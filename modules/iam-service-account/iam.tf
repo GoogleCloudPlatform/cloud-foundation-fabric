@@ -17,6 +17,20 @@
 # tfdoc:file:description IAM bindings.
 
 locals {
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._iam_principals[role], [])
+    )
+  }
   iam_billing_pairs = flatten([
     for entity, roles in var.iam_billing_roles : [
       for role in roles : [
@@ -24,6 +38,19 @@ locals {
       ]
     ]
   ])
+  iam_bindings_additive = merge(
+    var.iam_bindings_additive,
+    [
+      for principal, roles in var.iam_by_principals_additive : {
+        for role in roles :
+        "iam-bpa:${principal}-${role}" => {
+          member    = principal
+          role      = role
+          condition = null
+        }
+      }
+    ]...
+  )
   iam_folder_pairs = flatten([
     for entity, roles in var.iam_folder_roles : [
       for role in roles : [
@@ -62,17 +89,24 @@ locals {
 }
 
 resource "google_service_account_iam_binding" "authoritative" {
-  for_each           = var.iam
+  for_each           = local.iam
   service_account_id = local.service_account.name
-  role               = each.key
-  members            = each.value
+  role               = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for v in each.value :
+    lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_service_account_iam_binding" "bindings" {
   for_each           = var.iam_bindings
   service_account_id = local.service_account.name
-  role               = each.value.role
-  members            = each.value.members
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -84,10 +118,14 @@ resource "google_service_account_iam_binding" "bindings" {
 }
 
 resource "google_service_account_iam_member" "bindings" {
-  for_each           = var.iam_bindings_additive
+  for_each           = local.iam_bindings_additive
   service_account_id = local.service_account.name
-  role               = each.value.role
-  member             = each.value.member
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -104,8 +142,10 @@ resource "google_billing_account_iam_member" "billing-roles" {
     "${pair.entity}-${pair.role}" => pair
   }
   billing_account_id = each.value.entity
-  role               = each.value.role
-  member             = local.resource_iam_email
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_folder_iam_member" "folder-roles" {
@@ -113,9 +153,11 @@ resource "google_folder_iam_member" "folder-roles" {
     for pair in local.iam_folder_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  folder = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
+  folder = lookup(local.ctx.folder_ids, each.value.entity, each.value.entity)
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_organization_iam_member" "organization-roles" {
@@ -124,8 +166,10 @@ resource "google_organization_iam_member" "organization-roles" {
     "${pair.entity}-${pair.role}" => pair
   }
   org_id = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_project_iam_member" "project-roles" {
@@ -133,9 +177,11 @@ resource "google_project_iam_member" "project-roles" {
     for pair in local.iam_project_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  project = each.value.entity
-  role    = each.value.role
-  member  = local.resource_iam_email
+  project = lookup(local.ctx.project_ids, each.value.entity, each.value.entity)
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_service_account_iam_member" "additive" {
@@ -143,9 +189,13 @@ resource "google_service_account_iam_member" "additive" {
     for pair in local.iam_sa_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  service_account_id = each.value.entity
-  role               = each.value.role
-  member             = local.resource_iam_email
+  service_account_id = lookup(
+    local.ctx.service_account_ids, each.value.entity, each.value.entity
+  )
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }
 
 resource "google_storage_bucket_iam_member" "bucket-roles" {
@@ -153,7 +203,11 @@ resource "google_storage_bucket_iam_member" "bucket-roles" {
     for pair in local.iam_storage_pairs :
     "${pair.entity}-${pair.role}" => pair
   }
-  bucket = each.value.entity
-  role   = each.value.role
-  member = local.resource_iam_email
+  bucket = lookup(
+    local.ctx.storage_buckets, each.value.entity, each.value.entity
+  )
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = local.iam_email
 }

@@ -17,9 +17,11 @@
 # tfdoc:file:description Service agents supporting resources.
 
 locals {
-  services = distinct(concat(
-    local.available_services, try(var.project_reuse.attributes.services_enabled, [])
-  ))
+  services = [
+    for s in distinct(concat(
+      local.available_services, try(var.project_reuse.attributes.services_enabled, [])
+    )) : s if !contains(local._universe_unavailable_si, s)
+  ]
   _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
   # map of api => list of agents
   _service_agents_by_api = {
@@ -31,14 +33,15 @@ locals {
     ? ""
     : "${var.universe.prefix}-system."
   )
+  _universe_unavailable_si = try(var.universe.unavailable_service_identities, [])
   # map of service agent name => agent details for this project
   _project_service_agents_0 = merge([
     for api in concat(local.services, ["cloudservices"]) : {
       for agent in lookup(local._service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
         email = (
-          # If universe variable is set, enfore the use of the service-PROJECT_NUMBER@gcp-sa-ekms.UNVIVERSE-system.iam.gserviceaccount.com
-          # instead of service-PROJECT_NUMBER@gcp-sa-kms.UNVIVERSE-system.iam.gserviceaccount.com
+          # If universe variable is set, enfore the use of the service-PROJECT_NUMBER@gcp-sa-ekms.UNIVERSE-system.iam.gserviceaccount.com
+          # instead of service-PROJECT_NUMBER@gcp-sa-kms.UNIVERSE-system.iam.gserviceaccount.com
           # as in the TPC universes, the partner KMS is enforced by design
           var.universe != null && api == "cloudkms.googleapis.com"
           ? format("service-%s@gcp-sa-ekms.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
@@ -56,7 +59,7 @@ locals {
     k => merge(v, {
       iam_email  = "serviceAccount:${v.email}"
       create_jit = v.api == null ? false : contains(local.available_services, v.api)
-    })
+    }) if !contains(local._universe_unavailable_si, k)
   }
   # list of APIs with primary agents that should be created for the
   # current project, if the user requested it

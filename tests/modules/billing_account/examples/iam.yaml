@@ -18,6 +18,7 @@ values:
     condition: []
     members:
     - group:billing-admins@example.org
+    - group:gcp-organization-admins@example.com
     - serviceAccount:foo@myprj.iam.gserviceaccount.com
     role: roles/billing.admin
   module.billing-account.google_billing_account_iam_binding.bindings["conditional-admin"]:

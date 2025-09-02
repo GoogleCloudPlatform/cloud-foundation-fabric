@@ -45,16 +45,16 @@ variable "logging_settings" {
 variable "logging_sinks" {
   description = "Logging sinks to create for the organization."
   type = map(object({
+    destination          = string
     bq_partitioned_table = optional(bool, false)
     description          = optional(string)
-    destination          = string
     disabled             = optional(bool, false)
     exclusions           = optional(map(string), {})
     filter               = optional(string)
     iam                  = optional(bool, true)
     include_children     = optional(bool, true)
     intercept_children   = optional(bool, false)
-    type                 = string
+    type                 = optional(string, "logging")
   }))
   default  = {}
   nullable = false

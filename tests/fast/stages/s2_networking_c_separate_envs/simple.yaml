@@ -21,9 +21,9 @@ counts:
   google_compute_ha_vpn_gateway: 2
   google_compute_network: 2
   google_compute_route: 8
-  google_compute_router: 4
+  google_compute_router: 5
   google_compute_router_interface: 4
-  google_compute_router_nat: 2
+  google_compute_router_nat: 3
   google_compute_router_peer: 4
   google_compute_shared_vpc_host_project: 2
   google_compute_subnetwork: 4
@@ -43,6 +43,6 @@ counts:
   google_project_service_identity: 18
   google_storage_bucket_object: 2
   google_tags_tag_binding: 2
-  modules: 22
+  modules: 23
   random_id: 6
-  resources: 229
+  resources: 231

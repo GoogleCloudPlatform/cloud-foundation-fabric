@@ -34,7 +34,7 @@ locals {
             all = try(r.allow.all, null)
             values = (
               can(r.allow.values)
-              ? [for x in r.allow.values : templatestring(x, var.factories_config.context.org_policies)]
+              ? [for x in r.allow.values : templatestring(x, var.context.org_policies)]
               : null
             )
           } : null
@@ -42,7 +42,7 @@ locals {
             all = try(r.deny.all, null)
             values = (
               can(r.deny.values)
-              ? [for x in r.deny.values : templatestring(x, var.factories_config.context.org_policies)]
+              ? [for x in r.deny.values : templatestring(x, var.context.org_policies)]
               : null
             )
           } : null
@@ -50,28 +50,28 @@ locals {
           condition = {
             description = (
               can(r.condition.description)
-              ? templatestring(r.condition.description, var.factories_config.context.org_policies)
+              ? templatestring(r.condition.description, var.context.org_policies)
               : null
             )
             expression = (
               can(r.condition.expression)
-              ? templatestring(r.condition.expression, var.factories_config.context.org_policies)
+              ? templatestring(r.condition.expression, var.context.org_policies)
               : null
             )
             location = (
               can(r.condition.location)
-              ? templatestring(r.condition.location, var.factories_config.context.org_policies)
+              ? templatestring(r.condition.location, var.context.org_policies)
               : null
             )
             title = (
               can(r.condition.title)
-              ? templatestring(r.condition.title, var.factories_config.context.org_policies)
+              ? templatestring(r.condition.title, var.context.org_policies)
               : null
             )
           }
           parameters = (
             can(r.parameters)
-            ? templatestring(r.parameters, var.factories_config.context.org_policies)
+            ? templatestring(r.parameters, var.context.org_policies)
             : null
           )
         }

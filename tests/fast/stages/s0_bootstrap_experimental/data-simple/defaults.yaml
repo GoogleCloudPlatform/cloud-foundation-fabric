@@ -1,0 +1,61 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../../fast/stages/0-bootstrap-experimental/schemas/defaults.schema.json
+
+# defaults:
+#   storage_location: europe-west1
+global:
+  billing_account: 012345-012345-012345
+  locations:
+    bigquery: europe-west1
+    logging: europe-west1
+  organization:
+    domain: example.org
+    id: 1234567890
+    customer_id: abcd123456
+projects:
+  defaults:
+    prefix: ft0
+    storage_location: europe-west1
+  overrides: {}
+output_files:
+  local_path: /tmp/fast-config
+  storage_bucket: $storage_buckets:iac-0/iac-outputs
+  providers:
+    0-bootstrap:
+      bucket: $storage_buckets:iac-0/iac-bootstrap-state
+      service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    0-bootstrap-ro:
+      bucket: $storage_buckets:iac-0/iac-bootstrap-state
+      service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    1-vpcsc:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 1-vpcsc
+      service_account: $iam_principals:service_accounts/iac-0/iac-vpcsc-rw
+    2-networking:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-networking
+      service_account: $iam_principals:service_accounts/iac-0/iac-networking-rw
+    2-security:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-security
+      service_account: $iam_principals:service_accounts/iac-0/iac-security-rw
+    2-project-factory:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-project-factory
+      service_account: $iam_principals:service_accounts/iac-0/iac-pf-rw
+context:
+  iam_principals:
+    gcp-organization-admins: group:fabric-fast-owners@google.com

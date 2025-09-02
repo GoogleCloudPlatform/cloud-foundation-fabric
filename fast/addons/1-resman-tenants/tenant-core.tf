@@ -23,9 +23,8 @@ locals {
 module "tenant-core-logbucket" {
   source        = "../../../modules/logging-bucket"
   for_each      = local.tenants
-  parent_type   = "project"
   parent        = var.logging.project_id
-  id            = "${var.names.resource_short_name}-${each.key}-audit"
+  name          = "${var.names.resource_short_name}-${each.key}-audit"
   location      = var.locations.logging
   log_analytics = { enable = true }
 }

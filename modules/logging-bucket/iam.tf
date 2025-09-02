@@ -53,8 +53,10 @@ resource "google_logging_log_view_iam_binding" "authoritative" {
     for binding in local.view_iam :
     "${binding.view}.${binding.role}" => binding
   }
-  role     = each.value.role
-  members  = each.value.members
+  role = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   parent   = google_logging_log_view.views[each.value.view].parent
   location = google_logging_log_view.views[each.value.view].location
   bucket   = google_logging_log_view.views[each.value.view].bucket
@@ -63,8 +65,10 @@ resource "google_logging_log_view_iam_binding" "authoritative" {
 
 resource "google_logging_log_view_iam_binding" "bindings" {
   for_each = local.view_iam_bindings
-  role     = each.value.role
-  members  = each.value.members
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   parent   = google_logging_log_view.views[each.value.view].parent
   location = google_logging_log_view.views[each.value.view].location
   bucket   = google_logging_log_view.views[each.value.view].bucket
@@ -82,13 +86,12 @@ resource "google_logging_log_view_iam_binding" "bindings" {
 
 resource "google_logging_log_view_iam_member" "members" {
   for_each = local.view_iam_bindings_additive
-  role     = each.value.role
-  member   = each.value.member
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member   = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   parent   = google_logging_log_view.views[each.value.view].parent
   location = google_logging_log_view.views[each.value.view].location
   bucket   = google_logging_log_view.views[each.value.view].bucket
   name     = google_logging_log_view.views[each.value.view].name
-
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {

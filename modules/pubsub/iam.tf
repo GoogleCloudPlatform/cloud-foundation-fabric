@@ -15,6 +15,20 @@
  */
 
 locals {
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._iam_principals[role], [])
+    )
+  }
   subscription_iam = flatten([
     for k, v in var.subscriptions : [
       for role, members in v.iam : {
@@ -48,24 +62,23 @@ locals {
   ]...)
 }
 
-moved {
-  from = google_pubsub_topic_iam_binding.default
-  to   = google_pubsub_topic_iam_binding.authoritative
-}
-
 resource "google_pubsub_topic_iam_binding" "authoritative" {
-  for_each = var.iam
-  project  = var.project_id
+  for_each = local.iam
+  project  = local.project_id
   topic    = google_pubsub_topic.default.name
-  role     = each.key
-  members  = each.value
+  role     = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for v in each.value : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_pubsub_topic_iam_binding" "bindings" {
   for_each = var.iam_bindings
   topic    = google_pubsub_topic.default.name
-  role     = each.value.role
-  members  = each.value.members
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -79,8 +92,10 @@ resource "google_pubsub_topic_iam_binding" "bindings" {
 resource "google_pubsub_topic_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
   topic    = google_pubsub_topic.default.name
-  role     = each.value.role
-  member   = each.value.member
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -91,28 +106,27 @@ resource "google_pubsub_topic_iam_member" "bindings" {
   }
 }
 
-moved {
-  from = google_pubsub_subscription_iam_binding.default
-  to   = google_pubsub_subscription_iam_binding.authoritative
-}
-
 resource "google_pubsub_subscription_iam_binding" "authoritative" {
   for_each = {
     for binding in local.subscription_iam :
     "${binding.subscription}.${binding.role}" => binding
   }
-  project      = var.project_id
+  project      = local.project_id
   subscription = google_pubsub_subscription.default[each.value.subscription].name
-  role         = each.value.role
-  members      = each.value.members
+  role         = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_pubsub_subscription_iam_binding" "bindings" {
   for_each     = local.subscription_iam_bindings
-  project      = var.project_id
+  project      = local.project_id
   subscription = google_pubsub_subscription.default[each.value.subscription].name
-  role         = each.value.role
-  members      = each.value.members
+  role         = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -125,10 +139,12 @@ resource "google_pubsub_subscription_iam_binding" "bindings" {
 
 resource "google_pubsub_subscription_iam_member" "members" {
   for_each     = local.subscription_iam_bindings_additive
-  project      = var.project_id
+  project      = local.project_id
   subscription = google_pubsub_subscription.default[each.value.subscription].name
-  role         = each.value.role
-  member       = each.value.member
+  role         = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {

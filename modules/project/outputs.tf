@@ -24,12 +24,7 @@ output "alert_ids" {
 
 output "custom_role_id" {
   description = "Map of custom role IDs created in the project."
-  value = {
-    for k, v in google_project_iam_custom_role.roles :
-    # build the string manually so that role IDs can be used as map
-    # keys (useful for folder/organization/project-level iam bindings)
-    (k) => "projects/${local.project_id}/roles/${local.custom_roles[k].name}"
-  }
+  value       = local.custom_role_ids
 }
 
 output "custom_roles" {
@@ -88,7 +83,7 @@ output "network_tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default :
-    k => v if local.tag_values[k].tag_network
+    k => v if try(local.tag_values[k].tag_network, null) != null
   }
 }
 
@@ -195,6 +190,6 @@ output "tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default :
-    k => v if !local.tag_values[k].tag_network
+    k => v if try(local.tag_values[k].tag_network, null) == null
   }
 }

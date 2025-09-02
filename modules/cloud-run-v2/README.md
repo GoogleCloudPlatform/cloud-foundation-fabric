@@ -754,9 +754,9 @@ Unsupported variables / attributes:
 - containers.resources.startup_cpu_boost
 
 Additional configuration can be passwed as `job_config`:
-* max_retries - maximum of retries per task
-* task_count - desired number of tasks
-* timeout - max allowed time per task, in seconds with up to nine fractional digits, ending with 's'. Example: `3.5s`
+- max_retries - maximum of retries per task
+- task_count - desired number of tasks
+- timeout - max allowed time per task, in seconds with up to nine fractional digits, ending with 's'. Example: `3.5s`
 
 ```hcl
 module "cloud_run" {
@@ -873,6 +873,7 @@ module "cloud_run" {
 ```
 
 ## Adding GPUs
+
 GPU support is available for all types of Cloud Run resources: jobs, services and worker pools.
 
 ```hcl

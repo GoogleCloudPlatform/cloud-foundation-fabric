@@ -92,9 +92,8 @@ module "log-export-gcs" {
 module "log-export-logbucket" {
   source        = "../../../modules/logging-bucket"
   for_each      = toset([for k, v in var.log_sinks : k if v.type == "logging"])
-  parent_type   = "project"
   parent        = module.log-export-project.project_id
-  id            = each.key
+  name          = each.key
   location      = local.locations.logging
   log_analytics = { enable = true }
   # org-level logging settings ready before we create any logging buckets

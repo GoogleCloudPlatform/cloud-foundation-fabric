@@ -1,0 +1,93 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/project.schema.json
+
+iam_by_principals:
+  $iam_principals:org-admins:
+    - roles/iam.serviceAccountTokenCreator
+    - roles/iam.workloadIdentityPoolAdmin
+  $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro:
+    - roles/browser
+    - roles/cloudbuild.builds.viewer
+    - roles/iam.serviceAccountViewer
+    - roles/iam.workloadIdentityPoolViewer
+    - $custom_roles:storage_viewer
+    - roles/viewer
+  $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw:
+    - roles/cloudbuild.builds.editor
+    - roles/iam.serviceAccountAdmin
+    - roles/iam.workloadIdentityPoolAdmin
+    - roles/owner
+    - roles/storage.admin
+buckets:
+  iac-bootstrap-state:
+    description: Terraform state for the org-level automation.
+    iam:
+      roles/storage.admin:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
+      $custom_roles:storage_viewer:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro
+  iac-outputs:
+    description: Terraform state for the org-level automation.
+    iam:
+      roles/storage.admin:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-rw
+      $custom_roles:storage_viewer:
+        - $iam_principals:service_accounts/prod-iac-core-0/iac-bootstrap-ro
+service_accounts:
+  iac-bootstrap-ro:
+    display_name: IaC service account for bootstrap (read-only).
+  iac-bootstrap-rw:
+    display_name: IaC service account for bootstrap (read-write).
+  iac-vpcsc-ro:
+    display_name: IaC service account for vpc-sc (read-only).
+  iac-vpcsc-rw:
+    display_name: IaC service account for vpc-sc (read-write).
+org_policies:
+  iam.workloadIdentityPoolProviders:
+    rules:
+      - allow:
+          values:
+            - https://token.actions.githubusercontent.com
+            - https://gitlab.com
+            - https://app.terraform.io
+services:
+  - accesscontextmanager.googleapis.com
+  - bigquery.googleapis.com
+  - bigqueryreservation.googleapis.com
+  - bigquerystorage.googleapis.com
+  - billingbudgets.googleapis.com
+  - cloudasset.googleapis.com
+  - cloudbilling.googleapis.com
+  - cloudbuild.googleapis.com
+  - cloudkms.googleapis.com
+  - cloudquotas.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - compute.googleapis.com
+  - container.googleapis.com
+  - datacatalog.googleapis.com
+  - essentialcontacts.googleapis.com
+  - iam.googleapis.com
+  - iamcredentials.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - networksecurity.googleapis.com
+  - orgpolicy.googleapis.com
+  - pubsub.googleapis.com
+  - servicenetworking.googleapis.com
+  - serviceusage.googleapis.com
+  - storage-component.googleapis.com
+  - storage.googleapis.com
+  - sts.googleapis.com

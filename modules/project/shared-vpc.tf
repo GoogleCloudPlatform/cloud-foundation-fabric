@@ -25,20 +25,34 @@ locals {
   # filter the list and keep services for which we need to create IAM bindings
   _svpc_agent_config_filtered = [
     for v in local._svpc_agent_config : v
-    if contains(local._svpc.service_iam_grants, v.service)
+    if contains(local._svpc.service_iam_grants, "${local.ctx_p}service_agents:${v.service}")
   ]
   # normalize the list of service/role tuples
   _svpc_agent_grants = flatten(flatten([
     for v in local._svpc_agent_config_filtered : [
       for service, roles in v.agents : [
-        for role in roles : { role = role, service = service }
+        for role in roles : {
+          role = role
+          service = (
+            startswith(service, "${local.ctx_p}service_agents:")
+            ? replace(service, "/\\${local.ctx_p}service_agents:/", "")
+            : service
+          )
+        }
       ]
     ]
   ]))
   # normalize the service identity IAM bindings directly defined by the user
   _svpc_service_iam = flatten([
     for role, services in local._svpc.service_agent_iam : [
-      for service in services : { role = role, service = service }
+      for service in services : {
+        role = role
+        service = (
+          startswith(service, "${local.ctx_p}service_agents:")
+          ? replace(service, "/\\${local.ctx_p}service_agents:/", "")
+          : service
+        )
+      }
     ]
   ])
   svpc_host_config = {
@@ -96,17 +110,25 @@ resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
-  provider        = google-beta
-  for_each        = toset(local.svpc_host_config.service_projects)
-  host_project    = local.project.project_id
-  service_project = each.value
+  provider = google-beta
+  for_each = toset(local.svpc_host_config.service_projects)
+  host_project = lookup(
+    local.ctx.project_ids,
+    local.project.project_id,
+    local.project.project_id
+  )
+  service_project = lookup(local.ctx.project_ids, each.value, each.value)
   depends_on      = [google_compute_shared_vpc_host_project.shared_vpc_host]
 }
 
 resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
-  provider        = google-beta
-  count           = var.shared_vpc_service_config.host_project != null ? 1 : 0
-  host_project    = var.shared_vpc_service_config.host_project
+  provider = google-beta
+  count    = var.shared_vpc_service_config.host_project != null ? 1 : 0
+  host_project = lookup(
+    local.ctx.project_ids,
+    var.shared_vpc_service_config.host_project,
+    var.shared_vpc_service_config.host_project
+  )
   service_project = local.project.project_id
   depends_on = [
     google_access_context_manager_service_perimeter_dry_run_resource.default,
@@ -116,9 +138,16 @@ resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
 
 resource "google_project_iam_member" "shared_vpc_host_robots" {
   for_each = local.svpc_service_iam
-  project  = var.shared_vpc_service_config.host_project
-  role     = each.value.role
-  member   = try(local.aliased_service_agents[each.value.service].iam_email, each.value.service)
+  project = lookup(
+    local.ctx.project_ids,
+    var.shared_vpc_service_config.host_project,
+    var.shared_vpc_service_config.host_project
+  )
+  role = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member = try(
+    local.aliased_service_agents[each.value.service].iam_email,
+    each.value.service
+  )
   depends_on = [
     google_project_service.project_services,
     google_project_service_identity.default,
@@ -130,16 +159,28 @@ resource "google_project_iam_member" "shared_vpc_host_robots" {
 
 resource "google_project_iam_member" "shared_vpc_host_iam" {
   for_each = toset(var.shared_vpc_service_config.network_users)
-  project  = var.shared_vpc_service_config.host_project
-  role     = "roles/compute.networkUser"
-  member   = each.value
+  project = lookup(
+    local.ctx.project_ids,
+    var.shared_vpc_service_config.host_project,
+    var.shared_vpc_service_config.host_project
+  )
+  role   = "roles/compute.networkUser"
+  member = lookup(local.ctx.iam_principals, each.value, each.value)
 }
 
 resource "google_project_iam_member" "shared_vpc_host_iam_additive" {
   for_each = try(var.shared_vpc_service_config.iam_bindings_additive, {})
-  project  = var.shared_vpc_service_config.host_project
-  role     = each.value.role
-  member   = each.value.member
+  project = lookup(
+    local.ctx.project_ids,
+    var.shared_vpc_service_config.host_project,
+    var.shared_vpc_service_config.host_project
+  )
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -151,12 +192,19 @@ resource "google_project_iam_member" "shared_vpc_host_iam_additive" {
 }
 
 resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
-  for_each   = local.svpc_service_subnet_iam
-  project    = var.shared_vpc_service_config.host_project
+  for_each = local.svpc_service_subnet_iam
+  project = lookup(
+    local.ctx.project_ids,
+    var.shared_vpc_service_config.host_project,
+    var.shared_vpc_service_config.host_project
+  )
   region     = each.value.region
   subnetwork = each.value.subnet
   role       = "roles/compute.networkUser"
-  member     = try(local.aliased_service_agents[each.value.service].iam_email, each.value.service)
+  member = try(
+    local.aliased_service_agents[each.value.service].iam_email,
+    each.value.service
+  )
   depends_on = [
     google_project_service.project_services,
     google_project_service_identity.default,
@@ -167,10 +215,16 @@ resource "google_compute_subnetwork_iam_member" "shared_vpc_host_robots" {
 }
 
 resource "google_compute_subnetwork_iam_member" "shared_vpc_host_subnets_iam" {
-  for_each   = local.svpc_network_user_subnet_iam
-  project    = var.shared_vpc_service_config.host_project
+  for_each = local.svpc_network_user_subnet_iam
+  project = lookup(
+    local.ctx.project_ids,
+    var.shared_vpc_service_config.host_project,
+    var.shared_vpc_service_config.host_project
+  )
   region     = each.value.region
   subnetwork = each.value.subnet
   role       = "roles/compute.networkUser"
-  member     = each.value.member
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
 }

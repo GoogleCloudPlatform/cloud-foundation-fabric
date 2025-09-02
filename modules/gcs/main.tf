@@ -15,8 +15,15 @@
  */
 
 locals {
-  _name        = "${local.prefix}${lower(var.name)}"
+  _name = "${local.prefix}${lower(var.name)}"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p        = "$"
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
+  project_id   = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   notification = try(var.notification_config.enabled, false)
   topic_create = try(var.notification_config.create_topic, null) != null
   bucket = (
@@ -33,16 +40,13 @@ locals {
   )
 }
 
-moved {
-  from = google_storage_bucket.bucket
-  to   = google_storage_bucket.bucket[0]
-}
-
 resource "google_storage_bucket" "bucket" {
-  count                       = var.bucket_create ? 1 : 0
-  name                        = local._name
-  project                     = var.project_id
-  location                    = var.location
+  count   = var.bucket_create ? 1 : 0
+  name    = local._name
+  project = local.project_id
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
   storage_class               = var.storage_class
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = var.uniform_bucket_level_access
@@ -181,8 +185,7 @@ resource "google_storage_bucket" "bucket" {
 }
 
 resource "google_storage_bucket_object" "objects" {
-  for_each = var.objects_to_upload
-
+  for_each            = var.objects_to_upload
   bucket              = local.bucket.id
   name                = each.value.name
   metadata            = each.value.metadata
@@ -198,7 +201,6 @@ resource "google_storage_bucket_object" "objects" {
   detect_md5hash      = each.value.detect_md5hash
   storage_class       = each.value.storage_class
   kms_key_name        = each.value.kms_key_name
-
   dynamic "customer_encryption" {
     for_each = each.value.customer_encryption == null ? [] : [""]
 
@@ -231,7 +233,7 @@ resource "google_pubsub_topic_iam_binding" "binding" {
 
 resource "google_pubsub_topic" "topic" {
   count        = local.topic_create ? 1 : 0
-  project      = var.project_id
+  project      = local.project_id
   name         = var.notification_config.topic_name
   kms_key_name = try(var.notification_config.topic_create.kms_key_id, null)
 }

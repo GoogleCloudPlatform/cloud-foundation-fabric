@@ -21,7 +21,9 @@ locals {
     for k, v in var.environments :
     k => var.tag_values["environment/${v.tag_name}"]
   }
-  has_env_folders = var.folder_ids.networking-dev != null
+  has_env_folders = (try(
+    var.folder_ids["networking-dev"], var.folder_ids["networking/dev"], null
+  ) != null)
   iam_delegated = join(",", formatlist("'%s'", [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",

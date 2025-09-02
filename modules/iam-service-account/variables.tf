@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "External context used in replacements."
+  type = object({
+    custom_roles        = optional(map(string), {})
+    folder_ids          = optional(map(string), {})
+    iam_principals      = optional(map(string), {})
+    project_ids         = optional(map(string), {})
+    service_account_ids = optional(map(string), {})
+    storage_buckets     = optional(map(string), {})
+    tag_values          = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "create_ignore_already_exists" {
   description = "If set to true, skip service account creation if a service account with the same email already exists."
   type        = bool
@@ -34,85 +49,6 @@ variable "display_name" {
   description = "Display name of the service account to create."
   type        = string
   default     = "Terraform-managed."
-}
-
-variable "iam" {
-  description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_billing_roles" {
-  description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_bindings" {
-  description = "Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary."
-  type = map(object({
-    members = list(string)
-    role    = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_bindings_additive" {
-  description = "Individual additive IAM bindings on the service account. Keys are arbitrary."
-  type = map(object({
-    member = string
-    role   = string
-    condition = optional(object({
-      expression  = string
-      title       = string
-      description = optional(string)
-    }))
-  }))
-  nullable = false
-  default  = {}
-}
-
-variable "iam_folder_roles" {
-  description = "Folder roles granted to this service account, by folder id. Non-authoritative."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_organization_roles" {
-  description = "Organization roles granted to this service account, by organization id. Non-authoritative."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_project_roles" {
-  description = "Project roles granted to this service account, by project id."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_sa_roles" {
-  description = "Service account roles granted to this service account, by service account name."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
-variable "iam_storage_roles" {
-  description = "Storage roles granted to this service account, by bucket name."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
 
 variable "name" {

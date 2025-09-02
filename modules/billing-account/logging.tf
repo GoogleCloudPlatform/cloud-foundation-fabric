@@ -21,18 +21,27 @@ locals {
     for k, v in var.logging_sinks :
     # rewrite destination and type when type="project"
     k => merge(v, v.type != "project" ? {} : {
-      destination = "projects/${v.destination}"
+      destination = "projects/${lookup(local.ctx.project_ids, v.destination, v.destination)}"
       type        = "logging"
     })
   }
-  sink_bindings = {
-    for type in ["bigquery", "logging", "project", "pubsub", "storage"] :
-    type => {
-      for name, sink in var.logging_sinks :
-      name => sink
-      if sink.type == type
+  sink_bindings = merge(
+    {
+      storage = {
+        for name, sink in var.logging_sinks :
+        name => merge(sink, {
+          destination = lookup(local.ctx.storage_buckets, sink.destination, sink.destination)
+        }) if sink.type == "storage"
+      }
+    },
+    {
+      for type in ["bigquery", "logging", "project", "pubsub"] :
+      type => {
+        for name, sink in var.logging_sinks :
+        name => sink if sink.type == type
+      }
     }
-  }
+  )
 }
 
 resource "google_logging_billing_account_sink" "sink" {

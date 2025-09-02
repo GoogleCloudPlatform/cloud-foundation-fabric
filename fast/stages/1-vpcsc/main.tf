@@ -20,17 +20,17 @@ locals {
     "projects/${v}"
   ]
   restricted_services = yamldecode(file(var.factories_config.restricted_services))
-
   # extend context with our own data
   context = {
-    identity_sets = merge(var.factories_config.context.identity_sets, {
-      org_logging_writer_identities = distinct(values(var.logging.writer_identities))
+    identity_sets = merge(var.context.identity_sets, {
+      logging_identities = try(distinct(values(var.logging.writer_identities)), [])
     })
-    resource_sets = merge(var.factories_config.context.resource_sets, {
+    project_numbers = try(var.project_numbers)
+    resource_sets = merge(var.context.resource_sets, {
       discovered_projects = local.discovered_projects
-      logging_project     = ["projects/${var.logging.project_number}"]
+      logging_project     = try(["projects/${var.logging.project_number}"], [])
     })
-    service_sets = merge(var.factories_config.context.service_sets, {
+    service_sets = merge(var.context.service_sets, {
       restricted_services = local.restricted_services
     })
   }
@@ -53,13 +53,10 @@ module "vpc-sc" {
     parent = "organizations/${var.organization.id}"
     title  = "default"
   }
-  access_levels   = var.access_levels
-  egress_policies = var.egress_policies
-  factories_config = merge(
-    var.factories_config, {
-      context = local.context
-    }
-  )
+  access_levels           = var.access_levels
+  egress_policies         = var.egress_policies
+  context                 = local.context
+  factories_config        = var.factories_config
   ingress_policies        = var.ingress_policies
   perimeters              = var.perimeters
   project_id_search_scope = "organizations/${var.organization.id}"

@@ -74,6 +74,20 @@ variable "contacts" {
   nullable    = false
 }
 
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles   = optional(map(string), {})
+    folder_ids     = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    org_policies   = optional(map(map(string)), {})
+    tag_values     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "deletion_protection" {
   description = "Deletion protection setting for this folder."
   type        = bool
@@ -84,9 +98,6 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     org_policies = optional(string)
-    context = optional(object({
-      org_policies = optional(map(map(string)), {})
-    }), {})
   })
   nullable = false
   default  = {}
@@ -152,8 +163,12 @@ variable "parent" {
   type        = string
   default     = null
   validation {
-    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
-    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+    condition = (
+      var.parent == null ||
+      startswith(coalesce(var.parent, "-"), "$folder_ids:") ||
+      can(regex("(organizations|folders)/[0-9]+", coalesce(var.parent, "-")))
+    )
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id, or map to a context variable via $folder_ids:."
   }
 }
 

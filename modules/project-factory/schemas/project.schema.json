@@ -483,12 +483,6 @@
         "perimeter_name": {
           "type": "string"
         },
-        "perimeter_bridges": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "is_dry_run": {
           "type": "boolean"
         }

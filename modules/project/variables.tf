@@ -40,6 +40,24 @@ variable "contacts" {
   nullable    = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles          = optional(map(string), {})
+    folder_ids            = optional(map(string), {})
+    kms_keys              = optional(map(string), {})
+    iam_principals        = optional(map(string), {})
+    notification_channels = optional(map(string), {})
+    org_policies          = optional(map(map(string)), {})
+    project_ids           = optional(map(string), {})
+    tag_keys              = optional(map(string), {})
+    tag_values            = optional(map(string), {})
+    vpc_sc_perimeters     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
@@ -91,13 +109,6 @@ variable "factories_config" {
     org_policies  = optional(string)
     quotas        = optional(string)
     tags          = optional(string)
-    context = optional(object({
-      iam_principals        = optional(map(string), {})
-      notification_channels = optional(map(string), {})
-      org_policies          = optional(map(map(string)), {})
-      tag_keys              = optional(map(string), {})
-      tag_values            = optional(map(string), {})
-    }), {})
   })
   nullable = false
   default  = {}
@@ -154,8 +165,12 @@ variable "parent" {
   type        = string
   default     = null
   validation {
-    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
-    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+    condition = (
+      var.parent == null ||
+      startswith(coalesce(var.parent, "-"), "$") ||
+      can(regex("(organizations|folders)/[0-9]+", coalesce(var.parent, "-")))
+    )
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id or refer to a context variable via the '$' prefix."
   }
 }
 
@@ -286,8 +301,9 @@ variable "skip_delete" {
 variable "universe" {
   description = "GCP universe where to deploy the project. The prefix will be prepended to the project id."
   type = object({
-    prefix               = string
-    unavailable_services = optional(list(string), [])
+    prefix                         = string
+    unavailable_services           = optional(list(string), [])
+    unavailable_service_identities = optional(list(string), [])
   })
   default = null
 }
@@ -295,9 +311,8 @@ variable "universe" {
 variable "vpc_sc" {
   description = "VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module."
   type = object({
-    perimeter_name    = string
-    perimeter_bridges = optional(list(string), [])
-    is_dry_run        = optional(bool, false)
+    perimeter_name = string
+    is_dry_run     = optional(bool, false)
   })
   default = null
 }

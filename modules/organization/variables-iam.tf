@@ -15,7 +15,7 @@
  */
 
 variable "iam" {
-  description = "IAM bindings, in {ROLE => [MEMBERS]} format."
+  description = "Authoritative IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
   nullable    = false

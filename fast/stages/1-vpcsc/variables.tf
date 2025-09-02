@@ -70,6 +70,18 @@ variable "access_policy" {
   default     = null
 }
 
+variable "context" {
+  description = "External context used in replacements."
+  type = object({
+    identity_sets   = optional(map(list(string)), {})
+    project_numbers = optional(map(number), {})
+    resource_sets   = optional(map(list(string)), {})
+    service_sets    = optional(map(list(string)), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "egress_policies" {
   description = "Egress policy definitions that can be referenced in perimeters."
   type = map(object({
@@ -121,11 +133,6 @@ variable "factories_config" {
     ingress_policies    = optional(string, "data/ingress-policies")
     perimeters          = optional(string, "data/perimeters")
     restricted_services = optional(string, "data/restricted-services.yaml")
-    context = optional(object({
-      identity_sets = optional(map(list(string)), {})
-      resource_sets = optional(map(list(string)), {})
-      service_sets  = optional(map(list(string)), {})
-    }), {})
   })
   nullable = false
   default  = {}
