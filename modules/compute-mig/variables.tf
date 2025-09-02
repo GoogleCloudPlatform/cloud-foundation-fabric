@@ -175,7 +175,7 @@ variable "health_check_config" {
 }
 
 variable "instance_flexibility_policy_selections" {
-  description = "Instance flexibility policy selections. Only applicable to regional intances."
+  description = "Instance flexibility policy selections. Only applicable to regional instances."
   type = map(object({
     rank          = number
     machine_types = list(string)

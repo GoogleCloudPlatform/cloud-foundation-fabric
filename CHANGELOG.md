@@ -3,14 +3,40 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-08-08 06:51:19+00:00 to: None since: v42.0.0 -->
+## [Unreleased] <!-- from: 2025-09-01 15:08:43+00:00 to: None since: v42.1.0 -->
+
+## [43.0.0] - 2025-09-01
+
+### BREAKING CHANGES
+
+- `provider`: upgraded to version 7.0.1. See [upgrade notes](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/version_7_upgrade) for more details. [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)]
+- `modules/cloud-run-v2`: removed `depends_on` from worker pools. [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)]
+- `modules/gke-hub`: binutz removed from Config Management configuration options. [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)]
+
+
+### BLUEPRINTS
+
+- [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)] Upgrade provider to version 7.0.1 ([juliocc](https://github.com/juliocc)) <!-- 2025-09-01 15:29:20+00:00 -->
+
+### FAST
+
+- [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)] Upgrade provider to version 7.0.1 ([juliocc](https://github.com/juliocc)) <!-- 2025-09-01 15:29:20+00:00 -->
+
+### MODULES
+
+- [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)] Upgrade provider to version 7.0.1 ([juliocc](https://github.com/juliocc)) <!-- 2025-09-01 15:29:20+00:00 -->
+
+### TOOLS
+
+- [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)] Upgrade provider to version 7.0.1 ([juliocc](https://github.com/juliocc)) <!-- 2025-09-01 15:29:20+00:00 -->
+
+## [42.1.0] - 2025-09-01
 
 ### BREAKING CHANGES
 
 - `modules/cloud-run-v2`: dropped support for `service_account_create` for `eventarc_triggers` as it was impossible to properly manage permissions for those SA [[#3269](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3269)]
 - `terraform-provider-google`:  Bump provider to 6.47.0, to allow use of `gpu_zonal_redundancy_disabled` in modules/cloud-run-v2 [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)]
 - `modules/cloud-run-v2`: `create_job` bool was changed to `type` enum, `custom_audiences`, `eventarc_triggers`, `iap_config`, `ingress`  and `invoker_iam_disabled` were moved to `service_config`. `prefix` variable was removed. [[#3270](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3270)]
-
 
 ### BLUEPRINTS
 
@@ -19,10 +45,19 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3290](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3290)] Enable ADMIN_READ audit log for sts.googleapis.com in automation (iac) project  ([ysolt](https://github.com/ysolt)) <!-- 2025-09-01 13:58:29+00:00 -->
 - [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)] Add support for GPU functionality in Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 13:21:27+00:00 -->
 
 ### MODULES
 
+- [[#3293](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3293)] fix Flexible MIG E2E test ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-01 14:14:44+00:00 -->
+- [[#3292](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3292)] Fix boot disk source/params incompatibility in compute vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-01 12:45:43+00:00 -->
+- [[#3289](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3289)] Added test for compute-vm module disks template example ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-09-01 12:28:05+00:00 -->
+- [[#3281](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3281)] Instance flexibility policy added for regional MIGs ([apichick](https://github.com/apichick)) <!-- 2025-08-28 16:14:38+00:00 -->
+- [[#3279](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3279)] Support different key names for service accounts in project factory IAM ([ludoo](https://github.com/ludoo)) <!-- 2025-08-20 18:45:43+00:00 -->
+- [[#3277](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3277)] Provide Apache port to listen to, fixes E2E ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-18 09:52:28+00:00 -->
+- [[#3276](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3276)] Add Cloud Run recipes for updating image and IAM authentication to Cloud SQL ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-14 13:42:26+00:00 -->
+- [[#3275](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3275)] Provide node_pool_auto_config only when node auto provisioning is enabled for GKE standard cluster ([kumadee](https://github.com/kumadee)) <!-- 2025-08-14 12:47:07+00:00 -->
 - [[#3273](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3273)] Add cross project support for backend bucket ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-08-14 07:08:55+00:00 -->
 - [[#3269](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3269)] E2E: Align bucket location to the triggers ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 20:11:07+00:00 -->
 - [[#3274](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3274)] **incompatible change:** Add support for GPU functionality in Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-08-13 13:21:27+00:00 -->
@@ -1449,7 +1484,9 @@ All notable changes to this project will be documented in this file.
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v42.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v43.0.0...HEAD
+[43.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v43.0.0...42.1.0
+[42.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v42.1.0...42.0.0
 [42.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.1.0...41.0.0
 [41.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.0.0...41.1.0
 [41.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.2.0...41.0.0

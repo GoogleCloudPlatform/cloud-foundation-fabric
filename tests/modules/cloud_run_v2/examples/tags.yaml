@@ -34,7 +34,6 @@ values:
       - containers:
         - args: null
           command: null
-          depends_on: null
           env: []
           image: us-docker.pkg.dev/cloudrun/container/hello
           name: hello
