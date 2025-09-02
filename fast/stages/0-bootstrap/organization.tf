@@ -234,4 +234,5 @@ module "organization" {
       )
     }
   }
+  contacts = var.contacts
 }

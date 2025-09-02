@@ -391,3 +391,10 @@ variable "workload_identity_providers" {
   #   error_message = "Custom settings cannot be null."
   # }
 }
+
+variable "contacts" {
+  description = "List of essential contacts for the organization. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
