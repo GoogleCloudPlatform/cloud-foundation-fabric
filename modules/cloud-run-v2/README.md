@@ -944,7 +944,7 @@ module "worker" {
   project_id   = var.project_id
   name         = "worker"
   region       = var.region
-  launch_stage = "ALPHA"
+  launch_stage = "BETA"
   revision = {
     gpu_zonal_redundancy_disabled = true
     node_selector = {
