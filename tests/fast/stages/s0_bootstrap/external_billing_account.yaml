@@ -18,13 +18,6 @@ values:
   module.automation-project.data.google_storage_project_service_account.gcs_sa[0]:
     project: fast-prod-iac-core-0
     user_project: null
-  module.automation-project.google_essential_contacts_contact.contact["gcp-organization-admins@fast.example.com"]:
-    email: gcp-organization-admins@fast.example.com
-    language_tag: en
-    notification_category_subscriptions:
-    - ALL
-    parent: projects/fast-prod-iac-core-0
-    timeouts: null
   module.automation-project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"]:
     dry_run_spec: []
     name: projects/fast-prod-iac-core-0/policies/compute.skipDefaultNetworkCreation
@@ -786,13 +779,6 @@ values:
   module.billing-export-project[0].data.google_storage_project_service_account.gcs_sa[0]:
     project: fast-prod-billing-exp-0
     user_project: null
-  module.billing-export-project[0].google_essential_contacts_contact.contact["gcp-organization-admins@fast.example.com"]:
-    email: gcp-organization-admins@fast.example.com
-    language_tag: en
-    notification_category_subscriptions:
-    - ALL
-    parent: projects/fast-prod-billing-exp-0
-    timeouts: null
   module.billing-export-project[0].google_project.project[0]:
     auto_create_network: false
     billing_account: 000000-111111-222222
@@ -887,13 +873,6 @@ values:
   module.log-export-project.data.google_storage_project_service_account.gcs_sa[0]:
     project: fast-prod-audit-logs-0
     user_project: null
-  module.log-export-project.google_essential_contacts_contact.contact["gcp-organization-admins@fast.example.com"]:
-    email: gcp-organization-admins@fast.example.com
-    language_tag: en
-    notification_category_subscriptions:
-    - ALL
-    parent: projects/fast-prod-audit-logs-0
-    timeouts: null
   module.log-export-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 000000-111111-222222
@@ -939,6 +918,11 @@ values:
     project: fast-prod-audit-logs-0
     service: storage.googleapis.com
     timeouts: null
+  module.organization.google_essential_contacts_contact.contact["gcp-organization-admins@fast.example.com"]:
+    email: gcp-organization-admins@fast.example.com
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
   module.organization-logging.google_logging_organization_settings.default[0]:
     organization: '123456789012'
     storage_location: global

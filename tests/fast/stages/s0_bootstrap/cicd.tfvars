@@ -1,7 +1,9 @@
 billing_account = {
   id = "000000-111111-222222"
 }
-essential_contacts = "gcp-organization-admins@fast.example.com"
+essential_contacts = {
+  "gcp-organization-admins@fast.example.com" = ["ALL"]
+}
 groups = {
   gcp-support = "group:gcp-support@example.com"
 }

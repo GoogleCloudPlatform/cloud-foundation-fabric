@@ -83,13 +83,6 @@ variable "cicd_config" {
   }
 }
 
-variable "contacts" {
-  description = "List of essential contacts for the organization. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-}
-
 variable "custom_roles" {
   description = "Map of role names => list of permissions to additionally create at the organization level."
   type        = map(list(string))
@@ -138,9 +131,10 @@ variable "environments" {
 }
 
 variable "essential_contacts" {
-  description = "Email used for essential contacts, unset if null."
-  type        = string
-  default     = null
+  description = "List of essential contacts for the organization. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "factories_config" {

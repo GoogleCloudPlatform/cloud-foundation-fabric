@@ -234,5 +234,5 @@ module "organization" {
       )
     }
   }
-  contacts = var.contacts
+  contacts = var.essential_contacts
 }

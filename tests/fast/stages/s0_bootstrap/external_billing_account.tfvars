@@ -7,7 +7,9 @@ billing_account = {
     log_bucket = true
   }
 }
-essential_contacts = "gcp-organization-admins@fast.example.com"
+essential_contacts = {
+  "gcp-organization-admins@fast.example.com" = ["ALL"]
+}
 groups = {
   gcp-support = "group:gcp-support@example.com"
 }

@@ -25,11 +25,6 @@ module "automation-project" {
   )
   prefix   = var.prefix
   universe = var.universe
-  contacts = (
-    var.bootstrap_user != null || var.essential_contacts == null
-    ? {}
-    : { (var.essential_contacts) = ["ALL"] }
-  )
   factories_config = {
     org_policies = (
       var.bootstrap_user != null ? null : var.factories_config.org_policies_iac

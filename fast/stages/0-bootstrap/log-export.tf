@@ -50,11 +50,6 @@ module "log-export-project" {
   prefix          = var.prefix
   universe        = var.universe
   billing_account = var.billing_account.id
-  contacts = (
-    var.bootstrap_user != null || var.essential_contacts == null
-    ? {}
-    : { (var.essential_contacts) = ["ALL"] }
-  )
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]

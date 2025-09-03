@@ -68,11 +68,6 @@ module "billing-export-project" {
   )
   prefix   = var.prefix
   universe = var.universe
-  contacts = (
-    var.bootstrap_user != null || var.essential_contacts == null
-    ? {}
-    : { (var.essential_contacts) = ["ALL"] }
-  )
   iam = {
     "roles/owner"  = [module.automation-tf-bootstrap-sa.iam_email]
     "roles/viewer" = [module.automation-tf-bootstrap-r-sa.iam_email]
