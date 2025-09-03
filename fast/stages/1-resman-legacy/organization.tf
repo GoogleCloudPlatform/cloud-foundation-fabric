@@ -17,6 +17,10 @@
 # tfdoc:file:description Organization-level IAM and org policies.
 
 locals {
+  condition_vars = {
+    organization = var.organization
+    tag_names    = var.tag_names
+  }
   # combine org-level IAM additive from billing and stage 2s
   iam_bindings_additive = merge(
     merge([

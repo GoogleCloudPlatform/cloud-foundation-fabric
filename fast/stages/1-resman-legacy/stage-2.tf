@@ -174,6 +174,9 @@ module "stage2-folder" {
     )
   )
   name = each.value.folder_config.name
+  context = {
+    condition_vars = local.condition_vars
+  }
   iam = {
     for k, v in each.value.folder_config.iam :
     lookup(var.custom_roles, k, k) => [

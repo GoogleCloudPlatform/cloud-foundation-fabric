@@ -195,7 +195,7 @@ module "organization" {
   )
   custom_roles = var.custom_roles
   context = {
-    org_policies = {
+    condition_vars = {
       organization = var.organization
       tags = {
         org_policies_tag_name = local.org_policies_tag_name

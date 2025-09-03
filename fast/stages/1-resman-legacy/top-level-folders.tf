@@ -83,6 +83,9 @@ module "top-level-folder" {
   logging_exclusions  = each.value.logging_exclusions
   logging_settings    = each.value.logging_settings
   logging_sinks       = each.value.logging_sinks
+  context = {
+    condition_vars = local.condition_vars
+  }
   iam = {
     for role, members in each.value.iam :
     lookup(var.custom_roles, role, role) => [

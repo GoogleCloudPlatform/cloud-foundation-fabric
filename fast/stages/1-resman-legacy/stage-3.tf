@@ -157,6 +157,9 @@ module "stage3-folder" {
     )
   )
   name = each.value.folder_config.name
+  context = {
+    condition_vars = local.condition_vars
+  }
   iam = {
     # merge inputs/factory bindings with static role bindings in loocal._stage_3_iam
     for role in concat(keys(each.value.folder_config.iam), keys(local._stage_3_iam[each.key])) :
@@ -167,7 +170,6 @@ module "stage3-folder" {
       ) : lookup(local.principals_iam, m, m)
     ]
   }
-
   iam_bindings = {
     for k, v in each.value.folder_config.iam_bindings : k => merge(v, {
       members = [
