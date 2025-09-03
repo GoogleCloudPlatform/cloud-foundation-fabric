@@ -17,6 +17,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Hybrid NEG creation](#hybrid-neg-creation)
     - [Serverless NEG creation](#serverless-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
+    - [Private Service Connect NEG creation with PSC and Cross-project back-end](#private-service-connect-neg-creation-with-psc-and-cross-project-back-end)
     - [Internet NEG creation](#internet-neg-creation)
   - [URL Map](#url-map)
   - [SSL Certificates](#ssl-certificates)
@@ -441,6 +442,45 @@ module "ilb-l7" {
   }
 }
 # tftest modules=1 resources=5 e2e
+```
+
+#### Private Service Connect NEG creation with Cross-project PSC and back-end
+
+This example shows how to create the load balancer in one project `prj-host` while using a shared VPC deployed in the `prj-svc` project. Please note that the load balancer and its front-end will be created in the `prj-host` project and the back-end will be created in the `prj-svc` project. This is useful for situations where a shared VPC is being used that has been deployed in another project. Two subnetworks are needed, one for the loab balancer and another one for the PSC endpoint.
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-lb-app-int"
+  name       = "ilb-test"
+  project_id = "prj-host"
+  region     = "us-central1"
+
+  backend_service_configs = {
+    default = {
+      project_id = "prj-svc"
+      backends = [{
+        group = "neg-01"
+      }]
+      health_check_configs = {}
+      neg_configs = {
+        neg-01 = {
+          project_id  = "prj-svc"
+          description = "Network Endpoint Group for service accessed using Private Service Connect"
+          psc = {
+            region         = "us-central1"
+            target_service = "projects/producer_project/regions/us-central1/serviceAttachments/project_id"
+            network        = var.vpc.self_link
+            subnetwork     = "projects/prj-svc/regions/us-central1/subnetworks/psc_subnet"
+          }
+        }
+      }
+    }
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet_psc.self_link
+  }
+}
 ```
 
 #### Internet NEG creation
