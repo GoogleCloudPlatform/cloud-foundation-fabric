@@ -238,7 +238,7 @@ The module invocation using all optional features:
 
 ```hcl
 module "project-factory" {
-  source = "./fabric/modules/project-factory"
+  source = "./fabric/modules/project-factory-legacy"
   # use a default billing account if none is specified via yaml
   data_defaults = {
     billing_account  = var.billing_account_id
@@ -547,7 +547,7 @@ These tests validate fixes to the project factory.
 
 ```hcl
 module "project-factory" {
-  source = "./fabric/modules/project-factory"
+  source = "./fabric/modules/project-factory-legacy"
   data_defaults = {
     billing_account = "012345-67890A-ABCDEF"
   }

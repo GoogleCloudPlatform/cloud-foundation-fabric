@@ -292,7 +292,7 @@ This show a module invocation using all optional features:
 
 ```hcl
 module "project-factory" {
-  source = "./fabric/modules/project-factory-experimental"
+  source = "./fabric/modules/project-factory"
   context = {
     folder_ids = {
       default = "folders/5678901234"
@@ -615,7 +615,8 @@ These tests validate fixes to the project factory.
 module "project-factory" {
   source = "./fabric/modules/project-factory"
   data_defaults = {
-    billing_account = "012345-67890A-ABCDEF"
+    billing_account  = "012345-67890A-ABCDEF"
+    storage_location = "eu"
   }
   data_merges = {
     labels = {
@@ -629,10 +630,10 @@ module "project-factory" {
     prefix = "foo"
   }
   factories_config = {
-    projects_data_path = "data/projects"
+    projects = "data/projects"
   }
 }
-# tftest modules=4 resources=22 files=test-0,test-1,test-2
+# tftest modules=4 resources=23 files=test-0,test-1,test-2
 ```
 
 ```yaml
