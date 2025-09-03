@@ -15,19 +15,15 @@
 # yaml-language-server: $schema=../../../../schemas/folder.schema.json
 
 name: Development
-iam:
-  $custom_roles:project_iam_viewer:
-    - $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
-iam_bindings:
-  dp_dev:
-    role: roles/resourcemanager.projectIamAdmin
-    members:
-      - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
-    condition:
-      title: Data platform dev delegated IAM grant.
-      expression: |
-        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
-          '${custom_roles.service_project_network_admin}'
-        ])
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-dp-dev-rw:
+    - roles/logging.admin
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/compute.xpnAdmin
+  $iam_principals:service_accounts/iac-0/iac-dp-dev-ro:
+    - roles/viewer
+    - roles/resourcemanager.folderViewer
 tag_bindings:
   environment: $tag_values:environment/development

@@ -34,6 +34,7 @@ module "factory" {
   )
   data_overrides = local.project_defaults.overrides
   context = merge(local.ctx, {
+    condition_vars = local.ctx_condition_vars
     custom_roles = merge(
       local.ctx.custom_roles,
       module.organization[0].custom_role_id

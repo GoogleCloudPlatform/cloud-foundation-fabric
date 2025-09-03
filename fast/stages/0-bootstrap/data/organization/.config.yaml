@@ -28,14 +28,14 @@ iam_bindings:
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-rw
     condition:
-      expression: resource.matchTag('${organization}/context', 'project-factory')
+      expression: resource.matchTag('${organization.id}/context', 'project-factory')
       title: Project factory org policy admin
   pf_org_policy_viewer:
     role: roles/orgpolicy.policyViewer
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-ro
     condition:
-      expression: resource.matchTag('${organization}/context', 'project-factory')
+      expression: resource.matchTag('${organization.id}/context', 'project-factory')
       title: Project factory org policy viewer
 # authoritative IAM bindings by principal
 iam_by_principals:

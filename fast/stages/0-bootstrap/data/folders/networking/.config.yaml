@@ -31,3 +31,20 @@ iam_by_principals:
     - $custom_roles:service_project_network_admin
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
     - roles/compute.viewer
+iam_bindings:
+  dp_dev_rw:
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
+    role: $custom_roles:service_project_network_admin
+    condition:
+      expression: |
+        resource.matchTag('${organization.id}/environment', 'development')
+      title: Data platform dev service project admin.
+  dp_dev_ro:
+    role: roles/compute.networkViewer
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
+    condition:
+      title: Data platform dev network viewer.
+      expression: |
+        resource.matchTag('${organization.id}/environment', 'development')

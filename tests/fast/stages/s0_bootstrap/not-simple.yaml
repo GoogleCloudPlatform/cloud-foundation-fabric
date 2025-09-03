@@ -543,6 +543,7 @@ values:
     condition: []
     members:
     - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -553,6 +554,7 @@ values:
     condition: []
     members:
     - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -604,6 +606,11 @@ values:
     bucket: ft0-prod-iac-core-0-iac-stage-state
     force_destroy: false
     name: 2-security/
+    timeouts: null
+  module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["3-data-platform-dev/"]:
+    bucket: ft0-prod-iac-core-0-iac-stage-state
+    force_destroy: false
+    name: 3-data-platform-dev/
     timeouts: null
   ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["1-vpcsc/$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-stage-state
@@ -661,6 +668,20 @@ values:
     members:
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/storage.admin
+  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/$custom_roles:storage_viewer"]
+  : bucket: ft0-prod-iac-core-0-iac-stage-state
+    condition: []
+    managed_folder: 3-data-platform-dev/
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/storageViewer
+  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/roles/storage.admin"]
+  : bucket: ft0-prod-iac-core-0-iac-stage-state
+    condition: []
+    managed_folder: 3-data-platform-dev/
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.admin
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"]
   : condition: []
     members:
@@ -716,6 +737,26 @@ values:
     members:
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/viewer
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_ro"]:
+    condition:
+    - description: null
+      expression: 'resource.matchTag(''1234567890/environment'', ''development'')
+
+        '
+      title: Data platform dev network viewer.
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/compute.networkViewer
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_rw"]:
+    condition:
+    - description: null
+      expression: 'resource.matchTag(''1234567890/environment'', ''development'')
+
+        '
+      title: Data platform dev service project admin.
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/serviceProjectNetworkAdmin
   module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
@@ -796,6 +837,12 @@ values:
     members:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/viewer
+  module.factory.module.folder-1["data-platform"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Data Platform
+    parent: organizations/1234567890
+    tags: null
+    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
@@ -815,6 +862,69 @@ values:
     tags: null
     timeouts: null
   module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/compute.xpnAdmin
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/owner
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/viewer
+  ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/projectIamViewer
+  module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.bindings["dp_dev"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
+        \  'organizations/1234567890/roles/serviceProjectNetworkAdmin'\n])\n"
+      title: Data platform dev delegated IAM grant.
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
+  module.factory.module.folder-2["data-platform/dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.factory.module.folder-2["data-platform/dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-2["data-platform/prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    tags: null
+    timeouts: null
+  module.factory.module.folder-2["data-platform/prod"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.factory.module.folder-2["networking/dev"].google_folder.folder[0]:
     deletion_protection: false
@@ -1294,6 +1404,26 @@ values:
     display_name: IaC service account for bootstrap (read-write).
     email: iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     member: serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.module.service-accounts["iac-0/iac-dp-dev-ro"].google_service_account.service_account[0]:
+    account_id: iac-dp-dev-ro
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: IaC service account for data platform dev (read-only).
+    email: iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.module.service-accounts["iac-0/iac-dp-dev-rw"].google_service_account.service_account[0]:
+    account_id: iac-dp-dev-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: IaC service account for data platform dev (read-write).
+    email: iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     timeouts: null
   module.factory.module.service-accounts["iac-0/iac-networking-ro"].google_service_account.service_account[0]:
@@ -2488,8 +2618,8 @@ values:
 counts:
   google_bigquery_default_service_account: 1
   google_billing_account_iam_member: 5
-  google_folder: 5
-  google_folder_iam_binding: 27
+  google_folder: 8
+  google_folder_iam_binding: 38
   google_iam_workload_identity_pool: 1
   google_iam_workload_identity_pool_provider: 1
   google_logging_organization_settings: 1
@@ -2504,19 +2634,19 @@ counts:
   google_project_iam_member: 14
   google_project_service: 30
   google_project_service_identity: 8
-  google_service_account: 14
+  google_service_account: 16
   google_service_account_iam_member: 2
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_object: 9
-  google_storage_managed_folder: 4
-  google_storage_managed_folder_iam_binding: 8
+  google_storage_managed_folder: 5
+  google_storage_managed_folder_iam_binding: 10
   google_storage_project_service_account: 2
-  google_tags_tag_binding: 3
+  google_tags_tag_binding: 5
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 36
-  resources: 265
+  modules: 43
+  resources: 286
   terraform_data: 2

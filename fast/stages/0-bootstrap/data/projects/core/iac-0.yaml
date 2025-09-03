@@ -106,18 +106,26 @@ buckets:
             - $iam_principals:service_accounts/iac-0/iac-pf-rw
           $custom_roles:storage_viewer:
             - $iam_principals:service_accounts/iac-0/iac-pf-ro
+      3-data-platform-dev:
+        iam:
+          roles/storage.admin:
+            - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
+          $custom_roles:storage_viewer:
+            - $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
   # Terraform state bucket for FAST outputs
   iac-outputs:
     description: Terraform state for the org-level automation.
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+        - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
         - $iam_principals:service_accounts/iac-0/iac-networking-rw
         - $iam_principals:service_accounts/iac-0/iac-security-rw
         - $iam_principals:service_accounts/iac-0/iac-pf-rw
         - $iam_principals:service_accounts/iac-0/iac-vpcsc-rw
       $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/iac-0/iac-bootstrap-ro
+        - $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
         - $iam_principals:service_accounts/iac-0/iac-networking-ro
         - $iam_principals:service_accounts/iac-0/iac-security-ro
         - $iam_principals:service_accounts/iac-0/iac-pf-ro
@@ -159,3 +167,8 @@ service_accounts:
     display_name: IaC service account for project factory (read-only).
   iac-pf-rw:
     display_name: IaC service account for project factory (read-write).
+  # IaC service accounts for data platform (dev) stage
+  iac-dp-dev-ro:
+    display_name: IaC service account for data platform dev (read-only).
+  iac-dp-dev-rw:
+    display_name: IaC service account for data platform dev (read-write).

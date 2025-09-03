@@ -15,10 +15,29 @@
  */
 
 locals {
+  ctx_condition_vars = {
+    custom_roles = merge(
+      local.ctx.custom_roles,
+      module.organization[0].custom_role_id
+    )
+    organization = {
+      id          = local.organization_id
+      customer_id = local.organization.customer_id
+      domain      = local.organization.domain
+    }
+    tag_keys = merge(
+      local.ctx.tag_keys,
+      local.org_tag_keys
+    )
+    tag_values = merge(
+      local.ctx.tag_values,
+      local.org_tag_values
+    )
+  }
   # prepare organization data
   organization = merge(
     # initialize required attributes
-    { domain = null, id = null },
+    { customer_id = null, domain = null, id = null },
     # merge defaults
     lookup(local.defaults, "organization", {}),
     # merge attributes defined in yaml
@@ -55,6 +74,11 @@ module "organization" {
   organization_id  = "organizations/${local.organization_id}"
   logging_settings = lookup(local.organization, "logging", null)
   context = {
+    condition_vars = {
+      organization = {
+        id = local.organization_id
+      }
+    }
     locations = {
       default = local.defaults.locations.logging
     }
@@ -74,21 +98,16 @@ module "organization-iam" {
   count           = local.organization.id != null ? 1 : 0
   organization_id = module.organization[0].id
   context = merge(local.ctx, {
+    condition_vars = local.ctx_condition_vars
     custom_roles = merge(
-      local.ctx.custom_roles, module.organization[0].custom_role_id
+      local.ctx.custom_roles,
+      module.organization[0].custom_role_id
     )
     iam_principals = merge(
       local.ctx.iam_principals,
       module.factory.iam_principals
     )
     log_buckets = module.factory.log_buckets
-    org_policies = {
-      organization = local.defaults.organization
-      tags = merge(
-        local.ctx.tag_values,
-        local.org_tag_values
-      )
-    }
     project_ids = merge(
       local.ctx.project_ids, module.factory.project_ids
     )
