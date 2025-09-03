@@ -189,34 +189,35 @@ variable "revision" {
       tags      = optional(list(string))
     }), {})
     timeout = optional(string)
+    # deprecated fields
+    gen2_execution_environment = optional(any) # DEPRECATED
+    job                        = optional(any) # DEPRECATED
+    max_concurrency            = optional(any) # DEPRECATED
+    max_instance_count         = optional(any) # DEPRECATED
+    min_instance_count         = optional(any) # DEPRECATED
   })
   default  = {}
   nullable = false
   validation {
-    condition     = !contains(keys(var.revision), "gen2_execution_environment")
-    error_message = "Field gen2_execution_environment moved to var.service_config."
+    condition     = lookup(var.revision, "gen2_execution_environment", null) == null
+    error_message = "Field gen2_execution_environment has moved to var.service_config."
   }
   validation {
-    condition     = !contains(keys(var.revision), "max_concurrency")
-    error_message = "Field max_concurrency moved to var.service_config."
+    condition     = lookup(var.revision, "job", null) == null
+    error_message = "Field job has moved to var.job_config."
   }
   validation {
-    condition     = !contains(keys(var.revision), "max_concurrency")
-    error_message = "Field max_concurrency moved to var.service_config."
+    condition     = lookup(var.revision, "max_concurrency", null) == null
+    error_message = "Field max_concurrency has moved to var.service_config."
   }
   validation {
-    condition     = !contains(keys(var.revision), "max_instance_count")
-    error_message = "Field max_instance_count moved to var.service_config."
+    condition     = lookup(var.revision, "max_instance_count", null) == null
+    error_message = "Field max_instance_count has moved to var.service_config."
   }
   validation {
-    condition     = !contains(keys(var.revision), "min_instance_count")
-    error_message = "Field min_instance_count moved to var.service_config."
+    condition     = lookup(var.revision, "min_instance_count", null) == null
+    error_message = "Field min_instance_count has moved to var.service_config."
   }
-  validation {
-    condition     = !contains(keys(var.revision), "job")
-    error_message = "Field job moved to var.job_config."
-  }
-
   validation {
     condition = (
       try(var.revision.vpc_access.egress, null) == null ? true : contains(

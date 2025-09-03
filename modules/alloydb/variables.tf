@@ -138,6 +138,12 @@ variable "deletion_policy" {
   default     = null
 }
 
+variable "deletion_protection" {
+  description = "Whether Terraform will be prevented from destroying the cluster. When the field is set to true or unset in Terraform state, a terraform apply or terraform destroy that would delete the cluster will fail. When the field is set to false, deleting the cluster is allowed."
+  type        = bool
+  default     = null
+}
+
 variable "display_name" {
   description = "AlloyDB instance display name."
   type        = string

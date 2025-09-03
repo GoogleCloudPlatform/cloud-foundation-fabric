@@ -18,7 +18,7 @@
 
 locals {
   fleet_clusters = var.fleet_config == null ? {} : {
-    for k, v in var.clusters : k => v.configmanagement_template
+    for k, v in var.clusters : k => v.fleet_config.configmanagement_template
     if v.fleet_config.register == true
   }
   fleet_mcs_enabled = (
