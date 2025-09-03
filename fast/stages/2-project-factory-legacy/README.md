@@ -343,7 +343,7 @@ The approach is not shown here but reasonably easy to implement. The main projec
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
+| [main.tf](./main.tf) | Project factory. | <code>project-factory-legacy</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
