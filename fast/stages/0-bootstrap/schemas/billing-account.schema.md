@@ -44,6 +44,24 @@
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *array*
     - items: *string*
       <br>*pattern: ^roles/*
+- **logging_sinks**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9_-]+`**: *object*
+    <br>*additional properties: false*
+    - ⁺**destination**: *string*
+    - ⁺**type**: *string*
+      <br>*enum: ['bigquery', 'logging', 'project', 'pubsub', 'storage']*
+    - **bq_partitioned_table**: *boolean*
+    - **description**: *string*
+    - **disabled**: *boolean*
+    - **exclusions**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9_-]+`**: *object*
+        <br>*additional properties: false*
+        - ⁺**filter**: *string*
+        - **description**: *string*
+        - **disabled**: *boolean*
+    - **filter**: *string*
 
 ## Definitions
 
