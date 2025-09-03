@@ -83,6 +83,13 @@ variable "cicd_config" {
   }
 }
 
+variable "contacts" {
+  description = "List of essential contacts for the organization. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "custom_roles" {
   description = "Map of role names => list of permissions to additionally create at the organization level."
   type        = map(list(string))
@@ -390,11 +397,4 @@ variable "workload_identity_providers" {
   #   condition     = var.federated_identity_providers.custom_settings == null
   #   error_message = "Custom settings cannot be null."
   # }
-}
-
-variable "contacts" {
-  description = "List of essential contacts for the organization. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
