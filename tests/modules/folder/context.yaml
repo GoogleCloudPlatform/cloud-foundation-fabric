@@ -36,7 +36,10 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: roles/viewer
   google_folder_iam_binding.bindings["myrole_two"]:
-    condition: []
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/environment', 'development')
+      title: Test
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: organizations/366118655033/roles/myRoleTwo

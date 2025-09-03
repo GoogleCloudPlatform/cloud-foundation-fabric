@@ -2,6 +2,11 @@ prefix     = "prefix"
 project_id = "my-project-id"
 name       = "test-sa"
 context = {
+  condition_vars = {
+    organization = {
+      id = 1234567890
+    }
+  }
   custom_roles = {
     myrole_one = "organizations/366118655033/roles/myRoleOne"
     myrole_two = "organizations/366118655033/roles/myRoleTwo"
@@ -47,6 +52,10 @@ iam_bindings = {
     members = [
       "$iam_principals:mysa"
     ]
+    condition = {
+      title      = "Test"
+      expression = "resource.matchTag('$${organization.id}/environment', 'development')"
+    }
   }
 }
 iam_bindings_additive = {
