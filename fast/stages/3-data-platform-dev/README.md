@@ -183,6 +183,8 @@ Security permissions are only needed when using CMEK encryption, to grant the re
 
 The ["Classic FAST" dataset](../0-bootstrap/README.md#classic-fast-dataset) in the bootstrap stage already contains the configuration for a development Data Platform. Adapting it to multiple environments, or for a multi-environment setup is relatively trivial and left as an exercise to the user.
 
+What is missing from the default dataset are IAM grants on security resources. They can be added from the security stage by populating the `stage_configs.security.iam_admin_delegated` and `stage_configs.security.iam_viewer` variables with the identities of the Data Platform service account.
+
 ### Provider and Terraform variables
 
 As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
