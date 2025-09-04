@@ -478,7 +478,7 @@ module "ilb-l7" {
   }
   vpc_config = {
     network    = var.vpc.self_link
-    subnetwork = var.subnet_psc.self_link
+    subnetwork = var.subnet.self_link
   }
 }
 ```
