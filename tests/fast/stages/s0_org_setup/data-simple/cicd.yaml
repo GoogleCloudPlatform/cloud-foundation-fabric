@@ -27,21 +27,21 @@ workload_identity_federation:
       #   audiences: []
       #   jwks_json_path:
 workflows:
-  bootstrap:
+  org-setup:
     template: github
     workload_identity_provider:
       id: $wif_providers:github
       audiences: []
     repository:
-      name: bootstrap
+      name: org-setup
       branch: main
     output_files:
       storage_bucket: $storage_buckets:iac-0/iac-outputs
       providers:
-        apply: $output_files:providers/0-bootstrap
-        plan: $output_files:providers/0-bootstrap-ro
+        apply: $output_files:providers/0-org-setup
+        plan: $output_files:providers/0-org-setup-ro
       files:
         - tfvars/0-boostrap.auto.tfvars.json
     service_accounts:
-      apply: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-rw
-      plan: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-ro
+      apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+      plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro

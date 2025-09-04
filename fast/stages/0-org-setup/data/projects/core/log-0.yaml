@@ -16,9 +16,9 @@
 
 name: prod-audit-logs-0
 iam_by_principals:
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-ro:
+  $iam_principals:service_accounts/iac-0/iac-org-ro:
     - roles/viewer
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
+  $iam_principals:service_accounts/iac-0/iac-org-rw:
     - roles/owner
 services:
   - logging.googleapis.com

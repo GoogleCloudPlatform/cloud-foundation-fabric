@@ -41,12 +41,12 @@ output_files:
   local_path: ~/fast-config/fast-test-00
   storage_bucket: $storage_buckets:iac-0/iac-outputs
   providers:
-    0-bootstrap:
-      bucket: $storage_buckets:iac-0/iac-bootstrap-state
-      service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
-    0-bootstrap-ro:
-      bucket: $storage_buckets:iac-0/iac-bootstrap-state
-      service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    0-org-setup:
+      bucket: $storage_buckets:iac-0/iac-org-state
+      service_account: $iam_principals:service_accounts/iac-0/iac-org-rw
+    0-org-setup-ro:
+      bucket: $storage_buckets:iac-0/iac-org-state
+      service_account: $iam_principals:service_accounts/iac-0/iac-org-rw
     1-vpcsc:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 1-vpcsc

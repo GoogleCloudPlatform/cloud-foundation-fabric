@@ -24,9 +24,9 @@ iam_bindings_additive:
   billing_admin_org_admins:
     role: roles/billing.admin
     member: $iam_principals:gcp-organization-admins
-  billing_admin_bootstrap_sa:
+  billing_admin_org_sa:
     role: roles/billing.admin
-    member: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    member: $iam_principals:service_accounts/iac-0/iac-org-rw
   billing_user_security_sa:
     role: roles/billing.user
     member: $iam_principals:service_accounts/iac-0/iac-security-rw

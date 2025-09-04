@@ -52,7 +52,7 @@ locals {
       }
       prefix = local.defaults.prefix
     }
-    bootstrap = {
+    org-setup = {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
