@@ -73,7 +73,7 @@ The `factories_config` variable points to several paths containing the YAML conf
 If you are fine with this configuration nothing needs to be changed at this stage. To select a different setup create a `tfvars` file and set paths to the desired data folder, like shown in the example below. The different configurations produced by each fileset are described [later in this document](#default-factory-datasets).
 
 ```bash
-# create a file named 0-bootstrap.auto.tfvars containing the following
+# create a file named 0-org-setup.auto.tfvars containing the following
 # and replace paths by pointing them to the desired data folder
 factories_config = {
   billing_accounts = "data/billing-accounts"
@@ -163,7 +163,7 @@ compute.disableSerialPortAccess                  -            SET
 ```
 
 ```tfvars
-# create or edit the 0-bootstrap.auto.tfvars.file
+# create or edit the 0-org-setup.auto.tfvars.file
 org_policies_imports = [
   'iam.allowedPolicyMemberDomains',
   'compute.disableSerialPortAccess'
@@ -181,7 +181,7 @@ These files are only persisted by default on a special outputs bucket, but can a
 To enable local output files storage, set the `outputs_location` variable in your tfvars file to a filesystem path dedicated to this organization's output files. The following snippet provides an example.
 
 ```tfvars
-# create or edit the 0-bootstrap.auto.tfvars.file
+# create or edit the 0-org-setup.auto.tfvars.file
 outputs_location = "~/fast-configs/test-0"
 ```
 
@@ -200,33 +200,33 @@ When the first apply cycle has completed successfully, you are ready to switch T
 
 The first step is to link the generated provider file, either copying it from the GCS bucket or linking it from the local path if it has been configured in the previous step.
 
-The instructions also assume that you have moved the `0-bootstrap.auto.tfvars` file (if you have one) to the GCS bucket or the local config files. This is good practice in order to have the tfvars file persisted, either via GCS or by committing it to a repository with the source code in a dedicated config folder. The file needs to be copied or moved by hand. Alternatively, the last copy/link command can be ignored.
+The instructions also assume that you have moved the `0-org-setup.auto.tfvars` file (if you have one) to the GCS bucket or the local config files. This is good practice in order to have the tfvars file persisted, either via GCS or by committing it to a repository with the source code in a dedicated config folder. The file needs to be copied or moved by hand. Alternatively, the last copy/link command can be ignored.
 
 If local output files are available adjust the path, run the script, then copy/paste the resulting commands.
 
 ```bash
 # if local outputs file are available
 ../fast-links.sh ~/fast-configs/test-0
-# File linking commands for FAST Bootstrap. stage
+# File linking commands for FAST Organization Setup stage
 
 # provider file
-ln -s /home/user/fast-configs/test-0/providers/0-bootstrap-providers.tf ./
+ln -s /home/user/fast-configs/test-0/providers/0-org-setup-providers.tf ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-ln -s /home/user/fast-configs/test-0/0-bootstrap.auto.tfvars ./
+ln -s /home/user/fast-configs/test-0/0-org-setup.auto.tfvars ./
 ```
 
-If you did not configure local output files use the GCS bucket to fetch output files. The bucket name can be derived from the `tfvars.bootstrap.automation.outputs_bucket` Terraform output. Adjust the path, run the script, then copy/paste the resulting commands.
+If you did not configure local output files use the GCS bucket to fetch output files. The bucket name can be derived from the `tfvars.org_setup.automation.outputs_bucket` Terraform output. Adjust the path, run the script, then copy/paste the resulting commands.
 
 ```bash
 ../fast-links.sh gs://test0-prod-iac-core-0-iac-outputs
-# File linking commands for FAST Bootstrap. stage
+# File linking commands for FAST Organization Setup stage
 
 # provider file
-gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/providers/0-bootstrap-providers.tf ./
+gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/providers/0-org-setup-providers.tf ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/0-bootstrap.auto.tfvars ./
+gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/0-org-setup.auto.tfvars ./
 ```
 
 Once the provider file has been setup, migrate local state to the GCS backend and re-run apply.
@@ -294,7 +294,7 @@ The prerequisite configuration for this stage is done via a `defaults.yaml` file
 This is a commented example of a defaults file, showing a minimal working configuration. Refer to the YAML schema for all available options.
 
 ```yaml
-# global defaults used by bootstrap and persisted in the globals output file
+# global defaults used by org setup and persisted in the globals output file
 global:
   # billing account also set as default in the internal project factory
   billing_account: 123456-123456-123456
@@ -323,9 +323,9 @@ output_files:
   storage_bucket: $storage_buckets:iac-0/iac-outputs
   # FAST stage provider files (supports context interpolation)
   providers:
-    0-bootstrap:
-      bucket: $storage_buckets:iac-0/iac-bootstrap-state
-      service_account: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    0-org-setup:
+      bucket: $storage_buckets:iac-0/iac-org-state
+      service_account: $iam_principals:service_accounts/iac-0/iac-org-rw
     # [...]
 # static values added to context interpolation tables and used in factories
 context:
@@ -365,10 +365,10 @@ iam_bindings_additive:
     role: roles/billing.admin
     # statically defined principal (via defaults.yaml)
     member: $iam_principals:gcp-organization-admins
-  billing_admin_bootstrap_sa:
+  billing_admin_org_sa:
     role: roles/billing.admin
     # internally managed principal (project factory service account)
-    member: $iam_principals:service_accounts/iac-0/iac-bootstrap-rw
+    member: $iam_principals:service_accounts/iac-0/iac-org-rw
 logging_sinks:
   test:
     description: Test sink
@@ -404,7 +404,7 @@ iam_by_principals:
     - roles/compute.osAdminLogin
     # [...]
   # internally managed principal (project factory service account)
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
+  $iam_principals:service_accounts/iac-0/iac-org-rw:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
@@ -555,24 +555,24 @@ workload_identity_federation:
       #   audiences: []
       #   jwks_json_path:
 workflows:
-  bootstrap:
+  org_setup:
     template: github
     workload_identity_provider:
       id: $wif_providers:github
       audiences: []
     repository:
-      name: bootstrap
+      name: org-setup
       branch: main
     output_files:
       storage_bucket: $storage_buckets:iac-0/iac-outputs
       providers:
-        apply: $output_files:providers/0-bootstrap
-        plan: $output_files:providers/0-bootstrap-ro
+        apply: $output_files:providers/0-org-setup
+        plan: $output_files:providers/0-org-setup-ro
       files:
         - tfvars/0-boostrap.auto.tfvars.json
     service_accounts:
-      apply: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-rw
-      plan: $iam_principals:service_accounts/iac-0/iac-bootstrap-cicd-ro
+      apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+      plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
 ```
 
 ## Leveraging classic FAST Stages

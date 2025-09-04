@@ -45,7 +45,7 @@ The project factory stage is a thin wrapper of the underlying [project-factory m
 
 ## How to run this stage
 
-This stage is meant to be executed after the [bootstrap](../0-bootstrap/) stage. If any of the VPC SC, networking, and security stages have been applied, their resources can be directly leveraged via context interpolation as explained above.
+This stage is meant to be executed after the [bootstrap](../0-org-setup/) stage. If any of the VPC SC, networking, and security stages have been applied, their resources can be directly leveraged via context interpolation as explained above.
 
 ### Bootstrap stage configuration
 
@@ -147,7 +147,7 @@ The `data` folder in this stage contains factory files that can be used as examp
 
 ### Stage provider and Terraform variables
 
-As all other FAST stages, the [mechanism](../0-bootstrap/README.md#output-files-and-cross-stage-variables) used to pass variable values and pre-built provider files from one stage to the next is also leveraged here.
+As all other FAST stages, the [mechanism](../0-org-setup/README.md#output-files-and-cross-stage-variables) used to pass variable values and pre-built provider files from one stage to the next is also leveraged here.
 
 The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
@@ -161,7 +161,7 @@ ln -s ~/fast-config/fast-test-00/providers/2-project-factory-providers.tf ./
 
 # input files from other stages
 ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
 ln -s ~/fast-config/fast-test-00/2-project-factory.auto.tfvars ./
@@ -182,7 +182,7 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-project-factory-p
 
 # input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-project-factory.auto.tfvars ./

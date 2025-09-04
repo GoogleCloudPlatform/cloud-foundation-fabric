@@ -44,7 +44,7 @@ values:
     workload_identity_pool_id: iac-0
     workload_identity_pool_provider_id: github
     x509: []
-  google_storage_bucket_object.providers["0-bootstrap"]:
+  google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
     content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
@@ -56,10 +56,10 @@ values:
       \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"ft0-prod-iac-core-0-iac-bootstrap-state\"\n    impersonate_service_account\
-      \ = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
+      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_disposition: null
     content_encoding: null
@@ -70,13 +70,13 @@ values:
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
-    name: providers/0-bootstrap-providers.tf
+    name: providers/0-org-setup-providers.tf
     retention: []
     source: null
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.providers["0-bootstrap-ro"]:
+  google_storage_bucket_object.providers["0-org-setup-ro"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
     content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
@@ -88,10 +88,10 @@ values:
       \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"ft0-prod-iac-core-0-iac-bootstrap-state\"\n    impersonate_service_account\
-      \ = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
+      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_disposition: null
     content_encoding: null
@@ -102,7 +102,7 @@ values:
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
-    name: providers/0-bootstrap-ro-providers.tf
+    name: providers/0-org-setup-ro-providers.tf
     retention: []
     source: null
     source_md5hash: null
@@ -240,24 +240,6 @@ values:
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.tfvars["bootstrap"]:
-    bucket: ft0-prod-iac-core-0-iac-outputs
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: different hash
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: tfvars/0-bootstrap.auto.tfvars.json
-    retention: []
-    source: null
-    source_md5hash: null
-    temporary_hold: null
-    timeouts: null
   google_storage_bucket_object.tfvars["globals"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
@@ -277,7 +259,7 @@ values:
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.workflows["bootstrap"]:
+  google_storage_bucket_object.tfvars["org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
     content_disposition: null
@@ -289,13 +271,31 @@ values:
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
-    name: workflows/bootstrap.yaml
+    name: tfvars/0-org-setup.auto.tfvars.json
     retention: []
     source: null
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  local_file.providers["0-bootstrap"]:
+  google_storage_bucket_object.workflows["org-setup"]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: different hash
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: workflows/org-setup.yaml
+    retention: []
+    source: null
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  local_file.providers["0-org-setup"]:
     content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
       \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
       \ in compliance with the License.\n * You may obtain a copy of the License at\n\
@@ -305,18 +305,18 @@ values:
       \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"ft0-prod-iac-core-0-iac-bootstrap-state\"\n    impersonate_service_account\
-      \ = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
+      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/0-bootstrap-providers.tf
+    filename: /tmp/fast-config/providers/0-org-setup-providers.tf
     sensitive_content: null
     source: null
-  local_file.providers["0-bootstrap-ro"]:
+  local_file.providers["0-org-setup-ro"]:
     content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
       \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
       \ in compliance with the License.\n * You may obtain a copy of the License at\n\
@@ -326,15 +326,15 @@ values:
       \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"ft0-prod-iac-core-0-iac-bootstrap-state\"\n    impersonate_service_account\
-      \ = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n\
-      \  }\n}\nprovider \"google\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
+      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/0-bootstrap-ro-providers.tf
+    filename: /tmp/fast-config/providers/0-org-setup-ro-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["1-vpcsc"]:
@@ -425,13 +425,6 @@ values:
     filename: /tmp/fast-config/providers/2-security-providers.tf
     sensitive_content: null
     source: null
-  local_file.tfvars["bootstrap"]:
-    content_base64: null
-    directory_permission: '0777'
-    file_permission: '0644'
-    filename: /tmp/fast-config/tfvars/0-bootstrap.auto.tfvars.json
-    sensitive_content: null
-    source: null
   local_file.tfvars["globals"]:
     content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"eu","logging":"global","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0"}'
     content_base64: null
@@ -440,22 +433,29 @@ values:
     filename: /tmp/fast-config/tfvars/0-globals.auto.tfvars.json
     sensitive_content: null
     source: null
-  local_file.workflows["bootstrap"]:
+  local_file.tfvars["org-setup"]:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/workflows/bootstrap.yaml
+    filename: /tmp/fast-config/tfvars/0-org-setup.auto.tfvars.json
     sensitive_content: null
     source: null
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_bootstrap_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.admin
+  local_file.workflows["org-setup"]:
+    content_base64: null
+    directory_permission: '0777'
+    file_permission: '0644'
+    filename: /tmp/fast-config/workflows/org-setup.yaml
+    sensitive_content: null
+    source: null
   module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"]:
     billing_account_id: 012345-012345-012345
     condition: []
     member: group:fabric-fast-owners@google.com
+    role: roles/billing.admin
+  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_sa"]:
+    billing_account_id: 012345-012345-012345
+    condition: []
+    member: serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.admin
   module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_networking_sa"]:
     billing_account_id: 012345-012345-012345
@@ -472,7 +472,7 @@ values:
     condition: []
     member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.user
-  module.factory.module.buckets["iac-0/iac-bootstrap-state"].google_storage_bucket.bucket[0]:
+  module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
@@ -488,7 +488,7 @@ values:
     lifecycle_rule: []
     location: EUROPE-WEST1
     logging: []
-    name: ft0-prod-iac-core-0-iac-bootstrap-state
+    name: ft0-prod-iac-core-0-iac-org-state
     project: ft0-prod-iac-core-0
     requester_pays: null
     retention_policy: []
@@ -499,17 +499,17 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
-  ? module.factory.module.buckets["iac-0/iac-bootstrap-state"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
-  : bucket: ft0-prod-iac-core-0-iac-bootstrap-state
+  ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
+  : bucket: ft0-prod-iac-core-0-iac-org-state
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/storageViewer
-  ? module.factory.module.buckets["iac-0/iac-bootstrap-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]
-  : bucket: ft0-prod-iac-core-0-iac-bootstrap-state
+  ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]
+  : bucket: ft0-prod-iac-core-0-iac-org-state
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/storage.admin
   module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket.bucket[0]:
     autoclass: []
@@ -542,9 +542,9 @@ values:
   : bucket: ft0-prod-iac-core-0-iac-outputs
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -553,9 +553,9 @@ values:
     bucket: ft0-prod-iac-core-0-iac-outputs
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -970,31 +970,31 @@ values:
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:storage_viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: organizations/1234567890/roles/storageViewer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/browser"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/browser
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/cloudbuild.builds.editor
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/cloudbuild.builds.viewer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/iam.serviceAccountAdmin
   ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
@@ -1006,50 +1006,50 @@ values:
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountViewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/iam.serviceAccountViewer
   ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolAdmin"]
   : condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/iam.workloadIdentityPoolAdmin
   ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolViewer"]
   : condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/iam.workloadIdentityPoolViewer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/owner
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/storage.admin"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/storage.admin
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/viewer
   module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
     role: roles/owner
   module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
     role: roles/viewer
   module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
@@ -1366,46 +1366,6 @@ values:
     project: ft0-prod-audit-logs-0
     service: pubsub.googleapis.com
     timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-bootstrap-cicd-ro"].google_service_account.service_account[0]:
-    account_id: iac-bootstrap-cicd-ro
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for bootstrap CI/CD (read-only).
-    email: iac-bootstrap-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-bootstrap-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-bootstrap-cicd-rw"].google_service_account.service_account[0]:
-    account_id: iac-bootstrap-cicd-rw
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for bootstrap CI/CD (read-write).
-    email: iac-bootstrap-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-bootstrap-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-bootstrap-ro"].google_service_account.service_account[0]:
-    account_id: iac-bootstrap-ro
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for bootstrap (read-only).
-    email: iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-bootstrap-rw"].google_service_account.service_account[0]:
-    account_id: iac-bootstrap-rw
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for bootstrap (read-write).
-    email: iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
-    timeouts: null
   module.factory.module.service-accounts["iac-0/iac-dp-dev-ro"].google_service_account.service_account[0]:
     account_id: iac-dp-dev-ro
     create_ignore_already_exists: null
@@ -1444,6 +1404,46 @@ values:
     display_name: IaC service account for networking (read-write).
     email: iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     member: serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.module.service-accounts["iac-0/iac-org-cicd-ro"].google_service_account.service_account[0]:
+    account_id: iac-org-cicd-ro
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: IaC service account for org setup CI/CD (read-only).
+    email: iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.module.service-accounts["iac-0/iac-org-cicd-rw"].google_service_account.service_account[0]:
+    account_id: iac-org-cicd-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: IaC service account for org setup CI/CD (read-write).
+    email: iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.module.service-accounts["iac-0/iac-org-ro"].google_service_account.service_account[0]:
+    account_id: iac-org-ro
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: IaC service account for org setup (read-only).
+    email: iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.module.service-accounts["iac-0/iac-org-rw"].google_service_account.service_account[0]:
+    account_id: iac-org-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: IaC service account for org setup (read-write).
+    email: iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     timeouts: null
   module.factory.module.service-accounts["iac-0/iac-pf-ro"].google_service_account.service_account[0]:
@@ -1506,18 +1506,18 @@ values:
     member: serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     timeouts: null
-  module.factory.module.service_accounts-iam["iac-0/iac-bootstrap-cicd-ro"].data.google_service_account.service_account[0]:
-    account_id: iac-bootstrap-cicd-ro
-  ? module.factory.module.service_accounts-iam["iac-0/iac-bootstrap-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-bootstrap-ro-roles/iam.workloadIdentityUser"]
+  module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].data.google_service_account.service_account[0]:
+    account_id: iac-org-cicd-ro
+  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
-    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  module.factory.module.service_accounts-iam["iac-0/iac-bootstrap-cicd-rw"].data.google_service_account.service_account[0]:
-    account_id: iac-bootstrap-cicd-rw
-  ? module.factory.module.service_accounts-iam["iac-0/iac-bootstrap-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-bootstrap-rw-roles/iam.workloadIdentityUser"]
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+  module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].data.google_service_account.service_account[0]:
+    account_id: iac-org-cicd-rw
+  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
-    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.terraform_data.defaults_preconditions:
     input: null
     output: null
@@ -2190,7 +2190,7 @@ values:
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/accesscontextmanager.policyAdmin"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/accesscontextmanager.policyAdmin
@@ -2214,8 +2214,8 @@ values:
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudasset.viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -2262,63 +2262,63 @@ values:
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/essentialcontacts.admin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/essentialcontacts.viewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.organizationRoleAdmin"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/iam.organizationRoleAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.organizationRoleViewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/iam.organizationRoleViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.workforcePoolAdmin"]:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/iam.workforcePoolAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.workforcePoolViewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/iam.workforcePoolViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/logging.admin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/logging.viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/logging.viewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/orgpolicy.policyAdmin"]:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/orgpolicy.policyAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/orgpolicy.policyViewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/orgpolicy.policyViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/owner"]:
@@ -2331,58 +2331,58 @@ values:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.folderAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.folderViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.organizationAdmin"]:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.organizationAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.projectCreator
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectMover"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.projectMover
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagAdmin"]:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.tagAdmin
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.tagUser
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.tagViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]:
     condition: []
     members:
-    - serviceAccount:iac-bootstrap-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/serviceusage.serviceUsageViewer
   module.organization-iam[0].google_organization_iam_binding.bindings["pf_org_policy_admin"]:

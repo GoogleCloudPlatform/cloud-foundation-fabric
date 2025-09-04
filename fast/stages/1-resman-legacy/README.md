@@ -49,7 +49,7 @@ This split approach allows concise mapping of functional and operational pattern
 - team and application resources not subject to centralized management are grouped together, providing a unified view and easy budgeting/cost-allocation
 - automation for core resources is segregated via separate service accounts and buckets for each area (shared service, application) effectively minimizing blast radius
 
-Resource names follow the FAST convention discussed in the [Bootstrap stage documentation](../0-bootstrap/README.md#naming).
+Resource names follow the FAST convention discussed in the [Bootstrap stage documentation](../0-bootstrap-legacy/README.md#naming).
 
 ## Resource management primitives
 
@@ -204,11 +204,11 @@ tags = {
 
 This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).
 
-For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../0-bootstrap/README.md#cicd-repositories).
+For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../0-bootstrap-legacy/README.md#cicd-repositories).
 
 ## How to run this stage
 
-This stage is meant to be executed after the [bootstrap](../0-bootstrap) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
+This stage is meant to be executed after the [bootstrap](../0-bootstrap-legacy) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
 
 It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the bootstrap stage for the actual roles needed.
 
@@ -216,7 +216,7 @@ Before running this stage, you need to make sure you have the correct credential
 
 ### Provider and Terraform variables
 
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap-legacy/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
 The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
@@ -232,7 +232,7 @@ ln -s ~/fast-config/fast-test-00/providers/1-resman-providers.tf ./
 
 # input files from other stages
 ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap-legacy.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
 ln -s ~/fast-config/fast-test-00/1-resman.auto.tfvars ./
@@ -250,7 +250,7 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/1-resman-providers.
 
 # input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap-legacy.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/1-resman.auto.tfvars ./
@@ -265,10 +265,10 @@ The preconfigured provider file uses impersonation to run with this stage's auto
 Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
 
 - variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
-- variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap.auto.tfvars.json` file linked or copied above
+- variables which refer to resources managed by previous stage, which are prepopulated here via the `0-bootstrap-legacy.auto.tfvars.json` file linked or copied above
 - and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
 
-Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap/README.md#output-files-and-cross-stage-variables) for more details:
+Note that the `outputs_location` variable is disabled by default, you need to explicitly set it in your `terraform.tfvars` file if you want output files to be generated by this stage. This is a sample `terraform.tfvars` that configures it, refer to the [bootstrap stage documentation](../0-bootstrap-legacy/README.md#output-files-and-cross-stage-variables) for more details:
 
 ```tfvars
 outputs_location = "~/fast-config"

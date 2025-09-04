@@ -52,7 +52,7 @@ iam_by_principals:
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.tagAdmin
     - roles/iam.workforcePoolAdmin
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
+  $iam_principals:service_accounts/iac-0/iac-org-rw:
     - roles/accesscontextmanager.policyAdmin
     - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
@@ -66,7 +66,7 @@ iam_by_principals:
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
     - roles/resourcemanager.tagUser
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-ro:
+  $iam_principals:service_accounts/iac-0/iac-org-ro:
     - roles/cloudasset.viewer
     - roles/essentialcontacts.viewer
     - roles/iam.organizationRoleViewer

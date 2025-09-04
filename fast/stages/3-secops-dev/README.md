@@ -46,7 +46,7 @@ Network permissions are needed to associate data domain or product projects to S
 
 Security permissions are only needed when using CMEK encryption, to grant the relevant IAM roles to data platform service agents on the encryption keys used.
 
-The ["Classic FAST" dataset](../0-bootstrap/README.md#classic-fast-dataset) in the bootstrap stage contains the configuration for a development Data Platform that can be easily adapted to serve for this stage.
+The ["Classic FAST" dataset](../0-org-setup/README.md#classic-fast-dataset) in the bootstrap stage contains the configuration for a development Data Platform that can be easily adapted to serve for this stage.
 
 ## Customizations
 

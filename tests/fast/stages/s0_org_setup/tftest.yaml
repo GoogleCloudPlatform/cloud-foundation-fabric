@@ -1,3 +1,4 @@
+# skip boilerplate check
 # Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/project.schema.json
-
-name: prod-audit-logs-0
-iam_by_principals:
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-ro:
-    - roles/viewer
-  $iam_principals:service_accounts/iac-0/iac-bootstrap-rw:
-    - roles/owner
-services:
-  - logging.googleapis.com
-  - pubsub.googleapis.com
-  - storage.googleapis.com
-log_buckets:
-  audit-logs: {}
-  iam: {}
-  vpc-sc: {}
+module: fast/stages/0-org-setup
+tests:
+  # TODO: rename to simple once fast lint setup accepts extra dirs
+  not-simple:
+    inventory:
+      - not-simple.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s0_org_setup/data-simple

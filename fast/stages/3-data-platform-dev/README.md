@@ -181,11 +181,13 @@ Network permissions are needed to associate data domain or product projects to S
 
 Security permissions are only needed when using CMEK encryption, to grant the relevant IAM roles to data platform service agents on the encryption keys used.
 
-The ["Classic FAST" dataset](../0-bootstrap/README.md#classic-fast-dataset) in the bootstrap stage already contains the configuration for a development Data Platform. Adapting it to multiple environments, or for a multi-environment setup is relatively trivial and left as an exercise to the user.
+The ["Classic FAST" dataset](../0-org-setup/README.md#classic-fast-dataset) in the bootstrap stage already contains the configuration for a development Data Platform. Adapting it to multiple environments, or for a multi-environment setup is relatively trivial and left as an exercise to the user.
+
+What is missing from the default dataset are IAM grants on security resources. They can be added from the security stage by populating the `stage_configs.security.iam_admin_delegated` and `stage_configs.security.iam_viewer` variables with the identities of the Data Platform service account.
 
 ### Provider and Terraform variables
 
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-org-setup/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
 The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
@@ -197,7 +199,7 @@ ln -s ~/fast-config/providers/3-data-platform-dev-providers.tf ./
 
 # input files from other stages
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-org-setup.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
@@ -218,7 +220,7 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-data-platform-dev
 
 # input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-org-setup.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)

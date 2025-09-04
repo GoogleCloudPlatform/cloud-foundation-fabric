@@ -20,7 +20,7 @@ From the perspective of FAST's overall design, stages also work as contracts or 
   <img src="stages.png" alt="Stages diagram">
 </p>
 
-Please refer to the [stages](./stages/) section for further details on each stage. For details on tenant-level stages which introduce a deeper level of autonomy via nested FAST setups rooted in a top-level folder, refer to the [multitenant](#multitenant-organizations) section below.
+Please refer to the [stages](./stages/) section for further details on each stage.
 
 ### Security-first design
 
@@ -36,7 +36,7 @@ FAST uses YAML-based factories to deploy subnets and firewall rules and, as its 
 
 ### CI/CD
 
-One of our objectives with FAST is to provide a lightweight reference design for the IaC repositories, and a built-in implementation for running our code in automated pipelines. Our CI/CD approach leverages [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation), and provides sample workflow configurations for several major providers. Refer to the [CI/CD section in the bootstrap stage](./stages/0-bootstrap/README.md#cicd-configuration) for more details. We also provide separate [optional small stages](./extras/) to help you configure your CI/CD provider.
+One of our objectives with FAST is to provide a lightweight reference design for the IaC repositories, and a built-in implementation for running our code in automated pipelines. Our CI/CD approach leverages [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation), and provides sample workflow configurations for several major providers. Refer to the [CI/CD section in the organization setup stage](./stages/0-org-setup/README.md#cicd-configuration) for more details. We also provide separate [optional small stages](./extras/) to help you configure your CI/CD provider.
 
 <!-- TODO: move CI/CD documentation to its own file -->
 
