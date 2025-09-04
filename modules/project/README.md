@@ -623,7 +623,7 @@ module "project" {
     org_policies = "configs/org-policies/"
   }
   context = {
-    org_policies = {
+    condition_vars = {
       tags = {
         my_conditional_tag = "tagKeys/1234"
       }
