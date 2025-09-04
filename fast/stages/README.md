@@ -9,7 +9,7 @@ When deploying as part of a whole organization setup, each stage provides inform
 This has two important consequences:
 
 - any stage can be swapped out and replaced by different code as long as it respects the contract, by providing a predefined set of outputs and optionally accepting a predefined set of variables
-- data flow between stages can be partially automated (see [stage 0 documentation on output files](./0-bootstrap/README.md#output-files-and-cross-stage-variables)), reducing the effort and pain required to compile variables by hand
+- data flow between stages can be partially automated (see [stage 0 documentation on output files](./0-org-setup/README.md#output-files-and-cross-stage-variables)), reducing the effort and pain required to compile variables by hand
 
 One important assumption is that the flow of data is always forward looking (or sideways for optional components), so no stage needs to depend on outputs generated further down the chain. This greatly simplifies both the logic and the implementation, and allows stages to be effectively independent.
 
@@ -23,7 +23,7 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Organization (0)
 
-- [Bootstrap](./0-bootstrap/README.md)
+- [Organization Setup](./0-org-setup/README.md)
   This stage combines the legacy bootstrap and resource management stages described below, allowing easy configuration of all related resources via factories. Its flexibility supports any type of organizational design, while still supporting traditional FAST stages like VPC Service Controls, security, networking, and any stage 3.
 - [VPC Service Controls](./1-vpcsc/README.md)
   Optionally configures VPC Service Controls protection for the organization.

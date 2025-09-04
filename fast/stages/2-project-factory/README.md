@@ -45,7 +45,7 @@ The project factory stage is a thin wrapper of the underlying [project-factory m
 
 ## How to run this stage
 
-This stage is meant to be executed after the [bootstrap](../0-bootstrap/) stage. If any of the VPC SC, networking, and security stages have been applied, their resources can be directly leveraged via context interpolation as explained above.
+This stage is meant to be executed after the [bootstrap](../0-org-setup/) stage. If any of the VPC SC, networking, and security stages have been applied, their resources can be directly leveraged via context interpolation as explained above.
 
 ### Bootstrap stage configuration
 
@@ -147,7 +147,7 @@ The `data` folder in this stage contains factory files that can be used as examp
 
 ### Stage provider and Terraform variables
 
-As all other FAST stages, the [mechanism](../0-bootstrap/README.md#output-files-and-cross-stage-variables) used to pass variable values and pre-built provider files from one stage to the next is also leveraged here.
+As all other FAST stages, the [mechanism](../0-org-setup/README.md#output-files-and-cross-stage-variables) used to pass variable values and pre-built provider files from one stage to the next is also leveraged here.
 
 The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
@@ -161,7 +161,7 @@ ln -s ~/fast-config/fast-test-00/providers/2-project-factory-providers.tf ./
 
 # input files from other stages
 ln -s ~/fast-config/fast-test-00/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/fast-test-00/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/fast-test-00/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
 ln -s ~/fast-config/fast-test-00/2-project-factory.auto.tfvars ./
@@ -182,7 +182,7 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/2-project-factory-p
 
 # input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-org-setup.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/2-project-factory.auto.tfvars ./
@@ -359,22 +359,22 @@ automation:
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [billing_account](variables-fast.tf#L26) | Billing account id. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [prefix](variables-fast.tf#L92) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
+| [billing_account](variables-fast.tf#L26) | Billing account id. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
+| [prefix](variables-fast.tf#L92) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [custom_roles](variables-fast.tf#L34) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [custom_roles](variables-fast.tf#L34) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [factories_config](variables.tf#L35) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  folders  &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  projects &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account_id &#61; string&#10;    data               &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [folder_ids](variables-fast.tf#L42) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [folder_ids](variables-fast.tf#L42) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [host_project_ids](variables-fast.tf#L58) | Host project for the shared VPC. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-| [iam_principals](variables-fast.tf#L50) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [iam_principals](variables-fast.tf#L50) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [kms_keys](variables-fast.tf#L66) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
-| [locations](variables-fast.tf#L74) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  storage &#61; optional&#40;string, &#34;eu&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [locations](variables-fast.tf#L74) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  storage &#61; optional&#40;string, &#34;eu&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [perimeters](variables-fast.tf#L84) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
-| [project_ids](variables-fast.tf#L102) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
-| [service_accounts](variables-fast.tf#L110) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [project_ids](variables-fast.tf#L102) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [service_accounts](variables-fast.tf#L110) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [stage_name](variables.tf#L55) | FAST stage name. Used to separate output files across different factories. | <code>string</code> |  | <code>&#34;2-project-factory&#34;</code> |  |
-| [tag_values](variables-fast.tf#L118) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-bootstrap</code> |
+| [tag_values](variables-fast.tf#L118) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 
 ## Outputs
 
