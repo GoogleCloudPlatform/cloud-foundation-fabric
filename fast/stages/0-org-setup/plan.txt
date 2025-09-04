@@ -1,0 +1,436 @@
+  # google_iam_workload_identity_pool.default[0] must be replaced
+  # google_iam_workload_identity_pool_provider.default["github"] will be created
+  # google_iam_workload_identity_pool_provider.default["github-ludomagno"] will be destroyed
+  # google_iam_workload_identity_pool_provider.default["gitlab"] will be created
+  # google_iam_workload_identity_pool_provider.default["gitlab-ludomagno"] will be destroyed
+  # google_storage_bucket_object.providers["0-bootstrap"] will be destroyed
+  # google_storage_bucket_object.providers["0-bootstrap-r"] will be destroyed
+  # google_storage_bucket_object.providers["0-org-setup"] will be created
+  # google_storage_bucket_object.providers["0-org-setup-ro"] will be created
+  # google_storage_bucket_object.providers["1-resman"] will be destroyed
+  # google_storage_bucket_object.providers["1-resman-r"] will be destroyed
+  # google_storage_bucket_object.providers["1-resman-resman-tenants"] will be destroyed
+  # google_storage_bucket_object.providers["1-resman-resman-tenants-r"] will be destroyed
+  # google_storage_bucket_object.providers["1-vpcsc"] will be destroyed
+  # google_storage_bucket_object.providers["1-vpcsc-r"] will be destroyed
+  # google_storage_bucket_object.tfvars will be destroyed
+  # google_storage_bucket_object.tfvars["globals"] will be created
+  # google_storage_bucket_object.tfvars["org-setup"] will be created
+  # google_storage_bucket_object.tfvars_globals will be destroyed
+  # google_storage_bucket_object.version[0] will be destroyed
+  # google_storage_bucket_object.workflows["0-bootstrap"] will be destroyed
+  # google_storage_bucket_object.workflows["1-resman"] will be destroyed
+  # google_storage_bucket_object.workflows["1-resman-tenants"] will be destroyed
+  # google_storage_bucket_object.workflows["org-setup"] will be created
+  # local_file.providers["0-bootstrap"] will be destroyed
+  # local_file.providers["0-bootstrap-r"] will be destroyed
+  # local_file.providers["0-org-setup"] will be created
+  # local_file.providers["0-org-setup-ro"] will be created
+  # local_file.providers["1-resman"] will be destroyed
+  # local_file.providers["1-resman-r"] will be destroyed
+  # local_file.providers["1-resman-resman-tenants"] will be destroyed
+  # local_file.providers["1-resman-resman-tenants-r"] will be destroyed
+  # local_file.providers["1-vpcsc"] will be destroyed
+  # local_file.providers["1-vpcsc-r"] will be destroyed
+  # local_file.tfvars["1"] will be destroyed
+  # local_file.tfvars["globals"] will be created
+  # local_file.tfvars["org-setup"] will be created
+  # local_file.tfvars_globals["1"] will be destroyed
+  # local_file.workflows["0-bootstrap"] will be destroyed
+  # local_file.workflows["1-resman"] will be destroyed
+  # local_file.workflows["1-resman-tenants"] will be destroyed
+  # local_file.workflows["org-setup"] will be created
+  # terraform_data.precondition will be created
+  # module.automation-tf-bootstrap-gcs.google_storage_bucket.bucket[0] will be destroyed
+  # module.automation-tf-bootstrap-r-sa.google_organization_iam_member.organization-roles["366118655033-organizations/366118655033/roles/organizationAdminViewer"] will be destroyed
+  # module.automation-tf-bootstrap-r-sa.google_organization_iam_member.organization-roles["366118655033-organizations/366118655033/roles/tagViewer"] will be destroyed
+  # module.automation-tf-bootstrap-r-sa.google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-bootstrap-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
+  # module.automation-tf-bootstrap-r-sa.google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] will be destroyed
+  # module.automation-tf-bootstrap-sa.google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-bootstrap-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
+  # module.automation-tf-bootstrap-sa.google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.admin"] will be destroyed
+  # module.automation-tf-cicd-r-sa["bootstrap"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/logging.logWriter"] will be destroyed
+  # module.automation-tf-cicd-r-sa["bootstrap"].google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-cicd-r-sa["bootstrap"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"] will be destroyed
+  # module.automation-tf-cicd-r-sa["bootstrap"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/logging.logWriter"] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman"].google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman-tenants"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/logging.logWriter"] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"] will be destroyed
+  # module.automation-tf-cicd-r-sa["resman-tenants"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-cicd-sa["bootstrap"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/logging.logWriter"] will be destroyed
+  # module.automation-tf-cicd-sa["bootstrap"].google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-cicd-sa["bootstrap"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"] will be destroyed
+  # module.automation-tf-cicd-sa["bootstrap"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-cicd-sa["resman"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/logging.logWriter"] will be destroyed
+  # module.automation-tf-cicd-sa["resman"].google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-cicd-sa["resman"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"] will be destroyed
+  # module.automation-tf-cicd-sa["resman"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-cicd-sa["resman-tenants"].google_project_iam_member.project-roles["ldj-prod-iac-core-0-roles/logging.logWriter"] will be destroyed
+  # module.automation-tf-cicd-sa["resman-tenants"].google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-cicd-sa["resman-tenants"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"] will be destroyed
+  # module.automation-tf-cicd-sa["resman-tenants"].google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-output-gcs.google_storage_bucket.bucket[0] will be destroyed
+  # module.automation-tf-resman-gcs.google_storage_bucket.bucket[0] will be destroyed
+  # module.automation-tf-resman-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] will be destroyed
+  # module.automation-tf-resman-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-resman-r-sa.google_organization_iam_member.organization-roles["366118655033-organizations/366118655033/roles/organizationAdminViewer"] will be destroyed
+  # module.automation-tf-resman-r-sa.google_organization_iam_member.organization-roles["366118655033-organizations/366118655033/roles/tagViewer"] will be destroyed
+  # module.automation-tf-resman-r-sa.google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-resman-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
+  # module.automation-tf-resman-r-sa.google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] will be destroyed
+  # module.automation-tf-resman-sa.google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-resman-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
+  # module.automation-tf-resman-sa.google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.admin"] will be destroyed
+  # module.automation-tf-vpcsc-gcs.google_storage_bucket.bucket[0] will be destroyed
+  # module.automation-tf-vpcsc-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"] will be destroyed
+  # module.automation-tf-vpcsc-gcs.google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"] will be destroyed
+  # module.automation-tf-vpcsc-r-sa.google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-vpcsc-r-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
+  # module.automation-tf-vpcsc-r-sa.google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-organizations/366118655033/roles/storageViewer"] will be destroyed
+  # module.automation-tf-vpcsc-sa.google_service_account.service_account[0] will be destroyed
+  # module.automation-tf-vpcsc-sa.google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
+  # module.automation-tf-vpcsc-sa.google_storage_bucket_iam_member.bucket-roles["ldj-prod-iac-core-outputs-0-roles/storage.admin"] will be destroyed
+  # module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"] will be created
+  # module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_sa"] will be created
+  # module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_networking_sa"] will be created
+  # module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_pf_sa"] will be created
+  # module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_security_sa"] will be created
+  # module.factory.terraform_data.defaults_preconditions will be created
+  # module.log-export-dataset[0].google_bigquery_dataset.default will be destroyed
+  # module.log-export-logbucket["audit-logs"].google_logging_project_bucket_config.bucket[0] will be destroyed
+  # module.log-export-logbucket["data-access"].google_logging_project_bucket_config.bucket[0] will be destroyed
+  # module.log-export-logbucket["iam"].google_logging_project_bucket_config.bucket[0] will be destroyed
+  # module.log-export-logbucket["vpc-sc"].google_logging_project_bucket_config.bucket[0] will be destroyed
+  # module.log-export-logbucket["workspace-audit-logs"].google_logging_project_bucket_config.bucket[0] will be destroyed
+  # module.log-export-project.google_project.project[0] will be destroyed
+  # module.log-export-project.google_project_iam_binding.authoritative["roles/owner"] will be destroyed
+  # module.log-export-project.google_project_iam_binding.authoritative["roles/viewer"] will be destroyed
+  # module.log-export-project.google_project_service.project_services["bigquery.googleapis.com"] will be destroyed
+  # module.log-export-project.google_project_service.project_services["stackdriver.googleapis.com"] will be destroyed
+  # module.log-export-project.google_project_service.project_services["storage.googleapis.com"] will be destroyed
+  # module.organization.google_bigquery_dataset_iam_member.bq-sinks-binding["workspace-audit-logs-bq"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/billing.creator"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/browser"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/cloudasset.owner"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.admin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/compute.osAdminLogin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/compute.osLoginExternalUser"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/compute.viewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/essentialcontacts.viewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/iam.securityReviewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/logging.admin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/logging.viewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/monitoring.viewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/owner"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.organizationAdmin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.projectMover"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.tagAdmin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/securitycenter.admin"] will be destroyed
+  # module.organization.google_organization_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"] will be destroyed
+  # module.organization.google_organization_iam_binding.bindings["organization_iam_admin_conditional"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["asset_viewer_netmon"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["asset_viewer_test"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["org_role_admin_latchkey"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyAdmin-group:gcp-security-admins@ludo.joonix.net"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyAdmin-serviceAccount:ldj-prod-resman-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyAdmin-serviceAccount:ldj-prod-vpcsc-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyReader-serviceAccount:ldj-prod-resman-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/accesscontextmanager.policyReader-serviceAccount:ldj-prod-vpcsc-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/cloudasset.viewer-serviceAccount:ldj-prod-vpcsc-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/cloudasset.viewer-serviceAccount:ldj-prod-vpcsc-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/compute.orgFirewallPolicyAdmin-group:gcp-network-admins@ludo.joonix.net"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/compute.xpnAdmin-group:gcp-network-admins@ludo.joonix.net"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleAdmin-group:gcp-security-admins@ludo.joonix.net"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleAdmin-serviceAccount:ldj-prod-bootstrap-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/iam.organizationRoleViewer-serviceAccount:ldj-prod-bootstrap-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/iam.workforcePoolAdmin-group:gcp-organization-admins@ludo.joonix.net"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/iam.workforcePoolAdmin-serviceAccount:ldj-prod-bootstrap-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/iam.workforcePoolViewer-serviceAccount:ldj-prod-bootstrap-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-group:gcp-organization-admins@ludo.joonix.net"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-group:gcp-security-admins@ludo.joonix.net"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-serviceAccount:ldj-prod-bootstrap-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyAdmin-serviceAccount:ldj-prod-resman-0@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyViewer-serviceAccount:ldj-prod-bootstrap-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["roles/orgpolicy.policyViewer-serviceAccount:ldj-prod-resman-0r@ldj-prod-iac-core-0.iam.gserviceaccount.com"] will be destroyed
+  # module.organization.google_organization_iam_member.bindings["xpn_admin_org_admins"] will be destroyed
+  # module.organization.google_project_iam_member.bucket-sinks-binding["audit-logs"] will be destroyed
+  # module.organization.google_project_iam_member.bucket-sinks-binding["data-access"] will be destroyed
+  # module.organization.google_project_iam_member.bucket-sinks-binding["iam"] will be destroyed
+  # module.organization.google_project_iam_member.bucket-sinks-binding["vpc-sc"] will be destroyed
+  # module.organization.google_project_iam_member.bucket-sinks-binding["workspace-audit-logs"] will be destroyed
+  # module.organization.google_project_iam_member.project-sinks-binding["audit-logs-test"] will be destroyed
+  # module.organization[0].google_logging_organization_settings.default[0] will be created
+  # module.organization[0].google_organization_iam_custom_role.roles["tenantLoadBalancerAdmin"] will be destroyed
+  # (moved from module.organization.google_organization_iam_custom_role.roles["tenantLoadBalancerAdmin"])
+  # module.organization[0].google_organization_iam_custom_role.roles["tenant_network_admin"] will be destroyed
+  # (moved from module.organization.google_organization_iam_custom_role.roles["tenant_network_admin"])
+  # module.organization[0].google_tags_tag_key.default["context"] will be created
+  # module.organization[0].google_tags_tag_key.default["environment"] will be created
+  # module.organization[0].google_tags_tag_key.default["org-policies"] will be updated in-place
+  # (moved from module.organization.google_tags_tag_key.default["org-policies"])
+  # module.organization[0].google_tags_tag_value.default["context/project-factory"] will be created
+  # module.organization[0].google_tags_tag_value.default["environment/development"] will be created
+  # module.organization[0].google_tags_tag_value.default["environment/production"] will be created
+  # module.organization[0].google_tags_tag_value.default["org-policies/allowed-essential-contacts-domains-all"] will be updated in-place
+  # (moved from module.organization.google_tags_tag_value.default["org-policies/allowed-essential-contacts-domains-all"])
+  # module.organization[0].google_tags_tag_value.default["org-policies/allowed-policy-member-domains-all"] will be updated in-place
+  # (moved from module.organization.google_tags_tag_value.default["org-policies/allowed-policy-member-domains-all"])
+  # module.organization[0].google_tags_tag_value.default["org-policies/compute-require-oslogin-false"] will be destroyed
+  # (moved from module.organization.google_tags_tag_value.default["org-policies/compute-require-oslogin-false"])
+  # module.organization[0].google_tags_tag_value.default["org-policies/storage-public-access-allow"] will be destroyed
+  # (moved from module.organization.google_tags_tag_value.default["org-policies/storage-public-access-allow"])
+  # module.organization[0].google_tags_tag_value.default["org-policies/storage-public-access-prevention-false"] will be destroyed
+  # (moved from module.organization.google_tags_tag_value.default["org-policies/storage-public-access-prevention-false"])
+  # module.organization-iam[0].google_logging_organization_sink.sink["audit-logs"] will be updated in-place
+  # (moved from module.organization.google_logging_organization_sink.sink["audit-logs"])
+  # module.organization-iam[0].google_logging_organization_sink.sink["audit-logs-test"] will be destroyed
+  # (moved from module.organization.google_logging_organization_sink.sink["audit-logs-test"])
+  # module.organization-iam[0].google_logging_organization_sink.sink["data-access"] will be destroyed
+  # (moved from module.organization.google_logging_organization_sink.sink["data-access"])
+  # module.organization-iam[0].google_logging_organization_sink.sink["iam"] will be updated in-place
+  # (moved from module.organization.google_logging_organization_sink.sink["iam"])
+  # module.organization-iam[0].google_logging_organization_sink.sink["vpc-sc"] will be updated in-place
+  # (moved from module.organization.google_logging_organization_sink.sink["vpc-sc"])
+  # module.organization-iam[0].google_logging_organization_sink.sink["workspace-audit-logs"] will be updated in-place
+  # (moved from module.organization.google_logging_organization_sink.sink["workspace-audit-logs"])
+  # module.organization-iam[0].google_logging_organization_sink.sink["workspace-audit-logs-bq"] will be destroyed
+  # (moved from module.organization.google_logging_organization_sink.sink["workspace-audit-logs-bq"])
+  # module.organization-iam[0].google_org_policy_policy.default["cloudbuild.disableCreateDefaultServiceAccount"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["cloudbuild.useBuildServiceAccount"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["cloudbuild.useComputeServiceAccount"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["compute.disableInternetNetworkEndpointGroup"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["compute.disableVpcExternalIpv6"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["compute.restrictProtocolForwardingCreationForTypes"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["compute.trustedImageProjects"] will be updated in-place
+  # (moved from module.organization.google_org_policy_policy.default["compute.trustedImageProjects"])
+  # module.organization-iam[0].google_org_policy_policy.default["container.managed.enablePrivateNodes"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["custom.denyBridgePerimeters"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["gcp.resourceLocations"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["iam.allowedPolicyMemberDomains"] will be updated in-place
+  # (moved from module.organization.google_org_policy_policy.default["iam.allowedPolicyMemberDomains"])
+  # module.organization-iam[0].google_org_policy_policy.default["iam.disableAuditLoggingExemption"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["iam.managed.disableServiceAccountApiKeyCreation"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["iam.serviceAccountKeyExposureResponse"] will be updated in-place
+  # (moved from module.organization.google_org_policy_policy.default["iam.serviceAccountKeyExposureResponse"])
+  # module.organization-iam[0].google_org_policy_policy.default["iam.workloadIdentityPoolAwsAccounts"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["run.managed.requireInvokerIam"] will be created
+  # module.organization-iam[0].google_org_policy_policy.default["storage.publicAccessPrevention"] will be updated in-place
+  # (moved from module.organization.google_org_policy_policy.default["storage.publicAccessPrevention"])
+  # module.organization-iam[0].google_org_policy_policy.default["storage.restrictAuthTypes"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/accesscontextmanager.policyAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/accesscontextmanager.policyReader"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/billing.creator"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudasset.owner"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudasset.viewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudsupport.admin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgFirewallPolicyAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgFirewallPolicyUser"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.osAdminLogin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.osLoginExternalUser"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.xpnAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.viewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.organizationRoleAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.organizationRoleViewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.workforcePoolAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.workforcePoolViewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/logging.admin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/logging.viewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/orgpolicy.policyAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/orgpolicy.policyViewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/owner"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.organizationAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectMover"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagAdmin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.bindings["pf_org_policy_admin"] will be created
+  # module.organization-iam[0].google_organization_iam_binding.bindings["pf_org_policy_viewer"] will be created
+  # module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["audit-logs"] will be created
+  # module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["iam"] will be created
+  # module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["vpc-sc"] will be created
+  # module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["workspace-audit-logs"] will be created
+  # module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagUser"] will be created
+  # module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagViewer"] will be created
+  # module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagUser"] will be created
+  # module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagViewer"] will be created
+  # module.organization-logging.google_logging_organization_settings.default[0] will be destroyed
+  # module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket.bucket[0] will be created
+  # module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"] will be created
+  # module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"] will be created
+  # module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket.bucket[0] will be created
+  # module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"] will be created
+  # module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_bucket.bucket[0] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["1-vpcsc/"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["2-networking/"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["2-project-factory/"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["2-security/"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["3-data-platform-dev/"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["1-vpcsc/$custom_roles:storage_viewer"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["1-vpcsc/roles/storage.admin"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["2-networking/$custom_roles:storage_viewer"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["2-networking/roles/storage.admin"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["2-project-factory/$custom_roles:storage_viewer"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["2-project-factory/roles/storage.admin"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["2-security/$custom_roles:storage_viewer"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["2-security/roles/storage.admin"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/$custom_roles:storage_viewer"] will be created
+  # module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/roles/storage.admin"] will be created
+  # module.factory.module.folder-1["data-platform"].google_folder.folder[0] will be created
+  # module.factory.module.folder-1["networking"].google_folder.folder[0] will be created
+  # module.factory.module.folder-1["security"].google_folder.folder[0] will be created
+  # module.factory.module.folder-1["teams"].google_folder.folder[0] will be created
+  # module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/compute.viewer"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/logging.admin"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/owner"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/viewer"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_ro"] will be created
+  # module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_rw"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/logging.admin"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/owner"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be created
+  # module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/viewer"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/owner"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"] will be created
+  # module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/viewer"] will be created
+  # module.factory.module.folder-2["data-platform/dev"].google_folder.folder[0] will be created
+  # module.factory.module.folder-2["data-platform/dev"].google_tags_tag_binding.binding["environment"] will be created
+  # module.factory.module.folder-2["data-platform/prod"].google_folder.folder[0] will be created
+  # module.factory.module.folder-2["data-platform/prod"].google_tags_tag_binding.binding["environment"] will be created
+  # module.factory.module.folder-2["networking/dev"].google_folder.folder[0] will be created
+  # module.factory.module.folder-2["networking/dev"].google_tags_tag_binding.binding["environment"] will be created
+  # module.factory.module.folder-2["networking/prod"].google_folder.folder[0] will be created
+  # module.factory.module.folder-2["networking/prod"].google_tags_tag_binding.binding["environment"] will be created
+  # module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"] will be created
+  # module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.admin"] will be created
+  # module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/owner"] will be created
+  # module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"] will be created
+  # module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"] will be created
+  # module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"] will be created
+  # module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/viewer"] will be created
+  # module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"] will be created
+  # module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.bindings["dp_dev"] will be created
+  # module.factory.module.log-buckets["log-0/audit-logs"].google_logging_project_bucket_config.bucket[0] will be created
+  # module.factory.module.log-buckets["log-0/iam"].google_logging_project_bucket_config.bucket[0] will be created
+  # module.factory.module.log-buckets["log-0/vpc-sc"].google_logging_project_bucket_config.bucket[0] will be created
+  # module.factory.module.projects["iac-0"].google_org_policy_policy.default["compute.skipDefaultNetworkCreation"] will be destroyed
+  # (moved from module.automation-project.google_org_policy_policy.default["compute.skipDefaultNetworkCreation"])
+  # module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"] will be destroyed
+  # (moved from module.automation-project.google_org_policy_policy.default["iam.automaticIamGrantsForDefaultServiceAccounts"])
+  # module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"] will be destroyed
+  # (moved from module.automation-project.google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"])
+  # module.factory.module.projects["iac-0"].google_project_iam_audit_config.default["iam.googleapis.com"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_audit_config.default["iam.googleapis.com"])
+  # module.factory.module.projects["iac-0"].google_project_iam_audit_config.default["sts.googleapis.com"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_audit_config.default["sts.googleapis.com"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["organizations/366118655033/roles/storageViewer"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["organizations/366118655033/roles/storageViewer"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/browser"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/browser"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.viewer"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/cloudbuild.builds.viewer"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountViewer"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/iam.serviceAccountViewer"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolAdmin"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolAdmin"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolViewer"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolViewer"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/owner"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/owner"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/source.admin"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/source.admin"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/source.reader"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/source.reader"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/storage.admin"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/storage.admin"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.authoritative["roles/viewer"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.authoritative["roles/viewer"])
+  # module.factory.module.projects["iac-0"].google_project_iam_binding.bindings["delegated_grants_resman"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_binding.bindings["delegated_grants_resman"])
+  # module.factory.module.projects["iac-0"].google_project_iam_member.bindings["serviceusage_resman"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_member.bindings["serviceusage_resman"])
+  # module.factory.module.projects["iac-0"].google_project_iam_member.bindings["serviceusage_resman_r"] will be destroyed
+  # (moved from module.automation-project.google_project_iam_member.bindings["serviceusage_resman_r"])
+  # module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0] will be read during apply
+  # (depends on a resource or a module with changes pending)
+  # module.factory.module.projects["log-0"].google_project.project[0] will be created
+  # module.factory.module.projects["log-0"].google_project_iam_member.service_agents["pubsub"] will be created
+  # module.factory.module.projects["log-0"].google_project_service.project_services["logging.googleapis.com"] will be created
+  # module.factory.module.projects["log-0"].google_project_service.project_services["pubsub.googleapis.com"] will be created
+  # module.factory.module.projects["log-0"].google_project_service.project_services["storage.googleapis.com"] will be created
+  # module.factory.module.projects["log-0"].google_project_service_identity.default["pubsub.googleapis.com"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:storage_viewer"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/browser"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.viewer"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountViewer"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolAdmin"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolViewer"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/owner"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/storage.admin"] will be created
+  # module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/viewer"] will be created
+  # module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/owner"] will be created
+  # module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/viewer"] will be created
+  # module.factory.module.service-accounts["iac-0/iac-dp-dev-ro"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-dp-dev-rw"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-networking-ro"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-networking-rw"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-org-cicd-ro"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-org-cicd-rw"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-org-ro"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-org-rw"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-pf-ro"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-pf-rw"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-security-ro"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-security-rw"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-vpcsc-ro"].google_service_account.service_account[0] will be created
+  # module.factory.module.service-accounts["iac-0/iac-vpcsc-rw"].google_service_account.service_account[0] will be created
+  # module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].data.google_service_account.service_account[0] will be read during apply
+  # (config refers to values not yet known)
+  # module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"] will be created
+  # module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].data.google_service_account.service_account[0] will be read during apply
+  # (config refers to values not yet known)
+  # module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"] will be created

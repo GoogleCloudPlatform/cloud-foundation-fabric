@@ -1,0 +1,48 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/custom-role.schema.json
+
+name: ngfwEnterpriseAdmin
+includedPermissions:
+  - networksecurity.firewallEndpoints.create
+  - networksecurity.firewallEndpoints.delete
+  - networksecurity.firewallEndpoints.get
+  - networksecurity.firewallEndpoints.list
+  - networksecurity.firewallEndpoints.update
+  - networksecurity.firewallEndpoints.use
+  - networksecurity.locations.get
+  - networksecurity.locations.list
+  - networksecurity.operations.cancel
+  - networksecurity.operations.delete
+  - networksecurity.operations.get
+  - networksecurity.operations.list
+  - networksecurity.securityProfileGroups.create
+  - networksecurity.securityProfileGroups.delete
+  - networksecurity.securityProfileGroups.get
+  - networksecurity.securityProfileGroups.list
+  - networksecurity.securityProfileGroups.update
+  - networksecurity.securityProfileGroups.use
+  - networksecurity.securityProfiles.create
+  - networksecurity.securityProfiles.delete
+  - networksecurity.securityProfiles.get
+  - networksecurity.securityProfiles.list
+  - networksecurity.securityProfiles.update
+  - networksecurity.securityProfiles.use
+  - networksecurity.tlsInspectionPolicies.create
+  - networksecurity.tlsInspectionPolicies.delete
+  - networksecurity.tlsInspectionPolicies.get
+  - networksecurity.tlsInspectionPolicies.list
+  - networksecurity.tlsInspectionPolicies.update
+  - networksecurity.tlsInspectionPolicies.use

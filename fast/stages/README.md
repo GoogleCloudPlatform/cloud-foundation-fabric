@@ -21,13 +21,13 @@ Stages encapsulate core designs and functionality that is common in most type of
 
 To destroy a previous FAST deployment follow the instructions detailed in [cleanup](CLEANUP.md).
 
-## Organization (0)
+## Organization (0 and 1)
 
 - [Organization Setup](./0-org-setup/README.md)
   This stage combines the legacy bootstrap and resource management stages described below, allowing easy configuration of all related resources via factories. Its flexibility supports any type of organizational design, while still supporting traditional FAST stages like VPC Service Controls, security, networking, and any stage 3.
 - [VPC Service Controls](./1-vpcsc/README.md)
   Optionally configures VPC Service Controls protection for the organization.
-  
+
 ## Legacy Organization (0 and 1)
 
 These stages are considered legacy, and kept in this release to simplify migration to the new bootstrap stage. They will be dropped from the next release.

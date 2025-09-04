@@ -22,6 +22,36 @@ As usual, consider this a guideline with no guarantees. Migrations between FAST 
   - [Networking](#networking)
 <!-- END TOC -->
 
+## v43.0.0 to v44.0.0
+
+This release deprecates the legacy bootstrap and resource management stages, and modifies the project factory. Several underlying modules have changed, so the deprecated stages have been kept around in this release, to give users a change of upgrading modules.
+
+These migration notes cover moving from the legacy stages to the new ones. If you only need to upgrade modules apply the `-legacy` stages. Keep in mind they will be removed from the next release, and we won't be supporting them going forward.
+
+### Legacy bootstrap to org setup
+
+Start by cloning the `data` folder in the org setup stage, create a tfvars file that points to the new folder, then edit the `defaults.yaml` and `billing-accounts/default.yaml` to match. In the defaults file comment out all output files except the org setup ones.
+
+If you are using org-level billing IAM, transfer the IAM bindings from the billing file to `organization/.config.yaml`.
+
+Once that is done, go the the legacy bootstrap stage, init/apply until there's no changes, then pull its state.
+
+```bash
+tf state pull >../0-org-setup/bootstrap.tfstate
+```
+
+Confirm state contains your bootstrap resources. If critical resources (custom roles, folders, projects, tags) have been removed, either
+
+- check if a factory has the resource declared, and if not add the relevant configuration (for example copy/paste the missing file for a custom role)
+- check if some critical attribute is different and edit it (for example the project id for the automation or logging project, service accounts or bucket names)
+- add any missing moved block
+
+We don't provide moved blocks for IAM bindings as those are usually idempotent.
+
+### Legacy resource manager to org setup
+
+### Project factory
+
 ## v35.1.0 to v36.0.0
 
 ### Bootstrap stage
