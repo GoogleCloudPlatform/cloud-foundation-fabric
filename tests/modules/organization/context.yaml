@@ -94,7 +94,10 @@ values:
     org_id: '1234567890'
     role: roles/viewer
   google_organization_iam_binding.bindings["myrole_two"]:
-    condition: []
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/environment', 'development')
+      title: Test
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     org_id: '1234567890'

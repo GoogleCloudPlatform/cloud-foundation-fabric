@@ -75,7 +75,6 @@ locals {
       }
     ]...
   )
-  iam_condition_context = { organization = local.organization_id_numeric }
 }
 
 # we use a different key for custom roles to allow referring to the role alias
@@ -121,7 +120,7 @@ resource "google_organization_iam_binding" "bindings" {
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = templatestring(each.value.condition.expression, local.iam_condition_context)
+      expression  = templatestring(each.value.condition.expression, var.context.condition_vars)
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -137,7 +136,7 @@ resource "google_organization_iam_member" "bindings" {
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = templatestring(each.value.condition.expression, local.iam_condition_context)
+      expression  = templatestring(each.value.condition.expression, var.context.condition_vars)
       title       = each.value.condition.title
       description = each.value.condition.description
     }

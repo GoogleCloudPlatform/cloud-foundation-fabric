@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    }
+    } if k != "condition_vars"
   }
   ctx_p        = "$"
   prefix       = var.prefix == null ? "" : "${var.prefix}-"

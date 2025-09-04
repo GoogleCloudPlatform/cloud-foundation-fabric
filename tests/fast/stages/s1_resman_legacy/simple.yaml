@@ -1,0 +1,1682 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+counts:
+  google_folder: 16
+  google_folder_iam_binding: 72
+  google_org_policy_policy: 2
+  google_organization_iam_member: 21
+  google_project_iam_member: 19
+  google_service_account: 19
+  google_service_account_iam_binding: 19
+  google_storage_bucket: 9
+  google_storage_bucket_iam_binding: 18
+  google_storage_bucket_iam_member: 19
+  google_storage_bucket_object: 22
+  google_tags_tag_binding: 16
+  google_tags_tag_key: 2
+  google_tags_tag_value: 13
+  google_tags_tag_value_iam_binding: 4
+  modules: 45
+  resources: 271
+
+values:
+  google_storage_bucket_object.workflows["2-project-factory"]:
+    bucket: fast2-prod-iac-core-outputs
+    cache_control: null
+    content: "# Copyright 2025 Google LLC\n#\n# Licensed under the Apache License,\
+      \ Version 2.0 (the \"License\");\n# you may not use this file except in compliance\
+      \ with the License.\n# You may obtain a copy of the License at\n#\n#      http://www.apache.org/licenses/LICENSE-2.0\n\
+      #\n# Unless required by applicable law or agreed to in writing, software\n#\
+      \ distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT\
+      \ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the\
+      \ License for the specific language governing permissions and\n# limitations\
+      \ under the License.\n\nname: \"FAST project-factory stage\"\n\non:\n  pull_request:\n\
+      \    branches:\n      - main\n    types:\n      - closed\n      - opened\n \
+      \     - synchronize\n\nenv:\n  FAST_SERVICE_ACCOUNT: fast2-prod-resman-pf-1@fast2-prod-automation.iam.gserviceaccount.com\n\
+      \  FAST_SERVICE_ACCOUNT_PLAN: fast2-prod-resman-pf-1r@fast2-prod-automation.iam.gserviceaccount.com\n\
+      \  FAST_WIF_PROVIDER: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-github-ludomagno\n\
+      \  SSH_AUTH_SOCK: /tmp/ssh_agent.sock\n  TF_PROVIDERS_FILE: 2-project-factory-providers.tf\n\
+      \  TF_PROVIDERS_FILE_PLAN: 2-project-factory-r-providers.tf\n  TF_VERSION: 1.11.4\n\
+      \njobs:\n  fast-pr:\n    # Skip PRs which are closed without being merged.\n\
+      \    if: >-\n      github.event.action == 'closed' && \n      github.event.pull_request.merged\
+      \ == true ||\n      github.event.action == 'opened' ||\n      github.event.action\
+      \ == 'synchronize'\n    permissions:\n      contents: read\n      id-token:\
+      \ write\n      issues: write\n      pull-requests: write\n    runs-on: ubuntu-latest\n\
+      \    steps:\n      - id: checkout\n        name: Checkout repository\n     \
+      \   uses: actions/checkout@v4\n\n      # set up SSH key authentication to the\
+      \ modules repository\n\n      - id: ssh-config\n        name: Configure SSH\
+      \ authentication\n        run: |\n          ssh-agent -a \"$SSH_AUTH_SOCK\"\
+      \ > /dev/null\n          ssh-add - <<< \"${{ secrets.CICD_MODULES_KEY }}\"\n\
+      \n      # set up step variables for plan / apply\n\n      - id: vars-plan\n\
+      \        if: github.event.pull_request.merged != true && success()\n       \
+      \ name: Set up plan variables\n        run: |\n          echo \"plan_opts=-lock=false\"\
+      \ >> \"$GITHUB_ENV\"\n          echo \"provider_file=${{env.TF_PROVIDERS_FILE_PLAN}}\"\
+      \ >> \"$GITHUB_ENV\"\n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT_PLAN}}\"\
+      \ >> \"$GITHUB_ENV\"\n\n      - id: vars-apply\n        if: github.event.pull_request.merged\
+      \ == true && success()\n        name: Set up apply variables\n        run: |\n\
+      \          echo \"provider_file=${{env.TF_PROVIDERS_FILE}}\" >> \"$GITHUB_ENV\"\
+      \n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT}}\" >> \"$GITHUB_ENV\"\
+      \n\n      # set up authentication via Workload identity Federation and gcloud\n\
+      \n      - id: gcp-auth\n        name: Authenticate to Google Cloud\n       \
+      \ uses: google-github-actions/auth@v2\n        with:\n          workload_identity_provider:\
+      \ ${{env.FAST_WIF_PROVIDER}}\n          service_account: ${{env.service_account}}\n\
+      \          access_token_lifetime: 900s\n\n      - id: gcp-sdk\n        name:\
+      \ Set up Cloud SDK\n        uses: google-github-actions/setup-gcloud@v2\n  \
+      \      with:\n          install_components: alpha\n\n      # copy provider file\n\
+      \n      - id: tf-config-provider\n        name: Copy Terraform provider file\n\
+      \        run: |\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/providers/${{env.provider_file}}\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/0-bootstrap.auto.tfvars.json\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/1-resman.auto.tfvars.json\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/0-globals.auto.tfvars.json\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://fast2-prod-iac-core-outputs/tfvars/99-user.auto.tfvars.json\"\
+      \ ./\n\n      - id: tf-setup\n        name: Set up Terraform\n        uses:\
+      \ hashicorp/setup-terraform@v3\n        with:\n          terraform_version:\
+      \ ${{env.TF_VERSION}}\n\n      # run Terraform init/validate/plan\n\n      -\
+      \ id: tf-init\n        name: Terraform init\n        continue-on-error: true\n\
+      \        run: |\n          terraform init -no-color\n\n      - id: tf-validate\n\
+      \        continue-on-error: true\n        name: Terraform validate\n       \
+      \ run: terraform validate -no-color\n\n      - id: tf-plan\n        name: Terraform\
+      \ plan\n        continue-on-error: true\n        run: |\n          terraform\
+      \ plan -input=false -out ../plan.out -no-color ${{env.plan_opts}}\n\n      -\
+      \ id: tf-apply\n        if: github.event.pull_request.merged == true && success()\n\
+      \        name: Terraform apply\n        continue-on-error: true\n        run:\
+      \ |\n          terraform apply -input=false -auto-approve -no-color ../plan.out\n\
+      \n      # PR comment with Terraform result from previous steps\n      # length\
+      \ is checked and trimmed for length so as to stay within the limit\n\n     \
+      \ - id: pr-comment\n        name: Post comment to Pull Request\n        continue-on-error:\
+      \ true\n        uses: actions/github-script@v7\n        if: github.event_name\
+      \ == 'pull_request'\n        env:\n          PLAN: ${{steps.tf-plan.outputs.stdout}}\\\
+      n${{steps.tf-plan.outputs.stderr}}\n        with:\n          script: |\n   \
+      \         const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
+      `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
+      `\n\n            <details><summary>Validation Output</summary>\n\n         \
+      \   \\`\\`\\`\\n\n            ${{steps.tf-validate.outputs.stdout}}\n      \
+      \      \\`\\`\\`\n\n            </details>\n\n            ### Terraform Plan\
+      \ \\`${{steps.tf-plan.outcome}}\\`\n\n            <details><summary>Show Plan</summary>\n\
+      \n            \\`\\`\\`\\n\n            ${process.env.PLAN.split('\\n').filter(l\
+      \ => l.match(/^([A-Z\\s].*|)$$/)).join('\\n')}\n            \\`\\`\\`\n\n  \
+      \          </details>\n\n            ### Terraform Apply \\`${{steps.tf-apply.outcome}}\\\
+      `\n\n            *Pusher: @${{github.actor}}, Action: \\`${{github.event_name}}\\\
+      `, Working Directory: \\`${{env.tf_actions_working_dir}}\\`, Workflow: \\`${{github.workflow}}\\\
+      `*`;\n\n            github.rest.issues.createComment({\n              issue_number:\
+      \ context.issue.number,\n              owner: context.repo.owner,\n        \
+      \      repo: context.repo.repo,\n              body: output\n            })\n\
+      \n      - id: pr-short-comment\n        name: Post comment to Pull Request (abbreviated)\n\
+      \        uses: actions/github-script@v7\n        if: github.event_name == 'pull_request'\
+      \ && steps.pr-comment.outcome != 'success'\n        with:\n          script:\
+      \ |\n            const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
+      `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
+      `\n\n            ### Terraform Plan \\`${{steps.tf-plan.outcome}}\\`\n\n   \
+      \         Plan output is in the action log.\n\n            ### Terraform Apply\
+      \ \\`${{steps.tf-apply.outcome}}\\`\n\n            *Pusher: @${{github.actor}},\
+      \ Action: \\`${{github.event_name}}\\`, Working Directory: \\`${{env.tf_actions_working_dir}}\\\
+      `, Workflow: \\`${{github.workflow}}\\`*`;\n\n            github.rest.issues.createComment({\n\
+      \              issue_number: context.issue.number,\n              owner: context.repo.owner,\n\
+      \              repo: context.repo.repo,\n              body: output\n      \
+      \      })\n\n      # exit on error from previous steps\n\n      - id: check-init\n\
+      \        name: Check init failure\n        if: steps.tf-init.outcome != 'success'\n\
+      \        run: exit 1\n\n      - id: check-validate\n        name: Check validate\
+      \ failure\n        if: steps.tf-validate.outcome != 'success'\n        run:\
+      \ exit 1\n\n      - id: check-plan\n        name: Check plan failure\n     \
+      \   if: steps.tf-plan.outcome != 'success'\n        run: exit 1\n\n      - id:\
+      \ check-apply\n        name: Check apply failure\n        if: github.event.pull_request.merged\
+      \ == true && steps.tf-apply.outcome != 'success'\n        run: exit 1\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: different hash
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: workflows/2-project-factory-workflow.yaml
+    retention: []
+    source: null
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  ? module.cicd-sa-ro["project-factory"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/logging.logWriter
+  module.cicd-sa-ro["project-factory"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-pf-1r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: CI/CD 2-pf prod service account (read-only).
+    email: fast2-prod-resman-pf-1r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-1r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.cicd-sa-ro["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.repository/cloud-foundation-fabric/1-resman
+    role: roles/iam.workloadIdentityUser
+  ? module.cicd-sa-ro["project-factory"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectViewer
+  ? module.cicd-sa-rw["project-factory"].google_project_iam_member.project-roles["fast2-prod-automation-roles/logging.logWriter"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/logging.logWriter
+  module.cicd-sa-rw["project-factory"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-pf-1
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: CI/CD 2-pf prod service account.
+    email: fast2-prod-resman-pf-1@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-1@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.cicd-sa-rw["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/attribute.fast_sub/repo:cloud-foundation-fabric/1-resman:ref:refs/heads/main
+    role: roles/iam.workloadIdentityUser
+  ? module.cicd-sa-rw["project-factory"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectViewer
+  module.organization[0].google_organization_iam_member.bindings["data-platform-dev"]:
+    condition: []
+    member: serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_organization_iam_member.bindings["gcve-dev"]:
+    condition: []
+    member: serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_organization_iam_member.bindings["gke-dev"]:
+    condition: []
+    member: serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_organization_iam_member.bindings["sa_net_billing"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_organization_iam_member.bindings["sa_net_costs_manager"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.costsManager
+  module.organization[0].google_organization_iam_member.bindings["sa_net_ro_fw_policy_user"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/compute.orgFirewallPolicyUser
+  module.organization[0].google_organization_iam_member.bindings["sa_net_ro_ngfw_enterprise_viewer"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/ngfwEnterpriseViewer
+  module.organization[0].google_organization_iam_member.bindings["sa_net_rw_fw_policy_admin"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/compute.orgFirewallPolicyAdmin
+  module.organization[0].google_organization_iam_member.bindings["sa_net_rw_ngfw_enterprise_admin"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: organizations/123456789012/roles/ngfwEnterpriseAdmin
+  module.organization[0].google_organization_iam_member.bindings["sa_net_rw_xpn_admin"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/compute.xpnAdmin
+  module.organization[0].google_organization_iam_member.bindings["sa_pf_billing"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_organization_iam_member.bindings["sa_pf_conditional_org_policy"]:
+    condition:
+    - description: Org policy tag scoped grant for project factory.
+      expression: resource.matchTag('123456789012/context', 'project-factory')
+      title: org_policy_tag_pf_scoped
+    member: serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/orgpolicy.policyAdmin
+  module.organization[0].google_organization_iam_member.bindings["sa_pf_costs_manager"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.costsManager
+  module.organization[0].google_organization_iam_member.bindings["sa_sec_billing"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_organization_iam_member.bindings["sa_sec_cloudasset"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/cloudasset.viewer
+  module.organization[0].google_organization_iam_member.bindings["sa_sec_costs_manager"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.costsManager
+  module.organization[0].google_organization_iam_member.bindings["sa_so_billing"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_organization_iam_member.bindings["sa_so_costs_manager"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.costsManager
+  module.organization[0].google_organization_iam_member.bindings["sa_so_ro_wif"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/iam.workforcePoolViewer
+  module.organization[0].google_organization_iam_member.bindings["sa_so_rw_wif"]:
+    condition: []
+    member: serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/iam.workforcePoolAdmin
+  module.organization[0].google_organization_iam_member.bindings["secops-dev"]:
+    condition: []
+    member: serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    org_id: '123456789012'
+    role: roles/billing.user
+  module.organization[0].google_tags_tag_key.default["context"]:
+    description: Managed by the Terraform organization module.
+    parent: organizations/123456789012
+    purpose: null
+    purpose_data: null
+    short_name: context
+    timeouts: null
+  module.organization[0].google_tags_tag_key.default["environment"]:
+    description: Managed by the Terraform organization module.
+    parent: organizations/123456789012
+    purpose: null
+    purpose_data: null
+    short_name: environment
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/data-platform"]:
+    description: Managed by the Terraform organization module.
+    short_name: data-platform
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/gcve"]:
+    description: Managed by the Terraform organization module.
+    short_name: gcve
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/gke"]:
+    description: Managed by the Terraform organization module.
+    short_name: gke
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/networking"]:
+    description: Managed by the Terraform organization module.
+    short_name: networking
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/nsec"]:
+    description: Managed by the Terraform organization module.
+    short_name: nsec
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/project-factory"]:
+    description: Managed by the Terraform organization module.
+    short_name: project-factory
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/sandbox"]:
+    description: Managed by the Terraform organization module.
+    short_name: sandbox
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/secops"]:
+    description: Managed by the Terraform organization module.
+    short_name: secops
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/security"]:
+    description: Managed by the Terraform organization module.
+    short_name: security
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/shared"]:
+    description: Managed by the Terraform organization module.
+    short_name: shared
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["context/tenants"]:
+    description: Managed by the Terraform organization module.
+    short_name: tenants
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["environment/development"]:
+    description: Managed by the Terraform organization module.
+    short_name: development
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["environment/production"]:
+    description: Managed by the Terraform organization module.
+    short_name: production
+    timeouts: null
+  module.organization[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  ? module.organization[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagViewer"]
+  : condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
+  module.organization[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.organization[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    - serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
+  module.stage2-bucket["networking"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-prod-resman-net-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage2-bucket["networking"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-prod-resman-net-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage2-bucket["networking"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-prod-resman-net-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage2-bucket["project-factory"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-prod-resman-pf-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage2-bucket["project-factory"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-prod-resman-pf-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage2-bucket["project-factory"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-prod-resman-pf-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage2-bucket["secops"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-prod-resman-so-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage2-bucket["secops"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-prod-resman-so-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage2-bucket["secops"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-prod-resman-so-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage2-bucket["security"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-prod-resman-sec-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage2-bucket["security"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-prod-resman-sec-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage2-bucket["security"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-prod-resman-sec-0
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage2-folder-env["networking-dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.stage2-folder-env["networking-dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.stage2-folder-env["networking-prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    tags: null
+    timeouts: null
+  module.stage2-folder-env["networking-prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.stage2-folder["networking"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Networking
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  ? module.stage2-folder["networking"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/projectIamViewer"]
+  : condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/projectIamViewer
+  ? module.stage2-folder["networking"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/xpnServiceAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/xpnServiceAdmin
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/compute.networkViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/compute.networkViewer
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/compute.xpnAdmin
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/editor"]:
+    condition: []
+    members:
+    - group:gcp-vpc-network-admins@fast.example.com
+    role: roles/editor
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
+  module.stage2-folder["networking"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.stage2-folder["networking"].google_folder_iam_binding.bindings["project_factory"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
+        \  'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',\n  'roles/container.hostServiceAgentUser',\
+        \ 'roles/vpcaccess.user',\n  'organizations/123456789012/roles/dnsZoneBinder'\n\
+        ])\n"
+      title: Project factory delegated IAM grant.
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
+  module.stage2-folder["networking"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.stage2-folder["secops"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: SecOps
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/editor"]:
+    condition: []
+    members:
+    - group:gcp-security-admins@fast.example.com
+    role: roles/editor
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
+  module.stage2-folder["secops"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.stage2-folder["secops"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.stage2-folder["security"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Security
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/kmsKeyViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/kmsKeyViewer
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/editor"]:
+    condition: []
+    members:
+    - group:gcp-security-admins@fast.example.com
+    role: roles/editor
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
+  module.stage2-folder["security"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.stage2-folder["security"].google_folder_iam_binding.bindings["project_factory"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
+        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])\n"
+      title: Project factory delegated IAM grant.
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/kmsKeyEncryptionAdmin
+  module.stage2-folder["security"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  ? module.stage2-sa-ro["networking"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-ro["networking"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-net-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman networking service account (read-only).
+    email: fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage2-sa-ro["networking"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-ro["networking"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage2-sa-ro["project-factory"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-ro["project-factory"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-pf-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman project-factory service account (read-only).
+    email: fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  ? module.stage2-sa-ro["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-1r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-ro["project-factory"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage2-sa-ro["secops"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-ro["secops"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-so-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman secops service account (read-only).
+    email: fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage2-sa-ro["secops"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-ro["secops"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage2-sa-ro["security"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-ro["security"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-sec-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman security service account (read-only).
+    email: fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage2-sa-ro["security"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-ro["security"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage2-sa-rw["networking"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-rw["networking"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-net-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman networking service account.
+    email: fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage2-sa-rw["networking"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-rw["networking"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  ? module.stage2-sa-rw["project-factory"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-rw["project-factory"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-pf-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman project-factory service account.
+    email: fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  ? module.stage2-sa-rw["project-factory"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-1@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-rw["project-factory"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  ? module.stage2-sa-rw["secops"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-rw["secops"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-so-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman secops service account.
+    email: fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage2-sa-rw["secops"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-rw["secops"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  ? module.stage2-sa-rw["security"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage2-sa-rw["security"].google_service_account.service_account[0]:
+    account_id: fast2-prod-resman-sec-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman security service account.
+    email: fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage2-sa-rw["security"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage2-sa-rw["security"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  module.stage3-bucket["data-platform-dev"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-dev-resman-dp-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage3-bucket["data-platform-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-dev-resman-dp-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage3-bucket["data-platform-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-dev-resman-dp-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage3-bucket["gcve-dev"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-dev-resman-gcve-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage3-bucket["gcve-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-dev-resman-gcve-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage3-bucket["gcve-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-dev-resman-gcve-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage3-bucket["gke-dev"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-dev-resman-gke-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage3-bucket["gke-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-dev-resman-gke-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage3-bucket["gke-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-dev-resman-gke-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage3-bucket["secops-dev"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-dev-resman-secops-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.stage3-bucket["secops-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-dev-resman-secops-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.stage3-bucket["secops-dev"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-dev-resman-secops-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.stage3-folder["data-platform-dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/compute.xpnAdmin
+  module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.stage3-folder["data-platform-dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-dp-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.stage3-folder["data-platform-dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.stage3-folder["gcve-dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/compute.xpnAdmin
+  module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.stage3-folder["gcve-dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.stage3-folder["gcve-dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.stage3-folder["gke-dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/compute.xpnAdmin
+  module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.stage3-folder["gke-dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.stage3-folder["gke-dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.stage3-folder["secops-dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.stage3-folder["secops-dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/compute.xpnAdmin
+  module.stage3-folder["secops-dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.stage3-folder["secops-dev"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.stage3-folder["secops-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.stage3-folder["secops-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.stage3-folder["secops-dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.stage3-folder["secops-dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-secops-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.stage3-folder["secops-dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  ? module.stage3-sa-ro["data-platform-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-ro["data-platform-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-dp-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman data-platform-dev service account (read-only).
+    email: fast2-dev-resman-dp-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-dp-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  ? module.stage3-sa-ro["data-platform-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-ro["data-platform-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage3-sa-ro["gcve-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-ro["gcve-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-gcve-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman gcve-dev service account (read-only).
+    email: fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage3-sa-ro["gcve-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-ro["gcve-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage3-sa-ro["gke-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-ro["gke-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-gke-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman gke-dev service account (read-only).
+    email: fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage3-sa-ro["gke-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-ro["gke-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage3-sa-ro["secops-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-ro["secops-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-secops-0r
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman secops-dev service account (read-only).
+    email: fast2-dev-resman-secops-0r@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-secops-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage3-sa-ro["secops-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-ro["secops-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-organizations/123456789012/roles/storageViewer"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: organizations/123456789012/roles/storageViewer
+  ? module.stage3-sa-rw["data-platform-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-rw["data-platform-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-dp-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman data-platform-dev service account.
+    email: fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  ? module.stage3-sa-rw["data-platform-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-rw["data-platform-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  ? module.stage3-sa-rw["gcve-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-rw["gcve-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-gcve-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman gcve-dev service account.
+    email: fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage3-sa-rw["gcve-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-rw["gcve-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  ? module.stage3-sa-rw["gke-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-rw["gke-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-gke-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman gke-dev service account.
+    email: fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage3-sa-rw["gke-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-rw["gke-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  ? module.stage3-sa-rw["secops-dev"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.stage3-sa-rw["secops-dev"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-secops-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman secops-dev service account.
+    email: fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.stage3-sa-rw["secops-dev"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.stage3-sa-rw["secops-dev"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+  module.top-level-bucket["sandbox"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: fast2-dev-resman-sbox-0
+    project: fast2-prod-automation
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.top-level-bucket["sandbox"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    bucket: fast2-dev-resman-sbox-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectAdmin
+  module.top-level-bucket["sandbox"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]:
+    bucket: fast2-dev-resman-sbox-0
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+  module.top-level-folder["data-platform"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Data Platform
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["data-platform"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["gcve"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: GCVE
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["gcve"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["gke"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: GKE
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["gke"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["sandbox"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Sandbox
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["sandbox"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.top-level-folder["sandbox"].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
+  module.top-level-folder["sandbox"].google_org_policy_policy.default["sql.restrictPublicIp"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.top-level-folder["sandbox"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["shared"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Shared Infrastructure
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["shared"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["teams"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Teams
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  ? module.top-level-folder["teams"].google_folder_iam_binding.authoritative["organizations/123456789012/roles/xpnServiceAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/xpnServiceAdmin
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/owner
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderAdmin
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.folderViewer
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectCreator
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagViewer
+  module.top-level-folder["teams"].google_folder_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: roles/viewer
+  module.top-level-folder["teams"].google_folder_iam_binding.bindings["pf_viewer"]:
+    condition:
+    - description: Allow to check buckets and contact policies
+      expression: 'resource.matchTag(''123456789012/context'', ''project-factory'')
+
+        '
+      title: project-factory-scoped
+    members:
+    - serviceAccount:fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    role: organizations/123456789012/roles/organizationAdminViewer
+  module.top-level-folder["teams"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  module.top-level-folder["tenants"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Tenants
+    parent: organizations/123456789012
+    tags: null
+    timeouts: null
+  module.top-level-folder["tenants"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
+  ? module.top-level-sa["sandbox"].google_project_iam_member.project-roles["fast2-prod-automation-roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    project: fast2-prod-automation
+    role: roles/serviceusage.serviceUsageConsumer
+  module.top-level-sa["sandbox"].google_service_account.service_account[0]:
+    account_id: fast2-dev-resman-sbox-0
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform resman sandbox folder service account.
+    email: fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    member: serviceAccount:fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    project: fast2-prod-automation
+    timeouts: null
+  module.top-level-sa["sandbox"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]:
+    condition: []
+    members: null
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.top-level-sa["sandbox"].google_storage_bucket_iam_member.bucket-roles["fast2-prod-iac-core-outputs-roles/storage.objectAdmin"]
+  : bucket: fast2-prod-iac-core-outputs
+    condition: []
+    role: roles/storage.objectAdmin
+
+outputs:
+  cicd_repositories:
+    project-factory:
+      provider: projects/1234567890/locations/global/workloadIdentityPools/ldj-bootstrap/providers/ldj-bootstrap-github-ludomagno
+      repository:
+        branch: main
+        name: cloud-foundation-fabric/1-resman
+        type: github
+  service_accounts:
+    data-platform-dev-ro: fast2-dev-resman-dp-0r@fast2-prod-automation.iam.gserviceaccount.com
+    data-platform-dev-rw: fast2-dev-resman-dp-0@fast2-prod-automation.iam.gserviceaccount.com
+    gcve-dev-ro: fast2-dev-resman-gcve-0r@fast2-prod-automation.iam.gserviceaccount.com
+    gcve-dev-rw: fast2-dev-resman-gcve-0@fast2-prod-automation.iam.gserviceaccount.com
+    gke-dev-ro: fast2-dev-resman-gke-0r@fast2-prod-automation.iam.gserviceaccount.com
+    gke-dev-rw: fast2-dev-resman-gke-0@fast2-prod-automation.iam.gserviceaccount.com
+    networking-ro: fast2-prod-resman-net-0r@fast2-prod-automation.iam.gserviceaccount.com
+    networking-rw: fast2-prod-resman-net-0@fast2-prod-automation.iam.gserviceaccount.com
+    project-factory-ro: fast2-prod-resman-pf-0r@fast2-prod-automation.iam.gserviceaccount.com
+    project-factory-rw: fast2-prod-resman-pf-0@fast2-prod-automation.iam.gserviceaccount.com
+    sandbox: fast2-dev-resman-sbox-0@fast2-prod-automation.iam.gserviceaccount.com
+    secops-dev-ro: fast2-dev-resman-secops-0r@fast2-prod-automation.iam.gserviceaccount.com
+    secops-dev-rw: fast2-dev-resman-secops-0@fast2-prod-automation.iam.gserviceaccount.com
+    secops-ro: fast2-prod-resman-so-0r@fast2-prod-automation.iam.gserviceaccount.com
+    secops-rw: fast2-prod-resman-so-0@fast2-prod-automation.iam.gserviceaccount.com
+    security-ro: fast2-prod-resman-sec-0r@fast2-prod-automation.iam.gserviceaccount.com
+    security-rw: fast2-prod-resman-sec-0@fast2-prod-automation.iam.gserviceaccount.com
+

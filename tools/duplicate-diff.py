@@ -21,11 +21,11 @@ import sys
 duplicates = [
     [
         "modules/net-vpc-factory/factory-projects-object.tf",
-        "modules/project-factory/factory-projects-object.tf",
+        "modules/project-factory-legacy/factory-projects-object.tf",
         # data factory
     ],
     [
-        "fast/stages/0-bootstrap/identity-providers-wfif-defs.tf",
+        "fast/stages/0-bootstrap-legacy/identity-providers-wfif-defs.tf",
         "fast/stages/2-secops/identity-providers-defs.tf",
     ],
     [

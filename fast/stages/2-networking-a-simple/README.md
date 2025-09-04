@@ -272,7 +272,7 @@ The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overv
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resource management](../1-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../0-bootstrap) stage.
+This stage is meant to be executed after the [bootstrap](../0-bootstrap) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured there.
 
 It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
 
