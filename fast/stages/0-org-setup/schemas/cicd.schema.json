@@ -57,6 +57,9 @@
                     "gitlab",
                     "terraform"
                   ]
+                },
+                "provider_id": {
+                  "type": "string"
                 }
               }
             }
