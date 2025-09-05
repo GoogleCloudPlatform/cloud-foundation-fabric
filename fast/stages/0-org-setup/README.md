@@ -40,7 +40,7 @@ It heavily relies on a new [project factory module](../../../modules/project-fac
 
 The default set of YAML configuration files in the `data` folder mirrors the traditional FAST layout, and implements full compatibility with existing FAST stages like VPC-SC, security, networking, etc.
 
-The default configuration can be used as a starting point to implement radically different Landing Zone designs, or trimmed down to its bare minimum where the requirements are simply to have a secure organization-level configuration (possibly with VPC-SC), and a working project factory.
+The default configuration can be used as a starting point for radically different Landing Zone designs, or it can be trimmed down to the bare minimum required for a secure, organization-level configuration with a working project factory.
 
 ## Quickstart
 
@@ -60,7 +60,7 @@ This stage only requires minimal prerequisites:
 - one organization
 - credentials with admin access to the organization and one billing account
 
-The organization ideally needs to be empty. If pre-existing resources are present some care needs to be put into preserving their existing IAM and org policies, ideally my moving legacy projects to a dedicated folder where the current org-level configuration (IAM and org policies) can be replicated.
+The organization ideally needs to be empty. If pre-existing resources are present some care needs to be put into preserving their existing IAM and org policies. Ideally, move legacy projects to a dedicated folder where the current org-level configuration can be replicated.
 
 Billing admin permissions are ideally available on either an org-contained billing account or an external one. If those are unavailable, the YAML configuration files need to be updated to remove billing IAM bindings, and those need to be assigned via an external flow. Refer to the [billing section](#billing-account-iam) for more details or non-standard configurations.
 
@@ -70,7 +70,7 @@ The admin principal is typically a group that includes the user running the firs
 
 The `factories_config` variable points to several paths containing the YAML configuration files used by this stage. The default variable configuration points to the legacy FAST compatible fileset in the `data` folder.
 
-If you are fine with this configuration nothing needs to be changed at this stage. To select a different setup create a `tfvars` file and set paths to the desired data folder, like shown in the example below. The different configurations produced by each fileset are described [later in this document](#default-factory-datasets).
+If this configuration matches requirements, no changes are necessary at this stage. To select a different setup create a `tfvars` file and set paths to the desired data folder, like shown in the example below. The different configurations produced by each fileset are described [later in this document](#default-factory-datasets).
 
 ```bash
 # create a file named 0-org-setup.auto.tfvars containing the following
@@ -153,7 +153,7 @@ If you are using an externally managed billing account, make sure user has Billi
 
 #### Importing org policies
 
-If your dataset includes org policies which are already set in the organization, you need to either comment them out from the relevant YAML files or tell this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
+If your dataset includes org policies which are already set in the organization, you must either comment them out in the relevant YAML files or configure this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
 
 ```bash
 gcloud org-policies list --organization 1234567890
@@ -244,19 +244,19 @@ A few example datasets are included with the stage, each implementing a differen
 
 This dataset implements a Classic FAST design that replicates legacy bootstrap and resource management stages. The resulting layout is easy to customize, and supports VPC SC, networking, security and potentially any FAST stage 3 directly as explained in a [later section](#leveraging-classic-fast-stages).
 
-The organizational layout mirrors the consolidated FAST one, where shared infrastructure (stage 2 and 3) is partitioned via folders at the top, and further subdivided in environment-level folders for data or fleet management (Stage 3). An example "Teams" folder allows hooking up an application-level project factory as a separate stage, which is then used to define per-team subdivisions and create projects.
+The organizational layout mirrors the consolidated FAST one, where shared infrastructure (stage 2 and 3) is partitioned via folders at the top, and further subdivided in environment-level folders for data or fleet management (Stage 3). An example "Teams" folder allows for the integration of an application-level project factory as a separate stage, which can then be used to define per-team subdivisions and create projects.
 
 <p align="center">
   <img src="diagram-classic-fast.png" alt="Classic FAST organization-level diagram.">
 </p>
 
-### "Minimal" dataset
+### "Minimal" dataset (TBD)
 
 This dataset is meant as a minimalistic starting point for organizations where a security baseline and a project factory are all that's needed, at least initially. The design can then organically grow to support more functionality, converging to the Classic or other types of layouts.
 
-### "Tenants" dataset
+### "Tenants" dataset (TBD)
 
-TBD
+This dataset implements a design where internal tenants are given control over parts of the organization, while still retaining a degree of central control over core policies and resources.
 
 ## Detailed configuration
 
@@ -380,7 +380,7 @@ logging_sinks:
 
 ### Organization configuration
 
-The default dataset implements a classic FAST design, re-creating the required custom roles, IAM bindings, org policies, tags, and log sinks via the factories described in a previous section.
+The default dataset implements a classic FAST design, recreating the required custom roles, IAM bindings, org policies, tags, and log sinks via the factories described in a previous section.
 
 Compared to classic FAST this approach makes org-level configuration explicit, allowing easy customization of IAM and all other attributes. Before running this stage, check that the data files match your expected design.
 
@@ -535,7 +535,7 @@ The provided project configurations also create several key resources for the st
 
 ### CI/CD configuration
 
-CI/CD support is implemented in a similar way to classic/legacy FAST, except for being driven by a factory tha points to a single file.
+CI/CD support is implemented in a similar way to classic/legacy FAST, except for being driven by a factory that points to a single file.
 
 This allows defining a single Workload Identity provider that will be used to exchange external tokens for the pipelines, and one or more workflows that can interpolate internal (from the project factory) or external (user defined) attributes.
 
