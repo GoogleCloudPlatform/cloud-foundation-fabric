@@ -3,7 +3,55 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-09-01 15:08:43+00:00 to: None since: v42.1.0 -->
+## [Unreleased] <!-- from: 2025-09-01 15:38:26+00:00 to: None since: v43.0.0 -->
+
+## [44.0.0] - 2025-09-05
+
+### BREAKING CHANGES
+
+This release introduces several breaking changes.
+
+#### Blueprints
+
+Blueprints have been deprecated. Going forward, some of the old blueprints will be refactored as either FAST project templates, or module-level recipes. Please open a feature request if there's a blueprint that you would need us to refactor.
+
+#### Modules
+
+- The context replacement interface has been refactored across major modules and will eventually be rolled out across all.
+- The project factory module has been refactored so as to leverage the new context interface. The old project factory has been kept in this release as `project-factory-legacy` to support the corresponding FAST stage. It will be removed in the next release.
+
+#### FAST
+
+- The FAST bootstrap and resource manager stages have been deprecated, and replaced with a new organization setup stage. The old stages are still available in this release as `*-legacy` to support migration to the new context interface in modules. They will be removed in the next release.
+- The FAST project factory stage has been refactored to leverage the new project factory module. The old version has been renamed and will be removed in the next release.
+
+Please keep in mind that we are not supporting upgrades from legacy stages to new stages. They are possible, but require a substantial effort and custom steps that depend on each installation.
+
+Project templates are still following the old project factory schemas, and will be updated to work with the new project factory for the next release.
+
+### BLUEPRINTS
+
+- [[#3255](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3255)] FAST bootstrap light, blueprints deprecation, modules context, new project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-09-02 06:38:58+00:00 -->
+
+### FAST
+
+- [[#3300](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3300)] Final changes to new org setup stage ([ludoo](https://github.com/ludoo)) <!-- 2025-09-05 07:39:23+00:00 -->
+- [[#3299](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3299)] Rename new botstrap stage to org-setup ([ludoo](https://github.com/ludoo)) <!-- 2025-09-04 11:34:16+00:00 -->
+- [[#3298](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3298)] Rename FAST stages preparing for eventual deprecation ([ludoo](https://github.com/ludoo)) <!-- 2025-09-04 06:24:11+00:00 -->
+- [[#3297](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3297)] gke-hub local fix ([justkmark](https://github.com/justkmark)) <!-- 2025-09-03 11:29:27+00:00 -->
+- [[#3255](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3255)] FAST bootstrap light, blueprints deprecation, modules context, new project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-09-02 06:38:58+00:00 -->
+
+### MODULES
+
+- [[#3298](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3298)] Rename FAST stages preparing for eventual deprecation ([ludoo](https://github.com/ludoo)) <!-- 2025-09-04 06:24:11+00:00 -->
+- [[#3295](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3295)] Fix Cloud Run validation for refactored fields ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-03 11:13:15+00:00 -->
+- [[#3296](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3296)] Fix E2E tests after provider upgrade to 7.0+ ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-03 10:57:26+00:00 -->
+- [[#3255](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3255)] FAST bootstrap light, blueprints deprecation, modules context, new project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-09-02 06:38:58+00:00 -->
+
+### TOOLS
+
+- [[#3298](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3298)] Rename FAST stages preparing for eventual deprecation ([ludoo](https://github.com/ludoo)) <!-- 2025-09-04 06:24:11+00:00 -->
+- [[#3255](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3255)] FAST bootstrap light, blueprints deprecation, modules context, new project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-09-02 06:38:58+00:00 -->
 
 ## [43.0.0] - 2025-09-01
 
@@ -12,7 +60,6 @@ All notable changes to this project will be documented in this file.
 - `provider`: upgraded to version 7.0.1. See [upgrade notes](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/version_7_upgrade) for more details. [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)]
 - `modules/cloud-run-v2`: removed `depends_on` from worker pools. [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)]
 - `modules/gke-hub`: binutz removed from Config Management configuration options. [[#3291](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3291)]
-
 
 ### BLUEPRINTS
 
