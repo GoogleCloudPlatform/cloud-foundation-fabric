@@ -29,7 +29,7 @@ locals {
     )
   )
   of_service_accounts = {
-    for k, v in module.factory.service_accounts :
+    for k, v in module.factory.service_account_emails :
     "$iam_principals:service_accounts/${k}" => v
   }
   of_path = (
@@ -71,7 +71,7 @@ locals {
       )
       project_numbers = module.factory.project_numbers
       # project_numbers = module.factory.project_numbers
-      service_accounts = module.factory.service_accounts
+      service_accounts = module.factory.service_account_emails
       storage_buckets  = module.factory.storage_buckets
       tag_values = merge(
         local.ctx.project_ids,

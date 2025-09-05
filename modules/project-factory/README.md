@@ -209,18 +209,25 @@ automation:
 
 Interpolations leverage contexts from two separate sources: resources managed by the project factory (folders, service accounts, etc.), and user-defined resource ids passed in via the `context` variable.
 
-Context replacements use the `$` prefix and are accessible via namespaces that match the attributes in the context variable:
+Context replacements use the `$` prefix and are accessible via namespaces that match the attributes in the context variable.
 
-- `$custom_roles:foo`
-- `$folder_ids:foo`
-- `$iam_principals:foo`
-- `$kms_keys:foo`
-- `$locations:foo`
-- `$notification_channels:foo`
-- `$project_ids:foo`
-- `$tag_values:foo`
-- `$vpc_host_projects:foo`
-- `$vpc_sc_perimeters:foo`
+Context variables are accessed by keys that match the YAML file name for resources declared in individual files (projects, folders, custom roles, etc.), or the key in the YAML map where the resource is declared for other resources (service accounts, buckets, etc.).
+
+Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an example of referencing the actual IDs via interpolation in YAML files.
+
+- `$custom_roles:my_role`
+- `$folder_ids:my_folder`
+- `$iam_principals:my_principal`
+- `$iam_principals:service_accounts/my_project/my_sa`
+- `$kms_keys:my_key`
+- `$locations:my_location`
+- `$notification_channels:my_channel`
+- `$project_ids:my_project`
+- `$service_account_ids:my_project/my_sa`
+- `$service_agents:compute`
+- `$tag_values:my_value`
+- `$vpc_host_projects:my_project`
+- `$vpc_sc_perimeters:my_perimeter`
 
 Internally created resources are mapped to context namespaces, and use specific prefixes to express the relationship with their container folder/project where necessary, as shown in the following examples.
 
@@ -241,9 +248,24 @@ As an example, the id of the project defined in the `projects/team-0/app-0-0.yam
 
 ### Service account context ids
 
-Service accounts use the `$iam_principals:` namespace, with ids that allow referring to their parent project.
+Service accounts use the `$iam_principals:` namespace, with ids that allow referring to their parent project. As an example, the `rw` service account defined in the `projects/team-0/app-0-0.yaml` file will be accessible via `$iam_principals:service_accounts/app-0-0/rw`.
 
-As an example, the `rw` service account defined in the `projects/team-0/app-0-0.yaml` file will be accessible via `$iam_principals:service_accounts/app-0-0/rw`.
+```yaml
+iam_by_principals:
+  $iam_principals:service_accounts/app-0-0/rw:
+    - roles/viewer
+```
+
+The only exception is when setting IAM binding for a service account on a different service account via the `iam_sa_roles` attribute, which interpolates using the `$service_account_ids` namespace. As an example, granting a role to the `rw` service account above on the `ro` service account in the same project will use `$service_account_ids:app-0-0/ro`.
+
+```yaml
+service_accounts:
+  ro: {}
+  rw:
+    iam_sa_roles:
+      $service_account_ids:app-0-0/ro:
+        - roles/iam.serviceAccountTokenCreator
+```
 
 ### Other context ids
 
@@ -598,14 +620,17 @@ service_accounts:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L44) | Folder ids. |  |
-| [iam_principals](outputs.tf#L49) | IAM principals mappings. |  |
-| [log_buckets](outputs.tf#L54) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L61) | Project ids. |  |
-| [project_numbers](outputs.tf#L66) | Project numbers. |  |
-| [projects](outputs.tf#L73) | Project attributes. |  |
-| [service_accounts](outputs.tf#L78) | Service account emails. |  |
-| [storage_buckets](outputs.tf#L85) | Bucket names. |  |
+| [folder_ids](outputs.tf#L49) | Folder ids. |  |
+| [iam_principals](outputs.tf#L54) | IAM principals mappings. |  |
+| [log_buckets](outputs.tf#L59) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L66) | Project ids. |  |
+| [project_numbers](outputs.tf#L71) | Project numbers. |  |
+| [projects](outputs.tf#L78) | Project attributes. |  |
+| [service_account_emails](outputs.tf#L83) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L90) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L97) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L104) | Service account emails. |  |
+| [storage_buckets](outputs.tf#L109) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
