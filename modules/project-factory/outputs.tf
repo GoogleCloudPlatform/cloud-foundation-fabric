@@ -27,9 +27,11 @@ locals {
       }
       service_accounts = {
         for sk, sv in lookup(v, "service_accounts", {}) :
-        "${k}/${sk}" => (
-          module.service-accounts["${k}/${sk}"].email
-        )
+        "${k}/${sk}" => {
+          email     = module.service-accounts["${k}/${sk}"].email
+          iam_email = module.service-accounts["${k}/${sk}"].iam_email
+          id        = module.service-accounts["${k}/${sk}"].id
+        }
       }
       storage_buckets = {
         for sk, sv in lookup(v, "buckets", {}) :
@@ -39,6 +41,9 @@ locals {
       }
     }
   }
+  outputs_service_accounts = merge([
+    for k, v in local.outputs_projects : v.service_accounts
+  ]...)
 }
 
 output "folder_ids" {
@@ -75,11 +80,30 @@ output "projects" {
   value       = local.outputs_projects
 }
 
+output "service_account_emails" {
+  description = "Service account emails."
+  value = {
+    for k, v in local.outputs_service_accounts : k => v.email
+  }
+}
+
+output "service_account_iam_emails" {
+  description = "Service account IAM-format emails."
+  value = {
+    for k, v in local.outputs_service_accounts : k => v.iam_email
+  }
+}
+
+output "service_account_ids" {
+  description = "Service account IDs."
+  value = {
+    for k, v in local.outputs_service_accounts : k => v.id
+  }
+}
+
 output "service_accounts" {
   description = "Service account emails."
-  value = merge([
-    for k, v in local.outputs_projects : v.service_accounts
-  ]...)
+  value       = local.outputs_service_accounts
 }
 
 output "storage_buckets" {
