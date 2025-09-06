@@ -3,7 +3,22 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-09-01 15:38:26+00:00 to: None since: v43.0.0 -->
+## [Unreleased] <!-- from: 2025-09-05 09:36:17+00:00 to: None since: v44.0.0 -->
+
+## [44.1.0] - 2025-09-06
+
+### BREAKING CHANGES
+
+- `modules/project-factory`: automation resource keys now have the `/automation` prefix added between project key and resource key, e.g. `$iam_principals:service_accounts/foo/automation/rw` [[#3303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3303)]
+
+### FAST
+
+- [[#3301](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3301)] Add missing outputs to new project factory module, improve context README section ([ludoo](https://github.com/ludoo)) <!-- 2025-09-05 20:21:28+00:00 -->
+
+### MODULES
+
+- [[#3303](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3303)] New project factory improvements ([ludoo](https://github.com/ludoo)) <!-- 2025-09-06 08:01:37+00:00 -->
+- [[#3301](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3301)] Add missing outputs to new project factory module, improve context README section ([ludoo](https://github.com/ludoo)) <!-- 2025-09-05 20:21:28+00:00 -->
 
 ## [44.0.0] - 2025-09-05
 
@@ -1531,7 +1546,9 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v43.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...HEAD
+[44.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...44.0.0
+[44.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.0.0...43.0.0
 [43.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v43.0.0...42.1.0
 [42.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v42.1.0...42.0.0
 [42.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.1.0...41.0.0
