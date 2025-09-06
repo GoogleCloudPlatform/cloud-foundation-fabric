@@ -636,17 +636,17 @@ service_accounts:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L49) | Folder ids. |  |
-| [iam_principals](outputs.tf#L54) | IAM principals mappings. |  |
-| [log_buckets](outputs.tf#L59) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L66) | Project ids. |  |
-| [project_numbers](outputs.tf#L71) | Project numbers. |  |
-| [projects](outputs.tf#L78) | Project attributes. |  |
-| [service_account_emails](outputs.tf#L83) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L90) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L97) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L104) | Service account emails. |  |
-| [storage_buckets](outputs.tf#L109) | Bucket names. |  |
+| [folder_ids](outputs.tf#L78) | Folder ids. |  |
+| [iam_principals](outputs.tf#L83) | IAM principals mappings. |  |
+| [log_buckets](outputs.tf#L88) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L95) | Project ids. |  |
+| [project_numbers](outputs.tf#L100) | Project numbers. |  |
+| [projects](outputs.tf#L107) | Project attributes. |  |
+| [service_account_emails](outputs.tf#L112) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L119) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L126) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L133) | Service account emails. |  |
+| [storage_buckets](outputs.tf#L138) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 

@@ -15,8 +15,28 @@
  */
 
 locals {
+  _outputs_automation_buckets = {
+    for k, v in local.automation_buckets : v.source_project => k
+  }
+  _outputs_automation_sas = {
+    for k, v in local.automation_sas : v.source_project => k...
+  }
   outputs_projects = {
     for k, v in local.projects_input : k => {
+      automation = {
+        bucket = try(
+          module.automation-bucket[local._outputs_automation_buckets[k]].name,
+          null
+        )
+        service_accounts = {
+          for sa in lookup(local._outputs_automation_sas, k, []) :
+          sa => {
+            email     = module.automation-service-accounts[sa].email
+            iam_email = module.automation-service-accounts[sa].iam_email
+            id        = module.automation-service-accounts[sa].id
+          }
+        }
+      }
       number     = module.projects[k].number
       project_id = module.projects[k].project_id
       log_buckets = {

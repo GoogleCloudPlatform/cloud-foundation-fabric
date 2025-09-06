@@ -43,6 +43,7 @@ locals {
   _automation_buckets = {
     for k, v in local._automation : k => merge(v.bucket, {
       automation_project = v.project
+      source_project     = k
       name               = lookup(v, "name", "tf-state")
       # project automation always has a prefix
       prefix = try(coalesce(
@@ -56,6 +57,7 @@ locals {
     for k, v in local._automation : [
       for sk, sv in v.service_accounts : merge(sv, {
         automation_project = v.project
+        source_project     = k
         name               = sk
         parent             = k
         prefix             = v.prefix
