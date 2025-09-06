@@ -224,6 +224,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$notification_channels:my_channel`
 - `$project_ids:my_project`
 - `$service_account_ids:my_project/my_sa`
+- `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
 - `$tag_values:my_value`
 - `$vpc_host_projects:my_project`
@@ -254,6 +255,21 @@ Service accounts use the `$iam_principals:` namespace, with ids that allow refer
 iam_by_principals:
   $iam_principals:service_accounts/app-0-0/rw:
     - roles/viewer
+```
+
+Service accounts defined in the `automation` block will have an `automation` prefix prepended to their context id.
+
+```yaml
+automation:
+  project: $project_ids:prod-iac-core-0
+  bucket:
+    name: tf-state
+  service_accounts:
+    ro: {}
+    rw:
+      iam_sa_roles:
+        $service_account_ids:dev-app0-be-0/automation/ro:
+          - roles.iam.serviceAccountTokenCreator
 ```
 
 The only exception is when setting IAM binding for a service account on a different service account via the `iam_sa_roles` attribute, which interpolates using the `$service_account_ids` namespace. As an example, granting a role to the `rw` service account above on the `ro` service account in the same project will use `$service_account_ids:app-0-0/ro`.
@@ -497,9 +513,9 @@ services:
 - storage.googleapis.com
 iam:
   "roles/owner":
-    - $iam_principals:service_accounts/dev-tb-app0-0/rw
+    - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
   "roles/viewer":
-    - $iam_principals:service_accounts/dev-tb-app0-0/ro
+    - $iam_principals:service_accounts/dev-tb-app0-0/automation/ro
 shared_vpc_host_config:
   enabled: true
 service_accounts:
@@ -510,7 +526,7 @@ service_accounts:
       - roles/monitoring.metricWriter
     iam:
       roles/iam.serviceAccountTokenCreator:
-        - $iam_principals:service_accounts/dev-tb-app0-0/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
 automation:
   project: test-pf-teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
@@ -524,12 +540,12 @@ automation:
     description: Team B app 0 Terraform state bucket.
     iam:
       roles/storage.objectCreator:
-        - $iam_principals:service_accounts/dev-tb-app0-0/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
       roles/storage.objectViewer:
         - $iam_principals:gcp-devops
         - group:team-b-admins@example.org
-        - $iam_principals:service_accounts/dev-tb-app0-0/rw
-        - $iam_principals:service_accounts/dev-tb-app0-0/ro
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/ro
 
 # tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```
@@ -620,17 +636,17 @@ service_accounts:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L49) | Folder ids. |  |
-| [iam_principals](outputs.tf#L54) | IAM principals mappings. |  |
-| [log_buckets](outputs.tf#L59) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L66) | Project ids. |  |
-| [project_numbers](outputs.tf#L71) | Project numbers. |  |
-| [projects](outputs.tf#L78) | Project attributes. |  |
-| [service_account_emails](outputs.tf#L83) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L90) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L97) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L104) | Service account emails. |  |
-| [storage_buckets](outputs.tf#L109) | Bucket names. |  |
+| [folder_ids](outputs.tf#L78) | Folder ids. |  |
+| [iam_principals](outputs.tf#L83) | IAM principals mappings. |  |
+| [log_buckets](outputs.tf#L88) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L95) | Project ids. |  |
+| [project_numbers](outputs.tf#L100) | Project numbers. |  |
+| [projects](outputs.tf#L107) | Project attributes. |  |
+| [service_account_emails](outputs.tf#L112) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L119) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L126) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L133) | Service account emails. |  |
+| [storage_buckets](outputs.tf#L138) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 

@@ -44,9 +44,14 @@ locals {
   projects_sas_iam_emails = {
     for k, v in module.service-accounts : "service_accounts/${k}" => v.iam_email
   }
-  project_sas_ids = {
-    for k, v in module.service-accounts : k => v.id
-  }
+  project_sas_ids = merge(
+    {
+      for k, v in module.service-accounts : k => v.id
+    },
+    {
+      for k, v in module.automation-service-accounts : k => v.id
+    }
+  )
 }
 
 module "service-accounts" {
@@ -76,7 +81,9 @@ module "service_accounts-iam" {
     "${k.project_key}/${k.name}" => k
     if k.iam_sa_roles != {} || k.iam != {}
   }
-  project_id             = module.service-accounts[each.key].service_account.project
+  project_id = (
+    module.service-accounts[each.key].service_account.project
+  )
   name                   = each.value.name
   service_account_create = false
   context = merge(local.ctx, {
