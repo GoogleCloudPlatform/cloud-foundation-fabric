@@ -224,6 +224,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$notification_channels:my_channel`
 - `$project_ids:my_project`
 - `$service_account_ids:my_project/my_sa`
+- `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
 - `$tag_values:my_value`
 - `$vpc_host_projects:my_project`
@@ -254,6 +255,21 @@ Service accounts use the `$iam_principals:` namespace, with ids that allow refer
 iam_by_principals:
   $iam_principals:service_accounts/app-0-0/rw:
     - roles/viewer
+```
+
+Service accounts defined in the `automation` block will have an `automation` prefix prepended to their context id.
+
+```yaml
+automation:
+  project: $project_ids:prod-iac-core-0
+  bucket:
+    name: tf-state
+  service_accounts:
+    ro: {}
+    rw:
+      iam_sa_roles:
+        $service_account_ids:dev-app0-be-0/automation/ro:
+          - roles.iam.serviceAccountTokenCreator
 ```
 
 The only exception is when setting IAM binding for a service account on a different service account via the `iam_sa_roles` attribute, which interpolates using the `$service_account_ids` namespace. As an example, granting a role to the `rw` service account above on the `ro` service account in the same project will use `$service_account_ids:app-0-0/ro`.

@@ -37,3 +37,13 @@ shared_vpc_service_config:
   service_agent_iam:
     roles/compute.networkUser:
       - $service_agents:compute
+automation:
+  project: $project_ids:prod-iac-core-0
+  bucket:
+    name: tf-state
+  service_accounts:
+    ro: {}
+    rw:
+      iam_sa_roles:
+        $service_account_ids:dev-app0-be-0/automation/ro:
+          - roles.iam.serviceAccountTokenCreator

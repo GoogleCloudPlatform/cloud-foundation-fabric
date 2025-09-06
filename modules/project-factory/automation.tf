@@ -64,15 +64,15 @@ locals {
   ]))
   automation_buckets = {
     for k, v in local._automation_buckets :
-    "${k}/${v.name}" => v
+    "${k}/automation/${v.name}" => v
   }
   automation_sas = {
     for k in local._automation_sas :
-    "${k.parent}/${k.name}" => k
+    "${k.parent}/automation/${k.name}" => k
   }
   automation_sas_iam_emails = {
     for k, v in local.automation_sas :
-    "service_accounts/${v.parent}/${v.name}" => module.automation-service-accounts[k].iam_email
+    "service_accounts/${v.parent}/automation/${v.name}" => module.automation-service-accounts[k].iam_email
   }
 }
 
@@ -139,7 +139,24 @@ module "automation-service-accounts" {
   iam_folder_roles       = lookup(each.value, "iam_folder_roles", {})
   iam_organization_roles = lookup(each.value, "iam_organization_roles", {})
   iam_project_roles      = lookup(each.value, "iam_project_roles", {})
-  iam_sa_roles           = lookup(each.value, "iam_sa_roles", {})
+  # iam_sa_roles           = lookup(each.value, "iam_sa_roles", {})
   # we don't interpolate buckets here as we can't use a dynamic key
   iam_storage_roles = lookup(each.value, "iam_storage_roles", {})
+}
+
+module "automation-service-accounts-iam" {
+  source = "../iam-service-account"
+  for_each = {
+    for k, v in local.automation_sas :
+    k => v if lookup(v, "iam_sa_roles", null) != null
+  }
+  project_id = (
+    module.automation-service-accounts[each.key].service_account.project
+  )
+  name                   = module.automation-service-accounts[each.key].name
+  service_account_create = false
+  context = merge(local.ctx, {
+    service_account_ids = local.project_sas_ids
+  })
+  iam_sa_roles = lookup(each.value, "iam_sa_roles", {})
 }
