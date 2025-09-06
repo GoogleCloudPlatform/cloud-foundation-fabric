@@ -513,9 +513,9 @@ services:
 - storage.googleapis.com
 iam:
   "roles/owner":
-    - $iam_principals:service_accounts/dev-tb-app0-0/rw
+    - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
   "roles/viewer":
-    - $iam_principals:service_accounts/dev-tb-app0-0/ro
+    - $iam_principals:service_accounts/dev-tb-app0-0/automation/ro
 shared_vpc_host_config:
   enabled: true
 service_accounts:
@@ -526,7 +526,7 @@ service_accounts:
       - roles/monitoring.metricWriter
     iam:
       roles/iam.serviceAccountTokenCreator:
-        - $iam_principals:service_accounts/dev-tb-app0-0/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
 automation:
   project: test-pf-teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
@@ -540,12 +540,12 @@ automation:
     description: Team B app 0 Terraform state bucket.
     iam:
       roles/storage.objectCreator:
-        - $iam_principals:service_accounts/dev-tb-app0-0/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
       roles/storage.objectViewer:
         - $iam_principals:gcp-devops
         - group:team-b-admins@example.org
-        - $iam_principals:service_accounts/dev-tb-app0-0/rw
-        - $iam_principals:service_accounts/dev-tb-app0-0/ro
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
+        - $iam_principals:service_accounts/dev-tb-app0-0/automation/ro
 
 # tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```
