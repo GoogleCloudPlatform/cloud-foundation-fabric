@@ -15,7 +15,7 @@
  */
 
 variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
@@ -24,7 +24,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
   type = object({
     id = string
@@ -67,7 +67,7 @@ variable "kms_keys" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   type        = string
   validation {
