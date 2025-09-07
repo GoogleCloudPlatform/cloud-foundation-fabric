@@ -31,11 +31,6 @@ locals {
       var.context.iam_principals,
       try(local._defaults.context.iam_principals, {})
     )
-    kms_keys = merge(
-      var.kms_keys,
-      var.context.kms_keys,
-      try(local._defaults.context.kms_keys, {})
-    )
     locations = merge(
       var.context.locations,
       try(local._defaults.context.locations, {})

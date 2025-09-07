@@ -22,7 +22,6 @@ variable "context" {
     folder_ids        = optional(map(string), {})
     iam_principals    = optional(map(string), {})
     locations         = optional(map(string), {})
-    kms_keys          = optional(map(string), {})
     project_ids       = optional(map(string), {})
     tag_keys          = optional(map(string), {})
     tag_values        = optional(map(string), {})
@@ -38,7 +37,7 @@ variable "factories_config" {
     cicd     = optional(string)
     defaults = optional(string, "data/defaults.yaml")
     folders  = optional(string, "data/folders")
-    kms      = optional(string, "data/kms")
+    keyrings = optional(string, "data/keyrings")
     projects = optional(string, "data/projects")
   })
   nullable = false

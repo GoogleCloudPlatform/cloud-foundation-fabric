@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../schemas/defaults.schema.json
+# yaml-language-server: $schema=../../schemas/keyring.schema.json
 
-context:
-  locations:
-    primary: europe-west1
-    secondary: europe-west3
-projects:
-  defaults:
-    storage_location: eu
+location: $locations:primary
+project_id: $project_ids:prod-sec-core-0
+keys:
+  compute: {}
+  storage: {}

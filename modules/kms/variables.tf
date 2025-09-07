@@ -22,6 +22,7 @@ variable "context" {
     kms_keys       = optional(map(string), {})
     iam_principals = optional(map(string), {})
     locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
     tag_keys       = optional(map(string), {})
     tag_values     = optional(map(string), {})
   })
