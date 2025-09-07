@@ -15,6 +15,12 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p = "$"
   keyring = (
     var.keyring_create
     ? google_kms_key_ring.default[0]
@@ -26,14 +32,14 @@ data "google_kms_key_ring" "default" {
   count    = var.keyring_create ? 0 : 1
   project  = var.project_id
   name     = var.keyring.name
-  location = var.keyring.location
+  location = lookup(local.ctx.locations, var.keyring.location, var.keyring.location)
 }
 
 resource "google_kms_key_ring" "default" {
   count    = var.keyring_create ? 1 : 0
   project  = var.project_id
   name     = var.keyring.name
-  location = var.keyring.location
+  location = lookup(local.ctx.locations, var.keyring.location, var.keyring.location)
 }
 
 resource "google_kms_crypto_key" "default" {

@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    tag_keys       = optional(map(string), {})
+    tag_values     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
+# variable "factories_config" {
+#   description = "Paths to data files and folders that enable factory functionality."
+#   type = object({
+#     keyrings = optional(string)
+#   })
+#   nullable = false
+#   default  = {}
+# }
+
 variable "iam" {
   description = "Keyring IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
