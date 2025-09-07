@@ -15,7 +15,7 @@
  */
 
 variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
@@ -24,7 +24,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Billing account id."
   type = object({
     id = string
@@ -32,7 +32,7 @@ variable "billing_account" {
 }
 
 variable "custom_roles" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Custom roles defined at the org level, in key => id format."
   type        = map(string)
   nullable    = false
@@ -40,7 +40,7 @@ variable "custom_roles" {
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Folders created in the bootstrap stage."
   type        = map(string)
   nullable    = false
@@ -48,7 +48,7 @@ variable "folder_ids" {
 }
 
 variable "iam_principals" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "IAM-format principals."
   type        = map(string)
   nullable    = false
@@ -72,7 +72,7 @@ variable "kms_keys" {
 }
 
 variable "locations" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
   type = object({
     storage = optional(string, "eu")
@@ -90,7 +90,7 @@ variable "perimeters" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   type        = string
   validation {
@@ -100,7 +100,7 @@ variable "prefix" {
 }
 
 variable "project_ids" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Projects created in the bootstrap stage."
   type        = map(string)
   nullable    = false
@@ -108,7 +108,7 @@ variable "project_ids" {
 }
 
 variable "service_accounts" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Service accounts created in the bootstrap stage."
   type        = map(string)
   nullable    = false
@@ -116,7 +116,7 @@ variable "service_accounts" {
 }
 
 variable "tag_values" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "FAST-managed resource manager tag values."
   type        = map(string)
   nullable    = false

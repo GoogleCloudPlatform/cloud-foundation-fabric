@@ -29,12 +29,12 @@ locals {
   })
   defaults = {
     billing_account = try(local._defaults.global.billing_account, null)
-    locations = merge(try(local._defaults.global.locations, {}), {
+    locations = merge({
       bigquery = "eu"
       logging  = "global"
       pubsub   = []
       storage  = "eu"
-    })
+    }, try(local._defaults.global.locations, {}))
     organization = (
       try(local._defaults.global.organization.id, null) == null
       ? null

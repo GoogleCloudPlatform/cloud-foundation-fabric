@@ -31,6 +31,9 @@ locals {
     )
   )
   ctx = merge(local._ctx, {
+    iam_principals_list = {
+      for k, v in local._ctx.iam_principals : k => [v]
+    }
     project_numbers = {
       for k, v in local._ctx.project_numbers : k => "projects/${v}"
     }
