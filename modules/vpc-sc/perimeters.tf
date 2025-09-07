@@ -75,8 +75,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(local.ctx.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               source_restriction = (
                 length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
@@ -157,8 +160,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(local.ctx.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
@@ -266,8 +272,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(local.ctx.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               source_restriction = (
                 length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
@@ -348,8 +357,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(local.ctx.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)

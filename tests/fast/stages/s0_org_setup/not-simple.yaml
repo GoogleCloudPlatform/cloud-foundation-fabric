@@ -243,7 +243,7 @@ values:
   google_storage_bucket_object.tfvars["globals"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
-    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"eu","logging":"global","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0"}'
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0"}'
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -426,7 +426,7 @@ values:
     sensitive_content: null
     source: null
   local_file.tfvars["globals"]:
-    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"eu","logging":"global","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0"}'
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0"}'
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
@@ -2445,7 +2445,7 @@ values:
     role: roles/resourcemanager.tagViewer
   module.organization[0].google_logging_organization_settings.default[0]:
     organization: '1234567890'
-    storage_location: global
+    storage_location: europe-west1
     timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.denyBridgePerimeters"]:
     action_type: DENY

@@ -22,6 +22,9 @@ locals {
   restricted_services = yamldecode(file(var.factories_config.restricted_services))
   # extend context with our own data
   context = {
+    iam_principals = merge(var.iam_principals, {
+      for k, v in var.service_accounts : "service_accounts/${k}" => "serviceAccount:${v}"
+    })
     identity_sets = merge(var.context.identity_sets, {
       logging_identities = try(distinct(values(var.logging.writer_identities)), [])
     })
