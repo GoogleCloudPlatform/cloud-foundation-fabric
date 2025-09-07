@@ -27,11 +27,15 @@ resource "google_access_context_manager_access_policy_iam_binding" "bindings" {
   for_each = var.iam_bindings
   name     = local.access_policy
   role     = each.value.role
-  members  = each.value.members
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -42,11 +46,15 @@ resource "google_access_context_manager_access_policy_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
   name     = local.access_policy
   role     = each.value.role
-  member   = each.value.member
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }

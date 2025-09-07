@@ -23,6 +23,14 @@ variable "automation" {
   nullable = false
 }
 
+variable "iam_principals" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Org-level IAM principals."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "logging" {
   # tfdoc:variable:source 0-bootstrap
   description = "Log writer identities for organization / folders."
@@ -64,4 +72,12 @@ variable "root_node" {
     )
     error_message = "Root node must be in folders/nnnnn format if specified."
   }
+}
+
+variable "service_accounts" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Org-level service accounts."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
