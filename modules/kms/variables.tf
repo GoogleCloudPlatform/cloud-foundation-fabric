@@ -29,14 +29,14 @@ variable "context" {
   nullable = false
 }
 
-variable "factories_config" {
-  description = "Paths to data files and folders that enable factory functionality."
-  type = object({
-    keyrings = optional(string)
-  })
-  nullable = false
-  default  = {}
-}
+# variable "factories_config" {
+#   description = "Paths to data files and folders that enable factory functionality."
+#   type = object({
+#     keyrings = optional(string)
+#   })
+#   nullable = false
+#   default  = {}
+# }
 
 variable "iam" {
   description = "Keyring IAM bindings in {ROLE => [MEMBERS]} format."
