@@ -17,9 +17,9 @@
 variable "ca_configs" {
   description = "The CA configurations."
   type = map(object({
-    deletion_protection                    = optional(string, true)
-    type                                   = optional(string, "SELF_SIGNED")
+    deletion_protection                    = optional(bool, true)
     is_ca                                  = optional(bool, true)
+    is_self_signed                         = optional(bool, true)
     lifetime                               = optional(string, null)
     pem_ca_certificate                     = optional(string, null)
     ignore_active_certificates_on_deletion = optional(bool, false)
@@ -65,26 +65,15 @@ variable "ca_configs" {
       email_addresses = optional(list(string), null)
       ip_addresses    = optional(list(string), null)
       uris            = optional(list(string), null)
-    }), null)
+    }))
     subordinate_config = optional(object({
       root_ca_id              = optional(string)
       pem_issuer_certificates = optional(list(string))
-    }), null)
+    }))
   }))
   nullable = false
   default = {
     test-ca = {}
-  }
-  validation {
-    condition = (
-      length([
-        for _, v in var.ca_configs
-        : v.type
-        if v.type != null
-        && !contains(["SELF_SIGNED", "SUBORDINATE"], v.type)
-      ]) == 0
-    )
-    error_message = "Type can only be `SELF_SIGNED` or `SUBORDINATE`."
   }
   validation {
     condition = (
@@ -117,27 +106,27 @@ variable "ca_pool_config" {
   description = "The CA pool config. Either use_pool or create_pool need to be used. Use pool takes precedence if both are defined."
   type = object({
     create_pool = optional(object({
-      name = string
-      tier = optional(string, "DEVOPS")
+      name            = string
+      enterprise_tier = optional(bool, false)
     }))
     use_pool = optional(object({
       id = string
     }))
   })
   nullable = false
-  validation {
-    condition = (
-      try(var.ca_pool_config.create_pool.name, null) != null ||
-      try(var.ca_pool_config.use_pool.id, null) != null
-    )
-    error_message = "Either create pool name or use pool id need to be provided."
-  }
-  validation {
-    condition = var.ca_pool_config.create_pool == null || contains(
-      ["DEVOPS", "ENTERPRISE"], try(var.ca_pool_config.create_pool.tier, "-")
-    )
-    error_message = "Tier for pool creation can only be 'DEVOPS' or 'ENTERPRISE'."
-  }
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "location" {
