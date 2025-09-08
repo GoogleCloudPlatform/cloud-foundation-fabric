@@ -21,12 +21,14 @@ locals {
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
   ctx = merge(var.context, {
-    folder_ids = merge(var.folder_ids, var.context.folder_ids)
+    folder_ids = merge(
+      var.folder_ids, var.context.folder_ids
+    )
     iam_principals = merge(
       var.iam_principals,
       {
         for k, v in var.service_accounts :
-        "service_account/${k}" => "serviceAccount:${v}"
+        "service_accounts/${k}" => "serviceAccount:${v}"
       },
       var.context.iam_principals,
       try(local._defaults.context.iam_principals, {})

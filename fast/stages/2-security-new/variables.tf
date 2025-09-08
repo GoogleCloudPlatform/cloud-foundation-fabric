@@ -34,7 +34,6 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    cicd     = optional(string)
     defaults = optional(string, "data/defaults.yaml")
     folders  = optional(string, "data/folders")
     keyrings = optional(string, "data/keyrings")
