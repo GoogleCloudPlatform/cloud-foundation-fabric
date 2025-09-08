@@ -43,3 +43,9 @@ variable "factories_config" {
   nullable = false
   default  = {}
 }
+
+variable "outputs_location" {
+  description = "Path where tfvars files for the following stages are written. Leave empty to disable."
+  type        = string
+  default     = null
+}
