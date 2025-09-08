@@ -16,6 +16,7 @@
   - ["Minimal" dataset (TBD)](#minimal-dataset-tbd)
   - ["Tenants" dataset (TBD)](#tenants-dataset-tbd)
 - [Detailed configuration](#detailed-configuration)
+  - [Context interpolation](#context-interpolation)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
   - [Billing account IAM](#billing-account-iam)
