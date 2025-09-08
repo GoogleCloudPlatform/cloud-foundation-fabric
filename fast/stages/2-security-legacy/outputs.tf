@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 locals {
-  _o_kms_keys = flatten([
+  _output_kms_keys = flatten([
     for k, v in module.kms : [
       for name, id in v.key_ids : {
         key = "${name}-${k}"
@@ -24,7 +24,7 @@ locals {
     ]
   ])
   tfvars = {
-    ca_pools = {
+    certificate_authority_pools = {
       for k, v in module.cas : k => {
         ca_ids   = v.ca_ids
         id       = v.ca_pool_id
@@ -32,19 +32,9 @@ locals {
       }
     }
     kms_keys = {
-      for k in local._o_kms_keys : k.key => k.id
+      for k in local._output_kms_keys : k.key => k.id
     }
   }
-}
-
-resource "google_storage_bucket_object" "version" {
-  count = (
-    try(var.automation.outputs_bucket, null) != null &&
-    fileexists("fast_version.txt") ? 1 : 0
-  )
-  bucket = var.automation.outputs_bucket
-  name   = "versions/2-security-version.txt"
-  source = "fast_version.txt"
 }
 
 resource "local_file" "tfvars" {
@@ -60,13 +50,20 @@ resource "google_storage_bucket_object" "tfvars" {
   content = jsonencode(local.tfvars)
 }
 
-output "ca_pools" {
-  description = "Certificate Authority Service pools and CAs."
-  value       = local.tfvars.ca_pools
+resource "google_storage_bucket_object" "version" {
+  count  = fileexists("fast_version.txt") ? 1 : 0
+  bucket = var.automation.outputs_bucket
+  name   = "versions/2-security-version.txt"
+  source = "fast_version.txt"
 }
 
-output "kms_keys_ids" {
-  description = "KMS keys IDs."
+output "certificate_authority_pools" {
+  description = "Certificate Authority Service pools and CAs."
+  value       = local.tfvars.certificate_authority_pools
+}
+
+output "kms_keys" {
+  description = "KMS key ids."
   value       = local.tfvars.kms_keys
 }
 

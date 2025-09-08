@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KMS Keyring",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location",
+    "project_id"
+  ],
+  "properties": {
+    "location": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "iam": {
+      "$ref": "#/$defs/iam"
+    },
+    "iam_bindings": {
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "$ref": "#/$defs/iam_bindings_additive"
+    },
+    "reuse": {
+      "type": "boolean"
+    },
+    "keys": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "destroy_scheduled_duration": {
+              "type": "string"
+            },
+            "rotation_period": {
+              "type": "string"
+            },
+            "labels": {
+              "type": "string"
+            },
+            "purpose": {
+              "type": "string",
+              "default": "ENCRYPT_DECRYPT",
+              "enum": [
+                "CRYPTO_KEY_PURPOSE_UNSPECIFIED",
+                "ENCRYPT_DECRYPT",
+                "ASYMMETRIC_SIGN",
+                "ASYMMETRIC_DECRYPT",
+                "RAW_ENCRYPT_DECRYPT",
+                "MAC"
+              ]
+            },
+            "skip_initial_version_creation": {
+              "type": "boolean",
+              "default": false
+            },
+            "version_template": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "algorithm": {
+                  "type": "string"
+                },
+                "protection_level": {
+                  "type": "string",
+                  "default": "SOFTWARE",
+                  "enum": [
+                    "SOFTWARE",
+                    "HSM",
+                    "EXTERNAL",
+                    "EXTERNAL_VPC"
+                  ]
+                }
+              }
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^roles/": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+          }
+        }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              }
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^roles/"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member": {
+              "type": "string",
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_/]+$"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

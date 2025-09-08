@@ -1,0 +1,404 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Terraform Variable to JSON Schema Conversion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location",
+    "ca_pool_config",
+    "project_id"
+  ],
+  "properties": {
+    "location": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "iam": {
+      "$ref": "#/$defs/iam"
+    },
+    "iam_bindings": {
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "$ref": "#/$defs/iam_bindings_additive"
+    },
+    "iam_by_principals": {
+      "$ref": "#/$defs/iam_by_principals"
+    },
+    "ca_pool_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "create_pool"
+          ]
+        },
+        {
+          "required": [
+            "use_pool"
+          ]
+        }
+      ],
+      "default": {
+        "create_pool": {}
+      },
+      "properties": {
+        "create_pool": {
+          "type": "object",
+          "additionalProperties": false,
+          "default": {},
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "enterprise_tier": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "use_pool": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "ca_configs": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]+": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "deletion_protection": {
+              "type": "boolean",
+              "default": true
+            },
+            "is_ca": {
+              "type": "boolean",
+              "default": true
+            },
+            "is_self_signed": {
+              "type": "boolean",
+              "default": true
+            },
+            "lifetime": {
+              "type": "string"
+            },
+            "pem_ca_certificate": {
+              "type": "string"
+            },
+            "ignore_active_certificates_on_deletion": {
+              "type": "boolean",
+              "default": false
+            },
+            "skip_grace_period": {
+              "type": "boolean",
+              "default": true
+            },
+            "labels": {
+              "type": "object"
+            },
+            "gcs_bucket": {
+              "type": "string"
+            },
+            "key_spec": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "algorithm": {
+                  "type": "string",
+                  "default": "RSA_PKCS1_2048_SHA256",
+                  "enum": [
+                    "EC_P256_SHA256",
+                    "EC_P384_SHA384",
+                    "RSA_PSS_2048_SHA256",
+                    "RSA_PSS_3072_SHA256",
+                    "RSA_PSS_4096_SHA256",
+                    "RSA_PKCS1_2048_SHA256",
+                    "RSA_PKCS1_3072_SHA256",
+                    "RSA_PKCS1_4096_SHA256",
+                    "SIGN_HASH_ALGORITHM_UNSPECIFIED"
+                  ]
+                },
+                "kms_key_id": {
+                  "type": "string"
+                }
+              }
+            },
+            "key_usage": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cert_sign": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "client_auth": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "code_signing": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "content_commitment": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "crl_sign": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "data_encipherment": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "decipher_only": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "digital_signature": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "email_protection": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "encipher_only": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "key_agreement": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "key_encipherment": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "ocsp_signing": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "server_auth": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "time_stamping": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            },
+            "subject": {
+              "type": "object",
+              "required": [
+                "common_name",
+                "organization"
+              ],
+              "additionalProperties": false,
+              "default": {
+                "common_name": "test.example.com",
+                "organization": "Test Example"
+              },
+              "properties": {
+                "common_name": {
+                  "type": "string"
+                },
+                "organization": {
+                  "type": "string"
+                },
+                "country_code": {
+                  "type": "string"
+                },
+                "locality": {
+                  "type": "string"
+                },
+                "organizational_unit": {
+                  "type": "string"
+                },
+                "postal_code": {
+                  "type": "string"
+                },
+                "province": {
+                  "type": "string"
+                },
+                "street_address": {
+                  "type": "string"
+                }
+              }
+            },
+            "subject_alt_name": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "dns_names": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "email_addresses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "ip_addresses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "uris": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "subordinate_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "root_ca_id": {
+                  "type": "string"
+                },
+                "pem_issuer_certificates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^roles/": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+          }
+        }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              }
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^roles/"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member": {
+              "type": "string",
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_/]+$"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_by_principals": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:roles/|\\$custom_roles:)"
+          }
+        }
+      }
+    }
+  }
+}

@@ -12,11 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/2-security
+module: fast/stages/2-security-legacy
 
 tests:
-  not-simple:
-    inventory:
-      - not-simple.yaml
-    extra_dirs:
-      - ../../../tests/fast/stages/s2_security/data-simple
+  simple:

@@ -1,4 +1,4 @@
-# Project factory
+# Project Factory
 
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)

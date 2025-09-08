@@ -20,47 +20,55 @@ variable "automation" {
   type = object({
     outputs_bucket = string
   })
+  nullable = false
 }
 
 variable "billing_account" {
   # tfdoc:variable:source 0-org-setup
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
+  description = "Billing account id."
   type = object({
-    id           = string
-    is_org_level = optional(bool, true)
+    id = string
   })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
 }
 
-variable "environments" {
-  # tfdoc:variable:source 0-globals
-  description = "Environment names."
-  type = map(object({
-    name       = string
-    short_name = string
-    tag_name   = string
-    is_default = optional(bool, false)
-  }))
-  nullable = false
-  validation {
-    condition = anytrue([
-      for k, v in var.environments : v.is_default == true
-    ])
-    error_message = "At least one environment should be marked as default."
-  }
+variable "custom_roles" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Custom roles defined at the org level, in key => id format."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folder name => id mappings, the 'security' folder name must exist."
-  type = object({
-    security      = string
-    security-dev  = optional(string)
-    security-prod = optional(string)
-  })
+  # tfdoc:variable:source 0-org-setup
+  description = "Folders created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "iam_principals" {
+  # tfdoc:variable:source 0-org-setup
+  description = "IAM-format principals."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "kms_keys" {
+  # tfdoc:variable:source 2-security
+  description = "KMS key ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "perimeters" {
+  # tfdoc:variable:source 1-vpcsc
+  description = "Optional VPC-SC perimeter ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "prefix" {
@@ -73,23 +81,34 @@ variable "prefix" {
   }
 }
 
-variable "stage_configs" {
-  # tfdoc:variable:source 1-resman
-  description = "FAST stage configuration."
-  type = object({
-    security = optional(object({
-      short_name          = optional(string)
-      iam_admin_delegated = optional(map(list(string)), {})
-      iam_viewer          = optional(map(list(string)), {})
-    }), {})
-  })
-  default  = {}
-  nullable = false
+variable "project_ids" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Projects created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "service_accounts" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Service accounts created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "tag_keys" {
+  # tfdoc:variable:source 0-org-setup
+  description = "FAST-managed resource manager tag keys."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "tag_values" {
-  # tfdoc:variable:source 1-resman
-  description = "Root-level tag values."
+  # tfdoc:variable:source 0-org-setup
+  description = "FAST-managed resource manager tag values."
   type        = map(string)
+  nullable    = false
   default     = {}
 }
