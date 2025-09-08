@@ -44,7 +44,7 @@ resource "google_secure_source_manager_instance" "instance" {
     for_each = var.private_configs.is_private ? [""] : []
     content {
       is_private = true
-      ca_pool    = var.private_configs.ca_pool
+      ca_pool    = var.private_configs.ca_pool_id
     }
   }
 }
