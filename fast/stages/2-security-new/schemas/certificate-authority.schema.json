@@ -29,36 +29,6 @@
     },
     "ca_pool_config": {
       "type": "object",
-      "properties": {
-        "create_pool": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "enterprise_tier": {
-              "type": "boolean",
-              "default": false
-            }
-          },
-          "required": [
-            "name"
-          ],
-          "additionalProperties": false
-        },
-        "use_pool": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id"
-          ],
-          "additionalProperties": false
-        }
-      },
       "additionalProperties": false,
       "oneOf": [
         {
@@ -71,13 +41,44 @@
             "use_pool"
           ]
         }
-      ]
+      ],
+      "default": {
+        "create_pool": {}
+      },
+      "properties": {
+        "create_pool": {
+          "type": "object",
+          "additionalProperties": false,
+          "default": {},
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "enterprise_tier": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        "use_pool": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        }
+      }
     },
     "ca_configs": {
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z][a-z0-9-]+$/": {
+        "^[a-z][a-z0-9-]+": {
           "type": "object",
           "additionalProperties": false,
           "properties": {

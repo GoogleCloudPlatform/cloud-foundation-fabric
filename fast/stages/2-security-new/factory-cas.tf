@@ -88,7 +88,7 @@ locals {
 }
 
 module "cas" {
-  source                = "../../../modules/cas"
+  source                = "../../../modules/certificate-authority-service"
   for_each              = local.ca_pools
   project_id            = each.value.project_id
   location              = each.value.location
