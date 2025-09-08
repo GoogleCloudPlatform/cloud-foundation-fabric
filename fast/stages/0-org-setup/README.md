@@ -16,6 +16,7 @@
   - ["Minimal" dataset (TBD)](#minimal-dataset-tbd)
   - ["Tenants" dataset (TBD)](#tenants-dataset-tbd)
 - [Detailed configuration](#detailed-configuration)
+  - [Context interpolation](#context-interpolation)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
   - [Billing account IAM](#billing-account-iam)
@@ -261,6 +262,27 @@ This dataset implements a design where internal tenants are given control over p
 ## Detailed configuration
 
 The following sections explain how to configure and run this stage, and should be read in sequence when using it for the first time.
+
+### Context interpolation
+
+Module-level context interpolation is extensively supported in this stage. This allows intutive, portable referencing of resources independent from the specific configuration.
+
+This is a simple reference table of available interpolation namespaces, refer to the [project factory module](../../../modules/project-factory/README.md#context-based-interpolation) for more details on this feature.
+
+- `$custom_roles:my_role`
+- `$folder_ids:my_folder`
+- `$iam_principals:my_principal`
+- `$iam_principals:service_accounts/my_project/my_sa`
+- `$kms_keys:my_key`
+- `$locations:my_location`
+- `$notification_channels:my_channel`
+- `$project_ids:my_project`
+- `$service_account_ids:my_project/my_sa`
+- `$service_account_ids:my_project/automation/my_sa`
+- `$service_agents:compute`
+- `$tag_values:my_value`
+- `$vpc_host_projects:my_project`
+- `$vpc_sc_perimeters:my_perimeter`
 
 ### Factory data
 

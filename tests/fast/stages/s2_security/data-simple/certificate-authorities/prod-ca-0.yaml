@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/2-security
+# yaml-language-server: $schema=../../schemas/certificate-authority.schema.json
 
-tests:
-  not-simple:
-    inventory:
-      - not-simple.yaml
-    extra_dirs:
-      - ../../../tests/fast/stages/s2_security/data-simple
+location: $locations:primary
+project_id: $project_ids:prod-sec-core-0
+ca_pool_config:
+  create_pool: {}
+ca_configs:
+  prod-ca-0-0: {}
+
+

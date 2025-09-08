@@ -21,17 +21,20 @@ locals {
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
   ctx = merge(var.context, {
-    folder_ids = merge(
-      var.folder_ids, var.context.folder_ids
-    )
+    folder_ids = merge(var.folder_ids, var.context.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {
         for k, v in var.service_accounts :
-        "service_accounts/${k}" => "serviceAccount:${v}"
+        "service_account/${k}" => "serviceAccount:${v}"
       },
       var.context.iam_principals,
       try(local._defaults.context.iam_principals, {})
+    )
+    kms_keys = merge(
+      var.kms_keys,
+      var.context.kms_keys,
+      try(local._defaults.context.kms_keys, {})
     )
     locations = merge(
       var.context.locations,
@@ -54,7 +57,7 @@ locals {
   project_defaults = {
     defaults = merge(
       {
-        billing_account = var.billing_account.id
+        billing_account = var.billing_account
         prefix          = var.prefix
       },
       lookup(var.folder_ids, local.defaults.folder_name, null) == null ? {} : {

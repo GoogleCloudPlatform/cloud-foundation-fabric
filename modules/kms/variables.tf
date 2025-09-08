@@ -22,6 +22,7 @@ variable "context" {
     kms_keys       = optional(map(string), {})
     iam_principals = optional(map(string), {})
     locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
     tag_keys       = optional(map(string), {})
     tag_values     = optional(map(string), {})
   })
@@ -82,8 +83,7 @@ variable "keyring" {
     location = string
     name     = string
   })
-  nullable = true
-  default  = null
+  nullable = false
 }
 
 variable "keyring_create" {
