@@ -78,4 +78,4 @@ module "kms" {
   })
   depends_on = [module.factory]
 }
-output "foo" { value = module.factory.project_ids }
+
