@@ -63,7 +63,7 @@ module "ssm_instance" {
     my-repository = {}
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=2 inventory=private-instance.yaml
 ```
 
 You can optionally specify a Certificate Authority (CAS) pool and use your own certificate.
@@ -76,13 +76,13 @@ module "ssm_instance" {
   location    = var.region
   private_configs = {
     is_private = true
-    ca_pool    = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
+    ca_pool_id = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
   }
   repositories = {
     my-repository = {}
   }
 }
-# tftest modules=1 resources=2 inventory=private-instance.yaml
+# tftest modules=1 resources=2 inventory=private-instance-ca-pool.yaml
 ```
 
 ### IAM
