@@ -1,4 +1,4 @@
-# Shared security resources
+# Shared Security Resources (Legacy)
 
 This stage sets up an area dedicated to hosting security resources and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
 

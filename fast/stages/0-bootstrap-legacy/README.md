@@ -1,4 +1,4 @@
-# Organization bootstrap (legacy)
+# Organization Bootstrap (Legacy)
 
 The primary purpose of this stage is to enable critical organization-level functionalities that depend on broad administrative permissions, and prepare the prerequisites needed to enable automation in this and future stages.
 

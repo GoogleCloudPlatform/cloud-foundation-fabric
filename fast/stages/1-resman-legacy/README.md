@@ -1,4 +1,4 @@
-# Resource hierarchy
+# Resource hierarchy (Legacy)
 
 This stage manages the upper part of the resource management hierarchy, and decouples later stages (networking, etc.) from the organization via folders, IaC resources and IAM bindings.
 
