@@ -41,7 +41,7 @@ resource "google_secure_source_manager_instance" "instance" {
   labels      = var.labels
   kms_key     = var.kms_key
   dynamic "private_config" {
-    for_each = var.ca_pool == null ? [] : [""]
+    for_each = var.private_configs.is_private ? [""] : []
     content {
       is_private = true
       ca_pool    = var.ca_pool

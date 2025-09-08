@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "ca_pool" {
-  description = "CA pool."
-  type        = string
-  default     = null
-}
-
 variable "instance_create" {
   description = "Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance."
   type        = bool
@@ -46,6 +40,14 @@ variable "labels" {
 variable "location" {
   description = "Location."
   type        = string
+}
+
+variable "private_configs" {
+  description = "The configurations for SSM private instances."
+  type = object({
+    is_private = optional(bool, true)
+    ca_pool_id = optional(string)
+  })
 }
 
 variable "project_id" {

@@ -32,7 +32,7 @@ module "ssm_instance" {
 # tftest modules=1 resources=2 inventory=public-instance.yaml
 ```
 
-### Public instance with CMEK 
+### Public instance with CMEK
 
 ```hcl
 module "ssm_instance" {
@@ -56,7 +56,28 @@ module "ssm_instance" {
   project_id  = var.project_id
   instance_id = "my-instance"
   location    = var.region
-  ca_pool     = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
+  private_configs = {
+    is_private = true
+  }
+  repositories = {
+    my-repository = {}
+  }
+}
+# tftest modules=1 resources=2
+```
+
+You can optionally specify a Certificate Authority (CAS) pool and use your own certificate.
+
+```hcl
+module "ssm_instance" {
+  source      = "./fabric/modules/secure-source-manager-instance"
+  project_id  = var.project_id
+  instance_id = "my-instance"
+  location    = var.region
+  private_configs = {
+    is_private = true
+    ca_pool    = "projects/another-project/locations/${var.region}/caPools/my-ca-pool"
+  }
   repositories = {
     my-repository = {}
   }
