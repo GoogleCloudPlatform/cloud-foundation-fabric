@@ -1,0 +1,138 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_privateca_ca_pool.default[0]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    issuance_policy: []
+    labels: null
+    location: europe-west8
+    name: test-ca
+    project: test-0
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
+    timeouts: null
+  google_privateca_ca_pool_iam_binding.authoritative["$custom_roles:myrole_four"]:
+    condition: []
+    members:
+    - user:test-user2@example.com
+    role: organizations/366118655033/roles/myRoleFour
+  google_privateca_ca_pool_iam_binding.authoritative["$custom_roles:myrole_one"]:
+    condition: []
+    members:
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_privateca_ca_pool_iam_binding.authoritative["$custom_roles:myrole_three"]:
+    condition: []
+    members:
+    - user:test-user2@example.com
+    role: organizations/366118655033/roles/myRoleThree
+  google_privateca_ca_pool_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - user:test-user2@example.com
+    role: roles/owner
+  google_privateca_ca_pool_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: roles/viewer
+  google_privateca_ca_pool_iam_binding.bindings["myrole_two"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/environment', 'development')
+      title: Test
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_privateca_ca_pool_iam_member.bindings["myrole_three"]:
+    condition: []
+    member: serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: organizations/366118655033/roles/myRoleThree
+  google_privateca_certificate_authority.default["root_ca_1"]:
+    certificate_authority_id: root_ca_1
+    config:
+    - subject_config:
+      - subject:
+        - common_name: test.example.com
+          country_code: null
+          locality: null
+          organization: Test Example
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_protection: true
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: test-prod-cas
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: null
+      cloud_kms_key_version: projects/test-0/locations/europe-west8/keyRings/prod-ew8/cryptoKeys/prod-default
+    labels: null
+    lifetime: 315360000s
+    location: europe-west8
+    pem_ca_certificate: null
+    project: test-0
+    skip_grace_period: true
+    subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SELF_SIGNED
+    user_defined_access_urls: []
+
+counts:
+  google_privateca_ca_pool: 1
+  google_privateca_ca_pool_iam_binding: 6
+  google_privateca_ca_pool_iam_member: 1
+  google_privateca_certificate_authority: 1
+  modules: 0
+  resources: 9

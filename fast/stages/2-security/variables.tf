@@ -24,9 +24,9 @@ variable "certificate_authorities" {
     iam_bindings_additive = optional(map(any), {})
     iam_by_principals     = optional(map(list(string)), {})
     ca_configs = map(object({
-      deletion_protection                    = optional(string, true)
-      type                                   = optional(string, "SELF_SIGNED")
+      deletion_protection                    = optional(bool, true)
       is_ca                                  = optional(bool, true)
+      is_self_signed                         = optional(bool, true)
       lifetime                               = optional(string, null)
       pem_ca_certificate                     = optional(string, null)
       ignore_active_certificates_on_deletion = optional(bool, false)
@@ -75,11 +75,11 @@ variable "certificate_authorities" {
         email_addresses = optional(list(string), null)
         ip_addresses    = optional(list(string), null)
         uris            = optional(list(string), null)
-      }), null)
+      }))
       subordinate_config = optional(object({
         root_ca_id              = optional(string)
         pem_issuer_certificates = optional(list(string))
-      }), null)
+      }))
     }))
     ca_pool_config = object({
       create_pool = optional(object({

@@ -39,7 +39,7 @@ resource "google_privateca_ca_pool_iam_binding" "authoritative" {
   role     = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
     for v in each.value :
-    lookup(local.ctx_iam_principals, v, v)
+    lookup(local.ctx.iam_principals, v, v)
   ]
 }
 
@@ -48,7 +48,7 @@ resource "google_privateca_ca_pool_iam_binding" "bindings" {
   ca_pool  = local.pool_id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
-    for v in each.value.members : lookup(local.ctx_iam_principals, v, v)
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
   ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
@@ -66,7 +66,7 @@ resource "google_privateca_ca_pool_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
   ca_pool  = local.pool_id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  member   = lookup(local.ctx_iam_principals, each.value.member, each.value.member)
+  member   = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {

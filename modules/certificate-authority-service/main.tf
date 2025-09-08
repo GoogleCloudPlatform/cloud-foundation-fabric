@@ -20,8 +20,8 @@ locals {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if k != "condition_vars"
   }
-  ctx_p = "$"
-  project_id = lookup(local.ctx.locations, var.location, var.location)
+  ctx_p    = "$"
+  location = lookup(local.ctx.locations, var.location, var.location)
   pool_id = try(
     var.ca_pool_config.use_pool.id,
     google_privateca_ca_pool.default[0].id
@@ -59,8 +59,10 @@ resource "google_privateca_certificate_authority" "default" {
   pem_ca_certificate                     = each.value.pem_ca_certificate
   ignore_active_certificates_on_deletion = each.value.ignore_active_certificates_on_deletion
   skip_grace_period                      = each.value.skip_grace_period
-  gcs_bucket                             = each.value.gcs_bucket
-  labels                                 = each.value.labels
+  gcs_bucket = try(
+    local.ctx.storage_buckets[each.value.gcs_bucket], each.value.gcs_bucket
+  )
+  labels = each.value.labels
 
   config {
     subject_config {
@@ -113,7 +115,12 @@ resource "google_privateca_certificate_authority" "default" {
   }
 
   key_spec {
-    algorithm             = each.value.key_spec.algorithm
+    # only one of `key_spec.0.algorithm,key_spec.0.cloud_kms_key_version` can be specified
+    algorithm = (
+      try(each.value.key_spec.kms_key_id, null) != null
+      ? null
+      : each.value.key_spec.algorithm
+    )
     cloud_kms_key_version = try(
       local.ctx.kms_keys[each.value.key_spec.kms_key_id],
       each.value.key_spec.kms_key_id
