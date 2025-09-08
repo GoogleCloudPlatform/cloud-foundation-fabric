@@ -48,6 +48,8 @@ variable "private_configs" {
     is_private = optional(bool, true)
     ca_pool_id = optional(string)
   })
+  nullable = false
+  default  = {}
 }
 
 variable "project_id" {
