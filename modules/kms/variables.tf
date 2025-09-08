@@ -30,15 +30,6 @@ variable "context" {
   nullable = false
 }
 
-# variable "factories_config" {
-#   description = "Paths to data files and folders that enable factory functionality."
-#   type = object({
-#     keyrings = optional(string)
-#   })
-#   nullable = false
-#   default  = {}
-# }
-
 variable "iam" {
   description = "Keyring IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -92,6 +83,7 @@ variable "keyring" {
     location = string
     name     = string
   })
+  nullable = false
 }
 
 variable "keyring_create" {
@@ -134,6 +126,24 @@ variable "keys" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.keys : contains([
+        "CRYPTO_KEY_PURPOSE_UNSPECIFIED", "ENCRYPT_DECRYPT", "ASYMMETRIC_SIGN",
+        "ASYMMETRIC_DECRYPT", "RAW_ENCRYPT_DECRYPT", "MAC"
+        ], v.purpose
+      )
+    ])
+    error_message = "Invalid key purpose."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.keys : contains([
+        "SOFTWARE", "HSM", "EXTERNAL", "EXTERNAL_VPC"
+      ], try(v.version_template.protection_level, "SOFTWARE"))
+    ])
+    error_message = "Invalid version template protection level."
+  }
 }
 
 variable "project_id" {
