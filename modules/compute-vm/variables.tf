@@ -261,6 +261,13 @@ variable "metadata" {
   default     = {}
 }
 
+variable "metadata_startup_script" {
+  description = "Instance startup script. Will trigger recreation on change, even after importing."
+  type        = string
+  nullable    = true
+  default     = null
+}
+
 variable "min_cpu_platform" {
   description = "Minimum CPU platform."
   type        = string
