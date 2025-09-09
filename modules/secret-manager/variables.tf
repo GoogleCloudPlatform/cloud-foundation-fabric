@@ -28,6 +28,13 @@ variable "context" {
   nullable = false
 }
 
+# variable "kms_autokey_config" {
+#   description = "Key handle definitions for KMS autokey, in name => location format. Injected in the context $kms_keys:autokey/ namespace."
+#   type        = map(string)
+#   nullable    = false
+#   default     = {}
+# }
+
 variable "project_id" {
   description = "Project id where the keyring will be created."
   type        = string
@@ -44,21 +51,18 @@ variable "secrets" {
   type = map(object({
     annotations         = optional(map(string), {})
     deletion_protection = optional(bool)
-    # ignored if global_replication_config is set
-    kms_key = optional(string)
-    labels  = optional(map(string), {})
-    # location defines the switch between global (default) or regional resource
-    location     = optional(string)
-    tag_bindings = optional(map(string))
-    tags         = optional(map(string), {})
+    kms_key             = optional(string)
+    labels              = optional(map(string), {})
+    location            = optional(string)
+    tag_bindings        = optional(map(string))
+    tags                = optional(map(string), {})
     expiration_config = optional(object({
       time = optional(string)
       ttl  = optional(string)
     }))
-    # map of location => optional key
     global_replica_locations = optional(map(string))
     version_config = optional(object({
-      aliases     = optional(map(number), {})
+      aliases     = optional(map(number))
       destroy_ttl = optional(string)
     }), {})
     # rotation_config = optional(object({
@@ -79,18 +83,10 @@ variable "secrets" {
   validation {
     condition = alltrue([
       for k, v in var.secrets :
-      v.region == null || v.global_replica_locations == null
+      v.location == null || v.global_replica_locations == null
     ])
     error_message = "Global replication cannot be configured on regional secrets."
   }
-  # validation {
-  #   condition = alltrue([
-  #     for k, v in var.secrets :
-  #     try(v.rotation_config.period, null) == null
-  #     || try(v.rotation_config.next_time, null) != null
-  #   ])
-  #   error_message = "Next rotation time needs to be configured if period is set."
-  # }
 }
 
 variable "versions" {

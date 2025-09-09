@@ -35,6 +35,15 @@ locals {
   ]...)
 }
 
+# resource "google_kms_key_handle" "my_key_handle" {
+#   provider               = google-beta
+#   for_each               = var.kms_autokey_config
+#   project                = var.project_id
+#   name                   = each.key
+#   location               = each.value
+#   resource_type_selector = "secretmanager.googleapis.com/Secret"
+# }
+
 resource "google_tags_tag_binding" "binding" {
   for_each  = local.tag_bindings
   parent    = each.value.parent
