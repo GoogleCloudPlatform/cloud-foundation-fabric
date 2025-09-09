@@ -59,3 +59,11 @@ resource "google_secret_manager_regional_secret" "default" {
 #   enabled     = each.value.enabled
 #   secret_data = each.value.data
 # }
+
+resource "google_tags_location_tag_binding" "binding" {
+  for_each  = { for k, v in local.tag_bindings : k => v if v.location != null }
+  parent    = each.value.parent
+  location  = lookup(local.ctx.locations, each.value.location, each.value.location)
+  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+}
+

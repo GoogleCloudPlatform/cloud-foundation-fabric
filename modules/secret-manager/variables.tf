@@ -51,18 +51,37 @@ variable "project_number" {
 variable "secrets" {
   description = "Map of secrets to manage. Defaults to global secrets unless region is set."
   type = map(object({
-    annotations         = optional(map(string), {})
-    deletion_protection = optional(bool)
-    kms_key             = optional(string)
-    labels              = optional(map(string), {})
-    location            = optional(string)
-    tag_bindings        = optional(map(string))
-    tags                = optional(map(string), {})
+    annotations              = optional(map(string), {})
+    deletion_protection      = optional(bool)
+    kms_key                  = optional(string)
+    labels                   = optional(map(string), {})
+    global_replica_locations = optional(map(string))
+    location                 = optional(string)
+    tag_bindings             = optional(map(string))
+    tags                     = optional(map(string), {})
     expiration_config = optional(object({
       time = optional(string)
       ttl  = optional(string)
     }))
-    global_replica_locations = optional(map(string))
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
     version_config = optional(object({
       aliases     = optional(map(number))
       destroy_ttl = optional(string)

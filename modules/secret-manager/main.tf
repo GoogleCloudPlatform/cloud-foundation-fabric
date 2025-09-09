@@ -15,8 +15,12 @@
  */
 
 locals {
-  _tag_template = (
+  # TODO: move tag template expansion in resources
+  _tag_template_global = (
     "//secretmanager.googleapis.com/projects/%s/secrets/%s"
+  )
+  _tag_template_regional = (
+    "//secretmanager.googleapis.com/projects/%s/locations/%s/secrets/%s"
   )
   ctx = {
     for k, v in var.context : k => {
@@ -28,12 +32,20 @@ locals {
   tag_bindings = merge([
     for k, v in var.secrets : {
       for kk, vv in v.tag_bindings : "${k}/${kk}" => {
-        parent = format(
-          local._tag_template,
-          coalesce(var.project_number, var.project_id),
-          v.region == null
-          ? google_secret_manager_secret.default[k].secret_id
-          : google_secret_manager_regional_secret.default[k].secret_id
+        location = v.location
+        parent = (
+          v.location == null
+          ? format(
+            local._tag_template_global,
+            coalesce(var.project_number, var.project_id),
+            google_secret_manager_secret.default[k].secret_id
+          )
+          : format(
+            local._tag_template_regional,
+            coalesce(var.project_number, var.project_id),
+            lookup(local.ctx.locations, v.location, v.location),
+            google_secret_manager_regional_secret.default[k].secret_id
+          )
         )
         tag_value = vv
       }
@@ -50,9 +62,3 @@ locals {
 #   location               = each.value
 #   resource_type_selector = "secretmanager.googleapis.com/Secret"
 # }
-
-resource "google_tags_tag_binding" "binding" {
-  for_each  = local.tag_bindings
-  parent    = each.value.parent
-  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
-}

@@ -80,6 +80,12 @@ resource "google_secret_manager_secret" "default" {
   }
 }
 
+resource "google_tags_tag_binding" "binding" {
+  for_each  = { for k, v in local.tag_bindings : k => v if v.location == null }
+  parent    = each.value.parent
+  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+}
+
 # resource "google_secret_manager_secret_version" "default" {
 #   provider    = google-beta
 #   for_each    = local.version_keypairs

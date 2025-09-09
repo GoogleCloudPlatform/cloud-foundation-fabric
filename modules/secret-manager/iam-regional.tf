@@ -14,62 +14,27 @@
  * limitations under the License.
  */
 
-locals {
-  secret_iam = flatten([
-    for k, v in var.secrets : [
-      for role, members in v.iam : {
-        secret  = k
-        role    = role
-        members = members
-        global  = v.location == null
-      }
-    ]
-  ])
-  secret_iam_bindings = merge([
-    for k, v in var.secrets : {
-      for binding_key, data in v.iam_bindings :
-      "${k}-${binding_key}" => {
-        secret    = k
-        role      = data.role
-        members   = data.members
-        condition = data.condition
-        global    = v.location == null
-      }
-    }
-  ]...)
-  secret_iam_bindings_additive = merge([
-    for k, v in var.secrets : {
-      for binding_key, data in v.iam_bindings_additive :
-      "${k}-${binding_key}" => {
-        secret    = k
-        role      = data.role
-        member    = data.member
-        condition = data.condition
-        global    = v.location == null
-      }
-    }
-  ]...)
-}
-
-resource "google_secret_manager_secret_iam_binding" "authoritative" {
+resource "google_secret_manager_regional_secret_iam_binding" "authoritative" {
   for_each = {
     for binding in local.secret_iam :
-    "${binding.secret}.${binding.role}" => binding if binding.global
+    "${binding.secret}.${binding.role}" => binding if !binding.global
   }
   role      = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  secret_id = google_secret_manager_secret.default[each.value.secret].id
+  secret_id = google_secret_manager_regional_secret.default[each.value.secret].id
+  location  = google_secret_manager_regional_secret.default[each.value.secret].location
   members = [
     for v in each.value.members :
     lookup(local.ctx.iam_principals, v, v)
   ]
 }
 
-resource "google_secret_manager_secret_iam_binding" "bindings" {
+resource "google_secret_manager_regional_secret_iam_binding" "bindings" {
   for_each = {
-    for k, v in local.secret_iam_bindings : k => v if v.global
+    for k, v in local.secret_iam_bindings : k => v if !v.global
   }
   role      = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
-  secret_id = google_secret_manager_secret.default[each.value.secret].id
+  secret_id = google_secret_manager_regional_secret.default[each.value.secret].id
+  location  = google_secret_manager_regional_secret.default[each.value.secret].location
   members = [
     for v in each.value.members :
     lookup(local.ctx.iam_principals, v, v)
@@ -86,11 +51,12 @@ resource "google_secret_manager_secret_iam_binding" "bindings" {
   }
 }
 
-resource "google_secret_manager_secret_iam_member" "members" {
+resource "google_secret_manager_regional_secret_iam_member" "members" {
   for_each = {
-    for k, v in local.secret_iam_bindings_additive : k => v if v.global
+    for k, v in local.secret_iam_bindings_additive : k => v if !v.global
   }
-  secret_id = google_secret_manager_secret.default[each.value.secret].id
+  secret_id = google_secret_manager_regional_secret.default[each.value.secret].id
+  location  = google_secret_manager_regional_secret.default[each.value.secret].location
   role      = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member    = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
