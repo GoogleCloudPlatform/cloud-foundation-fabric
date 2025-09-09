@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-variable "iam" {
-  description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
-  type        = map(map(list(string)))
-  default     = {}
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    tag_keys       = optional(map(string), {})
+    tag_values     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "labels" {
@@ -40,11 +48,40 @@ variable "project_number" {
 variable "secrets" {
   description = "Map of secrets to manage, their optional expire time, version destroy ttl, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
   type = map(object({
-    expire_time         = optional(string)
-    locations           = optional(list(string))
-    keys                = optional(map(string))
+    location_config = optional(object({
+      global = optional(object({
+        keys      = optional(map(string))
+        locations = optional(list(string))
+      }))
+      regional = optional(object({
+        region = string
+        key    = optional(string)
+      }))
+    }), { global = {} })
+    global_config = optional(object({
+      keys      = optional(map(string))
+      locations = optional(list(string))
+    }), {})
+    regional_config = optional(object({
+      region = string
+      key    = optional(string)
+    }))
+    expiration_config = optional(object({
+      # TODO: validate only one
+      time = optional(string)
+      ttl  = optional(string)
+    }))
+    version_config = optional(object({
+      aliases     = optional(map(string), {})
+      destroy_ttl = optional(string)
+    }), {})
+    annotations         = optional(map(string), {})
+    deletion_protection = optional(bool)
+    labels              = optional(map(string), {})
     tag_bindings        = optional(map(string))
-    version_destroy_ttl = optional(string)
+    tags                = optional(map(string), {})
+    # rotation
+    # topics
   }))
   default = {}
 }

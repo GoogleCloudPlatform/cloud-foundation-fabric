@@ -15,16 +15,6 @@
  */
 
 locals {
-  # distinct is needed to make the expanding function argument work
-  iam = flatten([
-    for secret, roles in var.iam : [
-      for role, members in roles : {
-        secret  = secret
-        role    = role
-        members = members
-      }
-    ]
-  ])
   tag_bindings = merge([
     for k, v in var.secrets : {
       for kk, vv in v.tag_bindings : "${k}/${kk}" => {
