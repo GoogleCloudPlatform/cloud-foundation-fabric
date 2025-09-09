@@ -28,8 +28,8 @@ Gitlab hostname and SSH port on the `gitlab_config` section.
 ### Gitlab Config
 
 The `gitlab_config` variable defines where projects will be hosted.
-GitLab can either be the SaaS offering (with the default hostname `gitlab.com`) 
-or a self-hosted instance with a custom FQDN. If hostname is set to gitlab.com, you must 
+GitLab can either be the SaaS offering (with the default hostname `gitlab.com`)
+or a self-hosted instance with a custom FQDN. If hostname is set to gitlab.com, you must
 also set the `saas_group` variable to specify the group path where resources will be created.
 
 This is an example that configures a SaaS gitlab instance using `my_group/gcp` as default group :
@@ -157,7 +157,7 @@ projects = {
       }
     }
     group         = "org-admins"
-    populate_from = "../../stages/0-bootstrap"
+    populate_from = "../../stages/0-org-setup"
     workflow_file = "bootstrap-workflow.yaml"
   }
   fast_01_resman = {
@@ -211,7 +211,7 @@ projects = {
       }
     }
     group           = "org-admins"
-    populate_from   = "../../stages/0-bootstrap"
+    populate_from   = "../../stages/0-org-setup"
     populate_sample = true
     workflow_file   = "bootstrap-workflow.yaml"
   }
@@ -266,7 +266,7 @@ projects = {
       }
     }
     group           = "org-admins"
-    populate_from   = "../../stages/0-bootstrap"
+    populate_from   = "../../stages/0-org-setup"
     populate_sample = true
     workflow_file   = "bootstrap-workflow.yaml"
   }
@@ -348,7 +348,7 @@ An optional variable `commit_config` can be used to configure the author, email,
 and message used in commits for the initial population of files. Its defaults
 are probably fine for most use cases.
 
-## How to run this stage:
+## How to run this stage
 
 Connect to Gitlab as root user and create a personal access token with permissions as per the [gitlab provider credentials](#gitlab-provider-credentials).
 Set the newly created personal access as `gitlab_config.access_token` variable
@@ -358,11 +358,11 @@ and then issue the following commands:
 gcloud storage cp gs://${prefix}-prod-iac-core-outputs-0/workflows/*-workflow.yaml ./workflows/
 ```
 
-This will download Gitlab CICD workflow files generated during 0-bootstrap stage
+This will download Gitlab CICD workflow files generated during 0-org-setup stage
 on the local .workflows directory for later being uploaded on the new Gitlab
 projects.
 
-Set `http_proxy` and `https_proxy` env vars to http://localhost:3128 and then
+Set `http_proxy` and `https_proxy` env vars to <http://localhost:3128> and then
 run:
 
 ```bash
@@ -385,7 +385,6 @@ terraform init.
 
 Try to create a merge request to trigger a CI pipeline on one of FAST stages and
 check if the plan pipeline executes successfully.
-
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

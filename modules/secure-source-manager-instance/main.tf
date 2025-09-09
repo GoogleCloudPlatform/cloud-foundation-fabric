@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,10 @@ resource "google_secure_source_manager_instance" "instance" {
   labels      = var.labels
   kms_key     = var.kms_key
   dynamic "private_config" {
-    for_each = var.ca_pool == null ? [] : [""]
+    for_each = var.private_configs.is_private ? [""] : []
     content {
       is_private = true
-      ca_pool    = var.ca_pool
+      ca_pool    = var.private_configs.ca_pool_id
     }
   }
 }

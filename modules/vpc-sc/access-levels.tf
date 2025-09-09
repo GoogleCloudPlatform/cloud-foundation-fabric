@@ -36,8 +36,11 @@ resource "google_access_context_manager_access_level" "basic" {
       content {
         ip_subnetworks = c.value.ip_subnetworks
         members = flatten([
-          for i in c.value.members :
-          lookup(var.factories_config.context.identity_sets, i, [i])
+          for i in c.value.members : (
+            startswith(i, "$identity_sets:")
+            ? lookup(local.ctx.identity_sets, i, [i])
+            : lookup(local.ctx.iam_principals_list, i, [i])
+          )
         ])
         negate                 = c.value.negate
         regions                = c.value.regions

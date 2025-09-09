@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,25 +14,31 @@
 
 values:
   module.ssm_instance.google_secure_source_manager_instance.instance[0]:
+    deletion_policy: PREVENT
     effective_labels:
       goog-terraform-provisioned: 'true'
     instance_id: my-instance
     kms_key: null
     labels: null
     location: europe-west8
-    private_config: []
+    private_config:
+    - ca_pool: null
+      is_private: true
     project: project-id
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+    workforce_identity_federation_config: []
   ? module.ssm_instance.google_secure_source_manager_instance_iam_binding.authoritative["roles/securesourcemanager.instanceOwner"]
   : condition: []
     instance_id: my-instance
+    location: europe-west8
     members:
     - group:my-instance-admins@myorg.com
     project: project-id
     role: roles/securesourcemanager.instanceOwner
   module.ssm_instance.google_secure_source_manager_repository.repositories["my-repository"]:
+    deletion_policy: PREVENT
     description: null
     initial_config: []
     location: europe-west8
@@ -41,6 +47,7 @@ values:
     timeouts: null
   ? module.ssm_instance.google_secure_source_manager_repository_iam_binding.authoritative["my-repository.roles/securesourcemanager.repoAdmin"]
   : condition: []
+    location: europe-west8
     members:
     - group:my-repo-admins@myorg.com
     project: project-id

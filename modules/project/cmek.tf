@@ -75,7 +75,7 @@ locals {
 
 resource "google_kms_crypto_key_iam_member" "service_agent_cmek" {
   for_each      = local._cmek_members
-  crypto_key_id = each.value.key
+  crypto_key_id = lookup(local.ctx.kms_keys, each.value.key, each.value.key)
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   member        = each.value.agent
   depends_on = [

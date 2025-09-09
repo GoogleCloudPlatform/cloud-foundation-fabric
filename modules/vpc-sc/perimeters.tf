@@ -52,13 +52,14 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       )
       resources = flatten([
         for r in spec.value.resources : try(
-          var.factories_config.context.resource_sets[r],
-          [local.project_number[r]], [r]
+          local.ctx.resource_sets[r],
+          [local.ctx.project_numbers[r]],
+          [local.project_numbers[r]], [r]
         )
       ])
       restricted_services = flatten([
         for r in coalesce(spec.value.restricted_services, []) :
-        lookup(var.factories_config.context.service_sets, r, [r])
+        lookup(local.ctx.service_sets, r, [r])
       ])
 
       dynamic "egress_policies" {
@@ -74,8 +75,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(var.factories_config.context.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               source_restriction = (
                 length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
@@ -95,8 +99,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               dynamic "sources" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
-                    var.factories_config.context.resource_sets[r],
-                    [local.project_number[r]], [r]
+                    local.ctx.resource_sets[r],
+                    [local.ctx.project_numbers[r]],
+                    [local.project_numbers[r]], [r]
                   )
                 ])
                 iterator = resource
@@ -112,11 +117,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               external_resources = policy.value.to.external_resources
               resources = flatten([
                 for r in policy.value.to.resources : try(
-                  var.factories_config.context.resource_sets[r],
-                  [local.project_number[r]], [r]
+                  local.ctx.resource_sets[r],
+                  [local.ctx.project_numbers[r]],
+                  [local.project_numbers[r]], [r]
                 )
               ])
-
               roles = policy.value.to.roles
               dynamic "operations" {
                 for_each = toset(policy.value.to.operations)
@@ -155,8 +160,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(var.factories_config.context.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
@@ -170,8 +178,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               dynamic "sources" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
-                    var.factories_config.context.resource_sets[r],
-                    [local.project_number[r]], [r]
+                    local.ctx.resource_sets[r],
+                    [local.ctx.project_numbers[r]],
+                    [local.project_numbers[r]], [r]
                   )
                 ])
                 content {
@@ -185,8 +194,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               resources = flatten([
                 for r in policy.value.to.resources : try(
-                  var.factories_config.context.resource_sets[r],
-                  [local.project_number[r]], [r]
+                  local.ctx.resource_sets[r],
+                  [local.ctx.project_numbers[r]],
+                  [local.project_numbers[r]], [r]
                 )
               ])
               roles = policy.value.to.roles
@@ -219,7 +229,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         content {
           allowed_services = flatten([
             for r in spec.value.vpc_accessible_services.allowed_services :
-            lookup(var.factories_config.context.service_sets, r, [r])
+            lookup(local.ctx.service_sets, r, [r])
           ])
           enable_restriction = spec.value.vpc_accessible_services.enable_restriction
         }
@@ -239,13 +249,14 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       )
       resources = flatten([
         for r in status.value.resources : try(
-          var.factories_config.context.resource_sets[r],
-          [local.project_number[r]], [r]
+          local.ctx.resource_sets[r],
+          [local.ctx.project_numbers[r]],
+          [local.project_numbers[r]], [r]
         )
       ])
       restricted_services = flatten([
         for r in coalesce(status.value.restricted_services, []) :
-        lookup(var.factories_config.context.service_sets, r, [r])
+        lookup(local.ctx.service_sets, r, [r])
       ])
 
       dynamic "egress_policies" {
@@ -261,8 +272,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(var.factories_config.context.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               source_restriction = (
                 length(policy.value.from.access_levels) > 0 || length(policy.value.from.resources) > 0
@@ -282,8 +296,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               dynamic "sources" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
-                    var.factories_config.context.resource_sets[r],
-                    [local.project_number[r]], [r]
+                    local.ctx.resource_sets[r],
+                    [local.ctx.project_numbers[r]],
+                    [local.project_numbers[r]], [r]
                   )
                 ])
                 iterator = resource
@@ -299,8 +314,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               external_resources = policy.value.to.external_resources
               resources = flatten([
                 for r in policy.value.to.resources : try(
-                  var.factories_config.context.resource_sets[r],
-                  [local.project_number[r]], [r]
+                  local.ctx.resource_sets[r],
+                  [local.ctx.project_numbers[r]],
+                  [local.project_numbers[r]], [r]
                 )
               ])
               roles = policy.value.to.roles
@@ -341,8 +357,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               identity_type = policy.value.from.identity_type
               identities = flatten([
-                for i in policy.value.from.identities :
-                lookup(var.factories_config.context.identity_sets, i, [i])
+                for i in policy.value.from.identities : (
+                  startswith(i, "$identity_sets:")
+                  ? lookup(local.ctx.identity_sets, i, [i])
+                  : lookup(local.ctx.iam_principals_list, i, [i])
+                )
               ])
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
@@ -357,8 +376,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               dynamic "sources" {
                 for_each = flatten([
                   for r in policy.value.from.resources : try(
-                    var.factories_config.context.resource_sets[r],
-                    [local.project_number[r]], [r]
+                    local.ctx.resource_sets[r],
+                    [local.ctx.project_numbers[r]],
+                    [local.project_numbers[r]], [r]
                   )
                 ])
                 content {
@@ -372,8 +392,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             content {
               resources = flatten([
                 for r in policy.value.to.resources : try(
-                  var.factories_config.context.resource_sets[r],
-                  [local.project_number[r]], [r]
+                  local.ctx.resource_sets[r],
+                  [local.ctx.project_numbers[r]],
+                  [local.project_numbers[r]], [r]
                 )
               ])
               roles = policy.value.to.roles
@@ -406,7 +427,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
         content {
           allowed_services = flatten([
             for r in status.value.vpc_accessible_services.allowed_services :
-            lookup(var.factories_config.context.service_sets, r, [r])
+            lookup(local.ctx.service_sets, r, [r])
           ])
           enable_restriction = status.value.vpc_accessible_services.enable_restriction
         }

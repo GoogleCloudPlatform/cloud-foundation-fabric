@@ -1,0 +1,70 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../schemas/defaults.schema.json
+
+global:
+  # use `gcloud beta billing accounts list` to populate
+  billing_account: ABCDEF-0123456-ABCDEF
+  locations:
+    bigquery: europe-west1
+    logging: europe-west1
+  organization:
+    # use `gcloud organizations list`` to populate
+    domain: fast-test-00.example.com
+    id: 1234567890
+    customer_id: abcd123456
+projects:
+  defaults:
+    # prefix must be unique and less than 9 characters
+    prefix: test00
+    storage_location: europe-west1
+  overrides: {}
+context:
+  # you can populate context variables here for use in YAML replacements
+  iam_principals:
+    # this is the default group used in boostrap, initial user must be a member
+    gcp-organization-admins: group:gcp-organization-admins@example.com
+output_files:
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/fast-test-00
+  storage_bucket: $storage_buckets:iac-0/iac-outputs
+  providers:
+    0-org-setup:
+      bucket: $storage_buckets:iac-0/iac-org-state
+      service_account: $iam_principals:service_accounts/iac-0/iac-org-rw
+    0-org-setup-ro:
+      bucket: $storage_buckets:iac-0/iac-org-state
+      service_account: $iam_principals:service_accounts/iac-0/iac-org-rw
+    1-vpcsc:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 1-vpcsc
+      service_account: $iam_principals:service_accounts/iac-0/iac-vpcsc-rw
+    2-networking:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-networking
+      service_account: $iam_principals:service_accounts/iac-0/iac-networking-rw
+    2-security:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-security
+      service_account: $iam_principals:service_accounts/iac-0/iac-security-rw
+    2-project-factory:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-project-factory
+      service_account: $iam_principals:service_accounts/iac-0/iac-pf-rw
+    3-data-platform-dev:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 3-data-platform-dev
+      service_account: $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
+

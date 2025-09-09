@@ -16,33 +16,33 @@
 
 output "email" {
   description = "Service account email."
-  value       = local.resource_email_static
+  value       = local.static_email
   depends_on = [
-    local.service_account,
+    local.service_account
   ]
 }
 
 output "iam_email" {
   description = "IAM-format service account email."
-  value       = local.resource_iam_email_static
+  value       = local.static_iam_email
   depends_on = [
-    local.service_account,
+    local.service_account
   ]
 }
 
 output "id" {
   description = "Fully qualified service account id."
-  value       = local.service_account_id_static
+  value       = local.static_id
   depends_on = [
-    local.service_account,
+    local.service_account
   ]
 }
 
 output "name" {
   description = "Service account name."
-  value       = local.service_account_id_static
+  value       = local.static_id
   depends_on = [
-    local.service_account,
+    local.service_account
   ]
 }
 

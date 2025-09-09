@@ -15,35 +15,53 @@
  */
 
 variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
   })
+  nullable = false
+}
+
+variable "iam_principals" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Org-level IAM principals."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "logging" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Log writer identities for organization / folders."
   type = object({
-    project_number    = string
     writer_identities = map(string)
+    project_number    = optional(string)
   })
   default = null
 }
 
 variable "organization" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Organization details."
   type = object({
     domain      = string
     id          = number
     customer_id = string
   })
+  nullable = false
+}
+
+variable "project_numbers" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Project numbers."
+  type        = map(number)
+  nullable    = false
+  default     = {}
 }
 
 variable "root_node" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Root node for the hierarchy, if running in tenant mode."
   type        = string
   default     = null
@@ -54,4 +72,12 @@ variable "root_node" {
     )
     error_message = "Root node must be in folders/nnnnn format if specified."
   }
+}
+
+variable "service_accounts" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Org-level service accounts."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }

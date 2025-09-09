@@ -9,13 +9,12 @@
 
 This repository provides **end-to-end blueprints** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
-- organization-wide [landing zone blueprint](fast/) used to bootstrap real-world cloud foundations
-- reference [blueprints](./blueprints/) used to deep dive into network patterns or product features
+- organization-wide [landing zone toolkit](fast/) used to bootstrap real-world cloud foundations
 - a comprehensive source of lean [modules](./modules/) that lend themselves well to changes
 
 The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [contributing guide](./CONTRIBUTING.md), and a comparison against similar toolkits [here](./FABRIC-AND-CFT.md).
 
-## Organization blueprint (Fabric FAST)
+## Organization toolkit (Fabric FAST)
 
 Setting up a production-ready GCP organization is often a time-consuming process. Fabric [FAST](fast/) aims to speed up this process via two complementary goals. On the one hand, FAST provides a design of a GCP organization that includes the typical elements required by enterprise customers. Secondly, we provide a reference implementation of the FAST design using Terraform.
 
@@ -40,9 +39,5 @@ Currently available modules:
 - **serverless** - [Cloud Function v1](./modules/cloud-function-v1), [Cloud Function v2](./modules/cloud-function-v2), [Cloud Run](./modules/cloud-run), [Cloud Run v2](./modules/cloud-run-v2)
 
 For more information and usage examples see each module's README file.
-
-## End-to-end blueprints
-
-The [blueprints](./blueprints/) in this repository are split into several main sections: **[networking blueprints](./blueprints/networking/)** that implement core patterns or features, **[data solutions blueprints](./blueprints/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./blueprints/cloud-operations/)** that leverage specific products to meet specific operational needs, and **[factories](./blueprints/factories/)** that implement resource factories for the repetitive creation of specific resources, and finally **[GKE](./blueprints/gke)**, **[serverless](./blueprints/serverless)**, and **[third-party solutions](./blueprints/third-party-solutions/)** design blueprints.
 
 <!-- $Id$ -->

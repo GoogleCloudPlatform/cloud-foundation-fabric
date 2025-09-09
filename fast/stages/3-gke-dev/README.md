@@ -11,11 +11,7 @@ The following diagram illustrates the high-level design of created resources, wh
 <!-- BEGIN TOC -->
 - [Design overview and choices](#design-overview-and-choices)
 - [How to run this stage](#how-to-run-this-stage)
-  - [Resource management configuration](#resource-management-configuration)
-  - [Provider and Terraform variables](#provider-and-terraform-variables)
-  - [Impersonating the automation service account](#impersonating-the-automation-service-account)
-  - [Variable configuration](#variable-configuration)
-  - [Running the stage](#running-the-stage)
+  - [FAST prerequisites](#fast-prerequisites)
 - [Customizations](#customizations)
   - [Clusters and node pools](#clusters-and-node-pools)
   - [Fleet management](#fleet-management)
@@ -54,113 +50,17 @@ Some high level choices applied here:
 
 ## How to run this stage
 
-This stage is meant to be executed after the FAST "foundational" stages: bootstrap, resource management, security and networking stages.
+If this stage is deployed within a FAST-based GCP organization, we recommend executing it after foundational FAST `stage-2` components like `networking` and `security`. This is the recommended flow as specific data platform features in this stage might depend on configurations from these earlier stages. Although this stage can be run independently, instructions for such a standalone setup are beyond the scope of this document.
 
-It's of course possible to run this stage in isolation, refer to the *[Running in isolation](#running-in-isolation)* section below for details.
+### FAST prerequisites
 
-Before running this stage, you need to make sure you have the correct credentials and permissions, and localize variables by assigning values that match your configuration.
+This stage needs specific automation resources, and permissions granted on those that allow control of selective IAM roles on specific networking and security resources.
 
-### Resource management configuration
+Network permissions are needed to associate data domain or product projects to Shared VPC hosts and grant network permissions to data platform managed service accounts. They are mandatory when deploying Composer.
 
-Some configuration changes are needed in resource management before this stage can be run.
+Security permissions are only needed when using CMEK encryption, to grant the relevant IAM roles to data platform service agents on the encryption keys used.
 
-First, define a parent folder for each stage environment folder in the `data/top-level-folder` folder [in the resource management stage](../1-resman/data/top-level-folders/). As an example, this YAML definition creates a `GKE` folder under the organization:
-
-```yaml
-# yaml-language-server: $schema=../../schemas/top-level-folder.schema.json
-
-name: GKE
-
-# IAM bindings and organization policies can also be defined here
-```
-
-Then, edit the definition of the networking stage 2 in the `data/stage2` folder [in the resource management stage](../1-resman/data/stage-2/) to include the IAM configuration for GKE. The following are example snippets for GKE dev, make sure they match the `short_name` and `environment` configured above.
-
-In `folder_config.iam_bindings_additive` add:
-
-```yaml
-# folder_config:
-  # iam_bindings_additive:
-    gke_dns_admin:
-      role: roles/dns.admin
-      member: gke-dev-ro
-      condition:
-        title: GKE dev DNS admin.
-        expression: |
-          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
-    gke_dns_reader:
-      role: roles/dns.reader
-      member: gke-dev-ro
-      condition:
-        title: GKE dev DNS reader.
-        expression: |
-          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
-```
-
-### Provider and Terraform variables
-
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
-
-The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST root folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
-
-```bash
-../fast-links.sh ~/fast-config
-
-# File linking commands for GKE (dev) stage
-
-# provider file
-ln -s ~/fast-config/providers/3-gke-dev-providers.tf ./
-
-# input files from other stages
-ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
-
-# conventional place for stage tfvars (manually created)
-ln -s ~/fast-config/3-gke-dev.auto.tfvars ./
-```
-
-```bash
-../fast-links.sh gs://xxx-prod-iac-core-outputs-0
-
-# File linking commands for GKE (dev) stage
-
-# provider file
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-gke-dev-providers.tf ./
-
-# input files from other stages
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/2-networking.auto.tfvars.json ./
-
-# conventional place for stage tfvars (manually created)
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/3-gke-dev.auto.tfvars ./
-```
-
-### Impersonating the automation service account
-
-The preconfigured provider file uses impersonation to run with this stage's automation service account's credentials. The `gcp-devops` and `organization-admins` groups have the necessary IAM bindings in place to do that, so make sure the current user is a member of one of those groups.
-
-### Variable configuration
-
-Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
-
-- variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
-- variables which refer to resources managed by previous stage, which are prepopulated here via the `*.auto.tfvars.json` files linked or copied above
-- and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
-
-The latter set is explained in the [Customization](#customizations) sections below, and the full list can be found in the [Variables](#variables) table at the bottom of this document.
-
-### Running the stage
-
-Once provider and variable values are in place and the correct user is configured, the stage can be run:
-
-```bash
-terraform init
-terraform apply
-```
+The ["Classic FAST" dataset](../0-org-setup/README.md#classic-fast-dataset) in the bootstrap stage contains the configuration for a development Data Platform that can be easily adapted to serve for this stage.
 
 ## Customizations
 
@@ -227,10 +127,10 @@ Clusters can then be configured for fleet registration and one of the config man
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [billing_account](variables-fast.tf#L26) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
+| [billing_account](variables-fast.tf#L26) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
 | [environments](variables-fast.tf#L34) | Long environment names. | <code title="object&#40;&#123;&#10;  dev &#61; object&#40;&#123;&#10;    name &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [prefix](variables-fast.tf#L60) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables-fast.tf#L60) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
 | [clusters](variables.tf#L17) | Clusters configuration. Refer to the gke-cluster module for type details. | <code title="map&#40;object&#40;&#123;&#10;  access_config &#61; optional&#40;object&#40;&#123;&#10;    dns_access &#61; optional&#40;bool, true&#41;&#10;    ip_access &#61; optional&#40;object&#40;&#123;&#10;      authorized_ranges               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      disable_public_endpoint         &#61; optional&#40;bool, true&#41;&#10;      gcp_public_cidrs_access_enabled &#61; optional&#40;bool, false&#41;&#10;      private_endpoint_config &#61; optional&#40;object&#40;&#123;&#10;        endpoint_subnetwork &#61; optional&#40;string&#41;&#10;        global_access       &#61; optional&#40;bool, true&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;&#10;    private_nodes &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  cluster_autoscaling &#61; optional&#40;any&#41;&#10;  description         &#61; optional&#40;string&#41;&#10;  enable_addons &#61; optional&#40;any, &#123;&#10;    horizontal_pod_autoscaling &#61; true, http_load_balancing &#61; true&#10;  &#125;&#41;&#10;  enable_features &#61; optional&#40;any, &#123;&#10;    shielded_nodes    &#61; true&#10;    workload_identity &#61; true&#10;  &#125;&#41;&#10;  fleet_config &#61; optional&#40;object&#40;&#123;&#10;    register                  &#61; optional&#40;bool, true&#41;&#10;    configmanagement_template &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  issue_client_certificate &#61; optional&#40;bool, false&#41;&#10;  labels                   &#61; optional&#40;map&#40;string&#41;&#41;&#10;  location                 &#61; string&#10;  logging_config &#61; optional&#40;object&#40;&#123;&#10;    enable_system_logs             &#61; optional&#40;bool, true&#41;&#10;    enable_workloads_logs          &#61; optional&#40;bool, true&#41;&#10;    enable_api_server_logs         &#61; optional&#40;bool, false&#41;&#10;    enable_scheduler_logs          &#61; optional&#40;bool, false&#41;&#10;    enable_controller_manager_logs &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  maintenance_config &#61; optional&#40;any, &#123;&#10;    daily_window_start_time &#61; &#34;03:00&#34;&#10;    recurring_window        &#61; null&#10;    maintenance_exclusion   &#61; &#91;&#93;&#10;  &#125;&#41;&#10;  max_pods_per_node  &#61; optional&#40;number, 110&#41;&#10;  min_master_version &#61; optional&#40;string&#41;&#10;  monitoring_config &#61; optional&#40;object&#40;&#123;&#10;    enable_system_metrics &#61; optional&#40;bool, true&#41;&#10;    enable_api_server_metrics         &#61; optional&#40;bool, false&#41;&#10;    enable_controller_manager_metrics &#61; optional&#40;bool, false&#41;&#10;    enable_scheduler_metrics          &#61; optional&#40;bool, false&#41;&#10;    enable_daemonset_metrics   &#61; optional&#40;bool, false&#41;&#10;    enable_deployment_metrics  &#61; optional&#40;bool, false&#41;&#10;    enable_hpa_metrics         &#61; optional&#40;bool, false&#41;&#10;    enable_pod_metrics         &#61; optional&#40;bool, false&#41;&#10;    enable_statefulset_metrics &#61; optional&#40;bool, false&#41;&#10;    enable_storage_metrics     &#61; optional&#40;bool, false&#41;&#10;    enable_managed_prometheus &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  node_locations  &#61; optional&#40;list&#40;string&#41;&#41;&#10;  release_channel &#61; optional&#40;string&#41;&#10;  vpc_config &#61; object&#40;&#123;&#10;    subnetwork &#61; string&#10;    network    &#61; optional&#40;string&#41;&#10;    secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;      pods     &#61; string&#10;      services &#61; string&#10;    &#125;&#41;&#41;&#10;    secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;      pods     &#61; string&#10;      services &#61; string&#10;    &#125;&#41;, &#123; pods &#61; &#34;pods&#34;, services &#61; &#34;services&#34; &#125;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [deletion_protection](variables.tf#L98) | Prevent Terraform from destroying data resources. | <code>bool</code> |  | <code>false</code> |  |
 | [fleet_config](variables-fleet.tf#L19) | Fleet configuration. | <code title="object&#40;&#123;&#10;  enable_features &#61; optional&#40;object&#40;&#123;&#10;    appdevexperience             &#61; optional&#40;bool, false&#41;&#10;    configmanagement             &#61; optional&#40;bool, false&#41;&#10;    identityservice              &#61; optional&#40;bool, false&#41;&#10;    multiclusteringress          &#61; optional&#40;string, null&#41;&#10;    multiclusterservicediscovery &#61; optional&#40;bool, false&#41;&#10;    servicemesh                  &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  use_workload_identity &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |

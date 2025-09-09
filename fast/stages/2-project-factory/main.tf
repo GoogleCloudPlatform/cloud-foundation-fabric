@@ -16,54 +16,61 @@
 
 # tfdoc:file:description Project factory.
 
-module "projects" {
+module "factory" {
   source = "../../../modules/project-factory"
+  context = {
+    custom_roles = merge(
+      var.custom_roles, var.context.custom_roles
+    )
+    folder_ids = merge(
+      var.folder_ids, var.context.folder_ids
+    )
+    iam_principals = merge(
+      var.iam_principals,
+      {
+        for k, v in var.service_accounts :
+        k => "serviceAccount:${v}" if v != null
+      },
+      var.context.iam_principals
+    )
+    kms_keys = merge(
+      var.kms_keys, var.context.kms_keys
+    )
+    locations = merge(
+      var.locations, var.context.locations
+    )
+    notification_channels = var.context.notification_channels
+    project_ids = merge(
+      var.project_ids, var.host_project_ids, var.context.project_ids
+    )
+    tag_values = merge(
+      var.tag_values, var.context.tag_values
+    )
+    vpc_sc_perimeters = merge(
+      var.perimeters, var.context.vpc_sc_perimeters
+    )
+  }
   data_defaults = {
     # more defaults are available, check the project factory variables
     billing_account  = var.billing_account.id
-    storage_location = var.locations.gcs
+    storage_location = var.locations.storage
   }
   data_merges = {
     services = [
-      "stackdriver.googleapis.com"
+      "logging.googleapis.com",
+      "monitoring.googleapis.com"
     ]
   }
   data_overrides = {
     prefix = var.prefix
   }
   factories_config = merge(var.factories_config, {
-    context = {
-      custom_roles = merge(
-        var.custom_roles, var.factories_config.context.custom_roles
+    budgets = {
+      billing_account_id = try(
+        var.factories_config.budgets.billing_account_id, var.billing_account.id
       )
-      folder_ids = merge(
-        { for k, v in var.folder_ids : k => v if v != null },
-        var.factories_config.context.folder_ids
-      )
-      iam_principals = merge(
-        {
-          for k, v in var.service_accounts :
-          k => "serviceAccount:${v}" if v != null
-        },
-        var.groups,
-        var.factories_config.context.iam_principals
-      )
-      kms_keys = merge(
-        var.kms_keys,
-        var.factories_config.context.kms_keys
-      )
-      perimeters = var.perimeters
-      tag_values = merge(
-        {
-          for k, v in var.org_policy_tags.values :
-          "${var.org_policy_tags.key_name}/${k}" => v
-        },
-        var.tag_values,
-        var.factories_config.context.tag_values
-      )
-      vpc_host_projects = merge(
-        var.host_project_ids,
-        var.factories_config.context.vpc_host_projects
+      data = try(
+        var.factories_config.budgets.data, "data/budgets"
       )
     }
   })

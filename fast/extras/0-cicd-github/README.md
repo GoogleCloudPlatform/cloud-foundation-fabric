@@ -94,7 +94,7 @@ repositories = {
         issues = true
       }
     }
-    populate_from = "../../stages/0-bootstrap"
+    populate_from = "../../stages/0-org-setup"
   }
   fast_01_resman = {
     create_options = {
@@ -127,7 +127,7 @@ repositories = {
         issues = true
       }
     }
-    populate_from = "../../stages/0-bootstrap"
+    populate_from = "../../stages/0-org-setup"
     populate_samples = true
   }
   fast_01_resman = {

@@ -170,7 +170,7 @@ module "firewall-policy" {
 
 ### Factory
 
-Similarly to other modules, a rules factory (see [Resource Factories](../../blueprints/factories/)) is also included here to allow route management via descriptive configuration files.
+Similarly to other modules, a rules factory is also included here to allow route management via descriptive configuration files.
 
 Factory configuration is via three optional attributes in the `rules_factory_config` variable:
 

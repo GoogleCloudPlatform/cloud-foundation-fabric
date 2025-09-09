@@ -25,6 +25,6 @@ spec:
   egress_policies:
     - test
   restricted_services:
-    - restricted_services
+    - $service_sets:restricted_services
   resources:
     - projects/1234567890

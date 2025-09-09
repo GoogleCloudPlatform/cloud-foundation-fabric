@@ -36,19 +36,25 @@ locals {
 resource "google_storage_bucket_iam_binding" "authoritative" {
   for_each = local.iam
   bucket   = local.bucket.name
-  role     = each.key
-  members  = each.value
+  role     = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for v in each.value : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
   for_each = var.iam_bindings
   bucket   = local.bucket.name
-  role     = each.value.role
-  members  = each.value.members
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -58,12 +64,16 @@ resource "google_storage_bucket_iam_binding" "bindings" {
 resource "google_storage_bucket_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
   bucket   = local.bucket.name
-  role     = each.value.role
-  member   = each.value.member
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }

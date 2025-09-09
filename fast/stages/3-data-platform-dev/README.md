@@ -9,7 +9,7 @@ While our solution is conceptually guided by [Data Mesh principles on Google Clo
 <!-- BEGIN TOC -->
 - [Design Overview and Choices](#design-overview-and-choices)
   - [Data Platform Architecture](#data-platform-architecture)
-  - [Folder & Project Structure](#folder-project-structure)
+  - [Folder and Project Structure](#folder-and-project-structure)
     - [Central Shared Services (Federated Governance)](#central-shared-services-federated-governance)
     - [Data Domains (Domain-Driven Ownership)](#data-domains-domain-driven-ownership)
     - [Data Products (DaaP)](#data-products-daap)
@@ -38,7 +38,7 @@ The following diagram represent the high-level architecture of the Data Platform
   <img src="diagram-data-platform.png" alt="High level diagram.">
 </p>
 
-### Folder & Project Structure
+### Folder and Project Structure
 
 The stage manages the following three high-level logical components implemented via GCP folders and projects:
 
@@ -69,7 +69,7 @@ To support this ownership model and ensure clear separation, each logical Data D
 
 Within each Data Domain, a corresponding Google Cloud "Data Domain" project serves as the primary container for all its specific services and resources. A dedicated Cloud Composer environment is provisioned within this project for orchestrating the domain's data workflows. To adhere to the principle of least privilege, this Composer environment operates with a dedicated IAM Service Account capable of impersonating the necessary Data Product-specific service accounts within that domain.
 
-Define data domains by creating individual sub-folders within the `data/data-domains` directory. Each domain's configuration, including IAM permissions, services to enable in its shared folder, and settings for its Cloud Composer instance, should be specified in a `_config.yaml` file within its respective subfolder. Refer to the 
+Define data domains by creating individual sub-folders within the `data/data-domains` directory. Each domain's configuration, including IAM permissions, services to enable in its shared folder, and settings for its Cloud Composer instance, should be specified in a `_config.yaml` file within its respective subfolder. Refer to the
 
 We recommend granting data consumers access to exposed data product metadata through IAM Secure Tags created in the central project.
 
@@ -136,7 +136,6 @@ Please note that the above access scopes and the example configurations provided
 
 Refer to the [terraform.tfvars.sample](terraform.tfvars.sample), ["domain-0" _config.yaml](./data/data-domains/domain-0/_config.yaml) and [."domain-0" product-0.yaml](./data/data-domains/domain-0/product-0.yaml) files as a starting point for managing IAM.
 
-
 #### Central Data Platform Team
 
 This team defines the overall data platform architecture, establishes shared infrastructure, and enforces central data governance policies and standards across the data mesh. It empowers Data Producers with building blocks and best practices, ensuring high data quality, security, and trustworthiness for consumers. The primary focus is on providing the foundations for a self-serve data platform and universal governance standards for all users. The Central Data Platform team often collaborates with Data Governance functions within the enterprise.
@@ -163,6 +162,7 @@ This team is responsible for the end-to-end lifecycle of a specific Data Product
 Typically, this group has `ADMIN` access to resources within their Data Product project(s). They also usually have `READ/USAGE` access to relevant resources in the Central Shared Services project (e.g., Aspect Types) and the Data Domain's top-level shared project (e.g., Cloud Composer). This team is generally not the primary owner for configuring overarching IAM bindings, as that responsibility often lies elsewhere.
 
 Key responsibilities for the Data Product Team include:
+
 - Identifying and configuring the necessary resources within their data product project to perform ETL operations for the exposure layer. These resources should be deployed in a separate Terraform state, using the dedicated automation service account created for each data product.
 - Configuring Policy Tags to protect PII and sensitive data.
 - Defining and managing metadata for aspects related to tables and other resources within their data product's exposure layer.
@@ -171,71 +171,23 @@ When using BigQuery in the exposure layer, we recommend using [authorized datase
 
 ## How to run this stage
 
-If this stage is deployed within a FAST-based GCP organization, we recommend executing it after foundational FAST `stage-2` components like `networking` and `security`. This sequencing is advisable as specific data platform features in this stage might depend on configurations from these earlier stages. Although this stage can be run independently, instructions for such a standalone setup are beyond the scope of this document.
+If this stage is deployed within a FAST-based GCP organization, we recommend executing it after foundational FAST `stage-2` components like `networking` and `security`. This is the recommended flow as specific data platform features in this stage might depend on configurations from these earlier stages. Although this stage can be run independently, instructions for such a standalone setup are beyond the scope of this document.
 
 ### FAST prerequisites
 
-This stage needs specific permissions granted to its automation service accounts on networking and security resources.
+This stage needs specific automation resources, and permissions granted on those that allow control of selective IAM roles on specific networking and security resources.
 
 Network permissions are needed to associate data domain or product projects to Shared VPC hosts and grant network permissions to data platform managed service accounts. They are mandatory when deploying Composer.
 
 Security permissions are only needed when using CMEK encryption, to grant the relevant IAM roles to data platform service agents on the encryption keys used.
 
-The networking and security configuration need to be defined in the resource management stage via specific YAML code blocks: two are needed for networking, and one for security.
+The ["Classic FAST" dataset](../0-org-setup/README.md#classic-fast-dataset) in the bootstrap stage already contains the configuration for a development Data Platform. Adapting it to multiple environments, or for a multi-environment setup is relatively trivial and left as an exercise to the user.
 
-The first networking code block grants the relevant roles on the Networking folder to the Data Platform service accounts, with a condition on the environment tag.
-
-```yaml
-# make sure this block exists in the data/stage-2/networking.yaml file
-  iam_bindings_additive:
-    # Data Platform (dev)
-    dp_dev_net_admin:
-      role: service_project_network_admin
-      member: data-platform-dev-rw
-      condition:
-        title: Data platform dev service project admin.
-        expression: |
-          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
-    dp_dev_net_viewer:
-      role: roles/compute.networkViewer
-      member: data-platform-dev-ro
-      condition:
-        title: Data platform dev network viewer.
-        expression: |
-          resource.matchTag('${organization.id}/${tag_names.environment}', 'development')
-```
-
-The second networking code block signals the networking stage that the Data Platform service accounts need delegated IAM grants on the dev network project, in order to be able to assign specific roles on it.
-
-```yaml
-# make sure this block exists in the data/stage-2/networking.yaml file
-stage3_config:
-  iam_admin_delegated:
-    - environment: dev
-      principal: data-platform-dev-rw
-  iam_viewer:
-    - environment: dev
-      principal: data-platform-dev-ro
-```
-
-For security, a block similar to the one above is needed.
-
-```yaml
-# make sure this block exists in the data/stage-2/security.yaml file
-stage3_config:
-  iam_admin_delegated:
-    - environment: dev
-      principal: data-platform-dev-rw
-  iam_viewer:
-    - environment: dev
-      principal: data-platform-dev-ro
-```
-
-Once the two above configurations are in place, apply the resource management,  networking and security stages in succession. Be sure to refresh the tfvars files in the network and security stages if needed (e.g. by re-running `fast-links.sh`).
+What is missing from the default dataset are IAM grants on security resources. They can be added from the security stage by populating the `stage_configs.security.iam_admin_delegated` and `stage_configs.security.iam_viewer` variables with the identities of the Data Platform service account.
 
 ### Provider and Terraform variables
 
-As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-bootstrap/README.md#output-files-and-cross-stage-variables) is also leveraged here.
+As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../0-org-setup/README.md#output-files-and-cross-stage-variables) is also leveraged here.
 
 The commands to link or copy the provider and terraform variable files can be easily derived from the `fast-links.sh` script in the FAST stages folder, passing it a single argument with the local output files folder (if configured) or the GCS output bucket in the automation project (derived from stage 0 outputs). The following examples demonstrate both cases, and the resulting commands that then need to be copy/pasted and run.
 
@@ -247,7 +199,7 @@ ln -s ~/fast-config/providers/3-data-platform-dev-providers.tf ./
 
 # input files from other stages
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/0-bootstrap.auto.tfvars.json ./
+ln -s ~/fast-config/tfvars/0-org-setup.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
@@ -268,7 +220,7 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-data-platform-dev
 
 # input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-bootstrap.auto.tfvars.json ./
+gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-org-setup.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
@@ -374,10 +326,10 @@ The following table lists the available substitutions.
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
-| [billing_account](variables-fast.tf#L26) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
+| [billing_account](variables-fast.tf#L26) | Billing account id. If billing account is not part of the same org set `is_org_level` to false. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
 | [environments](variables-fast.tf#L34) | Environment names. | <code title="object&#40;&#123;&#10;  dev &#61; object&#40;&#123;&#10;    name       &#61; string&#10;    short_name &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>1-resman</code> |
-| [prefix](variables-fast.tf#L69) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-bootstrap</code> |
+| [prefix](variables-fast.tf#L69) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
 | [aspect_types](variables.tf#L17) | Aspect templates. Merged with those defined via the factory. | <code title="map&#40;object&#40;&#123;&#10;  description       &#61; optional&#40;string&#41;&#10;  display_name      &#61; optional&#40;string&#41;&#10;  labels            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metadata_template &#61; optional&#40;string&#41;&#10;  iam               &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [central_project_config](variables.tf#L48) | Configuration for the top-level central project. | <code title="object&#40;&#123;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;bigquery.googleapis.com&#34;,&#10;    &#34;datacatalog.googleapis.com&#34;,&#10;    &#34;logging.googleapis.com&#34;,&#10;    &#34;monitoring.googleapis.com&#34;,&#10;    &#34;storage.googleapis.com&#34;,&#10;  &#93;&#41;&#10;  short_name &#61; optional&#40;string, &#34;central-0&#34;&#41;&#10;  policy_tags &#61; optional&#40;map&#40;any&#41;, &#123;&#10;    low    &#61; &#123;&#125;&#10;    medium &#61; &#123;&#125;&#10;    high   &#61; &#123;&#125;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [encryption_keys](variables.tf#L90) | Default encryption keys for services, in service => { region => key id } format. Overridable on a per-object basis. | <code title="object&#40;&#123;&#10;  bigquery &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  composer &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |

@@ -14,37 +14,43 @@
  * limitations under the License.
  */
 
-variable "factories_config" {
-  description = "Configuration for YAML-based factories."
+variable "context" {
+  description = "Context-specific interpolations."
   type = object({
-    folders_data_path  = optional(string, "data/hierarchy")
-    projects_data_path = optional(string, "data/projects")
+    custom_roles          = optional(map(string), {})
+    folder_ids            = optional(map(string), {})
+    iam_principals        = optional(map(string), {})
+    kms_keys              = optional(map(string), {})
+    locations             = optional(map(string), {})
+    notification_channels = optional(map(string), {})
+    project_ids           = optional(map(string), {})
+    tag_values            = optional(map(string), {})
+    vpc_host_projects     = optional(map(string), {})
+    vpc_sc_perimeters     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "factories_config" {
+  description = "Path to folder with YAML resource description data files."
+  type = object({
+    folders  = optional(string, "data/folders")
+    projects = optional(string, "data/projects")
     budgets = optional(object({
-      billing_account       = string
-      budgets_data_path     = optional(string, "data/budgets")
-      notification_channels = optional(map(any), {})
+      billing_account_id = string
+      data               = string
     }))
-    context = optional(object({
-      custom_roles      = optional(map(string), {})
-      folder_ids        = optional(map(string), {})
-      kms_keys          = optional(map(string), {})
-      iam_principals    = optional(map(string), {})
-      tag_values        = optional(map(string), {})
-      vpc_host_projects = optional(map(string), {})
-    }), {})
-    projects_config = optional(object({
-      key_ignores_path = optional(bool, false)
-    }), {})
   })
   nullable = false
   default  = {}
 }
 
-variable "outputs_location" {
-  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable."
-  type        = string
-  default     = null
-}
+# variable "outputs_location" {
+#   description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable."
+#   type        = string
+#   default     = null
+# }
 
 variable "stage_name" {
   description = "FAST stage name. Used to separate output files across different factories."

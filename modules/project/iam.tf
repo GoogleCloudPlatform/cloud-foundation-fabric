@@ -20,19 +20,33 @@
 # - external users need to have accepted the invitation email to join
 
 locals {
-  _custom_roles_path = pathexpand(coalesce(var.factories_config.custom_roles, "-"))
+  _custom_roles_path = pathexpand(
+    coalesce(var.factories_config.custom_roles, "-")
+  )
   _custom_roles = {
     for f in try(fileset(local._custom_roles_path, "*.yaml"), []) :
     replace(f, ".yaml", "") => yamldecode(
       file("${local._custom_roles_path}/${f}")
     )
   }
+  # get the set of IAM by principals roles
   _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  # recompose the principals under each role
   _iam_principals = {
     for r in local._iam_principal_roles : r => [
       for k, v in var.iam_by_principals :
       k if try(index(v, r), null) != null
     ]
+  }
+  ctx_iam_principals = merge(local.ctx.iam_principals, {
+    for k, v in local.aliased_service_agents :
+    "$service_agents:${k}" => v.iam_email
+  })
+  custom_role_ids = {
+    for k, v in google_project_iam_custom_role.roles :
+    # build the string manually so that role IDs can be used as map
+    # keys (useful for folder/organization/project-level iam bindings)
+    (k) => "projects/${local.project_id}/roles/${local.custom_roles[k].name}"
   }
   custom_roles = merge(
     {
@@ -96,8 +110,11 @@ resource "google_project_iam_custom_role" "roles" {
 resource "google_project_iam_binding" "authoritative" {
   for_each = local.iam
   project  = local.project.project_id
-  role     = each.key
-  members  = each.value
+  role     = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for v in each.value :
+    lookup(local.ctx_iam_principals, v, v)
+  ]
   depends_on = [
     google_project_service.project_services,
     google_project_iam_custom_role.roles
@@ -107,12 +124,16 @@ resource "google_project_iam_binding" "authoritative" {
 resource "google_project_iam_binding" "bindings" {
   for_each = var.iam_bindings
   project  = local.project.project_id
-  role     = each.value.role
-  members  = each.value.members
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx_iam_principals, v, v)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -126,12 +147,14 @@ resource "google_project_iam_binding" "bindings" {
 resource "google_project_iam_member" "bindings" {
   for_each = local.iam_bindings_additive
   project  = local.project.project_id
-  role     = each.value.role
-  member   = each.value.member
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member   = lookup(local.ctx_iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }

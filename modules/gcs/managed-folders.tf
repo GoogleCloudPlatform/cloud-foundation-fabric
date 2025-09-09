@@ -21,7 +21,6 @@ locals {
     for k, v in var.managed_folders :
     (endswith(k, "/") ? k : "${k}/") => v
   }
-
   managed_folder_iam = flatten([
     for k, v in local.managed_folders : [
       for role, members in v.iam : {
@@ -34,7 +33,7 @@ locals {
   managed_folder_iam_bindings = merge([
     for k, v in local.managed_folders : {
       for binding_key, data in v.iam_bindings :
-      "${k}.${binding_key}" => {
+      "${k}${binding_key}" => {
         managed_folder = k
         role           = data.role
         members        = data.members
@@ -45,7 +44,7 @@ locals {
   managed_folder_iam_bindings_additive = merge([
     for k, v in local.managed_folders : {
       for binding_key, data in v.iam_bindings_additive :
-      "${k}.${binding_key}" => {
+      "${k}${binding_key}" => {
         managed_folder = k
         role           = data.role
         member         = data.member
@@ -66,18 +65,22 @@ resource "google_storage_managed_folder" "folder" {
 resource "google_storage_managed_folder_iam_binding" "authoritative" {
   for_each = {
     for binding in local.managed_folder_iam :
-    "${binding.managed_folder}.${binding.role}" => binding
+    "${binding.managed_folder}${binding.role}" => binding
   }
-  role           = each.value.role
-  members        = each.value.members
+  role = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   bucket         = local.bucket.name
   managed_folder = google_storage_managed_folder.folder[each.value.managed_folder].name
 }
 
 resource "google_storage_managed_folder_iam_binding" "bindings" {
-  for_each       = local.managed_folder_iam_bindings
-  role           = each.value.role
-  members        = each.value.members
+  for_each = local.managed_folder_iam_bindings
+  role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
+  ]
   bucket         = local.bucket.name
   managed_folder = google_storage_managed_folder.folder[each.value.managed_folder].name
 
@@ -93,8 +96,8 @@ resource "google_storage_managed_folder_iam_binding" "bindings" {
 
 resource "google_storage_managed_folder_iam_member" "members" {
   for_each       = local.managed_folder_iam_bindings_additive
-  role           = each.value.role
-  member         = each.value.member
+  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member         = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   bucket         = local.bucket.name
   managed_folder = google_storage_managed_folder.folder[each.value.managed_folder].name
 

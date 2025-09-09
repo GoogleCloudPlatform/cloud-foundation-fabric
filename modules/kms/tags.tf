@@ -17,6 +17,6 @@
 resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//cloudkms.googleapis.com/${local.keyring.id}"
-  tag_value = each.value
-  location  = var.keyring.location
+  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  location  = lookup(local.ctx.locations, var.keyring.location, var.keyring.location)
 }

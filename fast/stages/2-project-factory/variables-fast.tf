@@ -15,7 +15,7 @@
  */
 
 variable "automation" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
@@ -24,20 +24,15 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Billing account id. If billing account is not part of the same org set `is_org_level` to false."
+  # tfdoc:variable:source 0-org-setup
+  description = "Billing account id."
   type = object({
-    id           = string
-    is_org_level = optional(bool, true)
+    id = string
   })
-  validation {
-    condition     = var.billing_account.is_org_level != null
-    error_message = "Invalid `null` value for `billing_account.is_org_level`."
-  }
 }
 
 variable "custom_roles" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Custom roles defined at the org level, in key => id format."
   type        = map(string)
   nullable    = false
@@ -45,17 +40,16 @@ variable "custom_roles" {
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folders created in the resource management stage."
+  # tfdoc:variable:source 0-org-setup
+  description = "Folders created in the bootstrap stage."
   type        = map(string)
   nullable    = false
   default     = {}
 }
 
-variable "groups" {
-  # tfdoc:variable:source 0-bootstrap
-  # https://cloud.google.com/docs/enterprise/setup-checklist
-  description = "Group names or IAM-format principals to grant organization-level permissions. If just the name is provided, the 'group:' principal and organization domain are interpolated."
+variable "iam_principals" {
+  # tfdoc:variable:source 0-org-setup
+  description = "IAM-format principals."
   type        = map(string)
   nullable    = false
   default     = {}
@@ -78,10 +72,10 @@ variable "kms_keys" {
 }
 
 variable "locations" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Optional locations for GCS, BigQuery, and logging buckets created here."
   type = object({
-    gcs = optional(string)
+    storage = optional(string, "eu")
   })
   nullable = false
   default  = {}
@@ -95,19 +89,8 @@ variable "perimeters" {
   default     = {}
 }
 
-variable "org_policy_tags" {
-  # tfdoc:variable:source 0-bootstrap
-  description = "Optional organization policy tag values."
-  type = object({
-    key_name = optional(string, "org-policies")
-    values   = optional(map(string), {})
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "prefix" {
-  # tfdoc:variable:source 0-bootstrap
+  # tfdoc:variable:source 0-org-setup
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   type        = string
   validation {
@@ -116,16 +99,24 @@ variable "prefix" {
   }
 }
 
+variable "project_ids" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Projects created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "service_accounts" {
-  # tfdoc:variable:source 1-resman
-  description = "Automation service accounts in name => email format."
+  # tfdoc:variable:source 0-org-setup
+  description = "Service accounts created in the bootstrap stage."
   type        = map(string)
   nullable    = false
   default     = {}
 }
 
 variable "tag_values" {
-  # tfdoc:variable:source 1-resman
+  # tfdoc:variable:source 0-org-setup
   description = "FAST-managed resource manager tag values."
   type        = map(string)
   nullable    = false

@@ -21,6 +21,25 @@ variable "contacts" {
   nullable    = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    bigquery_datasets = optional(map(string), {})
+    condition_vars    = optional(map(map(string)), {})
+    custom_roles      = optional(map(string), {})
+    iam_principals    = optional(map(string), {})
+    locations         = optional(map(string), {})
+    log_buckets       = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    pubsub_topics     = optional(map(string), {})
+    storage_buckets   = optional(map(string), {})
+    tag_keys          = optional(map(string), {})
+    tag_values        = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
@@ -35,12 +54,6 @@ variable "factories_config" {
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)
     tags                          = optional(string)
-    context = optional(object({
-      iam_principals = optional(map(string), {})
-      org_policies   = optional(map(map(string)), {})
-      tag_keys       = optional(map(string), {})
-      tag_values     = optional(map(string), {})
-    }), {})
   })
   nullable = false
   default  = {}

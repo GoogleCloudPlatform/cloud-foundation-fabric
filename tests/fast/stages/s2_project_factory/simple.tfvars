@@ -8,9 +8,7 @@ billing_account = {
 folder_ids = {
   teams = "folders/1234567890"
 }
-groups = {
-  gcp-devops = "group:gcp-devops@example.org"
-}
 tag_values = {
   "environment/development" = "tagValues/1234567890"
+  "environment/production"  = "tagValues/2345678901"
 }

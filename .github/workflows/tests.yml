@@ -105,29 +105,6 @@ jobs:
           overwrite: true
           include-hidden-files: true
 
-
-  examples-blueprints:
-    runs-on: ubuntu-latest
-    needs: setup-tf-providers
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Call composite action fabric-tests
-        uses: ./.github/actions/fabric-tests
-        with:
-          PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
-          TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
-
-      - name: Run tests on documentation examples
-        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml -k blueprints/ tests/examples
-
-      - name: Create report
-        uses: ./.github/actions/post-fabric-tests
-        if: always()
-        with:
-          MODULE: Blueprint Examples
-
   examples-project-templates:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
@@ -183,28 +160,6 @@ jobs:
         if: always()
         with:
           MODULE: Module Examples
-
-  blueprints:
-    runs-on: ubuntu-latest
-    needs: setup-tf-providers
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Call composite action fabric-tests
-        uses: ./.github/actions/fabric-tests
-        with:
-          PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
-          TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
-
-      - name: Run tests environments
-        run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/blueprints
-
-      - name: Create report
-        uses: ./.github/actions/post-fabric-tests
-        if: always()
-        with:
-          MODULE: Blueprints
 
   modules:
     runs-on: ubuntu-latest

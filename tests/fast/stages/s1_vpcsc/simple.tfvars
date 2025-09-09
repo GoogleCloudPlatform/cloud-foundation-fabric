@@ -28,7 +28,7 @@ perimeters = {
       access_levels       = ["geo_it", "identity_me"]
       egress_policies     = ["test"]
       ingress_policies    = ["fast-org-log-sinks", "test"]
-      restricted_services = ["restricted_services"]
+      restricted_services = ["$service_sets:restricted_services"]
       resources = [
         "projects/1234567890"
       ]
