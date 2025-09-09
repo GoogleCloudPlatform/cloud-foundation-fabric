@@ -15,85 +15,24 @@
  */
 
 locals {
+  _tag_template = (
+    "//secretmanager.googleapis.com/projects/%s/secrets/%s"
+  )
   tag_bindings = merge([
     for k, v in var.secrets : {
       for kk, vv in v.tag_bindings : "${k}/${kk}" => {
-        parent    = "//secretmanager.googleapis.com/projects/${coalesce(var.project_number, var.project_id)}/secrets/${google_secret_manager_secret.default[k].secret_id}"
+        parent = format(
+          local._tag_template,
+          coalesce(var.project_number, var.project_id),
+          v.region == null
+          ? google_secret_manager_secret.default[k].secret_id
+          : google_secret_manager_regional_secret.default[k].secret_id
+        )
         tag_value = vv
       }
     }
     if v.tag_bindings != null
   ]...)
-  version_pairs = flatten([
-    for secret, versions in var.versions : [
-      for name, attrs in versions : merge(attrs, { name = name, secret = secret })
-    ]
-  ])
-  version_keypairs = {
-    for pair in local.version_pairs : "${pair.secret}:${pair.name}" => pair
-  }
-}
-
-resource "google_secret_manager_secret" "default" {
-  for_each            = var.secrets
-  project             = var.project_id
-  secret_id           = each.key
-  labels              = lookup(var.labels, each.key, null)
-  expire_time         = each.value.expire_time
-  version_destroy_ttl = each.value.version_destroy_ttl
-
-  dynamic "replication" {
-    for_each = each.value.locations == null ? [""] : []
-    content {
-      auto {
-        dynamic "customer_managed_encryption" {
-          for_each = try(lookup(each.value.keys, "global", null) == null ? [] : [""], [])
-          content {
-            kms_key_name = each.value.keys["global"]
-          }
-        }
-      }
-    }
-  }
-
-  dynamic "replication" {
-    for_each = each.value.locations == null ? [] : [""]
-    content {
-      user_managed {
-        dynamic "replicas" {
-          for_each = each.value.locations
-          iterator = location
-          content {
-            location = location.value
-            dynamic "customer_managed_encryption" {
-              for_each = try(lookup(each.value.keys, location.value, null) == null ? [] : [""], [])
-              content {
-                kms_key_name = each.value.keys[location.value]
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-resource "google_secret_manager_secret_version" "default" {
-  provider    = google-beta
-  for_each    = local.version_keypairs
-  secret      = google_secret_manager_secret.default[each.value.secret].id
-  enabled     = each.value.enabled
-  secret_data = each.value.data
-}
-
-resource "google_secret_manager_secret_iam_binding" "default" {
-  provider = google-beta
-  for_each = {
-    for binding in local.iam : "${binding.secret}.${binding.role}" => binding
-  }
-  role      = each.value.role
-  secret_id = google_secret_manager_secret.default[each.value.secret].id
-  members   = each.value.members
 }
 
 resource "google_tags_tag_binding" "binding" {

@@ -28,12 +28,6 @@ variable "context" {
   nullable = false
 }
 
-variable "labels" {
-  description = "Optional labels for each secret."
-  type        = map(map(string))
-  default     = {}
-}
-
 variable "project_id" {
   description = "Project id where the keyring will be created."
   type        = string
@@ -46,44 +40,57 @@ variable "project_number" {
 }
 
 variable "secrets" {
-  description = "Map of secrets to manage, their optional expire time, version destroy ttl, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
+  description = "Map of secrets to manage. Defaults to global secrets unless region is set."
   type = map(object({
-    location_config = optional(object({
-      global = optional(object({
-        keys      = optional(map(string))
-        locations = optional(list(string))
-      }))
-      regional = optional(object({
-        region = string
-        key    = optional(string)
-      }))
-    }), { global = {} })
-    global_config = optional(object({
-      keys      = optional(map(string))
-      locations = optional(list(string))
-    }), {})
-    regional_config = optional(object({
-      region = string
-      key    = optional(string)
-    }))
+    annotations         = optional(map(string), {})
+    deletion_protection = optional(bool)
+    # ignored if global_replication_config is set
+    kms_key = optional(string)
+    labels  = optional(map(string), {})
+    # location defines the switch between global (default) or regional resource
+    location     = optional(string)
+    tag_bindings = optional(map(string))
+    tags         = optional(map(string), {})
     expiration_config = optional(object({
-      # TODO: validate only one
       time = optional(string)
       ttl  = optional(string)
     }))
+    # map of location => optional key
+    global_replica_locations = optional(map(string))
     version_config = optional(object({
-      aliases     = optional(map(string), {})
+      aliases     = optional(map(number), {})
       destroy_ttl = optional(string)
     }), {})
-    annotations         = optional(map(string), {})
-    deletion_protection = optional(bool)
-    labels              = optional(map(string), {})
-    tag_bindings        = optional(map(string))
-    tags                = optional(map(string), {})
-    # rotation
+    # rotation_config = optional(object({
+    #   next_time = string
+    #   period    = number
+    # }))
     # topics
   }))
   default = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.secrets :
+      try(v.expiration_config.time, null) == null ||
+      try(v.expiration_config.ttl, null) == null
+    ])
+    error_message = "Only one of time and ttl can be set in expiration config."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.secrets :
+      v.region == null || v.global_replica_locations == null
+    ])
+    error_message = "Global replication cannot be configured on regional secrets."
+  }
+  # validation {
+  #   condition = alltrue([
+  #     for k, v in var.secrets :
+  #     try(v.rotation_config.period, null) == null
+  #     || try(v.rotation_config.next_time, null) != null
+  #   ])
+  #   error_message = "Next rotation time needs to be configured if period is set."
+  # }
 }
 
 variable "versions" {

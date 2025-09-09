@@ -14,50 +14,25 @@
  * limitations under the License.
  */
 
+locals {
+  o_secrets = merge(
+    google_secret_manager_secret.default,
+    google_secret_manager_regional_secret.default
+  )
+}
+
 output "ids" {
   description = "Fully qualified secret ids."
-  value = {
-    for k, v in google_secret_manager_secret.default : v.secret_id => v.id
-  }
-  depends_on = [
-    google_secret_manager_secret_iam_binding.default
-  ]
+  value       = { for k, v in local.o_secrets : k => v.id }
+  # depends_on = [
+  #   google_secret_manager_secret_iam_binding.default
+  # ]
 }
 
 output "secrets" {
   description = "Secret resources."
-  value       = google_secret_manager_secret.default
-  depends_on = [
-    google_secret_manager_secret_iam_binding.default
-  ]
-
-}
-
-output "version_ids" {
-  description = "Version ids keyed by secret name : version name."
-  value = {
-    for k, v in google_secret_manager_secret_version.default : k => v.id
-  }
-  depends_on = [
-    google_secret_manager_secret_iam_binding.default
-  ]
-}
-
-output "version_versions" {
-  description = "Version versions keyed by secret name : version name."
-  value = {
-    for k, v in google_secret_manager_secret_version.default : k => v.version
-  }
-  depends_on = [
-    google_secret_manager_secret_iam_binding.default
-  ]
-}
-
-output "versions" {
-  description = "Secret versions."
-  value       = google_secret_manager_secret_version.default
-  sensitive   = true
-  depends_on = [
-    google_secret_manager_secret_iam_binding.default
-  ]
+  value       = local.o_secrets
+  # depends_on = [
+  #   google_secret_manager_secret_iam_binding.default
+  # ]
 }

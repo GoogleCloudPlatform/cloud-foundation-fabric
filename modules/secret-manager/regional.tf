@@ -1,0 +1,57 @@
+/**
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+resource "google_secret_manager_regional_secret" "default" {
+  for_each            = { for k, v in var.secrets : k => v if v.location != null }
+  project             = var.project_id
+  location            = each.value.location
+  secret_id           = each.key
+  labels              = each.value.labels
+  annotations         = each.value.annotations
+  version_aliases     = try(each.value.version_config.aliases, null)
+  version_destroy_ttl = try(each.value.version_config.destroy_ttl, null)
+  expire_time         = try(each.value.expiration_config.time, null)
+  ttl                 = try(each.value.expiration_config.ttl, null)
+  tags                = each.value.tags
+  deletion_protection = each.value.deletion_protection
+  dynamic "customer_managed_encryption" {
+    for_each = each.value.kms_key == null ? [] : [""]
+    content {
+      kms_key_name = each.value.kms_key
+    }
+  }
+  # dynamic "rotation" {
+  #   for_each = try(each.value.rotation_config, null) == null ? [] : [""]
+  #   content {
+  #     next_rotation_time = each.value.rotation_config.next_time
+  #     rotation_period    = each.value.rotation_config.period
+  #   }
+  # }
+  # topics
+  lifecycle {
+    ignore_changes = [
+      rotation[0].next_rotation_time
+    ]
+  }
+}
+
+# resource "google_secret_manager_secret_version" "default" {
+#   provider    = google-beta
+#   for_each    = local.version_keypairs
+#   secret      = google_secret_manager_secret.default[each.value.secret].id
+#   enabled     = each.value.enabled
+#   secret_data = each.value.data
+# }
