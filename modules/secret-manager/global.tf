@@ -16,7 +16,7 @@
 
 resource "google_secret_manager_secret" "default" {
   for_each            = { for k, v in var.secrets : k => v if v.location == null }
-  project             = var.project_id
+  project             = local.project_id
   secret_id           = each.key
   labels              = each.value.labels
   annotations         = each.value.annotations
@@ -24,7 +24,10 @@ resource "google_secret_manager_secret" "default" {
   version_destroy_ttl = try(each.value.version_config.destroy_ttl, null)
   expire_time         = try(each.value.expiration_config.time, null)
   ttl                 = try(each.value.expiration_config.ttl, null)
-  tags                = each.value.tags
+  tags = {
+    for k, v in each.value.tags :
+    lookup(local.ctx.tag_keys, k, k) => lookup(local.ctx.tag_values, v, v)
+  }
   deletion_protection = each.value.deletion_protection
   dynamic "replication" {
     for_each = try(each.value.global_replica_locations, null) == null ? [""] : []
@@ -33,7 +36,9 @@ resource "google_secret_manager_secret" "default" {
         dynamic "customer_managed_encryption" {
           for_each = each.value.kms_key == null ? [] : [""]
           content {
-            kms_key_name = each.value.kms_key
+            kms_key_name = lookup(
+              local.ctx.kms_keys, each.value.kms_key, each.value.kms_key
+            )
           }
         }
       }
@@ -46,11 +51,13 @@ resource "google_secret_manager_secret" "default" {
         dynamic "replicas" {
           for_each = each.value.global_replica_locations
           content {
-            location = replicas.key
+            location = lookup(local.ctx.locations, replicas.key, replicas.key)
             dynamic "customer_managed_encryption" {
               for_each = replicas.value == null ? [] : [""]
               content {
-                kms_key_name = replicas.value
+                kms_key_name = lookup(
+                  local.ctx.kms_keys, replicas.value, replicas.value
+                )
               }
             }
           }

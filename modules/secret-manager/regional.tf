@@ -15,9 +15,11 @@
  */
 
 resource "google_secret_manager_regional_secret" "default" {
-  for_each            = { for k, v in var.secrets : k => v if v.location != null }
-  project             = var.project_id
-  location            = each.value.location
+  for_each = { for k, v in var.secrets : k => v if v.location != null }
+  project  = local.project_id
+  location = lookup(
+    local.ctx.locations, each.value.location, each.value.location
+  )
   secret_id           = each.key
   labels              = each.value.labels
   annotations         = each.value.annotations
@@ -30,7 +32,9 @@ resource "google_secret_manager_regional_secret" "default" {
   dynamic "customer_managed_encryption" {
     for_each = each.value.kms_key == null ? [] : [""]
     content {
-      kms_key_name = each.value.kms_key
+      kms_key_name = lookup(
+        local.ctx.kms_keys, each.value.kms_key, each.value.kms_key
+      )
     }
   }
   # dynamic "rotation" {

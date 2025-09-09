@@ -18,6 +18,13 @@ locals {
   _tag_template = (
     "//secretmanager.googleapis.com/projects/%s/secrets/%s"
   )
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p      = "$"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   tag_bindings = merge([
     for k, v in var.secrets : {
       for kk, vv in v.tag_bindings : "${k}/${kk}" => {
@@ -47,5 +54,5 @@ locals {
 resource "google_tags_tag_binding" "binding" {
   for_each  = local.tag_bindings
   parent    = each.value.parent
-  tag_value = each.value.tag_value
+  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
 }
