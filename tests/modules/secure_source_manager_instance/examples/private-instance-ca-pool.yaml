@@ -22,7 +22,7 @@ values:
     labels: null
     location: europe-west8
     private_config:
-    - ca_pool: null
+    - ca_pool: projects/another-project/locations/europe-west8/caPools/my-ca-pool
       is_private: true
     project: project-id
     terraform_labels:

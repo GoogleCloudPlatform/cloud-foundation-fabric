@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-variable "ca_pool" {
-  description = "CA pool."
-  type        = string
-  default     = null
-}
 
 variable "instance_create" {
   description = "Create SSM Instance. When set to false, uses instance_id to reference existing SSM instance."
@@ -46,6 +40,16 @@ variable "labels" {
 variable "location" {
   description = "Location."
   type        = string
+}
+
+variable "private_configs" {
+  description = "The configurations for SSM private instances."
+  type = object({
+    is_private = optional(bool, true)
+    ca_pool_id = optional(string)
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "project_id" {
