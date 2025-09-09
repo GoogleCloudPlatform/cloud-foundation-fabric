@@ -86,6 +86,16 @@ variable "secrets" {
       aliases     = optional(map(number))
       destroy_ttl = optional(string)
     }), {})
+    versions = optional(map(object({
+      data            = string
+      deletion_policy = optional(string)
+      enabled         = optional(bool)
+      data_config = optional(object({
+        is_base64          = optional(bool, false)
+        is_file            = optional(bool, false)
+        write_only_version = optional(number)
+      }))
+    })), {})
     # rotation_config = optional(object({
     #   next_time = string
     #   period    = number
@@ -107,6 +117,16 @@ variable "secrets" {
       v.location == null || v.global_replica_locations == null
     ])
     error_message = "Global replication cannot be configured on regional secrets."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.secrets : [
+        for sk, sv in v.versions : contains(
+          ["DELETE", "DISABLE", "ABANDON"], coalesce(sv.deletion_policy, "DELETE")
+        )
+      ]
+    ]))
+    error_message = "Invalid version deletion policy."
   }
 }
 

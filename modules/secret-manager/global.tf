@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+locals {
+  _tag_template_global = (
+    "//secretmanager.googleapis.com/projects/%s/secrets/%s"
+  )
+}
+
 resource "google_secret_manager_secret" "default" {
   for_each            = { for k, v in var.secrets : k => v if v.location == null }
   project             = local.project_id
@@ -80,16 +86,46 @@ resource "google_secret_manager_secret" "default" {
   }
 }
 
-resource "google_tags_tag_binding" "binding" {
-  for_each  = { for k, v in local.tag_bindings : k => v if v.location == null }
-  parent    = each.value.parent
-  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+resource "google_secret_manager_secret_version" "default" {
+  for_each = {
+    for v in local.versions :
+    "${v.secret}/${v.version}" => v if v.location == null
+  }
+  secret          = google_secret_manager_secret.default[each.value.secret].id
+  deletion_policy = each.value.deletion_policy
+  enabled         = each.value.enabled
+  is_secret_data_base64 = try(
+    each.value.data_config.is_base64, null
+  )
+  secret_data_wo_version = try(
+    each.value.data_config.write_only_version, null
+  )
+  secret_data = (
+    try(each.value.data_config.write_only_version, null) != null
+    ? null
+    : (
+      try(each.value.data_config.is_file, null) == true
+      ? file(each.value.data)
+      : each.value.data
+    )
+  )
+  secret_data_wo = (
+    try(each.value.data_config.write_only_version, null) == null
+    ? null
+    : (
+      try(each.value.data_config.is_file, null) == true
+      ? file(each.value.data)
+      : each.value.data
+    )
+  )
 }
 
-# resource "google_secret_manager_secret_version" "default" {
-#   provider    = google-beta
-#   for_each    = local.version_keypairs
-#   secret      = google_secret_manager_secret.default[each.value.secret].id
-#   enabled     = each.value.enabled
-#   secret_data = each.value.data
-# }
+resource "google_tags_tag_binding" "binding" {
+  for_each = { for k, v in local.tag_bindings : k => v if v.location == null }
+  parent = format(
+    local._tag_template_global,
+    local.tag_project,
+    google_secret_manager_secret.default[each.value.secret].secret_id
+  )
+  tag_value = lookup(local.ctx.tag_values, each.value.tag, each.value.tag)
+}

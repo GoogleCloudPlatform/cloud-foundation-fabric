@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+locals {
+  _tag_template_regional = (
+    "//secretmanager.googleapis.com/projects/%s/locations/%s/secrets/%s"
+  )
+}
+
 resource "google_secret_manager_regional_secret" "default" {
   for_each = { for k, v in var.secrets : k => v if v.location != null }
   project  = local.project_id
@@ -52,18 +58,34 @@ resource "google_secret_manager_regional_secret" "default" {
   }
 }
 
-# resource "google_secret_manager_secret_version" "default" {
-#   provider    = google-beta
-#   for_each    = local.version_keypairs
-#   secret      = google_secret_manager_secret.default[each.value.secret].id
-#   enabled     = each.value.enabled
-#   secret_data = each.value.data
-# }
+resource "google_secret_manager_regional_secret_version" "default" {
+  for_each = {
+    for v in local.versions :
+    "${v.secret}/${v.version}" => v if v.location != null
+  }
+  secret          = google_secret_manager_regional_secret.default[each.value.secret].id
+  deletion_policy = each.value.deletion_policy
+  enabled         = each.value.enabled
+  is_secret_data_base64 = try(
+    each.value.data_config.is_base64, null
+  )
+  secret_data = (
+    try(each.value.data_config.is_file, null) == true
+    ? file(each.value.data)
+    : each.value.data
+  )
+}
+
 
 resource "google_tags_location_tag_binding" "binding" {
-  for_each  = { for k, v in local.tag_bindings : k => v if v.location != null }
-  parent    = each.value.parent
+  for_each = { for k, v in local.tag_bindings : k => v if v.location != null }
+  parent = format(
+    local._tag_template_regional,
+    local.tag_project,
+    lookup(local.ctx.locations, each.value.location, each.value.location),
+    google_secret_manager_regional_secret.default[each.value.secret].secret_id
+  )
   location  = lookup(local.ctx.locations, each.value.location, each.value.location)
-  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+  tag_value = lookup(local.ctx.tag_values, each.value.tag, each.value.tag)
 }
 
