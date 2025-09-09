@@ -17,7 +17,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Hybrid NEG creation](#hybrid-neg-creation)
     - [Serverless NEG creation](#serverless-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
-    - [Private Service Connect NEG creation with PSC and Cross-project back-end](#private-service-connect-neg-creation-with-psc-and-cross-project-back-end)
+    - [Private Service Connect NEG creation with Cross-project PSC and back-end](#private-service-connect-neg-creation-with-cross-project-psc-and-back-end)
     - [Internet NEG creation](#internet-neg-creation)
   - [URL Map](#url-map)
   - [SSL Certificates](#ssl-certificates)
