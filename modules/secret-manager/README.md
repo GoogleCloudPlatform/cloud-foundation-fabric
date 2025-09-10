@@ -1,6 +1,6 @@
 # Google Secret Manager
 
-This module allows managing one or more secrets with versions and IAM bindings. For global secrets, this module optionally supports [write-only attributes](https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only) for versions, which do not save data in state.
+This module allows managing one or more secrets with versions and IAM bindings. For global secrets, this module optionally supports [write-only attributes](https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only) for versions, which do not save data in state. Write-only attributes are not yet supported in OpenTofu, so this module is only compatible with Terraform until [OpenTofu support](https://github.com/opentofu/opentofu/issues/2834) has been released.
 
 <!-- BEGIN TOC -->
 - [Global Secrets](#global-secrets)
