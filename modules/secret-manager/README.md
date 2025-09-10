@@ -223,8 +223,11 @@ module "secret-manager" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [ids](outputs.tf#L24) | Fully qualified secret ids. |  |
-| [secrets](outputs.tf#L32) | Secret resources. |  |
+| [ids](outputs.tf#L28) | Fully qualified secret ids. |  |
+| [secrets](outputs.tf#L41) | Secret resources. |  |
+| [version_ids](outputs.tf#L54) | Fully qualified version ids. |  |
+| [version_versions](outputs.tf#L67) | Version versions. |  |
+| [versions](outputs.tf#L80) | Version resources. | ✓ |
 <!-- END TFDOC -->
 ## Requirements
 

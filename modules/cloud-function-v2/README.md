@@ -293,7 +293,7 @@ module "cf-http" {
       project_id = var.project_id
       secret     = reverse(split("/", module.secret-manager.secrets["credentials"].name))[0]
       versions = [
-        "${module.secret-manager.version_versions["credentials:v1"]}:ver1"
+        "${module.secret-manager.version_versions["credentials/v1"]}:ver1"
       ]
     }
   }

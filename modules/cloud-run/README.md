@@ -29,11 +29,12 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    credentials = {}
-  }
-  iam = {
     credentials = {
-      "roles/secretmanager.secretAccessor" = [module.cloud_run.service_account_iam_email]
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          module.cloud_run.service_account_iam_email
+        ]
+      }
     }
   }
 }
@@ -73,16 +74,15 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    credentials = {}
-  }
-  versions = {
     credentials = {
-      v1 = { enabled = true, data = "foo bar baz" }
-    }
-  }
-  iam = {
-    credentials = {
-      "roles/secretmanager.secretAccessor" = [module.cloud_run.service_account_iam_email]
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          module.cloud_run.service_account_iam_email
+        ]
+      }
+      versions = {
+        v1 = { data = "foo bar baz" }
+      }
     }
   }
 }

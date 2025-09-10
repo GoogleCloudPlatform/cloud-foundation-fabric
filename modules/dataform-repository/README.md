@@ -2,8 +2,12 @@
 
 This module allows managing a dataform repository, allows adding IAM permissions. Also enables attaching a remote repository.
 
-## TODO
-[] Add validation rules to variable.
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple dataform repository with access configuration](#simple-dataform-repository-with-access-configuration)
+  - [Repository with an attached remote repository](#repository-with-an-attached-remote-repository)
+- [Variables](#variables)
+<!-- END TOC -->
 
 ## Examples
 
@@ -34,11 +38,9 @@ module "secret" {
   project_id = "fast-bi-fabric"
   secrets = {
     my-secret = {
-    }
-  }
-  versions = {
-    my-secret = {
-      v1 = { enabled = true, data = "MYTOKEN" }
+      versions = {
+        v1 = { data = "MYTOKEN" }
+      }
     }
   }
 }
@@ -51,7 +53,7 @@ module "dataform" {
   remote_repository_settings = {
     url         = "my-url"
     secret_name = "my-secret"
-    token       = module.secret.version_ids["my-secret:v1"]
+    token       = module.secret.version_ids["my-secret/v1"]
   }
 }
 # tftest modules=2 resources=3
