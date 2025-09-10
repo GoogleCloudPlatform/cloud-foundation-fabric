@@ -46,7 +46,7 @@ module "cloud_run" {
       env_from_key = {
         SECRET1 = {
           secret  = module.secret-manager.secrets["credentials"].name
-          version = module.secret-manager.version_versions["credentials:v1"]
+          version = module.secret-manager.version_versions["credentials/v1"]
         }
       }
     }
@@ -491,18 +491,17 @@ module "secrets" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    otel-config = {}
-  }
-  iam = {
     otel-config = {
-      "roles/secretmanager.secretAccessor" = [
-        "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com",
-      ]
-    }
-  }
-  versions = {
-    otel-config = {
-      v1 = { enabled = true, data = file("${path.module}/config/otel-config.yaml") }
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
+        ]
+      }
+      versions = {
+        v1 = {
+          data = file("${path.module}/config/otel-config.yaml")
+        }
+      }
     }
   }
 }
@@ -754,6 +753,7 @@ Unsupported variables / attributes:
 - containers.resources.startup_cpu_boost
 
 Additional configuration can be passwed as `job_config`:
+
 - max_retries - maximum of retries per task
 - task_count - desired number of tasks
 - timeout - max allowed time per task, in seconds with up to nine fractional digits, ending with 's'. Example: `3.5s`
