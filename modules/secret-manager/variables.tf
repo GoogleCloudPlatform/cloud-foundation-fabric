@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-variable "iam" {
-  description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
-  type        = map(map(list(string)))
-  default     = {}
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    tag_keys       = optional(map(string), {})
+    tag_values     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
-variable "labels" {
-  description = "Optional labels for each secret."
-  type        = map(map(string))
-  default     = {}
-}
+# variable "kms_autokey_config" {
+#   description = "Key handle definitions for KMS autokey, in name => location format. Injected in the context $kms_keys:autokey/ namespace."
+#   type        = map(string)
+#   nullable    = false
+#   default     = {}
+# }
 
 variable "project_id" {
   description = "Project id where the keyring will be created."
@@ -38,22 +49,83 @@ variable "project_number" {
 }
 
 variable "secrets" {
-  description = "Map of secrets to manage, their optional expire time, version destroy ttl, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set."
+  description = "Map of secrets to manage. Defaults to global secrets unless region is set."
   type = map(object({
-    expire_time         = optional(string)
-    locations           = optional(list(string))
-    keys                = optional(map(string))
-    tag_bindings        = optional(map(string))
-    version_destroy_ttl = optional(string)
+    annotations              = optional(map(string), {})
+    deletion_protection      = optional(bool)
+    kms_key                  = optional(string)
+    labels                   = optional(map(string), {})
+    global_replica_locations = optional(map(string))
+    location                 = optional(string)
+    tag_bindings             = optional(map(string))
+    tags                     = optional(map(string), {})
+    expiration_config = optional(object({
+      time = optional(string)
+      ttl  = optional(string)
+    }))
+    iam = optional(map(list(string)), {})
+    iam_bindings = optional(map(object({
+      members = list(string)
+      role    = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    iam_bindings_additive = optional(map(object({
+      member = string
+      role   = string
+      condition = optional(object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      }))
+    })), {})
+    version_config = optional(object({
+      aliases     = optional(map(number))
+      destroy_ttl = optional(string)
+    }), {})
+    versions = optional(map(object({
+      data            = string
+      deletion_policy = optional(string)
+      enabled         = optional(bool)
+      data_config = optional(object({
+        is_base64          = optional(bool, false)
+        is_file            = optional(bool, false)
+        write_only_version = optional(number)
+      }))
+    })), {})
+    # rotation_config = optional(object({
+    #   next_time = string
+    #   period    = number
+    # }))
+    # topics
   }))
   default = {}
-}
-
-variable "versions" {
-  description = "Optional versions to manage for each secret. Version names are only used internally to track individual versions."
-  type = map(map(object({
-    enabled = bool
-    data    = string
-  })))
-  default = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.secrets :
+      try(v.expiration_config.time, null) == null ||
+      try(v.expiration_config.ttl, null) == null
+    ])
+    error_message = "Only one of time and ttl can be set in expiration config."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.secrets :
+      v.location == null || v.global_replica_locations == null
+    ])
+    error_message = "Global replication cannot be configured on regional secrets."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.secrets : [
+        for sk, sv in v.versions : contains(
+          ["DELETE", "DISABLE", "ABANDON"], coalesce(sv.deletion_policy, "DELETE")
+        )
+      ]
+    ]))
+    error_message = "Invalid version deletion policy."
+  }
 }

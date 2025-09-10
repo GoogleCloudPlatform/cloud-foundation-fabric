@@ -16,6 +16,7 @@ values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     annotations: null
     binary_authorization: []
+    build_config: []
     client: null
     client_version: null
     custom_audiences: null
@@ -24,6 +25,8 @@ values:
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
+    iap_enabled: false
+    invoker_iam_disabled: false
     labels: null
     location: europe-west8
     name: hello
@@ -33,6 +36,7 @@ values:
     - annotations: null
       containers:
       - args: null
+        base_image_uri: null
         command: null
         depends_on: null
         env:
@@ -54,8 +58,11 @@ values:
         working_dir: null
       encryption_key: null
       execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      gpu_zonal_redundancy_disabled: null
       labels: null
+      node_selector: []
       revision: null
+      service_mesh: []
       session_affinity: null
       volumes: []
       vpc_access: []
@@ -69,6 +76,7 @@ values:
     role: roles/run.invoker
   module.secret-manager.google_secret_manager_secret.default["credentials"]:
     annotations: null
+    deletion_protection: false
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -79,6 +87,7 @@ values:
       user_managed: []
     rotation: []
     secret_id: credentials
+    tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -86,19 +95,20 @@ values:
     ttl: null
     version_aliases: null
     version_destroy_ttl: null
-  module.secret-manager.google_secret_manager_secret_iam_binding.default["credentials.roles/secretmanager.secretAccessor"]:
-    condition: []
+  ? module.secret-manager.google_secret_manager_secret_iam_binding.authoritative["credentials.roles/secretmanager.secretAccessor"]
+  : condition: []
     members:
     - serviceAccount:123-compute@developer.gserviceaccount.com
     - serviceAccount:project-id@appspot.gserviceaccount.com
     role: roles/secretmanager.secretAccessor
-  module.secret-manager.google_secret_manager_secret_version.default["credentials:v1"]:
+  module.secret-manager.google_secret_manager_secret_version.default["credentials/v1"]:
     deletion_policy: DELETE
     enabled: true
     is_secret_data_base64: false
     secret_data: manual foo bar spam
+    secret_data_wo: null
+    secret_data_wo_version: 0
     timeouts: null
-
 counts:
   google_cloud_run_v2_service: 1
   google_cloud_run_v2_service_iam_binding: 1

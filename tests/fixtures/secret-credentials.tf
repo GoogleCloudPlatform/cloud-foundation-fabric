@@ -18,19 +18,16 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    credentials = {}
-  }
-  iam = {
     credentials = {
-      "roles/secretmanager.secretAccessor" = [
-        "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com",
-        "serviceAccount:${var.project_id}@appspot.gserviceaccount.com",
-      ]
-    }
-  }
-  versions = {
-    credentials = {
-      v1 = { enabled = true, data = "manual foo bar spam" }
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com",
+          "serviceAccount:${var.project_id}@appspot.gserviceaccount.com",
+        ]
+      }
+      versions = {
+        v1 = { data = "manual foo bar spam" }
+      }
     }
   }
 }

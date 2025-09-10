@@ -20,19 +20,20 @@ locals {
 }
 
 resource "google_compute_instance_template" "default" {
-  provider              = google-beta
-  count                 = local.template_create && !local.template_regional ? 1 : 0
-  project               = var.project_id
-  region                = local.region
-  name_prefix           = "${var.name}-"
-  description           = var.description
-  tags                  = var.tags
-  machine_type          = var.instance_type
-  min_cpu_platform      = var.min_cpu_platform
-  can_ip_forward        = var.can_ip_forward
-  metadata              = var.metadata
-  labels                = var.labels
-  resource_manager_tags = var.tag_bindings_immutable
+  provider                = google-beta
+  count                   = local.template_create && !local.template_regional ? 1 : 0
+  project                 = var.project_id
+  region                  = local.region
+  name_prefix             = "${var.name}-"
+  description             = var.description
+  tags                    = var.tags
+  machine_type            = var.instance_type
+  min_cpu_platform        = var.min_cpu_platform
+  can_ip_forward          = var.can_ip_forward
+  metadata                = var.metadata
+  metadata_startup_script = var.metadata_startup_script
+  labels                  = var.labels
+  resource_manager_tags   = var.tag_bindings_immutable
 
   dynamic "advanced_machine_features" {
     for_each = local.advanced_mf != null ? [""] : []
@@ -211,19 +212,20 @@ resource "google_compute_instance_template" "default" {
 }
 
 resource "google_compute_region_instance_template" "default" {
-  provider              = google-beta
-  count                 = local.template_create && local.template_regional ? 1 : 0
-  project               = var.project_id
-  region                = local.region
-  name_prefix           = "${var.name}-"
-  description           = var.description
-  tags                  = var.tags
-  machine_type          = var.instance_type
-  min_cpu_platform      = var.min_cpu_platform
-  can_ip_forward        = var.can_ip_forward
-  metadata              = var.metadata
-  labels                = var.labels
-  resource_manager_tags = var.tag_bindings_immutable
+  provider                = google-beta
+  count                   = local.template_create && local.template_regional ? 1 : 0
+  project                 = var.project_id
+  region                  = local.region
+  name_prefix             = "${var.name}-"
+  description             = var.description
+  tags                    = var.tags
+  machine_type            = var.instance_type
+  min_cpu_platform        = var.min_cpu_platform
+  can_ip_forward          = var.can_ip_forward
+  metadata                = var.metadata
+  metadata_startup_script = var.metadata_startup_script
+  labels                  = var.labels
+  resource_manager_tags   = var.tag_bindings_immutable
 
   dynamic "advanced_machine_features" {
     for_each = local.advanced_mf != null ? [""] : []

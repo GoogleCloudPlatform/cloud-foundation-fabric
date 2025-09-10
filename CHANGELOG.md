@@ -3,7 +3,28 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-09-05 09:36:17+00:00 to: None since: v44.0.0 -->
+## [Unreleased] <!-- from: 2025-09-06 09:16:37+00:00 to: None since: v44.1.0 -->
+
+### BREAKING CHANGES
+
+- `modules/secret-manager`: the module interface has changed and been brought up to date with our current modules' shared interfaces; please test and refactor appropriately before using it in existing installations. This new version is **incompatible with OpenTofu** as it lacks support for write-once attributes. [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)]
+- `modules/secure-source-manager-instance`: Changed interface to declare private instances. [[#3310](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3310)]
+
+
+### FAST
+
+- [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
+- [[#3305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3305)] Improve context support in vpc-sc module and stage / new FAST stages small fixes ([ludoo](https://github.com/ludoo)) <!-- 2025-09-07 12:59:47+00:00 -->
+
+### MODULES
+
+- [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
+- [[#3313](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3313)] Add support for startup script to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-09 11:49:38+00:00 -->
+- [[#3286](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3286)] Added support for cross-project NEGs in net-lb-app-int module ([avh01](https://github.com/avh01)) <!-- 2025-09-09 07:18:30+00:00 -->
+- [[#3310](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3310)] [secure-source-manager-instance] Allow provisioning of instances with managed certificates ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-09-08 15:53:47+00:00 -->
+- [[#3308](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3308)] Add validation to kms key variables ([ludoo](https://github.com/ludoo)) <!-- 2025-09-08 09:14:40+00:00 -->
+- [[#3307](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3307)] Add support for context in kms module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-07 13:15:27+00:00 -->
+- [[#3305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3305)] Improve context support in vpc-sc module and stage / new FAST stages small fixes ([ludoo](https://github.com/ludoo)) <!-- 2025-09-07 12:59:47+00:00 -->
 
 ## [44.1.0] - 2025-09-06
 

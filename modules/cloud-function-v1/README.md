@@ -280,7 +280,7 @@ module "cf-http" {
       project_id = var.project_number # use project_number  to avoid perm-diff
       secret     = reverse(split("/", module.secret-manager.secrets["credentials"].name))[0]
       versions = [
-        "${module.secret-manager.version_versions["credentials:v1"]}:/ver1"
+        "${module.secret-manager.version_versions["credentials/v1"]}:/ver1"
       ]
     }
   }
@@ -288,7 +288,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf  inventory=secrets.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e skip-tofu
 ```
 
 ### Using CMEK to encrypt function resources
