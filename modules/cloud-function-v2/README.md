@@ -293,7 +293,7 @@ module "cf-http" {
       project_id = var.project_id
       secret     = reverse(split("/", module.secret-manager.secrets["credentials"].name))[0]
       versions = [
-        "${module.secret-manager.version_versions["credentials:v1"]}:ver1"
+        "${module.secret-manager.version_versions["credentials/v1"]}:ver1"
       ]
     }
   }
@@ -302,7 +302,7 @@ module "cf-http" {
   ]
 }
 
-# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e skip-tofu
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

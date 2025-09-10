@@ -17,31 +17,32 @@
 module "secops-tenant-secrets" {
   source     = "../../../modules/secret-manager"
   project_id = module.project.project_id
-  secrets = merge({
-    (local.secops_api_key_secret_key) = {
-      locations = [var.region]
+  secrets = merge(
+    {
+      (local.secops_api_key_secret_key) = {
+        global_replica_locations = {
+          (var.region) = null
+        }
+        labels = { scope = "secops" }
+        versions = {
+          latest = {
+            data = google_apikeys_key.feed_api_key.key_string
+          }
+        }
+      }
+    },
+    !local.workspace_log_ingestion ? {} : {
+      (local.secops_workspace_int_sa_key) = {
+        global_replica_locations = {
+          (var.region) = null
+        }
+        labels = { scope = "secops" }
+        versions = {
+          latest = {
+            data = google_service_account_key.workspace_integration_key[0].private_key
+          }
+        }
+      }
     }
-    }, local.workspace_log_ingestion ? {
-    (local.secops_workspace_int_sa_key) = {
-      locations = [var.region]
-    } } : {}
   )
-  versions = merge({
-    (local.secops_api_key_secret_key) = {
-      latest = {
-        enabled = true, data = google_apikeys_key.feed_api_key.key_string
-      }
-    }
-    }, local.workspace_log_ingestion ? {
-    (local.secops_workspace_int_sa_key) = {
-      latest = {
-        enabled = true, data = google_service_account_key.workspace_integration_key[0].private_key
-      }
-    }
-  } : {})
-  labels = merge({
-    (local.secops_api_key_secret_key) = { scope = "secops" }
-    }, local.workspace_log_ingestion ? {
-    (local.secops_workspace_int_sa_key) = { scope = "secops" }
-  } : {})
 }

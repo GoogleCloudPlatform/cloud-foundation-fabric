@@ -13,19 +13,25 @@
 # limitations under the License.
 
 values:
-  module.secret-manager.google_secret_manager_secret.default["test"]:
+  module.secret-manager.google_secret_manager_secret.default["test-user-cmek"]:
     annotations: null
     deletion_protection: false
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
-    project: project-id
+    project: foo-prod-test-0
     replication:
-    - auto:
-      - customer_managed_encryption: []
-      user_managed: []
+    - auto: []
+      user_managed:
+      - replicas:
+        - customer_managed_encryption:
+          - kms_key_name: projects/test-0/locations/europe-west1/keyRings/test-g/cryptoKeys/sec-ew1
+          location: europe-west1
+        - customer_managed_encryption:
+          - kms_key_name: projects/test-0/locations/europe-west3/keyRings/test-g/cryptoKeys/sec-ew3
+          location: europe-west3
     rotation: []
-    secret_id: test
+    secret_id: test-user-cmek
     tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -34,27 +40,15 @@ values:
     ttl: null
     version_aliases: null
     version_destroy_ttl: null
-  module.secret-manager.google_secret_manager_secret_iam_binding.authoritative["test.roles/secretmanager.admin"]:
+  module.secret-manager.google_secret_manager_secret_iam_binding.authoritative["test-user-cmek.roles/secretmanager.viewer"]:
     condition: []
     members:
-    - user:test-0@example.com
-    role: roles/secretmanager.admin
-  module.secret-manager.google_secret_manager_secret_iam_binding.bindings["test-test"]:
-    condition:
-    - description: null
-      expression: resource.matchTag('1234567890/environment', 'test')
-      title: Test.
-    members:
-    - user:test-1@example.com
-    role: roles/secretmanager.secretAccessor
-  module.secret-manager.google_secret_manager_secret_iam_member.members["test-test"]:
-    condition: []
-    member: user:test-2@example.com
+    - serviceAccount:test@foo-prod-test-0.iam.gserviceaccount.com
+    - user:test@example.com
     role: roles/secretmanager.viewer
 
 counts:
   google_secret_manager_secret: 1
-  google_secret_manager_secret_iam_binding: 2
-  google_secret_manager_secret_iam_member: 1
+  google_secret_manager_secret_iam_binding: 1
   modules: 1
-  resources: 4
+  resources: 2

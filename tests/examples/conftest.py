@@ -14,6 +14,8 @@
 """Pytest configuration for testing code examples."""
 
 import collections
+import os
+
 from pathlib import Path
 
 import marko
@@ -67,6 +69,9 @@ def pytest_generate_tests(metafunc, test_group='example',
           if directive is None:
             continue
           if directive and not filter_tests(directive.args):
+            continue
+          if os.environ.get(
+              'TERRAFORM') == 'tofu' and 'skip-tofu' in directive.args:
             continue
           if child.lang in ('hcl', 'tfvars'):
             path = module.relative_to(FABRIC_ROOT)

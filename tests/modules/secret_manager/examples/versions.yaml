@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,18 +13,58 @@
 # limitations under the License.
 
 values:
-  module.secret-manager.google_secret_manager_secret_version.default["test-auto:v1"]:
-    enabled: false
-    secret_data: auto foo bar baz
-  module.secret-manager.google_secret_manager_secret_version.default["test-auto:v2"]:
+  module.secret-manager.google_secret_manager_secret.default["test"]:
+    annotations: null
+    deletion_protection: false
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    project: project-id
+    replication:
+    - auto:
+      - customer_managed_encryption: []
+      user_managed: []
+    rotation: []
+    secret_id: test
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    topics: []
+    ttl: null
+    version_aliases: null
+    version_destroy_ttl: null
+  module.secret-manager.google_secret_manager_secret_version.default["test/a"]:
+    deletion_policy: DELETE
     enabled: true
-    secret_data: auto foo bar spam
-  module.secret-manager.google_secret_manager_secret_version.default["test-manual:v1"]:
+    is_secret_data_base64: false
+    secret_data: foo
+    secret_data_wo: null
+    secret_data_wo_version: 0
+    timeouts: null
+  module.secret-manager.google_secret_manager_secret_version.default["test/b"]:
+    deletion_policy: DELETE
     enabled: true
-    secret_data: manual foo bar spam
+    is_secret_data_base64: false
+    secret_data: 'foo-secret
+
+      # tftest-file id=0 path=test-data/secret-b.txt
+
+      '
+    secret_data_wo: null
+    secret_data_wo_version: 0
+    timeouts: null
+  module.secret-manager.google_secret_manager_secret_version.default["test/c"]:
+    deletion_policy: DELETE
+    enabled: true
+    is_secret_data_base64: false
+    secret_data: null
+    secret_data_wo: null
+    secret_data_wo_version: 1
+    timeouts: null
 
 counts:
-  google_secret_manager_secret: 2
+  google_secret_manager_secret: 1
   google_secret_manager_secret_version: 3
-
-outputs: {}
+  modules: 1
+  resources: 4

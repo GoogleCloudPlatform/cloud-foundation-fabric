@@ -14,50 +14,79 @@
  * limitations under the License.
  */
 
+locals {
+  o_secrets = merge(
+    google_secret_manager_secret.default,
+    google_secret_manager_regional_secret.default
+  )
+  o_versions = merge(
+    google_secret_manager_secret_version.default,
+    google_secret_manager_regional_secret_version.default
+  )
+}
+
 output "ids" {
   description = "Fully qualified secret ids."
-  value = {
-    for k, v in google_secret_manager_secret.default : v.secret_id => v.id
-  }
+  value       = { for k, v in local.o_secrets : k => v.id }
   depends_on = [
-    google_secret_manager_secret_iam_binding.default
+    google_secret_manager_secret_iam_binding.authoritative,
+    google_secret_manager_secret_iam_binding.bindings,
+    google_secret_manager_secret_iam_member.members,
+    google_secret_manager_regional_secret_iam_binding.authoritative,
+    google_secret_manager_regional_secret_iam_binding.bindings,
+    google_secret_manager_regional_secret_iam_member.members
   ]
 }
 
 output "secrets" {
   description = "Secret resources."
-  value       = google_secret_manager_secret.default
+  value       = local.o_secrets
   depends_on = [
-    google_secret_manager_secret_iam_binding.default
+    google_secret_manager_secret_iam_binding.authoritative,
+    google_secret_manager_secret_iam_binding.bindings,
+    google_secret_manager_secret_iam_member.members,
+    google_secret_manager_regional_secret_iam_binding.authoritative,
+    google_secret_manager_regional_secret_iam_binding.bindings,
+    google_secret_manager_regional_secret_iam_member.members
   ]
-
 }
 
 output "version_ids" {
-  description = "Version ids keyed by secret name : version name."
-  value = {
-    for k, v in google_secret_manager_secret_version.default : k => v.id
-  }
+  description = "Fully qualified version ids."
+  value       = { for k, v in local.o_versions : k => v.id }
   depends_on = [
-    google_secret_manager_secret_iam_binding.default
+    google_secret_manager_secret_iam_binding.authoritative,
+    google_secret_manager_secret_iam_binding.bindings,
+    google_secret_manager_secret_iam_member.members,
+    google_secret_manager_regional_secret_iam_binding.authoritative,
+    google_secret_manager_regional_secret_iam_binding.bindings,
+    google_secret_manager_regional_secret_iam_member.members
   ]
 }
 
 output "version_versions" {
-  description = "Version versions keyed by secret name : version name."
-  value = {
-    for k, v in google_secret_manager_secret_version.default : k => v.version
-  }
+  description = "Version versions."
+  value       = { for k, v in local.o_versions : k => v.version }
   depends_on = [
-    google_secret_manager_secret_iam_binding.default
+    google_secret_manager_secret_iam_binding.authoritative,
+    google_secret_manager_secret_iam_binding.bindings,
+    google_secret_manager_secret_iam_member.members,
+    google_secret_manager_regional_secret_iam_binding.authoritative,
+    google_secret_manager_regional_secret_iam_binding.bindings,
+    google_secret_manager_regional_secret_iam_member.members
   ]
 }
 
 output "versions" {
-  description = "Secret versions."
-  value       = google_secret_manager_secret_version.default
+  description = "Version resources."
+  value       = local.o_versions
   sensitive   = true
   depends_on = [
-    google_secret_manager_secret_iam_binding.default
+    google_secret_manager_secret_iam_binding.authoritative,
+    google_secret_manager_secret_iam_binding.bindings,
+    google_secret_manager_secret_iam_member.members,
+    google_secret_manager_regional_secret_iam_binding.authoritative,
+    google_secret_manager_regional_secret_iam_binding.bindings,
+    google_secret_manager_regional_secret_iam_member.members
   ]
 }

@@ -29,11 +29,12 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    credentials = {}
-  }
-  iam = {
     credentials = {
-      "roles/secretmanager.secretAccessor" = [module.cloud_run.service_account_iam_email]
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          module.cloud_run.service_account_iam_email
+        ]
+      }
     }
   }
 }
@@ -63,7 +64,7 @@ module "cloud_run" {
   }
   service_account_create = true
 }
-# tftest modules=2 resources=5 inventory=simple.yaml e2e
+# tftest modules=2 resources=5 inventory=simple.yaml e2e skip-tofu
 ```
 
 ## Mounting secrets as volumes
@@ -73,16 +74,15 @@ module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    credentials = {}
-  }
-  versions = {
     credentials = {
-      v1 = { enabled = true, data = "foo bar baz" }
-    }
-  }
-  iam = {
-    credentials = {
-      "roles/secretmanager.secretAccessor" = [module.cloud_run.service_account_iam_email]
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          module.cloud_run.service_account_iam_email
+        ]
+      }
+      versions = {
+        v1 = { data = "foo bar baz" }
+      }
     }
   }
 }
@@ -112,7 +112,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=2 resources=5 inventory=secrets.yaml e2e
+# tftest modules=2 resources=5 inventory=secrets.yaml e2e skip-tofu
 ```
 
 ## Revision annotations
