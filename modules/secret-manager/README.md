@@ -5,9 +5,9 @@ This module allows managing one or more secrets with versions and IAM bindings. 
 <!-- BEGIN TOC -->
 - [Global Secrets](#global-secrets)
 - [Regional Secrets](#regional-secrets)
-- [IAM bindings](#iam-bindings)
-- [Secret versions](#secret-versions)
-- [Context replacements](#context-replacements)
+- [IAM Bindings](#iam-bindings)
+- [Secret Versions](#secret-versions)
+- [Context Interpolations](#context-interpolations)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Requirements](#requirements)
@@ -55,18 +55,20 @@ Regional secrets are identified by having the `location` attribute defined, and 
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
-  location   = "europe-west1"
   secrets = {
-    test = {}
+    test = {
+      location = "europe-west1"
+    }
     test-cmek = {
-      kms_key = "projects/test-0/locations/global/keyRings/test-g/cryptoKeys/sec"
+      location = "europe-west1"
+      kms_key  = "projects/test-0/locations/global/keyRings/test-g/cryptoKeys/sec"
     }
   }
 }
 # tftest modules=1 resources=2 inventory=secret-regional.yaml
 ```
 
-## IAM bindings
+## IAM Bindings
 
 This module supports the same IAM interface as all other modules in this repository. IAM bindings are defined per secret, if you need cross-secret IAM bindings use project-level ones.
 
@@ -105,7 +107,7 @@ module "secret-manager" {
 # tftest modules=1 resources=4 inventory=iam.yaml
 ```
 
-## Secret versions
+## Secret Versions
 
 Versions are defined per secret via the `versions` attribute, and by default they accept string data which is stored in state. The `data_config` attributes allow configuring each secret:
 
@@ -130,7 +132,7 @@ module "secret-manager" {
           # potentially unsafe, reads from file
           data = "test-data/secret-b.txt"
           data_config = {
-            is_file = true            
+            is_file = true
           }
         }
         c = {
@@ -143,11 +145,17 @@ module "secret-manager" {
         }
       }
     }
+  }
 }
-# tftest modules=1 resources=5 inventory=versions.yaml
+# tftest files=0 modules=1 resources=4 inventory=versions.yaml
 ```
 
-## Context replacements
+```txt
+foo-secret
+# tftest-file id=0 path=test-data/secret-b.txt
+```
+
+## Context Interpolations
 
 Similarly to other core modules in this repository, this module also supports context-based interpolations, which are populated via the `context` variable.
 
@@ -166,8 +174,8 @@ This is a simple example that uses context interpolation.
 
 ```hcl
 module "secret-manager" {
-  source     = "./fabric/modules/secret-manager"
-  contexts = {
+  source = "./fabric/modules/secret-manager"
+  context = {
     iam_principals = {
       mysa   = "serviceAccount:test@foo-prod-test-0.iam.gserviceaccount.com"
       myuser = "user:test@example.com"
@@ -199,7 +207,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=context.yaml
+# tftest modules=1 resources=2 inventory=context.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
