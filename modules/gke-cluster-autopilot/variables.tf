@@ -126,12 +126,24 @@ variable "enable_features" {
     service_external_ips = optional(bool, true)
     tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
-      topic_id = optional(string)
+      enabled     = optional(bool, true)
+      event_types = optional(list(string), [])
+      topic_id    = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
     enterprise_cluster       = optional(bool)
   })
   default = {}
+  validation {
+    condition = alltrue([
+      for e in try(var.enable_features.upgrade_notifications.event_types, []) :
+      contains([
+        "UPGRADE_AVAILABLE_EVENT", "UPGRADE_EVENT",
+        "SECURITY_BULLETIN_EVENT", "UPGRADE_INFO_EVENT"
+      ], e)
+    ])
+    error_message = "Invalid upgrade notification event type."
+  }
 }
 
 variable "issue_client_certificate" {

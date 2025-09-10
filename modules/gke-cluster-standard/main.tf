@@ -494,7 +494,13 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.upgrade_notifications != null ? [""] : []
     content {
       pubsub {
-        enabled = true
+        enabled = var.enable_features.upgrade_notifications.enabled
+        dynamic "filter" {
+          for_each = var.enable_features.upgrade_notifications.event_types != null ? [""] : []
+          content {
+            event_type = var.enable_features.upgrade_notifications.event_types
+          }
+        }
         topic = (
           try(var.enable_features.upgrade_notifications.topic_id, null) != null
           ? var.enable_features.upgrade_notifications.topic_id
