@@ -44,7 +44,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=secret.yaml
+# tftest modules=1 resources=4 inventory=secret.yaml skip-tofu
 ```
 
 ## Regional Secrets
@@ -65,7 +65,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=secret-regional.yaml
+# tftest modules=1 resources=2 inventory=secret-regional.yaml skip-tofu
 ```
 
 ## IAM Bindings
@@ -104,7 +104,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=iam.yaml
+# tftest modules=1 resources=4 inventory=iam.yaml skip-tofu
 ```
 
 ## Secret Versions
@@ -147,7 +147,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest files=0 modules=1 resources=4 inventory=versions.yaml
+# tftest files=0 modules=1 resources=4 inventory=versions.yaml skip-tofu
 ```
 
 ```txt
@@ -207,7 +207,7 @@ module "secret-manager" {
     }
   }
 }
-# tftest modules=1 resources=2 inventory=context.yaml
+# tftest modules=1 resources=2 inventory=context.yaml skip-tofu
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
