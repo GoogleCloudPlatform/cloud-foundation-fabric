@@ -238,7 +238,9 @@ variable "enable_features" {
     shielded_nodes       = optional(bool, false)
     tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
-      topic_id = optional(string)
+      enabled     = optional(bool, true)
+      event_types = optional(list(string), [])
+      topic_id    = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
     workload_identity        = optional(bool, true)
@@ -250,6 +252,16 @@ variable "enable_features" {
       var.enable_features.fqdn_network_policy ? var.enable_features.dataplane_v2 : true
     )
     error_message = "FQDN network policy is only supported for clusters with Dataplane v2."
+  }
+  validation {
+    condition = alltrue([
+      for e in try(var.enable_features.upgrade_notifications.event_types, []) :
+      contains([
+        "UPGRADE_AVAILABLE_EVENT", "UPGRADE_EVENT",
+        "SECURITY_BULLETIN_EVENT", "UPGRADE_INFO_EVENT"
+      ], e)
+    ])
+    error_message = "Invalid upgrade notification event type."
   }
 }
 
