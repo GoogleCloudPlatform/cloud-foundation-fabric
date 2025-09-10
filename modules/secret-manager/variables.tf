@@ -129,12 +129,3 @@ variable "secrets" {
     error_message = "Invalid version deletion policy."
   }
 }
-
-variable "versions" {
-  description = "Optional versions to manage for each secret. Version names are only used internally to track individual versions."
-  type = map(map(object({
-    enabled = bool
-    data    = string
-  })))
-  default = {}
-}
