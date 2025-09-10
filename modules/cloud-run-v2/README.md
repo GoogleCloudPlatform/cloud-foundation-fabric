@@ -56,7 +56,7 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest fixtures=fixtures/secret-credentials.tf inventory=service-iam-env.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf inventory=service-iam-env.yaml e2e skip-tofu
 ```
 
 ## Mounting secrets as volumes
@@ -86,7 +86,7 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf inventory=service-volume-secretes.yaml e2e skip-tofu
 ```
 
 ## Mounting GCS buckets
@@ -554,7 +554,7 @@ module "cloud_run" {
   }
   deletion_protection = false
 }
-# tftest files=otel-config inventory=service-otel-sidecar.yaml e2e
+# tftest files=otel-config inventory=service-otel-sidecar.yaml e2e skip-tofu
 ```
 
 ## Eventarc triggers

@@ -64,7 +64,7 @@ module "cloud_run" {
   }
   service_account_create = true
 }
-# tftest modules=2 resources=5 inventory=simple.yaml e2e
+# tftest modules=2 resources=5 inventory=simple.yaml e2e skip-tofu
 ```
 
 ## Mounting secrets as volumes
@@ -112,7 +112,7 @@ module "cloud_run" {
     }
   }
 }
-# tftest modules=2 resources=5 inventory=secrets.yaml e2e
+# tftest modules=2 resources=5 inventory=secrets.yaml e2e skip-tofu
 ```
 
 ## Revision annotations

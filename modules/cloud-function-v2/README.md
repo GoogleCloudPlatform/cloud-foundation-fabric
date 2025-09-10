@@ -302,7 +302,7 @@ module "cf-http" {
   ]
 }
 
-# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e skip-tofu
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

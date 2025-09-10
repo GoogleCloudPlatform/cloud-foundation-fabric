@@ -56,7 +56,7 @@ module "dataform" {
     token       = module.secret.version_ids["my-secret/v1"]
   }
 }
-# tftest modules=2 resources=3
+# tftest modules=2 resources=3 skip-tofu
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

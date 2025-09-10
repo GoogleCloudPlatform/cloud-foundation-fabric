@@ -288,7 +288,7 @@ module "cf-http" {
     google_project_iam_member.bucket_default_compute_account_grant,
   ]
 }
-# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e
+# tftest fixtures=fixtures/secret-credentials.tf,fixtures/functions-default-sa-iam-grants.tf inventory=secrets.yaml e2e skip-tofu
 ```
 
 ### Using CMEK to encrypt function resources
