@@ -1,16 +1,13 @@
-# Google Secret Manager Module
+# Google Secret Manager
 
-Simple Secret Manager module that allows managing one or more secrets, their versions, and IAM bindings.
-
-Secret Manager locations are available via the `gcloud secrets locations list` command.
-
-**Warning:** managing versions will persist their data (the actual secret you want to protect) in the Terraform state in unencrypted form, accessible to any identity able to read or pull the state file.
+This module allows managing one or more secrets with versions and IAM bindings. For global secrets, this module optionally supports [write-only attributes](https://developer.hashicorp.com/terraform/language/manage-sensitive-data/write-only) for versions, which do not save data in state.
 
 <!-- BEGIN TOC -->
-- [Secrets](#secrets)
-- [Secret IAM bindings](#secret-iam-bindings)
+- [Global Secrets](#global-secrets)
+- [Regional Secrets](#regional-secrets)
+- [IAM bindings](#iam-bindings)
 - [Secret versions](#secret-versions)
-- [Secret with customer managed encryption key](#secret-with-customer-managed-encryption-key)
+- [Context replacements](#context-replacements)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Requirements](#requirements)
@@ -18,9 +15,11 @@ Secret Manager locations are available via the `gcloud secrets locations list` c
 - [APIs](#apis)
 <!-- END TOC -->
 
-## Secrets
+## Global Secrets
 
-The secret replication policy is automatically managed if no location is set, or manually managed if a list of locations is passed to the secret.
+Secrets are created as global by default, with auto replication policy. For auto managed replication secrets the `kms_key` attribute can be used to configure CMEK via a global key.
+
+To configure a secret for user managed replication configure the `global_replica_locations` attribute. Non-auto secrets ignore the `kms_key` attribute, but use each element of the locations map to configure keys.
 
 ```hcl
 module "secret-manager" {
@@ -28,183 +27,197 @@ module "secret-manager" {
   project_id = var.project_id
   secrets = {
     test-auto = {}
-    test-manual = {
-      expire_time = "2025-10-02T15:01:23Z"
-      locations   = [var.regions.primary, var.regions.secondary]
+    test-auto-cmek = {
+      kms_key = "projects/test-0/locations/global/keyRings/test-g/cryptoKeys/sec"
+    }
+    test-user = {
+      global_replica_locations = {
+        europe-west1 = null
+        europe-west3 = null
+      }
+    }
+    test-user-cmek = {
+      global_replica_locations = {
+        europe-west1 = "projects/test-0/locations/europe-west1/keyRings/test-g/cryptoKeys/sec-ew1"
+        europe-west3 = "projects/test-0/locations/europe-west3/keyRings/test-g/cryptoKeys/sec-ew3"
+      }
     }
   }
 }
-# tftest modules=1 resources=2 inventory=secret.yaml e2e
+# tftest modules=1 resources=4 inventory=secret.yaml
 ```
 
-## Secret IAM bindings
+## Regional Secrets
 
-IAM bindings can be set per secret in the same way as for most other modules supporting IAM, using the `iam` variable.
+Regional secrets are identified by having the `location` attribute defined, and share the same interface with a few exceptions: the `global_replica_locations` is of course ignored, and versions only support a subset of attributes and can't use write-only attributes.
+
+```hcl
+module "secret-manager" {
+  source     = "./fabric/modules/secret-manager"
+  project_id = var.project_id
+  location   = "europe-west1"
+  secrets = {
+    test = {}
+    test-cmek = {
+      kms_key = "projects/test-0/locations/global/keyRings/test-g/cryptoKeys/sec"
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=secret-regional.yaml
+```
+
+## IAM bindings
+
+This module supports the same IAM interface as all other modules in this repository. IAM bindings are defined per secret, if you need cross-secret IAM bindings use project-level ones.
 
 ```hcl
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    test-auto = {}
-    test-manual = {
-      locations = [var.regions.primary, var.regions.secondary]
-    }
-  }
-  iam = {
-    test-auto = {
-      "roles/secretmanager.secretAccessor" = ["group:${var.group_email}"]
-    }
-    test-manual = {
-      "roles/secretmanager.secretAccessor" = ["group:${var.group_email}"]
+    test = {
+      iam = {
+        "roles/secretmanager.admin" = [
+          "user:test-0@example.com"
+        ]
+      }
+      iam_bindings = {
+        test = {
+          role = "roles/secretmanager.secretAccessor"
+          members = [
+            "user:test-1@example.com"
+          ]
+          condition = {
+            title      = "Test."
+            expression = "resource.matchTag('1234567890/environment', 'test')"
+          }
+        }
+      }
+      iam_bindings_additive = {
+        test = {
+          role   = "roles/secretmanager.viewer"
+          member = "user:test-2@example.com"
+        }
+      }
     }
   }
 }
-# tftest modules=1 resources=4 inventory=iam.yaml e2e
+# tftest modules=1 resources=4 inventory=iam.yaml
 ```
 
 ## Secret versions
 
-As mentioned above, please be aware that **version data will be stored in state in unencrypted form**.
+Versions are defined per secret via the `versions` attribute, and by default they accept string data which is stored in state. The `data_config` attributes allow configuring each secret:
+
+- `data_config.is_file` instructs the module to read version data from a file (`data` is then used as the file path)
+- `data_config.is_base64` instructs the provider to treat data as Base64
+- `data_config.write_only_version` instructs the module to **use write-only attributes so that data is not set in state**, each time the write-only version is changed data is reuploaded to the secret version
+
+As mentioned before write-only attributes are only available for global secrets. Regional secrets still use the potentially insecure way of storing data.
 
 ```hcl
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
   project_id = var.project_id
   secrets = {
-    test-auto = {}
-    test-manual = {
-      locations = [var.regions.primary, var.regions.secondary]
+    test = {
+      versions = {
+        a = {
+          # potentially unsafe
+          data = "foo"
+        }
+        b = {
+          # potentially unsafe, reads from file
+          data = "test-data/secret-b.txt"
+          data_config = {
+            is_file = true            
+          }
+        }
+        c = {
+          # uses safer write-only attribute
+          data = "bar"
+          data_config = {
+            # bump this version when data needs updating
+            write_only_version = 1
+          }
+        }
+      }
     }
-  }
-  versions = {
-    test-auto = {
-      v1 = { enabled = false, data = "auto foo bar baz" }
-      v2 = { enabled = true, data = "auto foo bar spam" }
-    },
-    test-manual = {
-      v1 = { enabled = true, data = "manual foo bar spam" }
-    }
-  }
 }
-# tftest modules=1 resources=5 inventory=versions.yaml e2e
+# tftest modules=1 resources=5 inventory=versions.yaml
 ```
 
-## Secret with customer managed encryption key
+## Context replacements
 
-CMEK will be used if an encryption key is set in the `keys` field of `secrets` object for the secret region. For secrets with auto-replication, a global key must be specified.
+Similarly to other core modules in this repository, this module also supports context-based interpolations, which are populated via the `context` variable.
+
+This is a summary table of the available contexts, which can be used whenever an attribute expects the relevant information. Refer to the [project factory module](../project-factory/README.md#context-based-interpolation) for more details on context replacements.
+
+- `$custom_roles:my_role`
+- `$iam_principals:my_principal`
+- `$kms_keys:my_key`
+- `$locations:my_location`
+- `$project_ids:my_project`
+- `$tag_keys:my_key`
+- `$tag_values:my_value`
+- custom template variables used in IAM conditions
+
+This is a simple example that uses context interpolation.
 
 ```hcl
-module "project" {
-  source          = "./fabric/modules/project"
-  name            = "sec-mgr"
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  parent          = var.folder_id
-  services = [
-    "cloudkms.googleapis.com",
-    "secretmanager.googleapis.com",
-  ]
-}
-
-module "kms-global" {
-  source     = "./fabric/modules/kms"
-  project_id = module.project.project_id
-  keyring = {
-    location = "global"
-    name     = "${var.prefix}-keyring-global"
-  }
-  keys = {
-    "key-global" = {
-    }
-  }
-  iam = {
-    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-      module.project.service_agents.secretmanager.iam_email
-    ]
-  }
-}
-
-
-module "kms-primary-region" {
-  source     = "./fabric/modules/kms"
-  project_id = module.project.project_id
-  keyring = {
-    location = var.regions.primary
-    name     = "${var.prefix}-keyring-regional"
-  }
-  keys = {
-    "key-regional" = {
-    }
-  }
-  iam = {
-    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-      module.project.service_agents.secretmanager.iam_email
-    ]
-  }
-}
-
-module "kms-secondary-region" {
-  source     = "./fabric/modules/kms"
-  project_id = module.project.project_id
-  keyring = {
-    location = var.regions.secondary
-    name     = "${var.prefix}-keyring-regional"
-  }
-  keys = {
-    "key-regional" = {
-    }
-  }
-  iam = {
-    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-      module.project.service_agents.secretmanager.iam_email
-    ]
-  }
-}
-
-
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
-  project_id = module.project.project_id
-  secrets = {
-    test-auto = {
-      keys = {
-        global = module.kms-global.keys.key-global.id
-      }
+  contexts = {
+    iam_principals = {
+      mysa   = "serviceAccount:test@foo-prod-test-0.iam.gserviceaccount.com"
+      myuser = "user:test@example.com"
     }
-    test-auto-nokeys = {}
-    test-manual = {
-      locations = [var.regions.primary, var.regions.secondary]
-      keys = {
-        "${var.regions.primary}"   = module.kms-primary-region.keys.key-regional.id
-        "${var.regions.secondary}" = module.kms-secondary-region.keys.key-regional.id
+    kms_keys = {
+      primary   = "projects/test-0/locations/europe-west1/keyRings/test-g/cryptoKeys/sec-ew1"
+      secondary = "projects/test-0/locations/europe-west3/keyRings/test-g/cryptoKeys/sec-ew3"
+    }
+    locations = {
+      primary   = "europe-west1"
+      secondary = "europe-west3"
+    }
+    project_ids = {
+      test = "foo-prod-test-0"
+    }
+  }
+  project_id = "$project_ids:test"
+  secrets = {
+    test-user-cmek = {
+      global_replica_locations = {
+        "$locations:primary"   = "$kms_keys:primary"
+        "$locations:secondary" = "$kms_keys:secondary"
+      }
+      iam = {
+        "roles/secretmanager.viewer" = [
+          "$iam_principals:mysa", "$iam_principals:myuser"
+        ]
       }
     }
   }
 }
-# tftest inventory=secret-cmek.yaml e2e
+# tftest modules=1 resources=4 inventory=context.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L29) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
-| [iam](variables.tf#L17) | IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L23) | Optional labels for each secret. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_number](variables.tf#L34) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. | <code>string</code> |  | <code>null</code> |
-| [secrets](variables.tf#L40) | Map of secrets to manage, their optional expire time, version destroy ttl, locations and KMS keys in {LOCATION => KEY} format. {GLOBAL => KEY} format enables CMEK for automatic managed secrets. If locations is null, automatic management will be set. | <code title="map&#40;object&#40;&#123;&#10;  expire_time         &#61; optional&#40;string&#41;&#10;  locations           &#61; optional&#40;list&#40;string&#41;&#41;&#10;  keys                &#61; optional&#40;map&#40;string&#41;&#41;&#10;  tag_bindings        &#61; optional&#40;map&#40;string&#41;&#41;&#10;  version_destroy_ttl &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [versions](variables.tf#L52) | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  enabled &#61; bool&#10;  data    &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_id](variables.tf#L40) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_number](variables.tf#L45) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. | <code>string</code> |  | <code>null</code> |
+| [secrets](variables.tf#L51) | Map of secrets to manage. Defaults to global secrets unless region is set. | <code title="map&#40;object&#40;&#123;&#10;  annotations              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  deletion_protection      &#61; optional&#40;bool&#41;&#10;  kms_key                  &#61; optional&#40;string&#41;&#10;  labels                   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  global_replica_locations &#61; optional&#40;map&#40;string&#41;&#41;&#10;  location                 &#61; optional&#40;string&#41;&#10;  tag_bindings             &#61; optional&#40;map&#40;string&#41;&#41;&#10;  tags                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  expiration_config &#61; optional&#40;object&#40;&#123;&#10;    time &#61; optional&#40;string&#41;&#10;    ttl  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  version_config &#61; optional&#40;object&#40;&#123;&#10;    aliases     &#61; optional&#40;map&#40;number&#41;&#41;&#10;    destroy_ttl &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  versions &#61; optional&#40;map&#40;object&#40;&#123;&#10;    data            &#61; string&#10;    deletion_policy &#61; optional&#40;string&#41;&#10;    enabled         &#61; optional&#40;bool&#41;&#10;    data_config &#61; optional&#40;object&#40;&#123;&#10;      is_base64          &#61; optional&#40;bool, false&#41;&#10;      is_file            &#61; optional&#40;bool, false&#41;&#10;      write_only_version &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [versions](variables.tf#L133) | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  enabled &#61; bool&#10;  data    &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [ids](outputs.tf#L17) | Fully qualified secret ids. |  |
-| [secrets](outputs.tf#L27) | Secret resources. |  |
-| [version_ids](outputs.tf#L36) | Version ids keyed by secret name : version name. |  |
-| [version_versions](outputs.tf#L46) | Version versions keyed by secret name : version name. |  |
-| [versions](outputs.tf#L56) | Secret versions. | ✓ |
+| [ids](outputs.tf#L24) | Fully qualified secret ids. |  |
+| [secrets](outputs.tf#L32) | Secret resources. |  |
 <!-- END TFDOC -->
 ## Requirements
 
