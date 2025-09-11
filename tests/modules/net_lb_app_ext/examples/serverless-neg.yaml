@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,7 +62,6 @@ values:
       url_mask: null
     description: Terraform managed.
     name: glb-test-0-neg-0
-    network: null
     network_endpoint_type: SERVERLESS
     project: project-id
     psc_target_service: null

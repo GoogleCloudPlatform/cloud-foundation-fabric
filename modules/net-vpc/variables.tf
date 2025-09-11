@@ -319,7 +319,7 @@ variable "subnets" {
           for field in [s.ip_cidr_range, s.reserved_internal_range, s.ip_collection] :
           field if field != null
         ]) == 1
-      ) || (
+        ) || (
         length([
           for field in [s.ip_cidr_range, s.reserved_internal_range, s.ip_collection] :
           field if field != null
