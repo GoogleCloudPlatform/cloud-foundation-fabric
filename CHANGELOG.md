@@ -7,17 +7,19 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
-- `modules/secret-manager`: the module interface has changed and been brought up to date with our current modules' shared interfaces; please test and refactor appropriately before using it in existing installations. This new version is **incompatible with OpenTofu** as it lacks support for write-once attributes. [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)]
+- `modules/secret-manager`: the module interface has changed and been brought up to date with our current modules' shared interfaces; please test and refactor appropriately before using it in existing installations. This new version is **incompatible with OpenTofu** as it lacks support for write-only attributes. [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)]
 - `modules/secure-source-manager-instance`: Changed interface to declare private instances. [[#3310](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3310)]
 
 
 ### FAST
 
+- [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
 - [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
 - [[#3305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3305)] Improve context support in vpc-sc module and stage / new FAST stages small fixes ([ludoo](https://github.com/ludoo)) <!-- 2025-09-07 12:59:47+00:00 -->
 
 ### MODULES
 
+- [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
 - [[#3316](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3316)] Add support for upgrade notification filters to GKE cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 14:03:32+00:00 -->
 - [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
 - [[#3313](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3313)] Add support for startup script to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-09 11:49:38+00:00 -->
