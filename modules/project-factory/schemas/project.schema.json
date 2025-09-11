@@ -295,6 +295,9 @@
         }
       }
     },
+    "project_template": {
+      "type": "string"
+    },
     "service_accounts": {
       "type": "object",
       "additionalProperties": false,
