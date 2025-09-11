@@ -129,10 +129,13 @@ variable "internal_ranges" {
   }
   validation {
     condition = alltrue([
-      for r in var.internal_ranges :
-      r.allocation_options == null || (
-        r.allocation_options.allocation_strategy == null ||
-        contains(["RANDOM", "FIRST_AVAILABLE", "RANDOM_FIRST_N_AVAILABLE", "FIRST_SMALLEST_FITTING"], r.allocation_options.allocation_strategy)
+      for r in var.internal_ranges : (
+        r.allocation_options == null ||
+        try(r.allocation_options.allocation_strategy, null) == null ||
+        contains(
+          ["RANDOM", "FIRST_AVAILABLE", "RANDOM_FIRST_N_AVAILABLE", "FIRST_SMALLEST_FITTING"],
+          try(r.allocation_options.allocation_strategy, "")
+        )
       )
     ])
     error_message = "Allocation strategy must be one of: RANDOM, FIRST_AVAILABLE, RANDOM_FIRST_N_AVAILABLE, FIRST_SMALLEST_FITTING."
@@ -141,7 +144,7 @@ variable "internal_ranges" {
     condition = alltrue([
       for r in var.internal_ranges :
       r.overlaps == null || alltrue([
-        for overlap in r.overlaps :
+        for overlap in coalesce(r.overlaps, []) :
         contains(["OVERLAP_ROUTE_RANGE", "OVERLAP_EXISTING_SUBNET_RANGE"], overlap)
       ])
     ])
