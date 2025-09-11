@@ -162,3 +162,20 @@ output "subnets_psc" {
   description = "Private Service Connect subnet resources."
   value       = { for k, v in google_compute_subnetwork.psc : k => v }
 }
+
+output "internal_ranges" {
+  description = "Internal range resources."
+  value       = { for k, v in google_network_connectivity_internal_range.internal_range : k => v }
+}
+
+output "internal_range_ids" {
+  description = "Map of internal range IDs keyed by name."
+  value       = { for k, v in google_network_connectivity_internal_range.internal_range : k => v.id }
+}
+
+output "internal_range_ip_cidr_ranges" {
+  description = "Map of internal range IP CIDR ranges keyed by name."
+  value = {
+    for k, v in google_network_connectivity_internal_range.internal_range : k => v.ip_cidr_range
+  }
+}

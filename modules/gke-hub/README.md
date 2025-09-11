@@ -39,8 +39,8 @@ module "vpc" {
     name          = "cluster-1"
     region        = "europe-west1"
     secondary_ip_range = {
-      pods     = "10.1.0.0/16"
-      services = "10.2.0.0/24"
+      pods     = { ip_cidr_range = "10.1.0.0/16" }
+      services = { ip_cidr_range = "10.2.0.0/24" }
     }
   }]
 }
@@ -142,8 +142,8 @@ module "vpc" {
       name          = "subnet-cluster-1"
       region        = "europe-west1"
       secondary_ip_ranges = {
-        pods     = "10.1.0.0/16"
-        services = "10.2.0.0/24"
+        pods     = { ip_cidr_range = "10.1.0.0/16" }
+        services = { ip_cidr_range = "10.2.0.0/24" }
       }
     },
     {
@@ -151,8 +151,8 @@ module "vpc" {
       name          = "subnet-cluster-2"
       region        = "europe-west4"
       secondary_ip_ranges = {
-        pods     = "10.3.0.0/16"
-        services = "10.4.0.0/24"
+        pods     = { ip_cidr_range = "10.3.0.0/16" }
+        services = { ip_cidr_range = "10.4.0.0/24" }
       }
     },
     {

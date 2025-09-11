@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ module "net-vpc-host" {
       name          = "fixture-subnet-24"
       region        = var.region
       secondary_ip_ranges = {
-        pods     = "172.16.0.0/20"
-        services = "192.168.0.0/24"
+        pods     = { ip_cidr_range = "172.16.0.0/20" }
+        services = { ip_cidr_range = "192.168.0.0/24" }
       }
     },
     {
@@ -79,8 +79,8 @@ module "net-vpc-host" {
       name          = "fixture-subnet-28"
       region        = var.region
       secondary_ip_ranges = {
-        pods     = "172.16.16.0/20"
-        services = "192.168.1.0/24"
+        pods     = { ip_cidr_range = "172.16.16.0/20" }
+        services = { ip_cidr_range = "192.168.1.0/24" }
       }
     }
 
