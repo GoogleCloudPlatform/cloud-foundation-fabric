@@ -4,8 +4,20 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "ip_cidr_range",
     "region"
+  ],
+  "anyOf": [
+    {"required": ["ip_cidr_range"]},
+    {"required": ["reserved_internal_range"]},
+    {"required": ["ip_collection"]},
+    {
+      "allOf": [
+        {"not": {"required": ["ip_cidr_range"]}},
+        {"not": {"required": ["reserved_internal_range"]}},
+        {"not": {"required": ["ip_collection"]}},
+        {"properties": {"ipv6": {"properties": {"ipv6_only": {"const": true}}}}, "required": ["ipv6"]}
+      ]
+    }
   ],
   "properties": {
     "active": {
@@ -50,6 +62,10 @@
     "ip_cidr_range": {
       "type": "string"
     },
+    "reserved_internal_range": {
+      "type": "string",
+      "description": "Name of the internal range to use for this subnet. Mutually exclusive with ip_cidr_range and ip_collection."
+    },
     "ipv6": {
       "type": "object",
       "additionalProperties": false,
@@ -80,7 +96,30 @@
     "secondary_ip_ranges": {
       "type": "object",
       "additionalProperties": {
-        "type": "string"
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "IP CIDR range for backward compatibility"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "anyOf": [
+              {"required": ["ip_cidr_range"]},
+              {"required": ["reserved_internal_range"]}
+            ],
+            "properties": {
+              "ip_cidr_range": {
+                "type": "string",
+                "description": "IP CIDR range for this secondary range"
+              },
+              "reserved_internal_range": {
+                "type": "string",
+                "description": "Name of the internal range to use for this secondary range"
+              }
+            }
+          }
+        ]
       }
     },
     "iam": {

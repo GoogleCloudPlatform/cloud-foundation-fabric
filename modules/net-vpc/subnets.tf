@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ locals {
       description                      = try(v.description, null)
       enable_private_access            = try(v.enable_private_access, true)
       allow_subnet_cidr_routes_overlap = try(v.allow_subnet_cidr_routes_overlap, null)
+      reserved_internal_range          = try(v.reserved_internal_range, null)
       flow_logs_config = can(v.flow_logs_config) ? {
         aggregation_interval = try(v.flow_logs_config.aggregation_interval, null)
         filter_expression    = try(v.flow_logs_config.filter_expression, null)
@@ -42,16 +43,22 @@ locals {
         metadata_fields      = try(v.flow_logs_config.metadata_fields, null)
       } : null
       global        = try(v.global, false)
-      ip_cidr_range = v.ip_cidr_range
+      ip_cidr_range = try(v.ip_cidr_range, null)
       ipv6 = !can(v.ipv6) ? null : {
         access_type = try(v.ipv6.access_type, "INTERNAL")
         ipv6_only   = try(v.ipv6.ipv6_only, false)
       }
-      ip_collection       = try(v.ip_collection, null)
-      name                = try(v.name, k)
-      region              = v.region_computed
-      secondary_ip_ranges = try(v.secondary_ip_ranges, null)
-      iam                 = try(v.iam, {})
+      ip_collection = try(v.ip_collection, null)
+      name          = try(v.name, k)
+      region        = v.region_computed
+      secondary_ip_ranges = !can(v.secondary_ip_ranges) ? null : {
+        for k2, v2 in v.secondary_ip_ranges :
+        k2 => {
+          ip_cidr_range           = try(v2.ip_cidr_range, null)
+          reserved_internal_range = try(v2.reserved_internal_range, null)
+        }
+      }
+      iam = try(v.iam, {})
       iam_bindings = !can(v.iam_bindings) ? {} : {
         for k2, v2 in v.iam_bindings :
         k2 => {
@@ -151,6 +158,11 @@ resource "google_compute_subnetwork" "subnetwork" {
   region                           = each.value.region
   ip_cidr_range                    = try(each.value.ipv6.ipv6_only, false) ? null : each.value.ip_cidr_range
   allow_subnet_cidr_routes_overlap = each.value.allow_subnet_cidr_routes_overlap
+  reserved_internal_range = (
+    each.value.reserved_internal_range != null
+    ? "networkconnectivity.googleapis.com/${try(local.internal_ranges_ids[each.value.reserved_internal_range], each.value.reserved_internal_range)}"
+    : null
+  )
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
@@ -178,7 +190,12 @@ resource "google_compute_subnetwork" "subnetwork" {
     for_each = each.value.secondary_ip_ranges == null ? {} : each.value.secondary_ip_ranges
     content {
       range_name    = secondary_ip_range.key
-      ip_cidr_range = secondary_ip_range.value
+      ip_cidr_range = try(secondary_ip_range.value.ip_cidr_range, secondary_ip_range.value)
+      reserved_internal_range = (
+        try(secondary_ip_range.value.reserved_internal_range, null) != null
+        ? "networkconnectivity.googleapis.com/${try(local.internal_ranges_ids[secondary_ip_range.value.reserved_internal_range], secondary_ip_range.value.reserved_internal_range)}"
+        : null
+      )
     }
   }
   dynamic "log_config" {
