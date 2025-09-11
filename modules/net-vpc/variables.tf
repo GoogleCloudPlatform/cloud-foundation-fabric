@@ -393,7 +393,7 @@ variable "subnets" {
     condition = alltrue([
       for s in var.subnets :
       s.secondary_ip_ranges == null || alltrue([
-        for range_name, range_config in s.secondary_ip_ranges :
+        for range_name, range_config in coalesce(s.secondary_ip_ranges, {}) :
         (range_config.ip_cidr_range != null) != (range_config.reserved_internal_range != null)
       ])
     ])
