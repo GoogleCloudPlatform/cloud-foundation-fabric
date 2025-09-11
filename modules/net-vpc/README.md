@@ -931,23 +931,23 @@ secondary_ip_ranges:
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Fully qualified network id. |  |
-| [internal_ipv6_range](outputs.tf#L29) | ULA range. |  |
-| [internal_range_ids](outputs.tf#L171) | Map of internal range IDs keyed by name. |  |
-| [internal_range_ip_cidr_ranges](outputs.tf#L176) | Map of internal range IP CIDR ranges keyed by name. |  |
-| [internal_ranges](outputs.tf#L166) | Internal range resources. |  |
-| [name](outputs.tf#L34) | Network name. |  |
-| [network](outputs.tf#L46) | Network resource. |  |
-| [network_attachment_ids](outputs.tf#L58) | IDs of network attachments. |  |
-| [project_id](outputs.tf#L66) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
-| [self_link](outputs.tf#L79) | Network self link. |  |
-| [subnet_ids](outputs.tf#L91) | Map of subnet IDs keyed by name. |  |
-| [subnet_ips](outputs.tf#L100) | Map of subnet address ranges keyed by name. |  |
-| [subnet_ipv6_external_prefixes](outputs.tf#L107) | Map of subnet external IPv6 prefixes keyed by name. |  |
-| [subnet_regions](outputs.tf#L115) | Map of subnet regions keyed by name. |  |
-| [subnet_secondary_ranges](outputs.tf#L122) | Map of subnet secondary ranges keyed by name. |  |
-| [subnet_self_links](outputs.tf#L133) | Map of subnet self links keyed by name. |  |
-| [subnets](outputs.tf#L142) | Subnet resources. |  |
-| [subnets_private_nat](outputs.tf#L151) | Private NAT subnet resources. |  |
-| [subnets_proxy_only](outputs.tf#L156) | L7 ILB or L7 Regional LB subnet resources. |  |
-| [subnets_psc](outputs.tf#L161) | Private Service Connect subnet resources. |  |
+| [internal_ipv6_range](outputs.tf#L46) | ULA range. |  |
+| [internal_range_ids](outputs.tf#L29) | Map of internal range IDs keyed by name. |  |
+| [internal_range_ip_cidr_ranges](outputs.tf#L34) | Map of internal range IP CIDR ranges keyed by name. |  |
+| [internal_ranges](outputs.tf#L41) | Internal range resources. |  |
+| [name](outputs.tf#L51) | Network name. |  |
+| [network](outputs.tf#L63) | Network resource. |  |
+| [network_attachment_ids](outputs.tf#L75) | IDs of network attachments. |  |
+| [project_id](outputs.tf#L83) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
+| [self_link](outputs.tf#L96) | Network self link. |  |
+| [subnet_ids](outputs.tf#L108) | Map of subnet IDs keyed by name. |  |
+| [subnet_ips](outputs.tf#L117) | Map of subnet address ranges keyed by name. |  |
+| [subnet_ipv6_external_prefixes](outputs.tf#L124) | Map of subnet external IPv6 prefixes keyed by name. |  |
+| [subnet_regions](outputs.tf#L132) | Map of subnet regions keyed by name. |  |
+| [subnet_secondary_ranges](outputs.tf#L139) | Map of subnet secondary ranges keyed by name. |  |
+| [subnet_self_links](outputs.tf#L150) | Map of subnet self links keyed by name. |  |
+| [subnets](outputs.tf#L159) | Subnet resources. |  |
+| [subnets_private_nat](outputs.tf#L168) | Private NAT subnet resources. |  |
+| [subnets_proxy_only](outputs.tf#L173) | L7 ILB or L7 Regional LB subnet resources. |  |
+| [subnets_psc](outputs.tf#L178) | Private Service Connect subnet resources. |  |
 <!-- END TFDOC -->
