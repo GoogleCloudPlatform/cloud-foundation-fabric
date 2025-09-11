@@ -88,6 +88,67 @@ variable "firewall_policy_enforcement_order" {
   }
 }
 
+variable "internal_ranges" {
+  description = "Internal range configuration for IPAM operations within the VPC network."
+  type = list(object({
+    name                = string
+    description         = optional(string)
+    ip_cidr_range       = optional(string)
+    labels              = optional(map(string), {})
+    usage               = string
+    peering             = string
+    prefix_length       = optional(number)
+    target_cidr_range   = optional(list(string))
+    exclude_cidr_ranges = optional(list(string))
+    overlaps            = optional(list(string))
+    immutable           = optional(bool)
+    allocation_options = optional(object({
+      allocation_strategy                = optional(string)
+      first_available_ranges_lookup_size = optional(number)
+    }))
+    migration = optional(object({
+      source = string
+      target = string
+    }))
+  }))
+  default  = []
+  nullable = false
+  validation {
+    condition = alltrue([
+      for r in var.internal_ranges :
+      contains(["FOR_VPC", "EXTERNAL_TO_VPC", "FOR_MIGRATION"], r.usage)
+    ])
+    error_message = "Usage must be one of: FOR_VPC, EXTERNAL_TO_VPC, FOR_MIGRATION."
+  }
+  validation {
+    condition = alltrue([
+      for r in var.internal_ranges :
+      contains(["FOR_SELF", "FOR_PEER", "NOT_SHARED"], r.peering)
+    ])
+    error_message = "Peering must be one of: FOR_SELF, FOR_PEER, NOT_SHARED."
+  }
+  validation {
+    condition = alltrue([
+      for r in var.internal_ranges :
+      r.allocation_options == null || (
+        r.allocation_options.allocation_strategy == null ||
+        contains(["RANDOM", "FIRST_AVAILABLE", "RANDOM_FIRST_N_AVAILABLE", "FIRST_SMALLEST_FITTING"], r.allocation_options.allocation_strategy)
+      )
+    ])
+    error_message = "Allocation strategy must be one of: RANDOM, FIRST_AVAILABLE, RANDOM_FIRST_N_AVAILABLE, FIRST_SMALLEST_FITTING."
+  }
+  validation {
+    condition = alltrue([
+      for r in var.internal_ranges :
+      r.overlaps == null || alltrue([
+        for overlap in r.overlaps :
+        contains(["OVERLAP_ROUTE_RANGE", "OVERLAP_EXISTING_SUBNET_RANGE"], overlap)
+      ])
+    ])
+    error_message = "Overlaps must contain only: OVERLAP_ROUTE_RANGE, OVERLAP_EXISTING_SUBNET_RANGE."
+  }
+}
+
 variable "ipv6_config" {
   description = "Optional IPv6 configuration for this network."
   type = object({
@@ -416,67 +477,6 @@ variable "subnets_psc" {
   }))
   default  = []
   nullable = false
-}
-
-variable "internal_ranges" {
-  description = "Internal range configuration for IPAM operations within the VPC network."
-  type = list(object({
-    name                = string
-    description         = optional(string)
-    ip_cidr_range       = optional(string)
-    labels              = optional(map(string), {})
-    usage               = string
-    peering             = string
-    prefix_length       = optional(number)
-    target_cidr_range   = optional(list(string))
-    exclude_cidr_ranges = optional(list(string))
-    overlaps            = optional(list(string))
-    immutable           = optional(bool)
-    allocation_options = optional(object({
-      allocation_strategy                = optional(string)
-      first_available_ranges_lookup_size = optional(number)
-    }))
-    migration = optional(object({
-      source = string
-      target = string
-    }))
-  }))
-  default  = []
-  nullable = false
-  validation {
-    condition = alltrue([
-      for r in var.internal_ranges :
-      contains(["FOR_VPC", "EXTERNAL_TO_VPC", "FOR_MIGRATION"], r.usage)
-    ])
-    error_message = "Usage must be one of: FOR_VPC, EXTERNAL_TO_VPC, FOR_MIGRATION."
-  }
-  validation {
-    condition = alltrue([
-      for r in var.internal_ranges :
-      contains(["FOR_SELF", "FOR_PEER", "NOT_SHARED"], r.peering)
-    ])
-    error_message = "Peering must be one of: FOR_SELF, FOR_PEER, NOT_SHARED."
-  }
-  validation {
-    condition = alltrue([
-      for r in var.internal_ranges :
-      r.allocation_options == null || (
-        r.allocation_options.allocation_strategy == null ||
-        contains(["RANDOM", "FIRST_AVAILABLE", "RANDOM_FIRST_N_AVAILABLE", "FIRST_SMALLEST_FITTING"], r.allocation_options.allocation_strategy)
-      )
-    ])
-    error_message = "Allocation strategy must be one of: RANDOM, FIRST_AVAILABLE, RANDOM_FIRST_N_AVAILABLE, FIRST_SMALLEST_FITTING."
-  }
-  validation {
-    condition = alltrue([
-      for r in var.internal_ranges :
-      r.overlaps == null || alltrue([
-        for overlap in r.overlaps :
-        contains(["OVERLAP_ROUTE_RANGE", "OVERLAP_EXISTING_SUBNET_RANGE"], overlap)
-      ])
-    ])
-    error_message = "Overlaps must contain only: OVERLAP_ROUTE_RANGE, OVERLAP_EXISTING_SUBNET_RANGE."
-  }
 }
 
 variable "vpc_reuse" {
