@@ -931,10 +931,10 @@ secondary_ip_ranges:
 | name | description | sensitive |
 |---|---|:---:|
 | [id](outputs.tf#L17) | Fully qualified network id. |  |
-| [internal_ipv6_range](outputs.tf#L46) | ULA range. |  |
-| [internal_range_ids](outputs.tf#L29) | Map of internal range IDs keyed by name. |  |
-| [internal_range_ip_cidr_ranges](outputs.tf#L34) | Map of internal range IP CIDR ranges keyed by name. |  |
-| [internal_ranges](outputs.tf#L41) | Internal range resources. |  |
+| [internal_ipv6_range](outputs.tf#L29) | ULA range. |  |
+| [internal_range_ids](outputs.tf#L34) | Map of internal range IDs keyed by name. |  |
+| [internal_range_ip_cidr_ranges](outputs.tf#L39) | Map of internal range IP CIDR ranges keyed by name. |  |
+| [internal_ranges](outputs.tf#L46) | Internal range resources. |  |
 | [name](outputs.tf#L51) | Network name. |  |
 | [network](outputs.tf#L63) | Network resource. |  |
 | [network_attachment_ids](outputs.tf#L75) | IDs of network attachments. |  |
