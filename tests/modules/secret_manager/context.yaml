@@ -1,0 +1,125 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_secret_manager_regional_secret.default["test-regional"]:
+    annotations: null
+    customer_managed_encryption:
+    - kms_key_name: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
+    deletion_protection: false
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west1
+    project: test-0
+    rotation: []
+    secret_id: test-regional
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    topics: []
+    ttl: null
+    version_aliases: null
+    version_destroy_ttl: null
+  google_secret_manager_regional_secret_iam_binding.authoritative["test-regional.$custom_roles:myrole_one"]:
+    condition: []
+    location: europe-west1
+    members:
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_secret_manager_regional_secret_iam_binding.authoritative["test-regional.roles/viewer"]:
+    condition: []
+    location: europe-west1
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: roles/viewer
+  google_secret_manager_regional_secret_iam_binding.bindings["test-regional-myrole_two"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/environment', 'development')
+      title: Test
+    location: europe-west1
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_secret_manager_regional_secret_iam_member.members["test-regional-myrole_two"]:
+    condition: []
+    location: europe-west1
+    member: user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_secret_manager_secret.default["test-global"]:
+    annotations: null
+    deletion_protection: false
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    project: test-0
+    replication:
+    - auto:
+      - customer_managed_encryption:
+        - kms_key_name: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
+      user_managed: []
+    rotation: []
+    secret_id: test-global
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    topics: []
+    ttl: null
+    version_aliases: null
+    version_destroy_ttl: null
+  google_secret_manager_secret_iam_binding.authoritative["test-global.$custom_roles:myrole_one"]:
+    condition: []
+    members:
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_secret_manager_secret_iam_binding.authoritative["test-global.roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: roles/viewer
+  google_secret_manager_secret_iam_binding.bindings["test-global-myrole_two"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/environment', 'development')
+      title: Test
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_secret_manager_secret_iam_member.members["test-global-myrole_two"]:
+    condition: []
+    member: user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_tags_location_tag_binding.binding["test-regional/foo"]:
+    location: europe-west1
+    parent: //secretmanager.googleapis.com/projects/test-0/locations/europe-west1/secrets/test-regional
+    tag_value: tagValues/1234567890
+    timeouts: null
+  google_tags_tag_binding.binding["test-global/foo"]:
+    parent: //secretmanager.googleapis.com/projects/test-0/secrets/test-global
+    tag_value: tagValues/1234567890
+    timeouts: null
+counts:
+  google_secret_manager_regional_secret: 1
+  google_secret_manager_regional_secret_iam_binding: 3
+  google_secret_manager_regional_secret_iam_member: 1
+  google_secret_manager_secret: 1
+  google_secret_manager_secret_iam_binding: 3
+  google_secret_manager_secret_iam_member: 1
+  google_tags_location_tag_binding: 1
+  google_tags_tag_binding: 1
+  modules: 0
+  resources: 12
