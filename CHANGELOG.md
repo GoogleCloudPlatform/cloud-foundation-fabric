@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3316](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3316)] Add support for upgrade notification filters to GKE cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 14:03:32+00:00 -->
 - [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
 - [[#3313](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3313)] Add support for startup script to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-09 11:49:38+00:00 -->
 - [[#3286](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3286)] Added support for cross-project NEGs in net-lb-app-int module ([avh01](https://github.com/avh01)) <!-- 2025-09-09 07:18:30+00:00 -->
