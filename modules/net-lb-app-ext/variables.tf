@@ -88,7 +88,7 @@ variable "group_configs" {
 }
 
 variable "http_proxy_config" {
-  description = "HTTP proxy connfiguration. Only used for non-classic load balancers."
+  description = "HTTP proxy configuration. Only used for non-classic load balancers."
   type = object({
     name                   = optional(string)
     description            = optional(string, "Terraform managed.")
