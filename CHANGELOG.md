@@ -7,18 +7,23 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/net-lb-app-int`: resource names for new-style HTTP and HTTP proxies have changed. If you upgrade the module, please rename those resources in state via `terraform state mv`. [[#3320](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3320)]
+- `modules/net-vpc`: the values of `secondary_ip_ranges` changed from a string to an object. [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)]
 - `modules/secret-manager`: the module interface has changed and been brought up to date with our current modules' shared interfaces; please test and refactor appropriately before using it in existing installations. This new version is **incompatible with OpenTofu** as it lacks support for write-only attributes. [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)]
 - `modules/secure-source-manager-instance`: Changed interface to declare private instances. [[#3310](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3310)]
 
 
 ### FAST
 
+- [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)] Add support for VPC internal ranges to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2025-09-11 17:42:55+00:00 -->
 - [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
 - [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
 - [[#3305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3305)] Improve context support in vpc-sc module and stage / new FAST stages small fixes ([ludoo](https://github.com/ludoo)) <!-- 2025-09-07 12:59:47+00:00 -->
 
 ### MODULES
 
+- [[#3320](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3320)] Add http_keep_alive_timeout_sec to application load balancers ([ludoo](https://github.com/ludoo)) <!-- 2025-09-12 12:17:01+00:00 -->
+- [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)] Add support for VPC internal ranges to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2025-09-11 17:42:55+00:00 -->
 - [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
 - [[#3316](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3316)] Add support for upgrade notification filters to GKE cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 14:03:32+00:00 -->
 - [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
@@ -28,6 +33,10 @@ All notable changes to this project will be documented in this file.
 - [[#3308](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3308)] Add validation to kms key variables ([ludoo](https://github.com/ludoo)) <!-- 2025-09-08 09:14:40+00:00 -->
 - [[#3307](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3307)] Add support for context in kms module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-07 13:15:27+00:00 -->
 - [[#3305](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3305)] Improve context support in vpc-sc module and stage / new FAST stages small fixes ([ludoo](https://github.com/ludoo)) <!-- 2025-09-07 12:59:47+00:00 -->
+
+### TOOLS
+
+- [[#3319](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3319)] Allow skipping selected tests with tofu ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 12:53:56+00:00 -->
 
 ## [44.1.0] - 2025-09-06
 
