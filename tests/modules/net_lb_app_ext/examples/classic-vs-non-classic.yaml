@@ -71,7 +71,7 @@ values:
     timeout_sec: 5
     timeouts: null
     unhealthy_threshold: 2
-  module.glb-0.google_compute_target_http_proxy.default[0]:
+  module.glb-0.google_compute_target_http_proxy.new[0]:
     description: Terraform managed.
     http_keep_alive_timeout_sec: null
     name: glb-test-0
