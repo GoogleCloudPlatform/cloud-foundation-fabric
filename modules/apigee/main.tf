@@ -103,6 +103,13 @@ resource "google_apigee_instance" "instances" {
   )
   disk_encryption_key_name = each.value.disk_encryption_key
   consumer_accept_list     = each.value.consumer_accept_list
+  dynamic "access_logging_config" {
+    for_each = each.value.access_logging == null ? [] : [""]
+    content {
+      enabled = each.value.access_logging.enabled
+      filter  = each.value.access_logging.filter
+    }
+  }
 }
 
 resource "google_apigee_nat_address" "apigee_nat" {
