@@ -82,8 +82,8 @@ resource "google_compute_global_forwarding_rule" "forwarding_rules" {
 resource "google_compute_target_http_proxy" "default" {
   count       = var.protocol == "HTTPS" ? 0 : 1
   project     = var.project_id
-  name        = var.name
-  description = var.description
+  name        = coalesce(var.https_proxy_config.name, var.name)
+  description = var.http_proxy_config.description
   url_map     = google_compute_url_map.default.id
 }
 
@@ -93,6 +93,7 @@ resource "google_compute_target_https_proxy" "default" {
   name                             = coalesce(var.https_proxy_config.name, var.name)
   description                      = var.https_proxy_config.description
   certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
+  http_keep_alive_timeout_sec      = var.https_proxy_config.http_keepalive_timeout
   quic_override                    = var.https_proxy_config.quic_override
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_url_map.default.id

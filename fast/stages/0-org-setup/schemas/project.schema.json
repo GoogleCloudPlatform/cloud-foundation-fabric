@@ -295,6 +295,9 @@
         }
       }
     },
+    "project_template": {
+      "type": "string"
+    },
     "service_accounts": {
       "type": "object",
       "additionalProperties": false,
@@ -477,6 +480,27 @@
                   "type": "string"
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "universe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prefix": {
+          "type": "string",
+          "unavailable_services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unavailable_service_identities": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           }
         }

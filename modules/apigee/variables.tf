@@ -96,6 +96,10 @@ variable "instances" {
     name                          = optional(string)
     runtime_ip_cidr_range         = optional(string)
     troubleshooting_ip_cidr_range = optional(string)
+    access_logging = optional(object({
+      enabled = optional(bool, true)
+      filter  = optional(string)
+    }))
   }))
   validation {
     condition = alltrue([

@@ -114,6 +114,48 @@
                 }
               }
             },
+            "logging_data_access": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ADMIN_READ": {
+                    "type": "object",
+                    "properties": {
+                      "exempted_members": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "DATA_READ": {
+                    "type": "object",
+                    "properties": {
+                      "exempted_members": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "DATA_WRITE": {
+                    "type": "object",
+                    "properties": {
+                      "exempted_members": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
             "metric_scopes": {
               "type": "array",
               "default": [],
@@ -268,6 +310,24 @@
                 }
               }
             },
+            "universe": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "prefix"
+              ],
+              "properties": {
+                "prefix": {
+                  "type": "string"
+                },
+                "unavailable_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
             "vpc_sc": {
               "type": "object",
               "properties": {
@@ -281,6 +341,45 @@
               },
               "required": [
                 "perimeter_name"
+              ]
+            }
+          }
+        },
+        "overrides": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "billing_account": {
+              "type": "string"
+            },
+            "bucket": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "force_destroy": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "contacts": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z0-9_-]+$": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "deletion_policy": {
+              "type": "string",
+              "enum": [
+                "PREVENT",
+                "DELETE",
+                "ABANDON"
               ]
             },
             "logging_data_access": {
@@ -324,45 +423,6 @@
                   }
                 }
               }
-            }
-          }
-        },
-        "overrides": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "billing_account": {
-              "type": "string"
-            },
-            "bucket": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "force_destroy": {
-                  "type": "boolean"
-                }
-              }
-            },
-            "contacts": {
-              "type": "object",
-              "default": {},
-              "additionalProperties": false,
-              "patternProperties": {
-                "^[a-z0-9_-]+$": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "deletion_policy": {
-              "type": "string",
-              "enum": [
-                "PREVENT",
-                "DELETE",
-                "ABANDON"
-              ]
             },
             "parent": {
               "type": "string"
@@ -412,6 +472,24 @@
                 }
               }
             },
+            "universe": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "prefix"
+              ],
+              "properties": {
+                "prefix": {
+                  "type": "string"
+                },
+                "unavailable_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
             "vpc_sc": {
               "type": "object",
               "properties": {
@@ -426,48 +504,6 @@
               "required": [
                 "perimeter_name"
               ]
-            },
-            "logging_data_access": {
-              "type": "object",
-              "default": {},
-              "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "ADMIN_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_WRITE": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
         }

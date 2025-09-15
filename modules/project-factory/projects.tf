@@ -27,7 +27,9 @@ locals {
   }
   _projects_input = {
     for k, v in merge(local._folder_projects_raw, local._projects_raw) :
-    basename(k) => v
+    basename(k) => merge(
+      try(local._templates_raw[v.project_template], {}), v
+    )
   }
   _projects_path = try(
     pathexpand(var.factories_config.projects), null
@@ -35,6 +37,13 @@ locals {
   _projects_raw = {
     for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
+  }
+  _templates_path = try(
+    pathexpand(var.factories_config.project_templates), null
+  )
+  _templates_raw = {
+    for f in try(fileset(local._templates_path, "**/*.yaml"), []) :
+    trimsuffix(f, ".yaml") => yamldecode(file("${local._templates_path}/${f}"))
   }
   ctx_project_ids = merge(local.ctx.project_ids, local.project_ids)
   project_ids = {

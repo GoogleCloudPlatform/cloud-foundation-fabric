@@ -21,6 +21,7 @@ See FabricTestFile for details on the file structure.
 
 import fnmatch
 import json
+import os
 import re
 from pathlib import Path
 
@@ -61,7 +62,6 @@ class FabricTestFile(pytest.File):
     will be taken from the file test-name.yaml
 
     """
-
     try:
       raw = yaml.safe_load(self.path.open())
       module = raw.pop('module')
@@ -72,6 +72,8 @@ class FabricTestFile(pytest.File):
     common = raw.pop('common_tfvars', [])
     for test_name, spec in raw.get('tests', {}).items():
       spec = {} if spec is None else spec
+      if spec.get('skip_tofu') and os.environ.get('TERRAFORM') == 'tofu':
+        continue
       extra_dirs = spec.get('extra_dirs')
       extra_files = spec.get('extra_files')
       inventories = spec.get('inventory', [f'{test_name}.yaml'])

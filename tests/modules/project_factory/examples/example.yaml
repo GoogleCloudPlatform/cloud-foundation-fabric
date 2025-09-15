@@ -289,6 +289,9 @@ values:
   : project: test-pf-dev-ta-app0-be
     service: container.googleapis.com
     timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_binding.binding["context"]:
+    tag_value: tagValues/654321
+    timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_key.default["my-tag-key-1"]:
     description: Managed by the Terraform project-factory module.
     parent: projects/test-pf-dev-ta-app0-be
@@ -594,10 +597,10 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 4
-  google_tags_tag_binding: 1
+  google_tags_tag_binding: 2
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 23
-  resources: 85
+  resources: 86
   terraform_data: 1
