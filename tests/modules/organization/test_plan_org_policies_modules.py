@@ -54,7 +54,7 @@ def test_policy_implementation():
       '-  parent = local.folder_id\n',
       '+  name   = "${var.organization_id}/policies/${each.value}"\n',
       '+  parent = var.organization_id\n',
-      '@@ -187,0 +188,9 @@\n',
+      '@@ -195,0 +196,9 @@\n',
       '+  depends_on = [\n',
       '+    google_organization_iam_binding.authoritative,\n',
       '+    google_organization_iam_binding.bindings,\n',
