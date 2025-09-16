@@ -143,6 +143,13 @@ variable "neg_configs" {
       }))
       target_urlmask = optional(string)
     }))
+    serverless_deployment = optional(object({
+      region   = string
+      platform = string
+      resource = optional(string)
+      version  = optional(string)
+      url_mask = optional(string)
+    }))
     gce = optional(object({
       network    = string
       subnetwork = string
@@ -187,6 +194,7 @@ variable "neg_configs" {
       for k, v in var.neg_configs : (
         (try(v.cloudfunction, null) == null ? 0 : 1) +
         (try(v.cloudrun, null) == null ? 0 : 1) +
+        (try(v.serverless_deployment, null) == null ? 0 : 1) +
         (try(v.gce, null) == null ? 0 : 1) +
         (try(v.hybrid, null) == null ? 0 : 1) +
         (try(v.internet, null) == null ? 0 : 1) +
@@ -214,6 +222,16 @@ variable "neg_configs" {
       )
     ])
     error_message = "Cloud Function NEGs need either target function or target urlmask defined."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        v.serverless_deployment == null
+        ? true
+        : v.serverless_deployment.url_mask != null || v.serverless_deployment.resource != null
+      )
+    ])
+    error_message = "Serverless deployment NEGs need either resource or url_mask defined."
   }
 }
 
