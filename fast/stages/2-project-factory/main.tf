@@ -16,9 +16,25 @@
 
 # tfdoc:file:description Project factory.
 
+locals {
+  subnet_self_links = flatten([
+    for net, subnets in var.subnet_self_links : [
+      for subnet_name, subnet_link in subnets : {
+        key  = "${net}/${subnet_name}"
+        link = subnet_link
+      }
+    ]
+  ])
+}
+
 module "factory" {
   source = "../../../modules/project-factory"
   context = {
+    condition_vars = merge({
+      subnet_self_links = {
+        for v in local.subnet_self_links : v.key => v.link
+      }
+    }, var.context.condition_vars)
     custom_roles = merge(
       var.custom_roles, var.context.custom_roles
     )
@@ -50,20 +66,23 @@ module "factory" {
       var.perimeters, var.context.vpc_sc_perimeters
     )
   }
-  data_defaults = {
-    # more defaults are available, check the project factory variables
-    billing_account  = var.billing_account.id
-    storage_location = var.locations.storage
-  }
-  data_merges = {
-    services = [
+  data_defaults = merge(var.data_defaults, {
+    billing_account = coalesce(
+      var.data_defaults.billing_account, var.billing_account.id
+    )
+    prefix = coalesce(var.data_defaults.prefix, var.prefix)
+    storage_location = coalesce(
+      var.data_defaults.storage_location, var.locations.storage
+    )
+  })
+  data_merges = merge(var.data_merges, {
+    services = length(var.data_merges.services) > 0 ? var.data_merges.services : [
       "logging.googleapis.com",
       "monitoring.googleapis.com"
     ]
-  }
-  data_overrides = {
-    prefix = var.prefix
-  }
+    }
+  )
+  data_overrides = var.data_overrides
   factories_config = merge(var.factories_config, {
     budgets = {
       billing_account_id = try(

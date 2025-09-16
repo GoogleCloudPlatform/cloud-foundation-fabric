@@ -115,6 +115,14 @@ variable "service_accounts" {
   default     = {}
 }
 
+variable "subnet_self_links" {
+  # tfdoc:variable:source 2-networking
+  description = "Shared VPC subnet IDs."
+  type        = map(map(string))
+  nullable    = false
+  default     = {}
+}
+
 variable "tag_values" {
   # tfdoc:variable:source 0-org-setup
   description = "FAST-managed resource manager tag values."
