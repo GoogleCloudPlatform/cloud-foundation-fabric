@@ -40,6 +40,37 @@ variable "context" {
   nullable = false
 }
 
+variable "environments" {
+  description = "Environment names. When not defined, short name is set to the key and tag name to lower(name)."
+  type = map(object({
+    name       = optional(string)
+    is_default = optional(bool, false)
+    short_name = optional(string)
+    tag_name   = optional(string)
+  }))
+  nullable = false
+  validation {
+    condition = anytrue([
+      for k, v in var.environments : v.is_default == true
+    ])
+    error_message = "At least one environment should be marked as default."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.environments : join(" ", regexall(
+        "[a-zA-Z][a-zA-Z0-9\\s-]+[a-zA-Z0-9]", v.name
+      )) == v.name
+    ])
+    error_message = "Environment names can only contain letters numbers dashes or spaces."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.environments : (length(coalesce(v.short_name, k)) <= 4)
+    ])
+    error_message = "If environment key is longer than 4 characters, provide short_name that is at most 4 characters long."
+  }
+}
+
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({

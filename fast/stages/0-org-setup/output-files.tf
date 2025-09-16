@@ -43,6 +43,15 @@ locals {
       billing_account = {
         id = local.defaults.billing_account
       }
+      environments = {
+        for k, v in var.environments : k => {
+          is_default = v.is_default
+          key        = k
+          name       = v.name
+          short_name = v.short_name != null ? v.short_name : k
+          tag_name   = v.tag_name != null ? v.tag_name : lower(v.name)
+        }
+      }
       groups    = local.ctx.iam_principals
       locations = local.defaults.locations
       organization = {

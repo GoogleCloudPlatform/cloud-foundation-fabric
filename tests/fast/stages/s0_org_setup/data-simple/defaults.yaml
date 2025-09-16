@@ -18,6 +18,19 @@
 #   storage_location: europe-west1
 global:
   billing_account: 012345-012345-012345
+  environments:
+    dev:
+      is_default: false
+      key: dev
+      name: Development
+      short_name: dev
+      tag_name: development
+    prod:
+      is_default: true
+      key: prod
+      name: Production
+      short_name: prod
+      tag_name: production
   locations:
     bigquery: europe-west1
     logging: europe-west1
