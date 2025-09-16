@@ -47,7 +47,7 @@ locals {
   }
   neg_regional_serverless = {
     for k, v in var.neg_configs :
-    k => v if v.cloudrun != null || v.cloudfunction != null
+    k => v if v.cloudrun != null || v.cloudfunction != null || v.serverless_deployment != null
   }
   neg_zonal = {
     # we need to rebuild new objects as we cannot merge different types
@@ -137,6 +137,7 @@ resource "google_compute_region_network_endpoint_group" "psc" {
 }
 
 resource "google_compute_region_network_endpoint_group" "serverless" {
+  provider = google-beta
   for_each = local.neg_regional_serverless
   project = (
     each.value.project_id == null
@@ -144,7 +145,10 @@ resource "google_compute_region_network_endpoint_group" "serverless" {
     : each.value.project_id
   )
   region = try(
-    each.value.cloudrun.region, each.value.cloudfunction.region, null
+    each.value.cloudrun.region,
+    each.value.cloudfunction.region,
+    each.value.serverless_deployment.region,
+    null
   )
   name                  = "${var.name}-${each.key}"
   description           = coalesce(each.value.description, var.description)
@@ -162,6 +166,15 @@ resource "google_compute_region_network_endpoint_group" "serverless" {
       service  = try(each.value.cloudrun.target_service.name, null)
       tag      = try(each.value.cloudrun.target_service.tag, null)
       url_mask = each.value.cloudrun.target_urlmask
+    }
+  }
+  dynamic "serverless_deployment" {
+    for_each = each.value.serverless_deployment == null ? [] : [""]
+    content {
+      platform = each.value.serverless_deployment.platform
+      resource = each.value.serverless_deployment.resource
+      version  = each.value.serverless_deployment.version
+      url_mask = each.value.serverless_deployment.url_mask
     }
   }
 }

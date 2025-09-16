@@ -51,20 +51,40 @@ output_files:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 1-vpcsc
       service_account: $iam_principals:service_accounts/iac-0/iac-vpcsc-rw
+    1-vpcsc-ro:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 1-vpcsc
+      service_account: $iam_principals:service_accounts/iac-0/iac-vpcsc-ro
     2-networking:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 2-networking
       service_account: $iam_principals:service_accounts/iac-0/iac-networking-rw
+    2-networking-ro:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-networking
+      service_account: $iam_principals:service_accounts/iac-0/iac-networking-ro
     2-security:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 2-security
       service_account: $iam_principals:service_accounts/iac-0/iac-security-rw
+    2-security-ro:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-security
+      service_account: $iam_principals:service_accounts/iac-0/iac-security-ro
     2-project-factory:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 2-project-factory
       service_account: $iam_principals:service_accounts/iac-0/iac-pf-rw
+    2-project-factory-ro:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-project-factory
+      service_account: $iam_principals:service_accounts/iac-0/iac-pf-ro
     3-data-platform-dev:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 3-data-platform-dev
       service_account: $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
+    3-data-platform-dev-ro:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 3-data-platform-dev
+      service_account: $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
 
