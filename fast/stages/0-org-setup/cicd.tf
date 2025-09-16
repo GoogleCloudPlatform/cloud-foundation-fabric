@@ -18,11 +18,11 @@ locals {
   _cicd = try(yamldecode(file(local.paths.cicd)), {})
   _cicd_identity_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
-    "$wif_providers:${k}" => v.id
+    "$wif_providers:${k}" => v.name
   }
   _cicd_output_files = {
     for k, v in google_storage_bucket_object.providers :
-    "$output_files:providers/${k}" => v.name
+    "$output_files:providers/${k}" => split("/", v.name)[1]
   }
   cicd_project_ids = {
     for k, v in merge(
