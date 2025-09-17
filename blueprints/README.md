@@ -14,7 +14,7 @@ For example, to use a blueprint from the `v43.0.0` release, you can use the foll
 
 ```terraform
 module "gke" {
-  source = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//blueprints/gke/autopilot?ref=v35.0.0"
+  source = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//blueprints/gke/autopilot?ref=v43.0.0"
   project_create = {
     billing_account_id = "12345-12345-12345"
     parent             = "folders/123456789"
