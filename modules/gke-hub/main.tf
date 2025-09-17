@@ -105,7 +105,7 @@ resource "google_gke_hub_feature" "default" {
       dynamic "mesh" {
         for_each = var.fleet_default_member_config.mesh != null ? { 1 = 1 } : {}
         content {
-          management = try(mesh.value.management, "MANAGEMENT_AUTOMATIC")
+          management = mesh.value.management
         }
       }
 
@@ -356,9 +356,7 @@ resource "google_gke_hub_feature_membership" "default" {
         source_format = each.value.config_sync.source_format
         enabled       = true
         dynamic "git" {
-          for_each = (
-            try(each.value.config_sync.git, null) == null ? {} : { 1 = 1 }
-          )
+          for_each = each.value.config_sync.git == null ? {} : { 1 = 1 }
           content {
             gcp_service_account_email = (
               each.value.config_sync.git.gcp_service_account_email
