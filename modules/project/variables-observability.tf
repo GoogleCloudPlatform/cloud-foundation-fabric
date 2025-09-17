@@ -25,7 +25,7 @@ variable "alerts" {
     user_labels           = optional(map(string))
     alert_strategy = optional(object({
       auto_close           = optional(string)
-      notification_prompts = optional(string)
+      notification_prompts = optional(list(string))
       notification_rate_limit = optional(object({
         period = optional(string)
       }))
