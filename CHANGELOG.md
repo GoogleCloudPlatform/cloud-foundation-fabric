@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3326)] dev-platform.yaml secondary_ip_ranges syntax fix ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-09-16 13:57:41+00:00 -->
+- [[#3322](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3322)] Added read-only providers to 0-org-setup stage, and fixed CI/CD param… ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-09-16 08:02:02+00:00 -->
 - [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)] Add support for VPC internal ranges to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2025-09-11 17:42:55+00:00 -->
 - [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
 - [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
@@ -22,6 +24,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3323](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3323)] feat: Support serverless_deployment NEG for api gateway ([joshmyers](https://github.com/joshmyers)) <!-- 2025-09-16 09:11:59+00:00 -->
+- [[#3321](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3321)] Add instance access logging support to apigee module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-14 11:14:26+00:00 -->
 - [[#3320](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3320)] Add http_keep_alive_timeout_sec to application load balancers ([ludoo](https://github.com/ludoo)) <!-- 2025-09-12 12:17:01+00:00 -->
 - [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)] Add support for VPC internal ranges to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2025-09-11 17:42:55+00:00 -->
 - [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
