@@ -100,29 +100,29 @@ resource "google_gke_hub_feature" "default" {
     }
   }
   dynamic "fleet_default_member_config" {
-    for_each = var.fleet_default_member_config != null ? [1] : []
+    for_each = var.fleet_default_member_config[*]
     content {
       dynamic "mesh" {
-        for_each = var.fleet_default_member_config.mesh != null ? [1] : []
+        for_each = var.fleet_default_member_config.mesh[*]
         content {
           management = mesh.value.management
         }
       }
 
       dynamic "configmanagement" {
-        for_each = var.fleet_default_member_config.configmanagement != null ? [1] : []
+        for_each = var.fleet_default_member_config.configmanagement[*]
         content {
           version = configmanagement.value.version
 
           dynamic "config_sync" {
-            for_each = configmanagement.value.config_sync != null ? [1] : []
+            for_each = configmanagement.value.config_sync[*]
             content {
               prevent_drift = config_sync.value.prevent_drift
               source_format = config_sync.value.source_format
               enabled       = config_sync.value.enabled
 
               dynamic "git" {
-                for_each = config_sync.value.git != null ? [1] : []
+                for_each = config_sync.value.git[*]
                 content {
                   gcp_service_account_email = git.value.gcp_service_account_email
                   https_proxy               = git.value.https_proxy
@@ -140,7 +140,7 @@ resource "google_gke_hub_feature" "default" {
       }
 
       dynamic "policycontroller" {
-        for_each = var.fleet_default_member_config.policycontroller != null ? [1] : []
+        for_each = var.fleet_default_member_config.policycontroller[*]
         content {
           version = policycontroller.value.version
 
@@ -154,26 +154,26 @@ resource "google_gke_hub_feature" "default" {
             referential_rules_enabled  = policycontroller.value.policy_controller_hub_config.referential_rules_enabled
 
             dynamic "deployment_configs" {
-              for_each = policycontroller.value.policy_controller_hub_config.deployment_configs == null ? {} : policycontroller.value.policy_controller_hub_config.deployment_configs
+              for_each = policycontroller.value.policy_controller_hub_config.deployment_configs[*]
               content {
                 component = deployment_configs.key
 
                 dynamic "container_resources" {
-                  for_each = deployment_configs.value.container_resources == null ? [] : [1]
+                  for_each = deployment_configs.value.container_resources[*]
                   content {
                     dynamic "limits" {
-                      for_each = deployment_configs.value.container_resources.limits == null ? [] : [1]
+                      for_each = deployment_configs.value.container_resources.limits[*]
                       content {
-                        cpu    = deployment_configs.value.container_resources.limits.cpu
-                        memory = deployment_configs.value.container_resources.limits.memory
+                        cpu    = limits.value.cpu
+                        memory = limits.value.memory
                       }
                     }
 
                     dynamic "requests" {
-                      for_each = deployment_configs.value.container_resources.requests == null ? [] : [1]
+                      for_each = deployment_configs.value.container_resources.requests[*]
                       content {
-                        cpu    = deployment_configs.value.container_resources.requests.cpu
-                        memory = deployment_configs.value.container_resources.requests.memory
+                        cpu    = requests.value.cpu
+                        memory = requests.value.memory
                       }
                     }
                   }
@@ -182,7 +182,7 @@ resource "google_gke_hub_feature" "default" {
                 pod_affinity = deployment_configs.value.pod_affinity
 
                 dynamic "pod_toleration" {
-                  for_each = deployment_configs.value.pod_toleration == null ? [] : deployment_configs.value.pod_toleration
+                  for_each = deployment_configs.value.pod_toleration[*]
                   content {
                     key      = pod_toleration.value.key
                     operator = pod_toleration.value.operator
@@ -196,17 +196,17 @@ resource "google_gke_hub_feature" "default" {
             }
 
             dynamic "monitoring" {
-              for_each = policycontroller.value.policy_controller_hub_config.monitoring == null ? [] : [1]
+              for_each = policycontroller.value.policy_controller_hub_config.monitoring[*]
               content {
-                backends = policycontroller.value.policy_controller_hub_config.monitoring.backends
+                backends = monitoring.value.backends
               }
             }
 
             dynamic "policy_content" {
-              for_each = policycontroller.value.policy_controller_hub_config.policy_content == null ? [] : [1]
+              for_each = policycontroller.value.policy_controller_hub_config.policy_content[*]
               content {
                 dynamic "bundles" {
-                  for_each = policycontroller.value.policy_controller_hub_config.policy_content.bundles == null ? {} : policycontroller.value.policy_controller_hub_config.policy_content.bundles
+                  for_each = policy_content.value.bundles == null ? {} : policy_content.value.bundles
                   content {
                     bundle              = bundles.key
                     exempted_namespaces = bundles.value.exempted_namespaces
@@ -214,9 +214,9 @@ resource "google_gke_hub_feature" "default" {
                 }
 
                 dynamic "template_library" {
-                  for_each = policycontroller.value.policy_controller_hub_config.policy_content.template_library == null ? [] : [1]
+                  for_each = policycontroller.value.policy_controller_hub_config.policy_content.template_library[*]
                   content {
-                    installation = policycontroller.value.policy_controller_hub_config.policy_content.template_library.installation
+                    installation = template_library.value.installation
                   }
                 }
               }
@@ -259,10 +259,10 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
       constraint_violation_limit = each.value.policy_controller_hub_config.constraint_violation_limit
 
       dynamic "policy_content" {
-        for_each = each.value.policy_controller_hub_config.policy_content == null ? [] : [1]
+        for_each = each.value.policy_controller_hub_config.policy_content[*]
         content {
           dynamic "bundles" {
-            for_each = each.value.policy_controller_hub_config.policy_content.bundles == null ? {} : each.value.policy_controller_hub_config.policy_content.bundles
+            for_each = policy_content.value.bundles == null ? {} : policy_content.value.bundles
             content {
               bundle_name         = bundles.key
               exempted_namespaces = bundles.value.exempted_namespaces
@@ -270,9 +270,9 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
           }
 
           dynamic "template_library" {
-            for_each = each.value.policy_controller_hub_config.policy_content.template_library == null ? [] : [1]
+            for_each = policy_content.value.template_library[*]
             content {
-              installation = each.value.policy_controller_hub_config.policy_content.template_library.installation
+              installation = template_library.value.installation
             }
           }
         }
@@ -284,21 +284,21 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
           component_name = deployment_configs.key
 
           dynamic "container_resources" {
-            for_each = deployment_configs.value.container_resources == null ? [] : [1]
+            for_each = deployment_configs.value.container_resources[*]
             content {
               dynamic "limits" {
-                for_each = deployment_configs.value.container_resources.limits == null ? [] : [1]
+                for_each = container_resources.value.limits[*]
                 content {
-                  cpu    = deployment_configs.value.container_resources.limits.cpu
-                  memory = deployment_configs.value.container_resources.limits.memory
+                  cpu    = container_resources.value.limits.cpu
+                  memory = container_resources.value.limits.memory
                 }
               }
 
               dynamic "requests" {
-                for_each = deployment_configs.value.container_resources.requests == null ? [] : [1]
+                for_each = container_resources.value.requests[*]
                 content {
-                  cpu    = deployment_configs.value.container_resources.requests.cpu
-                  memory = deployment_configs.value.container_resources.requests.memory
+                  cpu    = requests.value.cpu
+                  memory = requests.value.memory
                 }
               }
             }
@@ -307,7 +307,7 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
           pod_affinity = deployment_configs.value.pod_affinity
 
           dynamic "pod_tolerations" {
-            for_each = deployment_configs.value.pod_tolerations == null ? [] : deployment_configs.value.pod_tolerations
+            for_each = deployment_configs.value.pod_tolerations[*]
             content {
               key      = pod_tolerations.value.key
               operator = pod_tolerations.value.operator
@@ -325,9 +325,9 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
       log_denies_enabled    = each.value.policy_controller_hub_config.log_denies_enabled
 
       dynamic "monitoring" {
-        for_each = each.value.policy_controller_hub_config.monitoring == null ? [] : [1]
+        for_each = each.value.policy_controller_hub_config.monitoring[*]
         content {
-          backends = each.value.policy_controller_hub_config.monitoring.backends
+          backends = monitoring.value.backends
         }
       }
 
@@ -350,37 +350,37 @@ resource "google_gke_hub_feature_membership" "default" {
     version = each.value.version
 
     dynamic "config_sync" {
-      for_each = each.value.config_sync == null ? [] : [1]
+      for_each = each.value.config_sync[*]
       content {
-        prevent_drift = each.value.config_sync.prevent_drift
-        source_format = each.value.config_sync.source_format
+        prevent_drift = config_sync.value.prevent_drift
+        source_format = config_sync.value.source_format
         enabled       = true
         dynamic "git" {
-          for_each = each.value.config_sync.git == null ? [] : [1]
+          for_each = config_sync.value.git[*]
           content {
             gcp_service_account_email = (
-              each.value.config_sync.git.gcp_service_account_email
+              git.value.gcp_service_account_email
             )
-            https_proxy    = each.value.config_sync.git.https_proxy
-            policy_dir     = each.value.config_sync.git.policy_dir
-            secret_type    = each.value.config_sync.git.secret_type
-            sync_branch    = each.value.config_sync.git.sync_branch
-            sync_repo      = each.value.config_sync.git.sync_repo
-            sync_rev       = each.value.config_sync.git.sync_rev
-            sync_wait_secs = each.value.config_sync.git.sync_wait_secs
+            https_proxy    = git.value.https_proxy
+            policy_dir     = git.value.policy_dir
+            secret_type    = git.value.secret_type
+            sync_branch    = git.value.sync_branch
+            sync_repo      = git.value.sync_repo
+            sync_rev       = git.value.sync_rev
+            sync_wait_secs = git.value.sync_wait_secs
           }
         }
       }
     }
 
     dynamic "hierarchy_controller" {
-      for_each = each.value.hierarchy_controller == null ? [] : [1]
+      for_each = each.value.hierarchy_controller[*]
       content {
         enable_hierarchical_resource_quota = (
-          each.value.hierarchy_controller.enable_hierarchical_resource_quota
+          hierarchy_controller.value.enable_hierarchical_resource_quota
         )
         enable_pod_tree_labels = (
-          each.value.hierarchy_controller.enable_pod_tree_labels
+          hierarchy_controller.value.enable_pod_tree_labels
         )
         enabled = true
       }

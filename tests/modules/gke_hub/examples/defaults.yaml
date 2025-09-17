@@ -1,0 +1,155 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.hub.google_gke_hub_feature.default["configmanagement"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    fleet_default_member_config:
+    - configmanagement:
+      - config_sync:
+        - enabled: true
+          git:
+          - gcp_service_account_email: config-sync@your-project.iam.gserviceaccount.com
+            https_proxy: null
+            policy_dir: configsync
+            secret_type: gcenode
+            sync_branch: main
+            sync_repo: https://github.com/your-org/config-repo
+            sync_rev: HEAD
+            sync_wait_secs: '15'
+          metrics_gcp_service_account_email: null
+          oci: []
+          prevent_drift: true
+          source_format: hierarchy
+        management: null
+        version: v1
+      mesh: []
+      policycontroller: []
+    labels: null
+    location: global
+    name: configmanagement
+    project: gkehub-test
+    spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.hub.google_gke_hub_feature.default["servicemesh"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    fleet_default_member_config:
+    - configmanagement:
+      - config_sync:
+        - enabled: true
+          git:
+          - gcp_service_account_email: config-sync@your-project.iam.gserviceaccount.com
+            https_proxy: null
+            policy_dir: configsync
+            secret_type: gcenode
+            sync_branch: main
+            sync_repo: https://github.com/your-org/config-repo
+            sync_rev: HEAD
+            sync_wait_secs: '15'
+          metrics_gcp_service_account_email: null
+          oci: []
+          prevent_drift: true
+          source_format: hierarchy
+        management: null
+        version: v1
+      mesh: []
+      policycontroller: []
+    labels: null
+    location: global
+    name: servicemesh
+    project: gkehub-test
+    spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.hub.google_gke_hub_feature_membership.default["cluster-1"]:
+    configmanagement:
+    - config_sync:
+      - deployment_overrides: []
+        enabled: true
+        git:
+        - gcp_service_account_email: null
+          https_proxy: null
+          policy_dir: cluster-specific
+          secret_type: none
+          sync_branch: main
+          sync_repo: https://github.com/your-org/cluster-specific-config
+          sync_rev: null
+          sync_wait_secs: null
+        metrics_gcp_service_account_email: null
+        oci: []
+        source_format: hierarchy
+        stop_syncing: null
+      hierarchy_controller: []
+      policy_controller: []
+      version: v1
+    feature: configmanagement
+    location: global
+    membership: cluster-1
+    membership_location: europe-west1
+    mesh: []
+    policycontroller: []
+    project: gkehub-test
+    timeouts: null
+  module.hub.google_gke_hub_membership.default["cluster-1"]:
+    authority: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    endpoint:
+    - gke_cluster:
+      - {}
+    labels: null
+    location: europe-west1
+    membership_id: cluster-1
+    project: gkehub-test
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.hub.google_gke_hub_membership.default["cluster-2"]:
+    authority: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    endpoint:
+    - gke_cluster:
+      - {}
+    labels: null
+    location: europe-west1
+    membership_id: cluster-2
+    project: gkehub-test
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_compute_network: 1
+  google_compute_route: 3
+  google_compute_subnetwork: 3
+  google_container_cluster: 2
+  google_container_node_pool: 2
+  google_gke_hub_feature: 2
+  google_gke_hub_feature_membership: 1
+  google_gke_hub_membership: 2
+  google_project: 1
+  google_project_iam_member: 8
+  google_project_service: 7
+  google_project_service_identity: 4
+  google_service_account: 2
+  modules: 7
+  resources: 38
+
+outputs: {}

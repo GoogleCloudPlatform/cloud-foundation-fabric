@@ -26,6 +26,13 @@ variable "configmanagement_clusters" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+  validation {
+    condition = alltrue([
+      for config_name in keys(var.configmanagement_clusters) :
+      contains(keys(var.configmanagement_templates), config_name)
+    ])
+    error_message = "All config names in 'configmanagement_clusters' must exist as keys in 'configmanagement_templates'."
+  }
 }
 
 variable "configmanagement_templates" {
@@ -128,7 +135,7 @@ variable "fleet_default_member_config" {
             operator = optional(string)
             value    = optional(string)
             effect   = optional(string)
-          })))
+          })), [])
           replica_count = optional(number)
         })))
         monitoring = optional(object({
@@ -161,6 +168,13 @@ variable "policycontroller_clusters" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+  validation {
+    condition = alltrue([
+      for config_name in keys(var.policycontroller_clusters) :
+      contains(keys(var.policycontroller_templates), config_name)
+    ])
+    error_message = "All config names in 'policycontroller_clusters' must exist as keys in 'policycontroller_templates'."
+  }
 }
 
 variable "policycontroller_templates" {
@@ -192,7 +206,7 @@ variable "policycontroller_templates" {
           operator = optional(string)
           value    = optional(string)
           effect   = optional(string)
-        })))
+        })), [])
         replica_count = optional(number)
       })))
       monitoring = optional(object({
@@ -222,6 +236,13 @@ variable "servicemesh_clusters" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+  validation {
+    condition = alltrue([
+      for config_name in keys(var.servicemesh_clusters) :
+      contains(keys(var.servicemesh_templates), config_name)
+    ])
+    error_message = "All config names in 'servicemesh_clusters' must exist as keys in 'servicemesh_templates'."
+  }
 }
 
 variable "servicemesh_templates" {
