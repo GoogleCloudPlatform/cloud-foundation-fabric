@@ -79,6 +79,7 @@ module "hub" {
   }
   features = {
     configmanagement = true
+    policycontroller = true
   }
   configmanagement_templates = {
     default = {
@@ -95,21 +96,29 @@ module "hub" {
         enable_hierarchical_resource_quota = true
         enable_pod_tree_labels             = true
       }
-      policy_controller = {
-        audit_interval_seconds     = 120
-        log_denies_enabled         = true
-        referential_rules_enabled  = true
-        template_library_installed = true
-      }
       version = "v1"
     }
   }
   configmanagement_clusters = {
     "default" = ["cluster-1"]
   }
+  policycontroller_templates = {
+    default = {
+      version = "v1.17.3"
+      policy_controller_hub_config = {
+        audit_interval_seconds    = 120
+        exemptable_namespaces     = ["kube-system", "kube-public"]
+        log_denies_enabled        = true
+        referential_rules_enabled = true
+      }
+    }
+  }
+  policycontroller_clusters = {
+    "default" = ["cluster-1"]
+  }
 }
 
-# tftest modules=4 resources=28 inventory=full.yaml
+# tftest modules=4 resources=29 inventory=full.yaml
 ```
 
 ## Multi-cluster mesh on GKE
@@ -359,6 +368,119 @@ module "hub" {
   }
   configmanagement_clusters = {
     "cluster-specific" = ["cluster-1"]
+  }
+}
+```
+
+## Policy Controller with Custom Configurations
+
+This example shows how to configure Policy Controller with custom configurations now that it's separated from Config Management:
+
+```hcl
+module "hub" {
+  source     = "./fabric/modules/gke-hub"
+  project_id = var.project_id
+  location   = "europe-west1"
+  clusters = {
+    cluster-1 = module.cluster_1.id
+    cluster-2 = module.cluster_2.id
+  }
+  features = {
+    configmanagement = true
+    policycontroller = true
+  }
+  
+  # Config Management configuration (without policy controller)
+  configmanagement_templates = {
+    default = {
+      version = "v1"
+      config_sync = {
+        git = {
+          sync_repo   = "https://github.com/your-org/config-repo"
+          policy_dir  = "configsync"
+          sync_branch = "main"
+        }
+        source_format = "hierarchy"
+      }
+    }
+  }
+  configmanagement_clusters = {
+    "default" = ["cluster-1", "cluster-2"]
+  }
+  
+  # Policy Controller configuration (separate from Config Management)
+  policycontroller_templates = {
+    strict = {
+      version = "v1.17.3"
+      policy_controller_hub_config = {
+        audit_interval_seconds     = 60
+        constraint_violation_limit = 20
+        exemptable_namespaces      = ["kube-system", "kube-public", "kube-node-lease"]
+        install_spec               = "INSTALL_SPEC_ENABLED"
+        log_denies_enabled         = true
+        mutation_enabled           = false
+        referential_rules_enabled  = true
+        
+        deployment_configs = {
+          "admission" = {
+            replica_count = 3
+            container_resources = {
+              limits = {
+                cpu    = "1000m"
+                memory = "512Mi"
+              }
+              requests = {
+                cpu    = "100m"
+                memory = "256Mi"
+              }
+            }
+          }
+          "audit" = {
+            replica_count = 1
+            container_resources = {
+              limits = {
+                cpu    = "1000m"
+                memory = "512Mi"
+              }
+              requests = {
+                cpu    = "100m"
+                memory = "256Mi"
+              }
+            }
+          }
+        }
+        
+        monitoring = {
+          backends = ["PROMETHEUS"]
+        }
+        
+        policy_content = {
+          bundles = {
+            "policy-essentials-v2022" = {
+              exempted_namespaces = ["kube-system", "kube-public"]
+            }
+          }
+          template_library = {
+            installation = "ALL"
+          }
+        }
+      }
+    }
+    
+    permissive = {
+      version = "v1.17.3"
+      policy_controller_hub_config = {
+        audit_interval_seconds    = 120
+        exemptable_namespaces     = ["kube-system", "kube-public", "kube-node-lease", "gke-system"]
+        log_denies_enabled        = false
+        referential_rules_enabled = false
+      }
+    }
+  }
+  
+  policycontroller_clusters = {
+    "strict"     = ["cluster-1"]
+    "permissive" = ["cluster-2"]
   }
 }
 ```
