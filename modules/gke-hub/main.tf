@@ -77,7 +77,7 @@ resource "google_gke_hub_membership" "default" {
   }
   dynamic "authority" {
     for_each = (
-      contains(var.workload_identity_clusters, each.key) ? { 1 = 1 } : {}
+      contains(var.workload_identity_clusters, each.key) ? [1] : []
     )
     content {
       issuer = "https://container.googleapis.com/v1/${var.clusters[each.key]}"
@@ -92,7 +92,7 @@ resource "google_gke_hub_feature" "default" {
   name     = each.key
   location = "global"
   dynamic "spec" {
-    for_each = each.key == "multiclusteringress" && each.value != null ? { 1 = 1 } : {}
+    for_each = each.key == "multiclusteringress" && each.value != null ? [1] : []
     content {
       multiclusteringress {
         config_membership = google_gke_hub_membership.default[each.value].id
@@ -100,29 +100,29 @@ resource "google_gke_hub_feature" "default" {
     }
   }
   dynamic "fleet_default_member_config" {
-    for_each = var.fleet_default_member_config != null ? { 1 = 1 } : {}
+    for_each = var.fleet_default_member_config != null ? [1] : []
     content {
       dynamic "mesh" {
-        for_each = var.fleet_default_member_config.mesh != null ? { 1 = 1 } : {}
+        for_each = var.fleet_default_member_config.mesh != null ? [1] : []
         content {
           management = mesh.value.management
         }
       }
 
       dynamic "configmanagement" {
-        for_each = var.fleet_default_member_config.configmanagement != null ? { 1 = 1 } : {}
+        for_each = var.fleet_default_member_config.configmanagement != null ? [1] : []
         content {
           version = configmanagement.value.version
 
           dynamic "config_sync" {
-            for_each = configmanagement.value.config_sync != null ? { 1 = 1 } : {}
+            for_each = configmanagement.value.config_sync != null ? [1] : []
             content {
               prevent_drift = config_sync.value.prevent_drift
               source_format = config_sync.value.source_format
               enabled       = config_sync.value.enabled
 
               dynamic "git" {
-                for_each = config_sync.value.git != null ? { 1 = 1 } : {}
+                for_each = config_sync.value.git != null ? [1] : []
                 content {
                   gcp_service_account_email = git.value.gcp_service_account_email
                   https_proxy               = git.value.https_proxy
@@ -140,7 +140,7 @@ resource "google_gke_hub_feature" "default" {
       }
 
       dynamic "policycontroller" {
-        for_each = var.fleet_default_member_config.policycontroller != null ? { 1 = 1 } : {}
+        for_each = var.fleet_default_member_config.policycontroller != null ? [1] : []
         content {
           version = policycontroller.value.version
 
@@ -159,10 +159,10 @@ resource "google_gke_hub_feature" "default" {
                 component = deployment_configs.key
 
                 dynamic "container_resources" {
-                  for_each = deployment_configs.value.container_resources == null ? {} : { 1 = 1 }
+                  for_each = deployment_configs.value.container_resources == null ? [] : [1]
                   content {
                     dynamic "limits" {
-                      for_each = deployment_configs.value.container_resources.limits == null ? {} : { 1 = 1 }
+                      for_each = deployment_configs.value.container_resources.limits == null ? [] : [1]
                       content {
                         cpu    = deployment_configs.value.container_resources.limits.cpu
                         memory = deployment_configs.value.container_resources.limits.memory
@@ -170,7 +170,7 @@ resource "google_gke_hub_feature" "default" {
                     }
 
                     dynamic "requests" {
-                      for_each = deployment_configs.value.container_resources.requests == null ? {} : { 1 = 1 }
+                      for_each = deployment_configs.value.container_resources.requests == null ? [] : [1]
                       content {
                         cpu    = deployment_configs.value.container_resources.requests.cpu
                         memory = deployment_configs.value.container_resources.requests.memory
@@ -196,14 +196,14 @@ resource "google_gke_hub_feature" "default" {
             }
 
             dynamic "monitoring" {
-              for_each = policycontroller.value.policy_controller_hub_config.monitoring == null ? {} : { 1 = 1 }
+              for_each = policycontroller.value.policy_controller_hub_config.monitoring == null ? [] : [1]
               content {
                 backends = policycontroller.value.policy_controller_hub_config.monitoring.backends
               }
             }
 
             dynamic "policy_content" {
-              for_each = policycontroller.value.policy_controller_hub_config.policy_content == null ? {} : { 1 = 1 }
+              for_each = policycontroller.value.policy_controller_hub_config.policy_content == null ? [] : [1]
               content {
                 dynamic "bundles" {
                   for_each = policycontroller.value.policy_controller_hub_config.policy_content.bundles == null ? {} : policycontroller.value.policy_controller_hub_config.policy_content.bundles
@@ -214,7 +214,7 @@ resource "google_gke_hub_feature" "default" {
                 }
 
                 dynamic "template_library" {
-                  for_each = policycontroller.value.policy_controller_hub_config.policy_content.template_library == null ? {} : { 1 = 1 }
+                  for_each = policycontroller.value.policy_controller_hub_config.policy_content.template_library == null ? [] : [1]
                   content {
                     installation = policycontroller.value.policy_controller_hub_config.policy_content.template_library.installation
                   }
@@ -259,7 +259,7 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
       constraint_violation_limit = each.value.policy_controller_hub_config.constraint_violation_limit
 
       dynamic "policy_content" {
-        for_each = each.value.policy_controller_hub_config.policy_content == null ? {} : { 1 = 1 }
+        for_each = each.value.policy_controller_hub_config.policy_content == null ? [] : [1]
         content {
           dynamic "bundles" {
             for_each = each.value.policy_controller_hub_config.policy_content.bundles == null ? {} : each.value.policy_controller_hub_config.policy_content.bundles
@@ -270,7 +270,7 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
           }
 
           dynamic "template_library" {
-            for_each = each.value.policy_controller_hub_config.policy_content.template_library == null ? {} : { 1 = 1 }
+            for_each = each.value.policy_controller_hub_config.policy_content.template_library == null ? [] : [1]
             content {
               installation = each.value.policy_controller_hub_config.policy_content.template_library.installation
             }
@@ -284,10 +284,10 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
           component_name = deployment_configs.key
 
           dynamic "container_resources" {
-            for_each = deployment_configs.value.container_resources == null ? {} : { 1 = 1 }
+            for_each = deployment_configs.value.container_resources == null ? [] : [1]
             content {
               dynamic "limits" {
-                for_each = deployment_configs.value.container_resources.limits == null ? {} : { 1 = 1 }
+                for_each = deployment_configs.value.container_resources.limits == null ? [] : [1]
                 content {
                   cpu    = deployment_configs.value.container_resources.limits.cpu
                   memory = deployment_configs.value.container_resources.limits.memory
@@ -295,7 +295,7 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
               }
 
               dynamic "requests" {
-                for_each = deployment_configs.value.container_resources.requests == null ? {} : { 1 = 1 }
+                for_each = deployment_configs.value.container_resources.requests == null ? [] : [1]
                 content {
                   cpu    = deployment_configs.value.container_resources.requests.cpu
                   memory = deployment_configs.value.container_resources.requests.memory
@@ -325,7 +325,7 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
       log_denies_enabled    = each.value.policy_controller_hub_config.log_denies_enabled
 
       dynamic "monitoring" {
-        for_each = each.value.policy_controller_hub_config.monitoring == null ? {} : { 1 = 1 }
+        for_each = each.value.policy_controller_hub_config.monitoring == null ? [] : [1]
         content {
           backends = each.value.policy_controller_hub_config.monitoring.backends
         }
@@ -350,13 +350,13 @@ resource "google_gke_hub_feature_membership" "default" {
     version = each.value.version
 
     dynamic "config_sync" {
-      for_each = each.value.config_sync == null ? {} : { 1 = 1 }
+      for_each = each.value.config_sync == null ? [] : [1]
       content {
         prevent_drift = each.value.config_sync.prevent_drift
         source_format = each.value.config_sync.source_format
         enabled       = true
         dynamic "git" {
-          for_each = each.value.config_sync.git == null ? {} : { 1 = 1 }
+          for_each = each.value.config_sync.git == null ? [] : [1]
           content {
             gcp_service_account_email = (
               each.value.config_sync.git.gcp_service_account_email
@@ -374,7 +374,7 @@ resource "google_gke_hub_feature_membership" "default" {
     }
 
     dynamic "hierarchy_controller" {
-      for_each = each.value.hierarchy_controller == null ? {} : { 1 = 1 }
+      for_each = each.value.hierarchy_controller == null ? [] : [1]
       content {
         enable_hierarchical_resource_quota = (
           each.value.hierarchy_controller.enable_hierarchical_resource_quota
