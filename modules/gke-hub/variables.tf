@@ -217,6 +217,22 @@ variable "project_id" {
   type        = string
 }
 
+variable "servicemesh_clusters" {
+  description = "Service Mesh configuration enabled on specific sets of member clusters, in config name => [cluster name] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "servicemesh_templates" {
+  description = "Sets of Service Mesh configurations that can be applied to member clusters, in config name => {options} format."
+  type = map(object({
+    management = optional(string, "MANAGEMENT_AUTOMATIC")
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "workload_identity_clusters" {
   description = "Clusters that will use Fleet Workload Identity."
   type        = list(string)

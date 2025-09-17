@@ -43,8 +43,24 @@ locals {
       var.features.policycontroller == true
     )
   }
+  _cluster_mesh_config = flatten([
+    for template, clusters in var.servicemesh_clusters : [
+      for cluster in clusters : {
+        cluster  = cluster
+        template = lookup(var.servicemesh_templates, template, null)
+      }
+    ]
+  ])
+  cluster_mesh_config = {
+    for k in local._cluster_mesh_config : k.cluster => k.template if(
+      k.template != null &&
+      var.features.servicemesh == true
+    )
+  }
   hub_features = {
-    for k, v in var.features : k => v if v != null && v != false && v != ""
+    for k, v in var.features :
+    k => v
+    if v != null && v != false && v != ""
   }
 }
 
@@ -214,7 +230,7 @@ resource "google_gke_hub_feature" "default" {
 
 resource "google_gke_hub_feature_membership" "servicemesh" {
   provider            = google-beta
-  for_each            = var.features.servicemesh ? var.clusters : {}
+  for_each            = local.cluster_mesh_config
   project             = var.project_id
   location            = "global"
   feature             = google_gke_hub_feature.default["servicemesh"].name
@@ -222,7 +238,7 @@ resource "google_gke_hub_feature_membership" "servicemesh" {
   membership_location = var.location
 
   mesh {
-    management = "MANAGEMENT_AUTOMATIC"
+    management = each.value.management
   }
 }
 
