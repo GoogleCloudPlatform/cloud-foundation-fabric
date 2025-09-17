@@ -29,8 +29,10 @@ iam_by_principals:
     - roles/viewer
   $iam_principals:service_accounts/iac-0/iac-pf-rw:
     - $custom_roles:service_project_network_admin
+    - roles/resourcemanager.projectIamAdmin
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
     - roles/compute.viewer
+    - $custom_roles:project_iam_viewer
 iam_bindings:
   dp_dev_rw:
     members:
