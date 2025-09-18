@@ -211,35 +211,24 @@ variable "iam" {
 variable "instance_schedule" {
   description = "Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null. Set active to null to dtach a policy from vm before destroying."
   type = object({
-    resource_policy_id = optional(string)
-    create_config = optional(object({
-      active          = optional(bool, true)
-      description     = optional(string)
-      expiration_time = optional(string)
-      start_time      = optional(string)
-      timezone        = optional(string, "UTC")
-      vm_start        = optional(string)
-      vm_stop         = optional(string)
-    }))
+    active          = optional(bool, true)
+    description     = optional(string)
+    expiration_time = optional(string)
+    start_time      = optional(string)
+    timezone        = optional(string, "UTC")
+    vm_start        = optional(string)
+    vm_stop         = optional(string)
   })
   default = null
   validation {
     condition = (
       var.instance_schedule == null ||
-      try(var.instance_schedule.resource_policy_id, null) != null ||
-      try(var.instance_schedule.create_config, null) != null
-    )
-    error_message = "A resource policy name or configuration must be specified when not null."
-  }
-  validation {
-    condition = (
-      try(var.instance_schedule.create_config, null) == null ||
       length(compact([
-        try(var.instance_schedule.create_config.vm_start, null),
-        try(var.instance_schedule.create_config.vm_stop, null)
+        try(var.instance_schedule.vm_start, null),
+        try(var.instance_schedule.vm_stop, null)
       ])) > 0
     )
-    error_message = "A resource policy configuration must contain at least one schedule."
+    error_message = "An instance schedule must contain at least one schedule."
   }
 }
 
@@ -379,6 +368,13 @@ variable "project_id" {
 variable "project_number" {
   description = "Project number. Used in tag bindings to avoid a permadiff."
   type        = string
+  default     = null
+}
+
+variable "resource_policies" {
+  description = "Resource policies to attach to the instance or template."
+  type        = list(string)
+  nullable    = true
   default     = null
 }
 
