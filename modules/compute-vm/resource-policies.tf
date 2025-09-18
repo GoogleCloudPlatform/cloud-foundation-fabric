@@ -57,7 +57,7 @@ resource "google_compute_resource_policy" "schedule" {
     start_time      = var.instance_schedule.start_time
     time_zone       = var.instance_schedule.timezone
     dynamic "vm_start_schedule" {
-      for_each = var.instance_schedule.vm_start != null ? [""] : []
+      for_each = var.instance_schedule.vm_start[*]
       content {
         schedule = var.instance_schedule.vm_start
       }
