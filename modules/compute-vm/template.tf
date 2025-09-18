@@ -34,7 +34,14 @@ resource "google_compute_instance_template" "default" {
   metadata_startup_script = var.metadata_startup_script
   labels                  = var.labels
   resource_manager_tags   = var.tag_bindings_immutable
-
+  resource_policies = (
+    var.resource_policies == null && var.instance_schedule == null
+    ? null
+    : concat(
+      coalesce(var.resource_policies, []),
+      coalesce(local.ischedule, [])
+    )
+  )
   dynamic "advanced_machine_features" {
     for_each = local.advanced_mf != null ? [""] : []
     content {
@@ -226,7 +233,14 @@ resource "google_compute_region_instance_template" "default" {
   metadata_startup_script = var.metadata_startup_script
   labels                  = var.labels
   resource_manager_tags   = var.tag_bindings_immutable
-
+  resource_policies = (
+    var.resource_policies == null && var.instance_schedule == null
+    ? null
+    : concat(
+      coalesce(var.resource_policies, []),
+      coalesce(local.ischedule, [])
+    )
+  )
   dynamic "advanced_machine_features" {
     for_each = local.advanced_mf != null ? [""] : []
     content {
