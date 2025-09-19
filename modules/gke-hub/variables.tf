@@ -26,6 +26,13 @@ variable "configmanagement_clusters" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+  validation {
+    condition = alltrue([
+      for config_name in keys(var.configmanagement_clusters) :
+      contains(keys(var.configmanagement_templates), config_name)
+    ])
+    error_message = "All config names in 'configmanagement_clusters' must exist as keys in 'configmanagement_templates'."
+  }
 }
 
 variable "configmanagement_templates" {
@@ -50,16 +57,16 @@ variable "configmanagement_templates" {
       enable_hierarchical_resource_quota = optional(bool)
       enable_pod_tree_labels             = optional(bool)
     }))
-    policy_controller = optional(object({
-      audit_interval_seconds     = optional(number)
-      exemptable_namespaces      = optional(list(string))
-      log_denies_enabled         = optional(bool)
-      referential_rules_enabled  = optional(bool)
-      template_library_installed = optional(bool)
-    }))
+    policy_controller = optional(any) # DEPRECATED: Use policycontroller_templates instead
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.configmanagement_templates : v.policy_controller == null
+    ])
+    error_message = "The 'policy_controller' field in configmanagement_templates is deprecated. Please use the 'policycontroller_templates' variable instead to configure Policy Controller with its own API."
+  }
 }
 
 variable "features" {
@@ -70,6 +77,7 @@ variable "features" {
     identityservice              = optional(bool, false)
     multiclusteringress          = optional(string, null)
     multiclusterservicediscovery = optional(bool, false)
+    policycontroller             = optional(bool, false)
     servicemesh                  = optional(bool, false)
   })
   default  = {}
@@ -100,6 +108,49 @@ variable "fleet_default_member_config" {
         }))
       }))
     }))
+    policycontroller = optional(object({
+      version = optional(string)
+      policy_controller_hub_config = object({
+        audit_interval_seconds     = optional(number)
+        constraint_violation_limit = optional(number)
+        exemptable_namespaces      = optional(list(string))
+        install_spec               = optional(string)
+        log_denies_enabled         = optional(bool)
+        mutation_enabled           = optional(bool)
+        referential_rules_enabled  = optional(bool)
+        deployment_configs = optional(map(object({
+          container_resources = optional(object({
+            limits = optional(object({
+              cpu    = optional(string)
+              memory = optional(string)
+            }))
+            requests = optional(object({
+              cpu    = optional(string)
+              memory = optional(string)
+            }))
+          }))
+          pod_affinity = optional(string)
+          pod_toleration = optional(list(object({
+            key      = optional(string)
+            operator = optional(string)
+            value    = optional(string)
+            effect   = optional(string)
+          })), [])
+          replica_count = optional(number)
+        })))
+        monitoring = optional(object({
+          backends = optional(list(string))
+        }))
+        policy_content = optional(object({
+          bundles = optional(map(object({
+            exempted_namespaces = optional(list(string))
+          })))
+          template_library = optional(object({
+            installation = optional(string)
+          }))
+        }))
+      })
+    }))
   })
   default  = null
   nullable = true
@@ -112,9 +163,95 @@ variable "location" {
   nullable    = true
 }
 
+variable "policycontroller_clusters" {
+  description = "Policy Controller configuration enabled on specific sets of member clusters, in config name => [cluster name] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+  validation {
+    condition = alltrue([
+      for config_name in keys(var.policycontroller_clusters) :
+      contains(keys(var.policycontroller_templates), config_name)
+    ])
+    error_message = "All config names in 'policycontroller_clusters' must exist as keys in 'policycontroller_templates'."
+  }
+}
+
+variable "policycontroller_templates" {
+  description = "Sets of Policy Controller configurations that can be applied to member clusters, in config name => {options} format."
+  type = map(object({
+    version = optional(string)
+    policy_controller_hub_config = object({
+      audit_interval_seconds     = optional(number)
+      constraint_violation_limit = optional(number)
+      exemptable_namespaces      = optional(list(string))
+      install_spec               = optional(string)
+      log_denies_enabled         = optional(bool)
+      mutation_enabled           = optional(bool)
+      referential_rules_enabled  = optional(bool)
+      deployment_configs = optional(map(object({
+        container_resources = optional(object({
+          limits = optional(object({
+            cpu    = optional(string)
+            memory = optional(string)
+          }))
+          requests = optional(object({
+            cpu    = optional(string)
+            memory = optional(string)
+          }))
+        }))
+        pod_affinity = optional(string)
+        pod_tolerations = optional(list(object({
+          key      = optional(string)
+          operator = optional(string)
+          value    = optional(string)
+          effect   = optional(string)
+        })), [])
+        replica_count = optional(number)
+      })))
+      monitoring = optional(object({
+        backends = optional(list(string))
+      }))
+      policy_content = optional(object({
+        bundles = optional(map(object({
+          exempted_namespaces = optional(list(string))
+        })))
+        template_library = optional(object({
+          installation = optional(string)
+        }))
+      }))
+    })
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "project_id" {
   description = "GKE hub project ID."
   type        = string
+}
+
+variable "servicemesh_clusters" {
+  description = "Service Mesh configuration enabled on specific sets of member clusters, in config name => [cluster name] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+  validation {
+    condition = alltrue([
+      for config_name in keys(var.servicemesh_clusters) :
+      contains(keys(var.servicemesh_templates), config_name)
+    ])
+    error_message = "All config names in 'servicemesh_clusters' must exist as keys in 'servicemesh_templates'."
+  }
+}
+
+variable "servicemesh_templates" {
+  description = "Sets of Service Mesh configurations that can be applied to member clusters, in config name => {options} format."
+  type = map(object({
+    management = optional(string, "MANAGEMENT_AUTOMATIC")
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "workload_identity_clusters" {
