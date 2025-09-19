@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "bootstrap_user" {
-  description = "Email of the nominal user running this stage for the first time."
-  type        = string
-  default     = null
-}
-
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
