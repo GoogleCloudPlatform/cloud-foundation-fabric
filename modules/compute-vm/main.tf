@@ -159,7 +159,14 @@ resource "google_compute_instance" "default" {
   labels                    = var.labels
   metadata                  = var.metadata
   metadata_startup_script   = var.metadata_startup_script
-  resource_policies         = local.ischedule_attach
+  resource_policies = (
+    var.resource_policies == null && var.instance_schedule == null
+    ? null
+    : concat(
+      coalesce(var.resource_policies, []),
+      coalesce(local.ischedule, [])
+    )
+  )
 
   dynamic "advanced_machine_features" {
     for_each = local.advanced_mf != null ? [""] : []

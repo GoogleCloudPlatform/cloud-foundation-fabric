@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/compute-vm`: the instance schedule variable has changed type. [[#3336](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3336)]
 - `modules/net-lb-app-int`: resource names for new-style HTTP and HTTP proxies have changed. If you upgrade the module, please rename those resources in state via `terraform state mv`. [[#3320](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3320)]
 - `modules/net-vpc`: the values of `secondary_ip_ranges` changed from a string to an object. [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)]
 - `modules/secret-manager`: the module interface has changed and been brought up to date with our current modules' shared interfaces; please test and refactor appropriately before using it in existing installations. This new version is **incompatible with OpenTofu** as it lacks support for write-only attributes. [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)]
@@ -15,7 +16,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
-- [[#3326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3326)] dev-platform.yaml secondary_ip_ranges syntax fix ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-09-16 13:57:41+00:00 -->
+- [[#3333](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3333)] Add conditional grants on networking to pf service account in FAST stage 0 ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-09-17 13:37:08+00:00 -->
+- [[#3326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3326)] Update secondary ranges syntax in network stage YAML definitions ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-09-16 13:57:41+00:00 -->
 - [[#3322](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3322)] Added read-only providers to 0-org-setup stage, and fixed CI/CD param… ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-09-16 08:02:02+00:00 -->
 - [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)] Add support for VPC internal ranges to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2025-09-11 17:42:55+00:00 -->
 - [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
@@ -24,6 +26,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3336](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3336)] Allow setting resource policies in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-18 07:13:47+00:00 -->
+- [[#3331](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3331)] Add support for permissive mode to GKE cluster modules backup plans ([ludoo](https://github.com/ludoo)) <!-- 2025-09-17 07:15:20+00:00 -->
+- [[#3330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3330)] Fix alert variable notification prompts type in project module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-17 06:59:18+00:00 -->
 - [[#3323](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3323)] feat: Support serverless_deployment NEG for api gateway ([joshmyers](https://github.com/joshmyers)) <!-- 2025-09-16 09:11:59+00:00 -->
 - [[#3321](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3321)] Add instance access logging support to apigee module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-14 11:14:26+00:00 -->
 - [[#3320](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3320)] Add http_keep_alive_timeout_sec to application load balancers ([ludoo](https://github.com/ludoo)) <!-- 2025-09-12 12:17:01+00:00 -->
