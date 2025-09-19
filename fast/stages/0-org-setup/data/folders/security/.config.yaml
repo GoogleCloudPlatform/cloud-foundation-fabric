@@ -26,3 +26,19 @@ iam_by_principals:
     - roles/viewer
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/cloudkms.cryptoKeyEncrypterDecrypter
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - roles/cloudkms.viewer
+    - $custom_roles:project_iam_viewer
+iam_bindings:
+  project_factory:
+    role: roles/resourcemanager.projectIamAdmin
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-pf-rw
+    condition:
+      title: Project factory delegated IAM grant.
+      expression: |
+        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
+          'roles/cloudkms.cryptoKeyEncrypterDecrypter'
+        ])
