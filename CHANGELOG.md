@@ -3,7 +3,21 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-09-06 09:16:37+00:00 to: None since: v44.1.0 -->
+## [Unreleased] <!-- from: 2025-09-05 09:36:17+00:00 to: None since: v44.0.0 -->
+
+## [45.0.0] - 2025-09-20
+
+### FAST
+
+- [[#3343](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3343)] Remove unused bootstrap_user variable ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-19 10:11:15+00:00 -->
+- [[#3342](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3342)] Cleanup 0-org-setup cloud build org-policies ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-19 09:43:45+00:00 -->
+- [[#3325](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3325)] Incremental improvements to project factory and underlying modules ([ludoo](https://github.com/ludoo)) <!-- 2025-09-16 21:21:19+00:00 -->
+- [[#3311](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3311)] New security stage leveraging project factory and contexts ([ludoo](https://github.com/ludoo)) <!-- 2025-09-08 16:59:16+00:00 -->
+
+### MODULES
+
+- [[#3325](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3325)] Incremental improvements to project factory and underlying modules ([ludoo](https://github.com/ludoo)) <!-- 2025-09-16 21:21:19+00:00 -->
+- [[#3311](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3311)] New security stage leveraging project factory and contexts ([ludoo](https://github.com/ludoo)) <!-- 2025-09-08 16:59:16+00:00 -->
 
 ## [44.2.0] - 2025-09-20
 
@@ -1596,7 +1610,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...HEAD
+[45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...44.2.0
 [44.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...44.1.0
 [44.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...44.0.0
 [44.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.0.0...43.0.0
