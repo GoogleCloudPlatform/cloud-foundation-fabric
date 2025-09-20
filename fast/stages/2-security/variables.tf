@@ -95,6 +95,37 @@ variable "certificate_authorities" {
   default  = {}
 }
 
+variable "environments" {
+  # tfdoc:variable:source 0-globals
+  description = "Environment names."
+  type = map(object({
+    name       = string
+    short_name = string
+    tag_name   = string
+    is_default = optional(bool, false)
+  }))
+  nullable = false
+  default = {
+    dev = {
+      name       = "Development"
+      short_name = "dev"
+      tag_name   = "development"
+    }
+    prod = {
+      name       = "Production"
+      short_name = "prod"
+      tag_name   = "production"
+      is_default = true
+    }
+  }
+  validation {
+    condition = anytrue([
+      for k, v in var.environments : v.is_default == true
+    ])
+    error_message = "At least one environment should be marked as default."
+  }
+}
+
 variable "essential_contacts" {
   description = "Email used for essential contacts, unset if null."
   type        = string
