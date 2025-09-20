@@ -656,5 +656,5 @@ Define values for the `var.environments` variable in a tfvars file.
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
 | [locations](outputs.tf#L22) | Default locations. |  |
 | [projects](outputs.tf#L27) | Attributes for managed projects. |  |
-| [tfvars](outputs.tf#L32) | Stage tfvars. |  |
+| [tfvars](outputs.tf#L32) | Stage tfvars. | ✓ |
 <!-- END TFDOC -->

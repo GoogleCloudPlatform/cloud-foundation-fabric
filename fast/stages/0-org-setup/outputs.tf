@@ -32,4 +32,5 @@ output "projects" {
 output "tfvars" {
   description = "Stage tfvars."
   value       = local.of_tfvars
+  sensitive   = true
 }

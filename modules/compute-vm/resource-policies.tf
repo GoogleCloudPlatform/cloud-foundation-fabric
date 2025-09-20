@@ -17,19 +17,9 @@
 # tfdoc:file:description Resource policies.
 
 locals {
-  ischedule = try(var.instance_schedule.create_config, null)
-  ischedule_attach = var.instance_schedule == null ? null : (
-    var.instance_schedule.create_config != null
-    # created policy with optional attach to allow policy destroy
-    ? (
-      var.instance_schedule.create_config.active
-      ? [google_compute_resource_policy.schedule[0].id]
-      : null
-    )
-    # externally managed policy
-    : [var.instance_schedule.resource_policy_id]
-  )
-
+  ischedule = var.instance_schedule == null ? null : [
+    google_compute_resource_policy.schedule[0].id
+  ]
   disk_zonal_schedule_attachments = flatten([
     for disk_key, disk_data in try(local.attached_disks_zonal, []) :
     disk_data.snapshot_schedule != null ? [
@@ -55,27 +45,27 @@ locals {
 }
 
 resource "google_compute_resource_policy" "schedule" {
-  count   = local.ischedule != null ? 1 : 0
+  count   = var.instance_schedule != null ? 1 : 0
   project = var.project_id
   region  = substr(var.zone, 0, length(var.zone) - 2)
   name    = var.name
   description = coalesce(
-    local.ischedule.description, "Schedule policy for ${var.name}."
+    var.instance_schedule.description, "Schedule policy for ${var.name}."
   )
   instance_schedule_policy {
-    expiration_time = local.ischedule.expiration_time
-    start_time      = local.ischedule.start_time
-    time_zone       = local.ischedule.timezone
+    expiration_time = var.instance_schedule.expiration_time
+    start_time      = var.instance_schedule.start_time
+    time_zone       = var.instance_schedule.timezone
     dynamic "vm_start_schedule" {
-      for_each = local.ischedule.vm_start != null ? [""] : []
+      for_each = var.instance_schedule.vm_start != null ? [""] : []
       content {
-        schedule = local.ischedule.vm_start
+        schedule = var.instance_schedule.vm_start
       }
     }
     dynamic "vm_stop_schedule" {
-      for_each = local.ischedule.vm_stop != null ? [""] : []
+      for_each = var.instance_schedule.vm_stop != null ? [""] : []
       content {
-        schedule = local.ischedule.vm_stop
+        schedule = var.instance_schedule.vm_stop
       }
     }
   }

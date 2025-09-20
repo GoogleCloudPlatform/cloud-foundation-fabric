@@ -396,7 +396,7 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
   backup_config {
     include_volume_data = each.value.include_volume_data
     include_secrets     = each.value.include_secrets
-
+    permissive_mode     = each.value.permissive_mode
     dynamic "encryption_key" {
       for_each = each.value.encryption_key != null ? [""] : []
       content {
