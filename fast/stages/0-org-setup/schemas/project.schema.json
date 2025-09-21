@@ -530,6 +530,10 @@
         "name": {
           "type": "string"
         },
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
         "description": {
           "type": "string"
         },
