@@ -31,7 +31,9 @@ The code is meant to be executed by a high level service account with powerful p
   - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
   - [Project templates](#project-templates)
   - [Service accounts and buckets](#service-accounts-and-buckets)
-  - [Automation project and resources](#automation-project-and-resources)
+  - [Automation resources](#automation-resources)
+    - [Prefix handling](#prefix-handling)
+    - [Complete automation example](#complete-automation-example)
 - [Billing budgets](#billing-budgets)
 - [Context-based interpolation](#context-based-interpolation)
   - [Folder context ids](#folder-context-ids)
@@ -118,17 +120,60 @@ buckets:
         - $iam_principals:service_accounts/my-project/terraform-rw
 ```
 
-### Automation project and resources
+### Automation resources
 
-Other than creating automation resources within the project via the `service_accounts` and `buckets` attributes, this module also support management of automation resources created in a separate controlling project. This allows grating broad roles on the project, while still making sure that the automation resources used for Terraform cannot be manipulated from the same identities.
+Other than creating automation resources within the project via the `service_accounts` and `buckets` attributes, this module also supports management of automation resources created in a separate controlling project.
+
+This allows granting broad roles on the project while ensuring that the automation resources used for Terraform are under a separate span of control. It also allows grouping together in a single file all resources specific to the same task, making template distribution easier.
 
 Automation resources are defined via the `automation` attribute in project configurations, which supports:
 
 - a mandatory `project` attribute to define the external controlling project; this attribute does not support interpolation and needs to be explicit
 - an optional `service_accounts` list where each element defines a service account in the controlling project
-- an optional `bucket` which defines a bucket in the controlling project, and the map of roles/principals in the corresponding value assigned on the created bucket; principals can refer to the created service accounts by key
+- an optional `bucket` which defines a bucket and/org managed folders in the controlling project; bucket names cannot use interpolation so where bucket creation is not needed, they need to be explicit
 
-Service accounts and buckets are prefixed with the project name. Service accounts use the key specified in the YAML file as a suffix, while buckets use a default `tf-state` suffix.
+#### Prefix handling
+
+To easily distinguish automation resources in the controlling project, service account and bucket names use a prefix that embeds the "local" project name to the default prefix. Due to the difference in maximum length and name uniqueness, service accounts and buckets treat the prefix differently.
+
+For service accounts the global prefix is ignored, and the "local" project name is used as a prefix. For example, a project defined in a `prod-app-example-0.yaml` file where the prefix is `foo` will have the `rw` automation service account resulting in the `prod-app-example-0-rw` name.
+
+For GCS buckets the global prefix is kept to ensure name uniqueness, and the "local" project name is appended. For example, a project defined in a `prod-app-example-0.yaml` file where the prefix is `foo` will have the `tf-state` automation bucket resulting in the `foo-prod-app-example-0-tf-state` name.
+
+This behaviour changes when bucket creation is set to `false`, which is the pattern used when GCS managed folders are used for each project automation. In these cases the prefix for the bucket is not suffixed with the local project name, to make it possible to refer to the pre-existing bucket.
+
+The difference in the two behaviours is shown in the snippets below.
+
+```yaml
+# file/project name: prod-example-app-0
+# prefix via factory defaults: foo
+
+automation:
+  project: $project_ids:iac-core-0
+  bucket:
+    name: tf-state
+
+# bucket is created, name is foo-prod-example-app-0-tf-state
+```
+
+```yaml
+# file/project name: prod-example-app-0
+# prefix via factory defaults: foo
+# pre-existing bucket: foo-prod-iac-core-0-shared-tf-state
+
+automation:
+  project: $project_ids:iac-core-0
+  bucket:
+    name: prod-iac-core-0-shared-tf-state
+    create: false
+    managed_folders:
+      prod-example-app-0: {}
+
+# managed folder prod-example-app-0 is created
+# in bucket foo-prod-iac-core-0-shared-tf-state
+```
+
+#### Complete automation example
 
 ```yaml
 # file name: prod-app-example-0

@@ -21,6 +21,7 @@ locals {
         project_key    = k
         project_name   = v.name
         name           = name
+        create         = lookup(opts, "create", true)
         description    = lookup(opts, "description", "Terraform-managed.")
         encryption_key = lookup(opts, "encryption_key", null)
         force_destroy = try(coalesce(
@@ -62,6 +63,7 @@ module "buckets" {
   project_id     = module.projects[each.value.project_key].project_id
   prefix         = each.value.prefix
   name           = "${each.value.project_name}-${each.value.name}"
+  bucket_create  = each.value.create
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {

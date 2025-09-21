@@ -44,7 +44,7 @@ values:
   : bucket: test-pf-dev-tb-app0-0-tf-state
     condition: []
     members:
-    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectCreator
   ? module.project-factory.module.automation-bucket["dev-tb-app0-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
   : bucket: test-pf-dev-tb-app0-0-tf-state
@@ -52,27 +52,27 @@ values:
     members:
     - group:gcp-devops@example.org
     - group:team-b-admins@example.org
-    - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
-    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
-  : account_id: test-pf-dev-tb-app0-0-ro
+  : account_id: dev-tb-app0-0-ro
     create_ignore_already_exists: null
     description: Team B app 0 read-only automation sa.
     disabled: false
     display_name: Service account ro for dev-tb-app0-0.
-    email: test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
-    member: serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    email: dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/rw"].google_service_account.service_account[0]
-  : account_id: test-pf-dev-tb-app0-0-rw
+  : account_id: dev-tb-app0-0-rw
     create_ignore_already_exists: null
     description: Team B app 0 read/write automation sa.
     disabled: false
     display_name: Service account rw for dev-tb-app0-0.
-    email: test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
-    member: serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    email: dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    member: serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
   module.project-factory.module.billing-budgets[0].google_billing_budget.default["test-100"]:
@@ -195,13 +195,13 @@ values:
   module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     role: roles/owner
   module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
-    - serviceAccount:test-pf-dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     role: roles/viewer
   module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.admin"]:
@@ -571,7 +571,7 @@ values:
   ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
     members:
-    - serviceAccount:test-pf-dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountTokenCreator
   module.project-factory.terraform_data.defaults_preconditions:
     input: null
