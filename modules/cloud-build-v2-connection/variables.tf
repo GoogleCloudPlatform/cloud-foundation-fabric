@@ -110,16 +110,6 @@ variable "name" {
   type        = string
 }
 
-variable "prefix" {
-  description = "Prefix."
-  type        = string
-  default     = null
-  validation {
-    condition     = var.prefix != ""
-    error_message = "Prefix cannot be empty, please use null instead."
-  }
-}
-
 variable "project_id" {
   description = "Project ID."
   type        = string

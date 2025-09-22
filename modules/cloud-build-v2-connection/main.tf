@@ -15,16 +15,14 @@
  */
 
 locals {
-  _name = "${local.prefix}${lower(var.name)}"
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     }
   }
   ctx_p      = "$"
-  prefix     = var.prefix == null ? "" : "${var.prefix}-"
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
-  name       = var.connection_create ? try(google_cloudbuildv2_connection.connection[0].name, null) : local._name
+  name       = var.connection_create ? try(google_cloudbuildv2_connection.connection[0].name, null) : var.name
   triggers = merge([for k1, v1 in var.repositories : { for k2, v2 in v1.triggers : "${k1}-${k2}" => merge(v2, {
     repository_name = k1
     trigger_name    = k2
@@ -36,7 +34,7 @@ resource "google_cloudbuildv2_connection" "connection" {
   count       = var.connection_create ? 1 : 0
   location    = var.location
   project     = var.project_id
-  name        = local._name
+  name        = var.name
   annotations = var.annotations
   disabled    = var.disabled
 

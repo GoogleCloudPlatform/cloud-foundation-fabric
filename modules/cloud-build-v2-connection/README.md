@@ -61,7 +61,6 @@ module "secret_manager" {
 module "cb_connection" {
   source     = "./fabric/modules/cloud-build-v2-connection"
   project_id = module.project.id
-  prefix     = var.prefix
   name       = "my-connection"
   location   = var.region
   context = {
@@ -157,7 +156,6 @@ module "secret_manager" {
 module "cb_connection" {
   source     = "./fabric/modules/cloud-build-v2-connection"
   project_id = module.project.id
-  prefix     = var.prefix
   name       = "my-connection"
   location   = var.region
   context = {
@@ -270,7 +268,6 @@ module "secret_manager" {
 module "cb_connection" {
   source     = "./fabric/modules/cloud-build-v2-connection"
   project_id = module.project.id
-  prefix     = var.prefix
   name       = "my-connection"
   location   = var.region
   context = {
@@ -382,7 +379,6 @@ module "secret_manager" {
 module "cb_connection" {
   source     = "./fabric/modules/cloud-build-v2-connection"
   project_id = module.project.id
-  prefix     = var.prefix
   name       = "my-connection"
   location   = var.region
   context = {
@@ -494,7 +490,6 @@ module "secret_manager" {
 module "cb_connection" {
   source     = "./fabric/modules/cloud-build-v2-connection"
   project_id = module.project.id
-  prefix     = var.prefix
   name       = "my-connection"
   location   = var.region
   context = {

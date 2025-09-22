@@ -59,7 +59,7 @@ values:
     github_enterprise_config: []
     gitlab_config: []
     location: europe-west8
-    name: test-my-connection
+    name: my-connection
     project: test-my-project
     timeouts: null
   module.cb_connection.google_cloudbuildv2_connection_iam_binding.authoritative["roles/cloudbuild.connectionViewer"]:
@@ -67,14 +67,14 @@ values:
     location: europe-west8
     members:
     - group:organization-admins@example.org
-    name: test-my-connection
+    name: my-connection
     project: test-my-project
     role: roles/cloudbuild.connectionViewer
   module.cb_connection.google_cloudbuildv2_repository.repositories["my-repository"]:
     annotations: null
     location: europe-west8
     name: my-repository
-    parent_connection: test-my-connection
+    parent_connection: my-connection
     project: test-my-project
     remote_uri: https://bbdc-host.com/scm/my-project/my-repository.git.
     timeouts: null
