@@ -110,6 +110,7 @@ These modules are used in the examples included in this repository. If you are u
 - [API Gateway](./api-gateway)
 - [Apigee](./apigee)
 - [Artifact Registry](./artifact-registry)
+- [Cloud Build V2 Connection](./cloud-build-v2-connection)
 - [Container Registry](./container-registry)
 - [Cloud Source Repository](./source-repository)
 - [Cloud Deploy](./cloud-deploy)
