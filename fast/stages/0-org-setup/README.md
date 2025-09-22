@@ -630,7 +630,7 @@ Define values for the `var.environments` variable in a tfvars file.
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
+| [billing.tf](./billing.tf) | None | <code>bigquery-dataset</code> · <code>billing-account</code> |  |
 | [cicd.tf](./cicd.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> · <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
 | [imports.tf](./imports.tf) | None |  |  |

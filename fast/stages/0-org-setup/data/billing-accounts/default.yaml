@@ -41,3 +41,6 @@ iam_bindings_additive:
 #     description: Test sink
 #     destination: $project_ids:log-0
 #     type: project
+billing_export:
+  dataset_name: bq_dataset
+  project_id: $project_ids:exp-0

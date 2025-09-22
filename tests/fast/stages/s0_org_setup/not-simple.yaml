@@ -472,6 +472,26 @@ values:
     condition: []
     member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.user
+  module.billing-exports["default"].google_bigquery_dataset.default:
+    dataset_id: bq_dataset
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: Billing export
+    labels: null
+    location: europe-west1
+    max_time_travel_hours: '168'
+    project: ft0-prod-billing-exp-0
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -967,6 +987,18 @@ values:
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 30
+  module.factory.module.projects-iam["exp-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/owner
+  module.factory.module.projects-iam["exp-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/viewer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:storage_viewer"]:
     condition: []
     members:
@@ -1052,6 +1084,52 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
     role: roles/viewer
+  module.factory.module.projects["exp-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-billing-exp-0
+  module.factory.module.projects["exp-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: ft0-prod-billing-exp-0
+    user_project: null
+  module.factory.module.projects["exp-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-012345-012345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: null
+    labels: null
+    name: ft0-prod-billing-exp-0
+    org_id: '1234567890'
+    project_id: ft0-prod-billing-exp-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["exp-0"].google_project_iam_member.service_agents["bigquerydatatransfer"]:
+    condition: []
+    project: ft0-prod-billing-exp-0
+    role: roles/bigquerydatatransfer.serviceAgent
+  module.factory.module.projects["exp-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["exp-0"].google_project_service.project_services["bigquerydatatransfer.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: bigquerydatatransfer.googleapis.com
+    timeouts: null
+  module.factory.module.projects["exp-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["exp-0"].google_project_service_identity.default["bigquerydatatransfer.googleapis.com"]:
+    project: ft0-prod-billing-exp-0
+    service: bigquerydatatransfer.googleapis.com
+    timeouts: null
   module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
     project: ft0-prod-iac-core-0
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
@@ -2616,7 +2694,8 @@ values:
     output: null
     triggers_replace: null
 counts:
-  google_bigquery_default_service_account: 1
+  google_bigquery_dataset: 1
+  google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 5
   google_folder: 8
   google_folder_iam_binding: 44
@@ -2629,11 +2708,11 @@ counts:
   google_org_policy_policy: 37
   google_organization_iam_binding: 33
   google_organization_iam_custom_role: 7
-  google_project: 2
-  google_project_iam_binding: 14
-  google_project_iam_member: 14
-  google_project_service: 30
-  google_project_service_identity: 8
+  google_project: 3
+  google_project_iam_binding: 16
+  google_project_iam_member: 15
+  google_project_service: 33
+  google_project_service_identity: 9
   google_service_account: 16
   google_service_account_iam_member: 2
   google_storage_bucket: 3
@@ -2641,12 +2720,12 @@ counts:
   google_storage_bucket_object: 9
   google_storage_managed_folder: 5
   google_storage_managed_folder_iam_binding: 10
-  google_storage_project_service_account: 2
+  google_storage_project_service_account: 3
   google_tags_tag_binding: 5
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 43
-  resources: 292
+  modules: 46
+  resources: 303
   terraform_data: 2
