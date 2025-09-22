@@ -1,0 +1,393 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DNS Configuration",
+  "description": "Schema for DNS configurations.",
+  "type": "object",
+  "required": ["project", "zones"],
+  "properties": {
+    "project": {
+      "type": "string"
+    },
+    "zones": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9-]+$": {
+          "$ref": "#/$defs/dnsZone"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "dnsZone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zone_config"
+      ],
+      "properties": {
+        "force_destroy": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "zone_config": {
+          "$ref": "#/$defs/dnsZoneConfig"
+        },
+        "recordsets": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_. -]+$": {
+              "$ref": "#/$defs/dnsRecordSet"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "dnsZoneConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain"
+      ],
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "forwarding": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "forwarders": {
+              "$ref": "#/$defs/stringMap"
+            },
+            "client_networks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "peering": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "peer_network"
+          ],
+          "properties": {
+            "client_networks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "peer_network": {
+              "type": "string"
+            }
+          }
+        },
+        "public": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dnssec_config": {
+              "$ref": "#/$defs/dnssecConfig"
+            },
+            "enable_logging": {
+              "type": "boolean"
+            }
+          }
+        },
+        "private": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "client_networks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "service_directory_namespace": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "dnssecConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "non_existence": {
+          "type": "string",
+          "enum": [
+            "nsec",
+            "nsec3"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "on",
+            "off",
+            "transfer"
+          ]
+        },
+        "key_signing_key": {
+          "$ref": "#/$defs/dnsKeySpec"
+        },
+        "zone_signing_key": {
+          "$ref": "#/$defs/dnsKeySpec"
+        }
+      }
+    },
+    "dnsKeySpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "key_length"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "rsasha1",
+            "rsasha256",
+            "rsasha512",
+            "ecdsap256sha256",
+            "ecdsap384sha384"
+          ]
+        },
+        "key_length": {
+          "type": "number"
+        }
+      }
+    },
+    "dnsRecordSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ttl": {
+          "type": "number"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geo_routing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dnsGeoRoutingRule"
+          }
+        },
+        "wrr_routing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dnsWrrRoutingRule"
+          }
+        }
+      }
+    },
+    "dnsGeoRoutingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "location"
+      ],
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "health_checked_targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dnsHealthCheckedTarget"
+          }
+        }
+      }
+    },
+    "dnsHealthCheckedTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "load_balancer_type",
+        "ip_address",
+        "port",
+        "ip_protocol",
+        "network_url",
+        "project"
+      ],
+      "properties": {
+        "load_balancer_type": {
+          "type": "string"
+        },
+        "ip_address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "ip_protocol": {
+          "type": "string"
+        },
+        "network_url": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "dnsWrrRoutingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weight",
+        "records"
+      ],
+      "properties": {
+        "weight": {
+          "type": "number"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expression",
+        "title"
+      ],
+      "properties": {
+        "expression": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "principalPattern": {
+      "type": "string",
+      "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+    },
+    "rolePattern": {
+      "type": "string",
+      "pattern": "^roles/"
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^roles/": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/principalPattern"
+          }
+        }
+      }
+    },
+    "iamBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "members",
+            "role"
+          ],
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/principalPattern"
+              }
+            },
+            "role": {
+              "$ref": "#/$defs/rolePattern"
+            },
+            "condition": {
+              "$ref": "#/$defs/condition"
+            }
+          }
+        }
+      }
+    },
+    "iamBindingsAdditive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "member",
+            "role"
+          ],
+          "properties": {
+            "member": {
+              "$ref": "#/$defs/principalPattern"
+            },
+            "role": {
+              "$ref": "#/$defs/rolePattern"
+            },
+            "condition": {
+              "$ref": "#/$defs/condition"
+            }
+          }
+        }
+      }
+    },
+    "iamByPrincipals": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rolePattern"
+          }
+        }
+      }
+    }
+  }
+}
