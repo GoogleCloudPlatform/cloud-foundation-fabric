@@ -162,7 +162,7 @@ resource "google_cloudbuild_trigger" "triggers" {
       content {
         branch          = each.value.pull_request.branch
         invert_regex    = each.value.pull_request.invert_regex
-        comment_control = each.value.push.tag
+        comment_control = each.value.pull_request.comment_control
       }
     }
   }
