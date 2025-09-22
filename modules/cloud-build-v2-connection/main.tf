@@ -25,7 +25,6 @@ locals {
   name       = var.connection_create ? try(google_cloudbuildv2_connection.connection[0].name, null) : var.name
   triggers = merge([for k1, v1 in var.repositories : { for k2, v2 in v1.triggers : "${k1}-${k2}" => merge(v2, {
     repository_name = k1
-    trigger_name    = k2
   }) }]...)
 }
 
@@ -143,7 +142,7 @@ resource "google_cloudbuildv2_repository" "repositories" {
 resource "google_cloudbuild_trigger" "triggers" {
   for_each    = local.triggers
   location    = var.location
-  name        = each.value.trigger_name
+  name        = each.key
   project     = local.project_id
   description = each.value.description
   disabled    = each.value.disabled

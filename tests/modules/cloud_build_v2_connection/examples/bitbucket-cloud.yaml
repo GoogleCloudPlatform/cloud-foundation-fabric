@@ -27,7 +27,7 @@ values:
     include_build_logs: null
     included_files: null
     location: europe-west8
-    name: my-trigger
+    name: my-repository-my-trigger
     project: test-my-project
     pubsub_config: []
     repository_event_config:

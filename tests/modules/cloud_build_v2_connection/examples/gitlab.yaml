@@ -27,15 +27,15 @@ values:
     include_build_logs: null
     included_files: null
     location: europe-west8
-    name: my-trigger
+    name: my-repository-my-trigger
     project: test-my-project
     pubsub_config: []
     repository_event_config:
-    - pull_request: []
-      push:
-      - branch: main
-        invert_regex: null
-        tag: null
+      - pull_request: []
+        push:
+          - branch: main
+            invert_regex: null
+            tag: null
     service_account: null
     source_to_build: []
     substitutions: null
@@ -51,8 +51,8 @@ values:
     github_config: []
     github_enterprise_config: []
     gitlab_config:
-    - service_directory_config: []
-      ssl_ca: null
+      - service_directory_config: []
+        ssl_ca: null
     location: europe-west8
     name: my-connection
     project: test-my-project
@@ -61,7 +61,7 @@ values:
     condition: []
     location: europe-west8
     members:
-    - group:organization-admins@example.org
+      - group:organization-admins@example.org
     name: my-connection
     project: test-my-project
     role: roles/cloudbuild.connectionViewer
@@ -88,20 +88,20 @@ values:
     billing_account: 123456-123456-123456
     deletion_policy: DELETE
     effective_labels:
-      goog-terraform-provisioned: 'true'
-    folder_id: '1122334455'
+      goog-terraform-provisioned: "true"
+    folder_id: "1122334455"
     labels: null
     name: test-my-project
     org_id: null
     project_id: test-my-project
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     timeouts: null
   module.project.google_project_iam_binding.authoritative["roles/logging.logWriter"]:
     condition: []
     members:
-    - serviceAccount:cloudbuild@test-my-project.iam.gserviceaccount.com
+      - serviceAccount:cloudbuild@test-my-project.iam.gserviceaccount.com
     project: test-my-project
     role: roles/logging.logWriter
   module.project.google_project_iam_member.service_agents["cloudbuild"]:
@@ -132,18 +132,18 @@ values:
     annotations: null
     deletion_protection: false
     effective_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     labels: null
     project: test-my-project
     replication:
-    - auto:
-      - customer_managed_encryption: []
-      user_managed: []
+      - auto:
+          - customer_managed_encryption: []
+        user_managed: []
     rotation: []
     secret_id: authorizer-credential
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     timeouts: null
     topics: []
     ttl: null
@@ -153,18 +153,18 @@ values:
     annotations: null
     deletion_protection: false
     effective_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     labels: null
     project: test-my-project
     replication:
-    - auto:
-      - customer_managed_encryption: []
-      user_managed: []
+      - auto:
+          - customer_managed_encryption: []
+        user_managed: []
     rotation: []
     secret_id: read-authorizer-credential
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     timeouts: null
     topics: []
     ttl: null
@@ -174,31 +174,31 @@ values:
     annotations: null
     deletion_protection: false
     effective_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     labels: null
     project: test-my-project
     replication:
-    - auto:
-      - customer_managed_encryption: []
-      user_managed: []
+      - auto:
+          - customer_managed_encryption: []
+        user_managed: []
     rotation: []
     secret_id: webhook-secret
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     timeouts: null
     topics: []
     ttl: null
     version_aliases: null
     version_destroy_ttl: null
-  ? module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["authorizer-credential.roles/secretmanager.secretAccessor"]
-  : condition: []
+  module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["authorizer-credential.roles/secretmanager.secretAccessor"]:
+    condition: []
     role: roles/secretmanager.secretAccessor
-  ? module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["read-authorizer-credential.roles/secretmanager.secretAccessor"]
-  : condition: []
+  module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["read-authorizer-credential.roles/secretmanager.secretAccessor"]:
+    condition: []
     role: roles/secretmanager.secretAccessor
-  ? module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["webhook-secret.roles/secretmanager.secretAccessor"]
-  : condition: []
+  module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["webhook-secret.roles/secretmanager.secretAccessor"]:
+    condition: []
     role: roles/secretmanager.secretAccessor
   module.secret_manager.google_secret_manager_secret_version.default["authorizer-credential/v1"]:
     deletion_policy: DELETE
