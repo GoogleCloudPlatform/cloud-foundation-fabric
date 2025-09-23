@@ -19,7 +19,6 @@
 variable "urlmap_config" {
   description = "The URL map configuration."
   type = object({
-    description = optional(string, "Terraform managed.")
     default_custom_error_response_policy = optional(object({
       error_service = optional(string)
       error_response_rules = optional(list(object({
@@ -280,6 +279,14 @@ variable "urlmap_config" {
       route_rules = optional(list(object({
         priority = number
         service  = optional(string)
+        custom_error_response_policy = optional(object({
+          error_service = optional(string)
+          error_response_rules = optional(list(object({
+            match_response_codes   = optional(list(string))
+            path                   = optional(string)
+            override_response_code = optional(number)
+          })))
+        }))
         header_action = optional(object({
           request_add = optional(map(object({
             value   = string
