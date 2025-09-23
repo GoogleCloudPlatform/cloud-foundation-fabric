@@ -290,6 +290,7 @@ resource "google_container_cluster" "cluster" {
         tags = toset(var.node_config.tags)
       }
     }
+    resource_manager_tags = var.node_config.resource_manager_tags
   }
   dynamic "private_cluster_config" {
     for_each = var.access_config.private_nodes == true ? [""] : []
