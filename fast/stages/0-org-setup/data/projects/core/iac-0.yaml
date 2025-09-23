@@ -130,6 +130,8 @@ buckets:
         - $iam_principals:service_accounts/iac-0/iac-security-ro
         - $iam_principals:service_accounts/iac-0/iac-pf-ro
         - $iam_principals:service_accounts/iac-0/iac-vpcsc-ro
+        - $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+        - $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
 service_accounts:
   # IaC service accounts for this stage
   iac-org-ro:
@@ -142,11 +144,13 @@ service_accounts:
     iam_sa_roles:
       $service_account_ids:iac-0/iac-org-ro:
         - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
   iac-org-cicd-rw:
     display_name: IaC service account for org setup CI/CD (read-write).
     iam_sa_roles:
       $service_account_ids:iac-0/iac-org-rw:
         - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
   # IaC service accounts for vpc-sc stage
   iac-vpcsc-ro:
     display_name: IaC service account for VPC service controls (read-only).
