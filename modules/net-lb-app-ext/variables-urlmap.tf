@@ -19,6 +19,7 @@
 variable "urlmap_config" {
   description = "The URL map configuration."
   type = object({
+    description = optional(string, "Terraform managed.")
     default_custom_error_response_policy = optional(object({
       error_service = optional(string)
       error_response_rules = optional(list(object({
