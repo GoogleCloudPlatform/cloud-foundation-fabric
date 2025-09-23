@@ -228,6 +228,12 @@ variable "reservation_affinity" {
   default = null
 }
 
+variable "resource_manager_tags" {
+  description = "A map of resource manager tag keys and values to be attached to the nodes for managing Compute Engine firewalls using Network Firewall Policies."
+  type        = map(string)
+  default     = null
+}
+
 variable "service_account" {
   description = "Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used."
   type = object({
