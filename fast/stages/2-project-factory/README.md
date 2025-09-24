@@ -11,6 +11,7 @@
   - [Factory configuration](#factory-configuration)
   - [Stage provider and Terraform variables](#stage-provider-and-terraform-variables)
 - [Managing folders and projects](#managing-folders-and-projects)
+  - [Project defaults and overrides](#project-defaults-and-overrides)
   - [Folder and hierarchy management](#folder-and-hierarchy-management)
   - [Folder parent-child relationship and variable substitutions](#folder-parent-child-relationship-and-variable-substitutions)
   - [Project Creation](#project-creation)
