@@ -55,7 +55,7 @@ The bootstrap-specific setup is reproduced here to aid using it as a starting po
 
 #### Automation resources
 
-The default design uses two service accounts (read-write and read-only) and a Cloud Storage folder in a pre-existing bucket, to enable this stage for Infrastructure as Code.
+The default design uses two service accounts (read-write and read-only) and a Cloud Storage folder in a pre-existing bucket, to enable this stage for Infrastructure as Code. This is an example snippet that shows how to configure the org setup stage IaC project.
 
 ```yaml
 # data/projects/core/iac-0.yaml
@@ -207,6 +207,12 @@ terraform apply
 ## Managing folders and projects
 
 The YAML data files are self-explanatory and the included [schema files](./schemas/) provide a reliable framework to allow editing the sample data, or starting from scratch to implement a different pattern. This section lists some general considerations on how folder and project files work to help getting up to speed with operations.
+
+### Project defaults and overrides
+
+The underlying module supports a way of defining sets of values that can be used as defaults of overrides for specific project attributes. This stage supports the same, and allows setting defaults and overrides either via Terraform variables, or via a dedicated YAML defaults file.
+
+An example defaults file is provided in the `data` folder, and the relevant schema (or the corresponding variable type) supports the full interface provided in the underlying module. Defaults from Terraform variables and the YAML file are merged, with the caveat that Where the same attribute (for example `billing_account`) is defined in both, the file takes precedence.
 
 ### Folder and hierarchy management
 
