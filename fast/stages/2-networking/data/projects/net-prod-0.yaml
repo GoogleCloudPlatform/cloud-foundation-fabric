@@ -12,8 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../schemas/folder.schema.json
+# yaml-language-server: $schema=../../schemas/project.schema.json
 
-name: Production
-tag_bindings:
-  environment: $tag_values:environment/production
+#TODO (revisit naming convention to avoid having the prod token twice)
+name: prod-net-prod-0
+parent: $folder_ids:prod
+services:
+  - container.googleapis.com
+  - compute.googleapis.com
+  - dns.googleapis.com
+  - iap.googleapis.com
+  - networkmanagement.googleapis.com
+  - networksecurity.googleapis.com
+  - servicenetworking.googleapis.com
+  - stackdriver.googleapis.com
+  - vpcaccess.googleapis.com
+shared_vpc_host_config:
+  enabled: true

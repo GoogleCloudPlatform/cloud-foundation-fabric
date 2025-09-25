@@ -15,22 +15,10 @@
 # yaml-language-server: $schema=../../schemas/dns.schema.json
 
 project: net-core-0
-zones:
-  onprem-fwd:
-    zone_config:
-      domain: .
-      forwarding:
-        forwarders:
-          "8.8.8.8": default
-          "1.1.1.1": default
-        client_networks:
-          - net-land-01/hub
-  dot-test:
-    zone_config:
-      domain: test.
-      private:
-        client_networks:
-          - net-land-01/hub
-    recordsets:
-      "A localhost":
-        records: ["127.0.0.1"]
+domain: test.
+private:
+  client_networks:
+    - net-land-01/hub
+recordsets:
+"A localhost":
+  records: ["127.0.0.1"]
