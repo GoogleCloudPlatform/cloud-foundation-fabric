@@ -87,21 +87,22 @@ resource "google_compute_ha_vpn_gateway" "default" {
   depends_on = [module.vpc]
 }
 
-# module "vpn-ha" {
-#   source        = "../../../modules/net-vpn-ha"
-#   for_each      = local.vpns
-#   project_id    = each.value.project_id
-#   name          = replace(each.key, "/", "-")
-#   network       = each.value.vpc_name
-#   region        = each.value.region
-#   router_config = each.value.router_config
-#   tunnels       = each.value.tunnels
-#   vpn_gateway   = google_compute_ha_vpn_gateway.default[each.key].id
-#   peer_gateways = {
-#     for k, gw in each.value.peer_gateways : k => {
-#       for gw_type, value in gw : gw_type => (
-#         gw_type == "gcp" ? try(google_compute_ha_vpn_gateway.default[value].id, value) : value
-#       )
-#     }
-#   }
-# }
+module "vpn-ha" {
+  source             = "../../../modules/net-vpn-ha"
+  for_each           = local.vpns
+  project_id         = each.value.project_id
+  name               = split(":", replace(each.key, "/", "-"))[1] #TODO: ugh
+  network            = each.value.vpc_name
+  region             = each.value.region
+  router_config      = each.value.router_config
+  tunnels            = each.value.tunnels
+  vpn_gateway        = google_compute_ha_vpn_gateway.default[each.key].id
+  vpn_gateway_create = null
+  peer_gateways = {
+    for k, gw in each.value.peer_gateways : k => {
+      for gw_type, value in gw : gw_type => (
+        gw_type == "gcp" ? try(google_compute_ha_vpn_gateway.default[value].id, value) : value
+      )
+    }
+  }
+}
