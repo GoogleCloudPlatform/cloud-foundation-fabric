@@ -66,6 +66,13 @@ locals {
     for name, rule in merge(var.ingress_rules) :
     name => merge(rule, { direction = "INGRESS" })
   }
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   # convert rules data to resource format and replace range template variables
   rules = {
     for name, rule in local._rules :
@@ -94,7 +101,7 @@ locals {
 
 resource "google_compute_firewall" "custom-rules" {
   for_each    = local.rules
-  project     = var.project_id
+  project     = local.project_id
   network     = var.network
   name        = each.key
   description = each.value.description

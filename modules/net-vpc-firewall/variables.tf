@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
+
 variable "default_rules_config" {
   description = "Optionally created convenience rules. Set the 'disabled' attribute to true, or individual rule attributes to empty lists to disable."
   type = object({

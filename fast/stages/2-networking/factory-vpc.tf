@@ -18,31 +18,26 @@
 
 locals {
 
-  _vpc_path = try(
+  _vpcs_path = try(
     pathexpand(var.factories_config.vpcs), null
   )
 
-  _vpc_files = try(
-    fileset(local._vpc_path, "**/.config.yaml"),
+  _vpcs_files = try(
+    fileset(local._vpcs_path, "**/.config.yaml"),
     []
   )
 
   _vpcs_preprocess = [
-    for f in local._vpc_files : yamldecode(file(
-      "${coalesce(local._vpc_path, "-")}/${f}"
-    ))
+    for f in local._vpcs_files : merge(yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")), {
+      factory_basepath = "${local._vpcs_path}/${dirname(f)}"
+    })
   ]
 
-  _vpcs = merge(flatten([
-    for x in local._vpcs_preprocess : {
-      for k, v in x.vpcs : "${x.project_id}/${k}" => merge(v, {
-        project_id = x.project_id
-        name       = k
-      })
-    }
-  ])...)
+  _vpcs = {
+    for v in local._vpcs_preprocess : "${v.project_id}/${v.name}" => v
+  }
 
-  vpcs = { for k, v in local._vpcs : k => {
+  vpcs = { for k, v in local._vpcs : k => merge(v, {
     auto_create_subnetworks           = try(v.auto_create_subnetworks, false)
     project_id                        = v.project_id
     description                       = try(v.description, "Terraform managed")
@@ -58,11 +53,15 @@ locals {
     psa_config                        = try(v.psa_config, [])
     routes                            = try(v.routes, {})
     routing_mode                      = try(v.routing_mode, "GLOBAL")
-    subnets_factory_config            = try(v.subnets_factory_config, {})
-    firewall_factory_config           = try(v.firewall_factory_config, {})
-    peering_config                    = try(v.peering_config, {})
-    vpn_config                        = try(v.vpn_config, {})
+    subnets_factory_config = {
+      subnets_folder = "${v.factory_basepath}/subnets"
     }
+    firewall_factory_config = {
+      rules_folder = "${v.factory_basepath}/firewall-rules"
+    }
+    peering_config = try(v.peering_config, {})
+    vpn_config     = try(v.vpn_config, {})
+    })
   }
 }
 
@@ -85,18 +84,21 @@ module "vpc" {
   psa_configs                       = each.value.psa_config
   routes                            = each.value.routes
   routing_mode                      = each.value.routing_mode
-  depends_on                        = [module.factory]
   context = merge(local.ctx, {
     project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
   })
+  depends_on = [module.factory]
 }
 
-# module "firewall" {
-#   source               = "../net-vpc-firewall"
-#   for_each             = { for k, v in local.vpcs : k => v if v.firewall_factory_config != null }
-#   project_id           = each.value.project_id
-#   network              = each.value.name
-#   factories_config     = each.value.firewall_factory_config
-#   default_rules_config = { disabled = true }
-#   depends_on           = [module.vpc]
-# }
+module "firewall" {
+  source               = "../../../modules/net-vpc-firewall"
+  for_each             = { for k, v in local.vpcs : k => v if v.firewall_factory_config != null }
+  project_id           = each.value.project_id
+  network              = each.value.name
+  factories_config     = each.value.firewall_factory_config
+  default_rules_config = { disabled = true }
+  context = merge(local.ctx, {
+    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
+  })
+  depends_on = [module.vpc]
+}

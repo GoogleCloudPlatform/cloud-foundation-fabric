@@ -23,7 +23,7 @@ locals {
   }
   _factory_data = {
     for k, v in local._factory_data_raw : k => merge(v, {
-      region_computed = lookup(local.ctx.regions, v.region, v.region)
+      region_computed = lookup(local.ctx.locations, v.region, v.region)
     })
   }
   _factory_path = try(pathexpand(var.factories_config.subnets_folder), null)

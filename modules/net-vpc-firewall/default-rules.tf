@@ -29,7 +29,7 @@ resource "google_compute_firewall" "allow-admins" {
   name          = "${var.network}-ingress-admins"
   description   = "Access from the admin subnet to all subnets."
   network       = var.network
-  project       = var.project_id
+  project       = local.project_id
   source_ranges = local.default_rules.admin_ranges
   allow { protocol = "all" }
 }
@@ -39,7 +39,7 @@ resource "google_compute_firewall" "allow-tag-http" {
   name          = "${var.network}-ingress-tag-http"
   description   = "Allow http to machines with matching tags."
   network       = var.network
-  project       = var.project_id
+  project       = local.project_id
   source_ranges = local.default_rules.http_ranges
   target_tags   = local.default_rules.http_tags
   allow {
@@ -53,7 +53,7 @@ resource "google_compute_firewall" "allow-tag-https" {
   name          = "${var.network}-ingress-tag-https"
   description   = "Allow http to machines with matching tags."
   network       = var.network
-  project       = var.project_id
+  project       = local.project_id
   source_ranges = local.default_rules.https_ranges
   target_tags   = local.default_rules.https_tags
   allow {
@@ -67,7 +67,7 @@ resource "google_compute_firewall" "allow-tag-ssh" {
   name          = "${var.network}-ingress-tag-ssh"
   description   = "Allow SSH to machines with matching tags."
   network       = var.network
-  project       = var.project_id
+  project       = local.project_id
   source_ranges = local.default_rules.ssh_ranges
   target_tags   = local.default_rules.ssh_tags
   allow {

@@ -4,5 +4,5 @@
 
 name: hub-default
 region: europe-west12
-ip_cidr_range: 10.70.0.0/24
+ip_cidr_range: 10.71.0.0/24
 description: Default europe-west12 subnet for hub
