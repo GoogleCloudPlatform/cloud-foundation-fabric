@@ -710,12 +710,12 @@ service_accounts:
 | [log_buckets](outputs.tf#L88) | Log bucket ids. |  |
 | [project_ids](outputs.tf#L95) | Project ids. |  |
 | [project_numbers](outputs.tf#L100) | Project numbers. |  |
-| [projects](outputs.tf#L107) | Project attributes. |  |
-| [service_account_emails](outputs.tf#L112) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L119) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L126) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L133) | Service account emails. |  |
-| [storage_buckets](outputs.tf#L138) | Bucket names. |  |
+| [projects](outputs.tf#L107) | Project attributes. | ✓ |
+| [service_account_emails](outputs.tf#L113) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L120) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L127) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L134) | Service account emails. |  |
+| [storage_buckets](outputs.tf#L139) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
