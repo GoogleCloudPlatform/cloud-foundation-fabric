@@ -17,57 +17,79 @@
 # tfdoc:file:description VPC and firewall factory.
 
 locals {
-  _vpcs_preprocess = [for factory_key, factory_config in local.paths.vpcs : {
-    for k, v in try(factory_config.vpc_config, {}) : "${factory_key}/${k}" => {
-      project_id                        = module.projects[factory_key].id
-      name                              = k
-      auto_create_subnetworks           = try(v.auto_create_subnetworks, false)
-      create_googleapis_routes          = try(v.create_googleapis_routes, {})
-      delete_default_routes_on_create   = try(v.delete_default_routes_on_create, false)
-      description                       = try(v.description, "Terraform-managed.")
-      dns_policy                        = try(v.dns_policy, {})
-      firewall_policy_enforcement_order = try(v.firewall_policy_enforcement_order, "AFTER_CLASSIC_FIREWALL")
-      ipv6_config                       = try(v.ipv6_config, {})
-      mtu                               = try(v.mtu, null)
-      network_attachments               = try(v.network_attachments, {})
-      policy_based_routes               = try(v.policy_based_routes, {})
-      psa_config                        = try(v.psa_config, [])
-      routes                            = try(v.routes, {})
-      routing_mode                      = try(v.routing_mode, "GLOBAL")
-      subnets_factory_config            = try(v.subnets_factory_config, {})
-      firewall_factory_config           = try(v.firewall_factory_config, {})
-      peering_config                    = try(v.peering_config, {})
-      vpn_config                        = try(v.vpn_config, {})
-    }
-  }]
 
-  # vpcs = merge(
-  #   merge(local._vpcs_preprocess...),
-  #   var.network_project_config
-  # )
+  _vpc_path = try(
+    pathexpand(var.factories_config.vpcs), null
+  )
+
+  _vpc_files = try(
+    fileset(local._vpc_path, "**/.config.yaml"),
+    []
+  )
+
+  _vpcs_preprocess = [
+    for f in local._vpc_files : yamldecode(file(
+      "${coalesce(local._vpc_path, "-")}/${f}"
+    ))
+  ]
+
+  _vpcs = merge(flatten([
+    for x in local._vpcs_preprocess : {
+      for k, v in x.vpcs : "${x.project_id}/${k}" => merge(v, {
+        project_id = x.project_id
+        name       = k
+      })
+    }
+  ])...)
+
+  vpcs = { for k, v in local._vpcs : k => {
+    auto_create_subnetworks           = try(v.auto_create_subnetworks, false)
+    project_id                        = v.project_id
+    description                       = try(v.description, "Terraform managed")
+    create_googleapis_routes          = try(v.create_googleapis_routes, {})
+    delete_default_routes_on_create   = try(v.delete_default_routes_on_create, false)
+    dns_policy                        = try(v.dns_policy, {})
+    firewall_policy_enforcement_order = try(v.firewall_policy_enforcement_order, "AFTER_CLASSIC_FIREWALL")
+    ipv6_config                       = try(v.ipv6_config, {})
+    mtu                               = try(v.mtu, null)
+    name                              = v.name
+    network_attachments               = try(v.network_attachments, {})
+    policy_based_routes               = try(v.policy_based_routes, {})
+    psa_config                        = try(v.psa_config, [])
+    routes                            = try(v.routes, {})
+    routing_mode                      = try(v.routing_mode, "GLOBAL")
+    subnets_factory_config            = try(v.subnets_factory_config, {})
+    firewall_factory_config           = try(v.firewall_factory_config, {})
+    peering_config                    = try(v.peering_config, {})
+    vpn_config                        = try(v.vpn_config, {})
+    }
+  }
 }
 
-# module "vpc" {
-#   source                            = "../net-vpc"
-#   for_each                          = local.vpcs
-#   project_id                        = each.value.project_id
-#   name                              = each.value.name
-#   description                       = each.value.description
-#   auto_create_subnetworks           = each.value.auto_create_subnetworks
-#   create_googleapis_routes          = each.value.create_googleapis_routes
-#   delete_default_routes_on_create   = each.value.delete_default_routes_on_create
-#   dns_policy                        = each.value.dns_policy
-#   factories_config                  = each.value.subnets_factory_config
-#   firewall_policy_enforcement_order = each.value.firewall_policy_enforcement_order
-#   ipv6_config                       = each.value.ipv6_config
-#   mtu                               = each.value.mtu
-#   network_attachments               = each.value.network_attachments
-#   policy_based_routes               = each.value.policy_based_routes
-#   psa_configs                       = each.value.psa_config
-#   routes                            = each.value.routes
-#   routing_mode                      = each.value.routing_mode
-#   depends_on                        = [module.projects]
-# }
+module "vpc" {
+  source                            = "../../../modules/net-vpc"
+  for_each                          = local.vpcs
+  project_id                        = each.value.project_id
+  name                              = each.value.name
+  description                       = each.value.description
+  auto_create_subnetworks           = each.value.auto_create_subnetworks
+  create_googleapis_routes          = each.value.create_googleapis_routes
+  delete_default_routes_on_create   = each.value.delete_default_routes_on_create
+  dns_policy                        = each.value.dns_policy
+  factories_config                  = each.value.subnets_factory_config
+  firewall_policy_enforcement_order = each.value.firewall_policy_enforcement_order
+  ipv6_config                       = each.value.ipv6_config
+  mtu                               = each.value.mtu
+  network_attachments               = each.value.network_attachments
+  policy_based_routes               = each.value.policy_based_routes
+  psa_configs                       = each.value.psa_config
+  routes                            = each.value.routes
+  routing_mode                      = each.value.routing_mode
+  depends_on                        = [module.factory]
+  context = merge(local.ctx, {
+    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
+  })
+}
 
 # module "firewall" {
 #   source               = "../net-vpc-firewall"

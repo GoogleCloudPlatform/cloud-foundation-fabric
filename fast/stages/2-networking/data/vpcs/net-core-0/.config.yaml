@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # yaml-language-server: $schema=../../../schemas/vpc.schema.json
-project: net-core-0
+project_id: $project_ids:net-core-0
 vpcs:
   test:
     delete_default_routes_on_create: false

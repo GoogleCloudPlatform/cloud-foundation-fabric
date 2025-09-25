@@ -58,7 +58,7 @@ locals {
     ? null
     : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
   )
-  project_id = lookup(local.ctx.project_ids, local.project_id, local.project_id)
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
 }
 
 data "google_compute_network" "network" {
