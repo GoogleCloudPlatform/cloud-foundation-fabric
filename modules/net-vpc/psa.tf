@@ -53,7 +53,7 @@ locals {
 
 resource "google_compute_global_address" "psa_ranges" {
   for_each      = local.psa_configs_ranges
-  project       = var.project_id
+  project       = local.project_id
   network       = local.network.id
   name          = each.key
   purpose       = "VPC_PEERING"
@@ -73,7 +73,7 @@ resource "google_service_networking_connection" "psa_connection" {
 
 resource "google_compute_network_peering_routes_config" "psa_routes" {
   for_each = local.psa_configs
-  project  = var.project_id
+  project  = local.project_id
   peering = (
     google_service_networking_connection.psa_connection[each.key].peering
   )
@@ -84,7 +84,7 @@ resource "google_compute_network_peering_routes_config" "psa_routes" {
 
 resource "google_service_networking_peered_dns_domain" "name" {
   for_each   = local.psa_peered_domains
-  project    = var.project_id
+  project    = local.project_id
   network    = local.network.name
   name       = each.key
   dns_suffix = each.value.dns_suffix

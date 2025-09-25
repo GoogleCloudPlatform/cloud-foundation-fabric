@@ -67,7 +67,7 @@ locals {
 resource "google_network_connectivity_internal_range" "internal_range" {
   provider = google-beta
   for_each = local.internal_ranges
-  project  = var.project_id
+  project  = local.project_id
   name     = each.value.name
   network  = local.network.id
 

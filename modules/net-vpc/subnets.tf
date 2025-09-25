@@ -152,7 +152,7 @@ locals {
 resource "google_compute_subnetwork" "subnetwork" {
   provider                         = google-beta
   for_each                         = local.subnets
-  project                          = var.project_id
+  project                          = local.project_id
   network                          = local.network.name
   name                             = each.value.name
   region                           = each.value.region
@@ -216,7 +216,7 @@ resource "google_compute_subnetwork" "subnetwork" {
 
 resource "google_compute_subnetwork" "proxy_only" {
   for_each      = local.subnets_proxy_only
-  project       = var.project_id
+  project       = local.project_id
   network       = local.network.name
   name          = each.value.name
   region        = each.value.region
@@ -233,7 +233,7 @@ resource "google_compute_subnetwork" "proxy_only" {
 
 resource "google_compute_subnetwork" "private_nat" {
   for_each      = local.subnets_private_nat
-  project       = var.project_id
+  project       = local.project_id
   network       = local.network.name
   name          = each.value.name
   region        = each.value.region
@@ -249,7 +249,7 @@ resource "google_compute_subnetwork" "private_nat" {
 
 resource "google_compute_subnetwork" "psc" {
   for_each      = local.subnets_psc
-  project       = var.project_id
+  project       = local.project_id
   network       = local.network.name
   name          = each.value.name
   region        = each.value.region
@@ -269,7 +269,7 @@ resource "google_compute_subnetwork_iam_binding" "authoritative" {
     for binding in local.subnet_iam :
     "${binding.subnet}.${binding.role}" => binding
   }
-  project    = var.project_id
+  project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
   role       = each.value.role
@@ -278,7 +278,7 @@ resource "google_compute_subnetwork_iam_binding" "authoritative" {
 
 resource "google_compute_subnetwork_iam_binding" "bindings" {
   for_each   = local.subnet_iam_bindings
-  project    = var.project_id
+  project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
   role       = each.value.role
@@ -295,7 +295,7 @@ resource "google_compute_subnetwork_iam_binding" "bindings" {
 
 resource "google_compute_subnetwork_iam_member" "bindings" {
   for_each   = local.subnet_iam_bindings_additive
-  project    = var.project_id
+  project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
   role       = each.value.role
@@ -313,7 +313,7 @@ resource "google_compute_subnetwork_iam_member" "bindings" {
 resource "google_compute_network_attachment" "default" {
   provider    = google-beta
   for_each    = var.network_attachments
-  project     = var.project_id
+  project     = local.project_id
   region      = google_compute_subnetwork.subnetwork[each.value.subnet].region
   name        = each.key
   description = each.value.description
