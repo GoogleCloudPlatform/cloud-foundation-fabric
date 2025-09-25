@@ -19,6 +19,9 @@ locals {
   }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
+  context = merge(local.ctx, {
+    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
+  })
   ctx = merge(var.context, {
     folder_ids = merge(
       var.folder_ids, var.context.folder_ids

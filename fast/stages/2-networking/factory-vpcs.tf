@@ -84,10 +84,8 @@ module "vpc" {
   psa_configs                       = each.value.psa_config
   routes                            = each.value.routes
   routing_mode                      = each.value.routing_mode
-  context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
-  })
-  depends_on = [module.factory]
+  context                           = local.context
+  depends_on                        = [module.factory]
 }
 
 module "firewall" {
@@ -97,8 +95,6 @@ module "firewall" {
   network              = each.value.name
   factories_config     = each.value.firewall_factory_config
   default_rules_config = { disabled = true }
-  context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
-  })
-  depends_on = [module.vpc]
+  context              = local.context
+  depends_on           = [module.vpc]
 }
