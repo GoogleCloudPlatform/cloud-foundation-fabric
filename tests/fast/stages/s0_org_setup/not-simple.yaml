@@ -564,6 +564,8 @@ values:
     members:
     - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -702,6 +704,11 @@ values:
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/storage.admin
+  ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/projectIamViewer
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"]
   : condition: []
     members:
@@ -777,6 +784,31 @@ values:
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/serviceProjectNetworkAdmin
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["project_factory"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
+        \  'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',\n  'roles/container.hostServiceAgentUser',\
+        \ 'roles/vpcaccess.user'\n])"
+      title: Project factory delegated IAM grant.
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/projectIamViewer
+  ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/cloudkms.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/cloudkms.viewer
   module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
@@ -817,6 +849,15 @@ values:
     members:
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/viewer
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.bindings["project_factory"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
+        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])"
+      title: Project factory delegated IAM grant.
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
   ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"]
   : condition: []
     members:
@@ -1586,12 +1627,20 @@ values:
     timeouts: null
   module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].data.google_service_account.service_account[0]:
     account_id: iac-org-cicd-ro
+  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].data.google_service_account.service_account[0]:
     account_id: iac-org-cicd-rw
+  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
@@ -2265,6 +2314,18 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:organization_admin_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: organizations/1234567890/roles/organizationAdminViewer
+  module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:tag_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: organizations/1234567890/roles/tagViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/accesscontextmanager.policyAdmin"]:
     condition: []
     members:
@@ -2706,7 +2767,7 @@ counts:
   google_logging_project_bucket_config: 3
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
-  google_organization_iam_binding: 33
+  google_organization_iam_binding: 35
   google_organization_iam_custom_role: 7
   google_project: 3
   google_project_iam_binding: 16
@@ -2714,7 +2775,7 @@ counts:
   google_project_service: 33
   google_project_service_identity: 9
   google_service_account: 16
-  google_service_account_iam_member: 2
+  google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_object: 9
@@ -2726,6 +2787,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 46
-  resources: 303
+  modules: 43
+  resources: 296
   terraform_data: 2

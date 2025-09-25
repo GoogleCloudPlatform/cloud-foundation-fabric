@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-variable "context" {
-  description = "Context-specific interpolations."
-  type = object({
-    condition_vars        = optional(map(map(string)), {})
-    custom_roles          = optional(map(string), {})
-    folder_ids            = optional(map(string), {})
-    iam_principals        = optional(map(string), {})
-    kms_keys              = optional(map(string), {})
-    locations             = optional(map(string), {})
-    notification_channels = optional(map(string), {})
-    project_ids           = optional(map(string), {})
-    tag_values            = optional(map(string), {})
-    vpc_host_projects     = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
-  })
-  default  = {}
-  nullable = false
-}
-
 variable "data_defaults" {
   description = "Optional default values used when corresponding project or folder data from files are missing."
   type = object({
@@ -48,12 +29,7 @@ variable "data_defaults" {
       org_policies  = optional(string)
       quotas        = optional(string)
     }), {})
-    labels = optional(map(string), {})
-    logging_data_access = optional(map(object({
-      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
-    })), {})
+    labels        = optional(map(string), {})
     metric_scopes = optional(list(string), [])
     parent        = optional(string)
     prefix        = optional(string)
@@ -65,10 +41,6 @@ variable "data_defaults" {
         services_enabled = optional(list(string), [])
       }))
     }))
-    service_accounts = optional(map(object({
-      display_name   = optional(string, "Terraform-managed.")
-      iam_self_roles = optional(list(string))
-    })), {})
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
@@ -90,6 +62,11 @@ variable "data_defaults" {
     }))
     storage_location = optional(string)
     tag_bindings     = optional(map(string), {})
+    # non-project resources
+    service_accounts = optional(map(object({
+      display_name   = optional(string, "Terraform-managed.")
+      iam_self_roles = optional(list(string))
+    })), {})
     universe = optional(object({
       prefix                         = string
       unavailable_service_identities = optional(list(string), [])
@@ -99,6 +76,11 @@ variable "data_defaults" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
+    logging_data_access = optional(map(object({
+      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+    })), {})
   })
   nullable = false
   default  = {}
@@ -139,21 +121,17 @@ variable "data_overrides" {
       org_policies  = optional(string)
       quotas        = optional(string)
     }), {})
-    logging_data_access = optional(map(object({
-      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
-    })))
-    parent = optional(string)
-    prefix = optional(string)
+    parent                     = optional(string)
+    prefix                     = optional(string)
+    service_encryption_key_ids = optional(map(list(string)))
+    storage_location           = optional(string)
+    tag_bindings               = optional(map(string))
+    services                   = optional(list(string))
+    # non-project resources
     service_accounts = optional(map(object({
       display_name   = optional(string, "Terraform-managed.")
       iam_self_roles = optional(list(string))
     })))
-    service_encryption_key_ids = optional(map(list(string)))
-    services                   = optional(list(string))
-    storage_location           = optional(string)
-    tag_bindings               = optional(map(string))
     universe = optional(object({
       prefix                         = string
       unavailable_service_identities = optional(list(string), [])
@@ -163,21 +141,13 @@ variable "data_overrides" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
+    logging_data_access = optional(map(object({
+      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
+      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+    })))
   })
   nullable = false
   default  = {}
 }
 
-variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
-  type = object({
-    folders           = optional(string)
-    project_templates = optional(string)
-    projects          = optional(string)
-    budgets = optional(object({
-      billing_account_id = string
-      data               = string
-    }))
-  })
-  nullable = false
-}

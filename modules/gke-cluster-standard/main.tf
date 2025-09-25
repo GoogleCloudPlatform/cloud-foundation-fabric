@@ -60,11 +60,12 @@ resource "google_container_cluster" "cluster" {
   # the default node pool is deleted here, use the gke-nodepool module instead.
   # shielded nodes are controlled by the cluster-level enable_features variable
   node_config {
-    boot_disk_kms_key = var.node_config.boot_disk_kms_key
-    service_account   = var.node_config.service_account
-    tags              = var.node_config.tags
-    labels            = var.node_config.k8s_labels
-    resource_labels   = var.node_config.labels
+    boot_disk_kms_key     = var.node_config.boot_disk_kms_key
+    service_account       = var.node_config.service_account
+    tags                  = var.node_config.tags
+    labels                = var.node_config.k8s_labels
+    resource_labels       = var.node_config.labels
+    resource_manager_tags = var.node_config.resource_manager_tags
     dynamic "shielded_instance_config" {
       for_each = var.enable_features.shielded_nodes ? [""] : []
       content {

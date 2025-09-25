@@ -41,7 +41,7 @@ workflows:
         apply: $output_files:providers/0-org-setup
         plan: $output_files:providers/0-org-setup-ro
       files:
-        - tfvars/0-boostrap.auto.tfvars.json
+        - 0-org-setup.auto.tfvars.json
     service_accounts:
       apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
       plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
