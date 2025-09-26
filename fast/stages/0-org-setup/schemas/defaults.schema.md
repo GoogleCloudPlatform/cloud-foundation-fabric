@@ -80,11 +80,6 @@
       *additional properties: String*
     - **service_accounts**: *object*
       *additional properties: Object*
-    - **universe**: *object*
-      <br>*additional properties: false*
-      - ⁺**prefix**: *string*
-      - **unavailable_service_identities**: *array*
-        - items: *string*
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
@@ -117,7 +112,6 @@
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
-      *additional properties: Object*
     - **logging_data_access**: *object*
       *additional properties: Object*
     - **bigquery_location**: *string*
