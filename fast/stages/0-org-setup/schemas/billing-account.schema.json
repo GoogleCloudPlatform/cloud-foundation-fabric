@@ -201,32 +201,6 @@
           }
         }
       }
-    },
-    "billing_export": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "dataset_name",
-        "project_id"
-      ],
-      "properties": {
-        "project_id": {
-          "type": "string",
-          "description": "The project_id where the BigQuery dataset is created"
-        },
-        "dataset_name": {
-          "type": "string",
-          "description": "The name of the BigQuery dataset to which billing data is exported."
-        },
-        "location": {
-          "type": "string",
-          "description": "The geographic location where the BigQuery dataset is hosted."
-        },
-        "friendly_name": {
-          "type": "string",
-          "description": "A user-friendly name for the billing export configuration."
-        }
-      }
     }
   }
 }

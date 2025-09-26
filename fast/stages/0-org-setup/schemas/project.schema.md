@@ -96,6 +96,7 @@
     - ⁺**number**: *number*
     - **services_enabled**: *array*
       - items: *string*
+- **project_template**: *string*
 - **service_accounts**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
@@ -140,15 +141,26 @@
   - **`^[a-z0-9_-]+$`**: *string*
 - **tags**: *object*
   *additional properties: Object*
+- **universe**: *object*
+  <br>*additional properties: false*
+  - **prefix**: *string*
 - **vpc_sc**: *object*
   - ⁺**perimeter_name**: *string*
   - **is_dry_run**: *boolean*
+- **bigquery_datasets**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**dataset_id**: *string*
+    - **friendly_name**: *string*
+    - **location**: *string*
 
 ## Definitions
 
 - **bucket**<a name="refs-bucket"></a>: *object*
   <br>*additional properties: false*
   - **name**: *string*
+  - **create**: *boolean*
   - **description**: *string*
   - **iam**: *reference([iam](#refs-iam))*
   - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*

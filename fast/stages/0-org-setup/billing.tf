@@ -35,28 +35,6 @@ locals {
       logging_sinks = lookup(v, "logging_sinks", {})
     }) if v.id != null
   }
-  billing_exports = {
-    for k, v in local.billing_accounts :
-    k => merge(v.billing_export,
-      {
-        dataset_name = v.billing_export.dataset_name,
-        project_id = lookup(
-          local.cicd_project_ids,
-          v.billing_export.project_id,
-          v.billing_export.project_id
-        ),
-        location = try(
-          v.billing_export.location,
-          local.defaults.locations.bigquery
-        ),
-        friendly_name = try(
-          v.billing_export.friendly_name,
-          "Billing export"
-        )
-      }
-    )
-    if try(v.billing_export.dataset_name, null) != null
-  }
 }
 
 module "billing-accounts" {
@@ -92,13 +70,4 @@ module "billing-accounts" {
     for k, v in each.value.logging_sinks : k => v
     if lookup(v, "destination", null) != null && lookup(v, "type", null) != null
   }
-}
-
-module "billing-exports" {
-  source        = "../../../modules/bigquery-dataset"
-  for_each      = local.billing_exports
-  project_id    = each.value.project_id
-  id            = each.value.dataset_name
-  friendly_name = each.value.friendly_name
-  location      = each.value.location
 }

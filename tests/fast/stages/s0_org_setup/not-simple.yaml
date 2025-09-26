@@ -472,8 +472,8 @@ values:
     condition: []
     member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.user
-  module.billing-exports["default"].google_bigquery_dataset.default:
-    dataset_id: bq_dataset
+  module.factory.module.bigquery-datasets["exp-0/billing_export"].google_bigquery_dataset.default:
+    dataset_id: billing_export
     default_encryption_configuration: []
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
@@ -2787,6 +2787,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 43
-  resources: 296
+  modules: 46
+  resources: 307
   terraform_data: 2

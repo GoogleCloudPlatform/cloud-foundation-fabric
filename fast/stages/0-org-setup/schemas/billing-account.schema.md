@@ -62,12 +62,6 @@
         - **description**: *string*
         - **disabled**: *boolean*
     - **filter**: *string*
-- **billing_export**: *object*
-  <br>*additional properties: false*
-  - ⁺**project_id**: *string*
-  - ⁺**dataset_name**: *string*
-  - **location**: *string*
-  - **friendly_name**: *string*
 
 ## Definitions
 
