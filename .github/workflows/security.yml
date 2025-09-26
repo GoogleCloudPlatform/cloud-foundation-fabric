@@ -1,0 +1,25 @@
+name: 🛡️ Scans de Segurança
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: ['*']
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "URL alvo do DAST (ex.: https://google.com)"
+        required: false
+        default: ""
+
+jobs:
+  Seguranca:
+    uses: ditointernet/dito-security/.github/workflows/appsec.yml@v1
+    with:
+      target: ${{ github.event.inputs.target != '' && github.event.inputs.target || vars.DAST_TARGET }}
+    secrets:
+      DOJO_TOKEN: ${{ secrets.DOJO_TOKEN }}
+      DOJO_USER: ${{ secrets.DOJO_USER }}
+      DOJO_PASS: ${{ secrets.DOJO_PASS }}
+      REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+      DPBOT_TOKEN: ${{ secrets.DPBOT_TOKEN }}
