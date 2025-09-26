@@ -147,7 +147,7 @@
 - **vpc_sc**: *object*
   - ⁺**perimeter_name**: *string*
   - **is_dry_run**: *boolean*
-- **bigquery_datasets**: *object*
+- **datasets**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
     <br>*additional properties: false*

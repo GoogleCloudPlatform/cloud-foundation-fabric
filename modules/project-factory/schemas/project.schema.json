@@ -521,7 +521,7 @@
         }
       }
     },
-    "bigquery_datasets": {
+    "datasets": {
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {

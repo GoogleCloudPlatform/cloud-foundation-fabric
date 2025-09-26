@@ -24,7 +24,7 @@ services:
   - bigquery.googleapis.com
   - bigquerydatatransfer.googleapis.com
   - storage.googleapis.com
-bigquery_datasets:
+datasets:
   billing_export:
     dataset_id: billing_export
     friendly_name: Billing export

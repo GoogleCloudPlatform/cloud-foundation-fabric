@@ -1,7 +1,7 @@
 locals {
   projects_bigquery_datasets = flatten([
     for k, v in local.projects_input : [
-      for name, opts in lookup(v, "bigquery_datasets", {}) : {
+      for name, opts in lookup(v, "datasets", {}) : {
         project_key   = k
         project_name  = v.name
         name          = name
