@@ -42,8 +42,6 @@
       <br>*additional properties: false*
       - **`^[a-z0-9_-]+$`**: *array*
         - items: *string*
-    - **logging_data_access**: *object*
-      *additional properties: Object*
     - **metric_scopes**: *array*
       - items: *string*
     - **parent**: *string*
@@ -90,6 +88,8 @@
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
+    - **logging_data_access**: *object*
+      *additional properties: Object*
     - **bigquery_location**: *string*
   - **overrides**: *object*
     <br>*additional properties: false*
@@ -103,8 +103,6 @@
         - items: *string*
     - **deletion_policy**: *string*
       <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
-    - **logging_data_access**: *object*
-      *additional properties: Object*
     - **parent**: *string*
     - **prefix**: *string*
     - **service_encryption_key_ids**: *object*
@@ -116,14 +114,12 @@
       *additional properties: String*
     - **service_accounts**: *object*
       *additional properties: Object*
-    - **universe**: *object*
-      <br>*additional properties: false*
-      - ⁺**prefix**: *string*
-      - **unavailable_service_identities**: *array*
-        - items: *string*
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
+      *additional properties: Object*
+    - **logging_data_access**: *object*
+      *additional properties: Object*
     - **bigquery_location**: *string*
 - **context**: *object*
   <br>*additional properties: false*
