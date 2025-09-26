@@ -1,4 +1,4 @@
-<img width="1392" height="541" alt="image" src="https://github.com/user-attachments/assets/786ffd8d-e354-4419-93a7-46994ca80f91" /># FAST Organization Setup
+# FAST Organization Setup
 
 <!-- BEGIN TOC -->
 - [Quickstart](#quickstart)
