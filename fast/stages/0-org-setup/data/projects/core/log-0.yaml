@@ -27,4 +27,7 @@ services:
 log_buckets:
   audit-logs: {}
   iam: {}
-  vpc-sc: {}
+  vpc-sc:
+    log_analytics:
+      enable: true
+    retention: 31
