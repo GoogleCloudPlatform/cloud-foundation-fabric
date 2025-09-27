@@ -124,7 +124,7 @@ Like in classic FAST, the user running the first apply cycle needs specific perm
 To quickly self-grant the above roles, run the following code snippet as the initial Organization Admin. The best approach is to use the same group used for organization admins above.
 
 ```bash
-export FAST_PRINCIPAL="group:fabric-fast-owners@example.com"
+export FAST_PRINCIPAL="group:gcp-organization-admins@example.com"
 
 # find your organization and export its id in the FAST_ORG variable
 gcloud organizations list
