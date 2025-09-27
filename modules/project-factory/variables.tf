@@ -99,6 +99,7 @@ variable "data_defaults" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
+    bigquery_location = optional(string)
   })
   nullable = false
   default  = {}
@@ -163,6 +164,7 @@ variable "data_overrides" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
+    bigquery_location = optional(string)
   })
   nullable = false
   default  = {}

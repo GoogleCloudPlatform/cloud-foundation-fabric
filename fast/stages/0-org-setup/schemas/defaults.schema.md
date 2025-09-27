@@ -85,6 +85,7 @@
       - **is_dry_run**: *boolean*
     - **logging_data_access**: *object*
       *additional properties: Object*
+    - **bigquery_location**: *string*
   - **overrides**: *object*
     <br>*additional properties: false*
     - **billing_account**: *string*
@@ -113,6 +114,7 @@
       - **is_dry_run**: *boolean*
     - **logging_data_access**: *object*
       *additional properties: Object*
+    - **bigquery_location**: *string*
 - **context**: *object*
   <br>*additional properties: false*
   - **iam_principals**: *object*

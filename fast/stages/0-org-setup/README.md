@@ -371,6 +371,8 @@ This stage allows the same flexibility, and even makes it possible to mix and ma
 
 The default dataset assumes an externally managed billing account is used, and configures its IAM accordingly via the billing account factory. The example below shows some of the IAM bindings configured at the billing account level, and how context-based interpolation is used there.
 
+Because of limitations of API availability, manual steps have to be followed to enable billing export within billing project to BigQuery dataset `billing_export` which will be created as part of the org-setup stage. The process to share billing data [is outlined here](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
+
 <details>
 <summary>Context-based replacement examples for the billing accounts factory</summary>
 
