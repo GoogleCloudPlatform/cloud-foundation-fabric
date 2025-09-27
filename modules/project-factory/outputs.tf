@@ -107,6 +107,7 @@ output "project_numbers" {
 output "projects" {
   description = "Project attributes."
   value       = local.outputs_projects
+  sensitive   = true
 }
 
 output "service_account_emails" {
