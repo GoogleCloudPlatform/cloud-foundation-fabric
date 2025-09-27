@@ -729,6 +729,30 @@ resource "google_compute_url_map" "default" {
             route_rules.value.service,
             route_rules.value.service
           )
+          dynamic "custom_error_response_policy" {
+            for_each = (
+              route_rules.value.custom_error_response_policy == null
+              ? []
+              : [route_rules.value.custom_error_response_policy]
+            )
+            iterator = p
+            content {
+              error_service = p.value.error_service == null ? null : lookup(
+                local.backend_ids,
+                p.value.error_service,
+                p.value.error_service
+              )
+              dynamic "error_response_rule" {
+                for_each = coalesce(p.value.error_response_rules, [])
+                iterator = r
+                content {
+                  match_response_codes   = r.value.match_response_codes
+                  path                   = r.value.path
+                  override_response_code = r.value.override_response_code
+                }
+              }
+            }
+          }
           dynamic "header_action" {
             for_each = (
               route_rules.value.header_action == null
