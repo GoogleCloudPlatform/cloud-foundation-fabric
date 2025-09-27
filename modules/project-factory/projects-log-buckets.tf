@@ -27,8 +27,8 @@ locals {
           lookup(local.ctx.locations, opts.location, opts.location),
           "global"
         )
-        retention     = lookup(v, "retention", null)
-        log_analytics = lookup(v, "log_analytics", {})
+        retention     = lookup(opts, "retention", null)
+        log_analytics = lookup(opts, "log_analytics", {})
       }
     ]
   ])
