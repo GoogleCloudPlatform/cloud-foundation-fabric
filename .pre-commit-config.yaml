@@ -31,22 +31,55 @@ repos:
   - id: cff-readme
     name: Regenerate README.md with tfdoc.py
     entry: tools/pre-commit-tfdoc.sh
-    language: script
+    language: python
+    additional_dependencies:
+      - click
+      - deepdiff
+      - ghapi
+      - iso8601
+      - marko
+      - requests
+      - yamale
+      - yapf
+      - jsonschema
+      - BeautifulSoup4
     #types: [terraform]
     files: ^(modules|fast).*(tf|README.md)$
     pass_filenames: true
     require_serial: true
   - id: licenese
     name: Check license presence and other boilerplate checks
-    language: system
+    language: python
     entry: tools/check_boilerplate.py
+    additional_dependencies:
+      - click
+      - deepdiff
+      - ghapi
+      - iso8601
+      - marko
+      - requests
+      - yamale
+      - yapf
+      - jsonschema
+      - BeautifulSoup4
     pass_filenames: true
     args:
     -  --scan-files
   - id: tflint-fast
     name: Checking FAST code with tflint
     entry: tools/tflint-fast.py
-    language: system
+    language: python
+    additional_dependencies:
+      - click
+      - deepdiff
+      - ghapi
+      - iso8601
+      - marko
+      - requests
+      - yamale
+      - yapf
+      - jsonschema
+      - BeautifulSoup4
     pass_filenames: false
     require_serial: true
     files: ^fast/.*tf
@@ -64,13 +97,35 @@ repos:
     entry: /usr/bin/find . -type f -name 'versions.tofu' -exec cp default-versions.tofu {} \;
   - id: check-names
     name: Check name lengths for FAST
-    language: system
+    language: python
+    additional_dependencies:
+      - click
+      - deepdiff
+      - ghapi
+      - iso8601
+      - marko
+      - requests
+      - yamale
+      - yapf
+      - jsonschema
+      - BeautifulSoup4
     pass_filenames: false
     files: ^fast
     entry: tools/check_names.py --prefix-length=10 --failed-only fast/stages
   - id: check-links
     name: Check links in markdown files
-    language: system
+    language: python
+    additional_dependencies:
+      - click
+      - deepdiff
+      - ghapi
+      - iso8601
+      - marko
+      - requests
+      - yamale
+      - yapf
+      - jsonschema
+      - BeautifulSoup4
     entry: tools/check_links.py --no-show-summary --scan-files
   - id: duplicate-diff
     name: duplicate-diff

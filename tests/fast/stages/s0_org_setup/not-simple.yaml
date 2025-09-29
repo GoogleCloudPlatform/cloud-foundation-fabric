@@ -1022,12 +1022,12 @@ values:
   module.factory.module.log-buckets["log-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: vpc-sc
     cmek_settings: []
-    enable_analytics: false
+    enable_analytics: true
     index_configs: []
     location: global
     locked: null
     project: ft0-prod-audit-logs-0
-    retention_days: 30
+    retention_days: 31
   module.factory.module.projects-iam["exp-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
