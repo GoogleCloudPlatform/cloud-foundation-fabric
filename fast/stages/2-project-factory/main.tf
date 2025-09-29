@@ -17,8 +17,8 @@
 # tfdoc:file:description Project factory.
 
 locals {
-  _defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
-  context   = merge(var.context, lookup(local._defaults, "context", {}))
+  context  = merge(var.context, lookup(local.defaults, "context", {}))
+  defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
   fast_defaults = {
     billing_account = coalesce(
       var.data_defaults.billing_account,
@@ -34,18 +34,18 @@ locals {
   project_defaults = {
     defaults = {
       for k, v in var.data_defaults : k => try(
-        local._defaults.projects.defaults[k],
+        local.defaults.projects.defaults[k],
         lookup(local.fast_defaults, k, v)
       )
     }
     merges = {
       for k, v in var.data_merges : k => try(
-        local._defaults.projects.merges[k], v
+        local.defaults.projects.merges[k], v
       )
     }
     overrides = {
       for k, v in var.data_overrides : k => try(
-        local._defaults.projects.overrides[k], v
+        local.defaults.projects.overrides[k], v
       )
     }
   }

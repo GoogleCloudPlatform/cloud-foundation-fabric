@@ -554,11 +554,35 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "file_prefix": {
+          "type": "string",
+          "default": "projects"
+        },
         "local_path": {
           "type": "string"
         },
         "storage_bucket": {
           "type": "string"
+        },
+        "provider_pattern": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service_accounts",
+            "storage_bucket"
+          ],
+          "properties": {
+            "service_accounts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minContains": 1
+            },
+            "storage_bucket": {
+              "type": "string"
+            }
+          }
         },
         "providers": {
           "type": "object",
@@ -582,6 +606,15 @@
                   "type": "string"
                 }
               }
+            }
+          }
+        },
+        "tfvars_pattern": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "storage_bucket": {
+              "type": "string"
             }
           }
         }
