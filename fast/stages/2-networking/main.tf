@@ -52,18 +52,5 @@ locals {
     storage_bucket = try(local._defaults.output_files.storage_bucket, null)
     providers      = try(local._defaults.output_files.providers, {})
   }
-  project_defaults = {
-    defaults = merge(
-      {
-        billing_account = var.billing_account.id
-        prefix          = var.prefix
-      },
-      lookup(var.folder_ids, local.defaults.folder_name, null) == null ? {} : {
-        parent = lookup(var.folder_ids, local.defaults.folder_name, null)
-      },
-      try(local._defaults.projects.defaults, {})
-    )
-    overrides = try(local._defaults.projects.overrides, {})
-  }
 }
 

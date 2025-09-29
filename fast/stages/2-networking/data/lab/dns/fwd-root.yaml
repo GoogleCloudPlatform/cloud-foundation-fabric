@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-context:
-  locations:
-    primary: europe-west1
-    secondary: europe-west3
-  iam_principals: {}
+# yaml-language-server: $schema=../../schemas/dns.schema.json
 
-projects:
-  defaults:
-    storage_location: eu
+project_id: $project_ids:net-core-0
+domain: .
+forwarding:
+  forwarders:
+    "8.8.8.8": default
+    "1.1.1.1": default
+  client_networks:
+    - $vpcs:net-land-01/hub

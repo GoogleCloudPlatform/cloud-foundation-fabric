@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/dns.schema.json
-
-project: net-core-0
-domain: .
-forwarding:
-  forwarders:
-    "8.8.8.8": default
-    "1.1.1.1": default
-  client_networks:
-    - net-land-01/hub
+# yaml-language-server: $schema=../../../schemas/vpc.schema.json
+project_id: $project_ids:net-prod-ncc-0
+name: prod-ncc
+delete_default_routes_on_create: false
+mtu: 1500
+nat_config:
+  nat-ew8:
+    region: europe-west8
+ncc_config:
+  hub: $ncc_hubs:net-prod-ncc-0/hub
+  group: $ncc_groups:net-prod-ncc-0/default

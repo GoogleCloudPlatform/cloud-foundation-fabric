@@ -14,11 +14,11 @@
 
 # yaml-language-server: $schema=../../schemas/dns.schema.json
 
-project: net-core-0
+project: $projects:net-core-0
 domain: test.
 private:
   client_networks:
-    - net-land-01/hub
+    - $vpcs:net-land-01/hub
 recordsets:
 "A localhost":
   records: ["127.0.0.1"]

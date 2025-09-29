@@ -37,6 +37,7 @@ variable "factories_config" {
     firewall-policies = optional(string, "data/firewall-policies")
     folders           = optional(string, "data/folders")
     interconnect      = optional(string, "data/interconnect")
+    ncc-hubs          = optional(string, "data/ncc-hubs")
     projects          = optional(string, "data/projects")
     vpcs              = optional(string, "data/vpcs")
   })

@@ -22,7 +22,7 @@ peer_gateways:
         - 8.8.8.8
 router_config:
   create: false
-  name: $project_ids:net-core-0/hub/vpn-router
+  name: $routers:net-core-0/hub/vpn-router
 tunnels:
   remote-0:
     bgp_peer:
