@@ -19,7 +19,7 @@
   - [Context interpolation](#context-interpolation)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
-  - [Billing account IAM](#billing-account-iam)
+  - [Billing account IAM and billing export](#billing-account-iam-and-billing-export)
     - [Context-based replacement in the billing account factory](#context-based-replacement-in-the-billing-account-factory)
   - [Organization configuration](#organization-configuration)
     - [Context-based replacement in organization factories](#context-based-replacement-in-organization-factories)
@@ -355,7 +355,7 @@ context:
     gcp-organization-admins: group:fabric-fast-owners@example.com
 ```
 
-### Billing account IAM
+### Billing account IAM and billing export
 
 FAST traditionally supports three different billing configurations:
 
@@ -371,7 +371,7 @@ This stage allows the same flexibility, and even makes it possible to mix and ma
 
 The default dataset assumes an externally managed billing account is used, and configures its IAM accordingly via the billing account factory. The example below shows some of the IAM bindings configured at the billing account level, and how context-based interpolation is used there.
 
-Because of limitations of API availability, manual steps have to be followed to enable billing export within billing project to BigQuery dataset `billing_export` which will be created as part of the org-setup stage. The process to share billing data [is outlined here](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
+Where billing exports need to be configured as part of a FAST installation, the default dataset includes a dedicated project and a BigQuery dataset that can be used as part of [manual process to set up exports](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
 
 <details>
 <summary>Context-based replacement examples for the billing accounts factory</summary>

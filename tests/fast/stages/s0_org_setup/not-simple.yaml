@@ -472,7 +472,7 @@ values:
     condition: []
     member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.user
-  module.factory.module.bigquery-datasets["exp-0/billing_export"].google_bigquery_dataset.default:
+  module.factory.module.bigquery-datasets["billing-0/billing_export"].google_bigquery_dataset.default:
     dataset_id: billing_export
     default_encryption_configuration: []
     default_partition_expiration_ms: null
@@ -1028,13 +1028,13 @@ values:
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 31
-  module.factory.module.projects-iam["exp-0"].google_project_iam_binding.authoritative["roles/owner"]:
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-billing-exp-0
     role: roles/owner
-  module.factory.module.projects-iam["exp-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -1125,12 +1125,12 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
     role: roles/viewer
-  module.factory.module.projects["exp-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+  module.factory.module.projects["billing-0"].data.google_bigquery_default_service_account.bq_sa[0]:
     project: ft0-prod-billing-exp-0
-  module.factory.module.projects["exp-0"].data.google_storage_project_service_account.gcs_sa[0]:
+  module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-billing-exp-0
     user_project: null
-  module.factory.module.projects["exp-0"].google_project.project[0]:
+  module.factory.module.projects["billing-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-012345-012345
     deletion_policy: DELETE
@@ -1145,29 +1145,29 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  module.factory.module.projects["exp-0"].google_project_iam_member.service_agents["bigquerydatatransfer"]:
+  module.factory.module.projects["billing-0"].google_project_iam_member.service_agents["bigquerydatatransfer"]:
     condition: []
     project: ft0-prod-billing-exp-0
     role: roles/bigquerydatatransfer.serviceAgent
-  module.factory.module.projects["exp-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+  module.factory.module.projects["billing-0"].google_project_service.project_services["bigquery.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: bigquery.googleapis.com
     timeouts: null
-  module.factory.module.projects["exp-0"].google_project_service.project_services["bigquerydatatransfer.googleapis.com"]:
+  module.factory.module.projects["billing-0"].google_project_service.project_services["bigquerydatatransfer.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: bigquerydatatransfer.googleapis.com
     timeouts: null
-  module.factory.module.projects["exp-0"].google_project_service.project_services["storage.googleapis.com"]:
+  module.factory.module.projects["billing-0"].google_project_service.project_services["storage.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: storage.googleapis.com
     timeouts: null
-  module.factory.module.projects["exp-0"].google_project_service_identity.default["bigquerydatatransfer.googleapis.com"]:
+  module.factory.module.projects["billing-0"].google_project_service_identity.default["bigquerydatatransfer.googleapis.com"]:
     project: ft0-prod-billing-exp-0
     service: bigquerydatatransfer.googleapis.com
     timeouts: null
