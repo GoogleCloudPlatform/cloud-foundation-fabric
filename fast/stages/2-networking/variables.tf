@@ -45,6 +45,16 @@ variable "factories_config" {
   default  = {}
 }
 
+variable "factories_index" {
+  description = "Controls whether factory resources are keyed by path or id"
+  type        = string
+  default     = "by_path"
+  validation {
+    condition     = contains(["by_path", "by_id"], var.factories_index)
+    error_message = "factories_index must be either 'by_path' or 'by_id'"
+  }
+}
+
 variable "outputs_location" {
   description = "Path where tfvars files for the following stages are written. Leave empty to disable."
   type        = string

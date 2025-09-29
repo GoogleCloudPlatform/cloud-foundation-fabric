@@ -19,9 +19,6 @@ locals {
   }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
-  context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
-  })
   ctx = merge(var.context, {
     folder_ids = merge(
       var.folder_ids, var.context.folder_ids
@@ -43,9 +40,11 @@ locals {
     tag_keys    = merge(var.tag_keys, var.context.tag_keys)
     tag_values  = merge(var.tag_values, var.context.tag_values)
   })
+
   defaults = {
     folder_name = try(local._defaults.global.folder_id, "networking")
     stage_name  = try(local._defaults.global.stage_name, "2-networking")
+    vpcs        = try(local._defaults.vpcs, {})
   }
   output_files = {
     local_path     = try(local._defaults.output_files.local_path, null)

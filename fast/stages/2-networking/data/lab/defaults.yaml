@@ -23,7 +23,6 @@ projects:
     storage_location: eu
 
 vpcs:
-  defaults:
-    auto_create_subnetworks: false
-    delete_default_route_on_create: true
-    mtu: 1500
+  auto_create_subnetworks: false
+  delete_default_route_on_create: true
+  mtu: 1500
