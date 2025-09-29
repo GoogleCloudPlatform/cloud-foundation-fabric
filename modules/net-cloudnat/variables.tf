@@ -79,6 +79,16 @@ variable "config_timeouts" {
   nullable = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    locations   = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "endpoint_types" {
   description = "Specifies the endpoint Types supported by the NAT Gateway. Supported values include: ENDPOINT_TYPE_VM, ENDPOINT_TYPE_SWG, ENDPOINT_TYPE_MANAGED_PROXY_LB."
   type        = list(string)
