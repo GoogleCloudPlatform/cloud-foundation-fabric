@@ -109,6 +109,7 @@ module "organization-iam" {
       module.factory.iam_principals
     )
     log_buckets = module.factory.log_buckets
+    prefix      = local.project_defaults.defaults.prefix
     project_ids = merge(
       local.ctx.project_ids, module.factory.project_ids
     )
