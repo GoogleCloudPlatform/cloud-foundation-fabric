@@ -60,6 +60,8 @@ module "nat" {
   rules                     = each.value.rules
   type                      = each.value.type
   context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
+    project_ids    = merge(local.ctx.project_ids, module.factory.project_ids)
+    vpc_self_links = local.ctx_vpcs.self_links
+    locations      = local.ctx.locations
   })
 }

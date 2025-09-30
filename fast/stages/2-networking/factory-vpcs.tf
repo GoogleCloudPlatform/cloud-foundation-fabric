@@ -17,7 +17,6 @@
 # tfdoc:file:description VPC and firewall factory.
 
 locals {
-  vpc_defaults = try(local._defaults.vpcs.defaults, {})
 
   _vpcs_path = try(
     pathexpand(var.factories_config.vpcs), null
@@ -46,7 +45,10 @@ locals {
 
   _vpcs = merge(local._vpcs_by_path, local._vpcs_by_id)
 
-  ctx_vpcs = { for k, v in module.vpcs : k => v.id }
+  ctx_vpcs = {
+    vpcs       = { for k, v in module.vpcs : k => v.id }
+    self_links = { for k, v in module.vpcs : k => v.self_link }
+  }
 
   vpcs = { for k, v in local._vpcs : k => merge(local.defaults.vpcs, v, {
     project_id                        = v.project_id
@@ -71,6 +73,9 @@ locals {
     vpn_config     = try(v.vpn_config, {})
     })
   }
+
+  vpc_defaults = try(local._defaults.vpcs.defaults, {})
+
 }
 
 module "vpcs" {

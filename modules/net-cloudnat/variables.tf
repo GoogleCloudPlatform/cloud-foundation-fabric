@@ -82,8 +82,9 @@ variable "config_timeouts" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    locations   = optional(map(string), {})
-    project_ids = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    vpc_self_links = optional(map(string), {})
   })
   default  = {}
   nullable = false
