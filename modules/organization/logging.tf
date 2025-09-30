@@ -82,7 +82,7 @@ resource "google_organization_iam_audit_config" "default" {
 
 resource "google_logging_organization_sink" "sink" {
   for_each           = local.logging_sinks
-  name               = each.key
+  name               = "${var.context.prefix == "" ? "" : "${var.context.prefix}-"}${each.key}"
   description        = coalesce(each.value.description, "${each.key} (Terraform-managed).")
   org_id             = local.organization_id_numeric
   destination        = "${lookup(each.value, "api", each.value.type)}.googleapis.com/${each.value.destination}"
