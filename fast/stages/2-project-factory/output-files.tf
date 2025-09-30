@@ -25,23 +25,39 @@ foo      = {
 locals {
   # output files configurations
   _of = {
-    local_path       = try(local.defaults.output_files.local_path, null)
-    provider_pattern = try(local.defaults.output_files.provider_pattern, {})
-    providers        = try(local.defaults.output_files.providers, {})
-    storage_bucket   = try(local.defaults.output_files.storage_bucket, null)
+    bucket     = try(local.defaults.output_files.storage_bucket, null)
+    local_path = try(local.defaults.output_files.local_path, null)
+    pattern = {
+      bucket = try(
+        local.defaults.output_files.provider_pattern.storage_bucket, null
+      )
+      sa_ro = try(
+        local.defaults.output_files.provider_pattern.service_accounts.ro, null
+      )
+      sa_rw = try(
+        local.defaults.output_files.provider_pattern.service_accounts.rw, null
+      )
+    }
+    providers = try(local.defaults.output_files.providers, {})
   }
-  # initial templated provider definitions for each project
-  _of_providers_templated = flatten([
-    for k, v in module.factory.projects : [
-      for s in lookup(local._of.provider_pattern, "service_accounts", []) : {
-        project         = k
-        service_account = "${k}/${s}"
-        storage_bucket = lookup(
-          local._of.provider_pattern, "storage_bucket", null
-        )
-      }
-    ]
-  ])
+  _of_pattern_use = local._of.pattern.bucket != null && (
+    local._of.pattern.sa_ro != null || local._of.pattern.sa_rw != null
+  )
+  # compute projects dereferencing service accounts for provider template
+  _of_providers_projects = !local._of_pattern_use ? {} : {
+    for k, v in module.factory.projects : k => {
+      ro = local._of.pattern.sa_ro == null ? null : lookup(
+        module.factory.service_account_emails,
+        "${k}/${local._of.pattern.sa_ro}",
+        null
+      )
+      rw = local._of.pattern.sa_rw == null ? null : lookup(
+        module.factory.service_account_emails,
+        "${k}/${local._of.pattern.sa_rw}",
+        null
+      )
+    }
+  }
   # merge single and templated providers dereferencing service accounts
   _of_providers = merge(
     # single providers
@@ -55,17 +71,23 @@ locals {
         )
       })
     },
-    # templated providers
-    {
-      for v in local._of_providers_templated : v.service_account => merge(v, {
-        filename = "${v.project}-${reverse(split("/", v.service_account))[0]}"
-        prefix   = v.project
-        # templated providers can only reference internal service accounts
-        service_account = try(
-          module.factory.service_account_emails["${v.service_account}"],
-          null
-        )
-      })
+    # templated providers, read-only service account
+    local._of.pattern.sa_ro == null ? {} : {
+      for k, v in local._of_providers_projects : "${k}-ro" => {
+        filename        = "${k}-ro"
+        prefix          = k
+        service_account = v.ro
+        storage_bucket  = local._of.pattern.bucket
+      } if v.ro != null
+    },
+    # templated providers, read-write service account
+    local._of.pattern.sa_rw == null ? {} : {
+      for k, v in local._of_providers_projects : "${k}-rw" => {
+        filename        = "${k}-rw"
+        prefix          = k
+        service_account = v.rw
+        storage_bucket  = local._of.pattern.bucket
+      } if v.rw != null
     }
   )
   of_path = (
@@ -77,24 +99,25 @@ locals {
     for k, v in local._of_providers : k => v
     if v.storage_bucket != null && v.service_account != null
   }
-  # dereference service accounts for single providers
+  # list of service accounts for dereferencing single providers
   of_service_accounts = {
     for k, v in module.factory.service_account_emails :
     "$iam_principals:service_accounts/${k}" => v
   }
   # dereference output files bucket
-  of_storage_bucket = local._of.storage_bucket == null ? null : lookup(
-    local.of_storage_buckets, local._of.storage_bucket, local._of.storage_bucket
+  of_storage_bucket = local._of.bucket == null ? null : lookup(
+    local.of_storage_buckets, local._of.bucket, local._of.bucket
   )
+  # list of storage buckets for dereferencing output files bucket
   of_storage_buckets = {
-    for k, v in module.factory.storage_buckets :
-    "$storage_buckets:${k}" => v
+    for k, v in module.factory.storage_buckets : "$storage_buckets:${k}" => v
   }
+  # TODO: allow customizing template path from defaults file
   of_template = file("assets/providers.tf.tpl")
   # tfvars files are generated for each project that has a providers file
   of_tfvars_projects = distinct([
-    for k, v in local.of_providers :
-    v.project if lookup(v, "project", null) != null
+    for k, v in local._of_providers_projects :
+    k if v.ro != null || v.rw != null
   ])
 }
 

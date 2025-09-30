@@ -376,12 +376,17 @@ output_files:
   provider_pattern:
     service_accounts:
       # one provider file is generated for each service account listed here
-      # projects where a service account is missing are skipped
+      # for each project where the service account is defined
       - automation/rw
-    # state bucket used for the provider files
-    storage_bucket: $storage_buckets:iac-0/iac-shared-state
-    # assign IAM grants on storage folders
-    storage_iam_grants: true
+    storage:
+      # a single bucket is used for all states
+      bucket: $storage_buckets:iac-0/iac-shared-state
+      folders:
+        # storage folders can optionally be created for each project
+        create: true
+        iam_readers: []
+        iam_writers:
+          - automation/rw
 ```
 
 Individual provider files can be used standalone, or combined with a provider pattern. Note that individual providers do not generate tfvars files, as the assumption is that these will be used across sets of projects.

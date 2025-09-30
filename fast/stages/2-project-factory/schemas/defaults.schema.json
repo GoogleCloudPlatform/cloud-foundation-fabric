@@ -573,14 +573,35 @@
           ],
           "properties": {
             "service_accounts": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "minContains": 1
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "ro": {
+                  "type": "string"
+                },
+                "rw": {
+                  "type": "string"
+                }
+              }
             },
             "storage_bucket": {
               "type": "string"
+            },
+            "storage_folders": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [],
+              "properties": {
+                "create": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "iam_assign": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
             }
           }
         },
