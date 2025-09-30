@@ -184,7 +184,7 @@ resource "google_tags_tag_key" "default" {
   purpose_data = (
     lookup(each.value, "network", null) == null ? null : { network = each.value.network }
   )
-  short_name  = each.key
+  short_name  = "${var.context.prefix == "" ? "" : "${var.context.prefix}-"}${each.key}"
   description = each.value.description
   depends_on = [
     google_organization_iam_binding.authoritative,

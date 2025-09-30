@@ -44,13 +44,17 @@ locals {
   custom_roles = merge(
     {
       for k, v in local._custom_roles : k => {
-        name        = lookup(v, "name", k)
+        name = (
+          "${var.context.prefix == "" ? "" : "${var.context.prefix}."}${lookup(v, "name", k)}"
+        )
         permissions = v["includedPermissions"]
       }
     },
     {
       for k, v in var.custom_roles : k => {
-        name        = k
+        name = (
+          "${var.context.prefix == "" ? "" : "${var.context.prefix}."}${k}"
+        )
         permissions = v
       }
     }

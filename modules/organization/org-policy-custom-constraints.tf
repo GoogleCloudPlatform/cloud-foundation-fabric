@@ -38,7 +38,7 @@ locals {
   custom_constraints = {
     for k, v in local._custom_constraints :
     k => merge(v, {
-      name   = k
+      name   = "${var.context.prefix}${k}"
       parent = var.organization_id
     })
   }

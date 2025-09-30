@@ -30,6 +30,7 @@ variable "context" {
     iam_principals    = optional(map(string), {})
     locations         = optional(map(string), {})
     log_buckets       = optional(map(string), {})
+    prefix            = optional(string, "")
     project_ids       = optional(map(string), {})
     pubsub_topics     = optional(map(string), {})
     storage_buckets   = optional(map(string), {})
