@@ -33,20 +33,13 @@ locals {
     })
   ]
 
-  _vpcs_by_path = {
+  _vpcs = {
     for v in local._vpcs_preprocess : v.factory_basepath => v
-    if var.factories_index == "by_path"
   }
-
-  _vpcs_by_id = {
-    for v in local._vpcs_preprocess : "${replace(v.project_id, "$project_ids:", "")}/${v.name}" => v
-    if var.factories_index == "by_id"
-  }
-
-  _vpcs = merge(local._vpcs_by_path, local._vpcs_by_id)
 
   ctx_vpcs = {
-    vpcs       = { for k, v in module.vpcs : k => v.id }
+    ids        = { for k, v in module.vpcs : k => v.id }
+    names      = { for k, v in module.vpcs : k => v.name }
     self_links = { for k, v in module.vpcs : k => v.self_link }
   }
 
@@ -97,9 +90,10 @@ module "vpcs" {
   psa_configs                       = each.value.psa_config
   routes                            = each.value.routes
   routing_mode                      = each.value.routing_mode
-  context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
-  })
+  context = {
+    project_ids = local.ctx_projects.project_ids
+    locations   = local.ctx.locations
+  }
   depends_on = [module.factory]
 }
 
@@ -110,8 +104,8 @@ module "firewall" {
   network              = each.value.name
   factories_config     = each.value.firewall_factory_config
   default_rules_config = { disabled = true }
-  context = merge(local.ctx, {
-    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
-  })
+  context = {
+    project_ids = local.ctx_projects.project_ids
+  }
   depends_on = [module.vpcs]
 }

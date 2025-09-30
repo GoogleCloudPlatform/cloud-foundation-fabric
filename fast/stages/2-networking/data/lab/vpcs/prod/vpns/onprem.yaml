@@ -21,8 +21,11 @@ peer_gateways:
       interfaces:
         - 8.8.8.8
 router_config:
-  create: false
-  name: $routers:data/lab/vpcs/hub/vpn-router
+  asn: 64514
+  custom_advertise:
+    all_subnets: true
+    ip_ranges:
+      "10.0.0.0/8": "default"
 tunnels:
   remote-0:
     bgp_peer:

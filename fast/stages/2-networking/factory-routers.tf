@@ -17,9 +17,11 @@
 # tfdoc:file:description Cloud NAT factory.
 
 locals {
-  ctx_router = {
-    for k, v in google_compute_router.default : k => v.id
+  ctx_routers = {
+    ids   = { for k, v in google_compute_router.default : k => v.id }
+    names = { for k, v in google_compute_router.default : k => v.name }
   }
+
   router_configs = merge(flatten([
     for vpc_key, vpc_config in local.vpcs : [
       for router_key, router_config in try(vpc_config.routers, {}) : {

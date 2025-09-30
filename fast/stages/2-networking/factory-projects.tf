@@ -15,6 +15,9 @@
  */
 
 locals {
+  ctx_projects = {
+    project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
+  }
   project_defaults = {
     defaults = merge(
       {

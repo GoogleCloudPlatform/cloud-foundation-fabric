@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    project_ids = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    routers     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "name" {
   description = "VPN Gateway name (if an existing VPN Gateway is not used), and prefix used for dependent resources."
   type        = string
