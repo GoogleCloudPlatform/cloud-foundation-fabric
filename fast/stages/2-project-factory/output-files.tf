@@ -23,14 +23,14 @@ foo      = {
 */
 
 locals {
+  # output files configurations
   _of = {
     local_path       = try(local.defaults.output_files.local_path, null)
     provider_pattern = try(local.defaults.output_files.provider_pattern, {})
     providers        = try(local.defaults.output_files.providers, {})
     storage_bucket   = try(local.defaults.output_files.storage_bucket, null)
-    tfvars_pattern   = try(local.defaults.output_files.tfvars_pattern, {})
   }
-  # templated provider definitions for each project
+  # initial templated provider definitions for each project
   _of_providers_templated = flatten([
     for k, v in module.factory.projects : [
       for s in lookup(local._of.provider_pattern, "service_accounts", []) : {
@@ -44,19 +44,24 @@ locals {
   ])
   # merge single and templated providers dereferencing service accounts
   _of_providers = merge(
+    # single providers
     {
       for k, v in local._of.providers : k => merge(v, {
         filename = k
         project  = k
+        # single providers can reference external service accounts
         service_account = try(
           module.factory.service_account_emails["${k}/${v.service_account}"],
-          null
+          v.service_account
         )
-      })
+        # single providers can only reference existing projects
+      }) if lookup(module.factory.projects, k, null) != null
     },
+    # templated providers
     {
       for v in local._of_providers_templated : v.service_account => merge(v, {
         filename = "${v.project}-${reverse(split("/", v.service_account))[0]}"
+        # templated providers can only reference internal service accounts
         service_account = try(
           module.factory.service_account_emails["${v.service_account}"],
           null
@@ -64,12 +69,6 @@ locals {
       })
     }
   )
-  # templated tfvars definitions for each project
-  _of_tfvars = local._of.tfvars_pattern == null ? {} : {
-    for k, v in module.factory.projects : k => lookup(
-      local._of.tfvars_pattern, "storage_bucket", null
-    )
-  }
   of_path = (
     local._of.local_path == null ? null : pathexpand(local._of.local_path)
   )
@@ -79,6 +78,7 @@ locals {
     for k, v in local._of_providers : k => v
     if v.storage_bucket != null && v.service_account != null
   }
+  # dereference output files bucket
   of_storage_bucket = local._of.storage_bucket == null ? null : lookup(
     local.of_storage_buckets, local._of.storage_bucket, local._of.storage_bucket
   )
@@ -86,7 +86,8 @@ locals {
     for k, v in module.factory.storage_buckets : "$storage_buckets:${k}" => v
   }
   of_template = file("assets/providers.tf.tpl")
-  of_tfvars   = { for k, v in local._of_tfvars : k => v if v != null }
+  # tfvars files are generated for each project that has a providers file
+  of_tfvars_projects = distinct([for k, v in local.of_providers : v.project])
 }
 
 resource "local_file" "providers" {
@@ -106,6 +107,17 @@ resource "local_file" "providers" {
   })
 }
 
+resource "local_file" "tfvars" {
+  for_each = toset(
+    local.of_path == null ? [] : local.of_tfvars_projects
+  )
+  file_permission = "0644"
+  filename = (
+    "${local.of_path}/tfvars/${local.of_prefix}/${each.value}.auto.tfvars.json"
+  )
+  content = jsonencode(module.factory.projects[each.value])
+}
+
 resource "google_storage_bucket_object" "providers" {
   for_each = local.of_storage_bucket == null ? {} : local.of_providers
   bucket   = local.of_storage_bucket
@@ -119,4 +131,13 @@ resource "google_storage_bucket_object" "providers" {
     prefix          = each.value.project
     service_account = each.value.service_account
   })
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  for_each = toset(
+    local.of_storage_bucket == null ? [] : local.of_tfvars_projects
+  )
+  bucket  = local.of_storage_bucket
+  name    = "tfvars/${local.of_prefix}/${each.value}.auto.tfvars.json"
+  content = jsonencode(module.factory.projects[each.value])
 }
