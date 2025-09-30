@@ -592,17 +592,14 @@
               "type": "object",
               "additionalProperties": false,
               "required": [
-                "bucket",
-                "service_account"
+                "service_account",
+                "storage_bucket"
               ],
               "properties": {
-                "bucket": {
-                  "type": "string"
-                },
-                "prefix": {
-                  "type": "string"
-                },
                 "service_account": {
+                  "type": "string"
+                },
+                "storage_bucket": {
                   "type": "string"
                 }
               }

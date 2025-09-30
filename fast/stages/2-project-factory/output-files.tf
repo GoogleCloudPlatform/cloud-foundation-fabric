@@ -48,19 +48,18 @@ locals {
     {
       for k, v in local._of.providers : k => merge(v, {
         filename = k
-        project  = k
+        prefix   = k
         # single providers can reference external service accounts
-        service_account = try(
-          module.factory.service_account_emails["${k}/${v.service_account}"],
-          v.service_account
+        service_account = lookup(
+          local.of_service_accounts, v.service_account, v.service_account
         )
-        # single providers can only reference existing projects
-      }) if lookup(module.factory.projects, k, null) != null
+      })
     },
     # templated providers
     {
       for v in local._of_providers_templated : v.service_account => merge(v, {
         filename = "${v.project}-${reverse(split("/", v.service_account))[0]}"
+        prefix   = v.project
         # templated providers can only reference internal service accounts
         service_account = try(
           module.factory.service_account_emails["${v.service_account}"],
@@ -78,16 +77,25 @@ locals {
     for k, v in local._of_providers : k => v
     if v.storage_bucket != null && v.service_account != null
   }
+  # dereference service accounts for single providers
+  of_service_accounts = {
+    for k, v in module.factory.service_account_emails :
+    "$iam_principals:service_accounts/${k}" => v
+  }
   # dereference output files bucket
   of_storage_bucket = local._of.storage_bucket == null ? null : lookup(
     local.of_storage_buckets, local._of.storage_bucket, local._of.storage_bucket
   )
   of_storage_buckets = {
-    for k, v in module.factory.storage_buckets : "$storage_buckets:${k}" => v
+    for k, v in module.factory.storage_buckets :
+    "$storage_buckets:${k}" => v
   }
   of_template = file("assets/providers.tf.tpl")
   # tfvars files are generated for each project that has a providers file
-  of_tfvars_projects = distinct([for k, v in local.of_providers : v.project])
+  of_tfvars_projects = distinct([
+    for k, v in local.of_providers :
+    v.project if lookup(v, "project", null) != null
+  ])
 }
 
 resource "local_file" "providers" {
@@ -102,7 +110,7 @@ resource "local_file" "providers" {
       each.value.storage_bucket,
       each.value.storage_bucket
     )
-    prefix          = each.value.project
+    prefix          = each.value.prefix
     service_account = each.value.service_account
   })
 }
@@ -128,7 +136,7 @@ resource "google_storage_bucket_object" "providers" {
       each.value.storage_bucket,
       each.value.storage_bucket
     )
-    prefix          = each.value.project
+    prefix          = each.value.prefix
     service_account = each.value.service_account
   })
 }

@@ -16,6 +16,7 @@
   - [Folder parent-child relationship and variable substitutions](#folder-parent-child-relationship-and-variable-substitutions)
   - [Project Creation](#project-creation)
   - [Automation Resources for Projects](#automation-resources-for-projects)
+  - [Generated provider and Terraform variables for projects](#generated-provider-and-terraform-variables-for-projects)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -351,6 +352,52 @@ automation:
         - group:devops@example.org
 ```
 
+### Generated provider and Terraform variables for projects
+
+This stage can optionally be configured to automatically generate provider and tfvars files ("output files"), when managed projects are meant to be configured via lower level automation setups like in the examples above.
+
+Provider files generation is configured via the defaults file in two ways:
+
+- a provider template allows automatically generating output files for all projects that match a specific pattern
+- specific providers can be defined where multiple projects should be driven by a single service account / state bucket combination
+
+Terraform variables files can not be defined, but are automatically generated for each individual project that matches the provider template.
+
+A single state bucket is allowed in the provider pattern, to support sharing via managed storage folders. IAM role assignment on the storage folders for the provider service accounts can also be activated via the pattern.
+
+This is an example of defining a provider template in the `defaults.yaml` file.
+
+```yaml
+output_files:
+  # optional path for local file generation
+  local_path: ~/dev/tf-playground/fast-config/ludo
+  # optional path for output files bucket
+  storage_bucket: $storage_buckets:iac-0/iac-shared-outputs
+  provider_pattern:
+    service_accounts:
+      # one provider file is generated for each service account listed here
+      # projects where a service account is missing are skipped
+      - automation/rw
+    # state bucket used for the provider files
+    storage_bucket: $storage_buckets:iac-0/iac-shared-state
+    # assign IAM grants on storage folders
+    storage_iam_grants: true
+```
+
+Individual provider files can be used standalone, or combined with a provider pattern. Note that individual providers do not generate tfvars files, as the assumption is that these will be used across sets of projects.
+
+```yaml
+output_files:
+  # optional path for local file generation
+  local_path: ~/dev/tf-playground/fast-config/ludo
+  # optional path for output files bucket
+  storage_bucket: $storage_buckets:iac-0/iac-shared-outputs
+  providers:
+    test-01:
+      storage_bucket: $storage_buckets:iac-0/iac-shared-outputs
+      service_account: $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+```
+
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-project-factory-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -358,6 +405,7 @@ automation:
 | name | description | modules | resources |
 |---|---|---|---|
 | [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
+| [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
