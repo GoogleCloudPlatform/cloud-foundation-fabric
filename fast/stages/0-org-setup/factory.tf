@@ -23,6 +23,11 @@ locals {
     try(local.project_defaults.defaults.parent, null) != null ||
     try(local.project_defaults.overrides.parent, null) != null
   ) ? {} : { parent = "organizations/${local.organization_id}" }
+  folder_id_default = coalesce(
+    try(local.project_defaults.overrides.parent, null),
+    try(local.project_defaults.defaults.parent, null),
+    "organizations/${local.organization_id}"
+  )
 }
 
 module "factory" {
@@ -42,7 +47,7 @@ module "factory" {
     folder_ids = merge(
       local.ctx.folder_ids,
       lookup(local.ctx.folder_ids, "default", null) != null ? {} : {
-        default = try(module.organization[0].id, null)
+        default = local.folder_id_default
       }
     )
     iam_principals = local.iam_principals
