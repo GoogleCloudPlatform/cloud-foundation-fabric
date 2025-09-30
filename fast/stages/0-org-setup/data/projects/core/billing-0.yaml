@@ -26,5 +26,4 @@ services:
   - storage.googleapis.com
 datasets:
   billing_export:
-    dataset_id: billing_export
     friendly_name: Billing export

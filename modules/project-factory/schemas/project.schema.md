@@ -148,9 +148,8 @@
   - **is_dry_run**: *boolean*
 - **datasets**: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9_-]+$`**: *object*
+  - **`^[a-z0-9_]+$`**: *object*
     <br>*additional properties: false*
-    - ⁺**dataset_id**: *string*
     - **friendly_name**: *string*
     - **location**: *string*
 

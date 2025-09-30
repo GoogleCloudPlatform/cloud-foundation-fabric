@@ -525,16 +525,10 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9_-]+$": {
+        "^[a-z0-9_]+$": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "dataset_id"
-          ],
           "properties": {
-            "dataset_id": {
-              "type": "string"
-            },
             "friendly_name": {
               "type": "string"
             },
