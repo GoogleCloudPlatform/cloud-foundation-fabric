@@ -100,6 +100,7 @@ locals {
           )
         )
         logging_data_access = {}
+        bigquery_location   = null
       },
       try(
         local._data_defaults.defaults, {}
@@ -144,6 +145,7 @@ locals {
         null
       )
       logging_data_access = null
+      bigquery_location   = null
       },
       try(
         local._data_defaults.overrides, {}
