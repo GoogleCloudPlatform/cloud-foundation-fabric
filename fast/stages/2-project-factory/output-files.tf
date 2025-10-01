@@ -64,7 +64,8 @@ locals {
     {
       for k, v in local._of.providers : k => merge(v, {
         filename = k
-        prefix   = k
+        name     = k
+        prefix   = lookup(v, "set_prefix", null) == true ? k : null
         # single providers can reference external service accounts
         service_account = lookup(
           local.of_service_accounts, v.service_account, v.service_account
@@ -75,6 +76,7 @@ locals {
     local._of.pattern.sa_ro == null ? {} : {
       for k, v in local._of_providers_projects : "${k}-ro" => {
         filename        = "${k}-ro"
+        name            = k
         prefix          = k
         service_account = v.ro
         storage_bucket  = local._of.pattern.bucket
@@ -93,7 +95,6 @@ locals {
   of_path = (
     local._of.local_path == null ? null : pathexpand(local._of.local_path)
   )
-  of_prefix = try(local.defaults.output_files.prefix, "projects")
   # filter provider definitions based on bucket and service account existence
   of_providers = {
     for k, v in local._of_providers : k => v
@@ -125,7 +126,7 @@ resource "local_file" "providers" {
   for_each        = local.of_path == null ? {} : local.of_providers
   file_permission = "0644"
   filename = (
-    "${local.of_path}/providers/${local.of_prefix}/${each.value.filename}.tf"
+    "${local.of_path}/providers/${each.value.filename}.tf"
   )
   content = templatestring(local.of_template, {
     bucket = lookup(
@@ -144,7 +145,7 @@ resource "local_file" "tfvars" {
   )
   file_permission = "0644"
   filename = (
-    "${local.of_path}/tfvars/${local.of_prefix}/${each.value}.auto.tfvars.json"
+    "${local.of_path}/tfvars/${each.value}.auto.tfvars.json"
   )
   content = jsonencode(module.factory.projects[each.value])
 }
@@ -152,7 +153,7 @@ resource "local_file" "tfvars" {
 resource "google_storage_bucket_object" "providers" {
   for_each = local.of_storage_bucket == null ? {} : local.of_providers
   bucket   = local.of_storage_bucket
-  name     = "providers/${local.of_prefix}/${each.value.filename}.tf"
+  name     = "providers/${each.value.filename}.tf"
   content = templatestring(local.of_template, {
     bucket = lookup(
       local.of_storage_buckets,
@@ -169,6 +170,6 @@ resource "google_storage_bucket_object" "tfvars" {
     local.of_storage_bucket == null ? [] : local.of_tfvars_projects
   )
   bucket  = local.of_storage_bucket
-  name    = "tfvars/${local.of_prefix}/${each.value}.auto.tfvars.json"
+  name    = "tfvars/${each.value}.auto.tfvars.json"
   content = jsonencode(module.factory.projects[each.value])
 }

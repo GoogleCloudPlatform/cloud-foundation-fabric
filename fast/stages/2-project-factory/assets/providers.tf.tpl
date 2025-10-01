@@ -18,7 +18,9 @@ terraform {
   backend "gcs" {
     bucket                      = "${bucket}"
     impersonate_service_account = "${service_account}"
+    %{~ if prefix != null ~}
     prefix = "${prefix}"
+    %{~ endif ~}
   }
 }
 provider "google" {

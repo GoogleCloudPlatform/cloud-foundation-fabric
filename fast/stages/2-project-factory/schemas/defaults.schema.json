@@ -554,10 +554,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "file_prefix": {
-          "type": "string",
-          "default": "projects"
-        },
         "local_path": {
           "type": "string"
         },
@@ -619,6 +615,9 @@
               "properties": {
                 "service_account": {
                   "type": "string"
+                },
+                "set_prefix": {
+                  "type": "boolean"
                 },
                 "storage_bucket": {
                   "type": "string"
