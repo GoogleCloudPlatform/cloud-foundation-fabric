@@ -37,11 +37,11 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    vpcs = optional(string, "data/vpcs")
+    vpcs     = optional(string, "data/vpcs")
     defaults = optional(string, "data/defaults.yaml")
   })
   nullable = false
-  default = {}
+  default  = {}
 }
 
 # Stage-specific variables (FAST stage variables are in variables-fast.tf)
@@ -64,8 +64,8 @@ variable "stage_name" {
 variable "output_files" {
   description = "Output files configuration for downstream stages."
   type = object({
-    enabled      = optional(bool, false)
-    local_path   = optional(string, "~/fast-config")
+    enabled        = optional(bool, false)
+    local_path     = optional(string, "~/fast-config")
     storage_bucket = optional(string)
   })
   default = {

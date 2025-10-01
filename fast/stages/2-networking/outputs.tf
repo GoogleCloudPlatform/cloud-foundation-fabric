@@ -42,8 +42,8 @@
 output "tfvars" {
   description = "Location of generated .tfvars files for downstream stages."
   value = {
-    enabled = var.output_files.enabled
-    local_path = var.output_files.enabled ? abspath("${pathexpand(var.output_files.local_path)}/${var.stage_name}.auto.tfvars.json") : null
+    enabled        = var.output_files.enabled
+    local_path     = var.output_files.enabled ? abspath("${pathexpand(var.output_files.local_path)}/${var.stage_name}.auto.tfvars.json") : null
     storage_bucket = var.output_files.storage_bucket
   }
 }

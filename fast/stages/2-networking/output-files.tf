@@ -19,18 +19,18 @@ locals {
   # Governed by var.output_files + local.output_files - merges variable config with defaults.yaml values
   of_output_files = merge(
     {
-      enabled = var.output_files.enabled        # From var.output_files.enabled
-      local_path = var.output_files.local_path  # From var.output_files.local_path
-      storage_bucket = var.output_files.storage_bucket  # From var.output_files.storage_bucket
+      enabled        = var.output_files.enabled        # From var.output_files.enabled
+      local_path     = var.output_files.local_path     # From var.output_files.local_path
+      storage_bucket = var.output_files.storage_bucket # From var.output_files.storage_bucket
     },
-    local.output_files  # Override with defaults.yaml values if present (from local._defaults.output_files)
+    local.output_files # Override with defaults.yaml values if present (from local._defaults.output_files)
   )
 
   # Governed by local.of_output_files.local_path - expands path for local file generation
   of_path = (
     local.of_output_files.local_path == null
     ? null
-    : pathexpand(local.of_output_files.local_path)  # Expand ~ and relative paths to absolute
+    : pathexpand(local.of_output_files.local_path) # Expand ~ and relative paths to absolute
   )
 
   # Governed by local.of_output_files.storage_bucket - GCS bucket for tfvars upload
@@ -40,11 +40,11 @@ locals {
   of_tfvars = {
     # Governed by global input variables - pass through globals unchanged
     globals = {
-      billing_account = var.billing_account  # From globals tfvars
-      groups         = var.groups           # From globals tfvars
-      locations      = var.locations        # From globals tfvars
-      organization   = var.organization     # From globals tfvars
-      prefix         = var.prefix           # From globals tfvars
+      billing_account = var.billing_account # From globals tfvars
+      groups          = var.groups          # From globals tfvars
+      locations       = var.locations       # From globals tfvars
+      organization    = var.organization    # From globals tfvars
+      prefix          = var.prefix          # From globals tfvars
     }
 
     # Governed by previous stage variables + networking module outputs - networking stage outputs for downstream consumption

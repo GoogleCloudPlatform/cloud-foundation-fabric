@@ -22,13 +22,13 @@ locals {
 module "network_factory" {
   source = "../../../modules/net-vpc-factory"
 
-  data_defaults = local.vpcs_defaults.defaults
+  data_defaults  = local.vpcs_defaults.defaults
   data_overrides = {}
   # Enhanced context with merged data from previous stages
   context = local.ctx
 
   factories_config = {
-    vpcs              = var.factories_config.vpcs
+    vpcs = var.factories_config.vpcs
     firewall_rules = {
       data = try(var.factories_config.firewall_rules.data, "data/firewall-rules")
     }

@@ -32,8 +32,8 @@ locals {
     try(var.context.iam_principals, {})
   )
   _computed_iam_principals = merge(
-    {for k, v in local._iam_principals : "service_accounts/${k}" => v if startswith(v, "serviceAccount:")},
-    {for k, v in local._iam_principals : k => v if !startswith(v, "serviceAccount:")}
+    { for k, v in local._iam_principals : "service_accounts/${k}" => v if startswith(v, "serviceAccount:") },
+    { for k, v in local._iam_principals : k => v if !startswith(v, "serviceAccount:") }
   )
 
   ctx = {
@@ -57,23 +57,23 @@ locals {
     # vpc_host_projects, vpc_sc_perimeters, etc.
   }
 
-  defaults =  local._defaults
-    # Governed by local._defaults.global.billing_account
-    # billing_account = try(local._defaults.global.billing_account, null)
-    # # Governed by local._defaults.global.locations with hardcoded defaults
-    # locations = try(local._defaults.global.locations, {})
-    # # Governed by local._defaults.global.organization.id existence check
-    # organization = (
-    #   try(local._defaults.global.organization.id, null) == null
-    #   ? null
-    #   : local._defaults.global.organization
-    # )
+  defaults = local._defaults
+  # Governed by local._defaults.global.billing_account
+  # billing_account = try(local._defaults.global.billing_account, null)
+  # # Governed by local._defaults.global.locations with hardcoded defaults
+  # locations = try(local._defaults.global.locations, {})
+  # # Governed by local._defaults.global.organization.id existence check
+  # organization = (
+  #   try(local._defaults.global.organization.id, null) == null
+  #   ? null
+  #   : local._defaults.global.organization
+  # )
 
   vpcs_defaults = {
-    defaults = try(local._defaults.vpcs.defaults, {})
+    defaults  = try(local._defaults.vpcs.defaults, {})
     overrides = try(local._defaults.vpcs.overrides, {})
   }
-  
+
   # Governed by local._defaults.output_files.* (from defaults.yaml output_files section)
   output_files = {
     local_path     = try(local._defaults.output_files.local_path, null)     # From defaults.yaml

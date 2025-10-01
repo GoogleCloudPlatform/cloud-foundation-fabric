@@ -25,8 +25,8 @@ variable "billing_account" {
 
 variable "groups" {
   description = "Organization groups."
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "locations" {
