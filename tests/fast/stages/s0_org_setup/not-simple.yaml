@@ -492,6 +492,11 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_viewer_org_ro"]:
+    billing_account_id: 012345-012345-012345
+    condition: []
+    member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/billing.viewer
   module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -2757,7 +2762,7 @@ values:
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
-  google_billing_account_iam_member: 5
+  google_billing_account_iam_member: 6
   google_folder: 8
   google_folder_iam_binding: 44
   google_iam_workload_identity_pool: 1
@@ -2788,5 +2793,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 46
-  resources: 307
+  resources: 308
   terraform_data: 2
