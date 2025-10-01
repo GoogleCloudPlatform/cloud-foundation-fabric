@@ -29,7 +29,7 @@ locals {
 
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")), {
-      factory_basepath = "${local._vpcs_path}/${dirname(f)}"
+      factory_basepath = dirname(f)
     })
   ]
 

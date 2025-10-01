@@ -22,7 +22,7 @@ peer_gateways:
         - 8.8.8.8
 router_config:
   create: false
-  name: $routers:data/lab/vpcs/hub-vpn/vpn-router
+  name: $routers:hub-vpn/vpn-router
 tunnels:
   remote-0:
     bgp_peer:

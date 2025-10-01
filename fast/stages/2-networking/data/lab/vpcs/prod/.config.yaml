@@ -22,4 +22,4 @@ nat_config:
     region: europe-west8
 peering_config:
   to-hub:
-    peer_network: $vpcs:net-core-0/hub
+    peer_network: $vpcs:hub

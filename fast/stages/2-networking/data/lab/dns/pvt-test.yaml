@@ -18,7 +18,7 @@ project: $projects:net-core-0
 domain: test.
 private:
   client_networks:
-    - $vpcs:net-land-01/hub
+    - $vpcs:hub
 recordsets:
-"A localhost":
-  records: ["127.0.0.1"]
+  "A localhost":
+    records: ["127.0.0.1"]

@@ -21,4 +21,4 @@ forwarding:
     "8.8.8.8": default
     "1.1.1.1": default
   client_networks:
-    - $vpcs:net-land-01/hub
+    - $vpcs:hub

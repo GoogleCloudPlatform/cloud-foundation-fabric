@@ -16,10 +16,10 @@ name: to-hub
 region: europe-west8
 peer_gateways:
   default:
-    gcp: $gateways:data/lab/vpcs/hub-vpn/to-prod
+    gcp: $gateways:hub-vpn/to-prod
 router_config:
   create: false
-  name: $routers:data/lab/vpcs/prod-vpn/vpn-router
+  name: $routers:prod-vpn/vpn-router
 tunnels:
   remote-0:
     shared_secret: foobar

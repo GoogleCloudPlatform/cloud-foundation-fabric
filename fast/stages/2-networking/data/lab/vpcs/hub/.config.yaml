@@ -31,4 +31,4 @@ routes:
     next_hop: "default-internet-gateway"
 peering_config:
   to-prod:
-    peer_network: $vpcs:net-prod-0/prod
+    peer_network: $vpcs:prod

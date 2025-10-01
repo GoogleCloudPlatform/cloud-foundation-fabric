@@ -25,7 +25,7 @@ locals {
 
   _vpns_preprocess = [
     for f in local._vpns_files : merge(yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")), {
-      factory_basepath = "${local._vpcs_path}/${dirname(dirname(f))}"
+      factory_basepath = dirname(dirname(f))
     })
   ]
 
