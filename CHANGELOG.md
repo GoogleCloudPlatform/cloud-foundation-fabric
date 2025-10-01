@@ -3,18 +3,44 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-09-06 09:16:37+00:00 to: None since: v44.1.0 -->
+## [Unreleased] <!-- from: 2025-09-05 09:36:17+00:00 to: None since: v44.0.0 -->
+
+## [45.0.0] - 2025-09-20
+
+### FAST
+
+- [[#3343](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3343)] Remove unused bootstrap_user variable ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-19 10:11:15+00:00 -->
+- [[#3342](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3342)] Cleanup 0-org-setup cloud build org-policies ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-19 09:43:45+00:00 -->
+- [[#3325](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3325)] Incremental improvements to project factory and underlying modules ([ludoo](https://github.com/ludoo)) <!-- 2025-09-16 21:21:19+00:00 -->
+- [[#3311](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3311)] New security stage leveraging project factory and contexts ([ludoo](https://github.com/ludoo)) <!-- 2025-09-08 16:59:16+00:00 -->
+
+### MODULES
+
+- [[#3325](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3325)] Incremental improvements to project factory and underlying modules ([ludoo](https://github.com/ludoo)) <!-- 2025-09-16 21:21:19+00:00 -->
+- [[#3311](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3311)] New security stage leveraging project factory and contexts ([ludoo](https://github.com/ludoo)) <!-- 2025-09-08 16:59:16+00:00 -->
+
+## [44.2.0] - 2025-09-20
 
 ### BREAKING CHANGES
 
+- `modules/compute-vm`: the instance schedule variable has changed type. [[#3336](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3336)]
 - `modules/net-lb-app-int`: resource names for new-style HTTP and HTTP proxies have changed. If you upgrade the module, please rename those resources in state via `terraform state mv`. [[#3320](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3320)]
 - `modules/net-vpc`: the values of `secondary_ip_ranges` changed from a string to an object. [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)]
 - `modules/secret-manager`: the module interface has changed and been brought up to date with our current modules' shared interfaces; please test and refactor appropriately before using it in existing installations. This new version is **incompatible with OpenTofu** as it lacks support for write-only attributes. [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)]
 - `modules/secure-source-manager-instance`: Changed interface to declare private instances. [[#3310](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3310)]
 
+### BLUEPRINTS
+
+- [[#3335](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3335)] docs(blueprints): add deprecation notice ([kaue](https://github.com/kaue)) <!-- 2025-09-19 06:58:15+00:00 -->
 
 ### FAST
 
+- [[#3344](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3344)] Add default values for environments in stage 2, moved to variables.tf ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-09-20 11:51:44+00:00 -->
+- [[#3337](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3337)] Add default values for environments in stage 2, moved to variables.tf ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-09-19 06:38:59+00:00 -->
+- [[#3338](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3338)] Add conditional grants on security to pf service account in FAST stage 0 ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-09-19 06:15:05+00:00 -->
+- [[#3333](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3333)] Add conditional grants on networking to pf service account in FAST stage 0 ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-09-17 13:37:08+00:00 -->
+- [[#3326](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3326)] Update secondary ranges syntax in network stage YAML definitions ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-09-16 13:57:41+00:00 -->
+- [[#3322](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3322)] Added read-only providers to 0-org-setup stage, and fixed CI/CD param… ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-09-16 08:02:02+00:00 -->
 - [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)] Add support for VPC internal ranges to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2025-09-11 17:42:55+00:00 -->
 - [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
 - [[#3315](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3315)] Refactor secret manager module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-10 11:47:35+00:00 -->
@@ -22,6 +48,11 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3336](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3336)] Allow setting resource policies in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-18 07:13:47+00:00 -->
+- [[#3331](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3331)] Add support for permissive mode to GKE cluster modules backup plans ([ludoo](https://github.com/ludoo)) <!-- 2025-09-17 07:15:20+00:00 -->
+- [[#3330](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3330)] Fix alert variable notification prompts type in project module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-17 06:59:18+00:00 -->
+- [[#3323](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3323)] feat: Support serverless_deployment NEG for api gateway ([joshmyers](https://github.com/joshmyers)) <!-- 2025-09-16 09:11:59+00:00 -->
+- [[#3321](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3321)] Add instance access logging support to apigee module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-14 11:14:26+00:00 -->
 - [[#3320](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3320)] Add http_keep_alive_timeout_sec to application load balancers ([ludoo](https://github.com/ludoo)) <!-- 2025-09-12 12:17:01+00:00 -->
 - [[#3318](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3318)] Add support for VPC internal ranges to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2025-09-11 17:42:55+00:00 -->
 - [[#3317](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3317)] Add support for project templates to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-09-11 07:56:01+00:00 -->
@@ -1579,7 +1610,9 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...HEAD
+[45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...44.2.0
+[44.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...44.1.0
 [44.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...44.0.0
 [44.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.0.0...43.0.0
 [43.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v43.0.0...42.1.0

@@ -52,6 +52,7 @@ variable "backup_configs" {
       include_volume_data               = optional(bool, true)
       labels                            = optional(map(string))
       namespaces                        = optional(list(string))
+      permissive_mode                   = optional(bool)
       region                            = string
       schedule                          = string
       retention_policy_days             = optional(string)

@@ -35,24 +35,6 @@ variable "billing_account" {
   }
 }
 
-variable "environments" {
-  # tfdoc:variable:source 0-globals
-  description = "Environment names."
-  type = map(object({
-    name       = string
-    short_name = string
-    tag_name   = string
-    is_default = optional(bool, false)
-  }))
-  nullable = false
-  validation {
-    condition = anytrue([
-      for k, v in var.environments : v.is_default == true
-    ])
-    error_message = "At least one environment should be marked as default."
-  }
-}
-
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."

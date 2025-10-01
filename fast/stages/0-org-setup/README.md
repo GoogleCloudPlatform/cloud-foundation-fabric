@@ -159,7 +159,7 @@ If your dataset includes org policies which are already set in the organization,
 ```bash
 gcloud org-policies list --organization 1234567890
 CONSTRAINT                                       LIST_POLICY  BOOLEAN_POLICY
-iam.allowedPolicyMemberDomains                   SET          -  
+iam.allowedPolicyMemberDomains                   SET          -
 compute.disableSerialPortAccess                  -            SET
 ```
 
@@ -265,7 +265,7 @@ The following sections explain how to configure and run this stage, and should b
 
 ### Context interpolation
 
-Module-level context interpolation is extensively supported in this stage. This allows intutive, portable referencing of resources independent from the specific configuration.
+Module-level context interpolation is extensively supported in this stage. This allows intuitive, portable referencing of resources independent from the specific configuration.
 
 This is a simple reference table of available interpolation namespaces, refer to the [project factory module](../../../modules/project-factory/README.md#context-based-interpolation) for more details on this feature.
 
@@ -288,7 +288,7 @@ This is a simple reference table of available interpolation namespaces, refer to
 
 The resources created by this stage are controlled by several factories, which point to YAML configuration files and folders. Data locations for each factory are controlled via the `var.factories_config` variable, and each factory path can be overridden individually.
 
-The default paths point to the dataset in the `data` folder which deploys a FAST-compliant configuration. These are the available factories in this stage, with file-level factories based on a single YAML file, and folder-level factories based on sets of YAML files contained withing a filesystem folder:
+The default paths point to the dataset in the `data` folder which deploys a FAST-compliant configuration. These are the available factories in this stage, with file-level factories based on a single YAML file, and folder-level factories based on sets of YAML files contained within a filesystem folder:
 
 - **defaults** (`data/defaults.yaml`) \
   file-level factory to define stage defaults (organization id, locations, prefix, etc.) and static context mappings
@@ -372,7 +372,7 @@ This stage allows the same flexibility, and even makes it possible to mix and ma
 The default dataset assumes an externally managed billing account is used, and configures its IAM accordingly via the billing account factory. The example below shows some of the IAM bindings configured at the billing account level, and how context-based interpolation is used there.
 
 <details>
-<summary>Context-based replacement examples for the billing acccounts factory</summary>
+<summary>Context-based replacement examples for the billing accounts factory</summary>
 
 #### Context-based replacement in the billing account factory
 
@@ -569,7 +569,7 @@ workload_identity_federation:
   project: $project_ids:iac-0
   providers:
     github:
-      # the condition is optional but recommented, use your GitHub org name
+      # the condition is optional but recommended, use your GitHub org name
       attribute_condition: attribute.repository_owner=="my_org"
       issuer: github
       # custom_settings:
@@ -645,10 +645,9 @@ Define values for the `var.environments` variable in a tfvars file.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [bootstrap_user](variables.tf#L17) | Email of the nominal user running this stage for the first time. | <code>string</code> |  | <code>null</code> |
-| [context](variables.tf#L23) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L43) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;data&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;data&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;data&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L58) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;data&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;data&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;data&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L52) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
@@ -657,5 +656,5 @@ Define values for the `var.environments` variable in a tfvars file.
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
 | [locations](outputs.tf#L22) | Default locations. |  |
 | [projects](outputs.tf#L27) | Attributes for managed projects. |  |
-| [tfvars](outputs.tf#L32) | Stage tfvars. |  |
+| [tfvars](outputs.tf#L32) | Stage tfvars. | ✓ |
 <!-- END TFDOC -->
