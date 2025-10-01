@@ -16,23 +16,14 @@
  */
 
 locals {
+  # Context parsing
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if k != "condition_vars"
   }
-  ctx_p = "$"
-  md5_keys = {
-    for k, v in random_id.md5_keys
-    : k => v.b64_url
-  }
-  network = lookup(local.ctx.networks, var.network, var.network)
-  peer_gateways_external = {
-    for k, v in var.peer_gateways : k => v.external if v.external != null
-  }
-  peer_gateways_gcp = {
-    for k, v in var.peer_gateways : k => v.gcp if v.gcp != null
-  }
+  ctx_p      = "$"
+  network    = lookup(local.ctx.networks, var.network, var.network)
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   region     = lookup(local.ctx.locations, var.region, var.region)
   router = (
@@ -40,6 +31,18 @@ locals {
     ? try(google_compute_router.router[0].name, null)
     : lookup(local.ctx.routers, var.router_config.name, var.router_config.name)
   )
+  peer_gateways_gcp = {
+    for k, v in var.peer_gateways : k => lookup(local.ctx.gateways, v.gcp, v.gcp) if v.gcp != null
+  }
+  # End of context parsing
+
+  md5_keys = {
+    for k, v in random_id.md5_keys
+    : k => v.b64_url
+  }
+  peer_gateways_external = {
+    for k, v in var.peer_gateways : k => v.external if v.external != null
+  }
   secret = random_id.secret.b64_url
   vpn_gateway = (
     var.vpn_gateway_create != null

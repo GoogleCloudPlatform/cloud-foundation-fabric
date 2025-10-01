@@ -17,9 +17,10 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    project_ids = optional(map(string), {})
+    gateways    = optional(map(string), {})
     locations   = optional(map(string), {})
     networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
     routers     = optional(map(string), {})
   })
   default  = {}

@@ -29,6 +29,8 @@ locals {
     })
   ]
 
+  ctx_gateways = { for k, v in google_compute_ha_vpn_gateway.default : k => v.id }
+
   vpns = {
     for v in local._vpns_preprocess : "${v.factory_basepath}/${v.name}" => merge(v, {
       vpc_name = v.factory_basepath
@@ -41,7 +43,6 @@ locals {
       tunnels       = try(v.tunnels, {})
     })
   }
-
 }
 
 resource "google_compute_ha_vpn_gateway" "default" {
@@ -73,9 +74,10 @@ module "vpn-ha" {
     }
   }
   context = {
-    project_ids = local.ctx_projects.project_ids
+    gateways    = local.ctx_gateways
     locations   = local.ctx.locations
     network     = local.ctx_vpcs.names
+    project_ids = local.ctx_projects.project_ids
     routers     = local.ctx_routers.names
   }
 }
