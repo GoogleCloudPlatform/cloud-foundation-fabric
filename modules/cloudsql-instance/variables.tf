@@ -306,3 +306,16 @@ variable "users" {
   default  = {}
   nullable = false
 }
+
+variable "managed_connection_pooling_config" {
+  description = "Configuration for Managed Connection Pooling. NOTE: This feature is only available for PostgreSQL on Enterprise Plus edition instances."
+  type = object({
+    enabled = bool
+    flags   = map(string)
+  })
+  default = {
+    enabled = false
+    flags   = {}
+  }
+  nullable = false
+}
