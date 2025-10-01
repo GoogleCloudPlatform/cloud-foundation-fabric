@@ -1,0 +1,58 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/network-project.schema.json
+
+project_config:
+  name: net-prod-01
+  services:
+    - container.googleapis.com
+    - compute.googleapis.com
+    - dns.googleapis.com
+    - iap.googleapis.com
+    - networkmanagement.googleapis.com
+    - networksecurity.googleapis.com
+    - servicenetworking.googleapis.com
+    - stackdriver.googleapis.com
+    - vpcaccess.googleapis.com
+  shared_vpc_host_config:
+    enabled: true
+vpc_config:
+  prod-spoke:
+    delete_default_routes_on_create: false
+    mtu: 1500
+    nat_config:
+      nat-ew8:
+        region: europe-west8
+    dns_zones:
+      root-peering:
+        zone_config:
+          domain: .
+          peering:
+            peer_network: net-land-01/hub
+            client_networks:
+              - net-prod-01/prod-spoke
+    subnets_factory_config:
+      subnets_folder: data/subnets/prod-spoke
+    firewall_factory_config:
+      rules_folder: data/firewall/prod-spoke
+    routes:
+      gateway:
+        dest_range: "8.8.8.8/32"
+        priority: 100
+        next_hop_type: "gateway"
+        next_hop: "default-internet-gateway"
+    peering_config:
+      to-hub:
+        peer_network: net-land-01/hub

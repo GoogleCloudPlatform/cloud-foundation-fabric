@@ -1,0 +1,1559 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Network Project Configuration (Single)",
+  "description": "Schema for a single network project configuration defined at the root.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "project_config"
+  ],
+  "properties": {
+    "project_config": {
+      "$ref": "#/$defs/projectConfig"
+    },
+    "ncc_hub_config": {
+      "$ref": "#/$defs/nccHubConfig"
+    },
+    "vpc_config": {
+      "$ref": "#/$defs/vpcConfigMap"
+    }
+  },
+  "$defs": {
+    "projectConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "project_reuse": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "use_data_source": {
+              "type": "boolean"
+            },
+            "attributes": {
+              "type": "object",
+              "required": [
+                "name",
+                "number"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "number": {
+                  "type": "number"
+                },
+                "services_enabled": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "billing_account": {
+          "type": "string"
+        },
+        "deletion_policy": {
+          "type": "string",
+          "enum": [
+            "DELETE",
+            "ABANDON"
+          ]
+        },
+        "default_service_account": {
+          "type": "string",
+          "enum": [
+            "deprovision",
+            "disable",
+            "keep"
+          ]
+        },
+        "auto_create_network": {
+          "type": "boolean"
+        },
+        "project_create": {
+          "type": "boolean"
+        },
+        "shared_vpc_host_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "service_projects": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z-]+\\.googleapis\\.com$"
+          }
+        },
+        "org_policies": {
+          "$ref": "#/$defs/orgPolicies"
+        },
+        "metric_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "iam_bindings": {
+          "$ref": "#/$defs/iamBindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iamBindingsAdditive"
+        },
+        "iam_by_principals": {
+          "$ref": "#/$defs/iamByPrincipals"
+        },
+        "iam_by_principals_additive": {
+          "$ref": "#/$defs/iamByPrincipals"
+        },       
+        "quotas": {
+          "$ref": "#/$defs/quotas"
+        }
+      }
+    },
+    "nccHubConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "preset_topology": {
+          "type": "string",
+          "enum": [
+            "MESH",
+            "STAR",
+            "PLANETARY"
+          ]
+        },
+        "export_psc": {
+          "type": "boolean"
+        },
+        "groups": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "$ref": "#/$defs/nccGroup"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "nccGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "labels": {
+          "$ref": "#/$defs/stringMap"
+        },
+        "description": {
+          "type": "string"
+        },
+        "auto_accept": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "vpcConfigMap": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "$ref": "#/$defs/vpcConfigEntry"
+        }
+      },
+      "additionalProperties": false
+    },
+    "vpcConfigEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "auto_create_subnetworks": {
+          "type": "boolean"
+        },
+        "create_googleapis_routes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "private": {
+              "type": "boolean"
+            },
+            "private-6": {
+              "type": "boolean"
+            },
+            "restricted": {
+              "type": "boolean"
+            },
+            "restricted-6": {
+              "type": "boolean"
+            }
+          }
+        },
+        "delete_default_routes_on_create": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "dns_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "inbound": {
+              "type": "boolean"
+            },
+            "logging": {
+              "type": "boolean"
+            },
+            "outbound": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "private_ns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "public_ns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "dns_zones": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/dnsZone"
+            }
+          },
+          "additionalProperties": false
+        },
+        "firewall_policy_enforcement_order": {
+          "type": "string",
+          "enum": [
+            "AFTER_CLASSIC_FIREWALL",
+            "BEFORE_CLASSIC_FIREWALL"
+          ]
+        },
+        "ipv6_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable_ula_internal": {
+              "type": "boolean"
+            },
+            "internal_range": {
+              "type": "string"
+            }
+          }
+        },
+        "mtu": {
+          "type": "number"
+        },
+        "nat_config": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/natConfig"
+            }
+          },
+          "additionalProperties": false
+        },
+        "network_attachments": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/networkAttachment"
+            }
+          },
+          "additionalProperties": false
+        },
+        "policy_based_routes": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/policyBasedRoute"
+            }
+          },
+          "additionalProperties": false
+        },
+        "psa_config": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/psaConfig"
+          }
+        },
+        "routers": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/routerConfig"
+            }
+          },
+          "additionalProperties": false
+        },
+        "routes": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/routeConfig"
+            }
+          },
+          "additionalProperties": false
+        },
+        "routing_mode": {
+          "type": "string",
+          "enum": [
+            "GLOBAL",
+            "REGIONAL"
+          ]
+        },
+        "subnets_factory_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "context": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "regions": {
+                  "$ref": "#/$defs/stringMap"
+                }
+              }
+            },
+            "subnets_folder": {
+              "type": "string"
+            }
+          }
+        },
+        "firewall_factory_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cidr_tpl_file": {
+              "type": "string"
+            },
+            "rules_folder": {
+              "type": "string"
+            }
+          }
+        },
+        "vpn_config": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/vpnConfig"
+            }
+          },
+          "additionalProperties": false
+        },
+        "peering_config": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/peeringConfig"
+            }
+          },
+          "additionalProperties": false
+        },
+        "ncc_config": {
+          "$ref": "#/$defs/vpcNccConfig"
+        }
+      }
+    },
+    "dnsZone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zone_config"
+      ],
+      "properties": {
+        "force_destroy": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "zone_config": {
+          "$ref": "#/$defs/dnsZoneConfig"
+        },
+        "recordsets": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9_. -]+$": {
+              "$ref": "#/$defs/dnsRecordSet"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "dnsZoneConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain"
+      ],
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "forwarding": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "forwarders": {
+              "$ref": "#/$defs/stringMap"
+            },
+            "client_networks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "peering": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "peer_network"
+          ],
+          "properties": {
+            "client_networks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "peer_network": {
+              "type": "string"
+            }
+          }
+        },
+        "public": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dnssec_config": {
+              "$ref": "#/$defs/dnssecConfig"
+            },
+            "enable_logging": {
+              "type": "boolean"
+            }
+          }
+        },
+        "private": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "client_networks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "service_directory_namespace": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "dnssecConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "non_existence": {
+          "type": "string",
+          "enum": [
+            "nsec",
+            "nsec3"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "on",
+            "off",
+            "transfer"
+          ]
+        },
+        "key_signing_key": {
+          "$ref": "#/$defs/dnsKeySpec"
+        },
+        "zone_signing_key": {
+          "$ref": "#/$defs/dnsKeySpec"
+        }
+      }
+    },
+    "dnsKeySpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithm",
+        "key_length"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "rsasha1",
+            "rsasha256",
+            "rsasha512",
+            "ecdsap256sha256",
+            "ecdsap384sha384"
+          ]
+        },
+        "key_length": {
+          "type": "number"
+        }
+      }
+    },
+    "dnsRecordSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ttl": {
+          "type": "number"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geo_routing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dnsGeoRoutingRule"
+          }
+        },
+        "wrr_routing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dnsWrrRoutingRule"
+          }
+        }
+      }
+    },
+    "dnsGeoRoutingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "location"
+      ],
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "health_checked_targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dnsHealthCheckedTarget"
+          }
+        }
+      }
+    },
+    "dnsHealthCheckedTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "load_balancer_type",
+        "ip_address",
+        "port",
+        "ip_protocol",
+        "network_url",
+        "project"
+      ],
+      "properties": {
+        "load_balancer_type": {
+          "type": "string"
+        },
+        "ip_address": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "ip_protocol": {
+          "type": "string"
+        },
+        "network_url": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "dnsWrrRoutingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weight",
+        "records"
+      ],
+      "properties": {
+        "weight": {
+          "type": "number"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "natConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "region"
+      ],
+      "properties": {
+        "region": {
+          "type": "string"
+        },
+        "router_create": {
+          "type": "boolean"
+        },
+        "router_name": {
+          "type": "string"
+        },
+        "router_network": {
+          "type": "string"
+        },
+        "router_asn": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "PUBLIC",
+            "PRIVATE"
+          ]
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "endpoint_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ENDPOINT_TYPE_VM",
+              "ENDPOINT_TYPE_SWG",
+              "ENDPOINT_TYPE_MANAGED_PROXY_LB"
+            ]
+          }
+        },
+        "logging_filter": {
+          "type": "string",
+          "enum": [
+            "ERRORS_ONLY",
+            "TRANSLATIONS_ONLY",
+            "ALL"
+          ]
+        },
+        "config_port_allocation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable_endpoint_independent_mapping": {
+              "type": "boolean"
+            },
+            "enable_dynamic_port_allocation": {
+              "type": "boolean"
+            },
+            "min_ports_per_vm": {
+              "type": "number"
+            },
+            "max_ports_per_vm": {
+              "type": "number"
+            }
+          }
+        },
+        "config_source_subnetworks": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "all": {
+              "type": "boolean"
+            },
+            "primary_ranges_only": {
+              "type": "boolean"
+            },
+            "subnetworks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/natSourceSubnetwork"
+              }
+            }
+          }
+        },
+        "config_timeouts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "icmp": {
+              "type": "number"
+            },
+            "tcp_established": {
+              "type": "number"
+            },
+            "tcp_time_wait": {
+              "type": "number"
+            },
+            "tcp_transitory": {
+              "type": "number"
+            },
+            "udp": {
+              "type": "number"
+            }
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/natRule"
+          }
+        }
+      }
+    },
+    "natSourceSubnetwork": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "self_link"
+      ],
+      "properties": {
+        "self_link": {
+          "type": "string"
+        },
+        "all_ranges": {
+          "type": "boolean"
+        },
+        "primary_range": {
+          "type": "boolean"
+        },
+        "secondary_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "natRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "match"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "match": {
+          "type": "string"
+        },
+        "source_ips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "networkAttachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subnet"
+      ],
+      "properties": {
+        "subnet": {
+          "type": "string"
+        },
+        "automatic_connection": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "producer_accept_lists": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "producer_reject_lists": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "policyBasedRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "labels": {
+          "$ref": "#/$defs/stringMap"
+        },
+        "priority": {
+          "type": "number"
+        },
+        "next_hop_ilb_ip": {
+          "type": "string"
+        },
+        "use_default_routing": {
+          "type": "boolean"
+        },
+        "filter": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ip_protocol": {
+              "type": "string"
+            },
+            "dest_range": {
+              "type": "string"
+            },
+            "src_range": {
+              "type": "string"
+            }
+          }
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "interconnect_attachment": {
+              "type": "string"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "psaConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ranges"
+      ],
+      "properties": {
+        "deletion_policy": {
+          "type": "string",
+          "enum": [
+            "delete",
+            "abandon"
+          ]
+        },
+        "ranges": {
+          "$ref": "#/$defs/stringMap"
+        },
+        "export_routes": {
+          "type": "boolean"
+        },
+        "import_routes": {
+          "type": "boolean"
+        },
+        "peered_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "range_prefix": {
+          "type": "string"
+        },
+        "service_producer": {
+          "type": "string"
+        }
+      }
+    },
+    "routerConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "region"
+      ],
+      "properties": {
+        "region": {
+          "type": "string"
+        },
+        "asn": {
+          "type": "number"
+        },
+        "custom_advertise": {
+          "$ref": "#/$defs/customAdvertiseConfig"
+        },
+        "keepalive": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "routeConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dest_range",
+        "next_hop_type",
+        "next_hop"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "dest_range": {
+          "type": "string"
+        },
+        "next_hop_type": {
+          "type": "string"
+        },
+        "next_hop": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "number"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "vpnConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "region",
+        "peer_gateways",
+        "router_config",
+        "tunnels"
+      ],
+      "properties": {
+        "region": {
+          "type": "string"
+        },
+        "ncc_spoke_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hub": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "labels": {
+              "$ref": "#/$defs/stringMap"
+            }
+          }
+        },
+        "peer_gateways": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/peerGateway"
+            }
+          },
+          "additionalProperties": false
+        },
+        "router_config": {
+          "$ref": "#/$defs/vpnRouterConfig"
+        },
+        "stack_type": {
+          "type": "string",
+          "enum": [
+            "IPV4_ONLY",
+            "IPV4_IPV6"
+          ]
+        },
+        "tunnels": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9-]+$": {
+              "$ref": "#/$defs/vpnTunnel"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "peerGateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "external": {
+          "$ref": "#/$defs/externalPeerGateway"
+        },
+        "gcp": {
+          "type": "string"
+        }
+      }
+    },
+    "externalPeerGateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "redundancy_type",
+        "interfaces"
+      ],
+      "properties": {
+        "redundancy_type": {
+          "type": "string",
+          "enum": [
+            "SINGLE_IP_INTERNALLY_REDUNDANT",
+            "TWO_IPS_REDUNDANCY",
+            "FOUR_IPS_REDUNDANCY"
+          ]
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "vpnRouterConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "asn": {
+          "type": "number"
+        },
+        "create": {
+          "type": "boolean"
+        },
+        "custom_advertise": {
+          "$ref": "#/$defs/customAdvertiseConfig"
+        },
+        "keepalive": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "override_name": {
+          "type": "string"
+        }
+      }
+    },
+    "vpnTunnel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bgp_peer",
+        "bgp_session_range",
+        "vpn_gateway_interface"
+      ],
+      "properties": {
+        "bgp_peer": {
+          "$ref": "#/$defs/bgpPeerConfig"
+        },
+        "bgp_session_range": {
+          "type": "string"
+        },
+        "ike_version": {
+          "type": "number",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "peer_external_gateway_interface": {
+          "type": "number"
+        },
+        "peer_router_interface_name": {
+          "type": "string"
+        },
+        "peer_gateway": {
+          "type": "string"
+        },
+        "router": {
+          "type": "string"
+        },
+        "shared_secret": {
+          "type": "string"
+        },
+        "vpn_gateway_interface": {
+          "type": "number"
+        }
+      }
+    },
+    "bgpPeerConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "address",
+        "asn"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "asn": {
+          "type": "number"
+        },
+        "route_priority": {
+          "type": "number"
+        },
+        "custom_advertise": {
+          "$ref": "#/$defs/customAdvertiseConfig"
+        },
+        "md5_authentication_key": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "key": {
+              "type": "string"
+            }
+          }
+        },
+        "ipv6": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "nexthop_address": {
+              "type": "string"
+            },
+            "peer_nexthop_address": {
+              "type": "string"
+            }
+          }
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "customAdvertiseConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all_subnets"
+      ],
+      "properties": {
+        "all_subnets": {
+          "type": "boolean"
+        },
+        "ip_ranges": {
+          "$ref": "#/$defs/stringMap"
+        }
+      }
+    },
+    "peeringConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "peer_network"
+      ],
+      "properties": {
+        "peer_network": {
+          "type": "string"
+        },
+        "routes_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "export": {
+              "type": "boolean"
+            },
+            "import": {
+              "type": "boolean"
+            },
+            "public_export": {
+              "type": "boolean"
+            },
+            "public_import": {
+              "type": "boolean"
+            }
+          }
+        },
+        "stack_type": {
+          "type": "string",
+          "enum": [
+            "IPV4_ONLY",
+            "IPV4_IPV6"
+          ]
+        }
+      }
+    },
+    "vpcNccConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hub"
+      ],
+      "properties": {
+        "hub": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "labels": {
+          "$ref": "#/$defs/stringMap"
+        },
+        "group": {
+          "type": "string"
+        },
+        "exclude_export_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "include_export_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expression",
+        "title"
+      ],
+      "properties": {
+        "expression": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "principalPattern": {
+      "type": "string",
+      "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+    },
+    "rolePattern": {
+      "type": "string",
+      "pattern": "^roles/"
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^roles/": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/principalPattern"
+          }
+        }
+      }
+    },
+    "iamBindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "members",
+            "role"
+          ],
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/principalPattern"
+              }
+            },
+            "role": {
+              "$ref": "#/$defs/rolePattern"
+            },
+            "condition": {
+              "$ref": "#/$defs/condition"
+            }
+          }
+        }
+      }
+    },
+    "iamBindingsAdditive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "member",
+            "role"
+          ],
+          "properties": {
+            "member": {
+              "$ref": "#/$defs/principalPattern"
+            },
+            "role": {
+              "$ref": "#/$defs/rolePattern"
+            },
+            "condition": {
+              "$ref": "#/$defs/condition"
+            }
+          }
+        }
+      }
+    },
+    "iamByPrincipals": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rolePattern"
+          }
+        }
+      }
+    },
+    "orgPolicies": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]+\\.": {
+          "$ref": "#/$defs/orgPolicyConfig"
+        }
+      }
+    },
+    "orgPolicyConfig": {
+      "type": "object",
+      "properties": {
+        "inherit_from_parent": {
+          "type": "boolean"
+        },
+        "reset": {
+          "type": "boolean"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/orgPolicyRule"
+          }
+        }
+      }
+    },
+    "orgPolicyRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow": {
+          "$ref": "#/$defs/orgPolicyRuleAllowDeny"
+        },
+        "deny": {
+          "$ref": "#/$defs/orgPolicyRuleAllowDeny"
+        },
+        "enforce": {
+          "type": "boolean"
+        },
+        "condition": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "expression": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "orgPolicyRuleAllowDeny": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "all": {
+          "type": "boolean"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "quotas": {
+      "title": "Quotas",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service",
+            "quota_id",
+            "preferred_value"
+          ],
+          "properties": {
+            "service": {
+              "type": "string"
+            },
+            "quota_id": {
+              "type": "string"
+            },
+            "preferred_value": {
+              "type": "number"
+            },
+            "dimensions": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "justification": {
+              "type": "string"
+            },
+            "contact_email": {
+              "type": "string"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "ignore_safety_checks": {
+              "type": "string",
+              "enum": [
+                "QUOTA_DECREASE_BELOW_USAGE",
+                "QUOTA_DECREASE_PERCENTAGE_TOO_HIGH",
+                "QUOTA_SAFETY_CHECK_UNSPECIFIED"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

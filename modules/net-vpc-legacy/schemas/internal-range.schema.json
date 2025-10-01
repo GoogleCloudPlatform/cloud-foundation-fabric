@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InternalRange",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "usage",
+    "peering"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the internal range. If not provided, the filename will be used."
+    },
+    "description": {
+      "type": "string",
+      "description": "An optional description of this internal range."
+    },
+    "labels": {
+      "type": "object",
+      "description": "User-defined labels.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "ip_cidr_range": {
+      "type": "string",
+      "description": "The IP range that this internal range defines. Note: IPv6 ranges are limited to usage=EXTERNAL_TO_VPC and peering=FOR_SELF. For IPv6 ranges this field is compulsory."
+    },
+    "usage": {
+      "type": "string",
+      "enum": ["FOR_VPC", "EXTERNAL_TO_VPC", "FOR_MIGRATION"],
+      "description": "The type of usage set for this InternalRange."
+    },
+    "peering": {
+      "type": "string",
+      "enum": ["FOR_SELF", "FOR_PEER", "NOT_SHARED"],
+      "description": "The type of peering set for this internal range."
+    },
+    "prefix_length": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32,
+      "description": "An alternate to ip_cidr_range. Can be set when trying to create a reservation that automatically finds a free range of the given size."
+    },
+    "target_cidr_range": {
+      "type": "array",
+      "description": "Optional. Can be set to narrow down or pick a different address space while searching for a free range.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclude_cidr_ranges": {
+      "type": "array",
+      "description": "Optional. List of IP CIDR ranges to be excluded. Only IPv4 CIDR ranges are supported.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "allocation_options": {
+      "type": "object",
+      "description": "Options for automatically allocating a free range with a size given by prefixLength.",
+      "additionalProperties": false,
+      "properties": {
+        "allocation_strategy": {
+          "type": "string",
+          "enum": ["RANDOM", "FIRST_AVAILABLE", "RANDOM_FIRST_N_AVAILABLE", "FIRST_SMALLEST_FITTING"],
+          "description": "Sets the strategy used to automatically find a free range of a size given by prefixLength."
+        },
+        "first_available_ranges_lookup_size": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Must be set when allocation_strategy is RANDOM_FIRST_N_AVAILABLE, otherwise must remain unset."
+        }
+      }
+    },
+    "overlaps": {
+      "type": "array",
+      "description": "Optional. Types of resources that are allowed to overlap with the current internal range.",
+      "items": {
+        "type": "string",
+        "enum": ["OVERLAP_ROUTE_RANGE", "OVERLAP_EXISTING_SUBNET_RANGE"]
+      }
+    },
+    "migration": {
+      "type": "object",
+      "description": "Specification for migration with source and target resource names.",
+      "additionalProperties": false,
+      "required": ["source", "target"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Resource path as an URI of the source resource, for example a subnet."
+        },
+        "target": {
+          "type": "string",
+          "description": "Resource path of the target resource. The target project can be different."
+        }
+      }
+    },
+    "immutable": {
+      "type": "boolean",
+      "description": "Immutable ranges cannot have their fields modified, except for labels and description."
+    }
+  },
+  "anyOf": [
+    {"required": ["ip_cidr_range"]},
+    {"required": ["prefix_length"]}
+  ]
+}
