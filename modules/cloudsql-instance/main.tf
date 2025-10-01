@@ -128,12 +128,12 @@ resource "google_sql_database_instance" "primary" {
     }
 
     dynamic "connection_pool_config" {
-      # Only enable for PostgreSQL on Enterprise Plus edition.
-      for_each = var.managed_connection_pooling_config.enabled && local.is_postgres && var.edition == "ENTERPRISE_PLUS" ? [1] : []
+      # Only available for PostgreSQL on Enterprise Plus edition.
+      for_each = (var.managed_connection_pooling_config.enabled && local.is_postgres && var.edition == "ENTERPRISE_PLUS") ? [1] : []
       content {
         connection_pooling_enabled = true
         dynamic "flags" {
-          for_each = var.managed_connection_pooling_config.flags != null ? var.managed_connection_pooling_config.flags : {}
+          for_each = var.managed_connection_pooling_config.flags
           iterator = flag
           content {
             name  = flag.key
