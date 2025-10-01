@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../../../schemas/subnet.schema.json
+
+# Terraform Resource: google_compute_subnetwork
+# Reference: $vpc_subnet_ids:dev/gke-subnet
+
+region: us-central1
+name: example-subnet2
+network_id: $vpc_ids:environments/dev
+description: "GKE subnet for dev environment"
+ip_cidr_range: "10.0.10.0/24"
+private_ip_google_access: true
+enable_flow_logs: true
+secondary_ip_ranges:
+  gke-pods:
+    ip_cidr_range: "100.96.0.0/11"
+  gke-services:
+    ip_cidr_range: "100.64.0.0/20"
+tag_bindings:
+  environment: $tag_values:environment/development

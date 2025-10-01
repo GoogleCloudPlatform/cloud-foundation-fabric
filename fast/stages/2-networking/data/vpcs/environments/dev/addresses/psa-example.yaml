@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../../schemas/address.schema.json
+
+# Example: Private Service Access (PSA) address
+# Use case: IP range allocation for Private Service Connect (e.g., Cloud SQL, Memorystore)
+
+# Terraform Resource: google_compute_global_address (PSA)
+# Reference: $vpc_address_ids:dev/psa-example
+
+project_id: $project_ids:net-dev
+address_type: INTERNAL
+purpose: VPC_PEERING
+description: "PSA range for Cloud SQL private IP"
+vpc_id: $vpc_ids:environments/dev
+address: "10.10.0.0"
+prefix_length: 16
+# Note: This creates a /16 range at 10.10.0.0 for Private Service Access

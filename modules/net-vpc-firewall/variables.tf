@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,106 +14,128 @@
  * limitations under the License.
  */
 
-variable "default_rules_config" {
-  description = "Optionally created convenience rules. Set the 'disabled' attribute to true, or individual rule attributes to empty lists to disable."
+variable "allow" {
+  description = "List of allow rules with protocol and optional ports."
+  type = list(object({
+    protocol = string
+    ports    = optional(list(string))
+  }))
+  default = []
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
   type = object({
-    admin_ranges = optional(list(string))
-    disabled     = optional(bool, false)
-    http_ranges = optional(list(string), [
-      "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
-    )
-    http_tags = optional(list(string), ["http-server"])
-    https_ranges = optional(list(string), [
-      "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
-    )
-    https_tags = optional(list(string), ["https-server"])
-    ssh_ranges = optional(list(string), ["35.235.240.0/20"])
-    ssh_tags   = optional(list(string), ["ssh"])
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    vpc_ids        = optional(map(string), {})
   })
   default  = {}
   nullable = false
 }
 
-variable "egress_rules" {
-  description = "List of egress rule definitions, default to deny action. Null destination ranges will be replaced with 0/0."
-  type = map(object({
-    deny               = optional(bool, true)
-    description        = optional(string)
-    destination_ranges = optional(list(string))
-    disabled           = optional(bool, false)
-    enable_logging = optional(object({
-      include_metadata = optional(bool)
-    }))
-    priority             = optional(number, 1000)
-    source_ranges        = optional(list(string))
-    targets              = optional(list(string))
-    use_service_accounts = optional(bool, false)
-    rules = optional(list(object({
-      protocol = string
-      ports    = optional(list(string))
-    })), [{ protocol = "all" }])
+variable "deny" {
+  description = "List of deny rules with protocol and optional ports."
+  type = list(object({
+    protocol = string
+    ports    = optional(list(string))
   }))
-  default  = {}
-  nullable = false
+  default = []
 }
 
-variable "factories_config" {
-  description = "Paths to data files and folders that enable factory functionality."
-  type = object({
-    cidr_tpl_file = optional(string)
-    rules_folder  = optional(string)
-  })
-  nullable = false
-  default  = {}
+variable "description" {
+  description = "Firewall rule description."
+  type        = string
+  default     = null
 }
 
-variable "ingress_rules" {
-  description = "List of ingress rule definitions, default to allow action. Null source ranges will be replaced with 0/0."
-  type = map(object({
-    deny               = optional(bool, false)
-    description        = optional(string)
-    destination_ranges = optional(list(string), []) # empty list is needed as default to allow deletion after initial creation with a value. See https://github.com/hashicorp/terraform-provider-google/issues/14270
-    disabled           = optional(bool, false)
-    enable_logging = optional(object({
-      include_metadata = optional(bool)
-    }))
-    priority             = optional(number, 1000)
-    source_ranges        = optional(list(string))
-    sources              = optional(list(string))
-    targets              = optional(list(string))
-    use_service_accounts = optional(bool, false)
-    rules = optional(list(object({
-      protocol = string
-      ports    = optional(list(string))
-    })), [{ protocol = "all" }])
-  }))
-  default  = {}
-  nullable = false
+variable "destination_ranges" {
+  description = "Destination IP ranges for EGRESS rules."
+  type        = list(string)
+  default     = null
 }
 
-variable "named_ranges" {
-  description = "Define mapping of names to ranges that can be used in custom rules."
-  type        = map(list(string))
-  default = {
-    any            = ["0.0.0.0/0"]
-    dns-forwarders = ["35.199.192.0/19"]
-    health-checkers = [
-      "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"
-    ]
-    iap-forwarders        = ["35.235.240.0/20"]
-    private-googleapis    = ["199.36.153.8/30"]
-    restricted-googleapis = ["199.36.153.4/30"]
-    rfc1918               = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+variable "direction" {
+  description = "Direction of traffic: INGRESS or EGRESS."
+  type        = string
+  validation {
+    condition     = contains(["INGRESS", "EGRESS"], var.direction)
+    error_message = "Direction must be either INGRESS or EGRESS."
   }
-  nullable = false
 }
 
-variable "network" {
-  description = "Name of the network this set of firewall rules applies to."
+variable "disabled" {
+  description = "Whether the rule is disabled."
+  type        = bool
+  default     = null
+}
+
+variable "enable_logging" {
+  description = "Enable logging for this firewall rule."
+  type        = bool
+  default     = null
+}
+
+variable "log_config" {
+  description = "Logging configuration."
+  type = object({
+    metadata        = optional(string, "INCLUDE_ALL_METADATA")
+    filter_expr     = optional(string)
+    metadata_fields = optional(list(string))
+  })
+  default = null
+}
+
+variable "name" {
+  description = "Firewall rule name."
   type        = string
 }
 
-variable "project_id" {
-  description = "Project id of the project that holds the network."
+variable "network_id" {
+  description = "VPC network self link. Already resolved in factory."
   type        = string
+}
+
+variable "priority" {
+  description = "Rule priority (0-65535)."
+  type        = number
+  default     = null
+}
+
+variable "rule_create" {
+  description = "Create firewall rule. Set to false to skip creation."
+  type        = bool
+  default     = true
+}
+
+variable "source_ranges" {
+  description = "Source IP ranges for INGRESS rules."
+  type        = list(string)
+  default     = null
+}
+
+variable "source_service_accounts" {
+  description = "Source service accounts for INGRESS rules."
+  type        = list(string)
+  default     = null
+}
+
+variable "source_tags" {
+  description = "Source network tags for INGRESS rules."
+  type        = list(string)
+  default     = null
+}
+
+variable "target_service_accounts" {
+  description = "Target service accounts."
+  type        = list(string)
+  default     = null
+}
+
+variable "target_tags" {
+  description = "Target network tags."
+  type        = list(string)
+  default     = null
 }

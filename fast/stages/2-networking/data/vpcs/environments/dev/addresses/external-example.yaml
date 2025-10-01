@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../../schemas/address.schema.json
+
+# Example: External regional address (IPv4)
+# Use case: Static public IP for VM, NAT gateway, or external load balancer
+
+# Terraform Resource: google_compute_address (external)
+# Reference: $vpc_address_ids:dev/external-example
+
+project_id: $project_ids:net-dev
+address_type: EXTERNAL
+region: us-central1
+description: "External IPv4 address for NAT or VM"
+tier: PREMIUM
+labels:
+  environment: dev
+  managed_by: terraform

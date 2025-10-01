@@ -21,6 +21,9 @@ locals {
     }
   }
   ctx_p = "$"
+
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  project_number = data.google_project.project.number
   network = (
     var.vpc_reuse == null
     ? {
@@ -34,14 +37,14 @@ locals {
       ? {
         id = format(
           "projects/%s/global/networks/%s",
-          var.project_id,
+          local.project_id,
           var.name
         )
         name       = var.name
         network_id = try(var.vpc_reuse.attributes.network_id, null)
         self_link = format(
           "https://www.googleapis.com/compute/v1/projects/%s/global/networks/%s",
-          var.project_id,
+          local.project_id,
           var.name
         )
       }
@@ -60,15 +63,19 @@ locals {
   )
 }
 
+data "google_project" "project" {
+  project_id = local.project_id
+}
+
 data "google_compute_network" "network" {
   count   = try(var.vpc_reuse.use_data_source, null) == true ? 1 : 0
   name    = var.name
-  project = var.project_id
+  project = local.project_id
 }
 
 resource "google_compute_network" "network" {
   count                                     = var.vpc_reuse == null ? 1 : 0
-  project                                   = var.project_id
+  project                                   = local.project_id
   name                                      = var.name
   description                               = var.description
   auto_create_subnetworks                   = var.auto_create_subnetworks
@@ -78,6 +85,7 @@ resource "google_compute_network" "network" {
   network_firewall_policy_enforcement_order = var.firewall_policy_enforcement_order
   enable_ula_internal_ipv6                  = var.ipv6_config.enable_ula_internal
   internal_ipv6_range                       = var.ipv6_config.internal_range
+  network_profile                           = var.network_profile
 }
 
 resource "google_compute_network_peering" "local" {
@@ -108,7 +116,7 @@ resource "google_compute_network_peering" "remote" {
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
   provider   = google-beta
   count      = var.shared_vpc_host ? 1 : 0
-  project    = var.project_id
+  project    = local.project_id
   depends_on = [local.network]
 }
 
@@ -119,14 +127,14 @@ resource "google_compute_shared_vpc_service_project" "service_projects" {
     ? var.shared_vpc_service_projects
     : []
   )
-  host_project    = var.project_id
+  host_project    = local.project_id
   service_project = each.value
   depends_on      = [google_compute_shared_vpc_host_project.shared_vpc_host]
 }
 
 resource "google_dns_policy" "default" {
   count                     = var.dns_policy == null ? 0 : 1
-  project                   = var.project_id
+  project                   = local.project_id
   name                      = var.name
   enable_inbound_forwarding = try(var.dns_policy.inbound, null)
   enable_logging            = try(var.dns_policy.logging, null)

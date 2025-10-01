@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../../schemas/address.schema.json
+
+# Terraform Resource: google_compute_address (internal)
+# Reference: $vpc_address_ids:dev/default
+
+project_id: $project_ids:net-dev
+address_type: INTERNAL
+region: us-central1
+vpc_subnet_id: $vpc_subnet_ids:environments/dev/dev-subnet-1
+description: "Default internal address for dev environment"
+address: "10.0.1.100"
+purpose: GCE_ENDPOINT

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PSC Endpoint",
+  "description": "A PSC endpoint.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The name of the PSC endpoint.",
+      "type": "string"
+    },
+    "project_id": {
+      "description": "The ID of the project where the PSC endpoint will be created.",
+      "type": "string"
+    },
+    "region": {
+      "description": "The region where the PSC endpoint will be created.",
+      "type": "string"
+    },
+    "subnetwork": {
+      "description": "The self-link of the subnetwork to which the PSC endpoint will be attached.",
+      "type": "string"
+    },
+    "network": {
+      "description": "The self-link of the network to which the PSC endpoint will be attached.",
+      "type": "string"
+    },
+    "service_attachment": {
+      "description": "The self-link of the service attachment to which the PSC endpoint will connect.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "project_id",
+    "region",
+    "subnetwork",
+    "network",
+    "service_attachment"
+  ]
+}

@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../../../schemas/address.schema.json
+
+# Example: Internal regional address
+# Use case: Static IP for internal VM, load balancer endpoint, or GCE_ENDPOINT
+
+# Terraform Resource: google_compute_address (internal)
+# Reference: $vpc_address_ids:dev/internal-example
+
+address_type: INTERNAL
+region: us-central1
+project_id: $project_ids:net-dev
+vpc_subnet_id: $vpc_subnet_ids:environments/dev/dev-subnet-1
+description: "Internal address for VM or internal load balancer"
+address: "10.0.1.101"
+purpose: GCE_ENDPOINT
+labels:
+  environment: dev
+  managed_by: terraform

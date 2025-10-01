@@ -1,0 +1,19 @@
+# Default configuration for VPC factory resources
+# These values are applied to all VPCs unless explicitly overridden
+
+global:
+  # use `gcloud beta billing accounts list` to populate
+  billing_account: ABCDEF-0123456-ABCDEF
+vpcs:
+  defaults: {}
+  overrides: {}
+context: 
+  # you can populate context variables here for use in YAML replacements
+  iam_principals:
+    # this is the default group used in boostrap, initial user must be a member
+    gcp-organization-admins: group:gcp-organization-admins@example.com
+output_files:
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/fast-test-00
+  storage_bucket: $storage_buckets:iac-0/iac-outputs
+  

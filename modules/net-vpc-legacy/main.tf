@@ -22,7 +22,6 @@ locals {
   }
   ctx_p = "$"
 
-  # Context interpolation for project_id (follows gcs module pattern)
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   network = (
     var.vpc_reuse == null

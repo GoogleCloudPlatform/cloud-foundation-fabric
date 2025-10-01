@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,67 +14,93 @@
  * limitations under the License.
  */
 
-resource "google_compute_global_address" "global" {
-  for_each    = var.global_addresses
-  project     = var.project_id
-  name        = coalesce(each.value.name, each.key)
-  description = each.value.description
-  ip_version  = each.value.ipv6 != null ? "IPV6" : "IPV4"
+locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p = "$"
+
+  # Project ID - already resolved in factory
+
+  # Subnet - resolve $subnet_ids: references if present
+  vpc_subnet_id =try(lookup(local.ctx.vpc_subnet_ids, var.vpc_subnet_id, var.vpc_subnet_id), null)
+  vpc_id =try(lookup(local.ctx.vpc_ids, var.vpc_id, var.vpc_id), null)
+  project_id =try(lookup(local.ctx.project_ids, var.project_id, var.project_id), null)
+
+  # Network - resolve $vpc_ids: references if present
 }
 
-resource "google_compute_address" "external" {
-  provider           = google-beta
-  for_each           = var.external_addresses
-  project            = var.project_id
-  name               = coalesce(each.value.name, each.key)
-  address_type       = "EXTERNAL"
-  description        = each.value.description
-  ip_version         = each.value.ipv6 != null ? "IPV6" : "IPV4"
-  ipv6_endpoint_type = try(each.value.ipv6.endpoint_type, null)
-  labels             = each.value.labels
-  network_tier       = each.value.tier
-  region             = each.value.region
-  subnetwork         = each.value.subnetwork
-}
-
+# Internal address (INTERNAL, regional)
 resource "google_compute_address" "internal" {
-  provider     = google-beta
-  for_each     = var.internal_addresses
-  project      = var.project_id
-  name         = coalesce(each.value.name, each.key)
-  address      = each.value.address
+  provider = google-beta
+  count    = var.address_create && var.address_type == "INTERNAL" && var.purpose != "VPC_PEERING" && var.purpose != "IPSEC_INTERCONNECT" && var.purpose != "PRIVATE_SERVICE_CONNECT" ? 1 : 0
+
+  project      = local.project_id
+  name         = var.name
+  region       = var.region
+  address      = var.address
   address_type = "INTERNAL"
-  description  = each.value.description
-  ip_version   = each.value.ipv6 != null ? "IPV6" : "IPV4"
-  labels       = coalesce(each.value.labels, {})
-  purpose      = each.value.purpose
-  region       = each.value.region
-  subnetwork   = each.value.subnetwork
+  description  = var.description
+  ip_version   = var.ipv6 != null ? "IPV6" : "IPV4"
+  labels       = var.labels
+  purpose      = var.purpose
+  subnetwork   = local.vpc_subnet_id
 }
 
+# External address (EXTERNAL, regional)
+resource "google_compute_address" "external" {
+  provider = google-beta
+  count    = var.address_create && var.address_type == "EXTERNAL" ? 1 : 0
+
+  project            = local.project_id
+  name               = var.name
+  region             = var.region
+  address_type       = "EXTERNAL"
+  description        = var.description
+  ip_version         = var.ipv6 != null ? "IPV6" : "IPV4"
+  ipv6_endpoint_type = try(var.ipv6.endpoint_type, null)
+  labels             = var.labels
+  network_tier       = var.tier
+  subnetwork         = local.vpc_subnet_id
+}
+
+# Global address (for global load balancers)
+resource "google_compute_global_address" "global" {
+  count = var.address_create && var.address_type == "GLOBAL" ? 1 : 0
+
+  project     = local.project_id
+  name        = var.name
+  description = var.description
+  ip_version  = var.ipv6 != null ? "IPV6" : "IPV4"
+}
+
+# PSA address (Private Service Access - VPC_PEERING purpose)
 resource "google_compute_global_address" "psa" {
-  for_each      = var.psa_addresses
-  project       = var.project_id
-  name          = coalesce(each.value.name, each.key)
-  description   = each.value.description
-  address       = each.value.address
+  count = var.address_create && var.purpose == "VPC_PEERING" ? 1 : 0
+
+  project       = local.project_id
+  name          = var.name
+  description   = var.description
+  address       = var.address
   address_type  = "INTERNAL"
-  network       = each.value.network
-  prefix_length = each.value.prefix_length
+  network       = local.vpc_id
+  prefix_length = var.prefix_length
   purpose       = "VPC_PEERING"
-  # labels       = lookup(var.internal_address_labels, each.key, {})
 }
 
+# IPSEC_INTERCONNECT address (for HPA VPN over Cloud Interconnect)
 resource "google_compute_address" "ipsec_interconnect" {
-  for_each      = var.ipsec_interconnect_addresses
-  project       = var.project_id
-  name          = coalesce(each.value.name, each.key)
-  description   = each.value.description
-  address       = each.value.address
+  count = var.address_create && var.purpose == "IPSEC_INTERCONNECT" ? 1 : 0
+
+  project       = local.project_id
+  name          = var.name
+  region        = var.region
+  description   = var.description
+  address       = var.address
   address_type  = "INTERNAL"
-  region        = each.value.region
-  network       = each.value.network
-  prefix_length = each.value.prefix_length
+  network       = local.vpc_id
+  prefix_length = var.prefix_length
   purpose       = "IPSEC_INTERCONNECT"
 }
-

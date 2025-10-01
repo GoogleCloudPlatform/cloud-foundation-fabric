@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../../schemas/firewall-rule.schema.json
+
+# Terraform Resource: google_compute_firewall
+# Reference: $firewall_rule_ids:dev/allow-iap
+
+network_id: $vpc_ids:environments/prod
+description: "Allow IAP traffic to instances"
+direction: "INGRESS"
+priority: 1000
+source_ranges:
+  - "35.235.240.0/20"
+allow:
+  - protocol: "tcp"
+    ports: ["22", "3389"]
+target_tags:
+  - "allow-iap"

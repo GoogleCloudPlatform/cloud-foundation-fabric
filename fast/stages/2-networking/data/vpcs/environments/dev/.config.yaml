@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=../../../schemas/vpc.schema.json
+
+# VPC identifier - references the VPC resource (hierarchical: environment)
+environment: dev
+
+# Project ID where the VPC resides
+project_id: $project_ids:net-dev
+
+# Network name (defaults to environment-vpc if not specified)
+network_name: "dev-vpc"
+
+# Network description
+description: "Dev VPC network"
+
+# Routing mode for the VPC
+routing_mode: "GLOBAL"
+
+mtu: 1301
+
+routers:
+  nat-router:
+    region: us-central1
+    description: "Router for Cloud NAT"
+    asn: 64512
+    advertise_mode: CUSTOM
+    advertised_groups: ["ALL_SUBNETS"]
+    advertised_ip_ranges:
+      private-range:
+        range: "10.0.0.0/8"
+        description: "Private IP range"
+
+factories_config:
+  subnets_folder: subnets
+  firewall_rules_folder: firewall-rules
+  routes_folder: routes
+  serverless_connector_folder: serverless-connectors
+  address_folder: addresses
+  cloud_nat_folder: cloud-nats
+
+tag_bindings:
+  environment: $tag_values:environment/development

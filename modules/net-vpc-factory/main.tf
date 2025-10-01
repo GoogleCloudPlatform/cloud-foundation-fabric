@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Read and process YaML factory files and variables.
+# tfdoc:file:description VPC factory resources and context processing.
+
 locals {
-  _network_factory_path = try(
-    pathexpand(var.factories_config.vpcs), null
-  )
-  _network_factory_files = try(
-    fileset(local._network_factory_path, "**/*.yaml"),
-    []
-  )
-
-  _network_projects_from_files = {
-    for f in local._network_factory_files :
-    f => yamldecode(file("${local._network_factory_path}/${f}"))
-  }
-
-  _network_projects = {
-    for _, v in local._network_projects_from_files :
-    v.project_config.name => v
-  }
-
-  network_projects = merge(local._network_projects, var.network_project_config)
+  # Context transformation for string interpolation
+  ctx = var.context
 }

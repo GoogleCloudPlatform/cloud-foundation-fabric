@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../../schemas/address.schema.json
+
+# Example: Global address (IPv4)
+# Use case: Static IP for global load balancers (HTTP(S), SSL proxy, TCP proxy)
+
+# Terraform Resource: google_compute_global_address
+# Reference: $vpc_address_ids:dev/global-example
+
+project_id: $project_ids:net-dev
+address_type: GLOBAL
+description: "Global address for HTTP(S) load balancer"
+# Note: region is not applicable for global addresses

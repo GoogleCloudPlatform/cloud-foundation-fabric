@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../../../../schemas/route.schema.json
+
+# Terraform Resource: google_compute_route
+# Reference: $vpc_route_ids:dev/default-internet-gateway
+
+network_id: $vpc_ids:environments/dev
+description: "Default route to internet gateway"
+dest_range: "0.0.0.0/0"
+next_hop_gateway: "default-internet-gateway"
+priority: 1000

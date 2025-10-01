@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../../../../schemas/address.schema.json
+
+# Example: IPSEC_INTERCONNECT address
+# Use case: IP range for High Availability (HA) VPN over Cloud Interconnect
+
+# Terraform Resource: google_compute_address (IPSEC_INTERCONNECT)
+# Reference: $vpc_address_ids:dev/ipsec-interconnect-example
+
+project_id: $project_ids:net-dev
+address_type: INTERNAL
+purpose: IPSEC_INTERCONNECT
+region: us-central1
+description: "IP range for HA VPN over Cloud Interconnect"
+vpc_id: $vpc_ids:environments/dev
+address: "10.20.0.0"
+prefix_length: 29
+# Note: This creates a /29 range for IPSEC over Interconnect (minimum 8 IPs required)

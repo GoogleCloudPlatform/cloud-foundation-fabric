@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-output "default_rules" {
-  description = "Default rule resources."
-  value = {
-    admin = try(google_compute_firewall.allow-admins, null)
-    http  = try(google_compute_firewall.allow-tag-http, null)
-    https = try(google_compute_firewall.allow-tag-https, null)
-    ssh   = try(google_compute_firewall.allow-tag-ssh, null)
-  }
+output "id" {
+  description = "Firewall rule fully qualified id."
+  value       = try(google_compute_firewall.rule[0].id, null)
 }
 
-output "rules" {
-  description = "Custom rule resources."
-  value       = google_compute_firewall.custom-rules
+output "name" {
+  description = "Firewall rule name."
+  value       = try(google_compute_firewall.rule[0].name, var.name)
+}
+
+output "rule" {
+  description = "Firewall rule resource."
+  value       = try(google_compute_firewall.rule[0], null)
+}
+
+output "self_link" {
+  description = "Firewall rule self link."
+  value       = try(google_compute_firewall.rule[0].self_link, null)
 }

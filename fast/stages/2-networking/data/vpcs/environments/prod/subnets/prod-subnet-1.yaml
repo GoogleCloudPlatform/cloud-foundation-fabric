@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../../../../schemas/subnet.schema.json
+
+# Terraform Resource: google_compute_subnetwork
+# Reference: $vpc_subnet_ids:prod/prod-subnet-1
+
+network_id: $vpc_ids:environments/prod
+name: example-subnet4
+region: us-central1
+description: "Primary subnet for prod environment"
+ip_cidr_range: "10.1.1.0/24"
+private_ip_google_access: true
+enable_flow_logs: true
