@@ -1,6 +1,6 @@
-name: hub
+name: the-hub
 project_id: $project_ids:net-core-0
 groups:
   default:
     auto_accept:
-      - $project_ids:net-prod-ncc-0
+      - $project_ids:net-prod-0
