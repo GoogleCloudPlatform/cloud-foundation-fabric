@@ -32,14 +32,15 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    defaults          = optional(string, "data/defaults.yaml")
-    dns               = optional(string, "data/dns")
-    firewall-policies = optional(string, "data/firewall-policies")
-    folders           = optional(string, "data/folders")
-    interconnect      = optional(string, "data/interconnect")
-    ncc-hubs          = optional(string, "data/ncc-hubs")
-    projects          = optional(string, "data/projects")
-    vpcs              = optional(string, "data/vpcs")
+    defaults              = optional(string, "data/defaults.yaml")
+    dns                   = optional(string, "data/dns/zones")
+    dns-response-policies = optional(string, "data/dns/response-policies")
+    firewall-policies     = optional(string, "data/firewall-policies")
+    folders               = optional(string, "data/folders")
+    interconnect          = optional(string, "data/interconnect")
+    ncc-hubs              = optional(string, "data/ncc-hubs")
+    projects              = optional(string, "data/projects")
+    vpcs                  = optional(string, "data/vpcs")
   })
   nullable = false
   default  = {}

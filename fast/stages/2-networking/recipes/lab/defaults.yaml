@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/dns.schema.json
+context:
+  locations:
+    primary: europe-west1
+    secondary: europe-west3
+  iam_principals: {}
 
-project: $projects:net-core-0
-domain: test.
-private:
-  client_networks:
-    - $vpcs:hub
-recordsets:
-  "A localhost":
-    records: ["127.0.0.1"]
+projects:
+  defaults:
+    storage_location: eu
+
+vpcs:
+  auto_create_subnetworks: false
+  delete_default_route_on_create: true
+  mtu: 1500

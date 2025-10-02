@@ -41,7 +41,6 @@ locals {
   ])...)
 }
 
-#TODO(SR): implement passing existing router
 module "nat" {
   source                    = "../../../modules/net-cloudnat"
   for_each                  = local.nat_configs

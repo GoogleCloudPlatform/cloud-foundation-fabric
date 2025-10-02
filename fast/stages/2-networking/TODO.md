@@ -8,4 +8,4 @@
   - ... do we care?
 - s/$gateways/$vpn_gateways/g
 - Support different NCC topologies
-- Support NCC filters
+- DNS response policies: project key is currently inferred from filename. Ick.

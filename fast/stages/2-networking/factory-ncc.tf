@@ -131,7 +131,6 @@ resource "google_network_connectivity_spoke" "vpcs" {
   group      = each.value.group == null ? null : lookup(local.ctx_ncc_groups, replace(each.value.group, "$ncc_groups:", ""), each.value.group)
 }
 
-
 resource "google_network_connectivity_spoke" "tunnels" {
   for_each    = local.ncc_vpn_spokes
   project     = lookup(local.ctx_projects.project_ids, replace(each.value.project_id, "$project_ids:", ""), each.value.project_id)

@@ -15,6 +15,31 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+
+  peering_client_networks = [
+    for net in try(var.zone_config.peering.client_networks, []) :
+    lookup(local.ctx.vpcs, net, net)
+  ]
+  peering_peer_network = try(
+    lookup(local.ctx.vpcs, var.zone_config.peering.peer_network, var.zone_config.peering.peer_network),
+    null
+  )
+  forwarding_client_networks = [
+    for net in try(var.zone_config.forwarding.client_networks, []) :
+    lookup(local.ctx.vpcs, net, net)
+  ]
+  private_client_networks = [
+    for net in try(var.zone_config.private.client_networks, []) :
+    lookup(local.ctx.vpcs, net, net)
+  ]
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+
   managed_zone = (var.zone_config == null ?
     data.google_dns_managed_zone.dns_managed_zone[0]
     : google_dns_managed_zone.dns_managed_zone[0]
@@ -40,9 +65,9 @@ locals {
     })
   }
   client_networks = concat(
-    coalesce(try(var.zone_config.forwarding.client_networks, null), []),
-    coalesce(try(var.zone_config.peering.client_networks, null), []),
-    coalesce(try(var.zone_config.private.client_networks, null), [])
+    local.peering_client_networks,
+    local.forwarding_client_networks,
+    local.private_client_networks
   )
   visibility = (var.zone_config == null ?
     null
@@ -57,7 +82,7 @@ locals {
 resource "google_dns_managed_zone" "dns_managed_zone" {
   count          = (var.zone_config == null) ? 0 : 1
   provider       = google-beta
-  project        = var.project_id
+  project        = local.project_id
   name           = var.name
   dns_name       = var.zone_config.domain
   description    = var.description
@@ -107,10 +132,10 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
   }
 
   dynamic "peering_config" {
-    for_each = try(var.zone_config.peering.peer_network, null) == null ? [] : [""]
+    for_each = local.peering_peer_network == null ? [] : [""]
     content {
       target_network {
-        network_url = var.zone_config.peering.peer_network
+        network_url = local.peering_peer_network
       }
     }
   }
@@ -146,13 +171,13 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
 
 data "google_dns_managed_zone" "dns_managed_zone" {
   count   = var.zone_config == null ? 1 : 0
-  project = var.project_id
+  project = local.project_id
   name    = var.name
 }
 
 resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
   for_each     = coalesce(var.iam, {})
-  project      = var.project_id
+  project      = local.project_id
   managed_zone = local.managed_zone.id
   role         = each.key
   members      = each.value
@@ -161,7 +186,7 @@ resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
 data "google_dns_keys" "dns_keys" {
   count        = try(var.zone_config.public.dnssec_config.state, "off") != "off" ? 1 : 0
   managed_zone = local.managed_zone.id
-  project      = var.project_id
+  project      = local.project_id
   depends_on = [
     google_dns_managed_zone.dns_managed_zone
   ]
@@ -169,7 +194,7 @@ data "google_dns_keys" "dns_keys" {
 
 resource "google_dns_record_set" "dns_record_set" {
   for_each     = local.recordsets
-  project      = var.project_id
+  project      = local.project_id
   managed_zone = var.name
   name         = each.value.resource_name
   type         = each.value.type

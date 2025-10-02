@@ -1,0 +1,150 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../schemas/dns-response-policy-rules.json
+
+accounts:
+  dns_name: "accounts.google.com."
+  behavior: bypassResponsePolicy
+aiplatform-notebook-cloud-all:
+  dns_name: "*.aiplatform-notebook.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+aiplatform-notebook-gu-all:
+  dns_name: "*.aiplatform-notebook.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+appengine:
+  dns_name: "appengine.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+appspot-all:
+  dns_name: "*.appspot.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+backupdr-cloud:
+  dns_name: "backupdr.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+backupdr-cloud-all:
+  dns_name: "*.backupdr.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+backupdr-gu:
+  dns_name: "backupdr.googleusercontent.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+backupdr-gu-all:
+  dns_name: "*.backupdr.googleusercontent.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+cloudfunctions:
+  dns_name: "*.cloudfunctions.net."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+cloudproxy:
+  dns_name: "*.cloudproxy.app."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+composer-cloud-all:
+  dns_name: "*.composer.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+composer-gu-all:
+  dns_name: "*.composer.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+datafusion-all:
+  dns_name: "*.datafusion.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+datafusion-gu-all:
+  dns_name: "*.datafusion.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+dataproc:
+  dns_name: "dataproc.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+dataproc-all:
+  dns_name: "*.dataproc.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+dataproc-gu:
+  dns_name: "dataproc.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+dataproc-gu-all:
+  dns_name: "*.dataproc.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+dl:
+  dns_name: "dl.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+gcr:
+  dns_name: "gcr.io."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+gcr-all:
+  dns_name: "*.gcr.io."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+gke-all:
+  dns_name: "*.gke.goog."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+googleapis-all:
+  dns_name: "*.googleapis.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+googleapis-private:
+  dns_name: "private.googleapis.com."
+  local_data:
+    A:
+      rrdatas:
+        - 199.36.153.8
+        - 199.36.153.9
+        - 199.36.153.10
+        - 199.36.153.11
+    AAAA:
+      rrdatas:
+        - "2600:2d00:2:2000::"
+googleapis-restricted:
+  dns_name: "restricted.googleapis.com."
+  local_data:
+    A:
+      rrdatas:
+        - 199.36.153.4
+        - 199.36.153.5
+        - 199.36.153.6
+        - 199.36.153.7
+    AAAA:
+      rrdatas:
+        - "2600:2d00:2:1000::"
+gstatic-all:
+  dns_name: "*.gstatic.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+kernels-gu:
+  dns_name: "kernels.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+kernels-gu-all:
+  dns_name: "*.kernels.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+ltsapis-all:
+  dns_name: "*.ltsapis.goog."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+notebooks:
+  dns_name: "notebooks.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+notebooks-all:
+  dns_name: "*.notebooks.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+notebooks-gu-all:
+  dns_name: "*.notebooks.googleusercontent.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+packages-cloud:
+  dns_name: "packages.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+packages-cloud-all:
+  dns_name: "*.packages.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+pkgdev:
+  dns_name: "pkg.dev."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+pkgdev-all:
+  dns_name: "*.pkg.dev."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+pkigoog:
+  dns_name: "pki.goog."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+pkigoog-all:
+  dns_name: "*.pki.goog."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+run-all:
+  dns_name: "*.run.app."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+source:
+  dns_name: "source.developers.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
+storage:
+  dns_name: "storage.cloud.google.com."
+  local_data: { CNAME: { rrdatas: ["private.googleapis.com."] } }
