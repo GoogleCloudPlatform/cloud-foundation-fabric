@@ -557,18 +557,22 @@
         "local_path": {
           "type": "string"
         },
+        "providers_template_path": {
+          "type": "string",
+          "default": "assets/providers.tf.tpl"
+        },
         "storage_bucket": {
           "type": "string"
         },
-        "provider_pattern": {
+        "providers_pattern": {
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "service_accounts",
+            "service_accounts_match",
             "storage_bucket"
           ],
           "properties": {
-            "service_accounts": {
+            "service_accounts_match": {
               "type": "object",
               "additionalProperties": false,
               "minProperties": 1,
@@ -597,6 +601,10 @@
                   "type": "boolean",
                   "default": true
                 }
+              },
+              "default": {
+                "create": true,
+                "iam_assign": true
               }
             }
           }
@@ -617,21 +625,13 @@
                   "type": "string"
                 },
                 "set_prefix": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "default": true
                 },
                 "storage_bucket": {
                   "type": "string"
                 }
               }
-            }
-          }
-        },
-        "tfvars_pattern": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "storage_bucket": {
-              "type": "string"
             }
           }
         }
