@@ -32,6 +32,8 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
     - roles/compute.viewer
     - $custom_roles:project_iam_viewer
+  $iam_principals:gcp-network-admins:
+    - roles/editor
 iam_bindings:
   dp_dev_rw:
     members:

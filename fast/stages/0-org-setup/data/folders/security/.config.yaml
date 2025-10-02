@@ -31,6 +31,8 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
     - roles/cloudkms.viewer
     - $custom_roles:project_iam_viewer
+  $iam_principals:gcp-security-admins:
+    - roles/editor
 iam_bindings:
   project_factory:
     role: roles/resourcemanager.projectIamAdmin

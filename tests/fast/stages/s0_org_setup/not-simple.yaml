@@ -2764,7 +2764,7 @@ counts:
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
   google_folder: 8
-  google_folder_iam_binding: 44
+  google_folder_iam_binding: 46
   google_iam_workload_identity_pool: 1
   google_iam_workload_identity_pool_provider: 1
   google_logging_organization_settings: 1
@@ -2793,5 +2793,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 46
-  resources: 308
+  resources: 310
   terraform_data: 2
