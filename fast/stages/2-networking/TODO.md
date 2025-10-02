@@ -7,3 +7,5 @@
   - Not trivial to solve because of dependencies - e.g. vpn-ha has a dependency on the router context to be ready, but can also automatically manage the creation of a router itself
   - ... do we care?
 - s/$gateways/$vpn_gateways/g
+- Support different NCC topologies
+- Support NCC filters
