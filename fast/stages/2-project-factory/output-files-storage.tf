@@ -15,35 +15,33 @@
  */
 
 locals {
-  # _off = {
-  #   bucket = try(
-  #     local.defaults.output_files.provider_pattern.storage_bucket, null
-  #   )
-  #   create = try(
-  #     local.defaults.output_files.provider_pattern.storage_folders.create, null
-  #   )
-  #   create = try(
-  #     local.defaults.output_files.provider_pattern.storage_folders.iam_assign, null
-  #   )
-  # }
-  #   _of_folder_readers = [
-  #     for v in lookup(local._of_folders, "iam_readers", []) :
-  #     v if contains(local.of_providers_service_accounts, v)
-  #   ]
-  #   _of_folder_writers = [
-  #     for v in lookup(local._of_folders, "iam_writers", []) :
-  #     v if contains(local.of_providers_service_accounts, v)
-  #   ]
-  # }
+  of_pf_create = local.of_p.bucket != null && local.of_p.folders_create
 }
-# module "output-folders" {
-#   source     = "../../../modules/gcs"
-#   project_id = var.project_id
-#   prefix     = var.prefix
-#   name       = "my-bucket"
-#   location   = "EU"
-#   versioning = true
-#   labels = {
-#     cost-center = "devops"
-#   }
-# }
+
+module "output-pattern-folders" {
+  source        = "../../../modules/gcs"
+  count         = local.of_pf_create ? 1 : 0
+  bucket_create = false
+  name = lookup(
+    local.of_storage_buckets, local.of_p.bucket, local.of_p.bucket
+  )
+  managed_folders = {
+    for k, v in local.of_p.projects :
+    "${k}/" => {
+      iam_bindings_additive = merge(
+        v.ro == null ? {} : {
+          automation_ro = {
+            member = "serviceAccount:${v.ro}"
+            role   = "roles/storage.objectViewer"
+          }
+        },
+        v.rw == null ? {} : {
+          automation_rw = {
+            member = "serviceAccount:${v.rw}"
+            role   = "roles/storage.objectAdmin"
+          }
+        }
+      )
+    }
+  }
+}

@@ -588,24 +588,9 @@
             "storage_bucket": {
               "type": "string"
             },
-            "storage_folders": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [],
-              "properties": {
-                "create": {
-                  "type": "boolean",
-                  "default": true
-                },
-                "iam_assign": {
-                  "type": "boolean",
-                  "default": true
-                }
-              },
-              "default": {
-                "create": true,
-                "iam_assign": true
-              }
+            "storage_folders_create": {
+              "type": "boolean",
+              "default": true
             }
           }
         },

@@ -410,6 +410,7 @@ output_files:
 | name | description | modules | resources |
 |---|---|---|---|
 | [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
+| [output-files-storage.tf](./output-files-storage.tf) | None | <code>gcs</code> |  |
 | [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
