@@ -16,6 +16,9 @@
   - [Folder parent-child relationship and variable substitutions](#folder-parent-child-relationship-and-variable-substitutions)
   - [Project Creation](#project-creation)
   - [Automation Resources for Projects](#automation-resources-for-projects)
+  - [Generated provider and Terraform variables for projects](#generated-provider-and-terraform-variables-for-projects)
+    - [Individual output files](#individual-output-files)
+    - [Pattern-defined output files](#pattern-defined-output-files)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -351,6 +354,112 @@ automation:
         - group:devops@example.org
 ```
 
+### Generated provider and Terraform variables for projects
+
+This stage can optionally be configured to generate provider and tfvars files ("output files") for projects. These files can then be distributed to project owners to help them boostrap automation, and will be used in future releases to configure project-level CI/CD from this factory.
+
+Output file generation is configured in the defaults file, and supports two usage modes:
+
+- individual output files can be generated for specific bucket/service account pairs, or
+- a pattern can be defined to match automation service accounts defined in projects, and generate files for all projects that match the pattern
+
+The first use case is simple to use for small setups, or where output files are needed to manage multiple projects from a single service account. The second use case allows mass generation of output files, where project automation service accounts conform to a specific template.
+
+As is usual with FAST output files, their destination can be a storage bucket and/or a local filesystem folder. The two are not mutuallye exclusive and can be independently activated.
+
+The following sub-sections illustrate the specifics of each of the two patterns described above.
+
+#### Individual output files
+
+To define individual output files, populate the `output_files.providers` map in this stage's defaults file. Each element in the map will result in one provider file, with a name matching the key used in the map.
+
+```yaml
+output_files:
+  # where files are stored, either of these can be defined
+  local_path: ~/fast-config/projects
+  storage_bucket: $storage_buckets:iac-0/iac-shared-outputs
+  # the template file used for providers, defaults to the built-in one
+  # providers_template_path: assets/providers.tf.tpl
+  providers:
+    # a single explicit provider pointing to a specific bucket/service account
+    test-01:
+      storage_bucket: $storage_buckets:iac-0/iac-shared-state
+      service_account: $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+      # the key is used as a backend prefix by default, use this to disable it
+      # set_prefix: false
+```
+
+The above snippet will result in two identical files being generated:
+
+- `~/fast-config/projects/providers/test-01.tf` in the local filesystem
+- `projects/providers/test-01.tf` in the storage bucket
+
+Individual files make specific assumptions:
+
+- the service account and bucket can refer to any valid resource, either internally (via context) or externally (explicitly) defined
+- where a backed prefix is set as in the example above, the assumption is the service account has permissions to use it
+- no tfvars files are generated as the provider might be designed to work across different projects (this may change ina  future release)
+
+#### Pattern-defined output files
+
+To automatically generate output files for all projects matching a pattern, populate the `output_files.providers_pattern` block in this stage's defaults file. Note that the `local_path`, `storage_bucket` and `providers_template` attribute are the same as in the example above, and shared between individual and pattern providers definitions.
+
+```yaml
+output_files:
+  # where files are stored, either of these can be defined
+  local_path: ~/fast-config/projects
+  storage_bucket: $storage_buckets:iac-0/iac-shared-outputs
+  # the template file used for providers, defaults to the built-in one
+  # providers_template_path: assets/providers.tf.tpl
+  providers_pattern:
+    # match automation service accounts in project definitions
+    service_accounts_match:
+      # at least one of the ro or rw matches needs to be defined
+      ro: automation/ro
+      rw: automation/rw
+    # which bucket is used for the provider backend
+    storage_bucket: $storage_buckets:iac-0/iac-shared-state
+    # create managed folders in the bucket by default and set IAM on them
+    # storage_folders_create: true
+```
+
+The above snippet will create zero, one, or two provider files depending on how many service accounts match for each indivdual project. One tfvars file will also be created for each project with at least one provider file.
+
+For example, a project with this definition will generate one provider and one tfvars file for each of the top-level storage options (`output_files.local_path`, `output_files.storage_bucket`) defined.
+
+```yaml
+# file name: dev-foo-0.yaml
+automation:
+  project: $project_ids:iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation service account.
+```
+
+And one with this definition will generate two providers (one for each service account) and one tfvars file for each of the top-level storage options (`output_files.local_path`, `output_files.storage_bucket`) defined.
+
+```yaml
+# file name: dev-foo-0.yaml
+automation:
+  project: $project_ids:iac-0
+  service_accounts:
+    ro:
+      description: Read-only automation service account.
+    rw:
+      description: Read/write automation service account.
+```
+
+Using the second example, these file names will be in the local filesystem (the bucket will have the same files save for the local path):
+
+- `~/fast-config/projects/providers/dev-foo-0-ro.tf`
+- `~/fast-config/projects/providers/dev-foo-0-rw.tf`
+- `~/fast-config/projects/tfvars/dev-foo-0.tf`
+
+Pattern-based files make specific assumptions:
+
+- service accounts can only refer to project-factory generated service accounts in each project definition
+- the backend prefix is always set, as the same bucket is used for all provider files
+
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-project-factory-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -358,6 +467,8 @@ automation:
 | name | description | modules | resources |
 |---|---|---|---|
 | [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
+| [output-files-storage.tf](./output-files-storage.tf) | None | <code>gcs</code> |  |
+| [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
