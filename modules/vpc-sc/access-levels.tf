@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ resource "google_access_context_manager_access_level" "basic" {
             allowed_encryption_statuses = (
               dp.value.allowed_encryption_statuses
             )
-            require_admin_approval = dp.value.key.require_admin_approval
+            require_admin_approval = dp.value.require_admin_approval
             require_corp_owned     = dp.value.require_corp_owned
             require_screen_lock    = dp.value.require_screen_lock
 
