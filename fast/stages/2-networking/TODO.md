@@ -8,4 +8,5 @@
   - ... do we care?
 - s/$gateways/$vpn_gateways/g
 - Support different NCC topologies
-- DNS response policies: project key is currently inferred from filename. Ick.
+- Firewall Policies (plugging the factory + testing should suffice)
+- Hierarchical Firewall policies (potentially rewrite the factory)

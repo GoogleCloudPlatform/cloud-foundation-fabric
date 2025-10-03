@@ -29,18 +29,22 @@ locals {
 
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")), {
-      factory_basepath = dirname(f)
+      factory_dirname  = dirname(f)
+      factory_basepath = "${local._vpcs_path}/${dirname(f)}"
     })
   ]
 
   _vpcs = {
-    for v in local._vpcs_preprocess : v.factory_basepath => v
+    for v in local._vpcs_preprocess : v.factory_dirname => v
   }
 
   ctx_vpcs = {
     ids        = { for k, v in module.vpcs : k => v.id }
     names      = { for k, v in module.vpcs : k => v.name }
     self_links = { for k, v in module.vpcs : k => v.self_link }
+    subnets_by_vpc = {
+      for k, v in module.vpcs : k => v.subnet_self_links
+    }
   }
 
   vpcs = { for k, v in local._vpcs : k => merge(local.defaults.vpcs, v, {
