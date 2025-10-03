@@ -358,7 +358,7 @@ automation:
 
 This stage can optionally be configured to generate provider and tfvars files ("output files") for projects. These files can then be distributed to project owners to help them boostrap automation, and will be used in future releases to configure project-level CI/CD from this factory.
 
-Ooutput file generation is configured in the defaults file, and supports two usage modes:
+Output file generation is configured in the defaults file, and supports two usage modes:
 
 - individual output files can be generated for specific bucket/service account pairs, or
 - a pattern can be defined to match automation service accounts defined in projects, and generate files for all projects that match the pattern
