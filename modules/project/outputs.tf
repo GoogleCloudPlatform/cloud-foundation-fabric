@@ -157,7 +157,7 @@ output "quotas" {
 }
 
 output "scc_custom_sha_modules_ids" {
-  description = "Map of SCC CUSTOM SHA MODULES => ID in the organization."
+  description = "Map of SCC CUSTOM SHA MODULES => ID in the project."
   value       = { for k, v in google_scc_management_project_security_health_analytics_custom_module.scc_project_custom_module : k => v.id }
 }
 

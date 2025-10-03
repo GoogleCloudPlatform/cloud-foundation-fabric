@@ -45,12 +45,12 @@ output "name" {
 }
 
 output "organization_policies_ids" {
-  description = "Map of ORGANIZATION_POLICIES => ID in the organization."
+  description = "Map of ORGANIZATION_POLICIES => ID in the folder."
   value       = { for k, v in google_org_policy_policy.default : k => v.id }
 }
 
 output "scc_custom_sha_modules_ids" {
-  description = "Map of SCC CUSTOM SHA MODULES => ID in the organization."
+  description = "Map of SCC CUSTOM SHA MODULES => ID in the folder."
   value       = { for k, v in google_scc_management_folder_security_health_analytics_custom_module.scc_folder_custom_module : k => v.id }
 }
 

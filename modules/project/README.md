@@ -1932,7 +1932,7 @@ alerts:
 | [project_id](outputs.tf#L125) | Project id. |  |
 | [quota_configs](outputs.tf#L143) | Quota configurations. |  |
 | [quotas](outputs.tf#L154) | Quota resources. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L159) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L159) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
 | [service_agents](outputs.tf#L164) | List of all (active) service agents for this project. |  |
 | [services](outputs.tf#L173) | Service APIs to enable in the project. |  |
 | [sink_writer_identities](outputs.tf#L182) | Writer identities created for each sink. |  |
