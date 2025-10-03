@@ -409,6 +409,7 @@ variable "node_config" {
     tags                          = optional(list(string))
     workload_metadata_config_mode = optional(string)
     kubelet_readonly_port_enabled = optional(bool, true)
+    resource_manager_tags         = optional(map(string), {})
   })
   default  = {}
   nullable = false

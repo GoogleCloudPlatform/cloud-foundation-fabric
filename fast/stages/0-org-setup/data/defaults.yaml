@@ -30,6 +30,7 @@ projects:
     # prefix must be unique and less than 9 characters
     prefix: test00
     storage_location: europe-west1
+    bigquery_location: europe-west1
   overrides: {}
 context:
   # you can populate context variables here for use in YAML replacements
@@ -46,7 +47,7 @@ output_files:
       service_account: $iam_principals:service_accounts/iac-0/iac-org-rw
     0-org-setup-ro:
       bucket: $storage_buckets:iac-0/iac-org-state
-      service_account: $iam_principals:service_accounts/iac-0/iac-org-rw
+      service_account: $iam_principals:service_accounts/iac-0/iac-org-ro
     1-vpcsc:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 1-vpcsc

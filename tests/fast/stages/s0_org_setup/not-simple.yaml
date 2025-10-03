@@ -472,6 +472,31 @@ values:
     condition: []
     member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.user
+  module.factory.module.bigquery-datasets["billing-0/billing_export"].google_bigquery_dataset.default:
+    dataset_id: billing_export
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: Billing export
+    labels: null
+    location: europe-west1
+    max_time_travel_hours: '168'
+    project: ft0-prod-billing-exp-0
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_viewer_org_ro"]:
+    billing_account_id: 012345-012345-012345
+    condition: []
+    member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/billing.viewer
   module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -544,6 +569,8 @@ values:
     members:
     - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -682,6 +709,11 @@ values:
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/storage.admin
+  ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/projectIamViewer
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"]
   : condition: []
     members:
@@ -757,6 +789,31 @@ values:
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/serviceProjectNetworkAdmin
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["project_factory"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
+        \  'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',\n  'roles/container.hostServiceAgentUser',\
+        \ 'roles/vpcaccess.user'\n])"
+      title: Project factory delegated IAM grant.
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/projectIamViewer
+  ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/cloudkms.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/cloudkms.viewer
   module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
@@ -797,6 +854,15 @@ values:
     members:
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/viewer
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.bindings["project_factory"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
+        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])"
+      title: Project factory delegated IAM grant.
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
   ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"]
   : condition: []
     members:
@@ -961,12 +1027,24 @@ values:
   module.factory.module.log-buckets["log-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: vpc-sc
     cmek_settings: []
-    enable_analytics: false
+    enable_analytics: true
     index_configs: []
     location: global
     locked: null
     project: ft0-prod-audit-logs-0
-    retention_days: 30
+    retention_days: 31
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/owner
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/viewer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:storage_viewer"]:
     condition: []
     members:
@@ -1052,6 +1130,52 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
     role: roles/viewer
+  module.factory.module.projects["billing-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-billing-exp-0
+  module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: ft0-prod-billing-exp-0
+    user_project: null
+  module.factory.module.projects["billing-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-012345-012345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: null
+    labels: null
+    name: ft0-prod-billing-exp-0
+    org_id: '1234567890'
+    project_id: ft0-prod-billing-exp-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["billing-0"].google_project_iam_member.service_agents["bigquerydatatransfer"]:
+    condition: []
+    project: ft0-prod-billing-exp-0
+    role: roles/bigquerydatatransfer.serviceAgent
+  module.factory.module.projects["billing-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["billing-0"].google_project_service.project_services["bigquerydatatransfer.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: bigquerydatatransfer.googleapis.com
+    timeouts: null
+  module.factory.module.projects["billing-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["billing-0"].google_project_service_identity.default["bigquerydatatransfer.googleapis.com"]:
+    project: ft0-prod-billing-exp-0
+    service: bigquerydatatransfer.googleapis.com
+    timeouts: null
   module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
     project: ft0-prod-iac-core-0
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
@@ -1508,12 +1632,20 @@ values:
     timeouts: null
   module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].data.google_service_account.service_account[0]:
     account_id: iac-org-cicd-ro
+  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].data.google_service_account.service_account[0]:
     account_id: iac-org-cicd-rw
+  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
@@ -2187,6 +2319,18 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:organization_admin_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: organizations/1234567890/roles/organizationAdminViewer
+  module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:tag_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: organizations/1234567890/roles/tagViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/accesscontextmanager.policyAdmin"]:
     condition: []
     members:
@@ -2616,8 +2760,9 @@ values:
     output: null
     triggers_replace: null
 counts:
-  google_bigquery_default_service_account: 1
-  google_billing_account_iam_member: 5
+  google_bigquery_dataset: 1
+  google_bigquery_default_service_account: 2
+  google_billing_account_iam_member: 6
   google_folder: 8
   google_folder_iam_binding: 44
   google_iam_workload_identity_pool: 1
@@ -2627,26 +2772,26 @@ counts:
   google_logging_project_bucket_config: 3
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
-  google_organization_iam_binding: 33
+  google_organization_iam_binding: 35
   google_organization_iam_custom_role: 7
-  google_project: 2
-  google_project_iam_binding: 14
-  google_project_iam_member: 14
-  google_project_service: 30
-  google_project_service_identity: 8
+  google_project: 3
+  google_project_iam_binding: 16
+  google_project_iam_member: 15
+  google_project_service: 33
+  google_project_service_identity: 9
   google_service_account: 16
-  google_service_account_iam_member: 2
+  google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_object: 9
   google_storage_managed_folder: 5
   google_storage_managed_folder_iam_binding: 10
-  google_storage_project_service_account: 2
+  google_storage_project_service_account: 3
   google_tags_tag_binding: 5
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 43
-  resources: 292
+  modules: 46
+  resources: 308
   terraform_data: 2

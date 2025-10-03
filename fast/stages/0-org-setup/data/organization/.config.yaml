@@ -76,6 +76,8 @@ iam_by_principals:
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
     - roles/serviceusage.serviceUsageViewer
+    - $custom_roles:organization_admin_viewer
+    - $custom_roles:tag_viewer
   $iam_principals:service_accounts/iac-0/iac-networking-rw:
     - roles/compute.orgFirewallPolicyAdmin
     - roles/compute.xpnAdmin

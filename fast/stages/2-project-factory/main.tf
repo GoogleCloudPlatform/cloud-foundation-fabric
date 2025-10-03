@@ -17,6 +17,38 @@
 # tfdoc:file:description Project factory.
 
 locals {
+  _defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
+  context   = merge(var.context, lookup(local._defaults, "context", {}))
+  fast_defaults = {
+    billing_account = coalesce(
+      var.data_defaults.billing_account,
+      var.billing_account.id
+    )
+    prefix = coalesce(
+      var.data_defaults.prefix, var.prefix
+    )
+    storage_location = coalesce(
+      var.data_defaults.storage_location, var.locations.storage
+    )
+  }
+  project_defaults = {
+    defaults = {
+      for k, v in var.data_defaults : k => try(
+        local._defaults.projects.defaults[k],
+        lookup(local.fast_defaults, k, v)
+      )
+    }
+    merges = {
+      for k, v in var.data_merges : k => try(
+        local._defaults.projects.merges[k], v
+      )
+    }
+    overrides = {
+      for k, v in var.data_overrides : k => try(
+        local._defaults.projects.overrides[k], v
+      )
+    }
+  }
   subnet_self_links = flatten([
     for net, subnets in var.subnet_self_links : [
       for subnet_name, subnet_link in subnets : {
@@ -34,55 +66,29 @@ module "factory" {
       subnet_self_links = {
         for v in local.subnet_self_links : v.key => v.link
       }
-    }, var.context.condition_vars)
-    custom_roles = merge(
-      var.custom_roles, var.context.custom_roles
-    )
-    folder_ids = merge(
-      var.folder_ids, var.context.folder_ids
-    )
+    }, local.context.condition_vars)
+    custom_roles = merge(var.custom_roles, local.context.custom_roles)
+    folder_ids   = merge(var.folder_ids, local.context.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {
         for k, v in var.service_accounts :
         k => "serviceAccount:${v}" if v != null
       },
-      var.context.iam_principals
+      local.context.iam_principals
     )
-    kms_keys = merge(
-      var.kms_keys, var.context.kms_keys
-    )
-    locations = merge(
-      var.locations, var.context.locations
-    )
-    notification_channels = var.context.notification_channels
+    kms_keys              = merge(var.kms_keys, local.context.kms_keys)
+    locations             = merge(var.locations, local.context.locations)
+    notification_channels = local.context.notification_channels
     project_ids = merge(
-      var.project_ids, var.host_project_ids, var.context.project_ids
+      var.project_ids, var.host_project_ids, local.context.project_ids
     )
-    tag_values = merge(
-      var.tag_values, var.context.tag_values
-    )
-    vpc_sc_perimeters = merge(
-      var.perimeters, var.context.vpc_sc_perimeters
-    )
+    tag_values        = merge(var.tag_values, local.context.tag_values)
+    vpc_sc_perimeters = merge(var.perimeters, local.context.vpc_sc_perimeters)
   }
-  data_defaults = merge(var.data_defaults, {
-    billing_account = coalesce(
-      var.data_defaults.billing_account, var.billing_account.id
-    )
-    prefix = coalesce(var.data_defaults.prefix, var.prefix)
-    storage_location = coalesce(
-      var.data_defaults.storage_location, var.locations.storage
-    )
-  })
-  data_merges = merge(var.data_merges, {
-    services = length(var.data_merges.services) > 0 ? var.data_merges.services : [
-      "logging.googleapis.com",
-      "monitoring.googleapis.com"
-    ]
-    }
-  )
-  data_overrides = var.data_overrides
+  data_defaults  = local.project_defaults.defaults
+  data_merges    = local.project_defaults.merges
+  data_overrides = local.project_defaults.overrides
   factories_config = merge(var.factories_config, {
     budgets = {
       billing_account_id = try(

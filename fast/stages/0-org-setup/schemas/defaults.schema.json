@@ -342,6 +342,9 @@
               "required": [
                 "perimeter_name"
               ]
+            },
+            "bigquery_location": {
+              "type": "string"
             }
           }
         },
@@ -504,6 +507,9 @@
               "required": [
                 "perimeter_name"
               ]
+            },
+            "bigquery_location": {
+              "type": "string"
             }
           }
         }
