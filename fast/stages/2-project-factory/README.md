@@ -423,7 +423,7 @@ output_files:
     # storage_folders_create: true
 ```
 
-The above snippet will create one or two provider files, and one tfvars file for each project where automation service accounts matching the pattern are defined.
+The above snippet will create zero, one, or two provider files depending on how many service accounts match for each indivdual project. One tfvars file will also be created for each project with at least one provider file.
 
 For example, a project with this definition will generate one provider and one tfvars file for each of the top-level storage options (`output_files.local_path`, `output_files.storage_bucket`) defined.
 
