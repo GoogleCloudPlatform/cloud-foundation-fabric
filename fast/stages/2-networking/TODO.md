@@ -10,3 +10,4 @@
 - Support different NCC topologies
 - Firewall Policies (plugging the factory + testing should suffice)
 - Hierarchical Firewall policies (potentially rewrite the factory)
+- Move folders creation to 0-org-setup
