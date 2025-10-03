@@ -6,9 +6,9 @@
 
 project_id: $project_ids:net-core-0
 networks:
-  - $vpc_self_links:hub
-  - $vpc_self_links:prod
-  - $vpc_self_links:dev
+  - $vpcs:hub
+  - $vpcs:prod
+  - $vpcs:dev
 rules:
   accounts:
     dns_name: "accounts.google.com."

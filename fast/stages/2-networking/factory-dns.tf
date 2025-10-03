@@ -65,6 +65,31 @@ locals {
       )
     })
   }
+
+  # DNS response policies
+  _dns_response_policies_path = try(
+    pathexpand(var.factories_config.dns-response-policies), null
+  )
+
+  _dns_response_policies_files = try(
+    fileset(local._dns_response_policies_path, "**/*.yaml"),
+    []
+  )
+
+  _dns_response_policies_preprocess = [
+    for f in local._dns_response_policies_files : merge(yamldecode(file("${coalesce(local._dns_response_policies_path, "-")}/${f}")), {
+      key = replace(f, ".yaml", "")
+    })
+  ]
+
+  dns_response_policies = {
+    for policy_config in local._dns_response_policies_preprocess : "${policy_config.key}" => {
+      project_id = policy_config.project_id
+      name       = policy_config.key
+      networks   = policy_config.networks
+      rules      = policy_config.rules
+    }
+  }
 }
 
 module "dns-zones" {
@@ -77,6 +102,20 @@ module "dns-zones" {
   iam           = each.value.iam
   zone_config   = each.value.zone_config
   recordsets    = each.value.recordsets
+  context = {
+    project_ids = local.ctx_projects.project_ids
+    vpcs        = local.ctx_vpcs.self_links
+  }
+  depends_on = [module.vpcs]
+}
+
+module "dns-response-policies" {
+  source     = "../../../modules/dns-response-policy"
+  for_each   = local.dns_response_policies
+  project_id = each.value.project_id
+  name       = each.value.name
+  networks   = { for n in each.value.networks : n => n }
+  rules      = each.value.rules
   context = {
     project_ids = local.ctx_projects.project_ids
     vpcs        = local.ctx_vpcs.self_links
