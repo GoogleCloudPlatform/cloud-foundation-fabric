@@ -20,6 +20,7 @@ locals {
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
   ctx = merge(var.context, {
+    cidr_ranges = try(local._defaults.context.cidr_ranges, {})
     folder_ids = merge(
       var.folder_ids, var.context.folder_ids
     )

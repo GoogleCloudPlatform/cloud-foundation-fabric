@@ -15,7 +15,9 @@
  */
 
 locals {
-  ctx_folders = merge(local.ctx.folder_ids, module.factory.folder_ids)
+  ctx_folders = merge(local.ctx.folder_ids, module.factory.folder_ids, {
+    organization = "organizations/${var.organization.id}"
+  })
   ctx_projects = {
     project_ids = merge(local.ctx.project_ids, module.factory.project_ids)
   }

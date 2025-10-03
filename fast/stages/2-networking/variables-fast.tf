@@ -55,6 +55,15 @@ variable "iam_principals" {
   default     = {}
 }
 
+variable "organization" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Organization details."
+  type = object({
+    id = number
+  })
+  nullable = false
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-org-setup
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."

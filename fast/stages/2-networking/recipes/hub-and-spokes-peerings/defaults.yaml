@@ -13,6 +13,16 @@
 # limitations under the License.
 
 context:
+  cidr_ranges:
+    healthchecks:
+      - 35.191.0.0/16
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+    rfc1918:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
   locations:
     primary: europe-west1
     secondary: europe-west3
