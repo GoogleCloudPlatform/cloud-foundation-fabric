@@ -146,6 +146,12 @@
 - **vpc_sc**: *object*
   - ⁺**perimeter_name**: *string*
   - **is_dry_run**: *boolean*
+- **datasets**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9_]+$`**: *object*
+    <br>*additional properties: false*
+    - **friendly_name**: *string*
+    - **location**: *string*
 
 ## Definitions
 

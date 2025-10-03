@@ -27,6 +27,9 @@ iam_bindings_additive:
   billing_admin_org_sa:
     role: roles/billing.admin
     member: $iam_principals:service_accounts/iac-0/iac-org-rw
+  billing_viewer_org_ro:
+    role: roles/billing.viewer
+    member: $iam_principals:service_accounts/iac-0/iac-org-ro
   billing_user_security_sa:
     role: roles/billing.user
     member: $iam_principals:service_accounts/iac-0/iac-security-rw

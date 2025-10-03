@@ -29,6 +29,7 @@ projects:
   defaults:
     prefix: ft0
     storage_location: europe-west1
+    bigquery_location: europe-west1
   overrides: {}
 output_files:
   local_path: /tmp/fast-config

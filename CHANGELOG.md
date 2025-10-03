@@ -3,7 +3,34 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-09-05 09:36:17+00:00 to: None since: v44.0.0 -->
+## [Unreleased] <!-- from: 2025-09-20 12:38:37+00:00 to: None since: v45.0.0 -->
+
+### BREAKING CHANGES
+
+- `modules/project-factory`: the format for automation service account names has changed. [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)]
+
+- [[#3361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3361)] Use pre-commit managed Python environment for pre-commit checks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-27 07:06:30+00:00 -->
+
+### FAST
+
+- [[#3347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3347)] Add support for billing export in 0-org-setup ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-01 10:12:45+00:00 -->
+- [[#3364](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3364)] Add missing billing viewer role for org-ro service account in org-set… ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-10-01 09:53:41+00:00 -->
+- [[#3357](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3357)] Fixed small typo in project-factory module with log-buckets ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-09-27 07:21:48+00:00 -->
+- [[#3362](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3362)] Fix linting / remove unnecessary screenshot ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-26 13:50:58+00:00 -->
+- [[#3354](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3354)] Expose project factory stage defaults via a YAML file ([ludoo](https://github.com/ludoo)) <!-- 2025-09-24 09:59:12+00:00 -->
+- [[#3351](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3351)] Fixing typos and adding missing roles for Terraform and CI/CD service… ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-09-23 19:20:21+00:00 -->
+- [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)] Rationalize prefix handling for project factory automation resources ([ludoo](https://github.com/ludoo)) <!-- 2025-09-21 19:07:29+00:00 -->
+
+### MODULES
+
+- [[#3369](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3369)] Make project id optional in GCS module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-02 16:23:23+00:00 -->
+- [[#3347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3347)] Add support for billing export in 0-org-setup ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-01 10:12:45+00:00 -->
+- [[#3353](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3353)] Add custom error response policy for route rules to external application load balancer module. ([patricklubach](https://github.com/patricklubach)) <!-- 2025-09-27 07:38:14+00:00 -->
+- [[#3357](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3357)] Fixed small typo in project-factory module with log-buckets ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-09-27 07:21:48+00:00 -->
+- [[#3354](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3354)] Expose project factory stage defaults via a YAML file ([ludoo](https://github.com/ludoo)) <!-- 2025-09-24 09:59:12+00:00 -->
+- [[#3350](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3350)] Add resource_manager_tags to gke-standard-cluster, gke-autopilot-cluster and gke-nodepool ([rosmo](https://github.com/rosmo)) <!-- 2025-09-23 13:51:37+00:00 -->
+- [[#3346](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3346)] Added Cloud Build v2 connection module ([apichick](https://github.com/apichick)) <!-- 2025-09-22 13:42:13+00:00 -->
+- [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)] Rationalize prefix handling for project factory automation resources ([ludoo](https://github.com/ludoo)) <!-- 2025-09-21 19:07:29+00:00 -->
 
 ## [45.0.0] - 2025-09-20
 
