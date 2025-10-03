@@ -57,7 +57,7 @@ resource "google_access_context_manager_access_level" "basic" {
             allowed_encryption_statuses = (
               dp.value.allowed_encryption_statuses
             )
-            require_admin_approval = dp.value.key.require_admin_approval
+            require_admin_approval = dp.value.require_admin_approval
             require_corp_owned     = dp.value.require_corp_owned
             require_screen_lock    = dp.value.require_screen_lock
 
