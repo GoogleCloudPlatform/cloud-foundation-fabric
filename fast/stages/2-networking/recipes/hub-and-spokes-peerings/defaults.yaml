@@ -12,8 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../schemas/folder.schema.json
+context:
+  locations:
+    primary: europe-west1
+    secondary: europe-west3
+  iam_principals: {}
 
-name: Production
-tag_bindings:
-  environment: $tag_values:environment/production
+projects:
+  defaults:
+    storage_location: eu
+
+vpcs:
+  auto_create_subnetworks: false
+  delete_default_route_on_create: true
+  mtu: 1500

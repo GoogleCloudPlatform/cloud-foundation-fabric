@@ -15,6 +15,12 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   router_name = (
     var.router_create
     ? try(google_compute_router.router[0].name, null)
@@ -29,14 +35,17 @@ locals {
       : "ALL_SUBNETWORKS_ALL_IP_RANGES"
     )
   )
+  project_id     = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region         = lookup(local.ctx.locations, var.region, var.region)
+  router_network = lookup(local.ctx.vpc_self_links, var.router_network, var.router_network)
 }
 
 resource "google_compute_router" "router" {
   count   = var.router_create ? 1 : 0
   name    = var.router_name == null ? "${var.name}-nat" : var.router_name
-  project = var.project_id
-  region  = var.region
-  network = var.router_network
+  project = local.project_id
+  region  = local.region
+  network = local.router_network
 
   dynamic "bgp" {
     for_each = var.router_asn == null ? [] : [1]
@@ -48,8 +57,8 @@ resource "google_compute_router" "router" {
 
 resource "google_compute_router_nat" "nat" {
   provider       = google-beta
-  project        = var.project_id
-  region         = var.region
+  project        = local.project_id
+  region         = local.region
   name           = var.name
   endpoint_types = var.endpoint_types
   type           = var.type

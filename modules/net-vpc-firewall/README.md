@@ -29,7 +29,7 @@ This is often useful for prototyping or testing infrastructure, allowing open in
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
@@ -52,7 +52,7 @@ Some implicit defaults are used in the rules variable types and can be controlle
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   default_rules_config = {
     admin_ranges = ["10.0.0.0/8"]
@@ -109,7 +109,7 @@ Default tags and ranges can be overridden for each protocol, like shown here for
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   default_rules_config = {
     ssh_ranges = ["10.0.0.0/8"]
@@ -126,7 +126,7 @@ Default rules can be disabled individually by specifying an empty set of ranges:
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   default_rules_config = {
     ssh_ranges = []
@@ -140,7 +140,7 @@ Or the entire set of rules can be disabled via the `disabled` attribute:
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   default_rules_config = {
     disabled = true
@@ -156,7 +156,7 @@ Custom rules now support including both source & destination ranges in ingress a
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   default_rules_config = {
     disabled = true
@@ -186,7 +186,7 @@ The module includes a rules factory for massive creation of rules leveraging YaM
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   factories_config = {
     rules_folder  = "configs/firewall/rules"
@@ -247,7 +247,7 @@ Instead of using `factories_config.cidr_tpl_file` file, you can pass CIDR blocks
 ```hcl
 module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
-  project_id = var.project_id
+  project_id = local.project_id
   network    = var.vpc.name
   factories_config = {
     rules_folder = "configs/firewall/rules"
