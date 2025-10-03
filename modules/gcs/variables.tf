@@ -23,6 +23,7 @@ variable "autoclass" {
 variable "bucket_create" {
   description = "Create bucket."
   type        = bool
+  nullable    = false
   default     = true
 }
 
@@ -158,8 +159,8 @@ variable "location" {
   type        = string
   default     = null
   validation {
-    condition     = ((var.bucket_create == true) == (var.location != null))
-    error_message = "Bucket location is required if and only if bucket_create is true."
+    condition     = var.bucket_create != true || var.location != null
+    error_message = "Bucket location needs to be defined when creating a bucket."
   }
 }
 
@@ -213,6 +214,7 @@ variable "notification_config" {
     sa_email       = string
     topic_name     = string
     create_topic = optional(object({
+      create     = optional(bool, true)
       kms_key_id = optional(string)
     }), {})
     event_types        = optional(list(string))
@@ -259,8 +261,22 @@ variable "prefix" {
 }
 
 variable "project_id" {
-  description = "Bucket project id."
+  description = "Bucket project id. Only required when creating buckets, or notification config topics."
   type        = string
+  nullable    = true
+  default     = null
+  validation {
+    condition = (
+      var.bucket_create != true || var.project_id != null
+    )
+    error_message = "Project id needs to be defined when creating a bucket."
+  }
+  validation {
+    condition = (
+      try(var.notification_config.create_topic.create, null) != true || var.project_id != null
+    )
+    error_message = "Project id needs to be defined when creating a notification topic."
+  }
 }
 
 variable "public_access_prevention" {

@@ -21,11 +21,13 @@ locals {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if k != "condition_vars"
   }
-  ctx_p        = "$"
-  prefix       = var.prefix == null ? "" : "${var.prefix}-"
-  project_id   = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  ctx_p  = "$"
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
   notification = try(var.notification_config.enabled, false)
-  topic_create = try(var.notification_config.create_topic, null) != null
+  topic_create = try(var.notification_config.create_topic.create, null) == true
   bucket = (
     var.bucket_create ? {
       name = try(google_storage_bucket.bucket[0].name, null)
