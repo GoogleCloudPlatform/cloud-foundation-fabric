@@ -115,6 +115,10 @@ output "number" {
     google_project_iam_member.service_agents
   ]
 }
+output "organization_policies_ids" {
+  description = "Map of ORGANIZATION_POLICIES => ID in the organization."
+  value       = { for k, v in google_org_policy_policy.default : k => v.id }
+}
 
 # TODO: deprecate in favor of id
 
@@ -150,6 +154,11 @@ output "quota_configs" {
 output "quotas" {
   description = "Quota resources."
   value       = google_cloud_quotas_quota_preference.default
+}
+
+output "scc_custom_sha_modules_ids" {
+  description = "Map of SCC CUSTOM SHA MODULES => ID in the organization."
+  value       = { for k, v in google_scc_management_project_security_health_analytics_custom_module.scc_project_custom_module : k => v.id }
 }
 
 output "service_agents" {

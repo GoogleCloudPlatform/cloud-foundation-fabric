@@ -11,6 +11,8 @@ This module allows the creation and management of folders, including support for
 - [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
 - [Log Sinks](#log-sinks)
 - [Data Access Logs](#data-access-logs)
+- [Custom Security Health Analytics Modules](#custom-security-health-analytics-modules)
+  - [Custom Security Health Analytics Modules Factory](#custom-security-health-analytics-modules-factory)
 - [Tags](#tags)
 - [Files](#files)
 - [Variables](#variables)
@@ -372,7 +374,64 @@ module "folder" {
 # tftest modules=1 resources=3 inventory=logging-data-access.yaml e2e
 ```
 
+## Custom Security Health Analytics Modules
+
+[Security Health Analytics custom modules](https://cloud.google.com/security-command-center/docs/custom-modules-sha-create) can be defined via the `scc_sha_custom_modules` variable:
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  scc_sha_custom_modules = {
+    cloudkmKeyRotationPeriod = {
+      description    = "The rotation period of the identified cryptokey resource exceeds 30 days."
+      recommendation = "Set the rotation period to at most 30 days."
+      severity       = "MEDIUM"
+      predicate = {
+        expression = "resource.rotationPeriod > duration(\"2592000s\")"
+      }
+      resource_selector = {
+        resource_types = ["cloudkms.googleapis.com/CryptoKey"]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=custom-modules-sha.yaml
+```
+### Custom Security Health Analytics Modules Factory
+
+Custom modules can also be specified via a factory. Each file is mapped to a custom module, where the module name defaults to the file name.
+
+Custom modules defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  factories_config = {
+    scc_sha_custom_modules = "data/scc_sha_custom_modules"
+  }
+}
+# tftest modules=1 resources=2 files=custom-module-sha-1 inventory=custom-modules-sha.yaml
+```
+
+```yaml
+# tftest-file id=custom-module-sha-1 path=data/scc_sha_custom_modules/cloudkmKeyRotationPeriod.yaml schema=scc-sha-custom-modules.schema.json
+cloudkmKeyRotationPeriod:
+  description: "The rotation period of the identified cryptokey resource exceeds 30 days."
+  recommendation: "Set the rotation period to at most 30 days."
+  severity: "MEDIUM"
+  predicate:
+    expression: "resource.rotationPeriod > duration(\"2592000s\")"
+  resource_selector:
+    resource_types:
+    - "cloudkms.googleapis.com/CryptoKey"
+```
+
 ## Tags
+
 
 Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
 
@@ -413,9 +472,11 @@ module "folder" {
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_assured_workloads_workload</code> · <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> |
 | [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Folder-level Custom modules with Security Health Analytics. | <code>google_scc_management_folder_security_health_analytics_custom_module</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
+| [variables-scc.tf](./variables-scc.tf) | None |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
 
@@ -427,23 +488,24 @@ module "folder" {
 | [contacts](variables.tf#L70) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L78) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [deletion_protection](variables.tf#L91) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
-| [factories_config](variables.tf#L97) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  org_policies &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy](variables.tf#L106) | Hierarchical firewall policy to associate to this folder. | <code title="object&#40;&#123;&#10;  name   &#61; string&#10;  policy &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [folder_create](variables.tf#L115) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
+| [factories_config](variables.tf#L97) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  org_policies           &#61; optional&#40;string&#41;&#10;  scc_sha_custom_modules &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy](variables.tf#L107) | Hierarchical firewall policy to associate to this folder. | <code title="object&#40;&#123;&#10;  name   &#61; string&#10;  policy &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [folder_create](variables.tf#L116) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [id](variables.tf#L121) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
+| [id](variables.tf#L122) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
 | [logging_data_access](variables-logging.tf#L17) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code title="map&#40;object&#40;&#123;&#10;  ADMIN_READ &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;  DATA_READ  &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;  DATA_WRITE &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code title="object&#40;&#123;&#10;  disable_default_sink &#61; optional&#40;bool&#41;&#10;  storage_location     &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the folder. | <code title="map&#40;object&#40;&#123;&#10;  bq_partitioned_table &#61; optional&#40;bool, false&#41;&#10;  description          &#61; optional&#40;string&#41;&#10;  destination          &#61; string&#10;  disabled             &#61; optional&#40;bool, false&#41;&#10;  exclusions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  filter               &#61; optional&#40;string&#41;&#10;  iam                  &#61; optional&#40;bool, true&#41;&#10;  include_children     &#61; optional&#40;bool, true&#41;&#10;  intercept_children   &#61; optional&#40;bool, false&#41;&#10;  type                 &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L127) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [org_policies](variables.tf#L133) | Organization policies applied to this folder keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    parameters &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [parent](variables.tf#L161) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L175) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [name](variables.tf#L128) | Folder name. | <code>string</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L134) | Organization policies applied to this folder keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    parameters &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [parent](variables.tf#L162) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [scc_sha_custom_modules](variables-scc.tf#L17) | SCC custom modules keyed by module name. | <code title="map&#40;object&#40;&#123;&#10;  description    &#61; optional&#40;string&#41;&#10;  severity       &#61; string&#10;  recommendation &#61; string&#10;  predicate &#61; object&#40;&#123;&#10;    expression &#61; string&#10;  &#125;&#41;&#10;  resource_selector &#61; object&#40;&#123;&#10;    resource_types &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  enablement_state &#61; optional&#40;string, &#34;ENABLED&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L176) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -453,5 +515,7 @@ module "folder" {
 | [folder](outputs.tf#L22) | Folder resource. |  |
 | [id](outputs.tf#L27) | Fully qualified folder id. |  |
 | [name](outputs.tf#L38) | Folder name. |  |
-| [sink_writer_identities](outputs.tf#L47) | Writer identities created for each sink. |  |
+| [organization_policies_ids](outputs.tf#L47) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L52) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
+| [sink_writer_identities](outputs.tf#L57) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->
