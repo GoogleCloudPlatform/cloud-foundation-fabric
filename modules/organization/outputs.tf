@@ -83,6 +83,16 @@ output "organization_id" {
   ]
 }
 
+output "organization_policies_ids" {
+  description = "Map of ORGANIZATION_POLICIES => ID in the organization."
+  value       = { for k, v in google_org_policy_policy.default : k => v.id }
+}
+
+output "scc_custom_sha_modules_ids" {
+  description = "Map of SCC CUSTOM SHA MODULES => ID in the organization."
+  value       = { for k, v in google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module : k => v.id }
+}
+
 output "sink_writer_identities" {
   description = "Writer identities created for each sink."
   value = {
@@ -107,3 +117,4 @@ output "tag_values" {
     k => v if local.tag_values[k].tag_network == null
   }
 }
+

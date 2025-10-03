@@ -49,6 +49,7 @@ variable "context" {
     kms_keys              = optional(map(string), {})
     iam_principals        = optional(map(string), {})
     notification_channels = optional(map(string), {})
+    logging_bucket_names  = optional(map(string), {})
     project_ids           = optional(map(string), {})
     tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})
@@ -104,11 +105,12 @@ variable "descriptive_name" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    custom_roles  = optional(string)
-    observability = optional(string)
-    org_policies  = optional(string)
-    quotas        = optional(string)
-    tags          = optional(string)
+    custom_roles           = optional(string)
+    observability          = optional(string)
+    org_policies           = optional(string)
+    quotas                 = optional(string)
+    scc_sha_custom_modules = optional(string)
+    tags                   = optional(string)
   })
   nullable = false
   default  = {}
