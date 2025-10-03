@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SCC Security Health Analytics Custom Modules",
+  "type": "object",
+  "patternProperties": {
+    "^[a-zA-Z]+$": {
+      "type": "object",
+      "required": [
+        "predicate",
+        "resource_selector",
+        "severity"
+      ],
+      "properties": {
+        "description": {
+            "type": "string"
+        },
+        "predicate": {
+            "type": "object",
+            "required": [
+              "expression"
+            ],
+             "properties": {
+                "expression": {
+                    "type": "string"
+                }
+             }
+        },
+        "recommendation": {
+            "type": "string"
+        },
+        "resource_selector": {
+            "type": "object",
+            "required": [
+              "resource_types"
+            ],
+             "properties": {
+                "resource_types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+             }
+        },
+        "severity": {
+            "type": "string"
+        }
+      }
+    }
+  }
+}

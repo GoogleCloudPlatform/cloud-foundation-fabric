@@ -87,12 +87,14 @@ locals {
             evaluation_missing_data = try(c.condition_threshold.evaluation_missing_data, null)
             filter                  = try(c.condition_threshold.filter, null)
             threshold_value         = try(c.condition_threshold.threshold_value, null)
-            aggregations = !can(c.condition_threshold.aggregations) ? null : {
-              per_series_aligner   = try(c.condition_threshold.aggregations.per_series_aligner, null)
-              group_by_fields      = try(c.condition_threshold.aggregations.group_by_fields, null)
-              cross_series_reducer = try(c.condition_threshold.aggregations.cross_series_reducer, null)
-              alignment_period     = try(c.condition_threshold.aggregations.alignment_period, null)
-            }
+            aggregations = !can(c.condition_threshold.aggregations) ? null : [
+              for a in c.condition_threshold.aggregations : {
+                per_series_aligner   = try(a.per_series_aligner, null)
+                group_by_fields      = try(a.group_by_fields, null)
+                cross_series_reducer = try(a.cross_series_reducer, null)
+                alignment_period     = try(a.alignment_period, null)
+              }
+            ]
             denominator_aggregations = !can(c.condition_threshold.denominator_aggregations) ? null : {
               per_series_aligner   = try(c.condition_threshold.denominator_aggregations.per_series_aligner, null)
               group_by_fields      = try(c.condition_threshold.denominator_aggregations.group_by_fields, null)
@@ -282,4 +284,6 @@ resource "google_monitoring_alert_policy" "alerts" {
       }
     }
   }
+
+  depends_on = [google_logging_metric.metrics]
 }
