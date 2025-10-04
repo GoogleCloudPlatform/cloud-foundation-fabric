@@ -68,7 +68,11 @@ locals {
       }
     )
   )
-  project_id         = "${local.universe_prefix}${local.prefix}${var.name}"
+  project_id = (
+    strcontains("${local.prefix}${var.name}", ":")
+    ? "${local.prefix}${var.name}"
+    : "${local.universe_prefix}${local.prefix}${var.name}"
+  )
   universe_prefix    = var.universe == null ? "" : "${var.universe.prefix}:"
   available_services = tolist(setsubtract(var.services, try(var.universe.unavailable_services, [])))
 }
