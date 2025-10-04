@@ -1,0 +1,239 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.hub.google_gke_hub_feature.default["configmanagement"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    fleet_default_member_config: []
+    labels: null
+    location: global
+    name: configmanagement
+    project: project-id
+    spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.hub.google_gke_hub_feature.default["policycontroller"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    fleet_default_member_config: []
+    labels: null
+    location: global
+    name: policycontroller
+    project: project-id
+    spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.hub.google_gke_hub_feature_membership.default["cluster-1"]:
+    configmanagement:
+    - config_sync:
+      - deployment_overrides: []
+        enabled: true
+        git:
+        - gcp_service_account_email: null
+          https_proxy: null
+          policy_dir: configsync
+          secret_type: none
+          sync_branch: main
+          sync_repo: https://github.com/your-org/config-repo
+          sync_rev: null
+          sync_wait_secs: null
+        metrics_gcp_service_account_email: null
+        oci: []
+        source_format: hierarchy
+        stop_syncing: null
+      hierarchy_controller: []
+      policy_controller: []
+      version: v1
+    feature: configmanagement
+    location: global
+    membership: cluster-1
+    membership_location: europe-west1
+    mesh: []
+    policycontroller: []
+    project: project-id
+    timeouts: null
+  module.hub.google_gke_hub_feature_membership.default["cluster-2"]:
+    configmanagement:
+    - config_sync:
+      - deployment_overrides: []
+        enabled: true
+        git:
+        - gcp_service_account_email: null
+          https_proxy: null
+          policy_dir: configsync
+          secret_type: none
+          sync_branch: main
+          sync_repo: https://github.com/your-org/config-repo
+          sync_rev: null
+          sync_wait_secs: null
+        metrics_gcp_service_account_email: null
+        oci: []
+        source_format: hierarchy
+        stop_syncing: null
+      hierarchy_controller: []
+      policy_controller: []
+      version: v1
+    feature: configmanagement
+    location: global
+    membership: cluster-2
+    membership_location: europe-west1
+    mesh: []
+    policycontroller: []
+    project: project-id
+    timeouts: null
+  module.hub.google_gke_hub_feature_membership.policycontroller["cluster-1"]:
+    configmanagement: []
+    feature: policycontroller
+    location: global
+    membership: cluster-1
+    membership_location: europe-west1
+    mesh: []
+    policycontroller:
+    - policy_controller_hub_config:
+      - audit_interval_seconds: 60
+        constraint_violation_limit: 20
+        deployment_configs:
+        - component_name: admission
+          container_resources:
+          - limits:
+            - cpu: 1000m
+              memory: 512Mi
+            requests:
+            - cpu: 100m
+              memory: 256Mi
+          pod_affinity: ''
+          pod_tolerations: []
+          replica_count: 3
+        - component_name: audit
+          container_resources:
+          - limits:
+            - cpu: 1000m
+              memory: 512Mi
+            requests:
+            - cpu: 100m
+              memory: 256Mi
+          pod_affinity: ''
+          pod_tolerations: []
+          replica_count: 1
+        exemptable_namespaces:
+        - kube-system
+        - kube-public
+        - kube-node-lease
+        install_spec: INSTALL_SPEC_ENABLED
+        log_denies_enabled: true
+        monitoring:
+        - backends:
+          - PROMETHEUS
+        mutation_enabled: false
+        policy_content:
+        - bundles:
+          - bundle_name: policy-essentials-v2022
+            exempted_namespaces:
+            - kube-system
+            - kube-public
+          template_library:
+          - installation: ALL
+        referential_rules_enabled: true
+      version: v1.17.3
+    project: project-id
+    timeouts: null
+  module.hub.google_gke_hub_feature_membership.policycontroller["cluster-2"]:
+    configmanagement: []
+    feature: policycontroller
+    location: global
+    membership: cluster-2
+    membership_location: europe-west1
+    mesh: []
+    policycontroller:
+    - policy_controller_hub_config:
+      - audit_interval_seconds: 120
+        constraint_violation_limit: null
+        exemptable_namespaces:
+        - kube-system
+        - kube-public
+        - kube-node-lease
+        - gke-system
+        install_spec: null
+        log_denies_enabled: false
+        mutation_enabled: null
+        referential_rules_enabled: false
+      version: v1.17.3
+    project: project-id
+    timeouts: null
+  module.hub.google_gke_hub_membership.default["cluster-1"]:
+    authority: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    endpoint:
+    - gke_cluster:
+      - {}
+    labels: null
+    location: europe-west1
+    membership_id: cluster-1
+    project: project-id
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.hub.google_gke_hub_membership.default["cluster-2"]:
+    authority: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    endpoint:
+    - gke_cluster:
+      - {}
+    labels: null
+    location: europe-west1
+    membership_id: cluster-2
+    project: project-id
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123-456-789
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '12345'
+    labels: null
+    name: gkehub-test
+    org_id: null
+    project_id: gkehub-test
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_compute_firewall: 6
+  google_compute_network: 1
+  google_compute_route: 3
+  google_compute_subnetwork: 3
+  google_container_cluster: 2
+  google_container_node_pool: 2
+  google_gke_hub_feature: 2
+  google_gke_hub_feature_membership: 4
+  google_gke_hub_membership: 2
+  google_project: 1
+  google_project_iam_member: 8
+  google_project_service: 7
+  google_project_service_identity: 4
+  google_service_account: 2
+  modules: 8
+  resources: 47
+
+outputs: {}
