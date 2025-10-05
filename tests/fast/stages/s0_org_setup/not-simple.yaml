@@ -57,8 +57,8 @@ values:
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
       \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
-      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
-      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_disposition: null
@@ -89,8 +89,8 @@ values:
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
       \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
-      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
-      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_disposition: null
@@ -243,7 +243,7 @@ values:
   google_storage_bucket_object.tfvars["globals"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
-    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0"}'
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -306,8 +306,8 @@ values:
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
       \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
-      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
-      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_base64: null
@@ -327,8 +327,8 @@ values:
       \ the specific language governing permissions and\n * limitations under the\
       \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
       \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
-      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n    \n  }\n\
-      }\nprovider \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
       \n}\n"
     content_base64: null
@@ -426,7 +426,7 @@ values:
     sensitive_content: null
     source: null
   local_file.tfvars["globals"]:
-    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0"}'
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
@@ -472,6 +472,11 @@ values:
     condition: []
     member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.user
+  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_viewer_org_ro"]:
+    billing_account_id: 012345-012345-012345
+    condition: []
+    member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/billing.viewer
   module.factory.module.bigquery-datasets["billing-0/billing_export"].google_bigquery_dataset.default:
     dataset_id: billing_export
     default_encryption_configuration: []
@@ -492,11 +497,6 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_viewer_org_ro"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.viewer
   module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []

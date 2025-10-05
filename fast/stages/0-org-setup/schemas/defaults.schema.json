@@ -314,9 +314,19 @@
               "type": "object",
               "additionalProperties": false,
               "required": [
+                "domain",
                 "prefix"
               ],
               "properties": {
+                "domain": {
+                  "type": "string"
+                },
+                "forced_jit_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
                 "prefix": {
                   "type": "string"
                 },
@@ -479,9 +489,19 @@
               "type": "object",
               "additionalProperties": false,
               "required": [
+                "domain",
                 "prefix"
               ],
               "properties": {
+                "domain": {
+                  "type": "string"
+                },
+                "forced_jit_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
                 "prefix": {
                   "type": "string"
                 },

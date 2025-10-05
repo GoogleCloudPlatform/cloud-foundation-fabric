@@ -17,13 +17,26 @@
 terraform {
   backend "gcs" {
     bucket                      = "${bucket}"
+    %{~ if try(universe_domain, null) == null ~}
     impersonate_service_account = "${service_account}"
-    %{ if try(prefix, null) != null }prefix = "${prefix}"%{ endif }
+    %{~ endif ~}
+    %{~ if try(prefix, null) != null ~}
+    prefix = "${prefix}"
+    %{~ endif ~}
+    %{~ if try(universe_domain, null) != null ~}
+    storage_custom_endpoint = "https://storage.${universe_domain}/storage/v1/b"
+    %{~ endif ~}
   }
 }
 provider "google" {
   impersonate_service_account = "${service_account}"
+  %{~ if try(universe_domain, null) != null ~}
+  universe_domain = "${universe_domain}"
+  %{~ endif ~}
 }
 provider "google-beta" {
   impersonate_service_account = "${service_account}"
+  %{~ if try(universe_domain, null) != null ~}
+  universe_domain = "${universe_domain}"
+  %{~ endif ~}
 }
