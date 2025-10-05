@@ -490,18 +490,24 @@
       "additionalProperties": false,
       "properties": {
         "prefix": {
-          "type": "string",
-          "unavailable_services": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "unavailable_service_identities": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "type": "string"
+        },
+        "forced_jit_service_identities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailable_services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailable_service_identities": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -535,7 +541,6 @@
             "location": {
               "type": "string"
             }
-            
           }
         }
       }

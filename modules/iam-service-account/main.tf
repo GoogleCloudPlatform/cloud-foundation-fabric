@@ -50,8 +50,12 @@ locals {
 }
 
 data "google_service_account" "service_account" {
-  count      = var.service_account_create ? 0 : 1
-  project    = local.project_id
+  count = var.service_account_create ? 0 : 1
+  project = (
+    strcontains(local.project_id, ":")
+    ? join(".", reverse(split(":", local.project_id)))
+    : local.project_id
+  )
   account_id = "${local.prefix}${local.name}"
 }
 

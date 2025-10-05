@@ -92,6 +92,7 @@ variable "data_defaults" {
     tag_bindings     = optional(map(string), {})
     universe = optional(object({
       prefix                         = string
+      forced_jit_service_identities  = optional(list(string), [])
       unavailable_service_identities = optional(list(string), [])
       unavailable_services           = optional(list(string), [])
     }))
@@ -157,6 +158,7 @@ variable "data_overrides" {
     tag_bindings               = optional(map(string))
     universe = optional(object({
       prefix                         = string
+      forced_jit_service_identities  = optional(list(string), [])
       unavailable_service_identities = optional(list(string), [])
       unavailable_services           = optional(list(string), [])
     }))
