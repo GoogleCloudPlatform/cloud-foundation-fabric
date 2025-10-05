@@ -24,7 +24,7 @@ terraform {
     prefix = "${prefix}"
     %{~ endif ~}
     %{~ if try(universe_domain, null) != null ~}
-    storage_custom_endpoint = ""https://storage.${universe_domain}/storage/v1/b"
+    storage_custom_endpoint = "https://storage.${universe_domain}/storage/v1/b"
     %{~ endif ~}
   }
 }
