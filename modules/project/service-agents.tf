@@ -37,10 +37,11 @@ locals {
               universe_domain = local._u_domain
             })
             # universe uses partner KMS
-            : templatestring(replace(agent.identity, "gcp-sa-kms", "gcp-sa-ekms"), {
-              project_number  = local.project.number
-              universe_domain = local._u_domain
-            })
+            : format(
+              "service-%s@gcp-sa-ekms.%siam.gserviceaccount.com",
+              local.project.number,
+              local._u_domain
+            )
           )
         )
       })
