@@ -304,6 +304,7 @@ variable "universe" {
   description = "GCP universe where to deploy the project. The prefix will be prepended to the project id."
   type = object({
     prefix                         = string
+    forced_jit_service_identities  = optional(list(string), [])
     unavailable_services           = optional(list(string), [])
     unavailable_service_identities = optional(list(string), [])
   })
