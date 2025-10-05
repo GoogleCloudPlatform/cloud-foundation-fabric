@@ -16,17 +16,6 @@
 
 # tfdoc:file:description Service agents supporting resources.
 
-# debug block
-
-# resource "terraform_data" "precondition" {
-#   lifecycle {
-#     precondition {
-#       condition     = local.primary_service_agents == null
-#       error_message = yamlencode(local.primary_service_agents)
-#     }
-#   }
-# }
-
 locals {
   _sa_raw = yamldecode(file("${path.module}/service-agents.yaml"))
   # initial map of service agents by name, defining agent email
