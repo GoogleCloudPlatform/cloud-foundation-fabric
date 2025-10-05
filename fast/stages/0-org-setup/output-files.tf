@@ -51,6 +51,11 @@ locals {
         id          = local.organization_id
       }
       prefix = local.defaults.prefix
+      universe = try(
+        local.project_defaults.overrides.universe,
+        local.project_defaults.defaults.universe,
+        null
+      )
     }
     org-setup = {
       automation = {
@@ -79,6 +84,11 @@ locals {
       )
     }
   }
+  of_universe_domain = try(
+    local.project_defaults.overrides.universe.domain,
+    local.project_defaults.defaults.universe.domain,
+    null
+  )
 }
 
 resource "local_file" "providers" {
@@ -93,6 +103,7 @@ resource "local_file" "providers" {
     service_account = lookup(
       local.of_service_accounts, each.value.service_account, each.value.service_account
     )
+    universe_domain = local.of_universe_domain
   })
 }
 
@@ -108,6 +119,7 @@ resource "google_storage_bucket_object" "providers" {
     service_account = lookup(
       local.of_service_accounts, each.value.service_account, each.value.service_account
     )
+    universe_domain = local.of_universe_domain
   })
 }
 
