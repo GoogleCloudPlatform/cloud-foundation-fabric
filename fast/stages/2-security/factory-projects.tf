@@ -15,10 +15,15 @@
  */
 
 module "factory" {
-  source         = "../../../modules/project-factory"
-  data_defaults  = local.project_defaults.defaults
-  data_overrides = local.project_defaults.overrides
-  context        = local.ctx
+  source        = "../../../modules/project-factory"
+  data_defaults = local.project_defaults.defaults
+  data_overrides = merge(
+    {
+      universe = var.universe
+    },
+    local.project_defaults.overrides
+  )
+  context = local.ctx
   factories_config = {
     folders  = var.factories_config.folders
     projects = var.factories_config.projects
