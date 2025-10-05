@@ -28,106 +28,115 @@
 # }
 
 locals {
-  services = [
-    for s in distinct(concat(
-      local.available_services, try(var.project_reuse.attributes.services_enabled, [])
-    )) : s if !contains(local._universe_unavailable_si, s)
-  ]
-  _service_agents_data = yamldecode(file("${path.module}/service-agents.yaml"))
-  # map of api => list of agents
-  _service_agents_by_api = {
-    for agent in local._service_agents_data :
-    coalesce(agent.api, "cloudservices") => agent... # cloudservices api is null
-  }
-  _universe_domain = (
-    var.universe == null
-    ? ""
-    : "${var.universe.prefix}-system."
-  )
-  _universe_unavailable_si = try(var.universe.unavailable_service_identities, [])
-  # map of service agent name => agent details for this project
-  _project_service_agents_0 = merge([
+  _sa_raw = yamldecode(file("${path.module}/service-agents.yaml"))
+  # initial map of service agents by name, defining agent email
+  _sa_0 = merge([
     for api in concat(local.services, ["cloudservices"]) : {
-      for agent in lookup(local._service_agents_by_api, api, []) :
+      for agent in lookup(local.service_agents_by_api, api, []) :
       (agent.name) => merge(agent, {
         email = (
-          # If universe variable is set, enfore the use of the service-PROJECT_NUMBER@gcp-sa-ekms.UNIVERSE-system.iam.gserviceaccount.com
-          # instead of service-PROJECT_NUMBER@gcp-sa-kms.UNIVERSE-system.iam.gserviceaccount.com
-          # as in the TPC universes, the partner KMS is enforced by design
-          var.universe != null && api == "cloudkms.googleapis.com"
-          ? format("service-%s@gcp-sa-ekms.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+          api == "cloudservices"
+          ? format(
+            "%s@cloudservices.%siam.gserviceaccount.com",
+            local.project.number,
+            local._u_domain
+          )
           : (
-            var.universe == null || api != "cloudservices"
-            ? templatestring(agent.identity, { project_number = local.project.number, universe_domain = local._universe_domain })
-            : format("%s@cloudservices.%siam.gserviceaccount.com", local.project.number, local._universe_domain)
+            var.universe == null || !startswith(api, "cloudkms.")
+            ? templatestring(agent.identity, {
+              project_number  = local.project.number
+              universe_domain = local._u_domain
+            })
+            # universe uses partner KMS
+            : templatestring(replace(agent.identity, "gcp-sa-kms", "gcp-sa-ekms"), {
+              project_number  = local.project.number
+              universe_domain = local._u_domain
+            })
           )
         )
       })
     }
   ]...)
-  _project_service_agents = {
-    for k, v in local._project_service_agents_0 :
-    k => merge(v, {
-      iam_email  = "serviceAccount:${v.email}"
-      create_jit = v.api == null ? false : contains(local.available_services, v.api)
-    }) if !contains(local._universe_unavailable_si, k)
+  # final map of service agents by name including JIT creation flag
+  _sa = {
+    for k, v in local._sa_0 : k => merge(v, {
+      iam_email = "serviceAccount:${v.email}"
+      create_jit = (
+        v.api == null ? false : contains(local.available_services, v.api)
+      )
+      # skip identities which are unavailable in the defined universe
+    }) if !contains(local._u_unavailable_si, k)
   }
-  # list of APIs with primary agents that should be created for the
-  # current project, if the user requested it
+  # map of name => agent for all known aliases
+  _sa_aliases = merge(local._sa, flatten([
+    for agent_name, agent in local._sa : [
+      for alias in agent.aliases : { (alias) = agent }
+    ]
+  ])...)
+  _u_domain = (
+    var.universe == null ? "" : "${var.universe.prefix}-system."
+  )
+  _u_unavailable_si = try(
+    var.universe.unavailable_service_identities, []
+  )
+  # aliased service agents, with unnecessary fields removed
+  aliased_service_agents = {
+    for k, v in local._sa_aliases : k => {
+      api          = v.api
+      display_name = v.display_name
+      email        = v.email
+      iam_email    = v.iam_email
+      is_primary   = v.is_primary
+      name         = v.name
+      role         = v.role
+    }
+  }
+  # service agents to create in this project
   primary_service_agents = [
-    for agent in local._project_service_agents : agent.api if(
+    for agent in local._sa : agent.api if(
+      # only create if user asked us to (which is the default)
       var.service_agents_config.create_primary_agents && (
-        (agent.is_primary && agent.create_jit) || contains(
+        # only create if agent is primary and JIT flag is true
+        (agent.is_primary && agent.create_jit)
+        ||
+        # or if universe configuration is forcing this agent to be created
+        contains(
           try(var.universe.forced_jit_service_identities, []),
           coalesce(agent.api, "-")
         )
       )
     )
   ]
-  # list of roles that should be granted to service agents for the
-  # current project, if the user requested it
+  # group service agents by api, cloudservices api is null
+  service_agents_by_api = {
+    for v in local._sa_raw : coalesce(v.api, "cloudservices") => v...
+  }
+  # IAM roles for service agents to create in this project
   service_agent_roles = {
-    for agent in local._project_service_agents :
-    (agent.name) => {
+    for agent in local._sa : (agent.name) => {
       role      = agent.role
       iam_email = agent.iam_email
-    }
-    if alltrue([
-      var.service_agents_config.grant_default_roles,
-      agent.role != null,
-      # FIXME: granting roles to the non-primary agents listed below
-      # currently fails, possibly because the agents doesn't exist
-      # after API activation. As a workaround, automatic role
-      # assignment for these agents is disabled.
-      !contains([
-        "apigateway", "apigateway-mgmt", "bigqueryspark", "bigquerytardis",
-        "firebase", "krmapihosting", "krmapihosting-dataplane", "logging",
-        "networkactions", "prod-bigqueryomni", "scc-notification", "securitycenter",
-      ], agent.name)
+      } if alltrue([
+        var.service_agents_config.grant_default_roles,
+        agent.role != null,
+        # TODO: improve the detection below
+        # this skips IAM role grants to the non-primary agents listed below
+        # as it's failing, possibly because the agents don't exist
+        # after API activation
+        !contains([
+          "apigateway", "apigateway-mgmt", "bigqueryspark", "bigquerytardis",
+          "firebase", "krmapihosting", "krmapihosting-dataplane", "logging",
+          "networkactions", "prod-bigqueryomni", "scc-notification",
+          "securitycenter"
+        ], agent.name)
     ])
   }
-  # map of name->agent including all known aliases
-  _aliased_service_agents = merge(
-    local._project_service_agents,
-    flatten([
-      for agent_name, agent in local._project_service_agents : [
-        for alias in agent.aliases :
-        { (alias) = agent }
-      ]
-    ])...
-  )
-  # same as _aliased_service_agents with unneeded fields removed
-  aliased_service_agents = {
-    for k, v in local._aliased_service_agents :
-    k => {
-      api          = v.api
-      display_name = v.display_name
-      email        = v.email
-      iam_email    = v.iam_email
-      is_primary   = v.is_primary
-      role         = v.role
-    }
-  }
+  services = [
+    for s in distinct(concat(
+      local.available_services,
+      try(var.project_reuse.attributes.services_enabled, [])
+    )) : s if !contains(local._u_unavailable_si, s)
+  ]
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
@@ -142,28 +151,12 @@ data "google_bigquery_default_service_account" "bq_sa" {
   depends_on = [google_project_service.project_services]
 }
 
-moved {
-  from = google_project_service_identity.jit_si
-  to   = google_project_service_identity.default
-}
-
-moved {
-  from = google_project_service_identity.servicenetworking[0]
-  to   = google_project_service_identity.default["servicenetworking.googleapis.com"]
-}
-
 resource "google_project_service_identity" "default" {
   provider   = google-beta
   for_each   = toset(local.primary_service_agents)
   project    = local.project.project_id
   service    = each.key
   depends_on = [google_project_service.project_services]
-}
-
-
-moved {
-  from = google_project_iam_member.servicenetworking[0]
-  to   = google_project_iam_member.service_agents["service-networking"]
 }
 
 resource "google_project_iam_member" "service_agents" {

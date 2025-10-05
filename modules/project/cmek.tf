@@ -51,11 +51,15 @@ locals {
   }
   _all_cmek_bindings = flatten([
     for service, keys in var.service_encryption_key_ids : [
-      for dep in try(local._cmek_agents_by_service[service], [for x in local._service_agents_by_api[service] : x.name], [service]) : [
+      for dep in try(
+        local._cmek_agents_by_service[service],
+        [for x in local.service_agents_by_api[service] : x.name],
+        [service]
+        ) : [
         for key in keys : {
           key_id      = key
-          agent_name  = local._aliased_service_agents[dep].name
-          agent_email = local._aliased_service_agents[dep].iam_email
+          agent_name  = local.aliased_service_agents[dep].name
+          agent_email = local.aliased_service_agents[dep].iam_email
         }
       ]
     ]
