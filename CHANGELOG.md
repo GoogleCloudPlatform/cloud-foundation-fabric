@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3381](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3381)] Fix typo in fast stage 0 provider template ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 11:35:49+00:00 -->
+- [[#3379](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3379)] Allow FAST stage 0 provider template to work with universe ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 09:17:32+00:00 -->
+- [[#3378](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3378)] Allow forcing jit service agents generation for universe in project and project factory modules ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 08:17:57+00:00 -->
 - [[#3347](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3347)] Add support for billing export in 0-org-setup ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-01 10:12:45+00:00 -->
 - [[#3364](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3364)] Add missing billing viewer role for org-ro service account in org-set… ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-10-01 09:53:41+00:00 -->
 - [[#3357](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3357)] Fixed small typo in project-factory module with log-buckets ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-09-27 07:21:48+00:00 -->
@@ -23,6 +26,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3380](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3380)] Lightly refactor service agents locals in project module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 10:25:05+00:00 -->
+- [[#3378](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3378)] Allow forcing jit service agents generation for universe in project and project factory modules ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 08:17:57+00:00 -->
 - [[#3376](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3376)] Allow project id with universe prefix in project module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-04 09:57:27+00:00 -->
 - [[#3375](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3375)] Fix service account module datasource when universe is set ([ludoo](https://github.com/ludoo)) <!-- 2025-10-04 08:37:29+00:00 -->
 - [[#3374](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3374)] Fix admin_approval field access in VPC-SC module ([juliocc](https://github.com/juliocc)) <!-- 2025-10-03 17:10:38+00:00 -->
