@@ -255,6 +255,13 @@ locals {
     { name = "country", type = "STRING" },
     { name = "population", type = "INT64" },
   ])
+  population_schema = [
+    {
+      name        = "total",
+      type        = "INT64",
+      description = "Total population"
+    }
+  ]
 }
 
 module "bigquery-dataset" {
@@ -271,7 +278,8 @@ module "bigquery-dataset" {
   views = {
     population = {
       friendly_name       = "Population"
-      query               = "SELECT SUM(population) FROM my_dataset.countries"
+      query               = "SELECT SUM(population) AS total FROM my_dataset.countries"
+      schema              = local.population_schema
       use_legacy_sql      = false
       deletion_protection = true
     }
