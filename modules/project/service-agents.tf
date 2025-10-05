@@ -16,6 +16,17 @@
 
 # tfdoc:file:description Service agents supporting resources.
 
+# debug block
+
+# resource "terraform_data" "precondition" {
+#   lifecycle {
+#     precondition {
+#       condition     = local.primary_service_agents == null
+#       error_message = yamlencode(local.primary_service_agents)
+#     }
+#   }
+# }
+
 locals {
   services = [
     for s in distinct(concat(
@@ -65,9 +76,12 @@ locals {
   # current project, if the user requested it
   primary_service_agents = [
     for agent in local._project_service_agents : agent.api if(
-      agent.is_primary &&
-      var.service_agents_config.create_primary_agents &&
-      agent.create_jit
+      var.service_agents_config.create_primary_agents && (
+        (agent.is_primary && agent.create_jit) || contains(
+          try(var.universe.forced_jit_service_identities, []),
+          coalesce(agent.api, "-")
+        )
+      )
     )
   ]
   # list of roles that should be granted to service agents for the

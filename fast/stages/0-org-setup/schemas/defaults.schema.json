@@ -317,6 +317,12 @@
                 "prefix"
               ],
               "properties": {
+                "forced_jit_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
                 "prefix": {
                   "type": "string"
                 },
@@ -482,6 +488,12 @@
                 "prefix"
               ],
               "properties": {
+                "forced_jit_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
                 "prefix": {
                   "type": "string"
                 },
