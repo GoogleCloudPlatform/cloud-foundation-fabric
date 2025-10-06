@@ -4,4 +4,3 @@ peering:
   peer_network: $vpcs:hub
   client_networks:
     - $vpcs:prod
-    - $vpcs:dev
