@@ -16,7 +16,7 @@
 
 resource "google_compute_network_firewall_policy" "net-global" {
   count       = !local.use_hierarchical && !local.use_regional ? 1 : 0
-  project     = var.parent_id
+  project     = local.parent_id
   name        = var.name
   description = var.description
 }
@@ -25,7 +25,7 @@ resource "google_compute_network_firewall_policy_association" "net-global" {
   for_each = (
     !local.use_hierarchical && !local.use_regional ? var.attachments : {}
   )
-  project           = var.parent_id
+  project           = local.parent_id
   name              = "${var.name}-${each.key}"
   attachment_target = each.value
   firewall_policy   = google_compute_network_firewall_policy.net-global[0].name
@@ -38,7 +38,7 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
     ? keys(local.rules)
     : []
   )
-  project                 = var.parent_id
+  project                 = local.parent_id
   firewall_policy         = google_compute_network_firewall_policy.net-global[0].name
   rule_name               = local.rules[each.key].name
   action                  = local.rules[each.key].action

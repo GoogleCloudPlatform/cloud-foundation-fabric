@@ -16,7 +16,7 @@
 
 resource "google_compute_region_network_firewall_policy" "net-regional" {
   count       = !local.use_hierarchical && local.use_regional ? 1 : 0
-  project     = var.parent_id
+  project     = local.parent_id
   name        = var.name
   description = var.description
   region      = var.region
@@ -26,7 +26,7 @@ resource "google_compute_region_network_firewall_policy_association" "net-region
   for_each = (
     !local.use_hierarchical && local.use_regional ? var.attachments : {}
   )
-  project           = var.parent_id
+  project           = local.parent_id
   region            = var.region
   name              = "${var.name}-${each.key}"
   attachment_target = each.value
@@ -40,7 +40,7 @@ resource "google_compute_region_network_firewall_policy_rule" "net-regional" {
     ? keys(local.rules)
     : []
   )
-  project                 = var.parent_id
+  project                 = local.parent_id
   region                  = var.region
   firewall_policy         = google_compute_region_network_firewall_policy.net-regional[0].name
   rule_name               = local.rules[each.key].name

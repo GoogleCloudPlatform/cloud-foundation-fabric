@@ -4,9 +4,9 @@
 
 # yaml-language-server: $schema=../schemas/firewall-policy-rules.schema.json
 
-parent_id: $folders/networking
+parent_id: $folders:networking
 attachments:
-  - $folders/networking
+  - $folders:networking
 name: network-policies-name-override
 ingress_rules:
   allow-healthchecks:
@@ -46,7 +46,6 @@ ingress_rules:
       source_ranges:
         - 107.178.230.64/26
         - 35.199.224.0/19
-
 egress_rules:
   deny-example-ip:
     description: Allow internal traffic within the VPC

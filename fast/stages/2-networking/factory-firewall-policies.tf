@@ -40,16 +40,18 @@ locals {
   # }
 }
 
-# module "firewall_policies" {
-#   source   = "../../../modules/net-firewall-policy"
-#   for_each = local.firewall_policies
+module "firewall_policies" {
+  source   = "../../../modules/net-firewall-policy"
+  for_each = local.firewall_policies
 
-#   name          = each.value.name
-#   parent        = each.value.parent
-#   ingress_rules = each.value.ingress_rules
-#   egress_rules  = each.value.egress_rules
-#   context = {
-#     folders = local.ctx_folders
-#     cidrs   = local.ctx_cidrs
-#   }
-# }
+  name      = each.key
+  parent_id = each.value.parent
+  factories_data = {
+    egress_rules  = each.value.egress_rules
+    ingress_rules = each.value.ingress_rules
+  }
+  context = {
+    folders = local.ctx_folders
+    cidrs   = local.ctx.cidr_ranges
+  }
+}

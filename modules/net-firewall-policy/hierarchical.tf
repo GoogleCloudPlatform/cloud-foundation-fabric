@@ -16,7 +16,7 @@
 
 resource "google_compute_firewall_policy" "hierarchical" {
   count       = local.use_hierarchical ? 1 : 0
-  parent      = var.parent_id
+  parent      = local.parent_id
   short_name  = var.name
   description = var.description
 }

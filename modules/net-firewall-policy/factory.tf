@@ -16,20 +16,25 @@
 
 locals {
   _factory_egress_rules = coalesce(
-    try(
+    merge(try(
       yamldecode(file(pathexpand(var.factories_config.egress_rules_file_path))),
-    {}), tomap({})
-  )
+      {}),
+    var.factories_data.egress_rules),
+  tomap({}))
+
   _factory_ingress_rules = coalesce(
-    try(
+    merge(try(
       yamldecode(file(pathexpand(var.factories_config.ingress_rules_file_path))),
-    {}), tomap({})
-  )
+      {}),
+    var.factories_data.ingress_rules),
+  tomap({}))
+
   factory_cidrs = coalesce(
-    try(
-      yamldecode(file(pathexpand(var.factories_config.cidr_file_path))),
-    {}), {}
-  )
+    merge(
+      try(yamldecode(file(pathexpand(var.factories_config.cidr_file_path))), {}),
+    var.context.cidrs),
+  {})
+
   factory_egress_rules = {
     for k, v in local._factory_egress_rules : "egress/${k}" => {
       direction               = "EGRESS"

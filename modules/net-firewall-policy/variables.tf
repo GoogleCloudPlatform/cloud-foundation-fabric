@@ -21,6 +21,16 @@ variable "attachments" {
   nullable    = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    cidrs   = optional(map(list(string)), {})
+    folders = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "description" {
   description = "Policy description."
   type        = string
@@ -63,6 +73,68 @@ variable "egress_rules" {
     ])
     error_message = "Action can only be one of 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'."
   }
+}
+
+#TODO(sruffilli): readme
+variable "factories_data" {
+  description = "Factory data."
+  type = object({
+    egress_rules = optional(map(object({
+      priority                = number
+      action                  = optional(string, "deny")
+      description             = optional(string)
+      disabled                = optional(bool, false)
+      enable_logging          = optional(bool)
+      security_profile_group  = optional(string)
+      target_resources        = optional(list(string))
+      target_service_accounts = optional(list(string))
+      target_tags             = optional(list(string))
+      tls_inspect             = optional(bool, null)
+      match = object({
+        address_groups       = optional(list(string))
+        fqdns                = optional(list(string))
+        region_codes         = optional(list(string))
+        threat_intelligences = optional(list(string))
+        destination_ranges   = optional(list(string))
+        source_ranges        = optional(list(string))
+        source_tags          = optional(list(string))
+        layer4_configs = optional(list(object({
+          protocol = optional(string, "all")
+          ports    = optional(list(string))
+        })), [{}])
+      })
+    })), {})
+    ingress_rules = optional(map(object({
+      priority                = number
+      action                  = optional(string, "allow")
+      description             = optional(string)
+      disabled                = optional(bool, false)
+      enable_logging          = optional(bool)
+      security_profile_group  = optional(string)
+      target_resources        = optional(list(string))
+      target_service_accounts = optional(list(string))
+      target_tags             = optional(list(string))
+      tls_inspect             = optional(bool, null)
+      match = object({
+        address_groups       = optional(list(string))
+        fqdns                = optional(list(string))
+        region_codes         = optional(list(string))
+        threat_intelligences = optional(list(string))
+        destination_ranges   = optional(list(string))
+        source_ranges        = optional(list(string))
+        source_tags          = optional(list(string))
+        layer4_configs = optional(list(object({
+          protocol = optional(string, "all")
+          ports    = optional(list(string))
+        })), [{}])
+      })
+    })), {})
+  })
+  default = {
+    egress_rules  = {}
+    ingress_rules = {}
+  }
+  nullable = false
 }
 
 variable "factories_config" {
