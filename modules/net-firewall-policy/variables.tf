@@ -24,8 +24,8 @@ variable "attachments" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    cidrs   = optional(map(list(string)), {})
-    folders = optional(map(string), {})
+    cidr_ranges = optional(map(list(string)), {})
+    folders     = optional(map(string), {})
   })
   default  = {}
   nullable = false

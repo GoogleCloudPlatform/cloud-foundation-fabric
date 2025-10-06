@@ -29,7 +29,7 @@ locals {
   firewall_policies = {
     for k, v in local._firewall_policies_data : try(v.name, k) => merge(v, {
       parent        = v.parent_id
-      attachments   = try(v.attachments, [])
+      attachments   = { for k in try(v.attachments, []) : k => k }
       ingress_rules = try(v.ingress_rules, {})
       egress_rules  = try(v.egress_rules, {})
     })
@@ -41,17 +41,17 @@ locals {
 }
 
 module "firewall_policies" {
-  source   = "../../../modules/net-firewall-policy"
-  for_each = local.firewall_policies
-
-  name      = each.key
-  parent_id = each.value.parent
+  source      = "../../../modules/net-firewall-policy"
+  for_each    = local.firewall_policies
+  attachments = each.value.attachments
+  name        = each.key
+  parent_id   = each.value.parent
   factories_data = {
     egress_rules  = each.value.egress_rules
     ingress_rules = each.value.ingress_rules
   }
   context = {
-    folders = local.ctx_folders
-    cidrs   = local.ctx.cidr_ranges
+    folders     = local.ctx_folders
+    cidr_ranges = local.ctx.cidr_ranges
   }
 }

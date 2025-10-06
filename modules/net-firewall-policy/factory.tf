@@ -32,7 +32,7 @@ locals {
   factory_cidrs = coalesce(
     merge(
       try(yamldecode(file(pathexpand(var.factories_config.cidr_file_path))), {}),
-    var.context.cidrs),
+    var.context.cidr_ranges),
   {})
 
   factory_egress_rules = {
@@ -59,7 +59,7 @@ locals {
           ? null
           : flatten([
             for r in v.match.destination_ranges :
-            try(local.factory_cidrs[r], r)
+            try(local.factory_cidrs[replace(r, "$cidr_ranges:", "")], r)
           ])
         )
         source_ranges = (
@@ -67,7 +67,7 @@ locals {
           ? null
           : flatten([
             for r in v.match.source_ranges :
-            try(local.factory_cidrs[r], r)
+            try(local.factory_cidrs[replace(r, "$cidr_ranges:", "")], r)
           ])
         )
         source_tags = lookup(v.match, "source_tags", null)
@@ -106,7 +106,7 @@ locals {
           ? null
           : flatten([
             for r in v.match.destination_ranges :
-            try(local.factory_cidrs[r], r)
+            try(local.factory_cidrs[replace(r, "$cidr_ranges:", "")], r)
           ])
         )
         source_ranges = (
@@ -114,7 +114,7 @@ locals {
           ? null
           : flatten([
             for r in v.match.source_ranges :
-            try(local.factory_cidrs[r], r)
+            try(local.factory_cidrs[replace(r, "$cidr_ranges:", "")], r)
           ])
         )
         source_tags = lookup(v.match, "source_tags", null)

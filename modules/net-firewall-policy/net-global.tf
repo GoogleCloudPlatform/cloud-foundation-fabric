@@ -26,8 +26,8 @@ resource "google_compute_network_firewall_policy_association" "net-global" {
     !local.use_hierarchical && !local.use_regional ? var.attachments : {}
   )
   project           = local.parent_id
-  name              = "${var.name}-${each.key}"
-  attachment_target = each.value
+  name              = replace("${var.name}-${lookup(local.ctx.folders, each.key, each.key)}", "/", "-")
+  attachment_target = lookup(local.ctx.folders, each.value, each.value)
   firewall_policy   = google_compute_network_firewall_policy.net-global[0].name
 }
 

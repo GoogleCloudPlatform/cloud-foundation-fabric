@@ -28,8 +28,8 @@ resource "google_compute_region_network_firewall_policy_association" "net-region
   )
   project           = local.parent_id
   region            = var.region
-  name              = "${var.name}-${each.key}"
-  attachment_target = each.value
+  name              = replace("${var.name}-${lookup(local.ctx.folders, each.key, each.key)}", "/", "-")
+  attachment_target = lookup(local.ctx.folders, each.value, each.value)
   firewall_policy   = google_compute_region_network_firewall_policy.net-regional[0].name
 }
 
