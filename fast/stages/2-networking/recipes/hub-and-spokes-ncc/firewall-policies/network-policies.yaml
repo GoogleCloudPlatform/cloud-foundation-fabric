@@ -1,0 +1,57 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../schemas/firewall-policy-rules.schema.json
+
+parent_id: $folders:networking
+attachments:
+  - $folders:networking
+name: network-policies-name-override
+ingress_rules:
+  allow-healthchecks:
+    description: Enable SSH, HTTP and HTTPS healthchecks
+    priority: 1001
+    match:
+      source_ranges:
+        - $cidr_ranges:healthchecks
+      layer4_configs:
+        - protocol: tcp
+          ports: ["22", "80", "443"]
+
+  allow-ssh-from-iap:
+    description: Enable SSH from IAP
+    priority: 1002
+    enable_logging: true
+    match:
+      source_ranges:
+        - 35.235.240.0/20
+      layer4_configs:
+        - protocol: tcp
+          ports: ["22"]
+
+  allow-icmp:
+    description: Enable ICMP
+    priority: 1003
+    match:
+      source_ranges:
+        - 0.0.0.0/0
+      layer4_configs:
+        - protocol: icmp
+
+  allow-nat-ranges:
+    description: Enable NAT ranges for VPC serverless connector
+    priority: 1004
+    match:
+      source_ranges:
+        - 107.178.230.64/26
+        - 35.199.224.0/19
+egress_rules:
+  deny-example-ip:
+    description: Allow internal traffic within the VPC
+    priority: 2000
+    match:
+      destination_ranges:
+        - 1.2.3.4/32
+      layer4_configs:
+        - protocol: all
