@@ -31,7 +31,7 @@ tunnels:
   remote-1:
     shared_secret: foobar
     bgp_peer:
-      address: 169.2543.6
+      address: 169.254.3.6
       asn: 64514
     bgp_session_range: "169.254.3.5/30"
     vpn_gateway_interface: 1
