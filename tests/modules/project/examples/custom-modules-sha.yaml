@@ -1,0 +1,57 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '1122334455'
+    labels: null
+    name: test-project
+    org_id: null
+    project_id: test-project
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project.google_scc_management_project_security_health_analytics_custom_module.scc_project_custom_module["cloudkmKeyRotationPeriod"]:
+    custom_config:
+    - custom_output: []
+      description: The rotation period of the identified cryptokey resource exceeds
+        30 days.
+      predicate:
+      - description: null
+        expression: resource.rotationPeriod > duration("2592000s")
+        location: null
+        title: null
+      recommendation: Set the rotation period to at most 30 days.
+      resource_selector:
+      - resource_types:
+        - cloudkms.googleapis.com/CryptoKey
+      severity: MEDIUM
+    display_name: cloudkmKeyRotationPeriod
+    enablement_state: ENABLED
+    location: global
+    project: test-project
+    timeouts: null
+
+counts:
+  google_project: 1
+  google_scc_management_project_security_health_analytics_custom_module: 1
+  modules: 1
+  resources: 2
+

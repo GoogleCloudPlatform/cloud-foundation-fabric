@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-module "factory" {
-  source        = "../../../modules/project-factory"
-  data_defaults = local.project_defaults.defaults
-  data_overrides = merge(
-    {
-      universe = var.universe
-    },
-    local.project_defaults.overrides
-  )
-  context = local.ctx
-  factories_config = {
-    folders  = var.factories_config.folders
-    projects = var.factories_config.projects
-  }
+variable "scc_sha_custom_modules" {
+  description = "SCC custom modules keyed by module name."
+  type = map(object({
+    description    = optional(string)
+    severity       = string
+    recommendation = string
+    predicate = object({
+      expression = string
+    })
+    resource_selector = object({
+      resource_types = list(string)
+    })
+    enablement_state = optional(string, "ENABLED")
+  }))
+  default  = {}
+  nullable = false
 }

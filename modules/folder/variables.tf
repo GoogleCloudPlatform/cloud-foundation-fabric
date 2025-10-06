@@ -97,7 +97,8 @@ variable "deletion_protection" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
-    org_policies = optional(string)
+    org_policies           = optional(string)
+    scc_sha_custom_modules = optional(string)
   })
   nullable = false
   default  = {}

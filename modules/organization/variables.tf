@@ -53,6 +53,7 @@ variable "factories_config" {
     custom_roles                  = optional(string)
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)
+    scc_sha_custom_modules        = optional(string)
     tags                          = optional(string)
   })
   nullable = false

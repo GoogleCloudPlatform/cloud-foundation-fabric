@@ -26,8 +26,9 @@ values:
     friendly_name: Population
     project: my-project
     table_id: population
+    schema: '[{"description":"Total population","mode":null,"name":"total","type":"INT64"}]'
     view:
-    - query: SELECT SUM(population) FROM my_dataset.countries
+    - query: SELECT SUM(population) AS total FROM my_dataset.countries
       use_legacy_sql: false
 
 counts:

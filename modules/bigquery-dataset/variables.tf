@@ -303,6 +303,12 @@ variable "views" {
     friendly_name       = optional(string)
     labels              = optional(map(string), {})
     use_legacy_sql      = optional(bool)
+    schema = optional(list(object({
+      name        = string
+      type        = string
+      description = string
+      mode        = optional(string)
+    })))
   }))
   default = {}
 }

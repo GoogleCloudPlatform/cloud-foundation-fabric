@@ -354,6 +354,7 @@ resource "google_bigquery_table" "views" {
   description         = each.value.description
   labels              = each.value.labels
   deletion_protection = each.value.deletion_protection
+  schema              = try(jsonencode(each.value.schema), null)
 
   view {
     query          = each.value.query

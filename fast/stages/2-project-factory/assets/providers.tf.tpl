@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-module "factory" {
-  source        = "../../../modules/project-factory"
-  data_defaults = local.project_defaults.defaults
-  data_overrides = merge(
-    {
-      universe = var.universe
-    },
-    local.project_defaults.overrides
-  )
-  context = local.ctx
-  factories_config = {
-    folders  = var.factories_config.folders
-    projects = var.factories_config.projects
+terraform {
+  backend "gcs" {
+    bucket                      = "${bucket}"
+    impersonate_service_account = "${service_account}"
+    %{~ if prefix != null ~}
+    prefix = "${prefix}"
+    %{~ endif ~}
   }
+}
+provider "google" {
+  impersonate_service_account = "${service_account}"
+}
+provider "google-beta" {
+  impersonate_service_account = "${service_account}"
 }
