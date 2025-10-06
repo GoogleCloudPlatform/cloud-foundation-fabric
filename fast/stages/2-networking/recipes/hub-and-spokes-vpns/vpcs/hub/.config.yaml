@@ -23,6 +23,11 @@ routers:
   vpn-router:
     region: europe-west8
     asn: 64514
+    custom_advertise:
+      ip_ranges:
+        "10.0.0.0/8": "rfc1918-10"
+        "172.16.0.0/12": "rfc1918-172"
+        "192.168.0.0/16": "rfc1918-192"
 routes:
   gateway:
     dest_range: "8.8.8.8/32"
