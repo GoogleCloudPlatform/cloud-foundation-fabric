@@ -43,11 +43,16 @@ locals {
         local._defaults.projects.merges[k], v
       )
     }
-    overrides = {
-      for k, v in var.data_overrides : k => try(
-        local._defaults.projects.overrides[k], v
-      )
-    }
+    overrides = merge(
+      {
+        for k, v in var.data_overrides : k => try(
+          local._defaults.projects.overrides[k], v
+        )
+      },
+      {
+        universe = var.universe
+      }
+    )
   }
   subnet_self_links = flatten([
     for net, subnets in var.subnet_self_links : [
