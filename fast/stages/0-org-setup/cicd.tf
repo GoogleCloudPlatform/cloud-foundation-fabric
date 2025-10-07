@@ -93,6 +93,15 @@ resource "google_iam_workload_identity_pool" "default" {
   )
 }
 
+resource "google_project_iam_member" "workload_identity_user_principalset" {
+  count = local.wif_project == null ? 0 : 1
+  project = lookup(
+    local.cicd_project_ids, local.wif_project, local.wif_project
+  )
+  role    = "roles/iam.workloadIdentityUser"
+  member  = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.default[0].name}/*"
+}
+
 resource "google_iam_workload_identity_pool_provider" "default" {
   for_each = local.wif_providers
   project = (
