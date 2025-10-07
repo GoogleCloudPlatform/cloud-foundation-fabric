@@ -434,6 +434,9 @@ iam_by_principals:
     - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
     # [...]
+iam_by_principals_additive:
+  $iam_principals:gcp-billing-admins:
+    - roles/billing.admin
 ```
 
 Log sinks can refer to project-level destination via different contexts.
