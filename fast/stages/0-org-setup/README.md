@@ -274,6 +274,7 @@ This is a simple reference table of available interpolation namespaces, refer to
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
 - `$kms_keys:my_key`
+- `$log_buckets:my_project/my_bucket`
 - `$locations:my_location`
 - `$notification_channels:my_channel`
 - `$project_ids:my_project`

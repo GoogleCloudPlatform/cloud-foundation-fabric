@@ -39,6 +39,7 @@ The code is meant to be executed by a high level service account with powerful p
   - [Folder context ids](#folder-context-ids)
   - [Project context ids](#project-context-ids)
   - [Service account context ids](#service-account-context-ids)
+  - [Log bucket context ids](#log-bucket-context-ids)
   - [Other context ids](#other-context-ids)
 - [Example](#example)
 - [Files](#files)
@@ -276,6 +277,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
 - `$kms_keys:my_key`
+- `$log_buckets:my_project/my_bucket`
 - `$locations:my_location`
 - `$notification_channels:my_channel`
 - `$project_ids:my_project`
@@ -337,6 +339,17 @@ service_accounts:
     iam_sa_roles:
       $service_account_ids:app-0-0/ro:
         - roles/iam.serviceAccountTokenCreator
+```
+
+### Log bucket context ids
+
+Log buckets use the `$log_buckets:` namespace, with ids that allow referring to their parent project. As an example, the `audit-logs` log bucket defined in the `projects/team-0/log-0.yaml` file will be accessible via `$log_buckets:log-0/audit-logs`.
+
+```yaml
+# sink defined at the organization level
+logging_sinks:
+  audit-logs:
+    destination: $log_buckets:log-0/audit-logs
 ```
 
 ### Other context ids
