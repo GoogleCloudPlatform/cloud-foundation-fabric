@@ -108,7 +108,7 @@
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
     },
-    "iam_by_additive": {
+    "iam_by_principals_additive": {
       "$ref": "#/$defs/iam_by_principals"
     },
     "labels": {
