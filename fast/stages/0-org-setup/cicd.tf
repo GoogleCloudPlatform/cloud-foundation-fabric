@@ -42,6 +42,7 @@ locals {
           v.workload_identity_provider.id,
           v.workload_identity_provider.id
         )
+        audiences = try(v.workload_identity_provider.audiences, [])
         service_accounts = {
           apply = lookup(
             local.of_service_accounts,
