@@ -130,3 +130,16 @@ variable "tag_values" {
   nullable    = false
   default     = {}
 }
+
+variable "universe" {
+  # tfdoc:variable:source 0-org-setup
+  description = "GCP universe where to deploy projects. The prefix will be prepended to the project id."
+  type = object({
+    domain                         = string
+    prefix                         = string
+    forced_jit_service_identities  = optional(list(string), [])
+    unavailable_services           = optional(list(string), [])
+    unavailable_service_identities = optional(list(string), [])
+  })
+  default = null
+}
