@@ -137,6 +137,9 @@ module "organization-iam" {
   iam_bindings_additive = lookup(
     local.organization, "iam_bindings_additive", {}
   )
+  iam_by_principals_additive = lookup(
+    local.organization, "iam_by_principals_additive", {}
+  )
   logging_sinks = try(local.organization.logging.sinks, {})
   tags_config = {
     force_context_ids = true
