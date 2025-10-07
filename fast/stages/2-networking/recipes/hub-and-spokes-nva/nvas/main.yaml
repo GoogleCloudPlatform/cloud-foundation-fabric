@@ -1,2 +1,41 @@
 project_id: $project_ids:net-core-0
-region: europe-west8
+
+name: nva
+image: projects/debian-cloud/global/images/family/debian-12
+instance_type: e2-standard-4
+region: europe-west12
+
+health_check:
+  name: tcp-health-check
+  tcp_health_check:
+    port: 80
+instance_groups:
+  # Keyed by zone
+  b:
+    auto_create_instances: 1
+    attach_instances:
+      - name1: self-link
+      - name2: self-link
+  c:
+    auto_create_instances: 1
+
+tags:
+  - nva
+  - test
+
+metadata:
+  startup-script: |
+    #!/bin/bash
+    # Enable IP forwarding
+    echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/70-ip-forwarding.conf
+    # ROUTES!
+    # PBR FOR LBS!
+    sysctl --system
+
+attachments:
+  - network: $vpcs:hub
+    subnet: $subnets:hub/europe-west12/hub-default
+  - network: $vpcs:prod
+    subnet: $subnets:prod/europe-west12/prod-default
+  - network: $vpcs:dev
+    subnet: $subnets:dev/europe-west12/dev-default

@@ -39,6 +39,7 @@ variable "factories_config" {
     folders               = optional(string, "data/folders")
     interconnect          = optional(string, "data/interconnect")
     ncc-hubs              = optional(string, "data/ncc-hubs")
+    nvas                  = optional(string, "data/nvas")
     projects              = optional(string, "data/projects")
     vpcs                  = optional(string, "data/vpcs")
   })

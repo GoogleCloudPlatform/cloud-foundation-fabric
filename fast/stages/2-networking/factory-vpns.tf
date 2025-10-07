@@ -48,7 +48,7 @@ locals {
 resource "google_compute_ha_vpn_gateway" "default" {
   for_each   = local.vpns
   project    = lookup(merge(local.ctx.project_ids, module.factory.project_ids), replace(each.value.project_id, "$project_ids:", ""), each.value.project_id)
-  region     = lookup(local.ctx.locations, each.value.region, each.value.region)
+  region     = lookup(local.ctx.locations, replace(each.value.region, "$locations:", ""), each.value.region)
   network    = lookup(local.ctx_vpcs.names, each.value.vpc_name, each.value.vpc_name)
   name       = replace(each.key, "/", "-")
   stack_type = try(each.value.stack_type, null)

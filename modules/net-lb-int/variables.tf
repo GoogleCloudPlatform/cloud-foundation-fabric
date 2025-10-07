@@ -83,6 +83,18 @@ variable "forwarding_rules_config" {
   }
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    locations   = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+    vpcs        = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
   type = map(object({

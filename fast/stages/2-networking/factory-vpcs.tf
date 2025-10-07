@@ -42,9 +42,11 @@ locals {
     ids        = { for k, v in module.vpcs : k => v.id }
     names      = { for k, v in module.vpcs : k => v.name }
     self_links = { for k, v in module.vpcs : k => v.self_link }
-    subnets_by_vpc = {
-      for k, v in module.vpcs : k => v.subnet_self_links
-    }
+    subnets_by_vpc = merge([
+      for vpc_key, vpc in module.vpcs : {
+        for subnet_key, subnet_self_link in vpc.subnet_self_links : "${vpc_key}/${subnet_key}" => subnet_self_link
+      }
+    ]...)
   }
 
   vpcs = { for k, v in local._vpcs : k => merge(local.defaults.vpcs, v, {

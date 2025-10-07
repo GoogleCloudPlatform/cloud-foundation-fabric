@@ -44,7 +44,7 @@ resource "google_compute_router" "default" {
   for_each = local.router_configs
   name     = replace(each.key, "/", "-")
   project  = lookup(local.ctx_projects.project_ids, replace(each.value.project_id, "$project_ids:", ""), each.value.project_id)
-  region   = lookup(local.ctx.locations, each.value.region, each.value.region)
+  region   = lookup(local.ctx.locations, replace(each.value.region, "$locations:", ""), each.value.region)
   network  = lookup(local.ctx_vpcs.self_links, each.value.vpc_self_link, each.value.vpc_self_link)
   bgp {
     advertise_mode    = each.value.advertise_mode
