@@ -100,12 +100,71 @@ locals {
       ]
     })
   }
+  use_legacy_org_policy = var.universe != null
+}
+
+resource "google_folder_organization_policy" "legacy" {
+  for_each = local.use_legacy_org_policy ? toset([
+    for k, v in local._org_policies : k
+  ]) : []
+
+  folder     = local.folder_id
+  constraint = each.value
+
+  dynamic "boolean_policy" {
+    for_each = (
+      local.org_policies[each.value].is_boolean_policy == true &&
+      local.org_policies[each.value].reset != true
+    ) ? [1] : []
+    content {
+      enforced = local.org_policies[each.value].rules[0].enforce
+    }
+  }
+
+  dynamic "list_policy" {
+    for_each = (
+      local.org_policies[each.value].is_boolean_policy != true &&
+      local.org_policies[each.value].reset != true
+    ) ? [1] : []
+    content {
+      inherit_from_parent = local.org_policies[each.value].inherit_from_parent
+
+      dynamic "allow" {
+        for_each = (
+          length(local.org_policies[each.value].rules) > 0 &&
+          local.org_policies[each.value].rules[0].allow != null
+        ) ? [1] : []
+        content {
+          all    = try(local.org_policies[each.value].rules[0].allow.all, null)
+          values = try(local.org_policies[each.value].rules[0].allow.values, null)
+        }
+      }
+
+      dynamic "deny" {
+        for_each = (
+          length(local.org_policies[each.value].rules) > 0 &&
+          local.org_policies[each.value].rules[0].deny != null
+        ) ? [1] : []
+        content {
+          all    = try(local.org_policies[each.value].rules[0].deny.all, null)
+          values = try(local.org_policies[each.value].rules[0].deny.values, null)
+        }
+      }
+    }
+  }
+
+  dynamic "restore_policy" {
+    for_each = local.org_policies[each.value].reset == true ? [1] : []
+    content {
+      default = true
+    }
+  }
 }
 
 resource "google_org_policy_policy" "default" {
-  for_each = toset([
+  for_each = !local.use_legacy_org_policy ? toset([
     for k, v in local._org_policies : trimprefix(k, "dry_run:")
-  ])
+  ]) : []
   name   = "${local.folder_id}/policies/${each.value}"
   parent = local.folder_id
   dynamic "spec" {

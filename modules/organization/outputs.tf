@@ -85,7 +85,10 @@ output "organization_id" {
 
 output "organization_policies_ids" {
   description = "Map of ORGANIZATION_POLICIES => ID in the organization."
-  value       = { for k, v in google_org_policy_policy.default : k => v.id }
+  value = merge(
+    { for k, v in google_org_policy_policy.default : k => v.id },
+    { for k, v in google_organization_policy.legacy : k => v.id }
+  )
 }
 
 output "scc_custom_sha_modules_ids" {
@@ -117,4 +120,3 @@ output "tag_values" {
     k => v if local.tag_values[k].tag_network == null
   }
 }
-

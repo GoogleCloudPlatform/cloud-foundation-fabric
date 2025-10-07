@@ -47,6 +47,7 @@ output "id" {
     google_project.project,
     data.google_project.project,
     google_org_policy_policy.default,
+    google_project_organization_policy.legacy,
     google_project_service.project_services,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.shared_vpc_service,
@@ -63,6 +64,7 @@ output "name" {
   value       = local.project.name
   depends_on = [
     google_org_policy_policy.default,
+    google_project_organization_policy.legacy,
     google_project_service.project_services,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
@@ -105,6 +107,7 @@ output "number" {
   value       = local.project.number
   depends_on = [
     google_org_policy_policy.default,
+    google_project_organization_policy.legacy,
     google_project_service.project_services,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.shared_vpc_service,
@@ -117,7 +120,10 @@ output "number" {
 }
 output "organization_policies_ids" {
   description = "Map of ORGANIZATION_POLICIES => ID in the organization."
-  value       = { for k, v in google_org_policy_policy.default : k => v.id }
+  value = merge(
+    { for k, v in google_org_policy_policy.default : k => v.id },
+    { for k, v in google_project_organization_policy.legacy : k => v.id }
+  )
 }
 
 # TODO: deprecate in favor of id
@@ -129,6 +135,7 @@ output "project_id" {
     google_project.project,
     data.google_project.project,
     google_org_policy_policy.default,
+    google_project_organization_policy.legacy,
     google_project_service.project_services,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.shared_vpc_service,

@@ -58,6 +58,10 @@ variable "factories_config" {
   })
   nullable = false
   default  = {}
+  validation {
+    condition     = var.universe == null || var.factories_config.org_policy_custom_constraints == null
+    error_message = "Custom constraint factory (factories_config.org_policy_custom_constraints) is not supported when universe is defined."
+  }
 }
 
 variable "firewall_policy" {
@@ -95,6 +99,36 @@ variable "org_policies" {
   }))
   default  = {}
   nullable = false
+
+  validation {
+    condition = var.universe == null || alltrue(flatten([
+      for k, v in var.org_policies : [
+        for r in v.rules :
+        r.condition == null || r.condition.expression == null
+      ]
+    ]))
+    error_message = "Conditions on policy rules are not supported when universe is defined."
+  }
+  validation {
+    condition = var.universe == null || alltrue(flatten([
+      for k, v in var.org_policies : [
+        for r in v.rules : r.parameters == null
+      ]
+    ]))
+    error_message = "Parameters on policy rules are not supported when universe is defined."
+  }
+  validation {
+    condition = var.universe == null || alltrue([
+      for k, v in var.org_policies : length(v.rules) <= 1
+    ])
+    error_message = "Only one rule per policy is supported when universe is defined (legacy API limitation)."
+  }
+  validation {
+    condition = var.universe == null || alltrue([
+      for k, v in var.org_policies : !startswith(k, "dry_run:")
+    ])
+    error_message = "Dry run policies are not supported when universe is defined."
+  }
 }
 
 variable "org_policy_custom_constraints" {
@@ -109,6 +143,10 @@ variable "org_policy_custom_constraints" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition     = var.universe == null || length(var.org_policy_custom_constraints) == 0
+    error_message = "Custom constraints (org_policy_custom_constraints) are not supported when universe is defined."
+  }
 }
 
 variable "organization_id" {
@@ -118,4 +156,10 @@ variable "organization_id" {
     condition     = can(regex("^organizations/[0-9]+", var.organization_id))
     error_message = "The organization_id must in the form organizations/nnn."
   }
+}
+
+variable "universe" {
+  description = "GCP universe."
+  type        = object({ prefix = string })
+  default     = null
 }

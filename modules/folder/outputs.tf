@@ -32,6 +32,7 @@ output "id" {
     google_folder_iam_binding.bindings,
     google_folder_iam_member.bindings,
     google_org_policy_policy.default,
+    google_folder_organization_policy.legacy,
   ]
 }
 
@@ -46,7 +47,10 @@ output "name" {
 
 output "organization_policies_ids" {
   description = "Map of ORGANIZATION_POLICIES => ID in the folder."
-  value       = { for k, v in google_org_policy_policy.default : k => v.id }
+  value = merge(
+    { for k, v in google_org_policy_policy.default : k => v.id },
+    { for k, v in google_folder_organization_policy.legacy : k => v.id }
+  )
 }
 
 output "scc_custom_sha_modules_ids" {

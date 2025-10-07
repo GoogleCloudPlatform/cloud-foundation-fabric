@@ -160,6 +160,35 @@ variable "org_policies" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = var.universe == null || alltrue(flatten([
+      for k, v in var.org_policies : [
+        for r in v.rules :
+        r.condition == null || r.condition.expression == null
+      ]
+    ]))
+    error_message = "Conditions on policy rules are not supported when universe is defined."
+  }
+  validation {
+    condition = var.universe == null || alltrue(flatten([
+      for k, v in var.org_policies : [
+        for r in v.rules : r.parameters == null
+      ]
+    ]))
+    error_message = "Parameters on policy rules are not supported when universe is defined."
+  }
+  validation {
+    condition = var.universe == null || alltrue([
+      for k, v in var.org_policies : length(v.rules) <= 1
+    ])
+    error_message = "Only one rule per policy is supported when universe is defined (legacy API limitation)."
+  }
+  validation {
+    condition = var.universe == null || alltrue([
+      for k, v in var.org_policies : !startswith(k, "dry_run:")
+    ])
+    error_message = "Dry run policies are not supported when universe is defined."
+  }
 }
 
 variable "parent" {
