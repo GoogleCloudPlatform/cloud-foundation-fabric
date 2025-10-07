@@ -65,6 +65,19 @@ variable "authorized_views" {
   default = []
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    tag_values     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "dataset_access" {
   description = "Set access in the dataset resource instead of using separate resources."
   type        = bool

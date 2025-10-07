@@ -17,6 +17,6 @@
 resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//bigquery.googleapis.com/${google_bigquery_dataset.default.id}"
-  tag_value = each.value
-  location  = var.location
+  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  location  = lookup(local.ctx.locations, var.location, var.location)
 }
