@@ -1,0 +1,60 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_bigquery_dataset.default:
+    dataset_id: dataset_0
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: null
+    labels: null
+    location: europe-west8
+    max_time_travel_hours: '168'
+    project: foo-test-0
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_bigquery_dataset_iam_binding.bindings["$custom_roles:myrole_one"]:
+    condition: []
+    dataset_id: dataset_0
+    members:
+    - user:test-user@example.com
+    project: foo-test-0
+    role: organizations/366118655033/roles/myRoleOne
+  google_bigquery_dataset_iam_binding.bindings["roles/viewer"]:
+    condition: []
+    dataset_id: dataset_0
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    project: foo-test-0
+    role: roles/viewer
+  google_tags_location_tag_binding.binding["foo"]:
+    location: europe-west8
+    tag_value: tagValues/1234567890
+    timeouts: null
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_dataset_iam_binding: 2
+  google_tags_location_tag_binding: 1
+  modules: 0
+  resources: 4
