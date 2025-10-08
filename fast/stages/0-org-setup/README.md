@@ -96,9 +96,6 @@ The standard datasets use the `gcp-organization-admins` alias to assign administ
 global:
   # gcloud beta billing accounts list
   billing_account: 123456-123456-123456
-  locations:
-    bigquery: europe-west1
-    logging: europe-west1
   organization:
     # gcloud organizations list
     domain: example.org
@@ -108,11 +105,16 @@ projects:
   defaults:
     # define a unique prefix with a maximum of 9 characters
     prefix: foo-1
-    storage_location: europe-west1
+  locations:
+    bigquery: $locations:primary
+    logging: $locations:primary
+    storage: $locations:primary
 context:
   iam_principals:
     # make sure the user running apply is a member of this group
     gcp-organization-admins: group:fabric-fast-owners@example.com
+  locations:
+    primary: europe-west1
 ```
 
 A more detailed example containing a few other attributes that can be set in the file is in a [later section](#defaults-configuration) in this document.
@@ -660,7 +662,6 @@ Define values for the `var.environments` variable in a tfvars file.
 | name | description | sensitive |
 |---|---|:---:|
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
-| [locations](outputs.tf#L22) | Default locations. |  |
-| [projects](outputs.tf#L27) | Attributes for managed projects. |  |
-| [tfvars](outputs.tf#L32) | Stage tfvars. | ✓ |
+| [projects](outputs.tf#L22) | Attributes for managed projects. |  |
+| [tfvars](outputs.tf#L27) | Stage tfvars. | ✓ |
 <!-- END TFDOC -->

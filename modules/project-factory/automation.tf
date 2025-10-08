@@ -101,9 +101,9 @@ module "automation-bucket" {
   labels                = lookup(each.value, "labels", {})
   managed_folders       = lookup(each.value, "managed_folders", {})
   location = each.value.create == false ? null : coalesce(
-    local.data_defaults.overrides.storage_location,
+    local.data_defaults.overrides.locations.storage,
     lookup(each.value, "location", null),
-    local.data_defaults.defaults.storage_location
+    local.data_defaults.defaults.locations.storage
   )
   storage_class = lookup(
     each.value, "storage_class", "STANDARD"

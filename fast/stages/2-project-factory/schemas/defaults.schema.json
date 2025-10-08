@@ -58,6 +58,21 @@
                 }
               }
             },
+            "locations": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "bigquery": {
+                  "type": "string"
+                },
+                "logging": {
+                  "type": "string"
+                },
+                "storage": {
+                  "type": "string"
+                }
+              }
+            },
             "logging_data_access": {
               "type": "object",
               "default": {},
@@ -244,9 +259,6 @@
                 "host_project"
               ]
             },
-            "storage_location": {
-              "type": "string"
-            },
             "tag_bindings": {
               "type": "object",
               "default": {},
@@ -404,6 +416,21 @@
                 "ABANDON"
               ]
             },
+            "locations": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "bigquery": {
+                  "type": "string"
+                },
+                "logging": {
+                  "type": "string"
+                },
+                "storage": {
+                  "type": "string"
+                }
+              }
+            },
             "logging_data_access": {
               "type": "object",
               "default": {},
@@ -491,9 +518,6 @@
                 "type": "string"
               }
             },
-            "storage_location": {
-              "type": "string"
-            },
             "tag_bindings": {
               "type": "object",
               "default": {},
@@ -542,7 +566,73 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "custom_roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "folder_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "kms_keys": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "iam_principals": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "locations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "notification_channels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "project_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "service_account_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tag_keys": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tag_values": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "vpc_host_projects": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "vpc_sc_perimeters": {
           "type": "object",
           "additionalProperties": {
             "type": "string"

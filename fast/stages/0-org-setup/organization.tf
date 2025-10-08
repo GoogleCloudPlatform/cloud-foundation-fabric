@@ -79,9 +79,7 @@ module "organization" {
         id = local.organization_id
       }
     }
-    locations = {
-      default = local.defaults.locations.logging
-    }
+    locations = local.ctx.locations
   }
   factories_config = {
     org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"

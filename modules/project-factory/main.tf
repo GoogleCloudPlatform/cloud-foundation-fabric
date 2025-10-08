@@ -32,10 +32,10 @@ resource "terraform_data" "defaults_preconditions" {
   lifecycle {
     precondition {
       condition = (
-        var.data_defaults.storage_location != null ||
-        var.data_overrides.storage_location != null
+        var.data_defaults.locations.storage != null ||
+        var.data_overrides.locations.storage != null
       )
-      error_message = "No default storage location defined in defaults or overides variables."
+      error_message = "No default storage location defined in defaults or overrides variables."
     }
   }
 }

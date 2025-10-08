@@ -94,7 +94,7 @@ iam_by_principals:
     - roles/cloudasset.viewer
 logging:
   # disable_default_log_sink: false
-  storage_location: $locations:default
+  storage_location: $locations:primary
   sinks:
     audit-logs:
       # description: foo
