@@ -23,8 +23,10 @@ locals {
         name         = name
         description  = lookup(opts, "description", "Terraform-managed.")
         kms_key_name = lookup(opts, "kms_key_name", null)
-        location = try(
-          lookup(local.ctx.locations, opts.location, opts.location),
+        location = coalesce(
+          local.data_defaults.overrides.locations.logging,
+          opts.location,
+          local.data_defaults.defaults.locations.logging,
           "global"
         )
         retention     = lookup(opts, "retention", null)
@@ -44,13 +46,14 @@ module "log-buckets" {
   location     = each.value.location
   kms_key_name = each.value.kms_key_name
   context = merge(local.ctx, {
-    folder_ids  = local.ctx_folder_ids
-    project_ids = local.ctx_project_ids
+    folder_ids = local.ctx_folder_ids
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails
     )
+    locations   = local.ctx.locations
+    project_ids = local.ctx_project_ids
   })
   retention     = each.value.retention
   log_analytics = each.value.log_analytics

@@ -49,6 +49,11 @@ variable "data_defaults" {
       quotas        = optional(string)
     }), {})
     labels = optional(map(string), {})
+    locations = optional(object({
+      bigquery = optional(string)
+      logging  = optional(string)
+      storage  = optional(string)
+    }), {})
     logging_data_access = optional(map(object({
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
       DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
@@ -88,8 +93,7 @@ variable "data_defaults" {
       service_iam_grants       = optional(list(string), [])
       network_subnet_users     = optional(map(list(string)), {})
     }))
-    storage_location = optional(string)
-    tag_bindings     = optional(map(string), {})
+    tag_bindings = optional(map(string), {})
     universe = optional(object({
       prefix                         = string
       forced_jit_service_identities  = optional(list(string), [])
@@ -100,7 +104,6 @@ variable "data_defaults" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
-    bigquery_location = optional(string)
   })
   nullable = false
   default  = {}
@@ -141,6 +144,11 @@ variable "data_overrides" {
       org_policies  = optional(string)
       quotas        = optional(string)
     }), {})
+    locations = optional(object({
+      bigquery = optional(string)
+      logging  = optional(string)
+      storage  = optional(string)
+    }), {})
     logging_data_access = optional(map(object({
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
       DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
@@ -154,7 +162,6 @@ variable "data_overrides" {
     })))
     service_encryption_key_ids = optional(map(list(string)))
     services                   = optional(list(string))
-    storage_location           = optional(string)
     tag_bindings               = optional(map(string))
     universe = optional(object({
       prefix                         = string
@@ -166,7 +173,6 @@ variable "data_overrides" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
-    bigquery_location = optional(string)
   })
   nullable = false
   default  = {}
