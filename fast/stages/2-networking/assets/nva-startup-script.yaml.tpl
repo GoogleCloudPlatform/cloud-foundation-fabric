@@ -85,10 +85,10 @@ runcmd:
       echo "Gateway for $${IF_NAME} is $${GATEWAY}."
 
       %{ for nic_index, nic in nva_nics_config ~}
-      if [ "$${i}" == "$${nic_index}" ]; then
+      if [ "$${i}" == "${nic_index}" ]; then
         %{ for route in nic.routes ~}
-        echo "Adding route for $${route} via $${GATEWAY} on $${IF_NAME}"
-        ip route add $${route} via $${GATEWAY} dev $${IF_NAME} proto static
+        echo "Adding route for ${route} via $${GATEWAY} on $${IF_NAME}"
+        ip route add ${route} via $${GATEWAY} dev $${IF_NAME} proto static
         %{ endfor ~}
         %{ if try(nic.masquerade, false) ~}
         echo "Enabling NAT (Masquerade) on $${IF_NAME}."

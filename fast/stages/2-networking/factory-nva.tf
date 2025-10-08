@@ -32,7 +32,12 @@ locals {
   ]
 
   nva_configs = {
-    for k, v in local._nva_configs : try(v.name, k) => v
+    for k, v in local._nva_configs : try(v.name, k) => merge(v, {
+      attachments = [for a in try(v.attachments, []) : merge(a, {
+        routes     = try(a.routes, [])
+        create_ilb = try(a.create_ilb, true)
+      })]
+    })
   }
 
   ctx_nva = {
@@ -79,7 +84,7 @@ locals {
           }
           health_check = try(nva_def.health_check, null)
         }
-      }
+      } if attachment.create_ilb == true
     ]
   ])...)
 
