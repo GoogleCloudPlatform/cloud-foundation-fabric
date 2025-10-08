@@ -27,12 +27,20 @@ locals {
     []
   )
 
-  nva_configs = [
-    for f in local._nva_files : yamldecode(file("${coalesce(local._nva_path, "-")}/${f}"))
+  _nva_configs = [
+    for f in local._nva_files : merge(yamldecode(file("${coalesce(local._nva_path, "-")}/${f}")), { filename = replace(f, ".yaml", "") })
   ]
 
+  nva_configs = {
+    for k, v in local._nva_configs : try(v.name, k) => v
+  }
+
+  ctx_nva = {
+    nva_ilb = { for k, v in module.ilb : k => v.forwarding_rule_addresses[""] }
+  }
+
   nva_instances = merge(flatten([
-    for nva_def in local.nva_configs : [
+    for nva_key, nva_def in local.nva_configs : [
       for group_key, group_value in nva_def.instance_groups : [
         for i in range(group_value.auto_create_instances) : {
           "${nva_def.name}-${group_key}-${i}" = {
@@ -41,10 +49,15 @@ locals {
             project_id    = nva_def.project_id
             image         = try(nva_def.image, "projects/debian-cloud/global/images/family/debian-12")
             instance_type = try(nva_def.instance_type, "e2-standard-4")
-            metadata      = try(nva_def.metadata, {})
-            attachments   = nva_def.attachments
-            tags          = try(nva_def.tags, ["nva"])
-            options       = try(nva_def.options, null)
+            metadata = coalesce(try(nva_def.metadata, null), {
+              user-data = templatefile(
+                "${path.module}/assets/nva-startup-script.yaml.tpl",
+                { nva_nics_config = nva_def.attachments }
+              )
+            })
+            attachments = nva_def.attachments
+            tags        = try(nva_def.tags, ["nva"])
+            options     = try(nva_def.options, null)
           }
         }
       ]
@@ -57,6 +70,7 @@ locals {
       for i, attachment in nva_def.attachments : {
         "${nva_def.name}-${i}" = {
           name       = "ilb-${nva_def.name}-${i}"
+          nva_name   = nva_def.name
           project_id = nva_def.project_id
           region     = nva_def.region
           vpc_config = {
@@ -64,16 +78,13 @@ locals {
             subnetwork = attachment.subnet
           }
           health_check = try(nva_def.health_check, null)
-          backends = [for k, v in local.nva_instances :
-            {
-              group = v.group.id
-            } if v.group_zone == i
-          ]
         }
       }
     ]
   ])...)
+
 }
+
 
 module "nva-instance" {
   for_each       = local.nva_instances
@@ -94,7 +105,10 @@ module "nva-instance" {
   ]
   boot_disk = {
     initialize_params = {
-      image = each.value.image
+      image                  = each.value.image
+      google-logging-enabled = true
+      type                   = "pd-ssd"
+      size                   = 10 # TODO: make configurable?
     }
   }
   group    = { named_ports = {} }
@@ -113,12 +127,10 @@ module "ilb" {
   region     = each.value.region
   name       = "ilb-${each.key}"
   vpc_config = each.value.vpc_config
-  backends   = each.value.backends
-  health_check_config = {
-    http = {
-      port = 80
-    }
-  }
+  backends = [
+    for k, v in module.nva-instance : { group = v.group.id } if startswith(k, "${each.value.nva_name}-")
+  ]
+  health_check_config = each.value.health_check
   context = {
     project_ids = local.ctx_projects.project_ids
     vpcs        = local.ctx_vpcs.self_links

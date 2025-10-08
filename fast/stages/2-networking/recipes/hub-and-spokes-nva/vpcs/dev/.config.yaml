@@ -17,3 +17,9 @@ project_id: $project_ids:net-core-0
 name: dev
 delete_default_routes_on_create: false
 mtu: 1500
+routes:
+  gateway:
+    dest_range: "0.0.0.0/0"
+    priority: 100
+    next_hop_type: ilb
+    next_hop: 10.73.0.12
