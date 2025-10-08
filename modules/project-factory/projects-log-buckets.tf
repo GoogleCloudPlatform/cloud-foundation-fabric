@@ -25,7 +25,7 @@ locals {
         kms_key_name = lookup(opts, "kms_key_name", null)
         location = coalesce(
           local.data_defaults.overrides.locations.logging,
-          opts.location,
+          lookup(opts, "location", null),
           local.data_defaults.defaults.locations.logging,
           "global"
         )

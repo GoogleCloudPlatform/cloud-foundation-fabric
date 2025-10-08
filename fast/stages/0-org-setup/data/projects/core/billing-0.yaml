@@ -27,4 +27,3 @@ services:
 datasets:
   billing_export:
     friendly_name: Billing export
-    location: $locations:bigquery

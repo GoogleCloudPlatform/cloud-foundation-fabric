@@ -19,11 +19,6 @@ output "iam_principals" {
   value       = local.iam_principals
 }
 
-output "locations" {
-  description = "Default locations."
-  value       = local.defaults.locations
-}
-
 output "projects" {
   description = "Attributes for managed projects."
   value       = module.factory.projects

@@ -18,23 +18,19 @@ locals {
   paths = {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
+  _ctx = {
+    for k, v in var.context : k => merge(
+      v,
+      try(local._defaults.context[k], {})
+    )
+  }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
-  ctx = merge(var.context, {
-    iam_principals = local.iam_principals
-    locations = {
-      for k, v in local.defaults.locations :
-      k => v if k != "pubsub"
-    }
+  ctx = merge(local._ctx, {
+    iam_principals = merge(local.iam_principals, local._ctx.iam_principals)
   })
   defaults = {
     billing_account = try(local._defaults.global.billing_account, null)
-    locations = merge({
-      bigquery = "eu"
-      logging  = "global"
-      pubsub   = []
-      storage  = "eu"
-    }, try(local._defaults.global.locations, {}))
     organization = (
       try(local._defaults.global.organization.id, null) == null
       ? null
@@ -84,13 +80,6 @@ resource "terraform_data" "precondition" {
         try(local.project_defaults.overrides.prefix, null) != null
       )
       error_message = "Prefix must be set in project defaults or overrides."
-    }
-    precondition {
-      condition = (
-        try(local.project_defaults.defaults.storage_location, null) != null ||
-        try(local.project_defaults.overrides.storage_location, null) != null
-      )
-      error_message = "Storage location must be set in project defaults or overrides."
     }
   }
 }

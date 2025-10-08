@@ -43,8 +43,7 @@ locals {
       billing_account = {
         id = local.defaults.billing_account
       }
-      groups    = local.ctx.iam_principals
-      locations = local.defaults.locations
+      groups = local.ctx.iam_principals
       organization = {
         customer_id = try(local.defaults.organization.customer_id, null)
         domain      = local.organization.domain
