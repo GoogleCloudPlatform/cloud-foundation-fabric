@@ -73,6 +73,63 @@
                 }
               }
             },
+            "locations": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "bigquery": {
+                  "type": "string"
+                },
+                "logging": {
+                  "type": "string"
+                },
+                "storage": {
+                  "type": "string"
+                }
+              }
+            },
+            "logging_data_access": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "ADMIN_READ": {
+                    "type": "object",
+                    "properties": {
+                      "exempted_members": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "DATA_READ": {
+                    "type": "object",
+                    "properties": {
+                      "exempted_members": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "DATA_WRITE": {
+                    "type": "object",
+                    "properties": {
+                      "exempted_members": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
             "metric_scopes": {
               "type": "array",
               "default": [],
@@ -198,9 +255,6 @@
                 "host_project"
               ]
             },
-            "storage_location": {
-              "type": "string"
-            },
             "tag_bindings": {
               "type": "object",
               "default": {},
@@ -227,6 +281,34 @@
                 }
               }
             },
+            "universe": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "domain",
+                "prefix"
+              ],
+              "properties": {
+                "domain": {
+                  "type": "string"
+                },
+                "forced_jit_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "prefix": {
+                  "type": "string"
+                },
+                "unavailable_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
             "vpc_sc": {
               "type": "object",
               "properties": {
@@ -241,48 +323,6 @@
               "required": [
                 "perimeter_name"
               ]
-            },
-            "logging_data_access": {
-              "type": "object",
-              "default": {},
-              "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "ADMIN_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_WRITE": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
             }
           }
         },
@@ -323,68 +363,20 @@
                 "ABANDON"
               ]
             },
-            "parent": {
-              "type": "string"
-            },
-            "prefix": {
-              "type": "string"
-            },
-            "service_encryption_key_ids": {
+            "locations": {
               "type": "object",
-              "default": {},
               "additionalProperties": false,
-              "patternProperties": {
-                "^[a-z0-9_-]+$": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "storage_location": {
-              "type": "string"
-            },
-            "tag_bindings": {
-              "type": "object",
-              "default": {},
-              "additionalProperties": {
-                "type": "string"
-              }
-            },
-            "service_accounts": {
-              "type": "object",
-              "default": {},
-              "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "display_name": {
-                    "type": "string",
-                    "default": "Terraform-managed."
-                  },
-                  "iam_self_roles": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            "vpc_sc": {
-              "type": "object",
               "properties": {
-                "perimeter_name": {
+                "bigquery": {
                   "type": "string"
                 },
-                "is_dry_run": {
-                  "type": "boolean",
-                  "default": false
+                "logging": {
+                  "type": "string"
+                },
+                "storage": {
+                  "type": "string"
                 }
-              },
-              "required": [
-                "perimeter_name"
-              ]
+              }
             },
             "logging_data_access": {
               "type": "object",
@@ -427,6 +419,94 @@
                   }
                 }
               }
+            },
+            "parent": {
+              "type": "string"
+            },
+            "prefix": {
+              "type": "string"
+            },
+            "service_encryption_key_ids": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z0-9_-]+$": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "tag_bindings": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "service_accounts": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "display_name": {
+                    "type": "string",
+                    "default": "Terraform-managed."
+                  },
+                  "iam_self_roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "universe": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "domain",
+                "prefix"
+              ],
+              "properties": {
+                "domain": {
+                  "type": "string"
+                },
+                "forced_jit_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "prefix": {
+                  "type": "string"
+                },
+                "unavailable_service_identities": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "vpc_sc": {
+              "type": "object",
+              "properties": {
+                "perimeter_name": {
+                  "type": "string"
+                },
+                "is_dry_run": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "perimeter_name"
+              ]
             }
           }
         }
@@ -436,6 +516,24 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "custom_roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "folder_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "kms_keys": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "iam_principals": {
           "type": "object",
           "additionalProperties": {
@@ -443,6 +541,48 @@
           }
         },
         "locations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "notification_channels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "project_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "service_account_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tag_keys": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tag_values": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "vpc_host_projects": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "vpc_sc_perimeters": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
