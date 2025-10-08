@@ -41,6 +41,7 @@ module "factory" {
     )
     folder_ids = merge(
       local.ctx.folder_ids,
+      try(local._defaults.context.folder_ids, {}), # the above contains only var.ctx.folder_ids
       lookup(local.ctx.folder_ids, "default", null) != null ? {} : {
         default = try(module.organization[0].id, null)
       }
