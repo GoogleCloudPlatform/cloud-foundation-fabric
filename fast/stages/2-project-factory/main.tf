@@ -17,7 +17,9 @@
 # tfdoc:file:description Project factory.
 
 locals {
-  context  = merge(var.context, lookup(local.defaults, "context", {}))
+  context = {
+    for k, v in var.context : k => merge(v, try(local.defaults.context[k], {}))
+  }
   defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
   fast_defaults = {
     billing_account = coalesce(
@@ -26,9 +28,6 @@ locals {
     )
     prefix = coalesce(
       var.data_defaults.prefix, var.prefix
-    )
-    storage_location = coalesce(
-      var.data_defaults.storage_location, var.locations.storage
     )
   }
   project_defaults = {
@@ -83,7 +82,7 @@ module "factory" {
       local.context.iam_principals
     )
     kms_keys              = merge(var.kms_keys, local.context.kms_keys)
-    locations             = merge(var.locations, local.context.locations)
+    locations             = local.context.locations
     notification_channels = local.context.notification_channels
     project_ids = merge(
       var.project_ids, var.host_project_ids, local.context.project_ids
