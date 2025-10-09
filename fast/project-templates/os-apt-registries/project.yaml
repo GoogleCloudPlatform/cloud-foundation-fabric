@@ -39,14 +39,15 @@ automation:
       os-apt:
         iam:
           roles/storage.objectCreator:
-            - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+            # the project id in the service account ref matches this file name
+            - $iam_principals:service_accounts/os-apt-registries/automation/rw
           roles/storage.objectViewer:
-            - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+            - $iam_principals:service_accounts/os-apt-registries/automation/rw
 iam:
   roles/viewer:
-    - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+    - $iam_principals:service_accounts/os-apt-registries/automation/rw
   roles/artifactregistry.admin:
-    - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+    - $iam_principals:service_accounts/os-apt-registries/automation/rw
   # TODO: add instance service accounts, or use principalSets for folders/projects
   # roles/artifactregistry.writer:
   #   - principalSet://cloudresourcemanager.googleapis.com/folders/210938489642/type/ServiceAccount
