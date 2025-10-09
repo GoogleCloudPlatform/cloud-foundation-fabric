@@ -24,7 +24,7 @@ locals {
         prefix           = coalesce(try(v.automation.prefix, null), v.prefix)
         project          = try(v.automation.project, null)
         service_accounts = try(v.automation.service_accounts, {})
-      } if try(v.automation.bucket, null) != null
+      } if try(v.automation.bucket, null) != null || try(v.automation.service_accounts, null) != null
     },
     {
       for k, v in local.projects_input : k => {
@@ -34,7 +34,7 @@ locals {
         prefix           = coalesce(try(v.automation.prefix, null), v.prefix)
         project          = try(v.automation.project, null)
         service_accounts = try(v.automation.service_accounts, {})
-      } if try(v.automation.bucket, null) != null
+      } if try(v.automation.bucket, null) != null || try(v.automation.service_accounts, null) != null
     }
   )
   _automation_buckets = {
@@ -48,7 +48,7 @@ locals {
         v.prefix,
         local.data_defaults.defaults.prefix
       ), null)
-    })
+    }) if v.bucket != null
   }
   _automation_sas = flatten(concat([
     for k, v in local._automation : [
@@ -58,7 +58,7 @@ locals {
         parent             = k
         parent_name        = v.parent_name
       })
-    ]
+    ] if v.service_accounts != null
   ]))
   automation_buckets = {
     for k, v in local._automation_buckets :
