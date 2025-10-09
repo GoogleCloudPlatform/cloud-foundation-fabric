@@ -15,31 +15,38 @@
 # yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
 
 # TODO: edit and uncomment the following line to create the project in a folder
-# parent: shared
+# parent: $folder_ids:shared
 
-name: prod-os-apt-0
+# project id can be customized here if file name cannot be changed
+# name: prod-os-apt-0
+
 services:
   - accesscontextmanager.googleapis.com
   - artifactregistry.googleapis.com
 
 automation:
   # TODO: edit the automation project and optionally edit resource names
-  project: prod-pf-iac-0
+  project: $project_ids:iac-0
   service_accounts:
     rw:
       description: Read/write automation service account for apt registries.
   bucket:
     description: Terraform state bucket for apt registries.
-    iam:
-      roles/storage.objectCreator:
-        - rw
-      roles/storage.objectViewer:
-        - rw
+    # this reuses the existing stage state bucket and creates a folder in it
+    name: iac-stage-state
+    create: false
+    managed_folders:
+      os-apt:
+        iam:
+          roles/storage.objectCreator:
+            - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+          roles/storage.objectViewer:
+            - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
 iam:
   roles/viewer:
-    - prod-os-apt-0/rw
+    - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
   roles/artifactregistry.admin:
-    - prod-os-apt-0/rw
-  # TODO: add instance service accounts that need access to the registries
+    - $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+  # TODO: add instance service accounts, or use principalSets for folders/projects
   # roles/artifactregistry.writer:
-  #   - serviceAccount:foo@bar
+  #   - principalSet://cloudresourcemanager.googleapis.com/folders/210938489642/type/ServiceAccount

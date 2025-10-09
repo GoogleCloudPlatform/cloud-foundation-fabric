@@ -1,2 +1,3 @@
 **/*-providers.tf
 **/*.tfvars
+**/*.tfvars.json
