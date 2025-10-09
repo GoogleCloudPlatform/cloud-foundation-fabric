@@ -124,7 +124,7 @@ resource "local_file" "providers" {
   for_each        = local.of_paths.local == null ? {} : local.of_providers
   file_permission = "0644"
   filename = (
-    "${local.of_paths.local}/providers/${each.value.filename}.tf"
+    "${local.of_paths.local}/providers/${each.value.filename}-providers.tf"
   )
   content = templatestring(local.of_template, {
     bucket = lookup(
@@ -151,7 +151,7 @@ resource "local_file" "tfvars" {
 resource "google_storage_bucket_object" "providers" {
   for_each = local.of_storage_bucket == null ? {} : local.of_providers
   bucket   = local.of_storage_bucket
-  name     = "providers/${each.value.filename}.tf"
+  name     = "providers/${each.value.filename}-providers.tf"
   content = templatestring(local.of_template, {
     bucket = lookup(
       local.of_storage_buckets,
