@@ -20,7 +20,7 @@ locals {
   gwcc = google_workstations_workstation_config.configs
   gwcw = google_workstations_workstation.workstations
   workstation_config_iam = merge([
-    for k1, v1 in var.workstation_configs : {
+    for k1, v1 in local.workstation_configs : {
       for k2, v2 in v1.iam : "${k1}-${k2}" => {
         workstation_config_id = k1
         role                  = k2
@@ -29,21 +29,21 @@ locals {
     }
   ]...)
   workstation_config_iam_bindings = merge([
-    for k1, v1 in var.workstation_configs : {
+    for k1, v1 in local.workstation_configs : {
       for k2, v2 in v1.iam_bindings : "${k1}-${k2}" => merge(v2, {
         workstation_config_id = k1
       })
     }
   ]...)
   workstation_config_iam_bindings_additive = merge([
-    for k1, v1 in var.workstation_configs : {
+    for k1, v1 in local.workstation_configs : {
       for k2, v2 in v1.iam_bindings_additive : "${k1}-${k2}" => merge(v2, {
         workstation_config_id = k1
       })
     }
   ]...)
   workstation_iam = merge(flatten([
-    for k1, v1 in var.workstation_configs : [
+    for k1, v1 in local.workstation_configs : [
       for k2, v2 in v1.workstations : {
         for k3, v3 in v2.iam : "${k1}-${k2}-${k3}" => {
           workstation_config_id = k1
@@ -55,7 +55,7 @@ locals {
     ]
   ])...)
   workstation_iam_bindings = merge(flatten([
-    for k1, v1 in var.workstation_configs : [
+    for k1, v1 in local.workstation_configs : [
       for k2, v2 in v1.workstations : {
         for k3, v3 in v2.iam_bindings : "${k1}-${k2}-${k3}" => merge(v3, {
           workstation_config_id = k1
@@ -65,7 +65,7 @@ locals {
     ]
   ])...)
   workstation_iam_bindings_additive = merge(flatten([
-    for k1, v1 in var.workstation_configs : [
+    for k1, v1 in local.workstation_configs : [
       for k2, v2 in v1.workstations : {
         for k3, v3 in v2.iam_bindings_additive : "${k1}-${k2}-${k3}" => merge(v3, {
           workstation_config_id = k1

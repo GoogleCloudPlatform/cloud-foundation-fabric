@@ -21,8 +21,11 @@ locals {
     } if k != "condition_vars"
   }
   ctx_p = "$"
+  workstation_configs = merge(
+    var.workstation_configs, local.f_workstation_configs
+  )
   workstations = merge(flatten([
-    for k1, v1 in var.workstation_configs : {
+    for k1, v1 in local.workstation_configs : {
       for k2, v2 in v1.workstations : "${k1}-${k2}" => merge({
         workstation_config_id = k1
         workstation_id        = k2
@@ -65,23 +68,27 @@ resource "google_workstations_workstation_cluster" "cluster" {
 }
 
 resource "google_workstations_workstation_config" "configs" {
-  for_each                = var.workstation_configs
+  for_each                = local.workstation_configs
   provider                = google-beta
   project                 = google_workstations_workstation_cluster.cluster.project
-  workstation_config_id   = each.key
-  workstation_cluster_id  = google_workstations_workstation_cluster.cluster.workstation_cluster_id
   location                = google_workstations_workstation_cluster.cluster.location
+  workstation_cluster_id  = google_workstations_workstation_cluster.cluster.workstation_cluster_id
+  workstation_config_id   = each.key
+  annotations             = each.value.annotations
   display_name            = each.value.display_name
+  labels                  = each.value.labels
   max_usable_workstations = each.value.max_workstations
+  replica_zones           = each.value.replica_zones
   idle_timeout = (
-    each.value.timeouts.idle == null ? null : "${each.value.timeouts.idle}s"
+    try(each.value.timeouts.idle, null) == null
+    ? null
+    : "${each.value.timeouts.idle}s"
   )
   running_timeout = (
-    each.value.timeouts.running == null ? null : "${each.value.timeouts.running}s"
+    try(each.value.timeouts.running, null) == null
+    ? null :
+    "${each.value.timeouts.running}s"
   )
-  replica_zones = each.value.replica_zones
-  annotations   = each.value.annotations
-  labels        = each.value.labels
   dynamic "host" {
     for_each = each.value.gce_instance == null ? [] : [""]
     content {
@@ -136,8 +143,16 @@ resource "google_workstations_workstation_config" "configs" {
   dynamic "encryption_key" {
     for_each = each.value.encryption_key == null ? [] : [""]
     content {
-      kms_key                 = each.value.encryption_key.kms_key
-      kms_key_service_account = each.value.encryption_key.kms_key_service_account
+      kms_key = each.value.encryption_key.kms_key
+      kms_key_service_account = (
+        each.value.encryption_key.kms_key_service_account == null
+        ? null
+        : lookup(
+          local.ctx.iam_principals,
+          each.value.encryption_key.kms_key_service_account,
+          each.value.encryption_key.kms_key_service_account
+        )
+      )
     }
   }
   dynamic "persistent_directories" {
