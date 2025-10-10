@@ -35,15 +35,6 @@ variable "context" {
   nullable = false
 }
 
-variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
-  type = object({
-    workstation_configs = optional(string, "data/workstation-configs")
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "display_name" {
   description = "Display name."
   type        = string
@@ -54,6 +45,15 @@ variable "domain" {
   description = "Domain."
   type        = string
   default     = null
+}
+
+variable "factories_config" {
+  description = "Path to folder with YAML resource description data files."
+  type = object({
+    workstation_configs = optional(string, "data/workstation-configs")
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "id" {
