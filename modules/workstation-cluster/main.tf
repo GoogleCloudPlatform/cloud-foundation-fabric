@@ -15,24 +15,40 @@
  */
 
 locals {
-  workstations = merge(flatten([for k1, v1 in var.workstation_configs :
-    { for k2, v2 in v1.workstations :
-      "${k1}-${k2}" => merge({
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p = "$"
+  workstations = merge(flatten([
+    for k1, v1 in var.workstation_configs : {
+      for k2, v2 in v1.workstations : "${k1}-${k2}" => merge({
         workstation_config_id = k1
         workstation_id        = k2
-  }, v2) }])...)
+      }, v2)
+    }
+  ])...)
 }
 
 resource "google_workstations_workstation_cluster" "cluster" {
   provider               = google-beta
   workstation_cluster_id = var.id
-  project                = var.project_id
-  display_name           = var.display_name
-  network                = var.network_config.network
-  subnetwork             = var.network_config.subnetwork
-  location               = var.location
-  annotations            = var.annotations
-  labels                 = var.labels
+  project = lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
+  display_name = var.display_name
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
+  network = lookup(
+    local.ctx.networks, var.network_config.network, var.network_config.network
+  )
+  subnetwork = lookup(
+    local.ctx.subnetworks, var.network_config.subnetwork, var.network_config.subnetwork
+  )
+  annotations = var.annotations
+  labels      = var.labels
   dynamic "private_cluster_config" {
     for_each = var.private_cluster_config == null ? [] : [""]
     content {
@@ -70,8 +86,12 @@ resource "google_workstations_workstation_config" "configs" {
     for_each = each.value.gce_instance == null ? [] : [""]
     content {
       gce_instance {
-        machine_type                 = each.value.gce_instance.machine_type
-        service_account              = each.value.gce_instance.service_account
+        machine_type = each.value.gce_instance.machine_type
+        service_account = each.value.gce_instance.service_account == null ? null : lookup(
+          local.ctx.iam_principals,
+          each.value.gce_instance.service_account,
+          each.value.gce_instance.service_account
+        )
         service_account_scopes       = each.value.gce_instance.service_account_scopes
         pool_size                    = each.value.gce_instance.pool_size
         boot_disk_size_gb            = each.value.gce_instance.boot_disk_size_gb
