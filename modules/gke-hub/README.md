@@ -84,7 +84,13 @@ module "hub" {
   project_id = module.project.project_id
   location   = "europe-west1"
   clusters = {
-    cluster-1 = module.cluster_1.id
+    cluster-1 = {
+      id                = module.cluster_1.id
+      configmanagement  = "default"
+      policycontroller  = "default"
+      servicemesh       = null
+      workload_identity = false
+    }
   }
   features = {
     configmanagement = true
@@ -108,9 +114,6 @@ module "hub" {
       version = "v1"
     }
   }
-  configmanagement_clusters = {
-    "default" = ["cluster-1"]
-  }
   policycontroller_templates = {
     default = {
       version = "v1.17.3"
@@ -121,9 +124,6 @@ module "hub" {
         referential_rules_enabled = true
       }
     }
-  }
-  policycontroller_clusters = {
-    "default" = ["cluster-1"]
   }
 }
 
@@ -294,8 +294,20 @@ module "hub" {
   source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
   clusters = {
-    cluster-1 = module.cluster_1.id
-    cluster-2 = module.cluster_2.id
+    cluster-1 = {
+      id                = module.cluster_1.id
+      configmanagement  = null
+      policycontroller  = null
+      servicemesh       = null
+      workload_identity = true
+    }
+    cluster-2 = {
+      id                = module.cluster_2.id
+      configmanagement  = null
+      policycontroller  = null
+      servicemesh       = null
+      workload_identity = true
+    }
   }
   features = {
     appdevexperience             = false
@@ -305,10 +317,6 @@ module "hub" {
     servicemesh                  = true
     multiclusterservicediscovery = false
   }
-  workload_identity_clusters = [
-    "cluster-1",
-    "cluster-2"
-  ]
 }
 
 # tftest modules=8 resources=42
@@ -451,8 +459,20 @@ module "hub" {
   project_id = module.project.project_id
   location   = "europe-west1"
   clusters = {
-    cluster-1 = module.cluster_1.id
-    cluster-2 = module.cluster_2.id
+    cluster-1 = {
+      id                = module.cluster_1.id
+      configmanagement  = "cluster-specific"
+      policycontroller  = null
+      servicemesh       = null
+      workload_identity = false
+    }
+    cluster-2 = {
+      id                = module.cluster_2.id
+      configmanagement  = null
+      policycontroller  = null
+      servicemesh       = null
+      workload_identity = false
+    }
   }
   features = {
     configmanagement = true
@@ -501,9 +521,6 @@ module "hub" {
       }
       version = "v1"
     }
-  }
-  configmanagement_clusters = {
-    "cluster-specific" = ["cluster-1"]
   }
 }
 # tftest modules=7 resources=38 inventory=defaults.yaml
@@ -676,8 +693,20 @@ module "hub" {
   project_id = var.project_id
   location   = "europe-west1"
   clusters = {
-    cluster-1 = module.cluster_1.id
-    cluster-2 = module.cluster_2.id
+    cluster-1 = {
+      id                = module.cluster_1.id
+      configmanagement  = "default"
+      policycontroller  = "strict"
+      servicemesh       = null
+      workload_identity = false
+    }
+    cluster-2 = {
+      id                = module.cluster_2.id
+      configmanagement  = "default"
+      policycontroller  = "permissive"
+      servicemesh       = null
+      workload_identity = false
+    }
   }
   features = {
     configmanagement = true
@@ -697,9 +726,6 @@ module "hub" {
         source_format = "hierarchy"
       }
     }
-  }
-  configmanagement_clusters = {
-    "default" = ["cluster-1", "cluster-2"]
   }
 
   # Policy Controller configuration (separate from Config Management)
@@ -771,11 +797,6 @@ module "hub" {
       }
     }
   }
-
-  policycontroller_clusters = {
-    "strict"     = ["cluster-1"]
-    "permissive" = ["cluster-2"]
-  }
 }
 # tftest modules=8 resources=47 inventory=policycontroller.yaml
 ```
@@ -784,18 +805,14 @@ module "hub" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L229) | GKE hub project ID. | <code>string</code> | ✓ |  |
-| [clusters](variables.tf#L17) | Clusters members of this GKE Hub in name => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [configmanagement_clusters](variables.tf#L24) | Config management features enabled on specific sets of member clusters, in config name => [cluster name] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [configmanagement_templates](variables.tf#L38) | Sets of config management configurations that can be applied to member clusters, in config name => {options} format. | <code title="map&#40;object&#40;&#123;&#10;  version &#61; optional&#40;string&#41;&#10;  config_sync &#61; object&#40;&#123;&#10;    git &#61; optional&#40;object&#40;&#123;&#10;      sync_repo                 &#61; string&#10;      policy_dir                &#61; string&#10;      gcp_service_account_email &#61; optional&#40;string&#41;&#10;      https_proxy               &#61; optional&#40;string&#41;&#10;      secret_type               &#61; optional&#40;string, &#34;none&#34;&#41;&#10;      sync_branch               &#61; optional&#40;string&#41;&#10;      sync_rev                  &#61; optional&#40;string&#41;&#10;      sync_wait_secs            &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    prevent_drift &#61; optional&#40;bool&#41;&#10;    source_format &#61; optional&#40;string, &#34;hierarchy&#34;&#41;&#10;  &#125;&#41;&#10;  hierarchy_controller &#61; optional&#40;object&#40;&#123;&#10;    enable_hierarchical_resource_quota &#61; optional&#40;bool&#41;&#10;    enable_pod_tree_labels             &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  policy_controller &#61; optional&#40;any&#41; &#35; DEPRECATED: Use policycontroller_templates instead&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [features](variables.tf#L72) | Enable and configure fleet features. | <code title="object&#40;&#123;&#10;  appdevexperience             &#61; optional&#40;bool, false&#41;&#10;  configmanagement             &#61; optional&#40;bool, false&#41;&#10;  identityservice              &#61; optional&#40;bool, false&#41;&#10;  multiclusteringress          &#61; optional&#40;string, null&#41;&#10;  multiclusterservicediscovery &#61; optional&#40;bool, false&#41;&#10;  policycontroller             &#61; optional&#40;bool, false&#41;&#10;  servicemesh                  &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [fleet_default_member_config](variables.tf#L87) | Fleet default member config. | <code title="object&#40;&#123;&#10;  mesh &#61; optional&#40;object&#40;&#123;&#10;    management &#61; optional&#40;string, &#34;MANAGEMENT_AUTOMATIC&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  configmanagement &#61; optional&#40;object&#40;&#123;&#10;    version &#61; optional&#40;string&#41;&#10;    config_sync &#61; optional&#40;object&#40;&#123;&#10;      prevent_drift &#61; optional&#40;bool&#41;&#10;      source_format &#61; optional&#40;string, &#34;hierarchy&#34;&#41;&#10;      enabled       &#61; optional&#40;bool&#41;&#10;      git &#61; optional&#40;object&#40;&#123;&#10;        gcp_service_account_email &#61; optional&#40;string&#41;&#10;        https_proxy               &#61; optional&#40;string&#41;&#10;        policy_dir                &#61; optional&#40;string&#41;&#10;        secret_type               &#61; optional&#40;string, &#34;none&#34;&#41;&#10;        sync_branch               &#61; optional&#40;string&#41;&#10;        sync_repo                 &#61; optional&#40;string&#41;&#10;        sync_rev                  &#61; optional&#40;string&#41;&#10;        sync_wait_secs            &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  policycontroller &#61; optional&#40;object&#40;&#123;&#10;    version &#61; optional&#40;string&#41;&#10;    policy_controller_hub_config &#61; object&#40;&#123;&#10;      audit_interval_seconds     &#61; optional&#40;number&#41;&#10;      constraint_violation_limit &#61; optional&#40;number&#41;&#10;      exemptable_namespaces      &#61; optional&#40;list&#40;string&#41;&#41;&#10;      install_spec               &#61; optional&#40;string&#41;&#10;      log_denies_enabled         &#61; optional&#40;bool&#41;&#10;      mutation_enabled           &#61; optional&#40;bool&#41;&#10;      referential_rules_enabled  &#61; optional&#40;bool&#41;&#10;      deployment_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;        container_resources &#61; optional&#40;object&#40;&#123;&#10;          limits &#61; optional&#40;object&#40;&#123;&#10;            cpu    &#61; optional&#40;string&#41;&#10;            memory &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          requests &#61; optional&#40;object&#40;&#123;&#10;            cpu    &#61; optional&#40;string&#41;&#10;            memory &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        pod_affinity &#61; optional&#40;string&#41;&#10;        pod_toleration &#61; optional&#40;list&#40;object&#40;&#123;&#10;          key      &#61; optional&#40;string&#41;&#10;          operator &#61; optional&#40;string&#41;&#10;          value    &#61; optional&#40;string&#41;&#10;          effect   &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;, &#91;&#93;&#41;&#10;        replica_count &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      monitoring &#61; optional&#40;object&#40;&#123;&#10;        backends &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      policy_content &#61; optional&#40;object&#40;&#123;&#10;        bundles &#61; optional&#40;map&#40;object&#40;&#123;&#10;          exempted_namespaces &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        template_library &#61; optional&#40;object&#40;&#123;&#10;          installation &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [location](variables.tf#L159) | GKE hub location, will also be used for the membership location. | <code>string</code> |  | <code>null</code> |
-| [policycontroller_clusters](variables.tf#L166) | Policy Controller configuration enabled on specific sets of member clusters, in config name => [cluster name] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policycontroller_templates](variables.tf#L180) | Sets of Policy Controller configurations that can be applied to member clusters, in config name => {options} format. | <code title="map&#40;object&#40;&#123;&#10;  version &#61; optional&#40;string&#41;&#10;  policy_controller_hub_config &#61; object&#40;&#123;&#10;    audit_interval_seconds     &#61; optional&#40;number&#41;&#10;    constraint_violation_limit &#61; optional&#40;number&#41;&#10;    exemptable_namespaces      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    install_spec               &#61; optional&#40;string&#41;&#10;    log_denies_enabled         &#61; optional&#40;bool&#41;&#10;    mutation_enabled           &#61; optional&#40;bool&#41;&#10;    referential_rules_enabled  &#61; optional&#40;bool&#41;&#10;    deployment_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;      container_resources &#61; optional&#40;object&#40;&#123;&#10;        limits &#61; optional&#40;object&#40;&#123;&#10;          cpu    &#61; optional&#40;string&#41;&#10;          memory &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        requests &#61; optional&#40;object&#40;&#123;&#10;          cpu    &#61; optional&#40;string&#41;&#10;          memory &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      pod_affinity &#61; optional&#40;string&#41;&#10;      pod_tolerations &#61; optional&#40;list&#40;object&#40;&#123;&#10;        key      &#61; optional&#40;string&#41;&#10;        operator &#61; optional&#40;string&#41;&#10;        value    &#61; optional&#40;string&#41;&#10;        effect   &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;, &#91;&#93;&#41;&#10;      replica_count &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    monitoring &#61; optional&#40;object&#40;&#123;&#10;      backends &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    policy_content &#61; optional&#40;object&#40;&#123;&#10;      bundles &#61; optional&#40;map&#40;object&#40;&#123;&#10;        exempted_namespaces &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      template_library &#61; optional&#40;object&#40;&#123;&#10;        installation &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [servicemesh_clusters](variables.tf#L234) | Service Mesh configuration enabled on specific sets of member clusters, in config name => [cluster name] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [servicemesh_templates](variables.tf#L248) | Sets of Service Mesh configurations that can be applied to member clusters, in config name => {options} format. | <code title="map&#40;object&#40;&#123;&#10;  management &#61; optional&#40;string, &#34;MANAGEMENT_AUTOMATIC&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [workload_identity_clusters](variables.tf#L257) | Clusters that will use Fleet Workload Identity. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [project_id](variables.tf#L207) | GKE hub project ID. | <code>string</code> | ✓ |  |
+| [clusters](variables.tf#L17) | A map of GKE clusters to register with GKE Hub and their associated feature configurations. The key is a logical name for the cluster, and the value is an object describing the cluster and its features. | <code title="map&#40;object&#40;&#123;&#10;  id                &#61; string&#10;  configmanagement  &#61; optional&#40;string&#41;&#10;  policycontroller  &#61; optional&#40;string&#41;&#10;  servicemesh       &#61; optional&#40;string&#41;&#10;  workload_identity &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [configmanagement_templates](variables.tf#L30) | Sets of config management configurations that can be applied to member clusters, in config name => {options} format. | <code title="map&#40;object&#40;&#123;&#10;  version &#61; optional&#40;string&#41;&#10;  config_sync &#61; object&#40;&#123;&#10;    git &#61; optional&#40;object&#40;&#123;&#10;      sync_repo                 &#61; string&#10;      policy_dir                &#61; string&#10;      gcp_service_account_email &#61; optional&#40;string&#41;&#10;      https_proxy               &#61; optional&#40;string&#41;&#10;      secret_type               &#61; optional&#40;string, &#34;none&#34;&#41;&#10;      sync_branch               &#61; optional&#40;string&#41;&#10;      sync_rev                  &#61; optional&#40;string&#41;&#10;      sync_wait_secs            &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    prevent_drift &#61; optional&#40;bool&#41;&#10;    source_format &#61; optional&#40;string, &#34;hierarchy&#34;&#41;&#10;  &#125;&#41;&#10;  hierarchy_controller &#61; optional&#40;object&#40;&#123;&#10;    enable_hierarchical_resource_quota &#61; optional&#40;bool&#41;&#10;    enable_pod_tree_labels             &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  policy_controller &#61; optional&#40;any&#41; &#35; DEPRECATED: Use policycontroller_templates instead&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [features](variables.tf#L64) | Enable and configure fleet features. | <code title="object&#40;&#123;&#10;  appdevexperience             &#61; optional&#40;bool, false&#41;&#10;  configmanagement             &#61; optional&#40;bool, false&#41;&#10;  identityservice              &#61; optional&#40;bool, false&#41;&#10;  multiclusteringress          &#61; optional&#40;string, null&#41;&#10;  multiclusterservicediscovery &#61; optional&#40;bool, false&#41;&#10;  policycontroller             &#61; optional&#40;bool, false&#41;&#10;  servicemesh                  &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [fleet_default_member_config](variables.tf#L79) | Fleet default member config. | <code title="object&#40;&#123;&#10;  mesh &#61; optional&#40;object&#40;&#123;&#10;    management &#61; optional&#40;string, &#34;MANAGEMENT_AUTOMATIC&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  configmanagement &#61; optional&#40;object&#40;&#123;&#10;    version &#61; optional&#40;string&#41;&#10;    config_sync &#61; optional&#40;object&#40;&#123;&#10;      prevent_drift &#61; optional&#40;bool&#41;&#10;      source_format &#61; optional&#40;string, &#34;hierarchy&#34;&#41;&#10;      enabled       &#61; optional&#40;bool&#41;&#10;      git &#61; optional&#40;object&#40;&#123;&#10;        gcp_service_account_email &#61; optional&#40;string&#41;&#10;        https_proxy               &#61; optional&#40;string&#41;&#10;        policy_dir                &#61; optional&#40;string&#41;&#10;        secret_type               &#61; optional&#40;string, &#34;none&#34;&#41;&#10;        sync_branch               &#61; optional&#40;string&#41;&#10;        sync_repo                 &#61; optional&#40;string&#41;&#10;        sync_rev                  &#61; optional&#40;string&#41;&#10;        sync_wait_secs            &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  policycontroller &#61; optional&#40;object&#40;&#123;&#10;    version &#61; optional&#40;string&#41;&#10;    policy_controller_hub_config &#61; object&#40;&#123;&#10;      audit_interval_seconds     &#61; optional&#40;number&#41;&#10;      constraint_violation_limit &#61; optional&#40;number&#41;&#10;      exemptable_namespaces      &#61; optional&#40;list&#40;string&#41;&#41;&#10;      install_spec               &#61; optional&#40;string&#41;&#10;      log_denies_enabled         &#61; optional&#40;bool&#41;&#10;      mutation_enabled           &#61; optional&#40;bool&#41;&#10;      referential_rules_enabled  &#61; optional&#40;bool&#41;&#10;      deployment_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;        container_resources &#61; optional&#40;object&#40;&#123;&#10;          limits &#61; optional&#40;object&#40;&#123;&#10;            cpu    &#61; optional&#40;string&#41;&#10;            memory &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;          requests &#61; optional&#40;object&#40;&#123;&#10;            cpu    &#61; optional&#40;string&#41;&#10;            memory &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;&#10;        pod_affinity &#61; optional&#40;string&#41;&#10;        pod_toleration &#61; optional&#40;list&#40;object&#40;&#123;&#10;          key      &#61; optional&#40;string&#41;&#10;          operator &#61; optional&#40;string&#41;&#10;          value    &#61; optional&#40;string&#41;&#10;          effect   &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;, &#91;&#93;&#41;&#10;        replica_count &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      monitoring &#61; optional&#40;object&#40;&#123;&#10;        backends &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      policy_content &#61; optional&#40;object&#40;&#123;&#10;        bundles &#61; optional&#40;map&#40;object&#40;&#123;&#10;          exempted_namespaces &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#41;&#10;        template_library &#61; optional&#40;object&#40;&#123;&#10;          installation &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [location](variables.tf#L151) | GKE hub location, will also be used for the membership location. | <code>string</code> |  | <code>null</code> |
+| [policycontroller_templates](variables.tf#L158) | Sets of Policy Controller configurations that can be applied to member clusters, in config name => {options} format. | <code title="map&#40;object&#40;&#123;&#10;  version &#61; optional&#40;string&#41;&#10;  policy_controller_hub_config &#61; object&#40;&#123;&#10;    audit_interval_seconds     &#61; optional&#40;number&#41;&#10;    constraint_violation_limit &#61; optional&#40;number&#41;&#10;    exemptable_namespaces      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    install_spec               &#61; optional&#40;string&#41;&#10;    log_denies_enabled         &#61; optional&#40;bool&#41;&#10;    mutation_enabled           &#61; optional&#40;bool&#41;&#10;    referential_rules_enabled  &#61; optional&#40;bool&#41;&#10;    deployment_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;      container_resources &#61; optional&#40;object&#40;&#123;&#10;        limits &#61; optional&#40;object&#40;&#123;&#10;          cpu    &#61; optional&#40;string&#41;&#10;          memory &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        requests &#61; optional&#40;object&#40;&#123;&#10;          cpu    &#61; optional&#40;string&#41;&#10;          memory &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      pod_affinity &#61; optional&#40;string&#41;&#10;      pod_tolerations &#61; optional&#40;list&#40;object&#40;&#123;&#10;        key      &#61; optional&#40;string&#41;&#10;        operator &#61; optional&#40;string&#41;&#10;        value    &#61; optional&#40;string&#41;&#10;        effect   &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;, &#91;&#93;&#41;&#10;      replica_count &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#41;&#10;    monitoring &#61; optional&#40;object&#40;&#123;&#10;      backends &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    policy_content &#61; optional&#40;object&#40;&#123;&#10;      bundles &#61; optional&#40;map&#40;object&#40;&#123;&#10;        exempted_namespaces &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#41;&#10;      template_library &#61; optional&#40;object&#40;&#123;&#10;        installation &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [servicemesh_templates](variables.tf#L212) | Sets of Service Mesh configurations that can be applied to member clusters, in config name => {options} format. | <code title="map&#40;object&#40;&#123;&#10;  management &#61; optional&#40;string, &#34;MANAGEMENT_AUTOMATIC&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

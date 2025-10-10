@@ -15,48 +15,33 @@
  */
 
 locals {
-  _cluster_cm_config = flatten([
-    for template, clusters in var.configmanagement_clusters : [
-      for cluster in clusters : {
-        cluster  = cluster
-        template = lookup(var.configmanagement_templates, template, null)
-      }
-    ]
-  ])
+  # Filter and prepare config management configurations
   cluster_cm_config = {
-    for k in local._cluster_cm_config : k.cluster => k.template if(
-      k.template != null &&
-      var.features.configmanagement == true
-    )
+    for key, cluster in var.clusters :
+    key => lookup(var.configmanagement_templates, cluster.configmanagement, null)
+    if cluster.configmanagement != null &&
+    var.features.configmanagement == true &&
+    lookup(var.configmanagement_templates, cluster.configmanagement, null) != null
   }
-  _cluster_pc_config = flatten([
-    for template, clusters in var.policycontroller_clusters : [
-      for cluster in clusters : {
-        cluster  = cluster
-        template = lookup(var.policycontroller_templates, template, null)
-      }
-    ]
-  ])
+
+  # Filter and prepare policy controller configurations
   cluster_pc_config = {
-    for k in local._cluster_pc_config : k.cluster => k.template if(
-      k.template != null &&
-      var.features.policycontroller == true
-    )
+    for key, cluster in var.clusters :
+    key => lookup(var.policycontroller_templates, cluster.policycontroller, null)
+    if cluster.policycontroller != null &&
+    var.features.policycontroller == true &&
+    lookup(var.policycontroller_templates, cluster.policycontroller, null) != null
   }
-  _cluster_mesh_config = flatten([
-    for template, clusters in var.servicemesh_clusters : [
-      for cluster in clusters : {
-        cluster  = cluster
-        template = lookup(var.servicemesh_templates, template, null)
-      }
-    ]
-  ])
+
+  # Filter and prepare service mesh configurations
   cluster_mesh_config = {
-    for k in local._cluster_mesh_config : k.cluster => k.template if(
-      k.template != null &&
-      var.features.servicemesh == true
-    )
+    for key, cluster in var.clusters :
+    key => lookup(var.servicemesh_templates, cluster.servicemesh, null)
+    if cluster.servicemesh != null &&
+    var.features.servicemesh == true &&
+    lookup(var.servicemesh_templates, cluster.servicemesh, null) != null
   }
+
   hub_features = {
     for k, v in var.features :
     k => v
@@ -72,15 +57,13 @@ resource "google_gke_hub_membership" "default" {
   membership_id = each.key
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/${each.value}"
+      resource_link = "//container.googleapis.com/${each.value.id}"
     }
   }
   dynamic "authority" {
-    for_each = (
-      contains(var.workload_identity_clusters, each.key) ? [1] : []
-    )
+    for_each = each.value.workload_identity ? [1] : []
     content {
-      issuer = "https://container.googleapis.com/v1/${var.clusters[each.key]}"
+      issuer = "https://container.googleapis.com/v1/${each.value.id}"
     }
   }
 }

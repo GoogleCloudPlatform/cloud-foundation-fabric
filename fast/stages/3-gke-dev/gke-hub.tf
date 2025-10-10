@@ -18,7 +18,7 @@
 
 locals {
   fleet_clusters = var.fleet_config == null ? {} : {
-    for k, v in var.clusters : k => v.fleet_config.configmanagement_template
+    for k, v in var.clusters : k => v.fleet_config
     if v.fleet_config.register == true
   }
   fleet_mcs_enabled = (
@@ -33,16 +33,16 @@ module "gke-hub" {
   count      = var.fleet_config != null ? 1 : 0
   project_id = module.gke-project-0.project_id
   clusters = {
-    for k, v in local.fleet_clusters : k => module.gke-cluster[k].id
+    for k, v in local.fleet_clusters : k => {
+      id                = module.gke-cluster[k].id
+      configmanagement  = v.configmanagement_template
+      policycontroller  = null # Can be extended if needed
+      servicemesh       = null # Can be extended if needed
+      workload_identity = var.fleet_config.use_workload_identity
+    }
   }
   features                   = var.fleet_config.enable_features
   configmanagement_templates = var.fleet_configmanagement_templates
-  configmanagement_clusters = {
-    for k, v in local.fleet_clusters : v => k...
-  }
-  workload_identity_clusters = (
-    var.fleet_config.use_workload_identity ? keys(local.fleet_clusters) : []
-  )
   depends_on = [
     module.gke-nodepool
   ]
