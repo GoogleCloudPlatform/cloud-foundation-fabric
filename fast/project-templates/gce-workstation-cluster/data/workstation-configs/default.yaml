@@ -1,0 +1,34 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../../modules/workstation-cluster/schemas/workstation-config.schema.json
+
+display_name: Default configuration.
+container:
+  image: us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest
+gce_instance:
+  disable_public_ip_addresses: true
+  machine_type: e2-medium
+  service_account: $iam_principals:service_accounts/prod-gce-ws-0/ws-default
+  service_account_scopes:
+    - https://www.googleapis.com/auth/cloud-platform
+persistent_directories:
+  - mount_path: /home
+    gce_pd:
+      size_gb: 10
+      fs_type: ext4
+      disk_type: pd-balanced
+      reclaim_policy: DELETE
+workstations:
+  test-0: {}

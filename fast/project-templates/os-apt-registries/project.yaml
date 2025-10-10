@@ -31,7 +31,6 @@ automation:
     rw:
       description: Read/write automation service account for apt registries.
   bucket:
-    description: Terraform state bucket for apt registries.
     # this reuses the existing stage state bucket and creates a folder in it
     name: iac-stage-state
     create: false
@@ -39,7 +38,7 @@ automation:
       os-apt:
         iam:
           roles/storage.objectCreator:
-            # the project id in the service account ref matches this file name
+            # TODO: the project id in the service account ref matches this file name
             - $iam_principals:service_accounts/os-apt-registries/automation/rw
           roles/storage.objectViewer:
             - $iam_principals:service_accounts/os-apt-registries/automation/rw

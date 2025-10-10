@@ -1,0 +1,117 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_workstations_workstation.workstations["my-workstation-config-my-workstation"]:
+    annotations: null
+    display_name: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+      team: my-team
+    env: null
+    labels:
+      team: my-team
+    location: europe-west8
+    project: dev-test-0
+    source_workstation: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+      team: my-team
+    timeouts: null
+    workstation_cluster_id: test-0
+    workstation_config_id: my-workstation-config
+    workstation_id: my-workstation
+  google_workstations_workstation_cluster.cluster:
+    annotations: null
+    display_name: null
+    domain_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west8
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    private_cluster_config:
+    - enable_private_endpoint: false
+    project: dev-test-0
+    subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/default
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    workstation_cluster_id: test-0
+  google_workstations_workstation_config.configs["my-workstation-config"]:
+    annotations: null
+    disable_tcp_connections: null
+    display_name: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_audit_agent: null
+    encryption_key: []
+    idle_timeout: 1200s
+    labels: null
+    location: europe-west8
+    project: dev-test-0
+    readiness_checks: []
+    running_timeout: 43200s
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    workstation_cluster_id: test-0
+    workstation_config_id: my-workstation-config
+  google_workstations_workstation_config_iam_binding.authoritative["my-workstation-config-roles/viewer"]:
+    condition: []
+    location: europe-west8
+    members:
+    - user:test-user2@example.com
+    project: dev-test-0
+    role: roles/viewer
+    workstation_cluster_id: test-0
+    workstation_config_id: my-workstation-config
+  google_workstations_workstation_config_iam_binding.bindings["my-workstation-config-workstations-config-viewer"]:
+    condition: []
+    location: europe-west8
+    members:
+    - user:test-user@example.com
+    project: dev-test-0
+    role: organizations/366118655033/roles/myRoleOne
+    workstation_cluster_id: test-0
+    workstation_config_id: my-workstation-config
+  google_workstations_workstation_config_iam_member.bindings["my-workstation-config-workstations-config-editor"]:
+    condition: []
+    location: europe-west8
+    member: group:group3@my-org.com
+    project: dev-test-0
+    role: roles/editor
+    workstation_cluster_id: test-0
+    workstation_config_id: my-workstation-config
+  google_workstations_workstation_iam_binding.authoritative["my-workstation-config-my-workstation-roles/workstations.user"]:
+    condition: []
+    location: europe-west8
+    members:
+    - user:test-user@example.com
+    project: dev-test-0
+    role: roles/workstations.user
+    workstation_cluster_id: test-0
+    workstation_config_id: my-workstation-config
+    workstation_id: my-workstation
+
+counts:
+  google_workstations_workstation: 1
+  google_workstations_workstation_cluster: 1
+  google_workstations_workstation_config: 1
+  google_workstations_workstation_config_iam_binding: 2
+  google_workstations_workstation_config_iam_member: 1
+  google_workstations_workstation_iam_binding: 1
+  modules: 0
+  resources: 7
