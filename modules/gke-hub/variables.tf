@@ -15,24 +15,16 @@
  */
 
 variable "clusters" {
-  description = "Clusters members of this GKE Hub in name => id format."
-  type        = map(string)
-  default     = {}
-  nullable    = false
-}
-
-variable "configmanagement_clusters" {
-  description = "Config management features enabled on specific sets of member clusters, in config name => [cluster name] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-  validation {
-    condition = alltrue([
-      for config_name in keys(var.configmanagement_clusters) :
-      contains(keys(var.configmanagement_templates), config_name)
-    ])
-    error_message = "All config names in 'configmanagement_clusters' must exist as keys in 'configmanagement_templates'."
-  }
+  description = "A map of GKE clusters to register with GKE Hub and their associated feature configurations. The key is a logical name for the cluster, and the value is an object describing the cluster and its features."
+  type = map(object({
+    id                = string
+    configmanagement  = optional(string)
+    policycontroller  = optional(string)
+    servicemesh       = optional(string)
+    workload_identity = optional(bool, false)
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "configmanagement_templates" {
@@ -163,20 +155,6 @@ variable "location" {
   nullable    = true
 }
 
-variable "policycontroller_clusters" {
-  description = "Policy Controller configuration enabled on specific sets of member clusters, in config name => [cluster name] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-  validation {
-    condition = alltrue([
-      for config_name in keys(var.policycontroller_clusters) :
-      contains(keys(var.policycontroller_templates), config_name)
-    ])
-    error_message = "All config names in 'policycontroller_clusters' must exist as keys in 'policycontroller_templates'."
-  }
-}
-
 variable "policycontroller_templates" {
   description = "Sets of Policy Controller configurations that can be applied to member clusters, in config name => {options} format."
   type = map(object({
@@ -231,20 +209,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "servicemesh_clusters" {
-  description = "Service Mesh configuration enabled on specific sets of member clusters, in config name => [cluster name] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
-  validation {
-    condition = alltrue([
-      for config_name in keys(var.servicemesh_clusters) :
-      contains(keys(var.servicemesh_templates), config_name)
-    ])
-    error_message = "All config names in 'servicemesh_clusters' must exist as keys in 'servicemesh_templates'."
-  }
-}
-
 variable "servicemesh_templates" {
   description = "Sets of Service Mesh configurations that can be applied to member clusters, in config name => {options} format."
   type = map(object({
@@ -252,11 +216,4 @@ variable "servicemesh_templates" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "workload_identity_clusters" {
-  description = "Clusters that will use Fleet Workload Identity."
-  type        = list(string)
-  default     = []
-  nullable    = false
 }
