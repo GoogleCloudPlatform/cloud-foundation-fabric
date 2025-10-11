@@ -15,7 +15,7 @@
 # Fabric release: v45.0.0
 
 terraform {
-  required_version = ">= 1.9.0"
+  required_version = ">= 1.10.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/cloud-deploy:v45.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/cloud-build-v2-connection:v45.0.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/cloud-deploy:v45.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/cloud-build-v2-connection:v45.0.0-tofu"
   }
 }
