@@ -18,7 +18,7 @@
 
 resource "google_compute_instance_group" "default" {
   for_each    = var.group_configs
-  project     = var.project_id
+  project     = local.project_id
   zone        = each.value.zone
   name        = "${var.name}-${each.key}"
   description = each.value.description

@@ -37,7 +37,7 @@ This module allows creation and management of VPC networks including subnetworks
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     {
@@ -64,7 +64,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     # simple subnet
@@ -120,7 +120,7 @@ Subnet IAM variables follow our general interface, with extra keys/members for t
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     {
@@ -169,7 +169,7 @@ If you only want to create the "local" side of the peering, use `peering_create_
 ```hcl
 module "vpc-hub" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "vpc-hub"
   subnets = [{
     ip_cidr_range = "10.0.0.0/24"
@@ -180,7 +180,7 @@ module "vpc-hub" {
 
 module "vpc-spoke-1" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "vpc-spoke1"
   subnets = [{
     ip_cidr_range = "10.0.1.0/24"
@@ -217,7 +217,7 @@ module "service-project" {
 
 module "vpc-host" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-host-network"
   subnets = [
     {
@@ -251,7 +251,7 @@ module "vpc-host" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     {
@@ -272,7 +272,7 @@ The module prefixes the PSA service to address range names, to disable this beha
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     {
@@ -294,7 +294,7 @@ Each PSA service can set a different prefix. Ranges will be allocated to the ser
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     {
@@ -326,7 +326,7 @@ Custom routes can be optionally exported/imported through the peering formed wit
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     {
@@ -350,7 +350,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   subnets = [
     {
@@ -385,7 +385,7 @@ Along with common private subnets module supports creation more service specific
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
 
   subnets_proxy_only = [
@@ -421,7 +421,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   network_attachments = {
     prod-ew1 = {
@@ -456,7 +456,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   dns_policy = {
     inbound = true
@@ -483,7 +483,7 @@ The `net-vpc` module includes a subnet factory for massive creation of subnets l
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   context = {
     regions = {
@@ -579,7 +579,7 @@ locals {
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
   for_each   = local.route_types
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network-with-route-${replace(each.key, "_", "-")}"
   routes = {
     next-hop = {
@@ -609,7 +609,7 @@ Policy based routes can be configured through the `policy_based_routes` variable
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-vpc"
   policy_based_routes = {
     skip-pbr-for-nva = {
@@ -643,7 +643,7 @@ By default the VPC module creates IPv4 routes for the [Private Google Access ran
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-vpc"
   create_googleapis_routes = {
     directpath   = false
@@ -662,7 +662,7 @@ module "vpc" {
 ```hcl
 module "vpc" {
   source                            = "./fabric/modules/net-vpc"
-  project_id                        = var.project_id
+  project_id                        = local.project_id
   name                              = "my-network"
   firewall_policy_enforcement_order = "BEFORE_CLASSIC_FIREWALL"
   subnets = [
@@ -692,7 +692,7 @@ A non-overlapping private IPv6 address space can be configured for the VPC via t
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   ipv6_config = {
     # internal_range is optional
@@ -726,7 +726,7 @@ An IPv6-only subnetwork can be specified by setting `ipv6_only` to `true` and se
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   ipv6_config = {
     enable_ula_internal = true
@@ -764,7 +764,7 @@ Google Cloud [Internal Ranges](https://cloud.google.com/vpc/docs/create-use-inte
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   internal_ranges = [
     {
@@ -793,7 +793,7 @@ Subnets can reference internal ranges instead of specifying explicit CIDR ranges
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   internal_ranges = [
     {
@@ -846,7 +846,7 @@ Internal ranges can be defined using YAML factory files, similar to the subnet f
 ```hcl
 module "vpc" {
   source     = "./fabric/modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "my-network"
   factories_config = {
     internal_ranges_folder = "config/internal-ranges"

@@ -122,6 +122,17 @@ variable "confidential_compute" {
   default     = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+    vpcs        = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "create_template" {
   description = "Create instance template instead of instances. Defaults to a global template."
   type = object({

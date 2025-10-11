@@ -22,7 +22,7 @@ locals {
 resource "google_compute_instance_template" "default" {
   provider                = google-beta
   count                   = local.template_create && !local.template_regional ? 1 : 0
-  project                 = var.project_id
+  project                 = local.project_id
   region                  = local.region
   name_prefix             = "${var.name}-"
   description             = var.description
@@ -127,8 +127,8 @@ resource "google_compute_instance_template" "default" {
     for_each = var.network_interfaces
     iterator = config
     content {
-      network    = config.value.network
-      subnetwork = config.value.subnetwork
+      network    = lookup(local.ctx.vpcs, config.value.network, config.value.network)
+      subnetwork = lookup(local.ctx.subnets, config.value.subnetwork, config.value.subnetwork)
       network_ip = try(config.value.addresses.internal, null)
       nic_type   = config.value.nic_type
       stack_type = config.value.stack_type
@@ -221,7 +221,7 @@ resource "google_compute_instance_template" "default" {
 resource "google_compute_region_instance_template" "default" {
   provider                = google-beta
   count                   = local.template_create && local.template_regional ? 1 : 0
-  project                 = var.project_id
+  project                 = local.project_id
   region                  = local.region
   name_prefix             = "${var.name}-"
   description             = var.description
@@ -326,8 +326,8 @@ resource "google_compute_region_instance_template" "default" {
     for_each = var.network_interfaces
     iterator = config
     content {
-      network    = config.value.network
-      subnetwork = config.value.subnetwork
+      network    = lookup(local.ctx.vpcs, config.value.network, config.value.network)
+      subnetwork = lookup(local.ctx.subnets, config.value.subnetwork, config.value.subnetwork)
       network_ip = try(config.value.addresses.internal, null)
       nic_type   = config.value.nic_type
       stack_type = config.value.stack_type

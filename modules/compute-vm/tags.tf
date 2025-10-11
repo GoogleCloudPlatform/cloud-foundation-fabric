@@ -46,7 +46,7 @@ locals {
   ])
   tag_parent_base = format(
     "//compute.googleapis.com/projects/%s",
-    coalesce(var.project_number, var.project_id)
+    coalesce(var.project_number, local.project_id)
   )
 }
 

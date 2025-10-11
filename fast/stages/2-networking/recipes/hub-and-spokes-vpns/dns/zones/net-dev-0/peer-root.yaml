@@ -1,0 +1,6 @@
+project_id: $project_ids:net-dev-0
+domain: .
+peering:
+  peer_network: $vpcs:hub
+  client_networks:
+    - $vpcs:dev

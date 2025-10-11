@@ -16,15 +16,15 @@
 
 resource "google_compute_firewall_policy" "hierarchical" {
   count       = local.use_hierarchical ? 1 : 0
-  parent      = var.parent_id
+  parent      = local.parent_id
   short_name  = var.name
   description = var.description
 }
 
 resource "google_compute_firewall_policy_association" "hierarchical" {
   for_each          = local.use_hierarchical ? var.attachments : {}
-  name              = "${var.name}-${each.key}"
-  attachment_target = each.value
+  name              = replace("${var.name}-${lookup(local.ctx.folders, each.key, each.key)}", "/", "-")
+  attachment_target = lookup(local.ctx.folders, each.value, each.value)
   firewall_policy   = google_compute_firewall_policy.hierarchical[0].name
 }
 

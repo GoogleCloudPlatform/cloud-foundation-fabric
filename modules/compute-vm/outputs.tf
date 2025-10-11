@@ -57,7 +57,7 @@ output "internal_ips" {
 
 output "login_command" {
   description = "Command to SSH into the machine."
-  value       = "gcloud compute ssh --project ${var.project_id} --zone ${var.zone} ${var.name}"
+  value       = "gcloud compute ssh --project ${local.project_id} --zone ${var.zone} ${var.name}"
 }
 
 output "self_link" {

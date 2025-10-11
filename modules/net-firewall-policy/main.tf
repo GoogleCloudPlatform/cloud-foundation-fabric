@@ -23,11 +23,18 @@ locals {
     for name, rule in merge(var.ingress_rules) :
     "ingress/${name}" => merge(rule, { name = name, direction = "INGRESS" })
   }
+  parent_id = lookup(local.ctx.folders, var.parent_id, var.parent_id)
   rules = merge(
     local.factory_egress_rules, local.factory_ingress_rules,
     local._rules_egress, local._rules_ingress
   )
   # do not depend on the parent id as that might be dynamic and prevent count
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p            = "$"
   use_hierarchical = var.region == null
   use_regional     = !local.use_hierarchical && var.region != "global"
 }

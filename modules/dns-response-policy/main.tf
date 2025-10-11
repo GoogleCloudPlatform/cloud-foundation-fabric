@@ -15,6 +15,15 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  networks   = [for n in var.networks : lookup(local.ctx.vpcs, n, n)]
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+
   _factory_data = (
     var.factories_config.rules != null
     ? file(pathexpand(var.factories_config.rules))
@@ -41,11 +50,11 @@ locals {
 resource "google_dns_response_policy" "default" {
   provider             = google-beta
   count                = var.policy_create ? 1 : 0
-  project              = var.project_id
+  project              = local.project_id
   description          = var.description
   response_policy_name = var.name
   dynamic "networks" {
-    for_each = var.networks
+    for_each = local.networks
     content {
       network_url = networks.value
     }
@@ -61,7 +70,7 @@ resource "google_dns_response_policy" "default" {
 resource "google_dns_response_policy_rule" "default" {
   provider        = google-beta
   for_each        = merge(local.factory_rules, var.rules)
-  project         = var.project_id
+  project         = local.project_id
   response_policy = local.policy_name
   rule_name       = each.key
   dns_name        = each.value.dns_name

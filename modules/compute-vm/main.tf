@@ -30,6 +30,14 @@ locals {
     for k, v in local.attached_disks :
     k => v if try(v.options.replica_zone, null) == null
   }
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+
   on_host_maintenance = (
     var.options.spot || var.confidential_compute || local.gpu
     ? "TERMINATE"
@@ -67,7 +75,7 @@ locals {
 
 resource "google_compute_disk" "boot" {
   count   = !local.template_create && var.boot_disk.use_independent_disk ? 1 : 0
-  project = var.project_id
+  project = local.project_id
   zone    = var.zone
   # by default, GCP creates boot disks with the same name as instance, the deviation here is kept for backwards
   # compatibility
@@ -93,7 +101,7 @@ resource "google_compute_disk" "disks" {
     for k, v in local.attached_disks_zonal :
     k => v if v.source_type != "attach"
   }
-  project  = var.project_id
+  project  = local.project_id
   zone     = var.zone
   name     = "${var.name}-${each.key}"
   type     = each.value.options.type
@@ -119,7 +127,7 @@ resource "google_compute_region_disk" "disks" {
     for k, v in local.attached_disks_regional :
     k => v if v.source_type != "attach"
   }
-  project       = var.project_id
+  project       = local.project_id
   region        = local.region
   replica_zones = [var.zone, each.value.options.replica_zone]
   name          = "${var.name}-${each.key}"
@@ -144,7 +152,7 @@ resource "google_compute_region_disk" "disks" {
 resource "google_compute_instance" "default" {
   provider                  = google-beta
   count                     = local.template_create ? 0 : 1
-  project                   = var.project_id
+  project                   = local.project_id
   zone                      = var.zone
   name                      = var.name
   hostname                  = var.hostname
@@ -263,8 +271,8 @@ resource "google_compute_instance" "default" {
     for_each = var.network_interfaces
     iterator = config
     content {
-      network    = config.value.network
-      subnetwork = config.value.subnetwork
+      network    = lookup(local.ctx.vpcs, config.value.network, config.value.network)
+      subnetwork = lookup(local.ctx.subnets, config.value.subnetwork, config.value.subnetwork)
       network_ip = try(config.value.addresses.internal, null)
       nic_type   = config.value.nic_type
       stack_type = config.value.stack_type
@@ -378,7 +386,7 @@ resource "google_compute_instance" "default" {
 }
 
 resource "google_compute_instance_iam_binding" "default" {
-  project       = var.project_id
+  project       = local.project_id
   for_each      = var.iam
   zone          = var.zone
   instance_name = var.name
@@ -389,12 +397,13 @@ resource "google_compute_instance_iam_binding" "default" {
 
 resource "google_compute_instance_group" "unmanaged" {
   count   = var.group != null && !local.template_create ? 1 : 0
-  project = var.project_id
+  project = local.project_id
   network = (
     length(var.network_interfaces) > 0
-    ? var.network_interfaces[0].network
+    ? lookup(local.ctx.vpcs, var.network_interfaces[0].network, var.network_interfaces[0].network)
     : ""
   )
+
   zone        = var.zone
   name        = var.name
   description = var.description
@@ -411,7 +420,7 @@ resource "google_compute_instance_group" "unmanaged" {
 
 resource "google_service_account" "service_account" {
   count        = try(var.service_account.auto_create, null) == true ? 1 : 0
-  project      = var.project_id
+  project      = local.project_id
   account_id   = "tf-vm-${var.name}"
   display_name = "Terraform VM ${var.name}."
 }

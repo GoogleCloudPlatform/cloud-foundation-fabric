@@ -1,0 +1,40 @@
+project_id: $project_ids:net-core-0
+name: main
+image: projects/cos-cloud/global/images/family/cos-stable
+instance_type: e2-standard-4
+region: europe-west12
+
+health_check:
+  tcp:
+    port: 22
+instance_groups:
+  # Keyed by zone
+  b:
+    auto_create_instances: 1
+    attach_instances:
+      - name1: self-link
+      - name2: self-link
+  c:
+    auto_create_instances: 1
+
+tags:
+  - nva
+  - test
+
+attachments:
+  - network: $vpcs:hub
+    subnet: $subnets:hub/europe-west12/hub-default
+    routes:
+      - 10.71.0.0/16
+    masquerade: true
+  - network: $vpcs:prod
+    subnet: $subnets:prod/europe-west12/prod-default
+    routes:
+      - 10.72.0.0/16
+  - network: $vpcs:dev
+    subnet: $subnets:dev/europe-west12/dev-default
+    routes:
+      - 10.73.0.0/16
+  - network: $vpcs:mgmt
+    subnet: $subnets:mgmt/europe-west12/mgmt-default
+    create_ilb: false
