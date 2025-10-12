@@ -35,7 +35,6 @@ values:
         \ []\n).hasOnly([\n  'roles/compute.networkAdmin'\n])\n"
       title: delegated_network_user_one
     members:
-    - group:gcp-organization-admins@example.com
     - group:organization-admins@example.org
     project: test-project
     role: roles/resourcemanager.projectIamAdmin

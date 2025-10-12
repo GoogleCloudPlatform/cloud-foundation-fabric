@@ -96,7 +96,7 @@ module "project" {
       my_role = "organizations/1234567890/roles/myRole"
     }
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam = {
@@ -125,7 +125,7 @@ module "project" {
       my_role = "organizations/1234567890/roles/myRole"
     }
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam_by_principals = {
@@ -161,7 +161,7 @@ module "project" {
       my_role = "organizations/1234567890/roles/myRole"
     }
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam_bindings = {
@@ -205,7 +205,7 @@ module "project" {
   ]
   context = {
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam_bindings_additive = {
