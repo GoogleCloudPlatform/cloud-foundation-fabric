@@ -46,7 +46,7 @@ values:
   module.project.google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - group:gcp-organization-admins@example.com
+    - group:organization-admins@example.org
     project: test-project
     role: roles/owner
 
