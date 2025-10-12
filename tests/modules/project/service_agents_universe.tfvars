@@ -8,13 +8,13 @@ shared_vpc_service_config = {
     "roles/compute.networkUser" = [
       "$service_agents:cloudservices", "$service_agents:container-engine"
     ]
-    "roles/vpcaccess.user" = [
-      "$service_agents:cloudrun"
-    ]
     "roles/container.hostServiceAgentUser" = [
       "$service_agents:container-engine"
     ]
   }
+  service_iam_grants = [
+    "$service_agents:run.googleapis.com"
+  ]
 }
 project_reuse = {
   use_data_source = false
