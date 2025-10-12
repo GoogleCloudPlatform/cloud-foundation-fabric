@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,32 +15,49 @@
 values:
   module.project.google_project.project[0]:
     auto_create_network: false
-    billing_account: 123456-123456-123456
+    billing_account: null
     deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
-    folder_id: '1122334455'
+    folder_id: null
     labels: null
-    name: test-project
+    name: project
     org_id: null
-    project_id: test-project
+    project_id: project
     tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.project.google_project_iam_binding.authoritative["projects/project/roles/myRole"]:
+    condition: []
+    members:
+    - group:organization-admins@example.org
+    project: project
+    role: projects/project/roles/myRole
   module.project.google_project_iam_binding.bindings["iam_admin_conditional"]:
     condition:
     - description: null
+      expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
+        \ []\n).hasOnly([\n  'organizations/1234567890/roles/myRole'\n])\n"
       title: delegated_custom_role
     members:
+    - $iam_principals:org_admins
     - group:organization-admins@example.org
-    project: test-project
+    project: project
     role: roles/resourcemanager.projectIamAdmin
+  module.project.google_project_iam_custom_role.roles["myRole"]:
+    description: Terraform-managed.
+    permissions:
+    - compute.instances.list
+    project: project
+    role_id: myRole
+    stage: GA
+    title: Custom role myRole
 
 counts:
   google_project: 1
-  google_project_iam_binding: 1
-  google_project_service: 1
+  google_project_iam_binding: 2
+  google_project_iam_custom_role: 1
   modules: 1
   resources: 4
 
