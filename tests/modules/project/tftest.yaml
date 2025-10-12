@@ -19,13 +19,15 @@ common_tfvars:
 
 tests:
   context:
-  prefix:
+  iam_by_principals_additive:
+  no_parent:
   no_prefix:
+  org_policies_boolean:
+  org_policies_list:
   parent_folder:
   parent_org:
-  no_parent:
+  prefix:
   service_encryption_keys:
-  org_policies_list:
-  org_policies_boolean:
-  iam_by_principals_additive:
+  service_agents:
+  service_agents_universe:
   universe:
