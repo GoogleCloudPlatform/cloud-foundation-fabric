@@ -52,7 +52,7 @@ The simplest example leverages defaults for the boot disk image and size, and us
 ```hcl
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -79,7 +79,7 @@ Scopes for custom service accounts are set by default to `cloud-platform` and `u
 ```hcl
 module "vm-managed-sa-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test1"
   network_interfaces = [{
@@ -95,7 +95,7 @@ module "vm-managed-sa-example" {
 ```hcl
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test2"
   network_interfaces = [{
@@ -114,7 +114,7 @@ module "vm-managed-sa-example2" {
 ```hcl
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test2"
   network_interfaces = [{
@@ -133,7 +133,7 @@ module "vm-managed-sa-example2" {
 ```hcl
 module "vm-managed-sa-example2" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test2"
   network_interfaces = [{
@@ -161,7 +161,7 @@ This is an example of attaching a pre-existing regional PD to a new instance:
 ```hcl
 module "vm-disks-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -189,7 +189,7 @@ And the same example for an instance template (where not using the full self lin
 ```hcl
 module "vm-disks-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -200,7 +200,7 @@ module "vm-disks-example" {
     name        = "repd"
     size        = 10
     source_type = "attach"
-    source      = "https://www.googleapis.com/compute/v1/projects/${local.project_id}/regions/${var.region}/disks/repd-test-1"
+    source      = "https://www.googleapis.com/compute/v1/projects/${var.project_id}/regions/${var.region}/disks/repd-test-1"
     options = {
       replica_zone = "${var.region}-c"
     }
@@ -220,7 +220,7 @@ The `attached_disks` variable exposes an `option` attribute that can be used to 
 ```hcl
 module "vm-disk-options-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -265,7 +265,7 @@ This will create the boot disk as its own resource and attach it to the instance
 ```hcl
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   boot_disk = {
@@ -292,7 +292,7 @@ By default VNs are create with an automatically assigned IP addresses, but you c
 ```hcl
 module "vm-internal-ip" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "vm-internal-ip"
   network_interfaces = [{
@@ -304,7 +304,7 @@ module "vm-internal-ip" {
 
 module "vm-external-ip" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "vm-external-ip"
   network_interfaces = [{
@@ -324,7 +324,7 @@ This example shows how to add additional [Alias IPs](https://cloud.google.com/vp
 ```hcl
 module "vm-with-alias-ips" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -346,7 +346,7 @@ Note: most recent Google-provided images do enable `GVNIC` and no custom image i
 
 ```hcl
 resource "google_compute_image" "cos-gvnic" {
-  project      = local.project_id
+  project      = var.project_id
   name         = "my-image"
   source_image = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-89-16108-534-18"
 
@@ -366,7 +366,7 @@ resource "google_compute_image" "cos-gvnic" {
 
 module "vm-with-gvnic" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   boot_disk = {
@@ -396,18 +396,18 @@ module "vm-with-gvnic" {
 # create the network attachment from a service project
 module "net-attachment" {
   source     = "./fabric/modules/net-address"
-  project_id = local.project_id
+  project_id = var.project_id
   network_attachments = {
     svc-0 = {
       subnet_self_link      = module.vpc.subnet_self_links["${var.region}/ipv6-internal"]
-      producer_accept_lists = [local.project_id]
+      producer_accept_lists = [var.project_id]
     }
   }
 }
 
 module "vm-psc-interface" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "vm-internal-ip"
   network_interfaces = [{
@@ -428,7 +428,7 @@ You can define labels and custom metadata values. Metadata can be leveraged, for
 ```hcl
 module "vm-metadata-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "nginx-server"
   network_interfaces = [{
@@ -460,7 +460,7 @@ Like most modules, you can assign IAM roles to the instance using the `iam` vari
 ```hcl
 module "vm-iam-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "webserver"
   network_interfaces = [{
@@ -484,7 +484,7 @@ module "vm-iam-example" {
 ```hcl
 module "spot-vm-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   options = {
@@ -506,7 +506,7 @@ You can enable confidential compute with the `confidential_compute` variable, wh
 ```hcl
 module "vm-confidential-example" {
   source               = "./fabric/modules/compute-vm"
-  project_id           = local.project_id
+  project_id           = var.project_id
   zone                 = "${var.region}-b"
   name                 = "confidential-vm"
   confidential_compute = true
@@ -524,7 +524,7 @@ module "vm-confidential-example" {
 
 module "template-confidential-example" {
   source               = "./fabric/modules/compute-vm"
-  project_id           = local.project_id
+  project_id           = var.project_id
   zone                 = "${var.region}-b"
   name                 = "confidential-template"
   confidential_compute = true
@@ -623,7 +623,7 @@ Advanced machine features can be configured via the `options.advanced_machine_fe
 ```hcl
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -650,7 +650,7 @@ This example shows how to use the module to manage an instance template that def
 ```hcl
 module "cos-test" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -680,7 +680,7 @@ A regional template can be created by setting `var.create_template.regional`.
 ```hcl
 module "cos-test" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -716,7 +716,7 @@ locals {
 
 module "instance-group" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "ilb-test"
   network_interfaces = [{
@@ -747,7 +747,7 @@ One instance start and stop schedule can be defined via the `instance_schedule` 
 ```hcl
 module "instance" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "schedule-test"
   network_interfaces = [{
@@ -760,7 +760,7 @@ module "instance" {
     }
   }
   resource_policies = [
-    "projects/${local.project_id}/regions/${var.region}/resourcePolicies/test"
+    "projects/${var.project_id}/regions/${var.region}/resourcePolicies/test"
   ]
 }
 # tftest inventory=instance-schedule-id.yaml
@@ -771,11 +771,11 @@ To create a new policy set its configuration in the `instance_schedule` variable
 ```hcl
 module "project" {
   source = "./fabric/modules/project"
-  name   = local.project_id
+  name   = var.project_id
   project_reuse = {
     use_data_source = false
     attributes = {
-      name             = local.project_id
+      name             = var.project_id
       number           = var.project_number
       services_enabled = ["compute.googleapis.com"]
     }
@@ -818,7 +818,7 @@ Snapshot policies can be attached to disks with optional creation managed by the
 ```hcl
 module "instance" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "schedule-test"
   network_interfaces = [{
@@ -869,7 +869,7 @@ This is an example of setting non-immutable tag bindings:
 ```hcl
 module "simple-vm-example" {
   source         = "./fabric/modules/compute-vm"
-  project_id     = local.project_id
+  project_id     = var.project_id
   project_number = 12345678
   zone           = "${var.region}-b"
   name           = "test"
@@ -889,7 +889,7 @@ This example uses immutable tag bindings, and will trigger recreation if those a
 ```hcl
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
+  project_id = var.project_id
   zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
@@ -910,7 +910,7 @@ You can add node affinities (and anti-affinity) configurations to allocate the V
 ```hcl
 module "sole-tenancy" {
   source        = "./fabric/modules/compute-vm"
-  project_id    = local.project_id
+  project_id    = var.project_id
   zone          = "${var.region}-b"
   instance_type = "n1-standard-1"
   name          = "test"
@@ -951,7 +951,7 @@ module "sole-tenancy" {
 | [description](variables.tf#L151) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
 | [enable_display](variables.tf#L157) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
 | [encryption](variables.tf#L163) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;  encrypt_boot            &#61; optional&#40;bool, false&#41;&#10;  disk_encryption_key_raw &#61; optional&#40;string&#41;&#10;  kms_key_self_link       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [gpu](variables.tf#L173) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [gpu](variables.tf#L173) | GPU information. Based on <https://cloud.google.com/compute/docs/gpus>. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [group](variables.tf#L208) | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;  named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [hostname](variables.tf#L216) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L222) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
