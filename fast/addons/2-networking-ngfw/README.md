@@ -85,6 +85,25 @@ iam_by_principals:
     - $custom_roles:ngfw_enterprise_viewer
 ```
 
+If VPC-SC is used, an additional ingress policy needs to be added to the perimeter to allow the NGFW service agent to reach the Certificate Authority Service. Edit and enable the following policy.
+
+```yaml
+from:
+  access_levels:
+    - "*"
+  identities:
+    # TODO: change to actual NGFW service identity
+    - serviceAccount:service-1234567890@gcp-sa-networksecurity.iam.gserviceaccount.com
+to:
+  operations:
+    - method_selectors:
+        - "*"
+      service_name: privateca.googleapis.com
+  resources:
+    # TODO: change to project number where CAS lives
+    - projects/1234567890
+```
+
 ### Provider and Terraform variables
 
 As all other FAST stages, the [mechanism used to pass variable values and pre-built provider files from one stage to the next](../../stages/0-org-setup/README.md#output-files-and-cross-stage-variables) is also leveraged here.
