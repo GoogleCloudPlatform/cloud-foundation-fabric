@@ -218,10 +218,7 @@ resource "google_compute_instance_template" "default" {
   dynamic "service_account" {
     for_each = var.service_account == null ? [] : [""]
     content {
-      email = try(
-        local.ctx.iam_principals[var.service_account.email],
-        var.service_account.email
-      )
+      email  = local.service_account.email
       scopes = local.service_account.scopes
     }
   }
@@ -431,10 +428,7 @@ resource "google_compute_region_instance_template" "default" {
   dynamic "service_account" {
     for_each = var.service_account == null ? [] : [""]
     content {
-      email = try(
-        local.ctx.iam_principals[var.service_account.email],
-        var.service_account.email
-      )
+      email  = local.service_account.email
       scopes = local.service_account.scopes
     }
   }

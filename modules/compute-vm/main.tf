@@ -46,10 +46,12 @@ locals {
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   region     = lookup(local.ctx.locations, local._region, local._region)
   service_account = var.service_account == null ? null : {
-    email = (
-      var.service_account.auto_create
+    email = (var.service_account.auto_create
       ? google_service_account.service_account[0].email
-      : try(local.ctx.iam_principals[var.service_account.email], var.service_account.email)
+      : try(
+        local.ctx.iam_principals[var.service_account.email],
+        var.service_account.email
+      )
     )
     scopes = (
       var.service_account.scopes != null ? var.service_account.scopes : (
@@ -390,10 +392,7 @@ resource "google_compute_instance" "default" {
   dynamic "service_account" {
     for_each = var.service_account == null ? [] : [""]
     content {
-      email = try(
-        local.ctx.iam_principals[var.service_account.email],
-        var.service_account.email
-      )
+      email  = local.service_account.email
       scopes = local.service_account.scopes
     }
   }
