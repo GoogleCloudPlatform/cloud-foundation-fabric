@@ -41,40 +41,36 @@ env:
   DEFAULT_TOFU_VERSION: "1.10.0"
 
 jobs:
-  compute-matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      DEFAULT_TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
-      DEFAULT_TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
-      DEFAULT_TOFU_VERSION: ${{ env.DEFAULT_TOFU_VERSION }}
-    steps:
-      - name: dummy
-        run: echo
-
   setup-tf-providers:
     runs-on: ubuntu-latest
-    needs:
-      - compute-matrix
     strategy:
       matrix:
         include:
           - flavour: terraform
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
           - flavour: tofu
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
     steps:
       - uses: actions/checkout@v4
+      - name: Set Terraform versions
+        run: |
+          set -e -o xtrace
+          if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+          elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
+          else
+            echo TERRAFORM_VERSION=unkown_flavor | tee -a ${GITHUB_ENV}
+          fi
 
       - uses: hashicorp/setup-terraform@v3
         if: ${{ matrix.flavour == 'terraform' }}
         with:
-          terraform_version: ${{ matrix.version  }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
 
       - uses: opentofu/setup-opentofu@v1
         if: ${{ matrix.flavour == 'tofu' }}
         with:
-          tofu_version: ${{ matrix.version }}
+          tofu_version: ${{ env.TERRAFORM_VERSION }}
           tofu_wrapper: false
 
       - name: Build lockfile and fetch providers
@@ -86,7 +82,7 @@ jobs:
           sed -i -e 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/versions.tf tools/lockfile/versions.tofu
 
           # change terraform version to the one that is running
-          sed -i 's/required_version = .*$/required_version = ">= ${{ matrix.version }}"/g' tools/lockfile/versions.tf
+          sed -i 's/required_version = .*$/required_version = ">= ${{ env.TERRAFORM_VERSION  }}"/g' tools/lockfile/versions.tf
 
           cd tools/lockfile
           ${{ matrix.flavour }} init -upgrade=true
@@ -95,12 +91,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-${{ matrix.flavour }}-${{ matrix.version }}-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
+          key: ${{ runner.os }}-${{ matrix.flavour }}-${{ env.TERRAFORM_VERSION }}-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
 
       - name: Upload lockfile
         uses: actions/upload-artifact@v4
         with:
-          name: lockfile-${{ runner.os }}-${{ matrix.flavour }}-${{ matrix.version }}
+          name: lockfile-${{ runner.os }}-${{ matrix.flavour }}-${{ env.TERRAFORM_VERSION }}
           path: tools/lockfile/.terraform.lock.hcl
           overwrite: true
           include-hidden-files: true
@@ -131,23 +127,30 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - setup-tf-providers
-      - compute-matrix
     strategy:
       matrix:
         include:
           - flavour: terraform
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
           - flavour: tofu
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
     steps:
       - uses: actions/checkout@v4
+      - name: Set Terraform versions
+        run: |
+          set -e -o xtrace
+          if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+          elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
+          else
+            echo TERRAFORM_VERSION=unkown_flavor | tee -a ${GITHUB_ENV}
+          fi
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ matrix.version }}
+          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
           TERRAFORM_FLAVOUR: ${{ matrix.flavour }}
 
       - name: Run tests on documentation examples
@@ -165,17 +168,24 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - setup-tf-providers
-      - compute-matrix
     strategy:
       matrix:
         include:
           - flavour: terraform
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TERRAFORM_VERSION }}"
           - flavour: tofu
-            version: "${{ needs.compute-matrix.outputs.DEFAULT_TOFU_VERSION }}"
 
     steps:
       - uses: actions/checkout@v4
+      - name: Set Terraform versions
+        run: |
+          set -e -o xtrace
+          if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+          elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
+          else
+            echo TERRAFORM_VERSION=unkown_flavor | tee -a ${GITHUB_ENV}
+          fi
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
@@ -183,7 +193,7 @@ jobs:
           TERRAFORM: ${{ matrix.flavour }}
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ matrix.version }}
+          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
           TERRAFORM_FLAVOUR: ${{ matrix.flavour }}
 
       - name: Run tests modules
@@ -200,15 +210,30 @@ jobs:
   fast:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
+    strategy:
+      matrix:
+        include:
+        - flavour: terraform
+        # - flavour: tofu # tofu fails to find the terraform binary for FAST tests
     steps:
       - uses: actions/checkout@v4
+      - name: Set Terraform versions
+        run: |
+          set -e -o xtrace
+          if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+          elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
+            echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
+          else
+            echo TERRAFORM_VERSION=unkown_flavor | tee -a ${GITHUB_ENV}
+          fi
 
       - name: Call composite action fabric-tests
         uses: ./.github/actions/fabric-tests
         with:
           PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
-          TERRAFORM_VERSION: ${{ env.DEFAULT_TERRAFORM_VERSION }}
-          TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
+          TERRAFORM_VERSION: ${{ env.TERRAFORM_VERSION }}
+          TERRAFORM_FLAVOUR: ${{ matrix.flavour }}
 
       - name: Run tests on FAST stages
         run: pytest -vv -n4 --tb=line --junit-xml=test-results-raw.xml tests/fast
