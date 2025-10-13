@@ -2399,10 +2399,15 @@ values:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/compute.xpnAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/compute.viewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"]:
     condition: []
     members:
@@ -2772,7 +2777,7 @@ counts:
   google_logging_project_bucket_config: 3
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
-  google_organization_iam_binding: 35
+  google_organization_iam_binding: 36
   google_organization_iam_custom_role: 9
   google_project: 3
   google_project_iam_binding: 16
@@ -2793,5 +2798,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 46
-  resources: 310
+  resources: 311
   terraform_data: 2

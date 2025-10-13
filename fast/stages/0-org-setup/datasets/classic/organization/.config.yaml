@@ -14,7 +14,7 @@
 
 # TODO: data access logs
 
-# yaml-language-server: $schema=../../../schemas/organization.schema.json
+# yaml-language-server: $schema=../../schemas/organization.schema.json
 
 id: $defaults:organization/id
 contacts:
@@ -83,7 +83,7 @@ iam_by_principals:
     - roles/compute.xpnAdmin
   $iam_principals:service_accounts/iac-0/iac-networking-ro:
     - roles/compute.orgFirewallPolicyUser
-    - roles/compute.xpnAdmin
+    - roles/compute.viewer
   $iam_principals:service_accounts/iac-0/iac-security-rw:
     - roles/cloudasset.viewer
   $iam_principals:service_accounts/iac-0/iac-vpcsc-rw:
