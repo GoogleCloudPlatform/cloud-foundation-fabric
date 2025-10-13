@@ -172,6 +172,18 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.hub.google_gke_hub_feature.default["policycontroller"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    fleet_default_member_config: []
+    labels: null
+    location: global
+    name: policycontroller
+    project: gkehub-test
+    spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.hub.google_gke_hub_feature_membership.default["cluster-1"]:
     configmanagement:
     - config_sync:
@@ -194,14 +206,7 @@ values:
       - enable_hierarchical_resource_quota: true
         enable_pod_tree_labels: true
         enabled: true
-      policy_controller:
-      - audit_interval_seconds: '120'
-        enabled: true
-        exemptable_namespaces: null
-        log_denies_enabled: true
-        mutation_enabled: null
-        referential_rules_enabled: true
-        template_library_installed: true
+      policy_controller: []
       version: v1
     feature: configmanagement
     location: global
@@ -209,6 +214,27 @@ values:
     membership_location: europe-west1
     mesh: []
     policycontroller: []
+    project: gkehub-test
+    timeouts: null
+  module.hub.google_gke_hub_feature_membership.policycontroller["cluster-1"]:
+    configmanagement: []
+    feature: policycontroller
+    location: global
+    membership: cluster-1
+    membership_location: europe-west1
+    mesh: []
+    policycontroller:
+    - policy_controller_hub_config:
+      - audit_interval_seconds: 120
+        constraint_violation_limit: null
+        exemptable_namespaces:
+        - kube-system
+        - kube-public
+        install_spec: null
+        log_denies_enabled: true
+        mutation_enabled: null
+        referential_rules_enabled: true
+      version: v1.17.3
     project: gkehub-test
     timeouts: null
   module.hub.google_gke_hub_membership.default["cluster-1"]:
@@ -402,14 +428,14 @@ counts:
   google_compute_route: 3
   google_compute_subnetwork: 1
   google_container_cluster: 1
-  google_gke_hub_feature: 1
-  google_gke_hub_feature_membership: 1
+  google_gke_hub_feature: 2
+  google_gke_hub_feature_membership: 2
   google_gke_hub_membership: 1
   google_project: 1
   google_project_iam_member: 6
   google_project_service: 7
   google_project_service_identity: 5
   modules: 4
-  resources: 28
+  resources: 30
 
 outputs: {}
