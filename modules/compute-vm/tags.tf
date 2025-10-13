@@ -46,7 +46,7 @@ locals {
   ])
   tag_parent_base = format(
     "//compute.googleapis.com/projects/%s",
-    coalesce(var.project_number, var.project_id)
+    coalesce(var.project_number, local.project_id)
   )
 }
 
@@ -55,19 +55,19 @@ locals {
 resource "google_tags_location_tag_binding" "network" {
   for_each = local.template_create ? {} : var.network_tag_bindings
   parent = (
-    "${local.tag_parent_base}/zones/${var.zone}/instances/${google_compute_instance.default[0].instance_id}"
+    "${local.tag_parent_base}/zones/${local.zone}/instances/${google_compute_instance.default[0].instance_id}"
   )
-  tag_value = each.value
-  location  = var.zone
+  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "instance" {
   for_each = local.template_create ? {} : var.tag_bindings
   parent = (
-    "${local.tag_parent_base}/zones/${var.zone}/instances/${google_compute_instance.default[0].instance_id}"
+    "${local.tag_parent_base}/zones/${local.zone}/instances/${google_compute_instance.default[0].instance_id}"
   )
-  tag_value = each.value
-  location  = var.zone
+  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "boot_disks" {
@@ -75,10 +75,10 @@ resource "google_tags_location_tag_binding" "boot_disks" {
     local.template_create ? {} : { for v in local.boot_disk_tags : v.key => v }
   )
   parent = (
-    "${local.tag_parent_base}/zones/${var.zone}/disks/${each.value.disk_id}"
+    "${local.tag_parent_base}/zones/${local.zone}/disks/${each.value.disk_id}"
   )
-  tag_value = each.value.tag_value
-  location  = var.zone
+  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+  location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "disks" {
@@ -86,10 +86,10 @@ resource "google_tags_location_tag_binding" "disks" {
     local.template_create ? {} : { for v in local.disk_tags : v.key => v }
   )
   parent = (
-    "${local.tag_parent_base}/zones/${var.zone}/disks/${each.value.disk_id}"
+    "${local.tag_parent_base}/zones/${local.zone}/disks/${each.value.disk_id}"
   )
-  tag_value = each.value.tag_value
-  location  = var.zone
+  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+  location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "disks_regional" {
@@ -99,7 +99,7 @@ resource "google_tags_location_tag_binding" "disks_regional" {
   parent = (
     "${local.tag_parent_base}/regions/${local.region}/disks/${each.value.disk_id}"
   )
-  tag_value = each.value.tag_value
+  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
   location  = local.region
 }
 
@@ -108,8 +108,8 @@ resource "google_tags_location_tag_binding" "disks_regional" {
 # resource "google_tags_location_tag_binding" "template" {
 #   for_each = local.template_create ? var.tag_bindings : {}
 #   parent = (
-#     "${local.tag_parent_base}/regions/${local.region}/instanceTemplates/${google_compute_instance.default[0].instance_id}"
+#     "${local.tag_parent_base}/regions/${local.region}/instanceTemplates/${google_compute_instance_template.default[0].instance_id}"
 #   )
-#   tag_value = each.value
+#   tag_value = lookup(local.ctx.tag_values, each.value, each.value)
 #   location  = local.region
 # }
