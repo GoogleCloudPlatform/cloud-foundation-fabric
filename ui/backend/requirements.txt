@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+google-cloud-storage
+google-cloud-secret-manager
+pydantic-settings
