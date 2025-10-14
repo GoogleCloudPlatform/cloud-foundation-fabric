@@ -1,13 +1,9 @@
-# TODO / Brainstorm
+# TODO
 
-- Automatically generated names should use resource name, not key
-- VPN Factory doesn't currently allow passing an arbitrary local vpn gateway
-  - ... do we care?
-- Automatically created routers are not added to context and are not reusable
-  - Not trivial to solve because of dependencies - e.g. vpn-ha has a dependency on the router context to be ready, but can also automatically manage the creation of a router itself
-  - ... do we care?
-- s/$gateways/$vpn_gateways/g
 - Support different NCC topologies
-- Firewall Policies (plugging the factory + testing should suffice)
-- Hierarchical Firewall policies (potentially rewrite the factory)
 - Move folders creation to 0-org-setup
+- Use VPC-reuse to manage the creation of routes - depends on ILBs for NVAs.
+- Re-implement DNS and Firewall policies factories
+  - Use a .config file to configure the factory, then consume the module's factory
+- Re-implement UIG creation on NVA factory, to allow attaching arbitrary instances
+  - Test creation

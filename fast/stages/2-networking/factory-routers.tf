@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Cloud NAT factory.
+# tfdoc:file:description Routers factory.
 
 locals {
   ctx_routers = {

@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description NCC
+# tfdoc:file:description NCC factory
 
 locals {
 
-  _ncc_path = try(
-    pathexpand(var.factories_config.ncc-hubs), null
-  )
+  _ncc_path = try(pathexpand(var.factories_config.ncc-hubs), null)
 
-  _ncc_files = try(
-    fileset(local._ncc_path, "**/*.yaml"),
-    []
-  )
+  _ncc_files = try(fileset(local._ncc_path, "**/*.yaml"), [])
 
   _ncc_preprocess = [
     for f in local._ncc_files : yamldecode(file("${coalesce(local._ncc_path, "-")}/${f}"))
   ]
 
-  # Since NCC groups depend on NCC hubs, two different lookup maps avoids circular dependencies.
+  # Since NCC groups depend on NCC hubs, two different lookup maps avoid circular dependencies.
   ctx_ncc_groups = {
     for k, v in google_network_connectivity_group.default : k => v.id
   }
@@ -61,19 +56,6 @@ locals {
     }
   ])...)
 
-
-  ncc_vpn_spokes = { for vpn_key, vpn_config in local.vpns : "${vpn_key}/${replace(vpn_config.ncc_spoke_config.hub, "$ncc_hubs:", "")}" => merge(vpn_config.ncc_spoke_config, {
-    name             = replace("${vpn_key}/${vpn_config.ncc_spoke_config.hub}", "$ncc_hubs:", "") # TODO: eww
-    project_id       = vpn_config.project_id
-    hub              = vpn_config.ncc_spoke_config.hub
-    location         = vpn_config.region
-    description      = lookup(vpn_config.ncc_spoke_config, "description", "Terraform-managed.")
-    labels           = lookup(vpn_config.ncc_spoke_config, "labels", {})
-    tunnel_self_link = [for t, _ in vpn_config.tunnels : module.vpn-ha[vpn_key].tunnel_self_links[t]]
-    })
-    if try(vpn_config.ncc_spoke_config != null, false)
-  }
-
   ncc_vpc_spokes = {
     for vpc_key, vpc_config in local.vpcs : "${vpc_key}/${replace(vpc_config.ncc_config.hub, "$ncc_hubs:", "")}" => merge(vpc_config.ncc_config, {
       project_id            = vpc_config.project_id
@@ -87,8 +69,19 @@ locals {
     })
     if try(vpc_config.ncc_config != null, false)
   }
-}
 
+  ncc_vpn_spokes = { for vpn_key, vpn_config in local.vpns : "${vpn_key}/${replace(vpn_config.ncc_spoke_config.hub, "$ncc_hubs:", "")}" => merge(vpn_config.ncc_spoke_config, {
+    name             = replace("${vpn_key}/${vpn_config.ncc_spoke_config.hub}", "$ncc_hubs:", "") # TODO: eww
+    project_id       = vpn_config.project_id
+    hub              = vpn_config.ncc_spoke_config.hub
+    location         = vpn_config.region
+    description      = lookup(vpn_config.ncc_spoke_config, "description", "Terraform-managed.")
+    labels           = lookup(vpn_config.ncc_spoke_config, "labels", {})
+    tunnel_self_link = [for t, _ in vpn_config.tunnels : module.vpn-ha[vpn_key].tunnel_self_links[t]]
+    })
+    if try(vpn_config.ncc_spoke_config != null, false)
+  }
+}
 resource "google_network_connectivity_hub" "default" {
   for_each        = local.ncc_hubs
   project         = lookup(local.ctx_projects.project_ids, replace(each.value.project_id, "$project_ids:", ""), each.value.project_id)

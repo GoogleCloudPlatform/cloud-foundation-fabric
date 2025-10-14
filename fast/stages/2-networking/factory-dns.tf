@@ -14,19 +14,12 @@
 #  * limitations under the License.
 #  */
 
-# # tfdoc:file:description VPC and firewall factory.
+# # tfdoc:file:description DNS factory.
 
 locals {
 
-  _dns_path = try(
-    pathexpand(var.factories_config.dns), null
-  )
-
-  _dns_files = try(
-    fileset(local._dns_path, "**/*.yaml"),
-    []
-  )
-
+  _dns_path  = try(pathexpand(var.factories_config.dns), null)
+  _dns_files = try(fileset(local._dns_path, "**/*.yaml"), [])
   _dns_preprocess = [
     for f in local._dns_files : merge(yamldecode(file("${coalesce(local._dns_path, "-")}/${f}")), {
       key = replace(f, ".yaml", "")
@@ -67,17 +60,11 @@ locals {
   }
 
   # DNS response policies
-  _dns_response_policies_path = try(
-    pathexpand(var.factories_config.dns-response-policies), null
-  )
-
-  _dns_response_policies_files = try(
-    fileset(local._dns_response_policies_path, "**/*.yaml"),
-    []
-  )
-
+  _dns_response_policies_path  = try(pathexpand(var.factories_config.dns-response-policies), null)
+  _dns_response_policies_files = try(fileset(local._dns_response_policies_path, "**/*.yaml"), [])
   _dns_response_policies_preprocess = [
-    for f in local._dns_response_policies_files : merge(yamldecode(file("${coalesce(local._dns_response_policies_path, "-")}/${f}")), {
+    for f in local._dns_response_policies_files :
+    merge(yamldecode(file("${coalesce(local._dns_response_policies_path, "-")}/${f}")), {
       key = replace(f, ".yaml", "")
     })
   ]

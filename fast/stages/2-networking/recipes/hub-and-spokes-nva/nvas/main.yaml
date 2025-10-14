@@ -10,12 +10,12 @@ health_check:
 instance_groups:
   # Keyed by zone
   b:
-    auto_create_instances: 1
+    auto_create_instances: 0
     attach_instances:
       - name1: self-link
       - name2: self-link
   c:
-    auto_create_instances: 1
+    auto_create_instances: 0
 
 tags:
   - nva

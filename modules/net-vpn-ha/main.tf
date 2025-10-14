@@ -32,7 +32,7 @@ locals {
     : lookup(local.ctx.routers, var.router_config.name, var.router_config.name)
   )
   peer_gateways_gcp = {
-    for k, v in var.peer_gateways : k => lookup(local.ctx.gateways, v.gcp, v.gcp) if v.gcp != null
+    for k, v in var.peer_gateways : k => lookup(local.ctx.vpn_gateways, v.gcp, v.gcp) if v.gcp != null
   }
   # End of context parsing
 

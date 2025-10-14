@@ -17,9 +17,7 @@
 # tfdoc:file:description Firewall policies factory.
 
 locals {
-  _firewall_policies_path = try(
-    pathexpand(var.factories_config.firewall-policies), null
-  )
+  _firewall_policies_path = try(pathexpand(var.factories_config.firewall-policies), null)
   _firewall_policies_files = local._firewall_policies_path == null ? [] : fileset(
     local._firewall_policies_path, "**/*.yaml"
   )
@@ -34,10 +32,6 @@ locals {
       egress_rules  = try(v.egress_rules, {})
     })
   }
-  # ctx_firewall_policies = {
-  #   ids   = { for k, v in module.firewall_policies : k => v.id }
-  #   names = { for k, v in module.firewall_policies : k => v.name }
-  # }
 }
 
 module "firewall_policies" {

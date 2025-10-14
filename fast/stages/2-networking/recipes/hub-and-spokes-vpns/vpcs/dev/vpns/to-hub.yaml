@@ -16,7 +16,7 @@ name: to-hub
 region: europe-west8
 peer_gateways:
   default:
-    gcp: $gateways:hub/to-dev
+    gcp: $vpn_gateways:hub/to-dev
 router_config:
   create: false
   name: $routers:dev/vpn-router

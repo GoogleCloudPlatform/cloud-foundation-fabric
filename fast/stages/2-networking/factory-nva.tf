@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description NCC
+# tfdoc:file:description NVA factory
 
 locals {
 
-  _nva_path = try(
-    pathexpand(var.factories_config.nvas), null
-  )
+  _nva_path = try(pathexpand(var.factories_config.nvas), null)
 
-  _nva_files = try(
-    fileset(local._nva_path, "**/*.yaml"),
-    []
-  )
+  _nva_files = try(fileset(local._nva_path, "**/*.yaml"), [])
 
   _nva_configs = [
-    for f in local._nva_files : merge(yamldecode(file("${coalesce(local._nva_path, "-")}/${f}")), { filename = replace(f, ".yaml", "") })
+    for f in local._nva_files :
+    merge(
+      yamldecode(file("${coalesce(local._nva_path, "-")}/${f}")),
+      { filename = replace(f, ".yaml", "")
+    })
   ]
+
+  # ctx_nva = {
+  #   nva_ilb = { for k, v in module.ilb : k => v.forwarding_rule_addresses[""] }
+  # }
 
   nva_configs = {
     for k, v in local._nva_configs : try(v.name, k) => merge(v, {
@@ -40,14 +43,10 @@ locals {
     })
   }
 
-  ctx_nva = {
-    nva_ilb = { for k, v in module.ilb : k => v.forwarding_rule_addresses[""] }
-  }
-
   nva_instances = merge(flatten([
     for nva_key, nva_def in local.nva_configs : [
       for group_key, group_value in nva_def.instance_groups : [
-        for i in range(group_value.auto_create_instances) : {
+        for i in range(try(group_value.auto_create_instances, 0)) : {
           "${nva_def.name}-${group_key}-${i}" = {
             group_zone    = group_key
             zone          = "${nva_def.region}-${group_key}"
@@ -87,7 +86,6 @@ locals {
       } if attachment.create_ilb == true
     ]
   ])...)
-
 }
 
 
@@ -125,20 +123,24 @@ module "nva-instance" {
   }
 }
 
-module "ilb" {
-  source     = "../../../modules/net-lb-int"
-  for_each   = local.nva_ilbs
-  project_id = each.value.project_id
-  region     = each.value.region
-  name       = "ilb-${each.key}"
-  vpc_config = each.value.vpc_config
-  backends = [
-    for k, v in module.nva-instance : { group = v.group.id } if startswith(k, "${each.value.nva_name}-")
-  ]
-  health_check_config = each.value.health_check
-  context = {
-    project_ids = local.ctx_projects.project_ids
-    vpcs        = local.ctx_vpcs.self_links
-    subnets     = local.ctx_vpcs.subnets_by_vpc
-  }
-}
+# TODO: create UIGs for each config/zone, and attach the right 
+# instances to them (both auto-created and attached ones)
+
+# module "ilb" {
+#   source     = "../../../modules/net-lb-int"
+#   for_each   = local.nva_ilbs
+#   project_id = each.value.project_id
+#   region     = each.value.region
+#   name       = "ilb-${each.key}"
+#   vpc_config = each.value.vpc_config
+#   backends = [
+#     for k, v in module.nva-instance : { group = v.group.id } if startswith(k, "${each.value.nva_name}-")
+#   ]
+#   health_check_config = each.value.health_check
+#   context = {
+#     project_ids = local.ctx_projects.project_ids
+#     vpcs        = local.ctx_vpcs.self_links
+#     subnets     = local.ctx_vpcs.subnets_by_vpc
+#   }
+#   depends_on = [module.nva-instance]
+# }

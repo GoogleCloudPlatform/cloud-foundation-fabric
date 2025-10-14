@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description VPC and firewall factory.
+# tfdoc:file:description VPC and firewall rules factory.
 
 locals {
 
