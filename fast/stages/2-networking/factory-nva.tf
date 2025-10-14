@@ -30,9 +30,9 @@ locals {
     })
   ]
 
-  # ctx_nva = {
-  #   nva_ilb = { for k, v in module.ilb : k => v.forwarding_rule_addresses[""] }
-  # }
+  ctx_nva = {
+    ilb_addresses = { for k, v in module.ilb : k => v.forwarding_rule_addresses[""] }
+  }
 
   nva_configs = {
     for k, v in local._nva_configs : try(v.name, k) => merge(v, {
@@ -68,13 +68,37 @@ locals {
     ]
   ])...)
 
+  nva_instance_groups = merge([
+    for nva_def in local.nva_configs : {
+      for group_key, group_value in try(nva_def.instance_groups, {}) :
+      "${nva_def.name}-${group_key}" => {
+        nva_config = nva_def.name
+        zone_key   = group_key
+        name       = "nva-${nva_def.name}-${group_key}"
+        project_id = nva_def.project_id
+        zone       = "${nva_def.region}-${group_key}"
+        network    = try(nva_def.attachments[0].network, null)
+        instances = toset(
+          concat(
+            [
+              for i in range(try(group_value.auto_create_instances, 0)) :
+              module.nva-instance["${nva_def.name}-${group_key}-${i}"].self_link
+            ],
+            flatten([
+              for v in try(group_value.attach_instances, {}) : values(v)
+            ])
+          )
+        )
+      }
+    }
+  ]...)
 
   nva_ilbs = merge(flatten([
     for nva_def in local.nva_configs : [
       for i, attachment in nva_def.attachments : {
-        "${nva_def.name}-${i}" = {
+        "${replace(attachment.network, "$vpcs:", "")}/${nva_def.name}" = {
           name       = "ilb-${nva_def.name}-${i}"
-          nva_name   = nva_def.name
+          nva_config = nva_def.name
           project_id = nva_def.project_id
           region     = nva_def.region
           vpc_config = {
@@ -114,7 +138,6 @@ module "nva-instance" {
       size                   = 10 # TODO: make configurable?
     }
   }
-  group    = { named_ports = {} }
   metadata = each.value.metadata
   context = {
     project_ids = local.ctx_projects.project_ids
@@ -123,24 +146,32 @@ module "nva-instance" {
   }
 }
 
-# TODO: create UIGs for each config/zone, and attach the right 
-# instances to them (both auto-created and attached ones)
+resource "google_compute_instance_group" "nva" {
+  for_each = local.nva_instance_groups
+  project  = lookup(local.ctx_projects.project_ids, replace(each.value.project_id, "$project_ids:", ""), each.value.project_id)
+  zone     = each.value.zone
+  name     = each.value.name
+  #network    = lookup(local.ctx_vpcs.self_links, replace(each.value.network, "$vpcs:", ""), each.value.network)
+  instances  = each.value.instances
+  depends_on = [module.nva-instance]
+}
 
-# module "ilb" {
-#   source     = "../../../modules/net-lb-int"
-#   for_each   = local.nva_ilbs
-#   project_id = each.value.project_id
-#   region     = each.value.region
-#   name       = "ilb-${each.key}"
-#   vpc_config = each.value.vpc_config
-#   backends = [
-#     for k, v in module.nva-instance : { group = v.group.id } if startswith(k, "${each.value.nva_name}-")
-#   ]
-#   health_check_config = each.value.health_check
-#   context = {
-#     project_ids = local.ctx_projects.project_ids
-#     vpcs        = local.ctx_vpcs.self_links
-#     subnets     = local.ctx_vpcs.subnets_by_vpc
-#   }
-#   depends_on = [module.nva-instance]
-# }
+module "ilb" {
+  source     = "../../../modules/net-lb-int"
+  for_each   = local.nva_ilbs
+  project_id = each.value.project_id
+  region     = each.value.region
+  name       = replace("ilb-${each.key}", "/", "-")
+  vpc_config = each.value.vpc_config
+  backends = [
+    for k, v in local.nva_instance_groups :
+    { group = google_compute_instance_group.nva[k].id } if v.nva_config == each.value.nva_config
+  ]
+  health_check_config = each.value.health_check
+  context = {
+    project_ids = local.ctx_projects.project_ids
+    vpcs        = local.ctx_vpcs.self_links
+    subnets     = local.ctx_vpcs.subnets_by_vpc
+  }
+  depends_on = [module.nva-instance]
+}

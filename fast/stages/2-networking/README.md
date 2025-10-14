@@ -217,6 +217,10 @@ DNS zones are defined in YAML files in the `dns/zones` directory of your chosen 
 
 - **Cloud Routers:** The `factory-routers.tf` file manages Cloud Routers, which are used with Cloud VPN and Cloud Interconnect to exchange routes between your VPC network and your on-premises network.
 
+## Extending your infrastructure
+
+TODO: describe how to use module outputs to extend the infra
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 <!-- END TFDOC -->

@@ -15,11 +15,11 @@
 # yaml-language-server: $schema=../../../schemas/vpc.schema.json
 project_id: $project_ids:net-core-0
 name: prod
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 mtu: 1500
 routes:
   gateway:
     dest_range: "0.0.0.0/0"
     priority: 100
     next_hop_type: ilb
-    next_hop: 10.72.0.12
+    next_hop: $addresses:prod/main

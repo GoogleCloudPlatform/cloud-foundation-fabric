@@ -68,7 +68,8 @@ context:
 # defining storage_location is required
 projects:
   defaults:
-    storage_location: eu
+    locations: 
+      storage: eu
   # overrides are optional, and can be used to override some FAST defaults
   overrides:
     # don't do this unless you have a good reason :

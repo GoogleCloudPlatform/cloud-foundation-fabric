@@ -94,11 +94,27 @@ module "vpcs" {
   network_attachments               = each.value.network_attachments
   policy_based_routes               = each.value.policy_based_routes
   psa_configs                       = each.value.psa_config
-  routes                            = each.value.routes
   routing_mode                      = each.value.routing_mode
   context = {
     project_ids = local.ctx_projects.project_ids
     locations   = local.ctx.locations
+  }
+  depends_on = [module.factory]
+}
+
+module "vpc_routes" {
+  source   = "../../../modules/net-vpc"
+  for_each = local.vpcs
+  vpc_reuse = {
+    use_data_source = true
+  }
+  project_id = each.value.project_id
+  name       = each.value.name
+  routes     = each.value.routes
+  context = {
+    project_ids = local.ctx_projects.project_ids
+    locations   = local.ctx.locations
+    addresses   = local.ctx_nva.ilb_addresses
   }
   depends_on = [module.factory]
 }

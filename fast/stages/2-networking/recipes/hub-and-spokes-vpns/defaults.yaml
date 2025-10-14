@@ -30,7 +30,8 @@ context:
 
 projects:
   defaults:
-    storage_location: eu
+    locations:
+      storage: eu
 
 vpcs:
   auto_create_subnetworks: false
