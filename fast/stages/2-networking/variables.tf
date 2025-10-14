@@ -32,16 +32,16 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    defaults              = optional(string, "data/defaults.yaml")
-    dns                   = optional(string, "data/dns/zones")
-    dns-response-policies = optional(string, "data/dns/response-policies")
-    firewall-policies     = optional(string, "data/firewall-policies")
-    folders               = optional(string, "data/folders")
-    interconnect          = optional(string, "data/interconnect")
-    ncc-hubs              = optional(string, "data/ncc-hubs")
-    nvas                  = optional(string, "data/nvas")
-    projects              = optional(string, "data/projects")
-    vpcs                  = optional(string, "data/vpcs")
+    defaults              = optional(string, "recipes/hub-and-spokes-peerings/defaults.yaml")
+    dns                   = optional(string, "recipes/hub-and-spokes-peerings/dns/zones")
+    dns-response-policies = optional(string, "recipes/hub-and-spokes-peerings/dns/response-policies")
+    firewall-policies     = optional(string, "recipes/hub-and-spokes-peerings/firewall-policies")
+    folders               = optional(string, "recipes/hub-and-spokes-peerings/folders")
+    interconnect          = optional(string, "recipes/hub-and-spokes-peerings/interconnect")
+    ncc-hubs              = optional(string, "recipes/hub-and-spokes-peerings/ncc-hubs")
+    nvas                  = optional(string, "recipes/hub-and-spokes-peerings/nvas")
+    projects              = optional(string, "recipes/hub-and-spokes-peerings/projects")
+    vpcs                  = optional(string, "recipes/hub-and-spokes-peerings/vpcs")
   })
   nullable = false
   default  = {}
