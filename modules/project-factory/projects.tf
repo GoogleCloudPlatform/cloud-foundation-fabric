@@ -123,10 +123,11 @@ module "projects-iam" {
     kms_keys       = local.ctx.kms_keys
     iam_principals = local.ctx_iam_principals
   })
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  iam                        = lookup(each.value, "iam", {})
+  iam_bindings               = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals          = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive = lookup(each.value, "iam_by_principals_additive", {})
   service_agents_config = {
     create_primary_agents = false
     grant_default_roles   = false

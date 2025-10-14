@@ -26,7 +26,8 @@ locals {
   }
   cicd_project_ids = {
     for k, v in merge(
-      var.context.project_ids, module.factory.project_ids
+      var.context.project_ids,
+      module.factory.project_ids
     ) : "$project_ids:${k}" => v
   }
   cicd_workflows = {
@@ -42,6 +43,7 @@ locals {
           v.workload_identity_provider.id,
           v.workload_identity_provider.id
         )
+        audiences = try(v.workload_identity_provider.audiences, [])
         service_accounts = {
           apply = lookup(
             local.of_service_accounts,

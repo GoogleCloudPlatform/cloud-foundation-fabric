@@ -7,12 +7,19 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/gke-hub`: Unified cluster configuration. The module now uses a single `clusters` variable to configure both cluster registration and feature enablement. [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
+- `all modules`: Minimum supported Terraform version bumped 1.12.2 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
+- `all modules`: Minimum supported OpenTofu version bumped 1.10.0 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `modules/project-factory`: the format for automation service account names has changed. [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)]
 
 - [[#3361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3361)] Use pre-commit managed Python environment for pre-commit checks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-27 07:06:30+00:00 -->
 
 ### FAST
 
+- [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)] Update gke-hub module to use new Policy Controller API ([juliocc](https://github.com/juliocc)) <!-- 2025-10-13 07:47:40+00:00 -->
+- [[#3400](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3400)] Remove unavailable service from VPC-SC stage services list ([ludoo](https://github.com/ludoo)) <!-- 2025-10-10 05:58:08+00:00 -->
+- [[#3385](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3385)] fix: expose missing audiences variable for gitlab workflow file ([vvision](https://github.com/vvision)) <!-- 2025-10-07 11:37:21+00:00 -->
+- [[#3384](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3384)] Add support for universe to fast project factory stage ([ludoo](https://github.com/ludoo)) <!-- 2025-10-06 07:00:01+00:00 -->
 - [[#3383](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3383)] Support universe in fast security stage ([ludoo](https://github.com/ludoo)) <!-- 2025-10-06 05:24:50+00:00 -->
 - [[#3381](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3381)] Fix typo in fast stage 0 provider template ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 11:35:49+00:00 -->
 - [[#3379](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3379)] Allow FAST stage 0 provider template to work with universe ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 09:17:32+00:00 -->
@@ -27,6 +34,9 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)] Update gke-hub module to use new Policy Controller API ([juliocc](https://github.com/juliocc)) <!-- 2025-10-13 07:47:40+00:00 -->
+- [[#3402](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3402)] Fix incorrect cloudservices agent email for global universe in project module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-12 11:13:50+00:00 -->
+- [[#3388](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3388)] Add support for context to bigquery module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-07 07:57:42+00:00 -->
 - [[#3377](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3377)] feat(bigquery-dataset): add optional schema support for views ([weather2602](https://github.com/weather2602)) <!-- 2025-10-06 05:40:39+00:00 -->
 - [[#3380](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3380)] Lightly refactor service agents locals in project module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 10:25:05+00:00 -->
 - [[#3378](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3378)] Allow forcing jit service agents generation for universe in project and project factory modules ([ludoo](https://github.com/ludoo)) <!-- 2025-10-05 08:17:57+00:00 -->
@@ -43,6 +53,11 @@ All notable changes to this project will be documented in this file.
 - [[#3350](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3350)] Add resource_manager_tags to gke-standard-cluster, gke-autopilot-cluster and gke-nodepool ([rosmo](https://github.com/rosmo)) <!-- 2025-09-23 13:51:37+00:00 -->
 - [[#3346](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3346)] Added Cloud Build v2 connection module ([apichick](https://github.com/apichick)) <!-- 2025-09-22 13:42:13+00:00 -->
 - [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)] Rationalize prefix handling for project factory automation resources ([ludoo](https://github.com/ludoo)) <!-- 2025-09-21 19:07:29+00:00 -->
+
+### TOOLS
+
+- [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)] Update gke-hub module to use new Policy Controller API ([juliocc](https://github.com/juliocc)) <!-- 2025-10-13 07:47:40+00:00 -->
+- [[#3404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3404)] Add tests for service agents iam_emails ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-12 13:02:13+00:00 -->
 
 ## [45.0.0] - 2025-09-20
 

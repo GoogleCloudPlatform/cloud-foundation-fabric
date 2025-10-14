@@ -30,22 +30,78 @@ The controlling project is usually one of those already created and managed by t
 
 ## How to run this stage
 
-Once the main networking stage has been configured and applied, the following configuration is added the the resource management `fast_addon` variable to create the add-on provider files, and its optional CI/CD resources if those are also required. The add-on name (`networking-ngfw`) is customizable, in case the add-on needs to be run multiple times for example to create different sets of endpoints and NGFW configurations per environment.
+Once the main networking stage has been configured and applied, the following configuration is added to the org setup stage.
 
-```hcl
-fast_addon = {
-  networking-ngfw = {
-    parent_stage = "2-networking"
-    # cicd_config = {
-    #   identity_provider = "github-test"
-    #   repository = {
-    #     name   = "test/ngfw"
-    #     type   = "github"
-    #     branch = "main"
-    #   }
-    # }
-  }
-}
+First, the new provider file is declared in the `defaults.yaml` file.
+
+```yaml
+# defaults.yaml (snippet)
+
+output_files:
+  # ...
+  providers:
+    # ...
+    2-networking-ngfw:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-networking-ngfw
+      service_account: $iam_principals:service_accounts/iac-0/iac-networking-rw
+
+```
+
+Then, the GCS folder (shown here) or bucket for the Terraform state is defined in the IaC project.
+
+```yaml
+# projects/iac-0.yaml
+buckets:
+  # ...
+  iac-stage-state:
+    description: Terraform state for stage automation.
+    managed_folders:
+      # ...
+      2-networking-ngfw:
+        iam:
+          roles/storage.admin:
+            - $iam_principals:service_accounts/iac-0/iac-networking-rw
+          $custom_roles:storage_viewer:
+            - $iam_principals:service_accounts/iac-0/iac-networking-ro
+
+```
+
+And finally, grant extra roles at the organization level to the networking service accounts.
+
+```yaml
+# organization/.config.yaml
+iam_by_principals:
+  # ...
+  $iam_principals:service_accounts/iac-0/iac-networking-rw:
+    - roles/compute.orgFirewallPolicyAdmin
+    - roles/compute.xpnAdmin
+    # add the custom role
+    - $custom_roles:ngfw_enterprise_admin
+  $iam_principals:service_accounts/iac-0/iac-networking-ro:
+    - roles/compute.orgFirewallPolicyUser
+    - roles/compute.viewer
+    # add the custom role
+    - $custom_roles:ngfw_enterprise_viewer
+```
+
+If VPC-SC is used, an additional ingress policy needs to be added to the perimeter to allow the NGFW service agent to reach the Certificate Authority Service. Edit and enable the following policy.
+
+```yaml
+from:
+  access_levels:
+    - "*"
+  identities:
+    # TODO: change to actual NGFW service identity
+    - serviceAccount:service-1234567890@gcp-sa-networksecurity.iam.gserviceaccount.com
+to:
+  operations:
+    - method_selectors:
+        - "*"
+      service_name: privateca.googleapis.com
+  resources:
+    # TODO: change to project number where CAS lives
+    - projects/1234567890
 ```
 
 ### Provider and Terraform variables
@@ -64,7 +120,6 @@ ln -s ~/fast-config/providers/2-networking-ngfw-providers.tf ./
 # input files from other stages
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-org-setup.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)

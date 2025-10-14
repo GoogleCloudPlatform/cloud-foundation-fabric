@@ -25,10 +25,17 @@ locals {
       (agent.name) => merge(agent, {
         email = (
           api == "cloudservices"
-          ? format(
-            "%s@cloudservices.%siam.gserviceaccount.com",
-            local.project.number,
-            local._u_domain
+          ? (
+            var.universe == null
+            ? format(
+              "%s@cloudservices.gserviceaccount.com",
+              local.project.number
+            )
+            : format(
+              "%s@cloudservices.%siam.gserviceaccount.com",
+              local.project.number,
+              local._u_domain
+            )
           )
           : (
             var.universe == null || !startswith(api, "cloudkms.")

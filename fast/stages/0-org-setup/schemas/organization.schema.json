@@ -31,6 +31,9 @@
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
     },
+    "iam_by_principals_additive": {
+      "$ref": "#/$defs/iam_by_principals"
+    },
     "logging": {
       "type": "object",
       "additionalProperties": false,

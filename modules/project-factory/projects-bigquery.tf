@@ -33,12 +33,21 @@ module "bigquery-datasets" {
   for_each = {
     for k in local.projects_bigquery_datasets : "${k.project_key}/${k.id}" => k
   }
-  project_id    = module.projects[each.value.project_key].project_id
-  id            = each.value.id
+  project_id = module.projects[each.value.project_key].project_id
+  id         = each.value.id
+  context = merge(local.ctx, {
+    iam_principals = merge(
+      local.ctx.iam_principals,
+      local.projects_sas_iam_emails,
+      local.automation_sas_iam_emails
+    )
+    locations   = local.ctx.locations
+    project_ids = local.ctx_project_ids
+  })
   friendly_name = each.value.friendly_name
   location = coalesce(
-    local.data_defaults.overrides.bigquery_location,
+    local.data_defaults.overrides.locations.bigquery,
     lookup(each.value, "location", null),
-    local.data_defaults.defaults.bigquery_location
+    local.data_defaults.defaults.locations.bigquery
   )
 }

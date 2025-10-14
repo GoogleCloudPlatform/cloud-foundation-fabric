@@ -23,5 +23,7 @@ output "cluster_ids" {
     google_gke_hub_membership.default,
     google_gke_hub_feature.default,
     google_gke_hub_feature_membership.default,
+    google_gke_hub_feature_membership.policycontroller,
+    google_gke_hub_feature_membership.servicemesh,
   ]
 }

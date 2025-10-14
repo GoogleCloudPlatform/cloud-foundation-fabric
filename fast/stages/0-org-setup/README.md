@@ -96,9 +96,6 @@ The standard datasets use the `gcp-organization-admins` alias to assign administ
 global:
   # gcloud beta billing accounts list
   billing_account: 123456-123456-123456
-  locations:
-    bigquery: europe-west1
-    logging: europe-west1
   organization:
     # gcloud organizations list
     domain: example.org
@@ -108,11 +105,16 @@ projects:
   defaults:
     # define a unique prefix with a maximum of 9 characters
     prefix: foo-1
-    storage_location: europe-west1
+  locations:
+    bigquery: $locations:primary
+    logging: $locations:primary
+    storage: $locations:primary
 context:
   iam_principals:
     # make sure the user running apply is a member of this group
     gcp-organization-admins: group:fabric-fast-owners@example.com
+  locations:
+    primary: europe-west1
 ```
 
 A more detailed example containing a few other attributes that can be set in the file is in a [later section](#defaults-configuration) in this document.
@@ -274,6 +276,7 @@ This is a simple reference table of available interpolation namespaces, refer to
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
 - `$kms_keys:my_key`
+- `$log_buckets:my_project/my_bucket`
 - `$locations:my_location`
 - `$notification_channels:my_channel`
 - `$project_ids:my_project`
@@ -433,6 +436,9 @@ iam_by_principals:
     - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
     # [...]
+iam_by_principals_additive:
+  $iam_principals:gcp-billing-admins:
+    - roles/billing.admin
 ```
 
 Log sinks can refer to project-level destination via different contexts.
@@ -648,7 +654,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;data&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;data&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;data&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;datasets&#47;classic&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;datasets&#47;classic&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;datasets&#47;classic&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;datasets&#47;classic&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies_imports](variables.tf#L52) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
@@ -656,7 +662,6 @@ Define values for the `var.environments` variable in a tfvars file.
 | name | description | sensitive |
 |---|---|:---:|
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
-| [locations](outputs.tf#L22) | Default locations. |  |
-| [projects](outputs.tf#L27) | Attributes for managed projects. |  |
-| [tfvars](outputs.tf#L32) | Stage tfvars. | ✓ |
+| [projects](outputs.tf#L22) | Attributes for managed projects. |  |
+| [tfvars](outputs.tf#L27) | Stage tfvars. | ✓ |
 <!-- END TFDOC -->
