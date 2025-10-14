@@ -643,6 +643,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
+| [observability.tf](./observability.tf) | None | <code>project</code> |  |
 | [organization.tf](./organization.tf) | None | <code>organization</code> |  |
 | [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |

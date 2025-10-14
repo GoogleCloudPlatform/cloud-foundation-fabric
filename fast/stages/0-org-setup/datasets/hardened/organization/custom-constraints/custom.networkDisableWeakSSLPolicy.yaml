@@ -1,0 +1,39 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+custom.networkDisableWeakSSLPolicy:
+  action_type: DENY
+  condition: |-
+    (resource.profile == "COMPATIBLE") || (resource.profile == "CUSTOM" &&
+      resource.customFeatures.exists(feature, feature in [
+      "TLS_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_RSA_WITH_AES_128_CBC_SHA",
+      "TLS_RSA_WITH_AES_256_CBC_SHA",
+      "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+      ])
+    ) || (resource.profile == "CUSTOM" &&
+      resource.minTlsVersion in ["TLS_1_2", "TLS_1_3"] == false
+    ) || (resource.profile == "MODERN" &&
+      resource.minTlsVersion in ["TLS_1_2", "TLS_1_3"] == false
+    ) || (resource.profile == "RESTRICTED" &&
+      resource.minTlsVersion in ["TLS_1_2", "TLS_1_3"] == false
+    )
+  description: Ensure SSL Policies created does not have weak cipher suites
+  display_name: Deny usage of SSL Policies with weak cipher suites
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - compute.googleapis.com/SslPolicy
