@@ -1,0 +1,69 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../..//stages/2-project-factory/schemas/project.schema.json
+
+# TODO: edit and uncomment the following line to create the project in a folder
+# parent: $folder_ids:shared
+services:
+  - artifactregistry.googleapis.com
+  - compute.googleapis.com
+  - servicedirectory.googleapis.com
+  - workstations.googleapis.com
+automation:
+  # TODO: edit the automation project and optionally edit resource names
+  project: $project_ids:iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation service account for workstations.
+  bucket:
+    # this reuses the existing stage state bucket and creates a folder in it
+    name: iac-stage-state
+    create: false
+    managed_folders:
+      gce-workstation-cluster:
+        iam:
+          roles/storage.objectCreator:
+            # TODO: the project id in the service account ref matches this file name
+            - $iam_principals:service_accounts/gce-workstation-cluster/automation/rw
+          roles/storage.objectViewer:
+            - $iam_principals:service_accounts/gce-workstation-cluster/automation/rw
+iam_by_principals:
+  # TODO: the project id in the service account ref matches this file name
+  $iam_principals:service_accounts/gce-workstation-cluster/automation/rw:
+    - roles/compute.admin
+    - roles/iam.serviceAccountUser
+    - roles/servicedirectory.admin
+    - roles/workstations.admin
+  $iam_principals:service_accounts/gce-workstation-cluster/ws-default:
+    - roles/logging.logWriter
+    - roles/monitoring.metricWriter
+# org_policies:
+#   compute.restrictSharedVpcSubnetworks:
+#     rules:
+#       - allow:
+#           values:
+#             - ${subnet_self_links["prod-landing/europe-west8/ws"]}
+service_accounts:
+  ws-default:
+    display_name: Workstations default service account.
+shared_vpc_service_config:
+  # TODO: edit the host project
+  host_project: $project_ids:prod-landing
+  network_users:
+    - $iam_principals:service_accounts/gce-workstation-cluster/automation/rw
+  service_agent_iam:
+    roles/compute.networkUser:
+      - $service_agents:compute
+      - $service_agents:workstations

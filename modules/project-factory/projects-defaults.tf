@@ -140,18 +140,15 @@ locals {
       )
       shared_vpc_service_config = ( # type: object({...})
         try(v.shared_vpc_service_config, null) != null
-        ? merge(
-          {
-            host_project             = null
-            iam_bindings_additive    = {}
-            network_users            = []
-            service_agent_iam        = {}
-            service_agent_subnet_iam = {}
-            service_iam_grants       = []
-            network_subnet_users     = {}
-          },
-          v.shared_vpc_service_config
-        )
+        ? {
+          host_project             = try(v.shared_vpc_service_config.host_project, null)
+          iam_bindings_additive    = try(v.shared_vpc_service_config.iam_bindings_additive, {})
+          network_users            = try(v.shared_vpc_service_config.network_users, [])
+          service_agent_iam        = try(v.shared_vpc_service_config.service_agent_iam, {})
+          service_agent_subnet_iam = try(v.shared_vpc_service_config.service_agent_subnet_iam, {})
+          service_iam_grants       = try(v.shared_vpc_service_config.service_iam_grants, [])
+          network_subnet_users     = try(v.shared_vpc_service_config.network_subnet_users, {})
+        }
         : local.data_defaults.defaults.shared_vpc_service_config
       )
       tag_bindings = coalesce( # type: map(string)
@@ -267,27 +264,15 @@ locals {
         )
         service_encryption_key_ids = {}
         services                   = []
-        shared_vpc_service_config = merge(
-          {
-            host_project             = null
-            iam_bindings_additive    = {}
-            network_users            = []
-            service_agent_iam        = {}
-            service_agent_subnet_iam = {}
-            service_iam_grants       = []
-            network_subnet_users     = {}
-          },
-          try(local._data_defaults.defaults.shared_vpc_service_config, {
-            host_project             = null
-            iam_bindings_additive    = {}
-            network_users            = []
-            service_agent_iam        = {}
-            service_agent_subnet_iam = {}
-            service_iam_grants       = []
-            network_subnet_users     = {}
-            }
-          )
-        )
+        shared_vpc_service_config = {
+          host_project             = try(local._data_defaults.defaults.shared_vpc_service_config.host_project, null)
+          iam_bindings_additive    = try(local._data_defaults.defaults.shared_vpc_service_config.iam_bindings_additive, {})
+          network_users            = try(local._data_defaults.defaults.shared_vpc_service_config.network_users, [])
+          service_agent_iam        = try(local._data_defaults.defaults.shared_vpc_service_config.service_agent_iam, {})
+          service_agent_subnet_iam = try(local._data_defaults.defaults.shared_vpc_service_config.service_agent_subnet_iam, {})
+          service_iam_grants       = try(local._data_defaults.defaults.shared_vpc_service_config.service_iam_grants, [])
+          network_subnet_users     = try(local._data_defaults.defaults.shared_vpc_service_config.network_subnet_users, {})
+        }
         tag_bindings     = {}
         service_accounts = {}
         universe         = null
