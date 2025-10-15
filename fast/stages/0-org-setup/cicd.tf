@@ -74,7 +74,7 @@ locals {
           )
         }
         tf_var_files = try(v.output_files.files, [])
-        audiences = try(v.workload_identity_provider.audiences, [])
+        audiences    = try(v.workload_identity_provider.audiences, [])
       })
     }
   }
