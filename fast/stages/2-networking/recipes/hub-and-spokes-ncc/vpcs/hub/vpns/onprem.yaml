@@ -23,6 +23,8 @@ peer_gateways:
 router_config:
   create: false
   name: $routers:hub/vpn-router
+ncc_spoke_config:
+  hub: $ncc_hubs:the-hub
 tunnels:
   remote-0:
     bgp_peer:

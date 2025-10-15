@@ -23,7 +23,7 @@ locals {
   }
   _factory_data = {
     for k, v in local._factory_data_raw : k => merge(v, {
-      region_computed = lookup(local.ctx.locations, v.region, v.region)
+      region_computed = v.region
     })
   }
   _factory_path = try(pathexpand(var.factories_config.subnets_folder), null)
@@ -155,7 +155,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   project                          = local.project_id
   network                          = local.network.name
   name                             = each.value.name
-  region                           = each.value.region
+  region                           = lookup(local.ctx.locations, each.value.region, each.value.region)
   ip_cidr_range                    = try(each.value.ipv6.ipv6_only, false) ? null : each.value.ip_cidr_range
   allow_subnet_cidr_routes_overlap = each.value.allow_subnet_cidr_routes_overlap
   reserved_internal_range = (
@@ -219,7 +219,7 @@ resource "google_compute_subnetwork" "proxy_only" {
   project       = local.project_id
   network       = local.network.name
   name          = each.value.name
-  region        = each.value.region
+  region        = lookup(local.ctx.locations, each.value.region, each.value.region)
   ip_cidr_range = each.value.ip_cidr_range
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.
@@ -236,7 +236,7 @@ resource "google_compute_subnetwork" "private_nat" {
   project       = local.project_id
   network       = local.network.name
   name          = each.value.name
-  region        = each.value.region
+  region        = lookup(local.ctx.locations, each.value.region, each.value.region)
   ip_cidr_range = each.value.ip_cidr_range
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.
@@ -252,7 +252,7 @@ resource "google_compute_subnetwork" "psc" {
   project       = local.project_id
   network       = local.network.name
   name          = each.value.name
-  region        = each.value.region
+  region        = lookup(local.ctx.locations, each.value.region, each.value.region)
   ip_cidr_range = each.value.ip_cidr_range
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.

@@ -18,8 +18,8 @@ name: dev
 delete_default_routes_on_create: false
 mtu: 1500
 nat_config:
-  nat-ew8:
-    region: europe-west8
+  nat-primary:
+    region: $locations:primary
 ncc_config:
   hub: $ncc_hubs:the-hub
   group: $ncc_groups:the-hub/default

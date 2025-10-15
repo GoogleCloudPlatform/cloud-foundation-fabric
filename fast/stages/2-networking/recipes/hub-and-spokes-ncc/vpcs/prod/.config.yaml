@@ -18,8 +18,20 @@ name: prod
 delete_default_routes_on_create: false
 mtu: 1500
 nat_config:
-  nat-ew8:
-    region: europe-west8
+  nat-primary:
+    region: $locations:primary
 ncc_config:
   hub: $ncc_hubs:the-hub
   group: $ncc_groups:the-hub/default
+psa_configs:
+  - ranges:
+      psa: 10.72.224.0/24
+    export_routes: true
+    import_routes: true
+    peered_domains:
+      - "test."
+subnets_proxy_only:
+  - ip_cidr_range: 10.72.240.0/24
+    region: $locations:primary
+    name: primary-region-proxy-only
+    active: true

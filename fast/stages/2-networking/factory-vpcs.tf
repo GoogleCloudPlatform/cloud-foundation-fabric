@@ -59,9 +59,13 @@ locals {
     name                              = v.name
     network_attachments               = try(v.network_attachments, {})
     policy_based_routes               = try(v.policy_based_routes, {})
-    psa_config                        = try(v.psa_config, [])
+    psa_configs                       = try(v.psa_configs, [])
     routes                            = try(v.routes, {})
     routing_mode                      = try(v.routing_mode, "GLOBAL")
+    subnets_private_nat               = try(v.subnets_private_nat, [])
+    subnets_proxy_only                = try(v.subnets_proxy_only, [])
+    subnets_psc                       = try(v.subnets_psc, [])
+    subnets                           = try(v.subnets, [])
     subnets_factory_config = {
       subnets_folder = "${v.factory_basepath}/subnets"
     }
@@ -82,10 +86,10 @@ module "vpcs" {
   for_each                          = local.vpcs
   project_id                        = each.value.project_id
   name                              = each.value.name
-  description                       = each.value.description
   auto_create_subnetworks           = each.value.auto_create_subnetworks
   create_googleapis_routes          = each.value.create_googleapis_routes
   delete_default_routes_on_create   = each.value.delete_default_routes_on_create
+  description                       = each.value.description
   dns_policy                        = each.value.dns_policy
   factories_config                  = each.value.subnets_factory_config
   firewall_policy_enforcement_order = each.value.firewall_policy_enforcement_order
@@ -93,8 +97,12 @@ module "vpcs" {
   mtu                               = each.value.mtu
   network_attachments               = each.value.network_attachments
   policy_based_routes               = each.value.policy_based_routes
-  psa_configs                       = each.value.psa_config
+  psa_configs                       = each.value.psa_configs
   routing_mode                      = each.value.routing_mode
+  subnets                           = each.value.subnets
+  subnets_private_nat               = each.value.subnets_private_nat
+  subnets_proxy_only                = each.value.subnets_proxy_only
+  subnets_psc                       = each.value.subnets_psc
   context = {
     project_ids = local.ctx_projects.project_ids
     locations   = local.ctx.locations
@@ -116,7 +124,10 @@ module "vpc_routes" {
     locations   = local.ctx.locations
     addresses   = local.ctx_nva.ilb_addresses
   }
-  depends_on = [module.factory]
+  depends_on = [
+    module.factory,
+    module.vpcs
+  ]
 }
 
 module "firewall" {
