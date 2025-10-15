@@ -15,11 +15,19 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   router_name = (
     var.router_create
     ? try(google_compute_router.router[0].name, null)
     : var.router_name
   )
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = lookup(local.ctx.locations, var.region, var.region)
   subnet_config = (
     var.config_source_subnetworks.all != true
     ? "LIST_OF_SUBNETWORKS"
@@ -34,10 +42,9 @@ locals {
 resource "google_compute_router" "router" {
   count   = var.router_create ? 1 : 0
   name    = var.router_name == null ? "${var.name}-nat" : var.router_name
-  project = var.project_id
-  region  = var.region
-  network = var.router_network
-
+  project = local.project_id
+  region  = local.region
+  network = lookup(local.ctx.networks, var.router_network, var.router_network)
   dynamic "bgp" {
     for_each = var.router_asn == null ? [] : [1]
     content {
@@ -48,13 +55,15 @@ resource "google_compute_router" "router" {
 
 resource "google_compute_router_nat" "nat" {
   provider       = google-beta
-  project        = var.project_id
-  region         = var.region
+  project        = local.project_id
+  region         = local.region
   name           = var.name
   endpoint_types = var.endpoint_types
   type           = var.type
   router         = local.router_name
-  nat_ips        = var.addresses
+  nat_ips = [
+    for a in var.addresses : lookup(local.ctx.addresses, a, a)
+  ]
   nat_ip_allocate_option = (
     var.type == "PRIVATE"
     ? null
@@ -64,30 +73,28 @@ resource "google_compute_router_nat" "nat" {
       : "AUTO_ONLY"
     )
   )
-  source_subnetwork_ip_ranges_to_nat = local.subnet_config
   icmp_idle_timeout_sec              = var.config_timeouts.icmp
-  udp_idle_timeout_sec               = var.config_timeouts.udp
+  source_subnetwork_ip_ranges_to_nat = local.subnet_config
   tcp_established_idle_timeout_sec   = var.config_timeouts.tcp_established
   tcp_time_wait_timeout_sec          = var.config_timeouts.tcp_time_wait
   tcp_transitory_idle_timeout_sec    = var.config_timeouts.tcp_transitory
+  udp_idle_timeout_sec               = var.config_timeouts.udp
   enable_endpoint_independent_mapping = (
     var.config_port_allocation.enable_endpoint_independent_mapping
   )
   enable_dynamic_port_allocation = (
     var.config_port_allocation.enable_dynamic_port_allocation
   )
+  log_config {
+    enable = var.logging_filter == null ? false : true
+    filter = var.logging_filter == null ? "ALL" : var.logging_filter
+  }
   min_ports_per_vm = (
     var.config_port_allocation.min_ports_per_vm
   )
   max_ports_per_vm = (
     var.config_port_allocation.max_ports_per_vm
   )
-
-  log_config {
-    enable = var.logging_filter == null ? false : true
-    filter = var.logging_filter == null ? "ALL" : var.logging_filter
-  }
-
   dynamic "subnetwork" {
     for_each = toset(
       local.subnet_config == "LIST_OF_SUBNETWORKS"
@@ -95,7 +102,9 @@ resource "google_compute_router_nat" "nat" {
       : []
     )
     content {
-      name = subnetwork.value.self_link
+      name = lookup(
+        local.ctx.subnets, subnetwork.value.self_link, subnetwork.value.self_link
+      )
       source_ip_ranges_to_nat = (
         subnetwork.value.all_ranges == true
         ? ["ALL_IP_RANGES"]
@@ -120,7 +129,6 @@ resource "google_compute_router_nat" "nat" {
       )
     }
   }
-
   dynamic "rules" {
     for_each = { for i, r in var.rules : i => r }
     content {
