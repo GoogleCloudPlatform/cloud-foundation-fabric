@@ -11,6 +11,7 @@ This module allows to create a Secure Source Manager instance and repositories i
   - [Private instance](#private-instance)
   - [IAM](#iam)
   - [Branch Protection Rules](#branch-protection-rules)
+  - [Initial Configuration](#initial-configuration)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -195,6 +196,26 @@ module "ssm_instance" {
 }
 # tftest modules=1 resources=3 inventory=branch-protection-rules.yaml 
 ```
+
+### Initial Configuration
+
+```hcl
+module "ssm_instance" {
+  source      = "./fabric/modules/secure-source-manager-instance"
+  project_id  = var.project_id
+  instance_id = "my-instance"
+  location    = var.region
+  repositories = {
+    my-repository = {
+      initial_config = {
+        default_branch = "main"
+        gitignores     = ["terraform.tfstate"]
+      }
+    }
+  }
+}
+# tftest inventory=initial-config.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -203,7 +224,7 @@ module "ssm_instance" {
 | [instance_id](variables.tf#L23) | Instance ID. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L40) | Location. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L55) | Project ID. | <code>string</code> | ✓ |  |
-| [repositories](variables.tf#L60) | Repositories. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role    &#61; string&#10;    members &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role   &#61; string&#10;    member &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  initial_config &#61; optional&#40;object&#40;&#123;&#10;    default_branch &#61; optional&#40;string&#41;&#10;    gitignores     &#61; optional&#40;string&#41;&#10;    license        &#61; optional&#40;string&#41;&#10;    readme         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  branch_rules &#61; optional&#40;map&#40;object&#40;&#123;&#10;    disabled                  &#61; optional&#40;bool, false&#41;&#10;    include_pattern           &#61; string&#10;    require_pull_request      &#61; optional&#40;bool&#41;&#10;    minimum_approvals_count   &#61; optional&#40;number&#41;&#10;    minimum_reviews_count     &#61; optional&#40;number&#41;&#10;    require_comments_resolved &#61; optional&#40;bool&#41;&#10;    allow_stale_reviews       &#61; optional&#40;bool&#41;&#10;    require_linear_history    &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [repositories](variables.tf#L60) | Repositories. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role    &#61; string&#10;    members &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    role   &#61; string&#10;    member &#61; string&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  initial_config &#61; optional&#40;object&#40;&#123;&#10;    default_branch &#61; optional&#40;string&#41;&#10;    gitignores     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    license        &#61; optional&#40;string&#41;&#10;    readme         &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  branch_rules &#61; optional&#40;map&#40;object&#40;&#123;&#10;    disabled                  &#61; optional&#40;bool, false&#41;&#10;    include_pattern           &#61; string&#10;    require_pull_request      &#61; optional&#40;bool&#41;&#10;    minimum_approvals_count   &#61; optional&#40;number&#41;&#10;    minimum_reviews_count     &#61; optional&#40;number&#41;&#10;    require_comments_resolved &#61; optional&#40;bool&#41;&#10;    allow_stale_reviews       &#61; optional&#40;bool&#41;&#10;    require_linear_history    &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [iam](variables-iam.tf#L17) | IAM bindings. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L23) | IAM bindings. | <code title="map&#40;object&#40;&#123;&#10;  role    &#61; string&#10;  members &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L32) | IAM bindings. | <code title="map&#40;object&#40;&#123;&#10;  role   &#61; string&#10;  member &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
