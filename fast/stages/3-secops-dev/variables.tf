@@ -111,7 +111,7 @@ variable "stage_config" {
   })
   default = {
     environment = "dev"
-    name        = "secops-dev"
+    name        = "secops/dev"
   }
 }
 

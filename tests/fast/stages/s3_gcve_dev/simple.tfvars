@@ -11,7 +11,7 @@ environments = {
 }
 
 folder_ids = {
-  gcve-dev = "folders/00000000000000"
+  "gcve/dev" = "folders/00000000000000"
 }
 
 organization = {

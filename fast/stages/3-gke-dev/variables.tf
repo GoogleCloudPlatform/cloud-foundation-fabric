@@ -173,7 +173,7 @@ variable "stage_config" {
   })
   default = {
     environment = "dev"
-    name        = "gke-dev"
+    name        = "gke/dev"
   }
 }
 
