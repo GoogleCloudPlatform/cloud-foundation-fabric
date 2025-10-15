@@ -30,10 +30,16 @@ variable "context" {
     iam_principals = optional(map(string), {})
     locations      = optional(map(string), {})
     networks       = optional(map(string), {})
-    project_ids    = optional(map(string), {})
+    # legacy context
+    regions     = optional(map(string), {})
+    project_ids = optional(map(string), {})
   })
   default  = {}
   nullable = false
+  validation {
+    condition     = length(var.context.regions) == 0 || length(var.context.locations) == 0
+    error_message = "Only one of locations, regions can be used."
+  }
 }
 
 variable "create_googleapis_routes" {

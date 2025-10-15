@@ -15,11 +15,14 @@
  */
 
 locals {
-  ctx = {
+  _ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     }
   }
+  ctx = merge(local._ctx, {
+    locations = merge(local._ctx.regions, local._ctx.locations)
+  })
   ctx_p = "$"
   network = (
     var.vpc_reuse == null
