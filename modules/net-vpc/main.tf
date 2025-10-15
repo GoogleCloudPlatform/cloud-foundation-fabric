@@ -162,7 +162,7 @@ resource "google_dns_policy" "default" {
         )
         iterator = ns
         content {
-          ipv4_address    = ns.value
+          ipv4_address    = lookup(local.ctx.addresses, ns.value, ns.value)
           forwarding_path = "private"
         }
       }
@@ -174,7 +174,7 @@ resource "google_dns_policy" "default" {
         )
         iterator = ns
         content {
-          ipv4_address = ns.value
+          ipv4_address = lookup(local.ctx.addresses, ns.value, ns.value)
         }
       }
     }

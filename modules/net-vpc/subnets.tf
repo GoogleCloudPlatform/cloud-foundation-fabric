@@ -88,6 +88,9 @@ locals {
       _is_proxy_only = try(v.proxy_only == true, false)
     }
   }
+  _iam_subnets = concat(
+    var.subnets, var.subnets_psc, var.subnets_proxy_only, values(local._factory_subnets)
+  )
   all_subnets = merge(
     { for k, v in google_compute_subnetwork.subnetwork : k => v },
     { for k, v in google_compute_subnetwork.proxy_only : k => v },
@@ -95,22 +98,21 @@ locals {
   )
   subnet_iam = flatten(concat(
     [
-      for s in concat(var.subnets, var.subnets_psc, var.subnets_proxy_only, values(local._factory_subnets)) : [
-        for role, members in s.iam :
-        {
-          role    = role
+      for s in local._iam_subnets : [
+        for role, members in s.iam : {
+          role    = lookup(local.ctx.custom_roles, role, role)
           members = members
-          subnet  = "${s.region}/${s.name}"
+          subnet  = "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}"
         }
       ]
     ],
   ))
   subnet_iam_bindings = merge([
-    for s in concat(var.subnets, var.subnets_psc, var.subnets_proxy_only, values(local._factory_subnets)) : {
+    for s in local._iam_subnets : {
       for key, data in s.iam_bindings :
       key => {
-        role      = data.role
-        subnet    = "${s.region}/${s.name}"
+        role      = lookup(local.ctx.custom_roles, data.role, data.role)
+        subnet    = "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}"
         members   = data.members
         condition = data.condition
       }
@@ -120,30 +122,42 @@ locals {
   # In other words, if you have multiple additive bindings with the
   # same name, only one will be used
   subnet_iam_bindings_additive = merge([
-    for s in concat(var.subnets, var.subnets_psc, var.subnets_proxy_only, values(local._factory_subnets)) : {
+    for s in local._iam_subnets : {
       for key, data in s.iam_bindings_additive :
       key => {
-        role      = data.role
-        subnet    = "${s.region}/${s.name}"
+        role      = lookup(local.ctx.custom_roles, data.role, data.role)
+        subnet    = "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}"
         member    = data.member
         condition = data.condition
       }
     }
   ]...)
   subnets = merge(
-    { for s in var.subnets : "${s.region}/${s.name}" => s },
+    {
+      for s in var.subnets :
+      "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}" => s
+    },
     { for k, v in local._factory_subnets : k => v if v._is_regular }
   )
   subnets_proxy_only = merge(
-    { for s in var.subnets_proxy_only : "${s.region}/${s.name}" => s },
+    {
+      for s in var.subnets_proxy_only :
+      "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}" => s
+    },
     { for k, v in local._factory_subnets : k => v if v._is_proxy_only },
   )
   subnets_private_nat = merge(
-    { for s in var.subnets_private_nat : "${s.region}/${s.name}" => s },
+    {
+      for s in var.subnets_private_nat :
+      "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}" => s
+    },
     # { for k, v in local._factory_subnets : k => v if v._is_proxy_only },
   )
   subnets_psc = merge(
-    { for s in var.subnets_psc : "${s.region}/${s.name}" => s },
+    {
+      for s in var.subnets_psc :
+      "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}" => s
+    },
     { for k, v in local._factory_subnets : k => v if v._is_psc }
   )
 }
@@ -294,9 +308,7 @@ resource "google_compute_subnetwork_iam_binding" "authoritative" {
   project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
-  role = lookup(
-    local.ctx.custom_roles, each.value.role, each.value.role
-  )
+  role       = each.value.role
   members = [
     for m in each.value.members : lookup(local.ctx.iam_principals, m, m)
   ]
@@ -307,9 +319,7 @@ resource "google_compute_subnetwork_iam_binding" "bindings" {
   project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
-  role = lookup(
-    local.ctx.custom_roles, each.value.role, each.value.role
-  )
+  role       = each.value.role
   members = [
     for m in each.value.members : lookup(local.ctx.iam_principals, m, m)
   ]
@@ -330,9 +340,7 @@ resource "google_compute_subnetwork_iam_member" "bindings" {
   project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
-  role = lookup(
-    local.ctx.custom_roles, each.value.role, each.value.role
-  )
+  role       = each.value.role
   member = lookup(
     local.ctx.iam_principals, each.value.member, each.value.member
   )

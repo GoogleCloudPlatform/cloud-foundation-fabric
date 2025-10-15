@@ -52,12 +52,10 @@ locals {
       }
     }
   }
-
   internal_ranges = merge(
     { for r in var.internal_ranges : r.name => r },
     local._factory_internal_ranges
   )
-
   internal_ranges_ids = {
     for k, v in google_network_connectivity_internal_range.internal_range :
     k => v.id
@@ -65,14 +63,15 @@ locals {
 }
 
 resource "google_network_connectivity_internal_range" "internal_range" {
-  provider = google-beta
-  for_each = local.internal_ranges
-  project  = var.project_id
-  name     = each.value.name
-  network  = local.network.id
-
-  description         = each.value.description
-  ip_cidr_range       = each.value.ip_cidr_range
+  provider    = google-beta
+  for_each    = local.internal_ranges
+  project     = local.project_id
+  name        = each.value.name
+  network     = local.network.id
+  description = each.value.description
+  ip_cidr_range = lookup(
+    local.ctx.cidr_ranges, each.value.ip_cidr_range, each.value.ip_cidr_range
+  )
   labels              = each.value.labels
   usage               = each.value.usage
   peering             = each.value.peering
