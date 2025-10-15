@@ -56,19 +56,28 @@ locals {
   peer_network = (
     var.peering_config == null
     ? null
-    : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
+    : (
+      startswith(var.peering_config.peer_vpc_self_link, "$networks:")
+      ? lookup(
+        local.ctx.networks,
+        var.peering_config.peer_vpc_self_link,
+        var.peering_config.peer_vpc_self_link
+      )
+      : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
+    )
   )
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
 }
 
 data "google_compute_network" "network" {
   count   = try(var.vpc_reuse.use_data_source, null) == true ? 1 : 0
   name    = var.name
-  project = var.project_id
+  project = local.project_id
 }
 
 resource "google_compute_network" "network" {
   count                                     = var.vpc_reuse == null ? 1 : 0
-  project                                   = var.project_id
+  project                                   = local.project_id
   name                                      = var.name
   description                               = var.description
   auto_create_subnetworks                   = var.auto_create_subnetworks
@@ -81,11 +90,15 @@ resource "google_compute_network" "network" {
 }
 
 resource "google_compute_network_peering" "local" {
-  provider             = google-beta
-  count                = var.peering_config == null ? 0 : 1
-  name                 = "${var.name}-${local.peer_network}"
-  network              = local.network.self_link
-  peer_network         = var.peering_config.peer_vpc_self_link
+  provider = google-beta
+  count    = var.peering_config == null ? 0 : 1
+  name     = "${var.name}-${local.peer_network}"
+  network  = local.network.self_link
+  peer_network = lookup(
+    local.ctx.networks,
+    var.peering_config.peer_vpc_self_link,
+    var.peering_config.peer_vpc_self_link
+  )
   export_custom_routes = var.peering_config.export_routes
   import_custom_routes = var.peering_config.import_routes
 }
@@ -97,8 +110,12 @@ resource "google_compute_network_peering" "remote" {
     ? 1
     : 0
   )
-  name                 = "${local.peer_network}-${var.name}"
-  network              = var.peering_config.peer_vpc_self_link
+  name = "${local.peer_network}-${var.name}"
+  network = lookup(
+    local.ctx.networks,
+    var.peering_config.peer_vpc_self_link,
+    var.peering_config.peer_vpc_self_link
+  )
   peer_network         = local.network.self_link
   export_custom_routes = var.peering_config.import_routes
   import_custom_routes = var.peering_config.export_routes
@@ -108,7 +125,7 @@ resource "google_compute_network_peering" "remote" {
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
   provider   = google-beta
   count      = var.shared_vpc_host ? 1 : 0
-  project    = var.project_id
+  project    = local.project_id
   depends_on = [local.network]
 }
 
@@ -119,14 +136,14 @@ resource "google_compute_shared_vpc_service_project" "service_projects" {
     ? var.shared_vpc_service_projects
     : []
   )
-  host_project    = var.project_id
-  service_project = each.value
+  host_project    = local.project_id
+  service_project = lookup(local.ctx.project_ids, each.value, each.value)
   depends_on      = [google_compute_shared_vpc_host_project.shared_vpc_host]
 }
 
 resource "google_dns_policy" "default" {
   count                     = var.dns_policy == null ? 0 : 1
-  project                   = var.project_id
+  project                   = local.project_id
   name                      = var.name
   enable_inbound_forwarding = try(var.dns_policy.inbound, null)
   enable_logging            = try(var.dns_policy.logging, null)

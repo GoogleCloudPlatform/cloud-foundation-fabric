@@ -96,7 +96,9 @@ resource "google_compute_route" "ip" {
   dest_range  = each.value.dest_range
   priority    = each.value.priority
   tags        = each.value.tags
-  next_hop_ip = each.value.next_hop
+  next_hop_ip = lookup(
+    local.ctx.cidr_ranges, each.value.next_hop, each.value.next_hop
+  )
 }
 
 resource "google_compute_route" "vpn_tunnel" {

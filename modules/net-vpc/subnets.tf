@@ -23,7 +23,7 @@ locals {
   }
   _factory_data = {
     for k, v in local._factory_data_raw : k => merge(v, {
-      region_computed = lookup(local.ctx.regions, v.region, v.region)
+      region_computed = lookup(local.ctx.locations, v.region, v.region)
     })
   }
   _factory_path = try(pathexpand(var.factories_config.subnets_folder), null)
@@ -88,7 +88,6 @@ locals {
       _is_proxy_only = try(v.proxy_only == true, false)
     }
   }
-
   all_subnets = merge(
     { for k, v in google_compute_subnetwork.subnetwork : k => v },
     { for k, v in google_compute_subnetwork.proxy_only : k => v },
@@ -150,13 +149,19 @@ locals {
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  provider                         = google-beta
-  for_each                         = local.subnets
-  project                          = var.project_id
-  network                          = local.network.name
-  name                             = each.value.name
-  region                           = each.value.region
-  ip_cidr_range                    = try(each.value.ipv6.ipv6_only, false) ? null : each.value.ip_cidr_range
+  provider = google-beta
+  for_each = local.subnets
+  project  = local.project_id
+  network  = local.network.name
+  name     = each.value.name
+  region = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
+  ip_cidr_range = (
+    try(each.value.ipv6.ipv6_only, false)
+    ? null
+    : try(local.ctx.cidr_ranges[each.value.ip_cidr_range], each.value.ip_cidr_range)
+  )
   allow_subnet_cidr_routes_overlap = each.value.allow_subnet_cidr_routes_overlap
   reserved_internal_range = (
     each.value.reserved_internal_range != null
@@ -189,8 +194,13 @@ resource "google_compute_subnetwork" "subnetwork" {
   dynamic "secondary_ip_range" {
     for_each = each.value.secondary_ip_ranges == null ? {} : each.value.secondary_ip_ranges
     content {
-      range_name    = secondary_ip_range.key
-      ip_cidr_range = try(secondary_ip_range.value.ip_cidr_range, secondary_ip_range.value)
+      range_name = secondary_ip_range.key
+      ip_cidr_range = try(
+        local.ctx.cidr_ranges[secondary_ip_range.value.ip_cidr_range],
+        secondary_ip_range.value.ip_cidr_range,
+        local.ctx.cidr_ranges[secondary_ip_range.value],
+        secondary_ip_range.value
+      )
       reserved_internal_range = (
         try(secondary_ip_range.value.reserved_internal_range, null) != null
         ? "networkconnectivity.googleapis.com/${try(local.internal_ranges_ids[secondary_ip_range.value.reserved_internal_range], secondary_ip_range.value.reserved_internal_range)}"
@@ -215,12 +225,16 @@ resource "google_compute_subnetwork" "subnetwork" {
 }
 
 resource "google_compute_subnetwork" "proxy_only" {
-  for_each      = local.subnets_proxy_only
-  project       = var.project_id
-  network       = local.network.name
-  name          = each.value.name
-  region        = each.value.region
-  ip_cidr_range = each.value.ip_cidr_range
+  for_each = local.subnets_proxy_only
+  project  = local.project_id
+  network  = local.network.name
+  name     = each.value.name
+  region = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
+  ip_cidr_range = lookup(
+    local.ctx.cidr_ranges, each.value.ip_cidr_range, each.value.ip_cidr_range
+  )
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
@@ -232,12 +246,16 @@ resource "google_compute_subnetwork" "proxy_only" {
 }
 
 resource "google_compute_subnetwork" "private_nat" {
-  for_each      = local.subnets_private_nat
-  project       = var.project_id
-  network       = local.network.name
-  name          = each.value.name
-  region        = each.value.region
-  ip_cidr_range = each.value.ip_cidr_range
+  for_each = local.subnets_private_nat
+  project  = local.project_id
+  network  = local.network.name
+  name     = each.value.name
+  region = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
+  ip_cidr_range = lookup(
+    local.ctx.cidr_ranges, each.value.ip_cidr_range, each.value.ip_cidr_range
+  )
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
@@ -248,12 +266,16 @@ resource "google_compute_subnetwork" "private_nat" {
 }
 
 resource "google_compute_subnetwork" "psc" {
-  for_each      = local.subnets_psc
-  project       = var.project_id
-  network       = local.network.name
-  name          = each.value.name
-  region        = each.value.region
-  ip_cidr_range = each.value.ip_cidr_range
+  for_each = local.subnets_psc
+  project  = local.project_id
+  network  = local.network.name
+  name     = each.value.name
+  region = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
+  ip_cidr_range = lookup(
+    local.ctx.cidr_ranges, each.value.ip_cidr_range, each.value.ip_cidr_range
+  )
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
@@ -269,24 +291,34 @@ resource "google_compute_subnetwork_iam_binding" "authoritative" {
     for binding in local.subnet_iam :
     "${binding.subnet}.${binding.role}" => binding
   }
-  project    = var.project_id
+  project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
-  role       = each.value.role
-  members    = each.value.members
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  members = [
+    for m in each.value.members : lookup(local.ctx.iam_principals, m, m)
+  ]
 }
 
 resource "google_compute_subnetwork_iam_binding" "bindings" {
   for_each   = local.subnet_iam_bindings
-  project    = var.project_id
+  project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
-  role       = each.value.role
-  members    = each.value.members
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  members = [
+    for m in each.value.members : lookup(local.ctx.iam_principals, m, m)
+  ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -295,15 +327,21 @@ resource "google_compute_subnetwork_iam_binding" "bindings" {
 
 resource "google_compute_subnetwork_iam_member" "bindings" {
   for_each   = local.subnet_iam_bindings_additive
-  project    = var.project_id
+  project    = local.project_id
   subnetwork = local.all_subnets[each.value.subnet].name
   region     = local.all_subnets[each.value.subnet].region
-  role       = each.value.role
-  member     = each.value.member
+  role = lookup(
+    local.ctx.custom_roles, each.value.role, each.value.role
+  )
+  member = lookup(
+    local.ctx.iam_principals, each.value.member, each.value.member
+  )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -313,7 +351,7 @@ resource "google_compute_subnetwork_iam_member" "bindings" {
 resource "google_compute_network_attachment" "default" {
   provider    = google-beta
   for_each    = var.network_attachments
-  project     = var.project_id
+  project     = local.project_id
   region      = google_compute_subnetwork.subnetwork[each.value.subnet].region
   name        = each.key
   description = each.value.description

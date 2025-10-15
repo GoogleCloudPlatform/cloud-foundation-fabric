@@ -23,7 +23,14 @@ variable "auto_create_subnetworks" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    regions = optional(map(string), {})
+    addresses      = optional(map(string), {})
+    cidr_ranges    = optional(map(string), {})
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    networks       = optional(map(string), {})
+    project_ids    = optional(map(string), {})
   })
   default  = {}
   nullable = false
