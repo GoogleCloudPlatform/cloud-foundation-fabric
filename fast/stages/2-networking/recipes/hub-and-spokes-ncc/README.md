@@ -25,12 +25,6 @@ The default recipe ships two different VPCs, mapping to hypotetical environments
 
 The design easily lends itself to implementing additional environments, or adopting a different logical mapping for spokes (e.g. one spoke for each company entity, etc.).
 
-### External connectivity
-
-External connectivity to on-prem is implemented here via [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (two tunnels per region), as this is the minimum common denominator often used directly, or as a stop-gap solution to validate routing and transfer data, while waiting for [interconnects](https://cloud.google.com/network-connectivity/docs/interconnect) to be provisioned.
-
-Connectivity to additional on-prem sites or other cloud providers should be implemented in a similar fashion, via VPN tunnels or interconnects in the hub VPC, sharing the same regional router, and attached as hybrid spokes to the same NCC hub.
-
 ### IP ranges, subnetting, routing
 
 Minimizing the number of routes (and subnets) in use on the cloud environment is an important consideration, as it simplifies management and avoids hitting [Cloud Router](https://cloud.google.com/network-connectivity/docs/router/quotas) and [VPC](https://cloud.google.com/vpc/docs/quota) quotas and limits. For this reason, we recommend careful planning of the IP space used in your cloud environment, to be able to use large IP CIDR blocks in routes whenever possible.
@@ -106,16 +100,17 @@ The GCP Firewall is a stateful, distributed feature that allows the creation of 
 The current setup adopts both firewall types, and uses [hierarchical rules on the Networking folder](./firewall-policies/network-policies.yaml) for common ingress rules, e.g. from health check or IAP forwarders ranges, and [VPC rules](./vpcs/prod/firewall-rules) for the environment or workload-level ingress.
 
 ### DNS
-<!-- 
-DNS goes hand in hand with networking, especially on GCP where Cloud DNS zones and policies are associated at the VPC level. This setup implements both DNS flows:
+
+This recipe implements both DNS flows:
 
 - on-prem to cloud via private zones for cloud-managed domains, and an [inbound policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) used as forwarding target or via delegation (requires some extra configuration) from on-prem DNS resolvers
+
 - cloud to on-prem via forwarding zones for the on-prem managed domains
 
 DNS configuration is further centralized by leveraging peering zones, so that
 
-- the hub/landing Cloud DNS hosts configurations for on-prem forwarding, Google API domains, and the top-level private zone/s (e.g. gcp.example.com)
-- the spokes Cloud DNS host configurations for the environment-specific domains (e.g. prod.gcp.example.com), which are bound to the hub/landing leveraging [cross-project binding](https://cloud.google.com/dns/docs/zones/zones-overview#cross-project_binding); a peering zone for the `.` (root) zone is then created on each spoke, delegating all DNS resolution to hub/landing.
+- the hub Cloud DNS hosts configurations for on-prem forwarding, Google API domains, and the top-level private zone/s (e.g. test.)
+- the spokes Cloud DNS host configurations for the environment-specific domains (e.g. prod.test.), which are bound to the hub leveraging [cross-project binding](https://cloud.google.com/dns/docs/zones/zones-overview#cross-project_binding); a peering zone for the `.` (root) zone is then created on each spoke, delegating all DNS resolution to hub/landing.
 - Private Google Access is enabled via [DNS Response Policies](https://cloud.google.com/dns/docs/zones/manage-response-policies#create-response-policy-rule) for most of the [supported domains](https://cloud.google.com/vpc/docs/configure-private-google-access#domain-options)
 
 To complete the configuration, the 35.199.192.0/19 range should be routed on the VPN tunnels from on-prem, and the following names configured for DNS forwarding to cloud:
@@ -124,6 +119,8 @@ To complete the configuration, the 35.199.192.0/19 range should be routed on the
 - `restricted.googleapis.com`
 - `gcp.example.com` (used as a placeholder)
 
-From cloud, the `example.com` domain (used as a placeholder) is forwarded to on-prem.
+From cloud, the `onprem.` domain (used as a placeholder) is forwarded to on-prem.
 
-This configuration is battle-tested, and flexible enough to lend itself to simple modifications without subverting its design, for example by forwarding and peering root zones to bypass Cloud DNS external resolution. -->
+### VPNs
+
+Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in [`onprem.yaml`](./vpcs/hub/vpns/onprem.yaml). The file provisionally implements a single logical connection between onprem and the hub on the primary region through 2 IPSec tunnels, which are connected to the NCC Hub as hybrid spokes.

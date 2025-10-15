@@ -14,11 +14,12 @@
 
 # yaml-language-server: $schema=../../schemas/dns.schema.json
 
-project_id: $project_ids:net-core-0
-domain: onprem.
-forwarding:
-  forwarders:
-    "8.8.8.8": default
-    "1.1.1.1": default
+project_id: $project_ids:net-prod-0
+domain: prod.test.
+private:
   client_networks:
     - $vpcs:hub
+    - $vpcs:prod
+recordsets:
+  "A localhost":
+    records: ["127.0.0.1"]
