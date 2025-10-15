@@ -50,6 +50,8 @@ locals {
         versioning = lookup(
           opts, "versioning", false
         )
+        retention_policy        = lookup(opts, "retention_policy", null)
+        enable_object_retention = lookup(opts, "enable_object_retention", null)
       }
     ]
   ])
@@ -88,4 +90,6 @@ module "buckets" {
   storage_class               = each.value.storage_class
   uniform_bucket_level_access = each.value.uniform_bucket_level_access
   versioning                  = each.value.versioning
+  retention_policy            = each.value.retention_policy
+  enable_object_retention     = each.value.enable_object_retention
 }
