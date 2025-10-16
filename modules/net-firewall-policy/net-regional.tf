@@ -58,16 +58,22 @@ resource "google_compute_region_network_firewall_policy_rule" "net-regional" {
   )
   match {
     dest_ip_ranges = (
-      local.rules[each.key].match.destination_ranges == null ? null : [
-        for r in local.rules[each.key].match.destination_ranges :
-        lookup(local.ctx.cidr_ranges, r, r)
-      ]
+      local.rules[each.key].match.destination_ranges == null ? null : distinct(flatten([
+        for r in local.rules[each.key].match.destination_ranges : try(
+          local.ctx.cidr_ranges_sets[r],
+          local.ctx.cidr_ranges[r],
+          r
+        )
+      ]))
     )
     src_ip_ranges = (
-      local.rules[each.key].match.source_ranges == null ? null : [
-        for r in local.rules[each.key].match.source_ranges :
-        lookup(local.ctx.cidr_ranges, r, r)
-      ]
+      local.rules[each.key].match.source_ranges == null ? null : distinct(flatten([
+        for r in local.rules[each.key].match.source_ranges : try(
+          local.ctx.cidr_ranges_sets[r],
+          local.ctx.cidr_ranges[r],
+          r
+        )
+      ]))
     )
     dest_address_groups = (
       local.rules[each.key].direction == "EGRESS"
