@@ -116,7 +116,7 @@ variable "secret_environment_variables" {
 }
 
 variable "service_account_config" {
-  description = "Service account configurations"
+  description = "Service account configurations."
   type = object({
     create = optional(bool, true)
     email  = optional(string)
