@@ -13,7 +13,6 @@ This Terraform can of course be deployed using any pre-existing project. In that
 - enable the APIs listed under `services`
 - grant the permissions listed under `iam` to the principal running Terraform, either machine (service account) or human
 
-
 ### High level architecture
 
 The following diagram illustrates the high-level design of the solution, which can be adapted to specific requirements via variables and/or simple terraform and Python code customizations:
@@ -22,13 +21,13 @@ The following diagram illustrates the high-level design of the solution, which c
 
 The use case is a SecOps deployment composed of 2 tenants (one for production and one for development/testing). There might be the need to export production data from the prod tenant and import them back in DEV (possibly anonymizing it) for rules and/or parser development, that is why this pipeline might be convenient for speeding up the data migration process.
 
-The solution is based on a custom Python script responsible for implementing the aforementioned logic. The script leverages the new [SecOps API Wrapper](https://github.com/google/secops-wrapper) available also in [PyPi](https://pypi.org/project/secops/). 
+The solution is based on a custom Python script responsible for implementing the aforementioned logic. The script leverages the new [SecOps API Wrapper](https://github.com/google/secops-wrapper) available also in [PyPi](https://pypi.org/project/secops/).
 
 ### Pipeline Steps
 
 - **SecOps Export**: Triggered via the corresponding TRIGGER-EXPORT action. Call [SecOps Export API](https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.dataExports) to trigger raw logs export on a GCS bucket based on either all the log types or one o more of them for a specific time frame. By default, the export will be for the previous day, otherwise the following parameters can be specified to change the time frame:
-  * `EXPORT_DATE` date for the export (format %Y-%m-%d)
-  * `EXPORT_START_DATETIME` and `EXPORT_END_DATETIME` start and end datetime for the export (format %Y-%m-%dT%H:%M:%SZ). This is useful for verbose log source with GB/TB of raw logs ingested on a daily basis
+  - `EXPORT_DATE` date for the export (format %Y-%m-%d)
+  - `EXPORT_START_DATETIME` and `EXPORT_END_DATETIME` start and end datetime for the export (format %Y-%m-%dT%H:%M:%SZ). This is useful for verbose log source with GB/TB of raw logs ingested on a daily basis
 - **Anonymize Data**: Triggered via the corresponding ANONYMIZE-DATA action. Split the exported CSV files to one or more CSV files where the size of each file is less than 60MB (which is the maximum file size supported by DLP). It also renames those files in .log for better handling by the DLP Job. It will then trigger an asynchronous DLP job to anonymize data.
 - **Import Data**: Triggered via the corresponding IMPORT-DATA action. Import the exported raw logs (or anonymized ones according to the pipeline configuration) data into the target SecOps tenant leveraging the new [SecOps Ingestion API](https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.logTypes.logs/import).
 
@@ -56,13 +55,13 @@ git clone REPO_URL
 Before you deploy the architecture, you will need at least the following
 information (for more precise configuration see the Variables section):
 
-* GCP Project ID for SecOps anonymization pipeline deployment
-* SecOps tenants information:
-  * GCP projects of both source and target SecOps tenants
-  * SecOps customer IDs for both source and target SecOps tenants
-  * SecOps deployment region for both the tenants (must be the same)
-  * SecOps Forwarder ID for target tenant (this is mandatory for new ingestion APIs and requires at least an empty collector forwarder to be setup in target tenant)
-  * **Grant Pipeline SA Chronicle API Editor role on both source and target tenant** (this might be restricred to data export permissions on source and import logs permissions on target tenant)
+- GCP Project ID for SecOps anonymization pipeline deployment
+- SecOps tenants information:
+  - GCP projects of both source and target SecOps tenants
+  - SecOps customer IDs for both source and target SecOps tenants
+  - SecOps deployment region for both the tenants (must be the same)
+  - SecOps Forwarder ID for target tenant (this is mandatory for new ingestion APIs and requires at least an empty collector forwarder to be setup in target tenant)
+  - **Grant Pipeline SA Chronicle API Editor role on both source and target tenant** (this might be restricred to data export permissions on source and import logs permissions on target tenant)
 
 #### Step 2: Prepare the variables
 

@@ -61,6 +61,19 @@ variable "backends" {
   nullable = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    addresses   = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "description" {
   description = "Optional description used for resources."
   type        = string

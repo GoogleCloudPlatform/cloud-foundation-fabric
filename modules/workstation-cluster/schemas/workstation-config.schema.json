@@ -1,0 +1,409 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workstation Config",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "annotations": {
+      "type": "object",
+      "description": "Annotations for the object (optional).",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "string"
+        }
+      }
+    },
+    "container": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Container configuration (optional).",
+      "properties": {
+        "args": {
+          "type": "array",
+          "description": "Container arguments (optional, defaults to []).",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "command": {
+          "type": "array",
+          "description": "Container command (optional, defaults to []).",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "env": {
+          "type": "object",
+          "description": "Container environment variables (optional, defaults to {}).",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "image": {
+          "type": "string",
+          "description": "Container image URL (optional)."
+        },
+        "run_as_user": {
+          "type": "string",
+          "description": "User to run the container as (optional)."
+        },
+        "working_dir": {
+          "type": "string",
+          "description": "Container working directory (optional)."
+        }
+      }
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable display name (optional)."
+    },
+    "enable_audit_agent": {
+      "type": "boolean",
+      "description": "Whether to enable the audit agent (optional)."
+    },
+    "encryption_key": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Customer-managed encryption key configuration (optional).",
+      "properties": {
+        "kms_key": {
+          "type": "string",
+          "description": "The KMS key resource name (required)."
+        },
+        "kms_key_service_account": {
+          "type": "string",
+          "description": "The service account to use for the KMS key (required)."
+        }
+      },
+      "required": [
+        "kms_key",
+        "kms_key_service_account"
+      ]
+    },
+    "gce_instance": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "GCE instance configuration (optional).",
+      "properties": {
+        "machine_type": {
+          "type": "string",
+          "description": "Machine type (optional)."
+        },
+        "service_account": {
+          "type": "string",
+          "description": "Service account for the GCE instance (optional)."
+        },
+        "service_account_scopes": {
+          "type": "array",
+          "description": "Service account scopes (optional, defaults to []).",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "pool_size": {
+          "type": "number",
+          "description": "Size of the GCE instance pool (optional)."
+        },
+        "boot_disk_size_gb": {
+          "type": "number",
+          "description": "Boot disk size in GB (optional)."
+        },
+        "tags": {
+          "type": "array",
+          "description": "Network tags (optional).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "disable_public_ip_addresses": {
+          "type": "boolean",
+          "description": "Whether to disable public IP addresses (optional, defaults to false).",
+          "default": false
+        },
+        "enable_nested_virtualization": {
+          "type": "boolean",
+          "description": "Whether to enable nested virtualization (optional, defaults to false).",
+          "default": false
+        },
+        "shielded_instance_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Shielded instance configuration (optional).",
+          "properties": {
+            "enable_secure_boot": {
+              "type": "boolean",
+              "description": "Whether to enable Secure Boot (optional, defaults to false).",
+              "default": false
+            },
+            "enable_vtpm": {
+              "type": "boolean",
+              "description": "Whether to enable vTPM (optional, defaults to false).",
+              "default": false
+            },
+            "enable_integrity_monitoring": {
+              "type": "boolean",
+              "description": "Whether to enable integrity monitoring (optional, defaults to false).",
+              "default": false
+            }
+          }
+        },
+        "enable_confidential_compute": {
+          "type": "boolean",
+          "description": "Whether to enable Confidential Compute (optional, defaults to false).",
+          "default": false
+        },
+        "accelerators": {
+          "type": "array",
+          "description": "Accelerator configuration (optional, defaults to []).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Accelerator type (optional)."
+              },
+              "count": {
+                "type": "number",
+                "description": "Number of accelerators (optional)."
+              }
+            }
+          },
+          "default": []
+        }
+      }
+    },
+    "iam": {
+      "type": "object",
+      "description": "IAM policy per role for the resource (optional, defaults to {}).",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "default": {}
+    },
+    "iam_bindings": {
+      "type": "object",
+      "description": "IAM bindings for the resource (optional, defaults to {}).",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The role name (required)."
+          },
+          "members": {
+            "type": "array",
+            "description": "List of members (required).",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "role",
+          "members"
+        ]
+      },
+      "default": {}
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "description": "Additive IAM bindings for the resource (optional, defaults to {}).",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The role name (required)."
+          },
+          "member": {
+            "type": "string",
+            "description": "The member (required)."
+          }
+        },
+        "required": [
+          "role",
+          "member"
+        ]
+      },
+      "default": {}
+    },
+    "labels": {
+      "type": "object",
+      "description": "Labels for the object (optional).",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "max_workstations": {
+      "type": "number",
+      "description": "Maximum number of workstations (optional)."
+    },
+    "persistent_directories": {
+      "type": "array",
+      "description": "Persistent directory configurations (optional, defaults to []).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mount_path": {
+            "type": "string",
+            "description": "Mount path for the directory (optional)."
+          },
+          "gce_pd": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "GCE persistent disk configuration (optional).",
+            "properties": {
+              "size_gb": {
+                "type": "number",
+                "description": "Size of the persistent disk in GB (optional)."
+              },
+              "fs_type": {
+                "type": "string",
+                "description": "Filesystem type (optional)."
+              },
+              "disk_type": {
+                "type": "string",
+                "description": "Disk type (optional)."
+              },
+              "source_snapshot": {
+                "type": "string",
+                "description": "Source snapshot (optional)."
+              },
+              "reclaim_policy": {
+                "type": "string",
+                "description": "Reclaim policy (optional)."
+              }
+            }
+          }
+        }
+      },
+      "default": []
+    },
+    "replica_zones": {
+      "type": "array",
+      "description": "Zones for replicas (optional).",
+      "items": {
+        "type": "string"
+      }
+    },
+    "timeouts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Timeout configuration (optional, defaults to {}).",
+      "properties": {
+        "idle": {
+          "type": "number",
+          "description": "Idle timeout in seconds (optional)."
+        },
+        "running": {
+          "type": "number",
+          "description": "Running timeout in seconds (optional)."
+        }
+      },
+      "default": {}
+    },
+    "workstations": {
+      "type": "object",
+      "description": "Workstation configurations by name (optional, defaults to {}).",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "annotations": {
+            "type": "object",
+            "description": "Annotations for the workstation (optional).",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "display_name": {
+            "type": "string",
+            "description": "Workstation display name (optional)."
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment variables (optional).",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "iam": {
+            "type": "object",
+            "description": "IAM policy per role for the workstation (optional, defaults to {}).",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "default": {}
+          },
+          "iam_bindings": {
+            "type": "object",
+            "description": "IAM bindings for the workstation (optional, defaults to {}).",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "The role name (required)."
+                },
+                "members": {
+                  "type": "array",
+                  "description": "List of members (required).",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "role",
+                "members"
+              ]
+            },
+            "default": {}
+          },
+          "iam_bindings_additive": {
+            "type": "object",
+            "description": "Additive IAM bindings for the workstation (optional, defaults to {}).",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "The role name (required)."
+                },
+                "member": {
+                  "type": "string",
+                  "description": "The member (required)."
+                }
+              },
+              "required": [
+                "role",
+                "member"
+              ]
+            },
+            "default": {}
+          },
+          "labels": {
+            "type": "object",
+            "description": "Labels for the workstation (optional).",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "default": {}
+    }
+  }
+}

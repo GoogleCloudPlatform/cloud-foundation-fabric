@@ -14,34 +14,44 @@
 
 # yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
 
-# edit parent to suit desired folder where project is created
-parent: shared
-name: prod-shared-mongodb-0
+# TODO: edit and uncomment the following line to create the project in a folder
+# parent: $folder_ids:shared
+
+# project id can be customized here if file name cannot be changed
+# name: prod-shared-mongodb-0
+
 services:
   - compute.googleapis.com
   - logging.googleapis.com
   - monitoring.googleapis.com
-# if automation resources are not used, grant these roles to the principal
-# that will be used to apply this Terraform setup
+
 iam:
   roles/compute.admin:
     - automation/rw
   roles/servicedirectory.admin:
     - automation/rw
+
 automation:
-  project: foo-prod-shared-iac-0
+  # TODO: edit the automation project and optionally edit resource names
+  project: $project_ids:iac-0
   service_accounts:
     rw:
       description: Read/write automation service account for MongoDB.
   bucket:
-    description: Terraform state bucket for MongoDB.
-    iam:
-      roles/storage.objectAdmin:
-        - automation/rw
-      roles/storage.objectViewer:
-        - automation/rw
+    description: Terraform state bucket for apt registries.
+    # this reuses the existing stage state bucket and creates a folder in it
+    name: iac-stage-state
+    create: false
+    managed_folders:
+      data-mongodb:
+        iam:
+          roles/storage.objectCreator:
+            # the project id in the service account ref matches this file name
+            - $iam_principals:service_accounts/data-mongodb/automation/rw
+          roles/storage.objectViewer:
+            - $iam_principals:service_accounts/data-mongodb/automation/rw
 # edit or comment shared VPC service host
 shared_vpc_service_config:
-  host_project: dev-spoke-0
+  host_project: $projject_ids:dev-spoke-0
   network_users:
-    - automation/rw
+    - $iam_principals:service_accounts/data-mongodb/automation/rw

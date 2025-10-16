@@ -38,6 +38,10 @@ values:
       dest_fqdns: null
       dest_ip_ranges:
       - 10.0.0.0/8
+      - 172.16.10.0/12
+      - 192.168.0.0/24
+      - 10.0.0.1/32
+      - 8.8.8.8
       dest_region_codes: null
       dest_threat_intelligences: null
       layer4_configs:
@@ -81,6 +85,10 @@ values:
       src_fqdns: null
       src_ip_ranges:
       - 10.0.0.0/8
+      - 172.16.10.0/12
+      - 192.168.0.0/24
+      - 10.0.0.1/32
+      - 8.8.8.8
       src_region_codes: null
       src_secure_tags: []
       src_threat_intelligences: null

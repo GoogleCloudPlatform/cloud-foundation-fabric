@@ -243,7 +243,7 @@ values:
   google_storage_bucket_object.tfvars["globals"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
-    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
     content_disposition: null
     content_encoding: null
     content_language: null
@@ -426,7 +426,7 @@ values:
     sensitive_content: null
     source: null
   local_file.tfvars["globals"]:
-    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"locations":{"bigquery":"europe-west1","logging":"europe-west1","pubsub":[],"storage":"eu"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
@@ -1011,7 +1011,7 @@ values:
     cmek_settings: []
     enable_analytics: false
     index_configs: []
-    location: global
+    location: europe-west1
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 30
@@ -1020,7 +1020,7 @@ values:
     cmek_settings: []
     enable_analytics: false
     index_configs: []
-    location: global
+    location: europe-west1
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 30
@@ -1029,7 +1029,7 @@ values:
     cmek_settings: []
     enable_analytics: true
     index_configs: []
-    location: global
+    location: europe-west1
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 31
@@ -2399,10 +2399,15 @@ values:
     condition: []
     members:
     - group:fabric-fast-owners@google.com
-    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/compute.xpnAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/compute.viewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"]:
     condition: []
     members:
@@ -2772,8 +2777,8 @@ counts:
   google_logging_project_bucket_config: 3
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
-  google_organization_iam_binding: 35
-  google_organization_iam_custom_role: 7
+  google_organization_iam_binding: 36
+  google_organization_iam_custom_role: 9
   google_project: 3
   google_project_iam_binding: 16
   google_project_iam_member: 15
@@ -2793,5 +2798,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 46
-  resources: 308
+  resources: 311
   terraform_data: 2
