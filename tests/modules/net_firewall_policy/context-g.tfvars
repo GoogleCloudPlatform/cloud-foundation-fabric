@@ -1,6 +1,14 @@
 context = {
   cidr_ranges = {
     rfc1918-10 = "10.0.0.0/8"
+    test       = "8.8.8.8"
+  }
+  cidr_ranges_sets = {
+    rfc1918 = [
+      "10.0.0.0/8",
+      "172.16.10.0/12",
+      "192.168.0.0/24"
+    ]
   }
   folder_ids = {
     test = "folders/1234567890"
@@ -32,7 +40,7 @@ egress_rules = {
     priority                = 900
     target_service_accounts = ["$iam_principals:test"]
     match = {
-      destination_ranges = ["$cidr_ranges:rfc1918-10"]
+      destination_ranges = ["$cidr_ranges_sets:rfc1918", "10.0.0.1/32", "$cidr_ranges:test", "10.0.0.0/8"]
       layer4_configs     = [{ protocol = "tcp", ports = ["25"] }]
       source_tags        = ["$tag_values:test"]
     }
@@ -45,7 +53,7 @@ ingress_rules = {
     target_resources = ["$networks:test"]
     target_tags      = ["$tag_values:test"]
     match = {
-      source_ranges  = ["$cidr_ranges:rfc1918-10"]
+      source_ranges  = ["$cidr_ranges_sets:rfc1918", "10.0.0.1/32", "$cidr_ranges:test", "10.0.0.0/8"]
       layer4_configs = [{ protocol = "icmp" }]
     }
   }
