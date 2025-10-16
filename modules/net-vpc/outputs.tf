@@ -81,7 +81,8 @@ output "network_attachment_ids" {
 }
 
 output "network_id" {
-  value = local.network.network_id
+  description = "Numeric network id."
+  value       = local.network.network_id
   depends_on = [
     google_compute_network_peering.local,
     google_compute_network_peering.remote,
