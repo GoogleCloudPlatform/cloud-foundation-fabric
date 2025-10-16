@@ -145,14 +145,15 @@ restricted:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L39) | Policy name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L58) | Project id for the zone. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L49) | Policy name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L68) | Project id for the zone. | <code>string</code> | ✓ |  |
 | [clusters](variables.tf#L17) | Map of GKE clusters to which this policy is applied in name => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L24) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [factories_config](variables.tf#L30) | Path to folder containing rules data files for the optional factory. | <code title="object&#40;&#123;&#10;  rules &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [networks](variables.tf#L44) | Map of VPC self links to which this policy is applied in name => self link format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_create](variables.tf#L51) | Set to false to use the existing policy matching name and only manage rules. | <code>bool</code> |  | <code>true</code> |
-| [rules](variables.tf#L63) | Map of policy rules in name => rule format. Local data takes precedence over behavior and is in the form record type => attributes. | <code title="map&#40;object&#40;&#123;&#10;  dns_name &#61; string&#10;  behavior &#61; optional&#40;string, &#34;bypassResponsePolicy&#34;&#41;&#10;  local_data &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ttl     &#61; optional&#40;number&#41;&#10;    rrdatas &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L24) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  networks    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L34) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [factories_config](variables.tf#L40) | Path to folder containing rules data files for the optional factory. | <code title="object&#40;&#123;&#10;  rules &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [networks](variables.tf#L54) | Map of VPC self links to which this policy is applied in name => self link format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [policy_create](variables.tf#L61) | Set to false to use the existing policy matching name and only manage rules. | <code>bool</code> |  | <code>true</code> |
+| [rules](variables.tf#L73) | Map of policy rules in name => rule format. Local data takes precedence over behavior and is in the form record type => attributes. | <code title="map&#40;object&#40;&#123;&#10;  dns_name &#61; string&#10;  behavior &#61; optional&#40;string, &#34;bypassResponsePolicy&#34;&#41;&#10;  local_data &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ttl     &#61; optional&#40;number&#41;&#10;    rrdatas &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

@@ -31,19 +31,12 @@ values:
   module.project.google_project_iam_binding.authoritative["$custom_roles:my_role"]:
     condition: []
     members:
-    - group:gcp-organization-admins@example.com
+    - group:organization-admins@example.org
     project: test-project
-    role: organizations/1234567890/roles/myRole
-  module.project.google_project_iam_binding.authoritative["roles/container.hostServiceAgentUser"]:
-    condition: []
-    members:
-    - serviceAccount:my_gke_service_account
-    project: test-project
-    role: roles/container.hostServiceAgentUser
 
 counts:
   google_project: 1
-  google_project_iam_binding: 2
+  google_project_iam_binding: 1
   google_project_iam_member: 2
   google_project_service: 2
   google_project_service_identity: 1

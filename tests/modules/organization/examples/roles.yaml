@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values: 
-  module.org.google_organization_iam_binding.authoritative["organizations/1122334455/roles/myRole"]:
+values:
+  module.org.google_organization_iam_binding.authoritative["organizations/1122334455/roles/myRoletest"]:
     condition: []
     members:
     - group:organization-admins@example.org
     org_id: '1122334455'
-    role: organizations/1122334455/roles/myRole
-  module.org.google_organization_iam_custom_role.roles["myRole"]:
+    role: organizations/1122334455/roles/myRoletest
+  module.org.google_organization_iam_custom_role.roles["myRoletest"]:
     description: Terraform-managed.
     org_id: '1122334455'
     permissions:
     - compute.instances.list
-    role_id: myRole
+    role_id: myRoletest
     stage: GA
-    title: Custom role myRole
+    title: Custom role myRoletest
 
 counts:
   google_organization_iam_binding: 1

@@ -1,0 +1,175 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: test
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: foo-test-0
+    routing_mode: GLOBAL
+    timeouts: null
+  google_compute_route.gateway["directpath-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: test-directpath-googleapis
+    network: test
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: foo-test-0
+    tags: null
+    timeouts: null
+  google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: test-private-googleapis
+    network: test
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: foo-test-0
+    tags: null
+    timeouts: null
+  google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: test-restricted-googleapis
+    network: test
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: foo-test-0
+    tags: null
+    timeouts: null
+  google_compute_route.ip["next-hop"]:
+    description: Route to internal range.
+    dest_range: 8.8.8.8/32
+    name: test-next-hop
+    network: test
+    next_hop_gateway: null
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_ip: 10.20.20.20
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: foo-test-0
+    tags: null
+    timeouts: null
+  google_compute_subnetwork.subnetwork["europe-west8/production"]:
+    description: Terraform-managed.
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: production
+    network: test
+    params: []
+    private_ip_google_access: true
+    project: foo-test-0
+    region: europe-west8
+    role: null
+    secondary_ip_range:
+    - range_name: pods
+    - ip_cidr_range: 192.168.0.0/16
+      range_name: traditional
+      reserved_internal_range: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+  google_compute_subnetwork_iam_binding.authoritative["europe-west8/production.organizations/366118655033/roles/myRoleOne"]:
+    condition: []
+    members:
+    - iam_principals:test
+    project: foo-test-0
+    region: europe-west8
+    role: organizations/366118655033/roles/myRoleOne
+    subnetwork: production
+  google_compute_subnetwork_iam_binding.bindings["myrole_two"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/environment', 'development')
+      title: Test
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    project: foo-test-0
+    region: europe-west8
+    role: organizations/366118655033/roles/myRoleOne
+    subnetwork: production
+  google_compute_subnetwork_iam_member.bindings["myrole_two"]:
+    condition: []
+    member: serviceAccount:test@test-project.iam.gserviceaccount.com
+    project: foo-test-0
+    region: europe-west8
+    role: organizations/366118655033/roles/myRoleOne
+    subnetwork: production
+  google_dns_policy.default[0]:
+    alternative_name_server_config:
+    - target_name_servers:
+      - forwarding_path: ''
+        ipv4_address: 8.8.8.8
+      - forwarding_path: private
+        ipv4_address: 10.10.10.10
+    description: Managed by Terraform
+    enable_inbound_forwarding: true
+    enable_logging: null
+    name: test
+    networks:
+    - {}
+    project: foo-test-0
+    timeouts: null
+  google_network_connectivity_internal_range.internal_range["pods-range"]:
+    allocation_options: []
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    exclude_cidr_ranges: null
+    immutable: null
+    ip_cidr_range: 172.16.10.0/12
+    labels: null
+    migration: []
+    name: pods-range
+    overlaps: null
+    peering: FOR_SELF
+    prefix_length: null
+    project: foo-test-0
+    target_cidr_range: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    usage: FOR_VPC
+
+counts:
+  google_compute_network: 1
+  google_compute_route: 4
+  google_compute_subnetwork: 1
+  google_compute_subnetwork_iam_binding: 2
+  google_compute_subnetwork_iam_member: 1
+  google_dns_policy: 1
+  google_network_connectivity_internal_range: 1
+  modules: 0
+  resources: 11

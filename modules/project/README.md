@@ -39,6 +39,7 @@ This module implements the creation and management of one GCP project including 
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Fixtures](#fixtures)
 <!-- END TOC -->
 
 ## Basic Project Creation
@@ -78,10 +79,6 @@ IAM also supports variable interpolation for both roles and principals, via the 
 The `iam` variable is based on role keys and is typically used for service accounts, or where member values can be dynamic and would create potential problems in the underlying `for_each` cycle.
 
 ```hcl
-locals {
-  gke_service_account = "my_gke_service_account"
-}
-
 module "project" {
   source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
@@ -94,22 +91,19 @@ module "project" {
   ]
   context = {
     custom_roles = {
-      my_role = "organizations/1234567890/roles/myRole"
+      my_role = google_organization_iam_custom_role.custom_role.id # or module.organization.custom_roles["my_role"].id
     }
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam = {
-    "roles/container.hostServiceAgentUser" = [
-      "serviceAccount:${local.gke_service_account}"
-    ]
     "$custom_roles:my_role" = [
       "$iam_principals:org_admins"
     ]
   }
 }
-# tftest modules=1 resources=8 inventory=iam-authoritative.yaml
+# tftest fixtures=fixtures/organization-custom-role.tf inventory=iam-authoritative.yaml e2e
 ```
 
 The `iam_by_principals` variable uses [principals](https://cloud.google.com/iam/docs/principal-identifiers) as keys and is a convenient way to assign roles to humans following Google's best practices. The end result is readable code that also serves as documentation.
@@ -123,10 +117,10 @@ module "project" {
   prefix          = var.prefix
   context = {
     custom_roles = {
-      my_role = "organizations/1234567890/roles/myRole"
+      my_role = google_organization_iam_custom_role.custom_role.id # or module.organization.custom_roles["my_role"].id
     }
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam_by_principals = {
@@ -142,7 +136,7 @@ module "project" {
     ]
   }
 }
-# tftest modules=1 resources=7 inventory=iam-group.yaml e2e
+# tftest fixtures=fixtures/organization-custom-role.tf inventory=iam-group.yaml e2e
 ```
 
 The `iam_bindings` variable behaves like a more verbose version of `iam`, and allows setting binding-level IAM conditions.
@@ -158,11 +152,13 @@ module "project" {
     "stackdriver.googleapis.com"
   ]
   context = {
-    custom_roles = {
-      my_role = "organizations/1234567890/roles/myRole"
+    condition_vars = {
+      custom_roles = {
+        my_role = google_organization_iam_custom_role.custom_role.id # or module.organization.custom_roles["my_role"].id
+      }
     }
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam_bindings = {
@@ -173,19 +169,19 @@ module "project" {
       ]
       role = "roles/resourcemanager.projectIamAdmin"
       condition = {
-        title      = "delegated_network_user_one"
+        title      = "delegated_custom_role"
         expression = <<-END
           api.getAttribute(
             'iam.googleapis.com/modifiedGrantsByRole', []
           ).hasOnly([
-            'roles/compute.networkAdmin'
+            '$${custom_roles.my_role}'
           ])
         END
       }
     }
   }
 }
-# tftest modules=1 resources=3 inventory=iam-bindings.yaml e2e
+# tftest fixtures=fixtures/organization-custom-role.tf inventory=iam-bindings.yaml e2e
 ```
 
 ### Additive IAM
@@ -206,7 +202,7 @@ module "project" {
   ]
   context = {
     iam_principals = {
-      org_admins = "group:gcp-organization-admins@example.com"
+      org_admins = "group:${var.group_email}"
     }
   }
   iam_bindings_additive = {
@@ -1248,11 +1244,37 @@ module "project" {
       "compute.instances.list",
     ]
   }
+  context = {
+    condition_vars = {
+      custom_roles = {
+        my_role = "organizations/1234567890/roles/myRole"
+      }
+    }
+  }
   iam = {
     (module.project.custom_role_id.myRole) = ["group:${var.group_email}"]
   }
+  iam_bindings = {
+    iam_admin_conditional = {
+      members = [
+        "group:${var.group_email}",
+        "$iam_principals:org_admins"
+      ]
+      role = "roles/resourcemanager.projectIamAdmin"
+      condition = {
+        title      = "delegated_custom_role"
+        expression = <<-END
+          api.getAttribute(
+            'iam.googleapis.com/modifiedGrantsByRole', []
+          ).hasOnly([
+            '$${custom_roles.my_role}'
+          ])
+        END
+      }
+    }
+  }
 }
-# tftest modules=1 resources=3
+# tftest inventory=custom-role-iam.yaml
 ```
 
 ### Custom Roles Factory
@@ -1939,4 +1961,8 @@ alerts:
 | [sink_writer_identities](outputs.tf#L182) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L189) | Tag key resources. |  |
 | [tag_values](outputs.tf#L198) | Tag value resources. |  |
+
+## Fixtures
+
+- [organization-custom-role.tf](../../tests/fixtures/organization-custom-role.tf)
 <!-- END TFDOC -->

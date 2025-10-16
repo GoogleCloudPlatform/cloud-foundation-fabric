@@ -46,8 +46,8 @@ locals {
 
 resource "google_compute_resource_policy" "schedule" {
   count   = var.instance_schedule != null ? 1 : 0
-  project = var.project_id
-  region  = substr(var.zone, 0, length(var.zone) - 2)
+  project = local.project_id
+  region  = substr(local.zone, 0, length(local.zone) - 2)
   name    = var.name
   description = coalesce(
     var.instance_schedule.description, "Schedule policy for ${var.name}."
@@ -73,8 +73,8 @@ resource "google_compute_resource_policy" "schedule" {
 
 resource "google_compute_resource_policy" "snapshot" {
   for_each = var.snapshot_schedules
-  project  = var.project_id
-  region   = substr(var.zone, 0, length(var.zone) - 2)
+  project  = local.project_id
+  region   = substr(local.zone, 0, length(local.zone) - 2)
   name     = "${var.name}-${each.key}"
   description = coalesce(
     each.value.description, "Schedule policy ${each.key} for ${var.name}."
@@ -132,8 +132,8 @@ resource "google_compute_resource_policy" "snapshot" {
 
 resource "google_compute_disk_resource_policy_attachment" "boot" {
   for_each = var.boot_disk.snapshot_schedule != null ? toset(var.boot_disk.snapshot_schedule) : []
-  project  = var.project_id
-  zone     = var.zone
+  project  = local.project_id
+  zone     = local.zone
   name = try(
     google_compute_resource_policy.snapshot[each.value].name,
     each.value
@@ -153,8 +153,8 @@ resource "google_compute_disk_resource_policy_attachment" "attached" {
     "${attachment.disk_key}-${attachment.snapshot_schedule}" => attachment
   }
 
-  project = var.project_id
-  zone    = var.zone
+  project = local.project_id
+  zone    = local.zone
   name = try(
     google_compute_resource_policy.snapshot[each.value.snapshot_schedule].name,
     each.value.snapshot_schedule
@@ -176,7 +176,7 @@ resource "google_compute_region_disk_resource_policy_attachment" "attached" {
     "${attachment.disk_key}-${attachment.snapshot_schedule}" => attachment
   }
 
-  project = var.project_id
+  project = local.project_id
   name = try(
     google_compute_resource_policy.snapshot[each.value.snapshot_schedule].name,
     each.value.snapshot_schedule

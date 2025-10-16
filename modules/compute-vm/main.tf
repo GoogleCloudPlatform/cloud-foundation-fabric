@@ -15,6 +15,7 @@
  */
 
 locals {
+  _region     = join("-", slice(split("-", local.zone), 0, 2))
   advanced_mf = var.options.advanced_machine_features
   attached_disks = {
     for i, disk in var.attached_disks :
@@ -30,18 +31,27 @@ locals {
     for k, v in local.attached_disks :
     k => v if try(v.options.replica_zone, null) == null
   }
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  gpu   = var.gpu != null
   on_host_maintenance = (
     var.options.spot || var.confidential_compute || local.gpu
     ? "TERMINATE"
     : "MIGRATE"
   )
-  region = join("-", slice(split("-", var.zone), 0, 2))
-  gpu    = var.gpu != null
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = lookup(local.ctx.locations, local._region, local._region)
   service_account = var.service_account == null ? null : {
-    email = (
-      var.service_account.auto_create
+    email = (var.service_account.auto_create
       ? google_service_account.service_account[0].email
-      : var.service_account.email
+      : try(
+        local.ctx.iam_principals[var.service_account.email],
+        var.service_account.email
+      )
     )
     scopes = (
       var.service_account.scopes != null ? var.service_account.scopes : (
@@ -63,12 +73,13 @@ locals {
   termination_action = (
     var.options.spot || var.options.max_run_duration != null ? coalesce(var.options.termination_action, "STOP") : null
   )
+  zone = lookup(local.ctx.locations, var.zone, var.zone)
 }
 
 resource "google_compute_disk" "boot" {
   count   = !local.template_create && var.boot_disk.use_independent_disk ? 1 : 0
-  project = var.project_id
-  zone    = var.zone
+  project = local.project_id
+  zone    = local.zone
   # by default, GCP creates boot disks with the same name as instance, the deviation here is kept for backwards
   # compatibility
   name  = "${var.name}-boot"
@@ -82,8 +93,12 @@ resource "google_compute_disk" "boot" {
   dynamic "disk_encryption_key" {
     for_each = var.encryption != null ? [""] : []
     content {
-      raw_key           = var.encryption.disk_encryption_key_raw
-      kms_key_self_link = var.encryption.kms_key_self_link
+      raw_key = var.encryption.disk_encryption_key_raw
+      kms_key_self_link = lookup(
+        local.ctx.kms_keys,
+        var.encryption.kms_key_self_link,
+        var.encryption.kms_key_self_link
+      )
     }
   }
 }
@@ -93,8 +108,8 @@ resource "google_compute_disk" "disks" {
     for k, v in local.attached_disks_zonal :
     k => v if v.source_type != "attach"
   }
-  project  = var.project_id
-  zone     = var.zone
+  project  = local.project_id
+  zone     = local.zone
   name     = "${var.name}-${each.key}"
   type     = each.value.options.type
   size     = each.value.size
@@ -107,8 +122,12 @@ resource "google_compute_disk" "disks" {
   dynamic "disk_encryption_key" {
     for_each = var.encryption != null ? [""] : []
     content {
-      raw_key           = var.encryption.disk_encryption_key_raw
-      kms_key_self_link = var.encryption.kms_key_self_link
+      raw_key = var.encryption.disk_encryption_key_raw
+      kms_key_self_link = lookup(
+        local.ctx.kms_keys,
+        var.encryption.kms_key_self_link,
+        var.encryption.kms_key_self_link
+      )
     }
   }
 }
@@ -119,9 +138,9 @@ resource "google_compute_region_disk" "disks" {
     for k, v in local.attached_disks_regional :
     k => v if v.source_type != "attach"
   }
-  project       = var.project_id
+  project       = local.project_id
   region        = local.region
-  replica_zones = [var.zone, each.value.options.replica_zone]
+  replica_zones = [local.zone, each.value.options.replica_zone]
   name          = "${var.name}-${each.key}"
   type          = each.value.options.type
   size          = each.value.size
@@ -136,7 +155,12 @@ resource "google_compute_region_disk" "disks" {
     content {
       raw_key = var.encryption.disk_encryption_key_raw
       # TODO: check if self link works here
-      kms_key_name = var.encryption.kms_key_self_link
+      kms_key_name = lookup(
+        local.ctx.kms_keys,
+        var.encryption.kms_key_self_link,
+        var.encryption.kms_key_self_link
+      )
+
     }
   }
 }
@@ -144,8 +168,8 @@ resource "google_compute_region_disk" "disks" {
 resource "google_compute_instance" "default" {
   provider                  = google-beta
   count                     = local.template_create ? 0 : 1
-  project                   = var.project_id
-  zone                      = var.zone
+  project                   = local.project_id
+  zone                      = local.zone
   name                      = var.name
   hostname                  = var.hostname
   description               = var.description
@@ -228,10 +252,20 @@ resource "google_compute_instance" "default" {
       : var.boot_disk.source
     )
     disk_encryption_key_raw = (
-      var.encryption != null ? var.encryption.disk_encryption_key_raw : null
+      var.encryption != null ?
+      try(
+        local.ctx.kms_keys[var.encryption.disk_encryption_key_raw],
+        var.encryption.disk_encryption_key_raw
+      )
+      : null
     )
     kms_key_self_link = (
-      var.encryption != null ? var.encryption.kms_key_self_link : null
+      var.encryption != null
+      ? try(
+        local.ctx.kms_keys[var.encryption.kms_key_self_link],
+        var.encryption.kms_key_self_link
+      )
+      : null
     )
     dynamic "initialize_params" {
       for_each = (
@@ -263,15 +297,27 @@ resource "google_compute_instance" "default" {
     for_each = var.network_interfaces
     iterator = config
     content {
-      network    = config.value.network
-      subnetwork = config.value.subnetwork
-      network_ip = try(config.value.addresses.internal, null)
+      network = lookup(
+        local.ctx.networks, config.value.network, config.value.network
+      )
+      subnetwork = lookup(
+        local.ctx.subnets, config.value.subnetwork, config.value.subnetwork
+      )
+      network_ip = try(
+        local.ctx.addresses[config.value.addresses.internal],
+        config.value.addresses.internal,
+        null
+      )
       nic_type   = config.value.nic_type
       stack_type = config.value.stack_type
       dynamic "access_config" {
         for_each = config.value.nat || config.value.network_tier != null ? [""] : []
         content {
-          nat_ip       = try(config.value.addresses.external, null)
+          nat_ip = try(
+            local.ctx.addresses[config.value.addresses.external],
+            config.value.addresses.external,
+            null
+          )
           network_tier = try(config.value.network_tier, null)
         }
       }
@@ -378,24 +424,26 @@ resource "google_compute_instance" "default" {
 }
 
 resource "google_compute_instance_iam_binding" "default" {
-  project       = var.project_id
+  project       = local.project_id
   for_each      = var.iam
-  zone          = var.zone
+  zone          = local.zone
   instance_name = var.name
-  role          = each.key
-  members       = each.value
-  depends_on    = [google_compute_instance.default]
+  role          = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for m in each.value : lookup(local.ctx.iam_principals, m, m)
+  ]
+  depends_on = [google_compute_instance.default]
 }
 
 resource "google_compute_instance_group" "unmanaged" {
   count   = var.group != null && !local.template_create ? 1 : 0
-  project = var.project_id
+  project = local.project_id
   network = (
     length(var.network_interfaces) > 0
     ? var.network_interfaces[0].network
     : ""
   )
-  zone        = var.zone
+  zone        = local.zone
   name        = var.name
   description = var.description
   instances   = [google_compute_instance.default[0].self_link]
@@ -411,7 +459,7 @@ resource "google_compute_instance_group" "unmanaged" {
 
 resource "google_service_account" "service_account" {
   count        = try(var.service_account.auto_create, null) == true ? 1 : 0
-  project      = var.project_id
+  project      = local.project_id
   account_id   = "tf-vm-${var.name}"
   display_name = "Terraform VM ${var.name}."
 }

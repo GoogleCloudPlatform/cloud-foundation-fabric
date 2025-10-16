@@ -1,0 +1,157 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_firewall.allow-admins[0]:
+    allow:
+    - ports: []
+      protocol: all
+    deny: []
+    description: Access from the admin subnet to all subnets.
+    disabled: null
+    log_config: []
+    name: dev-spoke-0-ingress-admins
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    params: []
+    priority: 1000
+    project: foo-test-0
+    source_ranges:
+    - 10.0.0.0/8
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  google_compute_firewall.allow-tag-http[0]:
+    allow:
+    - ports:
+      - '80'
+      protocol: tcp
+    deny: []
+    description: Allow http to machines with matching tags.
+    disabled: null
+    log_config: []
+    name: dev-spoke-0-ingress-tag-http
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    params: []
+    priority: 1000
+    project: foo-test-0
+    source_ranges:
+    - 10.0.0.0/8
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+    - http-server
+    timeouts: null
+  google_compute_firewall.allow-tag-https[0]:
+    allow:
+    - ports:
+      - '443'
+      protocol: tcp
+    deny: []
+    description: Allow http to machines with matching tags.
+    disabled: null
+    log_config: []
+    name: dev-spoke-0-ingress-tag-https
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    params: []
+    priority: 1000
+    project: foo-test-0
+    source_ranges:
+    - 10.0.0.0/8
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+    - https-server
+    timeouts: null
+  google_compute_firewall.allow-tag-ssh[0]:
+    allow:
+    - ports:
+      - '22'
+      protocol: tcp
+    deny: []
+    description: Allow SSH to machines with matching tags.
+    disabled: null
+    log_config: []
+    name: dev-spoke-0-ingress-tag-ssh
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    params: []
+    priority: 1000
+    project: foo-test-0
+    source_ranges:
+    - 10.0.0.0/8
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags:
+    - ssh
+    timeouts: null
+  google_compute_firewall.custom-rules["allow-egress-rfc1918"]:
+    allow:
+    - ports: []
+      protocol: all
+    deny: []
+    description: Allow egress.
+    destination_ranges:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    direction: EGRESS
+    disabled: false
+    log_config: []
+    name: allow-egress-rfc1918
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    params: []
+    priority: 1000
+    project: foo-test-0
+    source_ranges:
+    - 10.0.0.0/8
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    target_tags: null
+    timeouts: null
+  google_compute_firewall.custom-rules["allow-ingress-tag"]:
+    allow:
+    - ports: []
+      protocol: all
+    deny: []
+    description: Allow ingress.
+    destination_ranges:
+    - 10.0.0.0/8
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: allow-ingress-tag
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    params: []
+    priority: 1000
+    project: foo-test-0
+    source_ranges:
+    - 10.0.0.0/8
+    source_service_accounts:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    source_tags: null
+    target_service_accounts:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    target_tags: null
+    timeouts: null
+
+counts:
+  google_compute_firewall: 6
+  modules: 0
+  resources: 6

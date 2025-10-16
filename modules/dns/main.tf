@@ -15,15 +15,27 @@
  */
 
 locals {
-  managed_zone = (var.zone_config == null ?
-    data.google_dns_managed_zone.dns_managed_zone[0]
-    : google_dns_managed_zone.dns_managed_zone[0]
-  )
   # split record name and type and set as keys in a map
   _recordsets_0 = {
     for key, attrs in var.recordsets :
     key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
   }
+  client_networks = concat(
+    coalesce(try(var.zone_config.forwarding.client_networks, null), []),
+    coalesce(try(var.zone_config.peering.client_networks, null), []),
+    coalesce(try(var.zone_config.private.client_networks, null), [])
+  )
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  managed_zone = (var.zone_config == null ?
+    data.google_dns_managed_zone.dns_managed_zone[0]
+    : google_dns_managed_zone.dns_managed_zone[0]
+  )
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   # compute the final resource name for the recordset
   recordsets = {
     for key, attrs in local._recordsets_0 :
@@ -39,11 +51,6 @@ locals {
       )
     })
   }
-  client_networks = concat(
-    coalesce(try(var.zone_config.forwarding.client_networks, null), []),
-    coalesce(try(var.zone_config.peering.client_networks, null), []),
-    coalesce(try(var.zone_config.private.client_networks, null), [])
-  )
   visibility = (var.zone_config == null ?
     null
     : (var.zone_config.forwarding != null ||
@@ -57,7 +64,7 @@ locals {
 resource "google_dns_managed_zone" "dns_managed_zone" {
   count          = (var.zone_config == null) ? 0 : 1
   provider       = google-beta
-  project        = var.project_id
+  project        = local.project_id
   name           = var.name
   dns_name       = var.zone_config.domain
   description    = var.description
@@ -122,7 +129,9 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
         for_each = local.client_networks
         iterator = network
         content {
-          network_url = network.value
+          network_url = lookup(
+            local.ctx.networks, network.value, network.value
+          )
         }
       }
     }
@@ -146,22 +155,24 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
 
 data "google_dns_managed_zone" "dns_managed_zone" {
   count   = var.zone_config == null ? 1 : 0
-  project = var.project_id
+  project = local.project_id
   name    = var.name
 }
 
 resource "google_dns_managed_zone_iam_binding" "iam_bindings" {
   for_each     = coalesce(var.iam, {})
-  project      = var.project_id
+  project      = local.project_id
   managed_zone = local.managed_zone.id
-  role         = each.key
-  members      = each.value
+  role         = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for m in each.value : lookup(local.ctx.iam_principals, m, m)
+  ]
 }
 
 data "google_dns_keys" "dns_keys" {
   count        = try(var.zone_config.public.dnssec_config.state, "off") != "off" ? 1 : 0
   managed_zone = local.managed_zone.id
-  project      = var.project_id
+  project      = local.project_id
   depends_on = [
     google_dns_managed_zone.dns_managed_zone
   ]
@@ -169,7 +180,7 @@ data "google_dns_keys" "dns_keys" {
 
 resource "google_dns_record_set" "dns_record_set" {
   for_each     = local.recordsets
-  project      = var.project_id
+  project      = local.project_id
   managed_zone = var.name
   name         = each.value.resource_name
   type         = each.value.type
