@@ -117,7 +117,9 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
     for_each = try(var.zone_config.peering.peer_network, null) == null ? [] : [""]
     content {
       target_network {
-        network_url = var.zone_config.peering.peer_network
+        network_url = lookup(
+          local.ctx.networks, var.zone_config.peering.peer_network, var.zone_config.peering.peer_network
+        )
       }
     }
   }
