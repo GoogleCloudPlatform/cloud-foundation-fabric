@@ -1,0 +1,126 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_forwarding_rule.default[""]:
+    all_ports: true
+    allow_global_access: true
+    allow_psc_global_access: null
+    description: null
+    ip_address: 10.0.0.10
+    ip_collection: null
+    ip_protocol: TCP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL
+    name: test
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    no_automate_dns_zone: null
+    ports: null
+    project: foo-test-0
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
+    target: null
+    timeouts: null
+  google_compute_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: test
+    project: foo-test-0
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check:
+    - port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    backend:
+    - balancing_mode: CONNECTION
+      capacity_scaler: null
+      custom_metrics: []
+      description: Terraform managed.
+      failover: false
+      group: foo
+      max_connections: null
+      max_connections_per_endpoint: null
+      max_connections_per_instance: null
+      max_rate: null
+      max_rate_per_endpoint: null
+      max_rate_per_instance: null
+      max_utilization: null
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    custom_metrics: []
+    description: Terraform managed.
+    dynamic_forwarding: []
+    enable_cdn: null
+    failover_policy: []
+    ha_policy: []
+    iap:
+    - enabled: false
+      oauth2_client_id: null
+      oauth2_client_secret: null
+    ip_address_selection_policy: null
+    load_balancing_scheme: INTERNAL
+    locality_lb_policy: null
+    name: test
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    outlier_detection: []
+    project: foo-test-0
+    protocol: UNSPECIFIED
+    region: europe-west8
+    security_policy: null
+    strong_session_affinity_cookie: []
+    subsetting: []
+    timeouts: null
+  google_compute_service_attachment.default[""]:
+    connection_preference: ACCEPT_MANUAL
+    consumer_accept_lists: []
+    consumer_reject_lists: null
+    description: Terraform managed.
+    domain_names: null
+    enable_proxy_protocol: false
+    name: test
+    nat_subnets:
+    - projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/test-nat
+    project: foo-test-0
+    region: europe-west8
+    send_propagated_connection_limit_if_zero: false
+    timeouts: null
+
+counts:
+  google_compute_forwarding_rule: 1
+  google_compute_health_check: 1
+  google_compute_region_backend_service: 1
+  google_compute_service_attachment: 1
+  modules: 0
+  resources: 4
