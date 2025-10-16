@@ -35,89 +35,89 @@ resource "google_compute_region_network_firewall_policy_association" "net-region
 
 resource "google_compute_region_network_firewall_policy_rule" "net-regional" {
   # Terraform's type system barfs in the condition if we use the locals map
-  for_each = toset(
+  for_each = (
     !local.use_hierarchical && local.use_regional
-    ? keys(local.rules)
-    : []
+    ? local.rules
+    : {}
   )
   project         = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
   region          = lookup(local.ctx.locations, var.region, var.region)
   firewall_policy = google_compute_region_network_firewall_policy.net-regional[0].name
-  rule_name       = local.rules[each.key].name
-  action          = local.rules[each.key].action
-  description     = local.rules[each.key].description
-  direction       = local.rules[each.key].direction
-  disabled        = local.rules[each.key].disabled
-  enable_logging  = local.rules[each.key].enable_logging
-  priority        = local.rules[each.key].priority
+  rule_name       = each.value.name
+  action          = each.value.action
+  description     = each.value.description
+  direction       = each.value.direction
+  disabled        = each.value.disabled
+  enable_logging  = each.value.enable_logging
+  priority        = each.value.priority
   target_service_accounts = (
-    local.rules[each.key].target_service_accounts == null ? null : [
-      for n in local.rules[each.key].target_service_accounts :
+    each.value.target_service_accounts == null ? null : [
+      for n in each.value.target_service_accounts :
       lookup(local.ctx.iam_principals, n, n)
     ]
   )
   match {
     dest_ip_ranges = (
-      local.rules[each.key].match.destination_ranges == null ? null : [
-        for r in local.rules[each.key].match.destination_ranges :
+      each.value.match.destination_ranges == null ? null : [
+        for r in each.value.match.destination_ranges :
         lookup(local.ctx.cidr_ranges, r, r)
       ]
     )
     src_ip_ranges = (
-      local.rules[each.key].match.source_ranges == null ? null : [
-        for r in local.rules[each.key].match.source_ranges :
+      each.value.match.source_ranges == null ? null : [
+        for r in each.value.match.source_ranges :
         lookup(local.ctx.cidr_ranges, r, r)
       ]
     )
     dest_address_groups = (
-      local.rules[each.key].direction == "EGRESS"
-      ? local.rules[each.key].match.address_groups
+      each.value.direction == "EGRESS"
+      ? each.value.match.address_groups
       : null
     )
     dest_fqdns = (
-      local.rules[each.key].direction == "EGRESS"
-      ? local.rules[each.key].match.fqdns
+      each.value.direction == "EGRESS"
+      ? each.value.match.fqdns
       : null
     )
     dest_region_codes = (
-      local.rules[each.key].direction == "EGRESS"
-      ? local.rules[each.key].match.region_codes
+      each.value.direction == "EGRESS"
+      ? each.value.match.region_codes
       : null
     )
     dest_threat_intelligences = (
-      local.rules[each.key].direction == "EGRESS"
-      ? local.rules[each.key].match.threat_intelligences
+      each.value.direction == "EGRESS"
+      ? each.value.match.threat_intelligences
       : null
     )
     src_address_groups = (
-      local.rules[each.key].direction == "INGRESS"
-      ? local.rules[each.key].match.address_groups
+      each.value.direction == "INGRESS"
+      ? each.value.match.address_groups
       : null
     )
     src_fqdns = (
-      local.rules[each.key].direction == "INGRESS"
-      ? local.rules[each.key].match.fqdns
+      each.value.direction == "INGRESS"
+      ? each.value.match.fqdns
       : null
     )
     src_region_codes = (
-      local.rules[each.key].direction == "INGRESS"
-      ? local.rules[each.key].match.region_codes
+      each.value.direction == "INGRESS"
+      ? each.value.match.region_codes
       : null
     )
     src_threat_intelligences = (
-      local.rules[each.key].direction == "INGRESS"
-      ? local.rules[each.key].match.threat_intelligences
+      each.value.direction == "INGRESS"
+      ? each.value.match.threat_intelligences
       : null
     )
     dynamic "layer4_configs" {
-      for_each = local.rules[each.key].match.layer4_configs
+      for_each = each.value.match.layer4_configs
       content {
         ip_protocol = layer4_configs.value.protocol
         ports       = layer4_configs.value.ports
       }
     }
     dynamic "src_secure_tags" {
-      for_each = toset(coalesce(local.rules[each.key].match.source_tags, []))
+      for_each = toset(coalesce(each.value.match.source_tags, []))
       content {
         name = lookup(
           local.ctx.tag_values, src_secure_tags.key, src_secure_tags.key
@@ -127,9 +127,9 @@ resource "google_compute_region_network_firewall_policy_rule" "net-regional" {
   }
   dynamic "target_secure_tags" {
     for_each = toset(
-      local.rules[each.key].target_tags == null
+      each.value.target_tags == null
       ? []
-      : local.rules[each.key].target_tags
+      : each.value.target_tags
     )
     content {
       name = lookup(
