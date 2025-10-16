@@ -34,6 +34,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3424](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3424)] Support CIDR range sets in firewall modules context ([ludoo](https://github.com/ludoo)) <!-- 2025-10-16 09:01:06+00:00 -->
+- [[#3421](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3421)] Adds network_id to net-vpc outputs ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-16 07:44:33+00:00 -->
 - [[#3420](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3420)] Add support for context to net-vpn-ha module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-16 07:08:17+00:00 -->
 - [[#3419](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3419)] Add support for context to net-lb-int net-vpc-firewall and net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-16 05:54:14+00:00 -->
 - [[#3414](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3414)] Add support for context to net-cloudnat, net-firewall-policy modules ([ludoo](https://github.com/ludoo)) <!-- 2025-10-15 11:59:51+00:00 -->
