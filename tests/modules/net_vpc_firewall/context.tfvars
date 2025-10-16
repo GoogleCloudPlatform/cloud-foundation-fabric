@@ -1,6 +1,14 @@
 context = {
   cidr_ranges = {
     rfc1918-10 = "10.0.0.0/8"
+    test       = "8.8.8.8"
+  }
+  cidr_ranges_sets = {
+    rfc1918 = [
+      "10.0.0.0/8",
+      "172.16.10.0/12",
+      "192.168.0.0/24"
+    ]
   }
   iam_principals = {
     test = "serviceAccount:test@test-project.iam.gserviceaccount.com"
@@ -24,22 +32,20 @@ default_rules_config = {
   ssh_ranges   = ["$cidr_ranges:rfc1918-10"]
 }
 egress_rules = {
-  allow-egress-rfc1918 = {
-    deny        = false
-    description = "Allow egress."
-    destination_ranges = [
-      "$cidr_ranges:rfc1918-10", "172.16.0.0/12", "192.168.0.0/16"
-    ]
-    source_ranges        = ["$cidr_ranges:rfc1918-10"]
+  egress-test = {
+    deny                 = false
+    description          = "Allow egress."
+    destination_ranges   = ["$cidr_ranges_sets:rfc1918", "10.0.0.1/32", "$cidr_ranges:test", "10.0.0.0/8"]
+    source_ranges        = ["$cidr_ranges_sets:rfc1918", "10.0.0.1/32", "$cidr_ranges:test", "10.0.0.0/8"]
     targets              = ["$iam_principals:test"]
     use_service_accounts = true
   }
 }
 ingress_rules = {
-  allow-ingress-tag = {
+  ingress-test = {
     description          = "Allow ingress."
-    destination_ranges   = ["$cidr_ranges:rfc1918-10"]
-    source_ranges        = ["$cidr_ranges:rfc1918-10"]
+    destination_ranges   = ["$cidr_ranges_sets:rfc1918", "10.0.0.1/32", "$cidr_ranges:test", "10.0.0.0/8"]
+    source_ranges        = ["$cidr_ranges_sets:rfc1918", "10.0.0.1/32", "$cidr_ranges:test", "10.0.0.0/8"]
     sources              = ["$iam_principals:test"]
     targets              = ["$iam_principals:test"]
     use_service_accounts = true

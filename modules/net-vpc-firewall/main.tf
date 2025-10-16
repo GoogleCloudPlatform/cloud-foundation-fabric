@@ -47,6 +47,7 @@ locals {
     for r in local._factory_rule_list : r.name => r
     if contains(["EGRESS", "INGRESS"], r.direction)
   }
+  # TODO: deprecate once FAST does not need this anymore
   _named_ranges = merge(
     (
       var.factories_config.cidr_tpl_file != null
@@ -83,19 +84,25 @@ locals {
       destination_ranges = (
         try(rule.destination_ranges, null) == null
         ? null
-        : flatten([
-          for range in rule.destination_ranges :
-          try(local._named_ranges[range], range)
-        ])
+        : distinct(flatten([
+          for range in rule.destination_ranges : try(
+            local.ctx.cidr_ranges_sets[range],
+            local._named_ranges[range],
+            range
+          )
+        ]))
       )
       rules = { for k, v in rule.rules : k => v }
       source_ranges = (
         try(rule.source_ranges, null) == null
         ? null
-        : flatten([
-          for range in rule.source_ranges :
-          try(local._named_ranges[range], range)
-        ])
+        : distinct(flatten([
+          for range in rule.source_ranges : try(
+            local.ctx.cidr_ranges_sets[range],
+            local._named_ranges[range],
+            range
+          )
+        ]))
       )
     })
   }
