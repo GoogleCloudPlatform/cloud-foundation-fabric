@@ -69,8 +69,8 @@ resource "google_network_connectivity_internal_range" "internal_range" {
   name        = each.value.name
   network     = local.network.id
   description = each.value.description
-  ip_cidr_range = lookup(
-    local.ctx.cidr_ranges, each.value.ip_cidr_range, each.value.ip_cidr_range
+  ip_cidr_range = try(
+    local.ctx.cidr_ranges[each.value.ip_cidr_range], each.value.ip_cidr_range
   )
   labels              = each.value.labels
   usage               = each.value.usage
