@@ -14,39 +14,6 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "The ID of the project in which the resource belongs."
-  type        = string
-}
-
-variable "location" {
-  description = "The geographic location where the connection should reside."
-  type        = string
-}
-
-variable "connection_id" {
-  description = "The ID of the connection."
-  type        = string
-}
-
-variable "friendly_name" {
-  description = "A descriptive name for the connection."
-  type        = string
-  default     = null
-}
-
-variable "description" {
-  description = "A description of the connection."
-  type        = string
-  default     = null
-}
-
-variable "encryption_key" {
-  description = "The name of the KMS key used for encryption."
-  type        = string
-  default     = null
-}
-
 variable "connection_config" {
   description = "Connection properties."
   type = object({
@@ -89,6 +56,29 @@ variable "connection_config" {
   default = {}
 }
 
+variable "connection_id" {
+  description = "The ID of the connection."
+  type        = string
+}
+
+variable "description" {
+  description = "A description of the connection."
+  type        = string
+  default     = null
+}
+
+variable "encryption_key" {
+  description = "The name of the KMS key used for encryption."
+  type        = string
+  default     = null
+}
+
+variable "friendly_name" {
+  description = "A descriptive name for the connection."
+  type        = string
+  default     = null
+}
+
 variable "iam" {
   description = "IAM bindings for the connection in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -128,4 +118,14 @@ variable "iam_by_principals" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+}
+
+variable "location" {
+  description = "The geographic location where the connection should reside."
+  type        = string
+}
+
+variable "project_id" {
+  description = "The ID of the project in which the resource belongs."
+  type        = string
 }

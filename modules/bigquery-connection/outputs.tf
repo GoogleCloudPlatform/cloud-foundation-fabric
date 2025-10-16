@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "connection_id" {
-  description = "The ID of the BigQuery connection."
-  value       = google_bigquery_connection.connection.connection_id
-}
-
 output "connection_config" {
   description = "The connection configuration."
   value = {
@@ -29,6 +24,11 @@ output "connection_config" {
     cloud_sql      = try(google_bigquery_connection.connection.cloud_sql[0], null)
     spark          = try(google_bigquery_connection.connection.spark[0], null)
   }
+}
+
+output "connection_id" {
+  description = "The ID of the BigQuery connection."
+  value       = google_bigquery_connection.connection.connection_id
 }
 
 output "description" {
