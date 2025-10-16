@@ -22,12 +22,12 @@ output "connection_id" {
 output "connection_config" {
   description = "The connection configuration."
   value = {
-    aws            = try(google_bigquery_connection.connection.aws[0],null)
-    azure          = try(google_bigquery_connection.connection.azure[0],null)
-    cloud_resource = try(google_bigquery_connection.connection.cloud_resource[0],null)
-    cloud_spanner  = try(google_bigquery_connection.connection.cloud_spanner[0],null)
-    cloud_sql      = try(google_bigquery_connection.connection.cloud_sql[0],null)
-    spark          = try(google_bigquery_connection.connection.spark[0],null)
+    aws            = try(google_bigquery_connection.connection.aws[0], null)
+    azure          = try(google_bigquery_connection.connection.azure[0], null)
+    cloud_resource = try(google_bigquery_connection.connection.cloud_resource[0], null)
+    cloud_spanner  = try(google_bigquery_connection.connection.cloud_spanner[0], null)
+    cloud_sql      = try(google_bigquery_connection.connection.cloud_sql[0], null)
+    spark          = try(google_bigquery_connection.connection.spark[0], null)
   }
 }
 
