@@ -62,35 +62,28 @@ variable "connection_config" {
     aws = optional(object({
       access_role = object({
         iam_role_id = string
-        identity    = string
       })
     }))
     azure = optional(object({
-      application                     = string
-      client_id                       = string
-      object_id                       = string
       customer_tenant_id              = string
-      federated_application_client_id = string
-      redirect_uri                    = string
-      identity                        = string
+      federated_application_client_id = optional(string)
     }))
     cloud_spanner = optional(object({
       database        = string
-      use_parallelism = bool
-      use_data_boost  = bool
-      max_parallelism = number
+      use_parallelism = optional(bool)
+      use_data_boost  = optional(bool)
+      max_parallelism = optional(number)
       database_role   = optional(string)
     }))
     cloud_resource = optional(object({
-      service_id = string
     }))
     spark = optional(object({
-      metastore_service_config = object({
+      metastore_service_config = optional(object({
         metastore_service = string
-      })
-      spark_history_server_config = object({
+      }))
+      spark_history_server_config = optional(object({
         dataproc_cluster = string
-      })
+      }))
     }))
   })
   default = {}

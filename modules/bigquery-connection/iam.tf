@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- locals {
+locals {
   _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
   _iam_principals = {
     for r in local._iam_principal_roles : r => [
