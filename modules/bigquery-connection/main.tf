@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p  = "$"  
+}
+
 resource "google_bigquery_connection" "connection" {
   project       = var.project_id
   location      = var.location

@@ -61,6 +61,15 @@ variable "connection_id" {
   type        = string
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    iam_principals = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "description" {
   description = "A description of the connection."
   type        = string

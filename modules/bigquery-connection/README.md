@@ -91,6 +91,38 @@ module "bigquery-connection" {
 }
 # tftest modules=1 resources=2 inventory=spanner.yaml
 ```
+
+## Spanner Connection with Context interpolations
+
+```hcl
+module "bigquery-connection" {
+  source        = "./fabric/modules/bigquery-connection"
+  project_id    = var.project_id
+  location      = "EU"
+  connection_id = "my-connection"
+  friendly_name = "My BigQuery Connection"
+  description   = "A connection to a Spanner instance."
+
+  connection_config = {
+    cloud_spanner = {
+      database        = "projects/my-project/instances/my-instance/databases/my-database"
+      use_parallelism = true
+      use_data_boost  = true
+      max_parallelism = 2
+    }
+  }
+  context = {
+    iam_principals = {
+      myuser = "user:my-user@example.com"
+    }
+  }
+  iam = {
+    "roles/bigquery.connectionUser" = ["$iam_principals:myuser"]
+  }
+}
+# tftest modules=1 resources=2 inventory=spanner_context.yaml
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

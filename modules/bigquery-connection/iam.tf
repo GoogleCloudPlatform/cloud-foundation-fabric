@@ -26,7 +26,7 @@ locals {
     for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
     role => concat(
       try(var.iam[role], []),
-      try(local._iam_principals[role], [])
+      try([for v in local._iam_principals[role] : lookup(local.ctx.iam_principals, v, v)], [])
     )
   }
 }
@@ -37,7 +37,9 @@ resource "google_bigquery_connection_iam_binding" "authoritative" {
   location      = google_bigquery_connection.connection.location
   connection_id = google_bigquery_connection.connection.connection_id
   role          = each.key
-  members       = each.value
+  members       = [ 
+    for v in each.value : lookup(local.ctx.iam_principals, v, v)
+  ]
 }
 
 resource "google_bigquery_connection_iam_binding" "bindings" {
@@ -46,7 +48,7 @@ resource "google_bigquery_connection_iam_binding" "bindings" {
   location      = google_bigquery_connection.connection.location
   connection_id = google_bigquery_connection.connection.connection_id
   role          = each.value.role
-  members       = each.value.members
+  members       = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
@@ -63,7 +65,7 @@ resource "google_bigquery_connection_iam_member" "bindings" {
   location      = google_bigquery_connection.connection.location
   connection_id = google_bigquery_connection.connection.connection_id
   role          = each.value.role
-  member        = each.value.member
+  member        = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
