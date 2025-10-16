@@ -1,0 +1,47 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.bigquery-connection.google_bigquery_connection.connection:
+    aws: []
+    azure: []
+    cloud_resource: []
+    cloud_spanner: []
+    cloud_sql:
+    - credential:
+      - password: my-password
+        username: my-username
+      database: my-database
+      instance_id: my-instance-id
+      type: POSTGRES
+    connection_id: my-connection
+    description: A connection to a Cloud SQL instance.
+    friendly_name: My Cloud SQL Connection
+    kms_key_name: null
+    location: EU
+    project: project-id
+    spark: []
+    timeouts: null
+  module.bigquery-connection.google_bigquery_connection_iam_binding.authoritative["roles/bigquery.connectionUser"]:
+    condition: []
+    connection_id: my-connection
+    location: EU
+    members:
+    - user:my-user@example.com
+    project: project-id
+    role: roles/bigquery.connectionUser
+
+counts:
+  google_bigquery_connection: 1
+  google_bigquery_connection_iam_binding: 1
