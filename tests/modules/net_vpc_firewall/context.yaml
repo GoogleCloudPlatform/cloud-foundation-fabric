@@ -99,7 +99,7 @@ values:
     target_tags:
     - ssh
     timeouts: null
-  google_compute_firewall.custom-rules["allow-egress-rfc1918"]:
+  google_compute_firewall.custom-rules["egress-test"]:
     allow:
     - ports: []
       protocol: all
@@ -107,25 +107,31 @@ values:
     description: Allow egress.
     destination_ranges:
     - 10.0.0.0/8
-    - 172.16.0.0/12
-    - 192.168.0.0/16
+    - 10.0.0.1/32
+    - 172.16.10.0/12
+    - 192.168.0.0/24
+    - 8.8.8.8
     direction: EGRESS
     disabled: false
     log_config: []
-    name: allow-egress-rfc1918
+    name: egress-test
     network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
     params: []
     priority: 1000
     project: foo-test-0
     source_ranges:
     - 10.0.0.0/8
+    - 10.0.0.1/32
+    - 172.16.10.0/12
+    - 192.168.0.0/24
+    - 8.8.8.8
     source_service_accounts: null
     source_tags: null
     target_service_accounts:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     target_tags: null
     timeouts: null
-  google_compute_firewall.custom-rules["allow-ingress-tag"]:
+  google_compute_firewall.custom-rules["ingress-test"]:
     allow:
     - ports: []
       protocol: all
@@ -133,16 +139,24 @@ values:
     description: Allow ingress.
     destination_ranges:
     - 10.0.0.0/8
+    - 10.0.0.1/32
+    - 172.16.10.0/12
+    - 192.168.0.0/24
+    - 8.8.8.8
     direction: INGRESS
     disabled: false
     log_config: []
-    name: allow-ingress-tag
+    name: ingress-test
     network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
     params: []
     priority: 1000
     project: foo-test-0
     source_ranges:
     - 10.0.0.0/8
+    - 10.0.0.1/32
+    - 172.16.10.0/12
+    - 192.168.0.0/24
+    - 8.8.8.8
     source_service_accounts:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     source_tags: null
