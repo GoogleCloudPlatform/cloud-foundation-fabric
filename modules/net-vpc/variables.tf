@@ -23,10 +23,23 @@ variable "auto_create_subnetworks" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    regions = optional(map(string), {})
+    addresses      = optional(map(string), {})
+    cidr_ranges    = optional(map(string), {})
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    networks       = optional(map(string), {})
+    # legacy context
+    regions     = optional(map(string), {})
+    project_ids = optional(map(string), {})
   })
   default  = {}
   nullable = false
+  validation {
+    condition     = length(var.context.regions) == 0 || length(var.context.locations) == 0
+    error_message = "Only one of locations, regions can be used."
+  }
 }
 
 variable "create_googleapis_routes" {
