@@ -66,6 +66,15 @@ locals {
     for name, rule in merge(var.ingress_rules) :
     name => merge(rule, { direction = "INGRESS" })
   }
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p        = "$"
+  network      = lookup(local.ctx.networks, var.network, var.network)
+  network_name = reverse(split("/", local.network))[0]
+  project_id   = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   # convert rules data to resource format and replace range template variables
   rules = {
     for name, rule in local._rules :
@@ -94,30 +103,32 @@ locals {
 
 resource "google_compute_firewall" "custom-rules" {
   for_each    = local.rules
-  project     = var.project_id
-  network     = var.network
+  project     = local.project_id
+  network     = local.network
   name        = each.key
   description = each.value.description
   direction   = each.value.direction
   source_ranges = (
-    each.value.direction == "INGRESS"
+    each.value.source_ranges == null
     ? (
-      each.value.source_ranges == null && each.value.sources == null
+      each.value.direction == "INGRESS" && each.value.sources == null
       ? ["0.0.0.0/0"]
-      : each.value.source_ranges
+      : null
     )
-    #for egress, we will include the source_ranges when provided. Previously, null was forced
-    : each.value.source_ranges
+    : [
+      for r in each.value.source_ranges : lookup(local.ctx.cidr_ranges, r, r)
+    ]
   )
   destination_ranges = (
-    each.value.direction == "EGRESS"
+    each.value.destination_ranges == null
     ? (
-      each.value.destination_ranges == null
+      each.value.direction == "EGRESS"
       ? ["0.0.0.0/0"]
-      : each.value.destination_ranges
+      : null
     )
-    #for ingress, we will include the destination_ranges when provided. Previously, null was forced
-    : each.value.destination_ranges
+    : [
+      for r in each.value.destination_ranges : lookup(local.ctx.cidr_ranges, r, r)
+    ]
   )
   source_tags = (
     each.value.use_service_accounts || each.value.direction == "EGRESS"
@@ -126,14 +137,19 @@ resource "google_compute_firewall" "custom-rules" {
   )
   source_service_accounts = (
     each.value.use_service_accounts && each.value.direction == "INGRESS"
-    ? each.value.sources
+    ? (each.value.sources == null ? null : [
+      for s in each.value.sources : lookup(local.ctx.iam_principals, s, s)
+    ])
     : null
   )
   target_tags = (
-    each.value.use_service_accounts ? null : each.value.targets
+    !each.value.use_service_accounts ? each.value.targets : null
   )
   target_service_accounts = (
-    each.value.use_service_accounts ? each.value.targets : null
+    !each.value.use_service_accounts ? null : (
+      each.value.targets == null ? null : [
+        for s in each.value.targets : lookup(local.ctx.iam_principals, s, s)
+    ])
   )
   disabled = each.value.disabled == true
   priority = each.value.priority
