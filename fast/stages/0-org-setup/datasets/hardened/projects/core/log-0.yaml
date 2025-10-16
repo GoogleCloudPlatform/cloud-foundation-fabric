@@ -31,3 +31,5 @@ log_buckets:
     log_analytics:
       enable: true
     retention: 31
+factories_config:
+  observability: datasets/hardened/organization/observability/

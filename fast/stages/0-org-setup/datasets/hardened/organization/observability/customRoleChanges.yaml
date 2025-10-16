@@ -45,7 +45,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   customRoleChanges:
-    bucket_name: organization-log-bucket
+    bucket_name: log-0/audit-logs
     description: Custom Role Changes
     filter: "resource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
       \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\

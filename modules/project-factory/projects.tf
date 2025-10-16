@@ -49,6 +49,15 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
+  ctx_logging_bucket_names = merge(local.ctx.logging_bucket_names, local.logging_bucket_names)
+  logging_bucket_names = merge(
+    [
+      for k, v in local.projects_input : {
+        for sk, sv in lookup(v, "log_buckets", {}) :
+        "${k}/${sk}" => module.log-buckets["${k}/${sk}"].id
+      }
+    ]...
+  )
   projects_input = merge(var.projects, local._projects_output)
 }
 
@@ -74,10 +83,9 @@ module "projects" {
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
   factories_config = {
-    custom_roles  = each.value.factories_config.custom_roles
-    observability = each.value.factories_config.observability
-    org_policies  = each.value.factories_config.org_policies
-    quotas        = each.value.factories_config.quotas
+    custom_roles = each.value.factories_config.custom_roles
+    org_policies = each.value.factories_config.org_policies
+    quotas       = each.value.factories_config.quotas
   }
   labels = merge(
     each.value.labels, var.data_merges.labels
@@ -139,4 +147,30 @@ module "projects-iam" {
   shared_vpc_host_config    = each.value.shared_vpc_host_config
   shared_vpc_service_config = each.value.shared_vpc_service_config
   universe                  = each.value.universe
+}
+
+
+module "projects-observability" {
+  source   = "../project"
+  for_each = local.projects_input
+  name     = module.projects[each.key].project_id
+  project_reuse = {
+    use_data_source = false
+    attributes = {
+      name             = module.projects[each.key].name
+      number           = module.projects[each.key].number
+      services_enabled = module.projects[each.key].services
+    }
+  }
+  service_agents_config = {
+    create_primary_agents = false
+    grant_default_roles   = false
+  }
+  context = merge(local.ctx, {
+    logging_bucket_names = local.logging_bucket_names
+  })
+  factories_config = {
+    observability = each.value.factories_config.observability
+  }
+  universe = each.value.universe
 }
