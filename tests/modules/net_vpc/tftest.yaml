@@ -17,6 +17,7 @@ common_tfvars:
   - common.tfvars
 
 tests:
+  context:
   shared_vpc:
   psa_routes_export:
   psa_routes_import:

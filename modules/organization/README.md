@@ -385,12 +385,12 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   custom_roles = {
-    "myRole" = [
+    "myRole${replace(var.prefix, "/[^a-zA-Z0-9_\\.]/", "")}" = [
       "compute.instances.list",
     ]
   }
   iam = {
-    (module.org.custom_role_id.myRole) = ["group:${var.group_email}"]
+    (module.org.custom_role_id["myRole${replace(var.prefix, "/[^a-zA-Z0-9_\\.]/", "")}"]) = ["group:${var.group_email}"]
   }
 }
 # tftest modules=1 resources=2 inventory=roles.yaml e2e serial

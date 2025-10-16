@@ -50,36 +50,42 @@ locals {
 }
 
 resource "google_compute_route" "gateway" {
-  for_each         = local.routes.gateway
-  project          = var.project_id
-  network          = local.network.name
-  name             = "${var.name}-${each.key}"
-  description      = each.value.description
-  dest_range       = each.value.dest_range
+  for_each    = local.routes.gateway
+  project     = local.project_id
+  network     = local.network.name
+  name        = "${var.name}-${each.key}"
+  description = each.value.description
+  dest_range = lookup(
+    local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
+  )
   priority         = each.value.priority
   tags             = each.value.tags
   next_hop_gateway = each.value.next_hop
 }
 
 resource "google_compute_route" "ilb" {
-  for_each     = local.routes.ilb
-  project      = var.project_id
-  network      = local.network.name
-  name         = "${var.name}-${each.key}"
-  description  = each.value.description
-  dest_range   = each.value.dest_range
+  for_each    = local.routes.ilb
+  project     = local.project_id
+  network     = local.network.name
+  name        = "${var.name}-${each.key}"
+  description = each.value.description
+  dest_range = lookup(
+    local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
+  )
   priority     = each.value.priority
   tags         = each.value.tags
   next_hop_ilb = each.value.next_hop
 }
 
 resource "google_compute_route" "instance" {
-  for_each          = local.routes.instance
-  project           = var.project_id
-  network           = local.network.name
-  name              = "${var.name}-${each.key}"
-  description       = each.value.description
-  dest_range        = each.value.dest_range
+  for_each    = local.routes.instance
+  project     = local.project_id
+  network     = local.network.name
+  name        = "${var.name}-${each.key}"
+  description = each.value.description
+  dest_range = lookup(
+    local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
+  )
   priority          = each.value.priority
   tags              = each.value.tags
   next_hop_instance = each.value.next_hop
@@ -89,23 +95,29 @@ resource "google_compute_route" "instance" {
 
 resource "google_compute_route" "ip" {
   for_each    = local.routes.ip
-  project     = var.project_id
+  project     = local.project_id
   network     = local.network.name
   name        = "${var.name}-${each.key}"
   description = each.value.description
-  dest_range  = each.value.dest_range
-  priority    = each.value.priority
-  tags        = each.value.tags
-  next_hop_ip = each.value.next_hop
+  dest_range = lookup(
+    local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
+  )
+  priority = each.value.priority
+  tags     = each.value.tags
+  next_hop_ip = lookup(
+    local.ctx.addresses, each.value.next_hop, each.value.next_hop
+  )
 }
 
 resource "google_compute_route" "vpn_tunnel" {
-  for_each            = local.routes.vpn_tunnel
-  project             = var.project_id
-  network             = local.network.name
-  name                = "${var.name}-${each.key}"
-  description         = each.value.description
-  dest_range          = each.value.dest_range
+  for_each    = local.routes.vpn_tunnel
+  project     = local.project_id
+  network     = local.network.name
+  name        = "${var.name}-${each.key}"
+  description = each.value.description
+  dest_range = lookup(
+    local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
+  )
   priority            = each.value.priority
   tags                = each.value.tags
   next_hop_vpn_tunnel = each.value.next_hop
@@ -113,7 +125,7 @@ resource "google_compute_route" "vpn_tunnel" {
 
 resource "google_network_connectivity_policy_based_route" "default" {
   for_each              = var.policy_based_routes
-  project               = var.project_id
+  project               = local.project_id
   network               = local.network.id
   name                  = "${var.name}-${each.key}"
   description           = each.value.description

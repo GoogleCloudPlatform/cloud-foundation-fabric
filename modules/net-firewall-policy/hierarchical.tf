@@ -16,7 +16,7 @@
 
 resource "google_compute_firewall_policy" "hierarchical" {
   count       = local.use_hierarchical ? 1 : 0
-  parent      = var.parent_id
+  parent      = lookup(local.ctx.folder_ids, var.parent_id, var.parent_id)
   short_name  = var.name
   description = var.description
 }
@@ -24,7 +24,7 @@ resource "google_compute_firewall_policy" "hierarchical" {
 resource "google_compute_firewall_policy_association" "hierarchical" {
   for_each          = local.use_hierarchical ? var.attachments : {}
   name              = "${var.name}-${each.key}"
-  attachment_target = each.value
+  attachment_target = lookup(local.ctx.folder_ids, each.value, each.value)
   firewall_policy   = google_compute_firewall_policy.hierarchical[0].name
 }
 
@@ -33,23 +33,43 @@ resource "google_compute_firewall_policy_rule" "hierarchical" {
   for_each = toset(
     local.use_hierarchical ? keys(local.rules) : []
   )
-  firewall_policy         = google_compute_firewall_policy.hierarchical[0].name
-  action                  = local.rules[each.key].action
-  description             = local.rules[each.key].description
-  direction               = local.rules[each.key].direction
-  disabled                = local.rules[each.key].disabled
-  enable_logging          = local.rules[each.key].enable_logging
-  priority                = local.rules[each.key].priority
-  target_resources        = local.rules[each.key].target_resources
-  target_service_accounts = local.rules[each.key].target_service_accounts
-  tls_inspect             = local.rules[each.key].tls_inspect
+  firewall_policy = google_compute_firewall_policy.hierarchical[0].name
+  action          = local.rules[each.key].action
+  description     = local.rules[each.key].description
+  direction       = local.rules[each.key].direction
+  disabled        = local.rules[each.key].disabled
+  enable_logging  = local.rules[each.key].enable_logging
+  priority        = local.rules[each.key].priority
+  target_resources = (
+    local.rules[each.key].target_resources == null ? null : [
+      for n in local.rules[each.key].target_resources :
+      lookup(local.ctx.networks, n, n)
+    ]
+  )
+  target_service_accounts = (
+    local.rules[each.key].target_service_accounts == null ? null : [
+      for n in local.rules[each.key].target_service_accounts :
+      lookup(local.ctx.iam_principals, n, n)
+    ]
+  )
+  tls_inspect = local.rules[each.key].tls_inspect
   security_profile_group = try(
     var.security_profile_group_ids[local.rules[each.key].security_profile_group],
     local.rules[each.key].security_profile_group
   )
   match {
-    dest_ip_ranges = local.rules[each.key].match.destination_ranges
-    src_ip_ranges  = local.rules[each.key].match.source_ranges
+    dest_ip_ranges = (
+      local.rules[each.key].match.destination_ranges == null ? null : [
+        for r in local.rules[each.key].match.destination_ranges :
+        lookup(local.ctx.cidr_ranges, r, r)
+      ]
+    )
+    src_ip_ranges = (
+      local.rules[each.key].match.source_ranges == null ? null : [
+        for r in local.rules[each.key].match.source_ranges :
+        lookup(local.ctx.cidr_ranges, r, r)
+      ]
+    )
     dest_address_groups = (
       local.rules[each.key].direction == "EGRESS"
       ? local.rules[each.key].match.address_groups
