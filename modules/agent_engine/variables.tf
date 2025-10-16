@@ -40,21 +40,6 @@ variable "class_methods" {
   default     = []
 }
 
-variable "container_spec" {
-  description = "Container specific settings."
-  type = object({
-    container_concurrency = optional(number)
-    max_instances         = optional(number)
-    min_instances         = optional(number)
-    resource_limits = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
