@@ -1,4 +1,5 @@
 venv/*
+*/venv/*
 .python-version
 .terraform
 terraform.tfstate*
