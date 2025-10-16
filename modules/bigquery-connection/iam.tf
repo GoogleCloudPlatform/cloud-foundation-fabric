@@ -37,7 +37,7 @@ resource "google_bigquery_connection_iam_binding" "authoritative" {
   location      = google_bigquery_connection.connection.location
   connection_id = google_bigquery_connection.connection.connection_id
   role          = each.key
-  members       = [ 
+  members = [
     for v in each.value : lookup(local.ctx.iam_principals, v, v)
   ]
 }

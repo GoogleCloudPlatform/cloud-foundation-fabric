@@ -20,7 +20,7 @@ locals {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if k != "condition_vars"
   }
-  ctx_p  = "$"  
+  ctx_p = "$"
 }
 
 resource "google_bigquery_connection" "connection" {
