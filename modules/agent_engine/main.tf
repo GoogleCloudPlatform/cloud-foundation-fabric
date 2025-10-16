@@ -160,16 +160,18 @@ resource "null_resource" "default" {
 }
 
 resource "google_storage_bucket_object" "dependencies" {
-  name   = "${filesha1("${var.source_files.path}/${var.source_files.dependencies}")}.tar.gz"
-  bucket = local.bucket_name
-  source = "${var.source_files.path}/${var.source_files.dependencies}"
+  name           = "dependencies.tar.gz"
+  bucket         = local.bucket_name
+  source         = "${var.source_files.path}/${var.source_files.dependencies}"
+  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.dependencies}")
 }
 
 resource "google_storage_bucket_object" "pickle_from_src" {
-  count  = var.generate_pickle ? 1 : 0
-  name   = "${filesha1("${var.source_files.path}/${var.source_files.pickle_src}")}.pkl"
-  bucket = local.bucket_name
-  source = "${var.source_files.path}/${var.source_files.pickle_out}"
+  count          = var.generate_pickle ? 1 : 0
+  name           = "pickle.pkl"
+  bucket         = local.bucket_name
+  source         = "${var.source_files.path}/${var.source_files.pickle_out}"
+  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.pickle_out}")
 
   depends_on = [
     null_resource.default
@@ -177,16 +179,18 @@ resource "google_storage_bucket_object" "pickle_from_src" {
 }
 
 resource "google_storage_bucket_object" "pickle" {
-  count  = var.generate_pickle ? 0 : 1
-  name   = "${filesha1("${var.source_files.path}/${var.source_files.pickle_out}")}.pkl"
-  bucket = local.bucket_name
-  source = "${var.source_files.path}/${var.source_files.pickle_out}"
+  count          = var.generate_pickle ? 0 : 1
+  name           = "pickle.pkl"
+  bucket         = local.bucket_name
+  source         = "${var.source_files.path}/${var.source_files.pickle_out}"
+  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.pickle_out}")
 }
 
 resource "google_storage_bucket_object" "requirements" {
-  name   = "${filesha1("${var.source_files.path}/${var.source_files.requirements}")}.txt"
-  bucket = local.bucket_name
-  source = "${var.source_files.path}/${var.source_files.requirements}"
+  name           = "requirements.txt"
+  bucket         = local.bucket_name
+  source         = "${var.source_files.path}/${var.source_files.requirements}"
+  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.requirements}")
 }
 
 resource "google_service_account" "default" {
