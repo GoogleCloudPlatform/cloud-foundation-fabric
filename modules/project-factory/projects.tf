@@ -167,7 +167,7 @@ module "projects-observability" {
     grant_default_roles   = false
   }
   context = merge(local.ctx, {
-    logging_bucket_names = local.logging_bucket_names
+    logging_bucket_names = local.ctx_logging_bucket_names
   })
   factories_config = {
     observability = each.value.factories_config.observability
