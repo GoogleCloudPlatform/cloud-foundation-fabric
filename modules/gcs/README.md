@@ -149,12 +149,11 @@ module "bucket-gcs-notification" {
   name       = "my-bucket"
   location   = "EU"
   notification_config = {
-    enabled           = true
-    payload_format    = "JSON_API_V1"
-    sa_email          = module.project.service_agents.storage.email
-    topic_name        = "gcs-notification-topic"
-    event_types       = ["OBJECT_FINALIZE"]
-    custom_attributes = {}
+    enabled        = true
+    payload_format = "JSON_API_V1"
+    sa_email       = module.project.service_agents.storage.email
+    topic_name     = "gcs-notification-topic"
+    event_types    = ["OBJECT_FINALIZE"]
   }
 }
 # tftest e2e

@@ -23,6 +23,12 @@ locals {
     for name, rule in merge(var.ingress_rules) :
     "ingress/${name}" => merge(rule, { name = name, direction = "INGRESS" })
   }
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   rules = merge(
     local.factory_egress_rules, local.factory_ingress_rules,
     local._rules_egress, local._rules_ingress

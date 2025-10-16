@@ -1,0 +1,123 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_instance_iam_binding.default["$custom_roles:myrole_one"]:
+    condition: []
+    instance_name: test
+    members:
+    - group:test-group@example.com
+    project: foo-test-0
+    role: organizations/366118655033/roles/myRoleOne
+    zone: europe-west8-a
+  google_compute_instance_template.default[0]:
+    advanced_machine_features: []
+    can_ip_forward: false
+    description: Managed by the compute-vm Terraform module.
+    disk:
+    - auto_delete: true
+      boot: true
+      disk_encryption_key:
+      - kms_key_self_link: projects/foo-prod-sec-core/locations/global/keyRings/prod-global-default/cryptoKeys/compute
+        kms_key_service_account: null
+      disk_name: null
+      disk_size_gb: 10
+      disk_type: pd-balanced
+      guest_os_features: null
+      labels: null
+      resource_manager_tags: null
+      resource_policies: null
+      source: null
+      source_image: projects/debian-cloud/global/images/family/debian-11
+      source_image_encryption_key: []
+      source_snapshot: null
+      source_snapshot_encryption_key: []
+    - auto_delete: true
+      device_name: data-0
+      disk_encryption_key:
+      - kms_key_self_link: projects/foo-prod-sec-core/locations/global/keyRings/prod-global-default/cryptoKeys/compute
+        kms_key_service_account: null
+      disk_name: data-0
+      disk_size_gb: 10
+      disk_type: pd-balanced
+      guest_os_features: null
+      labels: null
+      mode: READ_WRITE
+      resource_manager_tags: null
+      resource_policies: null
+      source: null
+      source_image_encryption_key: []
+      source_snapshot: null
+      source_snapshot_encryption_key: []
+      type: PERSISTENT
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: null
+    guest_accelerator: []
+    instance_description: null
+    key_revocation_action_type: null
+    labels: null
+    machine_type: f1-micro
+    metadata: null
+    metadata_startup_script: null
+    min_cpu_platform: null
+    name_prefix: test-
+    network_interface:
+    - access_config:
+      - nat_ip: 35.10.10.10
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+      network_ip: 10.0.0.10
+      nic_type: null
+      queue_count: null
+      subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west1/subnetworks/gce
+    network_performance_config: []
+    partner_metadata: null
+    project: foo-test-0
+    region: europe-west8
+    reservation_affinity: []
+    resource_manager_tags: null
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+      termination_time: null
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+counts:
+  google_compute_instance_iam_binding: 1
+  google_compute_instance_template: 1
+  modules: 0
+  resources: 2

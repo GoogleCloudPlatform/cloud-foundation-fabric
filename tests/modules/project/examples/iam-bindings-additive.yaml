@@ -35,7 +35,7 @@ values:
     role: roles/owner
   module.project.google_project_iam_member.bindings["org-admins-viewer"]:
     condition: []
-    member: group:gcp-organization-admins@example.com
+    member: group:organization-admins@example.org
     project: test-project
     role: roles/viewer
 

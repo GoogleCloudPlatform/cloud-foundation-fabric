@@ -15,5 +15,6 @@
 module: modules/net-lb-int
 
 tests:
+  context:
   defaults:
   forwarding-rule:

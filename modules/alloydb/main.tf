@@ -254,6 +254,7 @@ resource "google_alloydb_cluster" "secondary" {
   cluster_type                     = var.cross_region_replication.promote_secondary || var.cross_region_replication.switchover_mode ? "PRIMARY" : "SECONDARY"
   database_version                 = var.database_version
   deletion_policy                  = "FORCE"
+  deletion_protection              = var.deletion_protection
   display_name                     = coalesce(var.cross_region_replication.secondary_cluster_display_name, local.secondary_cluster_name)
   labels                           = var.labels
   location                         = var.cross_region_replication.region
