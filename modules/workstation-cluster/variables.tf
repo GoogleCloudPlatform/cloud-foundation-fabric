@@ -20,6 +20,21 @@ variable "annotations" {
   default     = {}
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    networks       = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    subnetworks    = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "display_name" {
   description = "Display name."
   type        = string
@@ -30,6 +45,15 @@ variable "domain" {
   description = "Domain."
   type        = string
   default     = null
+}
+
+variable "factories_config" {
+  description = "Path to folder with YAML resource description data files."
+  type = object({
+    workstation_configs = optional(string)
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "id" {
@@ -74,40 +98,43 @@ variable "project_id" {
 variable "workstation_configs" {
   description = "Workstation configurations."
   type = map(object({
-    annotations = optional(map(string))
-    container = optional(object({
-      image       = optional(string)
-      command     = optional(list(string), [])
-      args        = optional(list(string), [])
-      working_dir = optional(string)
-      env         = optional(map(string), {})
-      run_as_user = optional(string)
-    }))
+    annotations        = optional(map(string))
     display_name       = optional(string)
     enable_audit_agent = optional(bool)
+    labels             = optional(map(string))
+    max_workstations   = optional(number)
+    replica_zones      = optional(list(string))
+    container = optional(object({
+      args        = optional(list(string), [])
+      command     = optional(list(string), [])
+      env         = optional(map(string), {})
+      image       = optional(string)
+      run_as_user = optional(string)
+      working_dir = optional(string)
+    }))
     encryption_key = optional(object({
       kms_key                 = string
       kms_key_service_account = string
     }))
     gce_instance = optional(object({
+      boot_disk_size_gb            = optional(number)
+      disable_public_ip_addresses  = optional(bool, false)
+      enable_confidential_compute  = optional(bool, false)
+      enable_nested_virtualization = optional(bool, false)
       machine_type                 = optional(string)
+      pool_size                    = optional(number)
       service_account              = optional(string)
       service_account_scopes       = optional(list(string), [])
-      pool_size                    = optional(number)
-      boot_disk_size_gb            = optional(number)
       tags                         = optional(list(string))
-      disable_public_ip_addresses  = optional(bool, false)
-      enable_nested_virtualization = optional(bool, false)
+      accelerators = optional(list(object({
+        type  = optional(string)
+        count = optional(number)
+      })), [])
       shielded_instance_config = optional(object({
         enable_secure_boot          = optional(bool, false)
         enable_vtpm                 = optional(bool, false)
         enable_integrity_monitoring = optional(bool, false)
       }))
-      enable_confidential_compute = optional(bool, false)
-      accelerators = optional(list(object({
-        type  = optional(string)
-        count = optional(number)
-      })), [])
     }))
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
@@ -118,8 +145,6 @@ variable "workstation_configs" {
       role   = string
       member = string
     })), {})
-    labels           = optional(map(string))
-    max_workstations = optional(number)
     persistent_directories = optional(list(object({
       mount_path = optional(string)
       gce_pd = optional(object({
@@ -130,7 +155,6 @@ variable "workstation_configs" {
         reclaim_policy  = optional(string)
       }))
     })), [])
-    replica_zones = optional(list(string))
     timeouts = optional(object({
       idle    = optional(number)
       running = optional(number)
@@ -151,4 +175,6 @@ variable "workstation_configs" {
       labels = optional(map(string))
     })), {})
   }))
+  nullable = false
+  default  = {}
 }

@@ -71,16 +71,6 @@ variable "kms_keys" {
   default     = {}
 }
 
-variable "locations" {
-  # tfdoc:variable:source 0-org-setup
-  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
-  type = object({
-    storage = optional(string, "eu")
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "perimeters" {
   # tfdoc:variable:source 1-vpcsc
   description = "Optional VPC-SC perimeter ids."

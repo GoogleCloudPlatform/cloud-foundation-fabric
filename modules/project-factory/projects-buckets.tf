@@ -69,12 +69,13 @@ module "buckets" {
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {
-    project_ids = local.ctx_project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails
     )
+    locations   = local.ctx.locations
+    project_ids = local.ctx_project_ids
   })
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
@@ -82,9 +83,9 @@ module "buckets" {
   iam_by_principals     = each.value.iam_by_principals
   labels                = each.value.labels
   location = coalesce(
-    local.data_defaults.overrides.storage_location,
+    local.data_defaults.overrides.locations.storage,
     lookup(each.value, "location", null),
-    local.data_defaults.defaults.storage_location
+    local.data_defaults.defaults.locations.storage
   )
   managed_folders             = each.value.managed_folders
   storage_class               = each.value.storage_class

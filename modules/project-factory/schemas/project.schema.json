@@ -88,6 +88,24 @@
         }
       }
     },
+    "datasets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "friendly_name": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "deletion_policy": {
       "type": "string",
       "enum": [
@@ -106,6 +124,9 @@
       "$ref": "#/$defs/iam_bindings_additive"
     },
     "iam_by_principals": {
+      "$ref": "#/$defs/iam_by_principals"
+    },
+    "iam_by_principals_additive": {
       "$ref": "#/$defs/iam_by_principals"
     },
     "labels": {
@@ -524,24 +545,6 @@
         },
         "is_dry_run": {
           "type": "boolean"
-        }
-      }
-    },
-    "datasets": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^[a-z0-9_]+$": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "friendly_name": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
-            }
-          }
         }
       }
     }

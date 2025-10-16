@@ -34,6 +34,15 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3424](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3424)] Support CIDR range sets in firewall modules context ([ludoo](https://github.com/ludoo)) <!-- 2025-10-16 09:01:06+00:00 -->
+- [[#3421](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3421)] Adds network_id to net-vpc outputs ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-16 07:44:33+00:00 -->
+- [[#3420](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3420)] Add support for context to net-vpn-ha module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-16 07:08:17+00:00 -->
+- [[#3419](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3419)] Add support for context to net-lb-int net-vpc-firewall and net-vpc module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-16 05:54:14+00:00 -->
+- [[#3414](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3414)] Add support for context to net-cloudnat, net-firewall-policy modules ([ludoo](https://github.com/ludoo)) <!-- 2025-10-15 11:59:51+00:00 -->
+- [[#3413](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3413)] Make SSM gitignores a list ([juliocc](https://github.com/juliocc)) <!-- 2025-10-15 09:35:44+00:00 -->
+- [[#3412](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3412)] Add support for context to DNS modules ([ludoo](https://github.com/ludoo)) <!-- 2025-10-14 16:07:30+00:00 -->
+- [[#3403](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3403)] modules fixes for E2E tests ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-13 16:58:52+00:00 -->
+- [[#3406](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3406)] Add support for contexts to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-13 14:54:13+00:00 -->
 - [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)] Update gke-hub module to use new Policy Controller API ([juliocc](https://github.com/juliocc)) <!-- 2025-10-13 07:47:40+00:00 -->
 - [[#3402](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3402)] Fix incorrect cloudservices agent email for global universe in project module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-12 11:13:50+00:00 -->
 - [[#3388](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3388)] Add support for context to bigquery module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-07 07:57:42+00:00 -->
@@ -56,6 +65,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3407)] remove tf version from matrix, to keep workflow names stable across upgrades ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-13 15:40:52+00:00 -->
 - [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)] Update gke-hub module to use new Policy Controller API ([juliocc](https://github.com/juliocc)) <!-- 2025-10-13 07:47:40+00:00 -->
 - [[#3404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3404)] Add tests for service agents iam_emails ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-12 13:02:13+00:00 -->
 

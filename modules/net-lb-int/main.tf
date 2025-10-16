@@ -16,19 +16,34 @@
 
 
 locals {
+  _service_attachments = (
+    var.service_attachments == null ? {} : var.service_attachments
+  )
   bs_conntrack = var.backend_service_config.connection_tracking
   bs_failover  = var.backend_service_config.failover_config
   forwarding_rule_names = {
     for k, v in var.forwarding_rules_config :
     k => k == "" ? var.name : "${var.name}-${k}"
   }
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   health_check = (
     var.health_check != null
     ? var.health_check
     : google_compute_health_check.default[0].self_link
   )
-  _service_attachments = (
-    var.service_attachments == null ? {} : var.service_attachments
+  network = lookup(
+    local.ctx.networks, var.vpc_config.network, var.vpc_config.network
+  )
+  project_id = lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
+  region = lookup(
+    local.ctx.locations, var.region, var.region
   )
   service_attachments = {
     for k, v in local._service_attachments :
@@ -44,36 +59,38 @@ moved {
 resource "google_compute_forwarding_rule" "default" {
   for_each    = var.forwarding_rules_config
   provider    = google-beta
-  project     = var.project_id
+  project     = local.project_id
   name        = coalesce(each.value.name, local.forwarding_rule_names[each.key])
-  region      = var.region
+  region      = local.region
   description = each.value.description
-  ip_address  = each.value.address
+  ip_address  = try(local.ctx.addresses[each.value.address], each.value.address)
   ip_protocol = each.value.protocol
   ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
   backend_service = (
     google_compute_region_backend_service.default.self_link
   )
   load_balancing_scheme = "INTERNAL"
-  network               = var.vpc_config.network
+  network               = local.network
   ports                 = each.value.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
-  subnetwork            = var.vpc_config.subnetwork
-  allow_global_access   = each.value.global_access
-  labels                = var.labels
-  all_ports             = each.value.ports == null ? true : null
-  service_label         = var.service_label
+  subnetwork = lookup(
+    local.ctx.subnets, var.vpc_config.subnetwork, var.vpc_config.subnetwork
+  )
+  allow_global_access = each.value.global_access
+  labels              = var.labels
+  all_ports           = each.value.ports == null ? true : null
+  service_label       = var.service_label
   # is_mirroring_collector = false
 }
 
 resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
-  project                         = var.project_id
-  region                          = var.region
+  project                         = local.project_id
+  region                          = local.region
   name                            = coalesce(var.backend_service_config.name, var.name)
   description                     = var.backend_service_config.description
   load_balancing_scheme           = "INTERNAL"
   protocol                        = var.backend_service_config.protocol
-  network                         = var.vpc_config.network
+  network                         = local.network
   health_checks                   = [local.health_check]
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
   session_affinity                = var.backend_service_config.session_affinity
@@ -135,12 +152,14 @@ resource "google_compute_region_backend_service" "default" {
 
 resource "google_compute_service_attachment" "default" {
   for_each       = local.service_attachments
-  project        = var.project_id
-  region         = var.region
+  project        = local.project_id
+  region         = local.region
   name           = local.forwarding_rule_names[each.key]
   description    = var.description
   target_service = google_compute_forwarding_rule.default[each.key].id
-  nat_subnets    = each.value.nat_subnets
+  nat_subnets = each.value.nat_subnets == null ? null : [
+    for s in each.value.nat_subnets : lookup(local.ctx.subnets, s, s)
+  ]
   connection_preference = (
     each.value.automatic_connection ? "ACCEPT_AUTOMATIC" : "ACCEPT_MANUAL"
   )

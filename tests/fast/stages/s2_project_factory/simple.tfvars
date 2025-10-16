@@ -12,3 +12,8 @@ tag_values = {
   "environment/development" = "tagValues/1234567890"
   "environment/production"  = "tagValues/2345678901"
 }
+data_defaults = {
+  locations = {
+    storage = "europe-west1"
+  }
+}

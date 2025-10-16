@@ -20,4 +20,5 @@ context:
     secondary: europe-west3
 projects:
   defaults:
-    storage_location: eu
+    locations:
+      storage: eu

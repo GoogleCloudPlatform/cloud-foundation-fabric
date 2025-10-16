@@ -15,38 +15,42 @@
 # yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
 
 # TODO: edit and uncomment the following line to create the project in a folder
-# parent: shared
+# parent: $folder_ids:shared
 
-name: secops-anonym-0
+# project id can be customized here if file name cannot be changed
+# name: secops-anonym-0
+
 services:
-  - "secretmanager.googleapis.com"
-  - "run.googleapis.com"
-  - "cloudscheduler.googleapis.com"
-  - "cloudbuild.googleapis.com"
-  - "cloudresourcemanager.googleapis.com"
-  - "vpcaccess.googleapis.com"
-  - "dlp.googleapis.com"
-  - "vpcaccess.googleapis.com"
+  - secretmanager.googleapis.com
+  - run.googleapis.com
+  - cloudscheduler.googleapis.com
+  - cloudbuild.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - vpcaccess.googleapis.com
+  - dlp.googleapis.com
+  - vpcaccess.googleapis.com
 
 automation:
   # TODO: edit the automation project and optionally edit resource names
-  project: pf-automation-0
+  project: $project_ids:iac-0
   service_accounts:
     rw:
-      description: Read/write automation service account for apt registries.
-  buckets:
-    tf-state:
-      description: Terraform state bucket for apt registries.
-      iam:
-        roles/storage.objectCreator:
-          - rw
-        roles/storage.objectViewer:
-          - rw
+      description: Read/write automation service account for secops pipeline.
+  bucket:
+    description: Terraform state bucket for apt registries.
+    # this reuses the existing stage state bucket and creates a folder in it
+    name: iac-stage-state
+    create: false
+    managed_folders:
+      secops-anonymization-pipeline:
+        iam:
+          roles/storage.objectCreator:
+            # the project id in the service account ref matches this file name
+            - $iam_principals:service_accounts/secops-anonymization-pipeline/automation/rw
+          roles/storage.objectViewer:
+            - $iam_principals:service_accounts/secops-anonymization-pipeline/automation/rw
 iam:
   roles/viewer:
-    - rw
+    - $iam_principals:service_accounts/secops-anonymization-pipeline/automation/rw
   roles/owner:
-    - rw
-  # TODO: add instance service accounts that need access to the registries
-  # roles/artifactregistry.writer:
-  #   - serviceAccount:foo@bar
+    - $iam_principals:service_accounts/secops-anonymization-pipeline/automation/rw

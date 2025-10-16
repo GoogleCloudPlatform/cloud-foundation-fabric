@@ -17,8 +17,10 @@
 # tfdoc:file:description Project factory.
 
 locals {
-  _defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
-  context   = merge(var.context, lookup(local._defaults, "context", {}))
+  context = {
+    for k, v in var.context : k => merge(v, try(local.defaults.context[k], {}))
+  }
+  defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
   fast_defaults = {
     billing_account = coalesce(
       var.data_defaults.billing_account,
@@ -27,26 +29,23 @@ locals {
     prefix = coalesce(
       var.data_defaults.prefix, var.prefix
     )
-    storage_location = coalesce(
-      var.data_defaults.storage_location, var.locations.storage
-    )
   }
   project_defaults = {
     defaults = {
       for k, v in var.data_defaults : k => try(
-        local._defaults.projects.defaults[k],
+        local.defaults.projects.defaults[k],
         lookup(local.fast_defaults, k, v)
       )
     }
     merges = {
       for k, v in var.data_merges : k => try(
-        local._defaults.projects.merges[k], v
+        local.defaults.projects.merges[k], v
       )
     }
     overrides = merge(
       {
         for k, v in var.data_overrides : k => try(
-          local._defaults.projects.overrides[k], v
+          local.defaults.projects.overrides[k], v
         )
       },
       {
@@ -83,7 +82,7 @@ module "factory" {
       local.context.iam_principals
     )
     kms_keys              = merge(var.kms_keys, local.context.kms_keys)
-    locations             = merge(var.locations, local.context.locations)
+    locations             = local.context.locations
     notification_channels = local.context.notification_channels
     project_ids = merge(
       var.project_ids, var.host_project_ids, local.context.project_ids
