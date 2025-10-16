@@ -48,7 +48,7 @@ values:
     project: my-project
     remote_function_options: []
     return_table_type: null
-    return_type: null
+    return_type: '{"typeKind":"STRING"}'
     routine_id: custom_masking_routine
     routine_type: SCALAR_FUNCTION
     spark_options: []
