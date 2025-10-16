@@ -1,0 +1,156 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.agent_engine.google_project_iam_member.default["roles/aiplatform.user"]:
+    condition: []
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/aiplatform.user
+  module.agent_engine.google_project_iam_member.default["roles/storage.objectViewer"]:
+    condition: []
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/storage.objectViewer
+  module.agent_engine.google_project_iam_member.default["roles/viewer"]:
+    condition: []
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/viewer
+  module.agent_engine.google_service_account.default[0]:
+    account_id: my-agent
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Agent Engine my-agent.
+    email: my-agent@project-id.iam.gserviceaccount.com
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
+  module.agent_engine.google_storage_bucket.default[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST8
+    logging: []
+    name: my-agent
+    project: project-id
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+  module.agent_engine.google_storage_bucket_object.dependencies:
+    bucket: my-agent
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: different hash
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: 9e4af8413e628a2955cef09c7092550786801f75.tar.gz
+    retention: []
+    source: assets/src//dependencies.tar.gz
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  module.agent_engine.google_storage_bucket_object.pickle_from_src[0]:
+    bucket: my-agent
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: different hash
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: 0c2a2e57b690d91e621e6f874a4e9a91de361958.pkl
+    retention: []
+    source: assets/src//pickle.pkl
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  module.agent_engine.google_storage_bucket_object.requirements:
+    bucket: my-agent
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: different hash
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: 83ae9c018d7fb0d3f2ad164a6c050f1c06bf1752.txt
+    retention: []
+    source: assets/src//requirements.txt
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  module.agent_engine.google_vertex_ai_reasoning_engine.default:
+    description: Terraform managed.
+    display_name: my-agent
+    encryption_spec:
+    - kms_key_name: projects/project-id/locations/europe-west8/keyRings/my-keyring/cryptoKeys/my-key
+    project: project-id
+    region: europe-west8
+    spec:
+    - agent_framework: google-adk
+      class_methods: null
+      deployment_spec: []
+      package_spec:
+      - dependency_files_gcs_uri: gs://my-agent/9e4af8413e628a2955cef09c7092550786801f75.tar.gz
+        pickle_object_gcs_uri: gs://my-agent/0c2a2e57b690d91e621e6f874a4e9a91de361958.pkl
+        python_version: '3.12'
+        requirements_gcs_uri: gs://my-agent/83ae9c018d7fb0d3f2ad164a6c050f1c06bf1752.txt
+      service_account: my-agent@project-id.iam.gserviceaccount.com
+    timeouts: null
+  module.agent_engine.null_resource.default[0]:
+    triggers: null
+  module.agent_engine.time_sleep.wait_5_minutes:
+    create_duration: 5m
+    destroy_duration: null
+    triggers: null
+
+counts:
+  google_project_iam_member: 3
+  google_service_account: 1
+  google_storage_bucket: 1
+  google_storage_bucket_object: 3
+  google_vertex_ai_reasoning_engine: 1
+  modules: 1
+  null_resource: 1
+  resources: 11
+  time_sleep: 1
+
+outputs: {}
