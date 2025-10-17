@@ -132,4 +132,11 @@ resource "google_privileged_access_manager_entitlement" "default" {
       requester_email_recipients = each.value.additional_notification_targets.requester_email_recipients
     }
   }
+
+  depends_on = [
+    # in case we're granting the service agent permissions in the same module call
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_binding.bindings,
+    google_organization_iam_member.bindings
+  ]
 }

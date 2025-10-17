@@ -63,7 +63,7 @@ locals {
 resource "google_privileged_access_manager_entitlement" "default" {
   for_each = local.pam_entitlements
 
-  parent               = local.folder_id
+  parent               = "projects/${local.project_id}"
   location             = "global"
   entitlement_id       = each.key
   max_request_duration = each.value.max_request_duration
@@ -76,8 +76,8 @@ resource "google_privileged_access_manager_entitlement" "default" {
 
   privileged_access {
     gcp_iam_access {
-      resource_type = "cloudresourcemanager.googleapis.com/Folder"
-      resource      = "//cloudresourcemanager.googleapis.com/${local.folder_id}"
+      resource_type = "cloudresourcemanager.googleapis.com/Project"
+      resource      = "//cloudresourcemanager.googleapis.com/projects/${local.project.project_id}"
       dynamic "role_bindings" {
         for_each = each.value.privileged_access
         iterator = binding
@@ -132,11 +132,10 @@ resource "google_privileged_access_manager_entitlement" "default" {
       requester_email_recipients = each.value.additional_notification_targets.requester_email_recipients
     }
   }
-
   depends_on = [
-    google_folder.folder,
-    google_folder_iam_binding.authoritative,
-    google_folder_iam_binding.bindings,
-    google_folder_iam_member.bindings
+    google_project_service.project_services,
+    google_project_iam_binding.authoritative,
+    google_project_iam_binding.bindings,
+    google_project_iam_member.bindings
   ]
 }
