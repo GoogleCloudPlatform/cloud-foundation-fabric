@@ -17,7 +17,6 @@
 # tfdoc:file:description Cloud NAT factory.
 
 locals {
-
   nat_configs = merge(flatten([
     for vpc_key, vpc_config in local.vpcs : [
       for nat_key, nat_config in try(vpc_config.nat_config, {}) : {

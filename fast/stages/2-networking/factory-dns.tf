@@ -17,7 +17,6 @@
 # # tfdoc:file:description DNS factory.
 
 locals {
-
   _dns_path  = try(pathexpand(var.factories_config.dns), null)
   _dns_files = try(fileset(local._dns_path, "**/*.yaml"), [])
   _dns_preprocess = [
@@ -25,50 +24,66 @@ locals {
       key = replace(f, ".yaml", "")
     })
   ]
-
   dns_zones = {
-    for zone_config in local._dns_preprocess : "${zone_config.key}" => merge(zone_config, {
-      project_id    = zone_config.project_id
-      name          = replace(zone_config.key, "/", "-")
-      description   = try(zone_config.description, "Terraform-managed.")
-      force_destroy = try(zone_config.force_destroy, null)
-      iam           = try(zone_config.iam, null)
-      recordsets    = try(zone_config.recordsets, null)
-      }, {
-      zone_config = merge(
-        { domain = try(zone_config.domain, null) },
-        contains(keys(try(zone_config, {})), "private") ? {
-          private = {
-            service_directory_namespace = try(zone_config.private.service_directory_namespace, null)
-            client_networks             = zone_config.private.client_networks
+    for zone_config in local._dns_preprocess : "${zone_config.key}" => merge(
+      zone_config,
+      {
+        project_id    = zone_config.project_id
+        name          = replace(zone_config.key, "/", "-")
+        description   = try(zone_config.description, "Terraform-managed.")
+        force_destroy = try(zone_config.force_destroy, null)
+        iam           = try(zone_config.iam, null)
+        recordsets    = try(zone_config.recordsets, null)
+      },
+      {
+        zone_config = merge(
+          { domain = try(zone_config.domain, null) },
+          contains(keys(try(zone_config, {})), "private")
+          ? {
+            private = {
+              service_directory_namespace = try(
+                zone_config.private.service_directory_namespace, null
+              )
+              client_networks = zone_config.private.client_networks
+            }
           }
-        } : {},
-        contains(keys(try(zone_config, {})), "peering") ? {
-          peering = {
-            peer_network    = zone_config.peering.peer_network
-            client_networks = zone_config.peering.client_networks
+          : {},
+          contains(keys(try(zone_config, {})), "peering")
+          ? {
+            peering = {
+              peer_network    = zone_config.peering.peer_network
+              client_networks = zone_config.peering.client_networks
+            }
           }
-        } : {},
-        contains(keys(try(zone_config, {})), "forwarding") ? {
-          forwarding = {
-            forwarders      = try(zone_config.forwarding.forwarders, {}),
-            client_networks = zone_config.forwarding.client_networks
+          : {},
+          contains(keys(try(zone_config, {})), "forwarding")
+          ? {
+            forwarding = {
+              forwarders      = try(zone_config.forwarding.forwarders, {}),
+              client_networks = zone_config.forwarding.client_networks
+            }
           }
-        } : {}
-      )
-    })
+          : {}
+        )
+      }
+    )
   }
-
   # DNS response policies
-  _dns_response_policies_path  = try(pathexpand(var.factories_config.dns-response-policies), null)
-  _dns_response_policies_files = try(fileset(local._dns_response_policies_path, "**/*.yaml"), [])
+  _dns_response_policies_path = try(
+    pathexpand(var.factories_config.dns-response-policies), null
+  )
+  _dns_response_policies_files = try(
+    fileset(local._dns_response_policies_path, "**/*.yaml"), []
+  )
   _dns_response_policies_preprocess = [
     for f in local._dns_response_policies_files :
-    merge(yamldecode(file("${coalesce(local._dns_response_policies_path, "-")}/${f}")), {
-      key = replace(f, ".yaml", "")
-    })
+    merge(
+      yamldecode(file("${coalesce(local._dns_response_policies_path, "-")}/${f}")),
+      {
+        key = replace(f, ".yaml", "")
+      }
+    )
   ]
-
   dns_response_policies = {
     for policy_config in local._dns_response_policies_preprocess : "${policy_config.key}" => {
       project_id = policy_config.project_id

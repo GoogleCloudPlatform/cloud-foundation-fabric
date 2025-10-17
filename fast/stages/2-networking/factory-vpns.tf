@@ -17,20 +17,19 @@
 # tfdoc:file:description VPNs factory.
 
 locals {
-
   _vpns_files = try(
     fileset(local._vpcs_path, "**/vpns/*.yaml"),
     []
   )
-
   _vpns_preprocess = [
-    for f in local._vpns_files : merge(yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")), {
-      factory_basepath = dirname(dirname(f))
-    })
+    for f in local._vpns_files : merge(
+      yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")),
+      {
+        factory_basepath = dirname(dirname(f))
+      }
+    )
   ]
-
   ctx_gateways = { for k, v in google_compute_ha_vpn_gateway.default : k => v.id }
-
   vpns = {
     for v in local._vpns_preprocess : "${v.factory_basepath}/${v.name}" => merge(v, {
       vpc_name = v.factory_basepath
@@ -46,10 +45,20 @@ locals {
 }
 
 resource "google_compute_ha_vpn_gateway" "default" {
-  for_each   = local.vpns
-  project    = lookup(merge(local.ctx.project_ids, module.projects.project_ids), replace(each.value.project_id, "$project_ids:", ""), each.value.project_id)
-  region     = lookup(local.ctx.locations, replace(each.value.region, "$locations:", ""), each.value.region)
-  network    = lookup(local.ctx_vpcs.names, each.value.vpc_name, each.value.vpc_name)
+  for_each = local.vpns
+  project = lookup(
+    merge(local.ctx.project_ids, module.projects.project_ids),
+    replace(each.value.project_id, "$project_ids:", ""),
+    each.value.project_id
+  )
+  region = lookup(
+    local.ctx.locations,
+    replace(each.value.region, "$locations:", ""),
+    each.value.region
+  )
+  network = lookup(
+    local.ctx_vpcs.names, each.value.vpc_name, each.value.vpc_name
+  )
   name       = replace(each.key, "/", "-")
   stack_type = try(each.value.stack_type, null)
   depends_on = [module.vpcs]
@@ -69,7 +78,9 @@ module "vpn-ha" {
   peer_gateways = {
     for k, gw in each.value.peer_gateways : k => {
       for gw_type, value in gw : gw_type => (
-        gw_type == "gcp" ? try(google_compute_ha_vpn_gateway.default[value].id, value) : value
+        gw_type == "gcp"
+        ? try(google_compute_ha_vpn_gateway.default[value].id, value)
+        : value
       )
     }
   }
