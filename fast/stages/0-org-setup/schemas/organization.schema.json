@@ -19,27 +19,6 @@
         }
       }
     },
-    "factories_config": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "custom_roles": {
-          "type": "string"
-        },
-        "org_policies": {
-          "type": "string"
-        },
-        "org_policy_custom_constraints": {
-          "type": "string"
-        },
-        "scc_sha_custom_modules": {
-          "type": "string"
-        },
-        "tags": {
-          "type": "string"
-        }
-      }
-    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
