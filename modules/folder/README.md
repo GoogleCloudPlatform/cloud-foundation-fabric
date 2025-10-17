@@ -473,6 +473,7 @@ module "folder" {
 | [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Folder-level Custom modules with Security Health Analytics. | <code>google_scc_management_folder_security_health_analytics_custom_module</code> |
+| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. |  |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
@@ -517,5 +518,6 @@ module "folder" {
 | [name](outputs.tf#L38) | Folder name. |  |
 | [organization_policies_ids](outputs.tf#L47) | Map of ORGANIZATION_POLICIES => ID in the folder. |  |
 | [scc_custom_sha_modules_ids](outputs.tf#L52) | Map of SCC CUSTOM SHA MODULES => ID in the folder. |  |
-| [sink_writer_identities](outputs.tf#L57) | Writer identities created for each sink. |  |
+| [service_agents](outputs.tf#L57) | Identities of all folder-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L62) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

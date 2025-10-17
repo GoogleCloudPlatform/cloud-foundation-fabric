@@ -103,6 +103,13 @@
   role: roles/meshdataplane.serviceAgent
   is_primary: false
   aliases: []
+- name: accessapproval
+  display_name: Access Approval Service Agent
+  api: accessapproval.googleapis.com
+  identity: service-p${project_number}@gcp-sa-accessapproval.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: adsdatahub
   display_name: Ads Data Hub Service Account
   api: adsdatahub.googleapis.com
@@ -218,7 +225,7 @@
 - name: gae-api-prod
   display_name: App Engine Flexible Environment Service Agent
   api: appengineflex.googleapis.com
-  identity: service-${project_number}@gae-api-prod.google.com.${universe_domain}iam.gserviceaccount.com
+  identity: service-${project_number}@gae-api-prod.${universe_domain}iam.gserviceaccount.com
   role: roles/appengineflex.serviceAgent
   is_primary: true
   aliases:
@@ -293,13 +300,6 @@
   role: roles/backupdr.serviceAgent
   is_primary: true
   aliases: []
-- name: backupdr-pr
-  display_name: Backup and DR Vault Service Agent
-  api: backupdr.googleapis.com
-  identity: vault-${project_number}-IDENTIFIER@gcp-sa-backupdr-pr.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: false
-  aliases: []
 - name: gkebackup
   display_name: Backup for GKE Service Account
   api: gkebackup.googleapis.com
@@ -329,11 +329,11 @@
   is_primary: false
   aliases:
   - bq
-- name: biglakerestcatalog
-  display_name: BigLake Iceberg Rest Catalog API Service Agent
-  api: biglake.googleapis.com
-  identity: blirc-${project_number}-IDENTIFIER@gcp-sa-biglakerestcatalog.${universe_domain}iam.gserviceaccount.com
-  role: null
+- name: connectedsheets
+  display_name: BigQuery Connected Sheets Service Agent
+  api: bigquery.googleapis.com
+  identity: service-${project_number}@gcp-sa-connectedsheets.${universe_domain}iam.gserviceaccount.com
+  role: roles/bigquery.connectedSheetsServiceAgent
   is_primary: false
   aliases: []
 - name: bigqueryconnection
@@ -371,13 +371,6 @@
   role: null
   is_primary: false
   aliases: []
-- name: bigquery-consp
-  display_name: BigQuery Spark Connection Delegate Service Agent
-  api: bigqueryconnection.googleapis.com
-  identity: bqcx-${project_number}-IDENTIFIER@gcp-sa-bigquery-consp.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: false
-  aliases: []
 - name: bigqueryspark
   display_name: BigQuery Spark Service Agent
   api: bigquery.googleapis.com
@@ -398,13 +391,6 @@
   identity: service-${project_number}@gcp-sa-bne.${universe_domain}iam.gserviceaccount.com
   role: roles/blockchainnodeengine.serviceAgent
   is_primary: true
-  aliases: []
-- name: bundles
-  display_name: Bundles Service Agent
-  api: integrations.googleapis.com
-  identity: b${project_number}-IDENTIFIER@gcp-sa-bundles.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: false
   aliases: []
 - name: chronicle-sv
   display_name: Chronicle Security Validation Service Account
@@ -639,11 +625,18 @@
   role: null
   is_primary: true
   aliases: []
+- name: nss-hpsa
+  display_name: Cloud Notebook Security Scanner Service Agent
+  api: notebooksecurityscanner.googleapis.com
+  identity: service-${project_number}@gcp-sa-nss-hpsa.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: observability
   display_name: Cloud Observability Service Account
   api: observability.googleapis.com
   identity: service-${project_number}@gcp-sa-observability.${universe_domain}iam.gserviceaccount.com
-  role: null
+  role: roles/observability.serviceAgent
   is_primary: true
   aliases: []
 - name: cloudoptim
@@ -849,6 +842,13 @@
   identity: service-${project_number}@gcp-sa-ktd-control.${universe_domain}iam.gserviceaccount.com
   role: roles/containerthreatdetection.serviceAgent
   is_primary: true
+  aliases: []
+- name: ktd-hpsa
+  display_name: Container Threat Detection Service Agent
+  api: containerthreatdetection.googleapis.com
+  identity: service-${project_number}@gcp-sa-ktd-hpsa.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
 - name: cloud-cw
   display_name: Content Warehouse Service Account
@@ -1096,6 +1096,13 @@
   is_primary: true
   aliases:
   - fleet
+- name: geminicodeassistmp
+  display_name: Gemini Code Assist Management Service Agent
+  api: geminicodeassistmanagement.googleapis.com
+  identity: service-${project_number}@gcp-sa-geminicodeassistmp.${universe_domain}iam.gserviceaccount.com
+  role: roles/geminicodeassistmanagement.serviceAgent
+  is_primary: true
+  aliases: []
 - name: cloudaicompanion
   display_name: Gemini for Google Cloud Service Agent
   api: cloudaicompanion.googleapis.com
@@ -1145,7 +1152,7 @@
 - name: cloud-ml
   display_name: Google Cloud ML Engine Service Agent
   api: ml.googleapis.com
-  identity: service-${project_number}@cloud-ml.google.com.${universe_domain}iam.gserviceaccount.com
+  identity: service-${project_number}@cloud-ml.${universe_domain}iam.gserviceaccount.com
   role: roles/ml.serviceAgent
   is_primary: true
   aliases: []
@@ -1155,6 +1162,13 @@
   identity: service-${project_number}@gcp-sa-netapp.${universe_domain}iam.gserviceaccount.com
   role: null
   is_primary: true
+  aliases: []
+- name: ns-authz
+  display_name: Google Cloud Network Security Authz Service Account
+  api: networksecurity.googleapis.com
+  identity: service-${project_number}@gcp-sa-ns-authz.${universe_domain}iam.gserviceaccount.com
+  role: roles/networksecurity.authzServiceAgent
+  is_primary: false
   aliases: []
 - name: osconfig-rollout
   display_name: Google Cloud OS Config Rollout Service Agent
@@ -1383,7 +1397,7 @@
   display_name: On-Demand Scanning Service Account
   api: ondemandscanning.googleapis.com
   identity: service-${project_number}@gcp-sa-ondemandscanning.${universe_domain}iam.gserviceaccount.com
-  role: roles/ondemandscanning.serviceAgent
+  role: null
   is_primary: true
   aliases: []
 - name: oci
@@ -1413,6 +1427,13 @@
   identity: service-${project_number}@gcp-sa-privateca.${universe_domain}iam.gserviceaccount.com
   role: null
   is_primary: true
+  aliases: []
+- name: pam
+  display_name: Privileged Access Manager Service Agent
+  api: privilegedaccessmanager.googleapis.com
+  identity: service-${project_number}@gcp-sa-pam.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
 - name: progrollout
   display_name: Progressive Rollout Service Agent
@@ -1671,6 +1692,13 @@
   api: aiplatform.googleapis.com
   identity: service-${project_number}@gcp-sa-vertex-tune.${universe_domain}iam.gserviceaccount.com
   role: roles/aiplatform.tuningServiceAgent
+  is_primary: false
+  aliases: []
+- name: vertex-telemetry
+  display_name: Vertex AI Telemetry Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-telemetry.${universe_domain}iam.gserviceaccount.com
+  role: roles/aiplatform.telemetryServiceAgent
   is_primary: false
   aliases: []
 - name: vertex-agent
