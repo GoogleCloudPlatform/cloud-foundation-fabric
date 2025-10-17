@@ -15,7 +15,7 @@
 #  */
 
 variable "pam_entitlements" {
-  description = ""
+  description = "Privileged Access Manager entitlements for this resource, keyed by entitlement ID."
   type = map(object({
     max_request_duration = string
     eligible_users       = list(string)
@@ -42,5 +42,11 @@ variable "pam_entitlements" {
   }))
   default  = {}
   nullable = false
-  // TODO validation: only one justification config enabled
+  validation {
+    condition = alltrue([
+      for v in values(var.pam_entitlements) :
+      !v.requester_justification_config.not_mandatory || !v.requester_justification_config.unstructured
+    ])
+    error_message = "Only one of 'not_mandatory' or 'unstructured' can be enabled in 'requester_justification_config'."
+  }
 }
