@@ -82,6 +82,7 @@ These modules are used in the examples included in this repository. If you are u
 
 - [AlloyDB](./alloydb)
 - [Analytics Hub](./analytics-hub)
+- [BigQuery connectio](./bigquery-connection)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
 - [Biglake catalog](./biglake-catalog)
