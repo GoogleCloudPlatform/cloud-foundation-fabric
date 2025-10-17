@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VPN Configuration",
+  "description": "Schema for a VPN YAML configuration file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "stack_type": {
+      "type": "string",
+      "enum": [
+        "IPV4_ONLY",
+        "IPV4_IPV6"
+      ]
+    },
+    "peer_gateways": {
+      "$ref": "#/$defs/peer_gateways"
+    },
+    "router_config": {
+      "$ref": "#/$defs/router_config"
+    },
+    "tunnels": {
+      "$ref": "#/$defs/tunnels"
+    },
+    "ncc_spoke_config": {
+      "$ref": "#/$defs/ncc_spoke_config"
+    }
+  },
+  "$defs": {
+    "peer_gateways": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "$ref": "#/$defs/peer_gateway"
+        }
+      }
+    },
+    "peer_gateway": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "external"
+          ],
+          "properties": {
+            "external": {
+              "type": "object",
+              "properties": {
+                "redundancy_type": {
+                  "type": "string"
+                },
+                "interfaces": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "gcp": false
+          }
+        },
+        {
+          "required": [
+            "gcp"
+          ],
+          "properties": {
+            "gcp": {
+              "type": "string"
+            },
+            "external": false
+          }
+        }
+      ]
+    },
+    "router_config": {
+      "type": "object",
+      "properties": {
+        "asn": {
+          "type": "number"
+        },
+        "create": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "tunnels": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "$ref": "#/$defs/tunnel"
+        }
+      }
+    },
+    "tunnel": {
+      "type": "object",
+      "properties": {
+        "bgp_peer": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "asn": {
+              "type": "number"
+            }
+          }
+        },
+        "bgp_session_range": {
+          "type": "string"
+        },
+        "peer_external_gateway_interface": {
+          "type": "number"
+        },
+        "shared_secret": {
+          "type": "string"
+        },
+        "vpn_gateway_interface": {
+          "type": "number"
+        }
+      }
+    },
+    "ncc_spoke_config": {
+      "type": "object",
+      "properties": {
+        "hub": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object"
+        },
+        "exclude_export_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "include_export_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "group": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
