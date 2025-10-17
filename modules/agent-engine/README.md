@@ -70,7 +70,7 @@ This example assumes you are providing the [source packages](#packaging-dependen
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent_engine"
+  source          = "./fabric/modules/agent-engine"
   name            = "my-agent"
   project_id      = var.project_id
   agent_framework = "google-adk"
@@ -87,7 +87,7 @@ Alternatively, you can pass a pre-generated `pickle.pkl` file.
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent_engine"
+  source          = "./fabric/modules/agent-engine"
   name            = "my-agent"
   project_id      = var.project_id
   agent_framework = "google-adk"
@@ -111,7 +111,7 @@ At the moment, you'll need at least to grant to it the `roles/viewer` role.
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent_engine"
+  source          = "./fabric/modules/agent-engine"
   name            = "my-agent"
   project_id      = var.project_id
   agent_framework = "google-adk"
@@ -132,7 +132,7 @@ Alternatively, you can use an existing service account.
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent_engine"
+  source          = "./fabric/modules/agent-engine"
   name            = "my-agent"
   project_id      = var.project_id
   agent_framework = "google-adk"
@@ -158,7 +158,7 @@ To use KMS keys you'll need to grant the AI Platform Service Agent (`service-YOU
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent_engine"
+  source          = "./fabric/modules/agent-engine"
   name            = "my-agent"
   project_id      = var.project_id
   agent_framework = "google-adk"
@@ -178,7 +178,7 @@ You can define environment variables and load existing secrets as environment va
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent_engine"
+  source          = "./fabric/modules/agent-engine"
   name            = "my-agent"
   project_id      = var.project_id
   agent_framework = "google-adk"
