@@ -80,7 +80,7 @@ module "agent_engine" {
     path = "assets/src/"
   }
 }
-# tftest inventory=minimal.yaml
+# tftest inventory=minimal.yaml skip-tofu
 ```
 
 Alternatively, you can pass a pre-generated `pickle.pkl` file.
@@ -98,7 +98,7 @@ module "agent_engine" {
     path = "assets/src/"
   }
 }
-# tftest inventory=minimal-pickle.yaml
+# tftest inventory=minimal-pickle.yaml skip-tofu
 ```
 
 ## Service accounts
@@ -125,7 +125,7 @@ module "agent_engine" {
     path = "assets/src/"
   }
 }
-# tftest inventory=sa-default.yaml
+# tftest inventory=sa-default.yaml skip-tofu
 ```
 
 Alternatively, you can use an existing service account.
@@ -147,7 +147,7 @@ module "agent_engine" {
     path = "assets/src/"
   }
 }
-# tftest inventory=sa-custom.yaml
+# tftest inventory=sa-custom.yaml skip-tofu
 ```
 
 ## Specify an encryption key
@@ -169,7 +169,7 @@ module "agent_engine" {
     path = "assets/src/"
   }
 }
-# tftest inventory=encryption.yaml
+# tftest inventory=encryption.yaml skip-tofu
 ```
 
 ## Define environment variables and use secrets
@@ -198,7 +198,7 @@ module "agent_engine" {
     path = "assets/src/"
   }
 }
-# tftest inventory=environment.yaml
+# tftest inventory=environment.yaml skip-tofu
 ```
 
 ## Getting values from context
