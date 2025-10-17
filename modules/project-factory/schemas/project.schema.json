@@ -620,6 +620,21 @@
         },
         "versioning": {
           "type": "boolean"
+        },
+        "retention_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "retention_period": {
+              "type": "number"
+            },
+            "is_locked": {
+              "type": "boolean"
+            }
+          }
+        },
+        "enable_object_retention": {
+          "type": "boolean"
         }
       }
     },

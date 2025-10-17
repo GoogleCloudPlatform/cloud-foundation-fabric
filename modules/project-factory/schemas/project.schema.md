@@ -178,6 +178,11 @@
   - **storage_class**: *string*
   - **uniform_bucket_level_access**: *boolean*
   - **versioning**: *boolean*
+  - **retention_policy**: *object*
+    <br>*additional properties: false*
+    - **retention_period**: *number*
+    - **is_locked**: *boolean*
+  - **enable_object_retention**: *boolean*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*
