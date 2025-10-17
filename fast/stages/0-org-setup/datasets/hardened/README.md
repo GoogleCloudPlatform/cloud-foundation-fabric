@@ -264,5 +264,5 @@ Error: Error creating OrganizationSecurityHealthAnalyticsCustomModule: googleapi
 │   49: resource "google_scc_management_organization_security_health_analytics_custom_module" "scc_organization_custom_module" {
 ```
 
-In the case you want to use SCC detectors and have an SCC Premium or Enterprise subscription, **ensure that the Securituy Command Center Premium or Enterprise`** has been enabled successfully enabled on the organization. 
+In the case you want to use SCC detectors and have an SCC Premium or Enterprise subscription, **ensure that the Security Command Center Premium or Enterprise`** has been enabled successfully enabled on the organization. 
 

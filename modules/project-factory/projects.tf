@@ -49,15 +49,10 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
-  ctx_logging_bucket_names = merge(local.ctx.logging_bucket_names, local.logging_bucket_names)
-  logging_bucket_names = merge(
-    [
-      for k, v in local.projects_input : {
-        for sk, sv in lookup(v, "log_buckets", {}) :
-        "${k}/${sk}" => module.log-buckets["${k}/${sk}"].id
-      }
-    ]...
-  )
+  ctx_logging_bucket_names = merge(local.ctx.logging_bucket_names, local.log_buckets)
+  log_buckets = {
+    for key, log_bucket in module.log-buckets : key => log_bucket.id
+  }
   projects_input = merge(var.projects, local._projects_output)
 }
 
@@ -127,10 +122,14 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
-    folder_ids     = local.ctx.folder_ids
-    kms_keys       = local.ctx.kms_keys
-    iam_principals = local.ctx_iam_principals
+    folder_ids           = local.ctx.folder_ids
+    kms_keys             = local.ctx.kms_keys
+    iam_principals       = local.ctx_iam_principals
+    logging_bucket_names = local.ctx_logging_bucket_names
   })
+  factories_config = {
+    observability = each.value.factories_config.observability
+  }
   iam                        = lookup(each.value, "iam", {})
   iam_bindings               = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
@@ -147,30 +146,4 @@ module "projects-iam" {
   shared_vpc_host_config    = each.value.shared_vpc_host_config
   shared_vpc_service_config = each.value.shared_vpc_service_config
   universe                  = each.value.universe
-}
-
-
-module "projects-observability" {
-  source   = "../project"
-  for_each = local.projects_input
-  name     = module.projects[each.key].project_id
-  project_reuse = {
-    use_data_source = false
-    attributes = {
-      name             = module.projects[each.key].name
-      number           = module.projects[each.key].number
-      services_enabled = module.projects[each.key].services
-    }
-  }
-  service_agents_config = {
-    create_primary_agents = false
-    grant_default_roles   = false
-  }
-  context = merge(local.ctx, {
-    logging_bucket_names = local.ctx_logging_bucket_names
-  })
-  factories_config = {
-    observability = each.value.factories_config.observability
-  }
-  universe = each.value.universe
 }
