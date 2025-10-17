@@ -17,12 +17,16 @@
 # tfdoc:file:description Firewall policies factory.
 
 locals {
-  _firewall_policies_path = try(pathexpand(var.factories_config.firewall-policies), null)
+  _firewall_policies_path = try(
+    pathexpand(var.factories_config.firewall-policies), null
+  )
   _firewall_policies_files = local._firewall_policies_path == null ? [] : fileset(
     local._firewall_policies_path, "**/*.yaml"
   )
   _firewall_policies_data = {
-    for f in local._firewall_policies_files : replace(f, ".yaml", "") => yamldecode(file("${local._firewall_policies_path}/${f}"))
+    for f in local._firewall_policies_files : replace(f, ".yaml", "") => yamldecode(
+      file("${local._firewall_policies_path}/${f}")
+    )
   }
   firewall_policies = {
     for k, v in local._firewall_policies_data : try(v.name, k) => merge(v, {

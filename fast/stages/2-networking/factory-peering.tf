@@ -17,22 +17,30 @@
 # tfdoc:file:description VPC Peering factory.
 
 locals {
-
   peering_configs = merge(flatten([
     for vpc_key, vpc_config in local.vpcs : {
       for peering_key, peering_configs in try(vpc_config.peering_config, {}) :
       "${vpc_key}/${peering_key}" => merge(peering_configs, {
-        project                             = vpc_config.project_id
-        name                                = replace("${vpc_key}/${peering_key}", "/", "-")
-        local_network                       = vpc_key
-        peer_network                        = peering_configs.peer_network
-        export_custom_routes                = try(peering_configs.routes_config.export, true)
-        import_custom_routes                = try(peering_configs.routes_config.import, true)
-        export_subnet_routes_with_public_ip = try(peering_configs.routes_config.public_export, null)
-        import_subnet_routes_with_public_ip = try(peering_configs.routes_config.public_import, null)
-        stack_type                          = try(peering_configs.stack_type, null)
-        }
-      )
+        project       = vpc_config.project_id
+        name          = replace("${vpc_key}/${peering_key}", "/", "-")
+        local_network = vpc_key
+        peer_network  = peering_configs.peer_network
+        export_custom_routes = try(
+          peering_configs.routes_config.export, true
+        )
+        import_custom_routes = try(
+          peering_configs.routes_config.import, true
+        )
+        export_subnet_routes_with_public_ip = try(
+          peering_configs.routes_config.public_export, null
+        )
+        import_subnet_routes_with_public_ip = try(
+          peering_configs.routes_config.public_import, null
+        )
+        stack_type = try(
+          peering_configs.stack_type, null
+        )
+      })
     }
   ])...)
 }
