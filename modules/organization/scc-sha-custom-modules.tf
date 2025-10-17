@@ -65,4 +65,10 @@ resource "google_scc_management_organization_security_health_analytics_custom_mo
     severity       = each.value.severity
   }
   enablement_state = each.value.enablement_state
+
+  depends_on = [
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_binding.bindings,
+    google_organization_iam_member.bindings,
+  ]
 }

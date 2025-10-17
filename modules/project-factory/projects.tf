@@ -49,6 +49,10 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
+  ctx_logging_bucket_names = merge(local.ctx.logging_bucket_names, local.log_buckets)
+  log_buckets = {
+    for key, log_bucket in module.log-buckets : key => log_bucket.id
+  }
   projects_input = merge(var.projects, local._projects_output)
 }
 
@@ -74,10 +78,9 @@ module "projects" {
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
   factories_config = {
-    custom_roles  = each.value.factories_config.custom_roles
-    observability = each.value.factories_config.observability
-    org_policies  = each.value.factories_config.org_policies
-    quotas        = each.value.factories_config.quotas
+    custom_roles = each.value.factories_config.custom_roles
+    org_policies = each.value.factories_config.org_policies
+    quotas       = each.value.factories_config.quotas
   }
   labels = merge(
     each.value.labels, var.data_merges.labels
@@ -119,10 +122,14 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
-    folder_ids     = local.ctx.folder_ids
-    kms_keys       = local.ctx.kms_keys
-    iam_principals = local.ctx_iam_principals
+    folder_ids           = local.ctx.folder_ids
+    kms_keys             = local.ctx.kms_keys
+    iam_principals       = local.ctx_iam_principals
+    logging_bucket_names = local.ctx_logging_bucket_names
   })
+  factories_config = {
+    observability = each.value.factories_config.observability
+  }
   iam                        = lookup(each.value, "iam", {})
   iam_bindings               = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})

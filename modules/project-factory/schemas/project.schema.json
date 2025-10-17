@@ -114,6 +114,15 @@
         "ABANDON"
       ]
     },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "string"
+        }
+      }
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
