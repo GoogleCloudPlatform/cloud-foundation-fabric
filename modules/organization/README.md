@@ -231,6 +231,49 @@ custom.dataprocNoMoreThan10Workers:
 # tftest-file id=dataproc path=configs/custom-constraints/dataproc.yaml
 ```
 
+## Privileged Access Manager (PAM) Entitlements
+
+[Privileged Access Manager](https://cloud.google.com/iam/docs/privileged-access-manager-overview) entitlements can be defined via the `pam_entitlements` variable:
+
+```hcl
+module "org" {
+  source              = "./fabric/modules/organization"
+  organization_id     = var.organization_id
+  pam_entitlements = {
+    net-admins = {
+      max_request_duration = "3600s"
+      manual_approvals = {
+        require_approver_justification = true
+        steps = [{
+          approvers = ["group:gcp-organization-admins@example.com"]
+        }]
+      }
+      eligible_users = ["group:gcp-network-admins@example.com"]
+      privileged_access = [
+        { role = "roles/compute.networkAdmin" },
+        { role = "roles/compute.admin" }
+      ]
+    }
+  }
+}
+```
+
+### Privileged Access Manager (PAM) Entitlements Factory
+
+PAM entitlements can be loaded from a directory containing YAML files where each file defines one or more entitlements. The structure of the YAML files is exactly the same as the `pam_entitlements` variable.
+
+Note that entitlements defined via `pam_entitlements` take precedence over those in the factory. In other words, if you specify the same entitlement in a YAML file and in the `pam_entitlements` variable, the latter will take priority.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  factories_config = {
+    pam_entitlements = "configs/pam-entitlements/"
+  }
+}
+```
+
 ## Hierarchical Firewall Policy Attachments
 
 Hierarchical firewall policies can be managed via the [`net-firewall-policy`](../net-firewall-policy/) module, including support for factories. Once a policy is available, attaching it to the organization can be done either in the firewall policy module itself, or here:

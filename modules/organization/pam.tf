@@ -63,7 +63,7 @@ locals {
 resource "google_privileged_access_manager_entitlement" "default" {
   for_each = local.pam_entitlements
 
-  parent               = local.folder_id
+  parent               = var.organization_id
   location             = "global"
   entitlement_id       = each.key
   max_request_duration = each.value.max_request_duration
@@ -76,8 +76,8 @@ resource "google_privileged_access_manager_entitlement" "default" {
 
   privileged_access {
     gcp_iam_access {
-      resource_type = "cloudresourcemanager.googleapis.com/Folder"
-      resource      = "//cloudresourcemanager.googleapis.com/${local.folder_id}"
+      resource_type = "cloudresourcemanager.googleapis.com/Organization"
+      resource      = "//cloudresourcemanager.googleapis.com/${var.organization_id}"
       dynamic "role_bindings" {
         for_each = each.value.privileged_access
         iterator = binding
