@@ -187,6 +187,7 @@ variable "routines" {
     imported_libraries   = optional(list(string))
     determinism_level    = optional(string)
     data_governance_type = optional(string)
+    return_type          = optional(string)
     return_table_type    = optional(string)
     arguments = optional(map(object({
       argument_kind = optional(string)
