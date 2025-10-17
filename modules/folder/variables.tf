@@ -98,6 +98,7 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     org_policies           = optional(string)
+    pam_entitlements       = optional(string)
     scc_sha_custom_modules = optional(string)
   })
   nullable = false
@@ -117,6 +118,10 @@ variable "folder_create" {
   description = "Create folder. When set to false, uses id to reference an existing folder."
   type        = bool
   default     = true
+  validation {
+    condition     = var.folder_create || var.id != null
+    error_message = "Variable `id` cannot be null when `folder_create` is false."
+  }
 }
 
 variable "id" {
