@@ -22,6 +22,14 @@ output "alert_ids" {
   }
 }
 
+output "bigquery_reservations" {
+  description = "BigQuery reservations and assignments."
+  value = {
+    reservations = google_bigquery_reservation.default
+    assignments  = google_bigquery_reservation_assignment.default
+  }
+}
+
 output "custom_role_id" {
   description = "Map of custom role IDs created in the project."
   value       = local.custom_role_ids

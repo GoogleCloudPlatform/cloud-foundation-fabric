@@ -26,6 +26,39 @@ variable "billing_account" {
   default     = null
 }
 
+variable "bigquery_reservations" {
+  description = "BigQuery reservations and assignments."
+  type = object({
+    reservations = optional(map(object({
+      location           = string
+      slot_capacity      = number
+      ignore_idle_slots  = optional(bool, false)
+      concurrency        = optional(number)
+      edition            = optional(string, "STANDARD")
+      secondary_location = optional(string)
+      max_slots          = optional(number)
+      scaling_mode       = optional(string, "AUTOSCALE_ONLY")
+    })), {})
+    assign_to_reservation = optional(map(object({
+      reservation = string
+      location    = string
+      project_id  = string
+    })), {})
+  })
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.bigquery_reservations.assign_to_reservation : contains(["PIPELINE", "QUERY", "ML_EXTERNAL"], k)
+    ])
+    error_message = "Job type must be one of 'PIPELINE', 'QUERY', 'ML_EXTERNAL'."
+  }
+  validation {
+    condition     = var.bigquery_reservations.reservations == {} || var.bigquery_reservations.assign_to_reservation != {}
+    error_message = "Use 'reservations' or 'assign_to_reservation', not both."
+  }
+}
+
 variable "compute_metadata" {
   description = "Optional compute metadata key/values. Only usable if compute API has been enabled."
   type        = map(string)
