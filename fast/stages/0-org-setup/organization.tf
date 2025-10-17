@@ -15,6 +15,26 @@
  */
 
 locals {
+  _organization = try(
+    yamldecode(file("${local.paths.organization}/.config.yaml")), {}
+  )
+  _organization_factories_config = {
+    custom_roles = try(
+      local._organization.factories_config.custom_roles, "custom-roles"
+    )
+    org_policies = try(
+      local._organization.factories_config.org_policies, "org-policies"
+    )
+    org_policy_custom_constraints = try(
+      local._organization.factories_config.org_policy_custom_constraints, "custom-constraints"
+    )
+    scc_sha_custom_modules = try(
+      local._organization.factories_config.scc_sha_custom_modules, null
+    )
+    tags = try(
+      local._organization.factories_config.tags, "tags"
+    )
+  }
   ctx_condition_vars = {
     custom_roles = merge(
       local.ctx.custom_roles,
@@ -37,11 +57,21 @@ locals {
   # prepare organization data
   organization = merge(
     # initialize required attributes
-    { customer_id = null, domain = null, id = null },
+    {
+      customer_id = null
+      domain      = null
+      id          = null
+    },
     # merge defaults
     lookup(local.defaults, "organization", {}),
     # merge attributes defined in yaml
-    try(yamldecode(file("${local.paths.organization}/.config.yaml")), {})
+    local._organization,
+    {
+      factories_config = {
+        for k, v in local._organization_factories_config :
+        k => "${local.paths.organization}/${v}" if v != null
+      }
+    }
   )
   # interpolate organization id if required
   organization_id = (
