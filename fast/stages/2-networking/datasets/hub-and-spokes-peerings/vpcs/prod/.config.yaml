@@ -1,0 +1,28 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../schemas/vpc.schema.json
+
+project_id: $project_ids:net-prod-0
+name: prod
+delete_default_routes_on_create: false
+mtu: 1500
+nat_config:
+  nat-ew8:
+    region: $locations:primary
+peering_config:
+  to-hub:
+    peer_network: $networks:hub
+psa_configs:
+  - ranges:
+      psa: 10.72.224.0/24
+    export_routes: true
+    import_routes: true
+    peered_domains:
+      - "test."
+subnets_proxy_only:
+  - ip_cidr_range: 10.72.240.0/24
+    region: $locations:primary
+    name: primary-region-proxy-only
+    active: true
