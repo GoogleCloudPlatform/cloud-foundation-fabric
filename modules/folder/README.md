@@ -118,6 +118,23 @@ module "folder" {
 }
 ```
 
+### Privileged Access Manager (PAM) Entitlements Factory
+
+PAM entitlements can be loaded from a directory containing YAML files where each file defines one or more entitlements. The structure of the YAML files is exactly the same as the `pam_entitlements` variable.
+
+Note that entitlements defined via `pam_entitlements` take precedence over those in the factory. In other words, if you specify the same entitlement in a YAML file and in the `pam_entitlements` variable, the latter will take priority.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  factories_config = {
+    pam_entitlements = "configs/pam-entitlements/"
+  }
+}
+```
+
 ## Organization policies
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.

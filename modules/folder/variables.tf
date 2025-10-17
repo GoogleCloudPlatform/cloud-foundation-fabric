@@ -98,6 +98,7 @@ variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
     org_policies           = optional(string)
+    pam_entitlements       = optional(string)
     scc_sha_custom_modules = optional(string)
   })
   nullable = false
