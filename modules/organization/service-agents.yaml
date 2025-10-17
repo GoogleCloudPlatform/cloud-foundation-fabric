@@ -1,0 +1,190 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: accessapproval
+  display_name: Access Approval Service Agent
+  api: accessapproval.googleapis.com
+  identity: service-o${organization_number}@gcp-sa-accessapproval.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: assuredoss
+  display_name: Assured OSS Service Agent
+  api: assuredoss.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-assuredoss.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: asm-hpsa
+  display_name: Attack Surface Management Service Agent
+  api: securitycenter.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-asm-hpsa.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: audit-manager
+  display_name: Audit Manager Service Agent
+  api: auditmanager.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-audit-manager.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: chronicle-soar
+  display_name: Chronicle Soar Service Agent
+  api: chronicle.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-chronicle-soar.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: effectivepolicy
+  display_name: Cloud Asset Effective Policy Service Agent
+  api: cloudasset.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-effectivepolicy.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: othercloudcfg
+  display_name: Cloud Asset Other Cloud Config Service Agent
+  api: cloudasset.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-othercloudcfg.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: cloudkms
+  display_name: Cloud KMS Organization Service Agent
+  api: cloudkms.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-cloudkms.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: logging
+  display_name: Cloud Logging Service Agent
+  api: logging.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-logging.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: nss-hpsa
+  display_name: Cloud Notebook Security Scanner Service Agent
+  api: notebooksecurityscanner.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-nss-hpsa.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: observability
+  display_name: Cloud Observability Service Account
+  api: observability.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-observability.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: cloudresourcemanager
+  display_name: Cloud Resource Manager Service Agent
+  api: cloudresourcemanager.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-cloudresourcemanager.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: riskmanager
+  display_name: Cloud Risk Manager Service Agent
+  api: dlp.googleapis.com
+  identity: organizations-${organization_number}@gcp-sa-riskmanager.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: scc-bulk-export
+  display_name: Cloud Security Command Center Bulk Export Service Account
+  api: securitycenter.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-scc-bulk-export.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: scc-notification
+  display_name: Cloud Security Command Center Notification Service Account
+  api: securitycenter.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-scc-notification.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: security-center-api
+  display_name: Cloud Security Command Center Service Agent
+  api: securitycenter.googleapis.com
+  identity: service-org-${organization_number}@security-center-api.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: ktd-hpsa
+  display_name: Container Threat Detection Service Agent
+  api: containerthreatdetection.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-ktd-hpsa.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: dataplex-cmek
+  display_name: Dataplex Cmek Service Agent
+  api: dataplex.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-dataplex-cmek.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: dataplex
+  display_name: Dataplex Service Agent
+  api: dataplex.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-dataplex.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: osconfig-rollout
+  display_name: Google Cloud OS Config Rollout Service Agent
+  api: osconfig.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-osconfig-rollout.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: osconfig
+  display_name: Google Cloud OS Config Service Agent
+  api: osconfig.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-osconfig.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: v1-remediator
+  display_name: Policy Remediator Service Agent (prod)
+  api: policyremediator.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-v1-remediator.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: pam
+  display_name: Privileged Access Manager Service Agent
+  api: privilegedaccessmanager.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-pam.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: progrollout
+  display_name: Progressive Rollout Service Agent
+  api: progressiverollout.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-progrollout.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: sccspanner
+  display_name: SCC CMEK Spanner Service Agent (PROD)
+  api: securitycenter.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-sccspanner.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+
