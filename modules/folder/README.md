@@ -89,6 +89,35 @@ module "folder" {
 # tftest modules=1 resources=3 inventory=assured-workload.yaml
 ```
 
+## Privileged Access Manager (PAM) Entitlements
+
+[Privileged Access Manager](https://cloud.google.com/iam/docs/privileged-access-manager-overview) entitlements can be defined via the `pam_entitlements` variable:
+
+```hcl
+module "folder" {
+  source              = "./fabric/modules/folder"
+  parent              = var.folder_id
+  name                = "Networking"
+  deletion_protection = false
+  pam_entitlements = {
+    net-admins = {
+      max_request_duration = "3600s"
+      eligible_users = ["group:gcp-network-admins@example.com"]
+      privileged_access = [
+        { role = "roles/compute.networkAdmin" },
+        { role = "roles/compute.admin" },
+      ]
+      manual_approvals = {
+        require_approver_justification = true
+        steps = [{
+          approvers = ["group:gcp-organization-admins@example.com"]
+        }]
+      }
+    }
+  }
+}
+```
+
 ## Organization policies
 
 To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
