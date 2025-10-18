@@ -3,7 +3,8 @@
 The module creates Agent Engine and related dependencies.
 
 - It can automatically generate and update the Pickle file for you, given a source file.
-- It optionally creates a GCS storage bucket or can use an existing one and loads on it all the dependencies (`pickle`, `dependencies.tar.gz`, `requirements.txt`)
+- It optionally creates a GCS storage bucket or can use an existing one and loads on it all your dependencies (`pickle`, `dependencies.tar.gz`, `requirements.txt`)
+- Manages the service accounts lifecycle
 
 <!-- BEGIN TOC -->
 - [Packaging dependencies](#packaging-dependencies)
