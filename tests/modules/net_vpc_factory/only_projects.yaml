@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
 
 counts:
   google_project: 3
-  google_project_iam_member: 21
+  google_project_iam_member: 24
   google_project_service: 27
   google_project_service_identity: 21
   modules: 3
-  resources: 72
+  resources: 75

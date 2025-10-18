@@ -25,6 +25,103 @@ locals {
     defaults  = try(var.data_defaults, {})
     overrides = try(var.data_overrides, {})
   }
+  data_defaults = {
+    defaults = merge(
+      {
+        billing_account = null
+        contacts        = {}
+        deletion_policy = null
+        labels          = {}
+        metric_scopes   = []
+        parent          = null
+        prefix          = null
+        project_reuse = merge(
+          {
+            use_data_source = true
+            attributes      = null
+          },
+          try(local._data_defaults.defaults.project_reuse, {
+            use_data_source = true
+            attributes      = null
+            }
+          )
+        )
+        service_encryption_key_ids = {}
+        services                   = []
+        shared_vpc_service_config = merge(
+          {
+            host_project             = null
+            iam_bindings_additive    = {}
+            network_users            = []
+            service_agent_iam        = {}
+            service_agent_subnet_iam = {}
+            service_iam_grants       = []
+            network_subnet_users     = {}
+          },
+          try(local._data_defaults.defaults.shared_vpc_service_config, {
+            host_project             = null
+            iam_bindings_additive    = {}
+            network_users            = []
+            service_agent_iam        = {}
+            service_agent_subnet_iam = {}
+            service_iam_grants       = []
+            network_subnet_users     = {}
+            }
+          )
+        )
+        storage_location = null
+        tag_bindings     = {}
+        service_accounts = {}
+        universe         = null
+        vpc_sc = merge(
+          {
+            perimeter_name = null
+            is_dry_run     = false
+          },
+          try(local._data_defaults.defaults.vpc_sc, {
+            perimeter_name = null
+            is_dry_run     = false
+            }
+          )
+        )
+        logging_data_access = {}
+        bigquery_location   = null
+      },
+      try(
+        local._data_defaults.defaults, {}
+      )
+    )
+    # data_overrides default to null's, to mark that they should not override
+    overrides = merge({
+      billing_account            = null
+      contacts                   = null
+      deletion_policy            = null
+      parent                     = null
+      prefix                     = null
+      service_encryption_key_ids = null
+      storage_location           = null
+      tag_bindings               = null
+      services                   = null
+      service_accounts           = null
+      universe                   = null
+      vpc_sc = try(
+        merge(
+          {
+            perimeter_name = null
+            is_dry_run     = false
+          },
+          local._data_defaults.overrides.vpc_sc
+        ),
+        null
+      )
+      logging_data_access = null
+      bigquery_location   = null
+      },
+      try(
+        local._data_defaults.overrides, {}
+      )
+    )
+  }
   _projects_output = {
     # Semantics of the merges are:
     #   - if data_overrides.<field> is not null, use this value
@@ -49,37 +146,7 @@ locals {
         try(v.contacts, null),
         local.data_defaults.defaults.contacts
       )
-      factories_config = {  # type: object
-        custom_roles = try( # type: string
-          coalesce(
-            local.data_defaults.overrides.factories_config.custom_roles,
-            try(v.factories_config.custom_roles, null),
-            local.data_defaults.defaults.factories_config.custom_roles
-          ),
-          null
-        )
-        observability = try( # type: string
-          coalesce(
-            local.data_defaults.overrides.factories_config.observability,
-            try(v.factories_config.observability, null),
-            local.data_defaults.defaults.factories_config.observability
-          ),
-        null)
-        org_policies = try( # type: string
-          coalesce(
-            local.data_defaults.overrides.factories_config.org_policies,
-            try(v.factories_config.org_policies, null),
-            local.data_defaults.defaults.factories_config.org_policies
-          ),
-        null)
-        quotas = try( # type: string
-          coalesce(
-            local.data_defaults.overrides.factories_config.quotas,
-            try(v.factories_config.quotas, null),
-            local.data_defaults.defaults.factories_config.quotas
-          ),
-        null)
-      }
+      factories_config           = try(v.factories_config, {})
       iam                        = try(v.iam, {})                        # type: map(list(string))
       iam_bindings               = try(v.iam_bindings, {})               # type: map(object({...}))
       iam_bindings_additive      = try(v.iam_bindings_additive, {})      # type: map(object({...}))
@@ -226,21 +293,6 @@ locals {
         billing_account = null
         contacts        = {}
         deletion_policy = null
-        factories_config = merge(
-          {
-            custom_roles  = null
-            observability = null
-            org_policies  = null
-            quotas        = null
-          },
-          try(local._data_defaults.defaults.factories_config, {
-            custom_roles  = null
-            observability = null
-            org_policies  = null
-            quotas        = null
-            }
-          )
-        )
         labels = {}
         locations = {
           bigquery = try(local._data_defaults.defaults.locations.bigquery, null)
@@ -297,21 +349,6 @@ locals {
       billing_account = null
       contacts        = null
       deletion_policy = null
-      factories_config = merge(
-        {
-          custom_roles  = null
-          observability = null
-          org_policies  = null
-          quotas        = null
-        },
-        try(local._data_defaults.overrides.factories_config, {
-          custom_roles  = null
-          observability = null
-          org_policies  = null
-          quotas        = null
-          }
-        )
-      )
       locations = {
         bigquery = try(local._data_defaults.overrides.locations.bigquery, null)
         logging  = try(local._data_defaults.overrides.locations.logging, null)

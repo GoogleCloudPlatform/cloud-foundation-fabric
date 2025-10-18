@@ -54,4 +54,4 @@ module "recipe_apigee_swp" {
     subnet_proxy_only_ip_cidr_range = "10.16.2.0/24"
   }
 }
-# tftest modules=10 resources=43
+# tftest modules=10 resources=44
