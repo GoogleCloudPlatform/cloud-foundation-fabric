@@ -25,6 +25,10 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+- **factories_config**: *object*
+  <br>*additional properties: false*
+  - **org_policies**: *string*
+  - **scc_sha_custom_modules**: *string*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
@@ -99,7 +103,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -112,7 +116,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
