@@ -30,7 +30,7 @@ env:
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${tf_providers_files.apply}
   TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
-  TF_VERSION: 1.11.4
+  TF_VERSION: 1.12.2
 
 jobs:
   fast-pr:
