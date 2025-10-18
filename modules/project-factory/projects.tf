@@ -73,12 +73,7 @@ module "projects" {
   })
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
-  factories_config = {
-    custom_roles  = each.value.factories_config.custom_roles
-    observability = each.value.factories_config.observability
-    org_policies  = each.value.factories_config.org_policies
-    quotas        = each.value.factories_config.quotas
-  }
+  factories_config        = each.value.factories_config
   labels = merge(
     each.value.labels, var.data_merges.labels
   )

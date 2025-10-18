@@ -64,6 +64,18 @@
         }
       }
     },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "org_policies": {
+          "type": "string"
+        },
+        "scc_sha_custom_modules": {
+          "type": "string"
+        }
+      }
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },

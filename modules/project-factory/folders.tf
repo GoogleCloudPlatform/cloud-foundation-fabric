@@ -58,6 +58,7 @@ module "folder-1" {
   }
   parent              = coalesce(each.value.parent, "$folder_ids:default")
   name                = each.value.name
+  factories_config    = lookup(each.value, "factories_config", {})
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
@@ -89,6 +90,7 @@ module "folder-2" {
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
   name                = each.value.name
+  factories_config    = lookup(each.value, "factories_config", {})
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
@@ -128,6 +130,7 @@ module "folder-3" {
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
   name                = each.value.name
+  factories_config    = lookup(each.value, "factories_config", {})
   org_policies        = lookup(each.value, "org_policies", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
