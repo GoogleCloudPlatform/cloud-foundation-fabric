@@ -654,6 +654,7 @@ values:
 | [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Organization-level Custom modules with Security Health Analytics. | <code>google_scc_management_organization_security_health_analytics_custom_module</code> |
+| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. |  |
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
@@ -702,7 +703,8 @@ values:
 | [organization_id](outputs.tf#L69) | Organization id dependent on module resources. |  |
 | [organization_policies_ids](outputs.tf#L86) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
 | [scc_custom_sha_modules_ids](outputs.tf#L91) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
-| [sink_writer_identities](outputs.tf#L96) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L104) | Tag key resources. |  |
-| [tag_values](outputs.tf#L113) | Tag value resources. |  |
+| [service_agents](outputs.tf#L96) | Identities of all organization-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L101) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L109) | Tag key resources. |  |
+| [tag_values](outputs.tf#L118) | Tag value resources. |  |
 <!-- END TFDOC -->
