@@ -48,7 +48,7 @@ locals {
   )
   service_account_roles = [
     for role in var.service_account_config.roles
-    : lookup(var.context.custom_roles, role, role)
+    : lookup(local.ctx.custom_roles, role, role)
   ]
 }
 
