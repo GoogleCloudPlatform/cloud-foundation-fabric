@@ -48,7 +48,6 @@ variable "data_defaults" {
       logging  = optional(string)
       storage  = optional(string)
     }), {})
-    labels = optional(map(string), {})
     logging_data_access = optional(map(object({
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
       DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
