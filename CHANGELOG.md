@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/project-factory`: the `factories_config` attribute has been removed from project defaults and overrides. [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)]
 - `modules/gke-hub`: Unified cluster configuration. The module now uses a single `clusters` variable to configure both cluster registration and feature enablement. [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `all modules`: Minimum supported Terraform version bumped 1.12.2 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `all modules`: Minimum supported OpenTofu version bumped 1.10.0 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
@@ -17,6 +18,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)] Support resource-level factories config in project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-18 10:41:19+00:00 -->
+- [[#3439](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3439)] compatiblity fix: Github CICD templates Terraform version bump to 1.12.2 ([ysolt](https://github.com/ysolt)) <!-- 2025-10-18 08:00:15+00:00 -->
 - [[#3432](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3432)] Revert "Added audience to workflow local in 0-org-setup" ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 12:38:08+00:00 -->
 - [[#3418](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3418)] Added audience to workflow local in 0-org-setup ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-17 08:13:28+00:00 -->
 - [[#3427](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3427)] Add missing project number variable to outputs in 0-org-setup stage ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2025-10-17 06:51:05+00:00 -->
@@ -38,6 +41,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)] Support resource-level factories config in project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-18 10:41:19+00:00 -->
 - [[#3436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3436)] Add service agent outputs to folder and organization ([juliocc](https://github.com/juliocc)) <!-- 2025-10-17 15:23:08+00:00 -->
 - [[#3423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3423)] bigquery-connection module ([lcaggio](https://github.com/lcaggio)) <!-- 2025-10-16 15:15:36+00:00 -->
 - [[#3425](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3425)] bigquery-dataset: fix issues ([rosmo](https://github.com/rosmo)) <!-- 2025-10-16 13:12:23+00:00 -->
