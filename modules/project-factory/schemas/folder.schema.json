@@ -169,7 +169,8 @@
       }
     },
     "parent": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^(?:folders/[0-9]+|organizations/[0-9]+|\\$folder_ids:[a-z0-9_-]+)$"
     },
     "tag_bindings": {
       "type": "object",
@@ -281,7 +282,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -320,7 +321,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
