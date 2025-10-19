@@ -47,18 +47,18 @@ variable "bigquery_reservations" {
       alltrue([
         for key in keys(reservation.assignments) :
         contains(["JOB_TYPE_UNSPECIFIED",
-                  "PIPELINE",
-                  "QUERY",
-                  "ML_EXTERNAL",
-                  "BACKGROUND",
-                  "CONTINUOUS",
-                  "BACKGROUND_CHANGE_DATA_CAPTURE", 
-                  "BACKGROUND_COLUMN_METADATA_INDEX", 
-                  "BACKGROUND_SEARCH_INDEX_REFRESH"], key)
+          "PIPELINE",
+          "QUERY",
+          "ML_EXTERNAL",
+          "BACKGROUND",
+          "CONTINUOUS",
+          "BACKGROUND_CHANGE_DATA_CAPTURE",
+          "BACKGROUND_COLUMN_METADATA_INDEX",
+        "BACKGROUND_SEARCH_INDEX_REFRESH"], key)
       ])
     ])
     error_message = "All keys in the nested 'assignments' map (within 'bigquery_reservations') must be one of the following allowed values: ML_EXTERNAL, QUERY, or BACKGROUND."
-  } 
+  }
   default  = {}
   nullable = false
 }
