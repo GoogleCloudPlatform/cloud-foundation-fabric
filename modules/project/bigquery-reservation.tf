@@ -14,8 +14,25 @@
  * limitations under the License.
  */
 
+locals {
+  _assignments = flatten([
+    for reservation_name, reservation in var.bigquery_reservations : [
+      for job_type, assignees in reservation.assignments : [
+        for assignee in assignees : {
+          key              = "${reservation_name}-${job_type}-${assignee}"
+          reservation_name = reservation_name
+          location         = reservation.location
+          job_type         = job_type
+          assignee         = assignee
+        }
+      ]
+    ]
+  ])
+  assignments = { for a in local._assignments : a.key => a }
+}
+
 resource "google_bigquery_reservation" "default" {
-  for_each = var.bigquery_reservations.reservations
+  for_each = var.bigquery_reservations
 
   project            = local.project.project_id
   location           = each.value.location
@@ -25,7 +42,6 @@ resource "google_bigquery_reservation" "default" {
   concurrency        = each.value.concurrency
   edition            = each.value.edition
   secondary_location = each.value.secondary_location
-
 
   dynamic "autoscale" {
     for_each = each.value.max_slots == null ? [] : [each.value.max_slots]
@@ -40,11 +56,11 @@ resource "google_bigquery_reservation" "default" {
 }
 
 resource "google_bigquery_reservation_assignment" "default" {
-  for_each = var.bigquery_reservations.assign_to_reservation
+  for_each = local.assignments
 
-  project     = each.value.project_id
+  project     = local.project.project_id
   location    = each.value.location
-  reservation = each.value.reservation
-  assignee    = "projects/${local.project.project_id}"
-  job_type    = each.key
+  reservation = google_bigquery_reservation.default[each.value.reservation_name].id
+  assignee    = each.value.assignee
+  job_type    = each.value.job_type
 }

@@ -13,11 +13,10 @@
 # limitations under the License.
 
 values:
-  module.project-billing.data.google_bigquery_default_service_account.bq_sa[0]:
+  module.project-bq-billing.data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-project-billing
-  module.project-billing.google_bigquery_reservation.default["ew8"]:
-    autoscale:
-    - max_slots: 50
+  module.project-bq-billing.google_bigquery_reservation.default["ew8"]:
+    autoscale: []
     concurrency: 0
     edition: STANDARD
     ignore_idle_slots: false
@@ -27,7 +26,7 @@ values:
     secondary_location: null
     slot_capacity: 0
     timeouts: null
-  module.project-billing.google_project.project[0]:
+  module.project-bq-billing.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
     deletion_policy: DELETE
@@ -42,51 +41,45 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  module.project-billing.google_project_iam_member.service_agents["container-engine-robot"]:
+  module.project-bq-billing.google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
     project: test-project-billing
     role: roles/container.serviceAgent
-  module.project-billing.google_project_iam_member.service_agents["gkenode"]:
+  module.project-bq-billing.google_project_iam_member.service_agents["gkenode"]:
     condition: []
     project: test-project-billing
     role: roles/container.defaultNodeServiceAgent
-  module.project-billing.google_project_service.project_services["bigquery.googleapis.com"]:
+  module.project-bq-billing.google_project_service.project_services["bigquery.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-billing
     service: bigquery.googleapis.com
     timeouts: null
-  module.project-billing.google_project_service.project_services["bigqueryreservation.googleapis.com"]:
+  module.project-bq-billing.google_project_service.project_services["bigqueryreservation.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-billing
     service: bigqueryreservation.googleapis.com
     timeouts: null
-  module.project-billing.google_project_service.project_services["container.googleapis.com"]:
+  module.project-bq-billing.google_project_service.project_services["container.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-billing
     service: container.googleapis.com
     timeouts: null
-  module.project-billing.google_project_service.project_services["stackdriver.googleapis.com"]:
+  module.project-bq-billing.google_project_service.project_services["stackdriver.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-billing
     service: stackdriver.googleapis.com
     timeouts: null
-  module.project-billing.google_project_service_identity.default["container.googleapis.com"]:
+  module.project-bq-billing.google_project_service_identity.default["container.googleapis.com"]:
     project: test-project-billing
     service: container.googleapis.com
     timeouts: null
-  module.project-bq.data.google_bigquery_default_service_account.bq_sa[0]:
+  module.project-bq-data.data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-project-data
-  module.project-bq.google_bigquery_reservation_assignment.default["QUERY"]:
-    assignee: projects/test-project-data
-    job_type: QUERY
-    location: europe-west8
-    project: test-project-billing
-    timeouts: null
-  module.project-bq.google_project.project[0]:
+  module.project-bq-data.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
     deletion_policy: DELETE
@@ -101,39 +94,49 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  module.project-bq.google_project_iam_member.service_agents["container-engine-robot"]:
+  module.project-bq-data.google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
     project: test-project-data
     role: roles/container.serviceAgent
-  module.project-bq.google_project_iam_member.service_agents["gkenode"]:
+  module.project-bq-data.google_project_iam_member.service_agents["gkenode"]:
     condition: []
     project: test-project-data
     role: roles/container.defaultNodeServiceAgent
-  module.project-bq.google_project_service.project_services["bigquery.googleapis.com"]:
+  module.project-bq-data.google_project_service.project_services["bigquery.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-data
     service: bigquery.googleapis.com
     timeouts: null
-  module.project-bq.google_project_service.project_services["bigqueryreservation.googleapis.com"]:
+  module.project-bq-data.google_project_service.project_services["bigqueryreservation.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-data
     service: bigqueryreservation.googleapis.com
     timeouts: null
-  module.project-bq.google_project_service.project_services["container.googleapis.com"]:
+  module.project-bq-data.google_project_service.project_services["container.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-data
     service: container.googleapis.com
     timeouts: null
-  module.project-bq.google_project_service.project_services["stackdriver.googleapis.com"]:
+  module.project-bq-data.google_project_service.project_services["stackdriver.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project-data
     service: stackdriver.googleapis.com
     timeouts: null
-  module.project-bq.google_project_service_identity.default["container.googleapis.com"]:
+  module.project-bq-data.google_project_service_identity.default["container.googleapis.com"]:
     project: test-project-data
     service: container.googleapis.com
     timeouts: null
+
+counts:
+  google_bigquery_default_service_account: 2
+  google_bigquery_reservation: 1
+  google_project: 2
+  google_project_iam_member: 4
+  google_project_service: 8
+  google_project_service_identity: 2
+  modules: 2
+  resources: 19

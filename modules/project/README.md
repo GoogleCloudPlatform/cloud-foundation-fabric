@@ -219,10 +219,12 @@ module "project" {
 # tftest modules=1 resources=5 inventory=iam-bindings-additive.yaml e2e
 ```
 
-## BigQueryReservation
+## BigQuery Reservations
+
+BigQuery reservations are primarily used to manage and allocate dedicated compute capacity for running queries, which helps provide predictable and consistent performance and costs. You can configure BigQuery reservations and assign projects, folders, or organizations to them by specifying the job type.
 
 ```hcl
-module "project-billing" {
+module "project-bq-billing" {
   source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project-billing"
@@ -235,17 +237,17 @@ module "project-billing" {
     "stackdriver.googleapis.com"
   ]
   bigquery_reservations = {
-    reservations = {
-      "ew8" = {
-        location      = "europe-west8"
-        slot_capacity = 0
-        max_slots     = 50
+    "ew8" = {
+      location      = "europe-west8"
+      slot_capacity = 0
+      assignements = {
+        "QUERY" = ["projects/{$module.project-bq-data.project_id}"]
       }
     }
   }
 }
 
-module "project-bq" {
+module "project-bq-data" {
   source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project-data"
@@ -257,17 +259,8 @@ module "project-bq" {
     "bigqueryreservation.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  bigquery_reservations = {
-    assign_to_reservation = {
-      "QUERY" = {
-        project_id  = module.project-billing.project_id
-        reservation = module.project-billing.bigquery_reservations.reservations["ew8"].id
-        location    = module.project-billing.bigquery_reservations.reservations["ew8"].location
-      }
-    }
-  }
 }
-# tftest modules=2 resources=20 inventory=bigqueryreservation.yaml
+# tftest modules=2 resources=19 inventory=bigqueryreservation.yaml
 ```
 
 ### Service Agents

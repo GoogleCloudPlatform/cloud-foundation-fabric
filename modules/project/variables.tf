@@ -27,36 +27,40 @@ variable "billing_account" {
 }
 
 variable "bigquery_reservations" {
-  description = "BigQuery reservations and assignments."
-  type = object({
-    reservations = optional(map(object({
-      location           = string
-      slot_capacity      = number
-      ignore_idle_slots  = optional(bool, false)
-      concurrency        = optional(number)
-      edition            = optional(string, "STANDARD")
-      secondary_location = optional(string)
-      max_slots          = optional(number)
-      scaling_mode       = optional(string, "AUTOSCALE_ONLY")
-    })), {})
-    assign_to_reservation = optional(map(object({
-      reservation = string
-      location    = string
-      project_id  = string
-    })), {})
-  })
-  default  = {}
-  nullable = false
+  description = "BigQuery reservations and assignments. Assignement specified as {JOB_TYPE = ['projects/PROJECT_ID']}"
+  type = map(object({
+    location           = string
+    slot_capacity      = number
+    ignore_idle_slots  = optional(bool, false)
+    concurrency        = optional(number)
+    edition            = optional(string, "STANDARD")
+    secondary_location = optional(string)
+    max_slots          = optional(number)
+    scaling_mode       = optional(string, "AUTOSCALE_ONLY")
+    assignments        = optional(map(list(string)), {})
+  }))
   validation {
     condition = alltrue([
-      for k, v in var.bigquery_reservations.assign_to_reservation : contains(["PIPELINE", "QUERY", "ML_EXTERNAL"], k)
+      for name, reservation in var.bigquery_reservations :
+      # Check the keys of the 'assignments' map within each reservation object.
+      # If 'assignments' is omitted (defaults to {}), the inner 'alltrue' evaluates to true.
+      alltrue([
+        for key in keys(reservation.assignments) :
+        contains(["JOB_TYPE_UNSPECIFIED",
+                  "PIPELINE",
+                  "QUERY",
+                  "ML_EXTERNAL",
+                  "BACKGROUND",
+                  "CONTINUOUS",
+                  "BACKGROUND_CHANGE_DATA_CAPTURE", 
+                  "BACKGROUND_COLUMN_METADATA_INDEX", 
+                  "BACKGROUND_SEARCH_INDEX_REFRESH"], key)
+      ])
     ])
-    error_message = "Job type must be one of 'PIPELINE', 'QUERY', 'ML_EXTERNAL'."
-  }
-  validation {
-    condition     = var.bigquery_reservations.reservations == {} || var.bigquery_reservations.assign_to_reservation != {}
-    error_message = "Use 'reservations' or 'assign_to_reservation', not both."
-  }
+    error_message = "All keys in the nested 'assignments' map (within 'bigquery_reservations') must be one of the following allowed values: ML_EXTERNAL, QUERY, or BACKGROUND."
+  } 
+  default  = {}
+  nullable = false
 }
 
 variable "compute_metadata" {
