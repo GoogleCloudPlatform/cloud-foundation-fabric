@@ -20,14 +20,8 @@ variable "auto_create_network" {
   default     = false
 }
 
-variable "billing_account" {
-  description = "Billing account id."
-  type        = string
-  default     = null
-}
-
 variable "bigquery_reservations" {
-  description = "BigQuery reservations and assignments. Assignement specified as {JOB_TYPE = ['projects/PROJECT_ID']}"
+  description = "BigQuery reservations and assignments. Assignement specified as {JOB_TYPE = ['projects/PROJECT_ID']}."
   type = map(object({
     location           = string
     slot_capacity      = number
@@ -61,6 +55,12 @@ variable "bigquery_reservations" {
   }
   default  = {}
   nullable = false
+}
+
+variable "billing_account" {
+  description = "Billing account id."
+  type        = string
+  default     = null
 }
 
 variable "compute_metadata" {
