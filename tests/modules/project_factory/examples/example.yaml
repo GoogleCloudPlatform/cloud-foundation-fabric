@@ -145,6 +145,19 @@ values:
     display_name: App 0
     tags: null
     timeouts: null
+  module.project-factory.module.folder-2["team-a/app-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
+    timeouts: null
   module.project-factory.module.folder-2["team-b/app-0"].google_folder.folder[0]:
     deletion_protection: false
     display_name: App 0
@@ -438,6 +451,21 @@ values:
     - ALL
     parent: projects/test-pf-teams-iac-0
     timeouts: null
+  module.project-factory.module.projects["teams-iac-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
+    dry_run_spec: []
+    name: projects/test-pf-teams-iac-0/policies/compute.disableSerialPortAccess
+    parent: projects/test-pf-teams-iac-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
+    timeouts: null
   module.project-factory.module.projects["teams-iac-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-BCDEF0
@@ -587,6 +615,7 @@ counts:
   google_folder_iam_binding: 1
   google_kms_crypto_key_iam_member: 2
   google_monitoring_notification_channel: 1
+  google_org_policy_policy: 2
   google_project: 4
   google_project_iam_binding: 6
   google_project_iam_member: 21
@@ -602,5 +631,5 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 23
-  resources: 86
+  resources: 88
   terraform_data: 1
