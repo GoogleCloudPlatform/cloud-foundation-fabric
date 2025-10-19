@@ -18,3 +18,8 @@ output "id" {
   description = "Fully qualified Agent Engine id."
   value       = google_vertex_ai_reasoning_engine.default.id
 }
+
+output "service_account" {
+  description = "Service account resource."
+  value       = try(google_service_account.service_account[0], null)
+}
