@@ -73,7 +73,13 @@ module "projects" {
   })
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
-  factories_config        = { for k, v in each.value.factories_config : k => v if k != "observability" }
+  factories_config = {
+    custom_roles           = try(each.value.factories_config.custom_roles, null)
+    org_policies           = try(each.value.factories_config.org_policies, null)
+    quotas                 = try(each.value.factories_config.quotas, null)
+    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    tags                   = try(each.value.factories_config.tags, null)
+  }
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
@@ -88,7 +94,6 @@ module "projects" {
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
-  pam_entitlements      = try(each.value.pam_entitlements, {})
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -119,11 +124,16 @@ module "projects-iam" {
     kms_keys       = local.ctx.kms_keys
     iam_principals = local.ctx_iam_principals
   })
-  factories_config      = { for k, v in each.value.factories_config : k => v if k == "observability" }
+  factories_config = {
+    # we do anything that can refer to IAM and custom roles in this call
+    observability    = try(each.value.factories_config.observability, null)
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+  }
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  pam_entitlements      = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false
     grant_default_roles   = false
