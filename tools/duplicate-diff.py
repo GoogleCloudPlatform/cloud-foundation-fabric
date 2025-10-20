@@ -28,12 +28,33 @@ duplicates = [  #
         "fast/stages/2-networking-a-simple/data/cidrs.yaml",
         "fast/stages/2-networking-b-nva/data/cidrs.yaml",
         "fast/stages/2-networking-c-separate-envs/data/cidrs.yaml",
+    ],
+    [
+        "modules/cloud-function-v1/serviceaccount.tf",
+        "modules/cloud-function-v2/serviceaccount.tf",
+    ],
+    [
+        "modules/cloud-function-v1/variables-serviceaccount.tf",
+        "modules/cloud-function-v2/variables-serviceaccount.tf",
+    ],
+    [
+        "modules/cloud-function-v1/bundle.tf",
+        "modules/cloud-function-v2/bundle.tf",
     ]
 ]
 
-for group in duplicates:
-  first = group[0]
-  for second in group[1:]:
-    if not filecmp.cmp(first, second):  # true if files are the same
-      print(f'found diff between {first} and {second}')
-      sys.exit(1)
+
+def main():
+  error = False
+  for group in duplicates:
+    first = group[0]
+    for second in group[1:]:
+      if not filecmp.cmp(first, second):  # true if files are the same
+        print(f'found diff between {first} and {second}')
+        error = True
+  if error:
+    sys.exit(1)
+
+
+if __name__ == '__main__':
+  main()

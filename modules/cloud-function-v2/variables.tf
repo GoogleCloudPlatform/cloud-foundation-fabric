@@ -81,6 +81,24 @@ variable "bundle_config" {
   }
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {}) # not needed here?
+    cidr_ranges    = optional(map(string), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    locations      = optional(map(string), {})
+    networks       = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    subnets        = optional(map(string), {})
+    tag_values     = optional(map(string), {}) # not needed here?
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "description" {
   description = "Optional description."
   type        = string
@@ -181,18 +199,6 @@ variable "secrets" {
   }))
   nullable = false
   default  = {}
-}
-
-variable "service_account" {
-  description = "Service account email. Unused if service account is auto-created."
-  type        = string
-  default     = null
-}
-
-variable "service_account_create" {
-  description = "Auto-create service account."
-  type        = bool
-  default     = false
 }
 
 variable "trigger_config" {

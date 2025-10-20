@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,12 @@
  */
 
 locals {
+  _ctx_p = "$"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
   bucket = (
     var.bucket_config == null
     ? var.bucket_name
@@ -24,12 +30,9 @@ locals {
       : null
     )
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-  service_account_email = (
-    var.service_account_create
-    ? google_service_account.service_account[0].email
-    : var.service_account
-  )
+  location   = lookup(local.ctx.locations, var.region, var.region)
+  prefix     = var.prefix == null ? "" : "${var.prefix}-"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   trigger_sa_create = (
     try(var.trigger_config.service_account_create, false) == true
   )
@@ -50,12 +53,17 @@ locals {
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count          = var.vpc_connector.create == true ? 1 : 0
-  project        = var.project_id
-  name           = var.vpc_connector.name
-  region         = var.region
-  ip_cidr_range  = var.vpc_connector_config.ip_cidr_range
-  network        = var.vpc_connector_config.network
+  count   = var.vpc_connector.create == true ? 1 : 0
+  project = local.project_id
+  name    = var.vpc_connector.name
+  region  = local.location
+  ip_cidr_range = lookup(local.ctx.cidr_ranges,
+    var.vpc_connector_config.ip_cidr_range,
+    var.vpc_connector_config.ip_cidr_range
+  )
+  network = lookup(local.ctx.networks,
+    var.vpc_connector_config.network, var.vpc_connector_config.network
+  )
   max_instances  = try(var.vpc_connector_config.instances.max, null)
   min_instances  = try(var.vpc_connector_config.instances.min, null)
   max_throughput = try(var.vpc_connector_config.throughput.max, null)
@@ -64,11 +72,11 @@ resource "google_vpc_access_connector" "connector" {
 
 resource "google_cloudfunctions2_function" "function" {
   provider     = google-beta
-  project      = var.project_id
-  location     = var.region
+  project      = local.project_id
+  location     = local.location
   name         = "${local.prefix}${var.name}"
   description  = var.description
-  kms_key_name = var.kms_key
+  kms_key_name = var.kms_key == null ? null : lookup(local.ctx.kms_keys, var.kms_key, var.kms_key)
   build_config {
     service_account       = var.build_service_account
     worker_pool           = var.build_worker_pool
@@ -207,13 +215,6 @@ resource "google_cloud_run_service_iam_member" "invoker" {
   lifecycle {
     replace_triggered_by = [google_cloudfunctions2_function.function]
   }
-}
-
-resource "google_service_account" "service_account" {
-  count        = var.service_account_create ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-cf-${var.name}"
-  display_name = "Terraform Cloud Function ${var.name}."
 }
 
 resource "google_service_account" "trigger_service_account" {
