@@ -71,10 +71,10 @@ resource "google_vertex_ai_reasoning_engine" "default" {
   }
 
   spec {
-    agent_framework = var.agent_framework
+    agent_framework = var.agent_engine_config.agent_framework
     class_methods = (
-      length(var.class_methods) > 0
-      ? jsonencode(var.class_methods)
+      length(var.agent_engine_config.class_methods) > 0
+      ? jsonencode(var.agent_engine_config.class_methods)
       : null
     )
     service_account = local.service_account_email
@@ -82,15 +82,15 @@ resource "google_vertex_ai_reasoning_engine" "default" {
     dynamic "deployment_spec" {
       for_each = (
         # length(var.container_spec) > 0 ||
-        length(var.environment_variables) > 0 ||
-        length(var.secret_environment_variables) > 0
+        length(var.agent_engine_config.environment_variables) > 0 ||
+        length(var.agent_engine_config.secret_environment_variables) > 0
         ? { 1 = 1 }
         : {}
       )
 
       content {
         dynamic "env" {
-          for_each = var.environment_variables
+          for_each = var.agent_engine_config.environment_variables
 
           content {
             name  = env.key
@@ -99,7 +99,7 @@ resource "google_vertex_ai_reasoning_engine" "default" {
         }
 
         dynamic "secret_env" {
-          for_each = var.secret_environment_variables
+          for_each = var.agent_engine_config.secret_environment_variables
 
           content {
             name = secret_env.key
@@ -114,7 +114,7 @@ resource "google_vertex_ai_reasoning_engine" "default" {
     }
 
     package_spec {
-      python_version           = var.python_version
+      python_version           = var.agent_engine_config.python_version
       dependency_files_gcs_uri = "gs://${local.bucket_name}/${google_storage_bucket_object.dependencies.name}"
       requirements_gcs_uri     = "gs://${local.bucket_name}/${google_storage_bucket_object.requirements.name}"
       pickle_object_gcs_uri = (
@@ -126,8 +126,8 @@ resource "google_vertex_ai_reasoning_engine" "default" {
   }
 }
 
-# Eventual consistency issue.
-# AE doesn't retry (yet) the deployment if bindings are still not active.
+# TODO: fix once eventual consistency issue is solved.
+# AE doesn't retry the deployment (yet) if bindings are still not active.
 resource "time_sleep" "wait_5_minutes" {
   create_duration = "5m"
 

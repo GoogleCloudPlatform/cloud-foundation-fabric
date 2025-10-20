@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-# Add validation once API stabilizes
-variable "agent_framework" {
-  description = "The agent framework."
-  type        = string
-  nullable    = false
+variable "agent_engine_config" {
+  type = object({
+    # Add validation once API stabilizes
+    agent_framework       = string
+    class_methods         = optional(list(any), [])
+    environment_variables = optional(map(string), {})
+    python_version        = optional(string, "3.12")
+    secret_environment_variables = optional(map(object({
+      secret_id = string
+      version   = optional(string, "latest")
+    })), {})
+  })
 }
 
 variable "bucket_config" {
@@ -31,13 +38,6 @@ variable "bucket_config" {
   })
   nullable = false
   default  = {}
-}
-
-variable "class_methods" {
-  description = "The class methods (will be automatically json encoded)."
-  type        = list(any)
-  nullable    = false
-  default     = []
 }
 
 variable "context" {
@@ -66,13 +66,6 @@ variable "encryption_key" {
   default     = null
 }
 
-variable "environment_variables" {
-  description = "The container environment variables."
-  type        = map(string)
-  nullable    = false
-  default     = {}
-}
-
 variable "generate_pickle" {
   description = "Generate the pickle file from a source file."
   type        = bool
@@ -92,27 +85,10 @@ variable "project_id" {
   nullable    = false
 }
 
-variable "python_version" {
-  description = "The Python version to use."
-  type        = string
-  nullable    = false
-  default     = "3.12"
-}
-
 variable "region" {
   description = "The region where to deploy the agent."
   type        = string
   nullable    = false
-}
-
-variable "secret_environment_variables" {
-  description = "The secrets to load as environment variables by variable name."
-  type = map(object({
-    secret_id = string
-    version   = optional(string, "latest")
-  }))
-  nullable = false
-  default  = {}
 }
 
 variable "service_account_config" {
