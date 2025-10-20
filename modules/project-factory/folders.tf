@@ -60,6 +60,7 @@ module "folder-1" {
   name                = each.value.name
   factories_config    = lookup(each.value, "factories_config", {})
   org_policies        = lookup(each.value, "org_policies", {})
+  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
   context             = local.ctx
@@ -92,6 +93,7 @@ module "folder-2" {
   name                = each.value.name
   factories_config    = lookup(each.value, "factories_config", {})
   org_policies        = lookup(each.value, "org_policies", {})
+  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
   context = merge(local.ctx, {
@@ -132,6 +134,7 @@ module "folder-3" {
   name                = each.value.name
   factories_config    = lookup(each.value, "factories_config", {})
   org_policies        = lookup(each.value, "org_policies", {})
+  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
   context = merge(local.ctx, {
@@ -160,4 +163,3 @@ module "folder-3-iam" {
     iam_principals = local.ctx_iam_principals
   })
 }
-

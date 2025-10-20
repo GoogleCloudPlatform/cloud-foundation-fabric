@@ -497,6 +497,20 @@ parent: folders/5678901234
 name: App 0
 factories_config:
   org_policies: data/factories/org-policies
+
+pam_entitlements:
+  app-0-admins:
+    max_request_duration: 3600s
+    manual_approvals:
+      require_approver_justification: true
+      steps:
+        - approvers:
+          - group:app-0-admins@example.org
+    eligible_users:
+      - group:app-a-ops@example.org
+    privileged_access:
+      - role: roles/writer
+
 # tftest-file id=3 path=data/hierarchy/team-a/app-0/.config.yaml schema=folder.schema.json
 ```
 
@@ -564,6 +578,19 @@ shared_vpc_service_config:
       - $service_agents:container-engine
 billing_budgets:
   - $billing_budgets:test-100
+pam_entitlements:
+  project-admins:
+    max_request_duration: 3600s
+    manual_approvals:
+      require_approver_justification: true
+      steps:
+        - approvers:
+          - group:team-a-admins@example
+    eligible_users:
+      - group:team-a-ops@example.org
+    privileged_access:
+      - role: roles/compute.admin
+      - role: roles/bigquery.admin
 tags:
   my-tag-key-1:
     values:

@@ -46,6 +46,7 @@ values:
     members:
     - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectCreator
+    timeouts: null
   ? module.project-factory.module.automation-bucket["dev-tb-app0-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
   : bucket: test-pf-dev-tb-app0-0-tf-state
     condition: []
@@ -55,6 +56,7 @@ values:
     - serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
+    timeouts: null
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
   : account_id: dev-tb-app0-0-ro
     create_ignore_already_exists: null
@@ -158,6 +160,34 @@ values:
         parameters: null
         values: []
     timeouts: null
+  ? module.project-factory.module.folder-2["team-a/app-0"].google_privileged_access_manager_entitlement.default["app-0-admins"]
+  : additional_notification_targets: []
+    approval_workflow:
+    - manual_approvals:
+      - require_approver_justification: true
+        steps:
+        - approvals_needed: 1
+          approver_email_recipients: null
+          approvers:
+          - principals:
+            - group:app-0-admins@example
+    eligible_users:
+    - principals:
+      - group:app-a-ops@example.org
+    entitlement_id: app-0-admins
+    location: global
+    max_request_duration: 3600s
+    privileged_access:
+    - gcp_iam_access:
+      - resource_type: cloudresourcemanager.googleapis.com/Folder
+        role_bindings:
+        - condition_expression: null
+          role: roles/writer
+    requester_justification_config:
+    - not_mandatory: []
+      unstructured:
+      - {}
+    timeouts: null
   module.project-factory.module.folder-2["team-b/app-0"].google_folder.folder[0]:
     deletion_protection: false
     display_name: App 0
@@ -238,6 +268,38 @@ values:
     notification_category_subscriptions:
     - ALL
     parent: projects/test-pf-dev-ta-app0-be
+    timeouts: null
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_privileged_access_manager_entitlement.default["project-admins"]
+  : additional_notification_targets: []
+    approval_workflow:
+    - manual_approvals:
+      - require_approver_justification: true
+        steps:
+        - approvals_needed: 1
+          approver_email_recipients: null
+          approvers:
+          - principals:
+            - group:team-a-admins@example
+    eligible_users:
+    - principals:
+      - group:team-a-ops@example.org
+    entitlement_id: project-admins
+    location: global
+    max_request_duration: 3600s
+    parent: projects/test-pf-dev-ta-app0-be
+    privileged_access:
+    - gcp_iam_access:
+      - resource: //cloudresourcemanager.googleapis.com/projects/test-pf-dev-ta-app0-be
+        resource_type: cloudresourcemanager.googleapis.com/Project
+        role_bindings:
+        - condition_expression: null
+          role: roles/compute.admin
+        - condition_expression: null
+          role: roles/bigquery.admin
+    requester_justification_config:
+    - not_mandatory: []
+      unstructured:
+      - {}
     timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_project.project[0]:
     auto_create_network: false
@@ -616,6 +678,7 @@ counts:
   google_kms_crypto_key_iam_member: 2
   google_monitoring_notification_channel: 1
   google_org_policy_policy: 2
+  google_privileged_access_manager_entitlement: 2
   google_project: 4
   google_project_iam_binding: 6
   google_project_iam_member: 21
@@ -631,5 +694,5 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 23
-  resources: 88
+  resources: 90
   terraform_data: 1

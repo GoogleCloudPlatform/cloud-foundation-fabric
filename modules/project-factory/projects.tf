@@ -88,6 +88,7 @@ module "projects" {
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
+  pam_entitlements      = try(each.value.pam_entitlements, {})
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
