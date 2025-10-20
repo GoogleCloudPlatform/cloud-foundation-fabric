@@ -23,11 +23,6 @@ iam.allowedPolicyMemberDomains:
     - allow:
         values:
           - is:${organization.customer_id}
-          - "is:C02h8e9nw"
-          - "is:C03lwmla1"
-          - "is:C037b1w29"
-          - "is:C0202kd6o"
-          - "is:C00w6sz8i"
       condition:
         title: Restrict member domains
         expression: |
