@@ -18,7 +18,6 @@ values:
     display_name: Test Context
     parent: organizations/1234567890
     tags: null
-    timeouts: null
   google_folder_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     members:
@@ -78,10 +77,8 @@ values:
     - not_mandatory: []
       unstructured:
       - {}
-    timeouts: null
   google_tags_tag_binding.binding["foo"]:
     tag_value: tagValues/1234567890
-    timeouts: null
 
 counts:
   google_folder: 1

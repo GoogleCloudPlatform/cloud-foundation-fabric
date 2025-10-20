@@ -21,7 +21,6 @@ values:
   google_logging_organization_settings.default[0]:
     organization: '1234567890'
     storage_location: europe-west8
-    timeouts: null
   google_logging_organization_sink.sink["test-bq"]:
     bigquery_options:
     - use_partitioned_tables: false
@@ -140,7 +139,6 @@ values:
     - not_mandatory: []
       unstructured:
       - {}
-    timeouts: null
   google_project_iam_member.bucket-sinks-binding["test-logging"]:
     condition:
     - expression: resource.name.endsWith('projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs')
@@ -160,11 +158,9 @@ values:
     bucket: test-prod-logs-audit-0
     condition: []
     role: roles/storage.objectCreator
-    timeouts: null
   google_tags_tag_binding.binding["foo"]:
     parent: //cloudresourcemanager.googleapis.com/organizations/1234567890
     tag_value: tagValues/1234567890
-    timeouts: null
   google_tags_tag_key_iam_binding.bindings["test:tag_user"]:
     condition: []
     members:
