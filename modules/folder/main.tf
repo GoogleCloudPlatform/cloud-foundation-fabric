@@ -30,8 +30,9 @@ locals {
     )
     : format("folders/%s", try(google_assured_workloads_workload.folder[0].resources[0].resource_id, ""))
   )
+  folder_number = split("/", local.folder_id)[1]
   aw_parent = (
-    # Assured Workload only accepls folder as a parent and uses organization as a parent when no value provided.
+    # Assured Workload only accepts folder as a parent and uses organization as a parent when no value provided.
     var.parent == null
     ? null
     : (
