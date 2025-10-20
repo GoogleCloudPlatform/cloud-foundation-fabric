@@ -112,6 +112,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `storage.secureHttpTransport` | Restrict unencrypted HTTP access to Cloud Storage. |  |
 | `storage.uniformBucketLevelAccess` | Enforce the enablement of uniform bucket-level access to Cloud Storage buckets. | **CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 
+**Note:** For organizations with strict requirements to ensure all resources are created and stored within specific geographic regions (e.g., for data sovereignty or regulatory compliance), the `gcp.resourceLocations` Organization Policy present in file [gcp.yaml](organization/org-policies/gcp.yaml)  can be enabled.
 
 #### Custom Constraints
 | Constraint | Description | Compliance Mapping |
