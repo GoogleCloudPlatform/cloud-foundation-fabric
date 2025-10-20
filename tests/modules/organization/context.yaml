@@ -107,6 +107,40 @@ values:
     member: user:test-user@example.com
     org_id: '1234567890'
     role: organizations/366118655033/roles/myRoleTwo
+  google_privileged_access_manager_entitlement.default["net-admins"]:
+    additional_notification_targets: []
+    approval_workflow:
+    - manual_approvals:
+      - require_approver_justification: true
+        steps:
+        - approvals_needed: 1
+          approver_email_recipients: null
+          approvers:
+          - principals:
+            - group:test-group@example.com
+    eligible_users:
+    - principals:
+      - group:test-group@example.com
+    entitlement_id: net-admins
+    location: global
+    max_request_duration: 3600s
+    parent: organizations/1234567890
+    privileged_access:
+    - gcp_iam_access:
+      - resource: //cloudresourcemanager.googleapis.com/organizations/1234567890
+        resource_type: cloudresourcemanager.googleapis.com/Organization
+        role_bindings:
+        - condition_expression: null
+          role: roles/compute.networkAdmin
+        - condition_expression: null
+          role: roles/compute.admin
+        - condition_expression: null
+          role: organizations/366118655033/roles/myRoleTwo
+    requester_justification_config:
+    - not_mandatory: []
+      unstructured:
+      - {}
+    timeouts: null
   google_project_iam_member.bucket-sinks-binding["test-logging"]:
     condition:
     - expression: resource.name.endsWith('projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs')
@@ -126,6 +160,7 @@ values:
     bucket: test-prod-logs-audit-0
     condition: []
     role: roles/storage.objectCreator
+    timeouts: null
   google_tags_tag_binding.binding["foo"]:
     parent: //cloudresourcemanager.googleapis.com/organizations/1234567890
     tag_value: tagValues/1234567890
@@ -171,6 +206,7 @@ counts:
   google_logging_organization_sink: 5
   google_organization_iam_binding: 4
   google_organization_iam_member: 1
+  google_privileged_access_manager_entitlement: 1
   google_project_iam_member: 2
   google_pubsub_topic_iam_member: 1
   google_storage_bucket_iam_member: 1
@@ -180,4 +216,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 23
+  resources: 24

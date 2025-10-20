@@ -47,6 +47,38 @@ values:
     condition: []
     member: user:test-user@example.com
     role: organizations/366118655033/roles/myRoleTwo
+  google_privileged_access_manager_entitlement.default["net-admins"]:
+    additional_notification_targets: []
+    approval_workflow:
+    - manual_approvals:
+      - require_approver_justification: true
+        steps:
+        - approvals_needed: 1
+          approver_email_recipients: null
+          approvers:
+          - principals:
+            - group:test-group@example.com
+    eligible_users:
+    - principals:
+      - group:test-group@example.com
+    entitlement_id: net-admins
+    location: global
+    max_request_duration: 3600s
+    privileged_access:
+    - gcp_iam_access:
+      - resource_type: cloudresourcemanager.googleapis.com/Folder
+        role_bindings:
+        - condition_expression: null
+          role: roles/compute.networkAdmin
+        - condition_expression: null
+          role: roles/compute.admin
+        - condition_expression: null
+          role: organizations/366118655033/roles/myRoleTwo
+    requester_justification_config:
+    - not_mandatory: []
+      unstructured:
+      - {}
+    timeouts: null
   google_tags_tag_binding.binding["foo"]:
     tag_value: tagValues/1234567890
     timeouts: null
@@ -55,6 +87,7 @@ counts:
   google_folder: 1
   google_folder_iam_binding: 4
   google_folder_iam_member: 1
+  google_privileged_access_manager_entitlement: 1
   google_tags_tag_binding: 1
   modules: 0
-  resources: 7
+  resources: 8
