@@ -114,7 +114,7 @@ jobs:
           egrep -v "(required_version|module_name)" default-versions.tofu > /tmp/versions.tofu
           diff -rub /tmp/versions.tf /tmp/versions.tofu
           DIFF_EC=$?
-          [[ "${DIFF_EC}" -eq "0" ||  -z "${OUTPUT_TF}" || -z "${OUTPUT_TOFU}" ]]
+          [[ "${DIFF_EC}" -eq "0" &&  -z "${OUTPUT_TF}" && -z "${OUTPUT_TOFU}" ]]
 
       - name: Check for diverging files
         id: duplicates
