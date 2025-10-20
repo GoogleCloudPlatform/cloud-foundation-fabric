@@ -54,8 +54,8 @@ ALIASES = {
 }
 
 IGNORED_AGENTS = [
-    # Alloydb has two agents. Ignore the non-primary one
-    'c-PROJECT_NUMBER-IDENTIFIER@gcp-sa-alloydb.iam.gserviceaccount.com'
+    # gcp-sa-ns-authz agent gets created on first create op
+    'service-PROJECT_NUMBER@gcp-sa-ns-authz.iam.gserviceaccount.com'
 ]
 
 AGENT_NAME_OVERRIDE = {
