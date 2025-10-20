@@ -123,16 +123,18 @@ module "anonymized-bucket" {
 }
 
 module "function" {
-  source                 = "../../../modules/cloud-function-v2"
-  project_id             = module.project.project_id
-  region                 = var.regions.primary
-  prefix                 = var.prefix
-  name                   = "secops-anonymization"
-  bucket_name            = "${var.project_id}-anonymization"
-  service_account_create = true
-  ingress_settings       = "ALLOW_INTERNAL_AND_GCLB"
-  build_worker_pool      = var.cloud_function_config.build_worker_pool_id
-  build_service_account  = var.cloud_function_config.build_sa != null ? var.cloud_function_config.build_sa : module.cloudbuild-sa.0.id
+  source      = "../../../modules/cloud-function-v2"
+  project_id  = module.project.project_id
+  region      = var.regions.primary
+  prefix      = var.prefix
+  name        = "secops-anonymization"
+  bucket_name = "${var.project_id}-anonymization"
+  service_account_config = {
+    create = true
+  }
+  ingress_settings      = "ALLOW_INTERNAL_AND_GCLB"
+  build_worker_pool     = var.cloud_function_config.build_worker_pool_id
+  build_service_account = var.cloud_function_config.build_sa != null ? var.cloud_function_config.build_sa : module.cloudbuild-sa.0.id
   bucket_config = {
     lifecycle_delete_age_days = 1
   }
