@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/cloud-function-v1
+module: modules/cloud-function-v2
 tests:
   context:
   context-subnet:
   context-subnet-project:
   kms:
+  vpcconnector:

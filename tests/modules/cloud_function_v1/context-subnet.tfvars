@@ -47,10 +47,11 @@ vpc_connector = {
   name   = "connector_name"
 }
 vpc_connector_create = {
-  ip_cidr_range = "$cidr_ranges:test"
-  network       = "$networks:test"
   instances = {
     max = 10
     min = 3
+  }
+  subnet = {
+    name = "$subnets:test"
   }
 }

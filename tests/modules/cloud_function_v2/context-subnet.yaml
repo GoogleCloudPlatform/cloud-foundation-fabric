@@ -13,17 +13,19 @@
 # limitations under the License.
 
 values:
-  google_cloudfunctions_function.function:
+  google_cloudfunctions2_function.function:
     kms_key_name: projects/foo-prod-sec-core/locations/global/keyRings/prod-global-default/cryptoKeys/compute
+    location: europe-west8
     project: foo-test-0
-    region: europe-west8
-    service_account_email: test-cf-kms@foo-test-0.iam.gserviceaccount.com
-  google_cloudfunctions_function_iam_binding.default["$custom_roles:myrole_one"]:
+    service_config:
+    - service_account_email: test-cf-kms@foo-test-0.iam.gserviceaccount.com
+  google_cloudfunctions2_function_iam_binding.binding["$custom_roles:myrole_one"]:
+    cloud_function: test-cf-kms
     condition: []
     members:
     - group:test-group@example.com
     project: foo-test-0
-    region: europe-west8
+    location: europe-west8
     role: organizations/366118655033/roles/myRoleOne
   google_project_iam_member.default["organizations/366118655033/roles/myRoleOne"]:
     condition: []
@@ -41,20 +43,20 @@ values:
     project: foo-test-0
     timeouts: null
   google_vpc_access_connector.connector[0]:
-    ip_cidr_range: 10.10.20.0/28
+    ip_cidr_range: null
     machine_type: e2-micro
     max_instances: 10
     min_instances: 3
     name: test-cf-kms
-    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
     project: foo-test-0
     region: europe-west8
-    subnet: []
-    timeouts: null
+    subnet:
+    - name: gce
+      project_id: foo-dev-net-spoke-0
 
 counts:
-  google_cloudfunctions_function: 1
-  google_cloudfunctions_function_iam_binding: 1
+  google_cloudfunctions2_function: 1
+  google_cloudfunctions2_function_iam_binding: 1
   google_project_iam_member: 1
   google_service_account: 1
   google_vpc_access_connector: 1

@@ -212,39 +212,3 @@ variable "trigger_config" {
   })
   default = null
 }
-
-variable "vpc_connector" {
-  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
-  type = object({
-    create          = optional(bool, false)
-    name            = optional(string)
-    egress_settings = optional(string)
-  })
-  nullable = false
-  default  = {}
-}
-
-variable "vpc_connector_config" {
-  description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
-  type = object({
-    ip_cidr_range = string
-    network       = string
-    instances = optional(object({
-      max = optional(number)
-      min = optional(number, 2)
-    }))
-    throughput = optional(object({
-      max = optional(number, 300)
-      min = optional(number, 200)
-    }))
-  })
-  default = null
-  validation {
-    condition = (
-      var.vpc_connector_config == null ||
-      try(var.vpc_connector_config.instances, null) != null ||
-      try(var.vpc_connector_config.throughput, null) != null
-    )
-    error_message = "VPC connector must specify either instances or throughput."
-  }
-}

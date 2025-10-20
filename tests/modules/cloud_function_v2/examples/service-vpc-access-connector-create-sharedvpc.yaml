@@ -1,0 +1,73 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cf_http.google_cloudfunctions2_function.function:
+    build_config:
+    - entry_point: main
+      on_deploy_update_policy: []
+      runtime: python310
+      source:
+      - repo_source: []
+        storage_source:
+        - bucket: bucket
+          object: bundle-95c1b0e5b92dae8333539b1e0ad5173b.zip
+      worker_pool: null
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    event_trigger: []
+    kms_key_name: null
+    labels: null
+    location: europe-west8
+    name: test-cf-http
+    project: project-id
+    service_config:
+    - all_traffic_on_latest_revision: true
+      available_cpu: '0.166'
+      available_memory: 256M
+      binary_authorization_policy: null
+      environment_variables:
+        LOG_EXECUTION_ID: 'true'
+      ingress_settings: ALLOW_ALL
+      max_instance_count: 1
+      min_instance_count: 0
+      secret_environment_variables: []
+      secret_volumes: []
+      service_account_email: test-cf-http@project-id.iam.gserviceaccount.com
+      timeout_seconds: 180
+      vpc_connector_egress_settings: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.cf_http.google_vpc_access_connector.connector[0]:
+    ip_cidr_range: null
+    machine_type: e2-standard-4
+    max_throughput: 300
+    min_throughput: 200
+    name: test-cf-http
+    project: project-id
+    region: europe-west8
+    subnet:
+    - name: fixture-subnet-28
+      project_id: test-host
+    timeouts: null
+
+counts:
+  google_cloudfunctions2_function: 1
+  google_service_account: 1
+  google_storage_bucket_object: 1
+
+
+outputs: {}

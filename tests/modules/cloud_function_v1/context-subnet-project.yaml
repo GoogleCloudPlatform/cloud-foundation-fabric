@@ -41,15 +41,16 @@ values:
     project: foo-test-0
     timeouts: null
   google_vpc_access_connector.connector[0]:
-    ip_cidr_range: 10.10.20.0/28
+    ip_cidr_range: null
     machine_type: e2-micro
     max_instances: 10
     min_instances: 3
     name: test-cf-kms
-    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
     project: foo-test-0
     region: europe-west8
-    subnet: []
+    subnet:
+    - name: gce
+      project_id: foo-test-0
     timeouts: null
 
 counts:

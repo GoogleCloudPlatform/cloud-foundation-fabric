@@ -14,7 +14,7 @@
 
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
-    location: europe-west8
+    location: europe-west9
     name: hello
     project: project-id
     template:
@@ -42,4 +42,3 @@ counts:
   resources: 2
 
 outputs: {}
-
