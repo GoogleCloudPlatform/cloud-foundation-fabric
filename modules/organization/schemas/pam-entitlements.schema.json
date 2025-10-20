@@ -28,7 +28,8 @@
                         },
                         "required": [
                             "role"
-                        ]
+                        ],
+                        "additionalProperties": false
                     }
                 },
                 "requester_justification_config": {
@@ -40,7 +41,8 @@
                         "unstructured": {
                             "type": "boolean"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 "manual_approvals": {
                     "type": "object",
@@ -71,14 +73,16 @@
                                 },
                                 "required": [
                                     "approvers"
-                                ]
+                                ],
+                                "additionalProperties": false
                             }
                         }
                     },
                     "required": [
                         "require_approver_justification",
                         "steps"
-                    ]
+                    ],
+                    "additionalProperties": false
                 },
                 "additional_notification_targets": {
                     "type": "object",
@@ -95,14 +99,16 @@
                                 "type": "string"
                             }
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 }
             },
             "required": [
                 "max_request_duration",
                 "eligible_users",
                 "privileged_access"
-            ]
+            ],
+            "additionalProperties": false
         }
     },
     "additionalProperties": false
