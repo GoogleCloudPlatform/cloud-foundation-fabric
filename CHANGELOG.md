@@ -41,6 +41,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3442](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3442)] Apply alerts and log based metrics after log buckets creation ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-20 06:13:42+00:00 -->
 - [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)] Support resource-level factories config in project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-18 10:41:19+00:00 -->
 - [[#3436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3436)] Add service agent outputs to folder and organization ([juliocc](https://github.com/juliocc)) <!-- 2025-10-17 15:23:08+00:00 -->
 - [[#3423](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3423)] bigquery-connection module ([lcaggio](https://github.com/lcaggio)) <!-- 2025-10-16 15:15:36+00:00 -->
