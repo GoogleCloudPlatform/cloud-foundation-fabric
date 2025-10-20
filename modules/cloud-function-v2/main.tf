@@ -41,33 +41,7 @@ locals {
     var.trigger_config.service_account_email,
     null
   )
-  vpc_connector = (
-    var.vpc_connector.name == null
-    ? null
-    : (
-      var.vpc_connector.create == false
-      ? var.vpc_connector.name
-      : google_vpc_access_connector.connector[0].id
-    )
-  )
-}
-
-resource "google_vpc_access_connector" "connector" {
-  count   = var.vpc_connector.create == true ? 1 : 0
-  project = local.project_id
-  name    = var.vpc_connector.name
-  region  = local.location
-  ip_cidr_range = lookup(local.ctx.cidr_ranges,
-    var.vpc_connector_config.ip_cidr_range,
-    var.vpc_connector_config.ip_cidr_range
-  )
-  network = lookup(local.ctx.networks,
-    var.vpc_connector_config.network, var.vpc_connector_config.network
-  )
-  max_instances  = try(var.vpc_connector_config.instances.max, null)
-  min_instances  = try(var.vpc_connector_config.instances.min, null)
-  max_throughput = try(var.vpc_connector_config.throughput.max, null)
-  min_throughput = try(var.vpc_connector_config.throughput.min, null)
+  vpc_connector = var.vpc_connector.create ? google_vpc_access_connector.connector[0].id : var.vpc_connector.name
 }
 
 resource "google_cloudfunctions2_function" "function" {
@@ -168,14 +142,23 @@ resource "google_cloudfunctions2_function_iam_binding" "binding" {
   for_each = {
     for k, v in var.iam : k => v if k != "roles/run.invoker"
   }
-  project        = var.project_id
-  location       = google_cloudfunctions2_function.function.location
+  project        = local.project_id
+  location       = local.location
   cloud_function = google_cloudfunctions2_function.function.name
-  role           = each.key
-  members        = each.value
+  role           = lookup(local.ctx.custom_roles, each.key, each.key)
+  members        = [for member in each.value : lookup(local.ctx.iam_principals, member, member)]
   lifecycle {
     replace_triggered_by = [google_cloudfunctions2_function.function]
   }
+}
+
+locals {
+  run_invoker_members = distinct(compact(concat(
+    !local.trigger_sa_create
+    ? []
+    : ["serviceAccount:${local.trigger_sa_email}"],
+    lookup(var.iam, "roles/run.invoker", []),
+  )))
 }
 
 resource "google_cloud_run_service_iam_binding" "invoker" {
@@ -183,18 +166,11 @@ resource "google_cloud_run_service_iam_binding" "invoker" {
   count = (
     lookup(var.iam, "roles/run.invoker", null) != null
   ) ? 1 : 0
-  project  = var.project_id
-  location = google_cloudfunctions2_function.function.location
+  project  = local.project_id
+  location = local.location
   service  = google_cloudfunctions2_function.function.name
   role     = "roles/run.invoker"
-  members = distinct(compact(concat(
-    lookup(var.iam, "roles/run.invoker", []),
-    (
-      !local.trigger_sa_create
-      ? []
-      : ["serviceAccount:${local.trigger_sa_email}"]
-    )
-  )))
+  members  = [for member in local.run_invoker_members : lookup(local.ctx.iam_principals, member, member)]
   lifecycle {
     replace_triggered_by = [google_cloudfunctions2_function.function]
   }
@@ -207,8 +183,8 @@ resource "google_cloud_run_service_iam_member" "invoker" {
     lookup(var.iam, "roles/run.invoker", null) == null &&
     local.trigger_sa_create
   ) ? 1 : 0
-  project  = var.project_id
-  location = google_cloudfunctions2_function.function.location
+  project  = local.project_id
+  location = local.location
   service  = google_cloudfunctions2_function.function.name
   role     = "roles/run.invoker"
   member   = "serviceAccount:${local.trigger_sa_email}"

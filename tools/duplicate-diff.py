@@ -30,6 +30,10 @@ duplicates = [  #
         "fast/stages/2-networking-c-separate-envs/data/cidrs.yaml",
     ],
     [
+        "modules/cloud-function-v1/bundle.tf",
+        "modules/cloud-function-v2/bundle.tf",
+    ],
+    [
         "modules/cloud-function-v1/serviceaccount.tf",
         "modules/cloud-function-v2/serviceaccount.tf",
     ],
@@ -38,9 +42,13 @@ duplicates = [  #
         "modules/cloud-function-v2/variables-serviceaccount.tf",
     ],
     [
-        "modules/cloud-function-v1/bundle.tf",
-        "modules/cloud-function-v2/bundle.tf",
-    ]
+        "modules/cloud-function-v1/variables-vpcconnector.tf",
+        "modules/cloud-function-v2/variables-vpcconnector.tf",
+    ],
+    [
+        "modules/cloud-function-v1/vpcconnector.tf",
+        "modules/cloud-function-v2/vpcconnector.tf",
+    ],
 ]
 
 
