@@ -15,6 +15,7 @@
  */
 
 variable "agent_engine_config" {
+  description = "The configuration of the "
   type = object({
     # Add validation once API stabilizes
     agent_framework       = string
