@@ -18,16 +18,22 @@
 
 locals {
   _sa_raw = yamldecode(file("${path.module}/service-agents.yaml"))
-  service_agents = {
+  _sa0 = {
     for agent in local._sa_raw :
     agent.name => {
       create_command = (
         "gcloud beta services identity create --service=${agent.api} --folder=${local.folder_number}"
       )
       display_name = agent.display_name
-      identity = templatestring(agent.identity, {
+      email = templatestring(agent.identity, {
         folder_number = local.folder_number
       })
     }
+  }
+  service_agents = {
+    for k, v in local._sa0 :
+    k => merge(v, {
+      iam_email = "serviceAccount:${v.email}"
+    })
   }
 }
