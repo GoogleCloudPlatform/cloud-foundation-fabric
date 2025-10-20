@@ -71,11 +71,14 @@ This example assumes you are providing the [source packages](#packaging-dependen
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent-engine"
-  name            = "my-agent"
-  project_id      = var.project_id
-  agent_framework = "google-adk"
-  region          = var.region
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
 
   source_files = {
     path = "assets/src/"
@@ -91,9 +94,12 @@ module "agent_engine" {
   source          = "./fabric/modules/agent-engine"
   name            = "my-agent"
   project_id      = var.project_id
-  agent_framework = "google-adk"
   region          = var.region
   generate_pickle = false
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
 
   source_files = {
     path = "assets/src/"
@@ -112,11 +118,14 @@ At the moment, you'll need at least to grant to it the `roles/viewer` role.
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent-engine"
-  name            = "my-agent"
-  project_id      = var.project_id
-  agent_framework = "google-adk"
-  region          = var.region
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
 
   service_account_config = {
     create = false
@@ -133,11 +142,14 @@ Alternatively, you can use an existing service account.
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent-engine"
-  name            = "my-agent"
-  project_id      = var.project_id
-  agent_framework = "google-adk"
-  region          = var.region
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
 
   service_account_config = {
     create = false
@@ -159,12 +171,15 @@ To use KMS keys you'll need to grant the AI Platform Service Agent (`service-YOU
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent-engine"
-  name            = "my-agent"
-  project_id      = var.project_id
-  agent_framework = "google-adk"
-  region          = var.region
-  encryption_key  = "projects/${var.project_id}/locations/${var.region}/keyRings/my-keyring/cryptoKeys/my-key"
+  source         = "./fabric/modules/agent-engine"
+  name           = "my-agent"
+  project_id     = var.project_id
+  region         = var.region
+  encryption_key = "projects/${var.project_id}/locations/${var.region}/keyRings/my-keyring/cryptoKeys/my-key"
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
 
   source_files = {
     path = "assets/src/"
@@ -179,19 +194,21 @@ You can define environment variables and load existing secrets as environment va
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent-engine"
-  name            = "my-agent"
-  project_id      = var.project_id
-  agent_framework = "google-adk"
-  region          = var.region
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
 
-  environment_variables = {
-    FOO = "my-foo-variable"
-  }
+  agent_engine_config = {
+    agent_framework = "google-adk"
 
-  secret_environment_variables = {
-    BAR = {
-      secret_id = "projects/YOUR_PROJECT_NUMBER/secrets/my-bar-secret"
+    environment_variables = {
+      FOO = "my-foo-variable"
+    }
+    secret_environment_variables = {
+      BAR = {
+        secret_id = "projects/YOUR_PROJECT_NUMBER/secrets/my-bar-secret"
+      }
     }
   }
 
