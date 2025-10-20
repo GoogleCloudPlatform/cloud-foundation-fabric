@@ -22,7 +22,7 @@ The following diagram illustrates the high-level design of the solution, which c
 
 The use case is a SecOps deployment composed of 2 tenants (one for production and one for development/testing). There might be the need to export production data from the prod tenant and import them back in DEV (possibly anonymizing it) for rules and/or parser development, that is why this pipeline might be convenient for speeding up the data migration process.
 
-The solution is based on a custom Python script responsible for implementing the aforementioned logic. The script leverages the new [SecOps API Wrapper](https://github.com/google/secops-wrapper) available also in [PyPi](https://pypi.org/project/secops/). 
+The solution is based on a custom Python script responsible for implementing the aforementioned logic. The script leverages the new [SecOps API Wrapper](https://github.com/google/secops-wrapper) available also in [PyPi](https://pypi.org/project/secops/).
 
 ### Pipeline Steps
 
@@ -93,7 +93,7 @@ terraform apply
 
 #### Step 5: Test solution
 
-Test the solution triggering an export from the Cloud Scheduler page, after few hours (accoding to the size of the export) logs should be available on secops-export bucket. Please check for any issue during export using the corresponding APIs and the export ID.
+Test the solution triggering an export from the Cloud Scheduler page, after few hours (according to the size of the export) logs should be available on secops-export bucket. Please check for any issue during export using the corresponding APIs and the export ID.
 
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -145,5 +145,5 @@ module "test" {
     secondary = "europe-west1"
   }
 }
-# tftest modules=7 resources=49
+# tftest modules=7 resources=51
 ```
