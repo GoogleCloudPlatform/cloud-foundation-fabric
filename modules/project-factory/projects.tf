@@ -49,7 +49,7 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
-  ctx_logging_bucket_names = merge(local.ctx.logging_bucket_names, local.log_buckets)
+  ctx_log_buckets = merge(local.ctx.log_buckets, local.log_buckets)
   log_buckets = {
     for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
@@ -118,10 +118,10 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
-    folder_ids           = local.ctx.folder_ids
-    kms_keys             = local.ctx.kms_keys
-    iam_principals       = local.ctx_iam_principals
-    logging_bucket_names = local.ctx_logging_bucket_names
+    folder_ids     = local.ctx.folder_ids
+    kms_keys       = local.ctx.kms_keys
+    iam_principals = local.ctx_iam_principals
+    log_buckets    = local.ctx_log_buckets
   })
   factories_config           = { for k, v in each.value.factories_config : k => v if k == "observability" }
   iam                        = lookup(each.value, "iam", {})

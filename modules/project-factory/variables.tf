@@ -23,7 +23,7 @@ variable "context" {
     iam_principals        = optional(map(string), {})
     kms_keys              = optional(map(string), {})
     locations             = optional(map(string), {})
-    logging_bucket_names  = optional(map(string), {})
+    log_buckets           = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     tag_values            = optional(map(string), {})
