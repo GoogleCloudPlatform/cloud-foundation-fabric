@@ -1,0 +1,111 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_region_network_firewall_policy.net-regional[0]:
+    description: null
+    name: test-1
+    project: foo-test-0
+    region: europe-west8
+    timeouts: null
+  google_compute_region_network_firewall_policy_association.net-regional["test"]:
+    attachment_target: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    firewall_policy: test-1
+    name: test-1-test
+    project: foo-test-0
+    region: europe-west8
+    timeouts: null
+  google_compute_region_network_firewall_policy_rule.net-regional["egress/smtp"]:
+    action: deny
+    description: null
+    direction: EGRESS
+    disabled: false
+    enable_logging: null
+    firewall_policy: test-1
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.10.0/12
+      - 192.168.0.0/24
+      - 10.0.0.1/32
+      - 8.8.8.8
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '25'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_secure_tags:
+      - name: tagValues/1234567890
+      src_threat_intelligences: null
+    priority: 900
+    project: foo-test-0
+    region: europe-west8
+    rule_name: smtp
+    security_profile_group: null
+    target_secure_tags: []
+    target_service_accounts:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    timeouts: null
+    tls_inspect: null
+  google_compute_region_network_firewall_policy_rule.net-regional["ingress/icmp"]:
+    action: allow
+    description: null
+    direction: INGRESS
+    disabled: false
+    enable_logging: true
+    firewall_policy: test-1
+    match:
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: icmp
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 10.0.0.0/8
+      - 172.16.10.0/12
+      - 192.168.0.0/24
+      - 10.0.0.1/32
+      - 8.8.8.8
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
+    priority: 1000
+    project: foo-test-0
+    region: europe-west8
+    rule_name: icmp
+    security_profile_group: null
+    target_secure_tags:
+    - name: tagValues/1234567890
+    target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
+
+counts:
+  google_compute_region_network_firewall_policy: 1
+  google_compute_region_network_firewall_policy_association: 1
+  google_compute_region_network_firewall_policy_rule: 2
+  modules: 0
+  resources: 4

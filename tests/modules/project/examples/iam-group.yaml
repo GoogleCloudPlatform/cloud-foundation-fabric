@@ -18,7 +18,6 @@ values:
     members:
     - group:organization-admins@example.org
     project: test-project
-    role: organizations/1234567890/roles/myRole
   module.project.google_project_iam_binding.authoritative["roles/cloudasset.owner"]:
     condition: []
     members:
@@ -46,7 +45,7 @@ values:
   module.project.google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - group:gcp-organization-admins@example.com
+    - group:organization-admins@example.org
     project: test-project
     role: roles/owner
 
@@ -54,4 +53,4 @@ counts:
   google_project: 1
   google_project_iam_binding: 6
   modules: 1
-  resources: 7
+  resources: 8

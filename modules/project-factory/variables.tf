@@ -42,13 +42,7 @@ variable "data_defaults" {
     }), {})
     contacts        = optional(map(list(string)), {})
     deletion_policy = optional(string)
-    factories_config = optional(object({
-      custom_roles  = optional(string)
-      observability = optional(string)
-      org_policies  = optional(string)
-      quotas        = optional(string)
-    }), {})
-    labels = optional(map(string), {})
+    labels          = optional(map(string), {})
     logging_data_access = optional(map(object({
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
       DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
@@ -135,12 +129,6 @@ variable "data_overrides" {
     }), {})
     contacts        = optional(map(list(string)))
     deletion_policy = optional(string)
-    factories_config = optional(object({
-      custom_roles  = optional(string)
-      observability = optional(string)
-      org_policies  = optional(string)
-      quotas        = optional(string)
-    }), {})
     logging_data_access = optional(map(object({
       ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
       DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),

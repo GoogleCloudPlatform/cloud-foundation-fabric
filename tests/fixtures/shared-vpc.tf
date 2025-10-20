@@ -56,7 +56,7 @@ module "project-service" {
   shared_vpc_service_config = {
     host_project = module.project-host.project_id
     # reuse the list of services from the module's outputs
-    service_iam_grants = module.project-service.services
+    service_iam_grants = [for service in module.project-service.services : "$service_agents:${service}"]
   }
 }
 
