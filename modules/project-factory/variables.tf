@@ -42,13 +42,7 @@ variable "data_defaults" {
     }), {})
     contacts        = optional(map(list(string)), {})
     deletion_policy = optional(string)
-    factories_config = optional(object({
-      custom_roles  = optional(string)
-      observability = optional(string)
-      org_policies  = optional(string)
-      quotas        = optional(string)
-    }), {})
-    labels = optional(map(string), {})
+    labels          = optional(map(string), {})
     locations = optional(object({
       bigquery = optional(string)
       logging  = optional(string)
@@ -138,12 +132,6 @@ variable "data_overrides" {
     }), {})
     contacts        = optional(map(list(string)))
     deletion_policy = optional(string)
-    factories_config = optional(object({
-      custom_roles  = optional(string)
-      observability = optional(string)
-      org_policies  = optional(string)
-      quotas        = optional(string)
-    }), {})
     locations = optional(object({
       bigquery = optional(string)
       logging  = optional(string)

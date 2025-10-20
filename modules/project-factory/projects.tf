@@ -73,12 +73,7 @@ module "projects" {
   })
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
-  factories_config = {
-    custom_roles  = each.value.factories_config.custom_roles
-    observability = each.value.factories_config.observability
-    org_policies  = each.value.factories_config.org_policies
-    quotas        = each.value.factories_config.quotas
-  }
+  factories_config        = { for k, v in each.value.factories_config : k => v if k != "observability" }
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
@@ -123,6 +118,7 @@ module "projects-iam" {
     kms_keys       = local.ctx.kms_keys
     iam_principals = local.ctx_iam_principals
   })
+  factories_config           = { for k, v in each.value.factories_config : k => v if k == "observability" }
   iam                        = lookup(each.value, "iam", {})
   iam_bindings               = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})

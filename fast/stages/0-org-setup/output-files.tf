@@ -68,6 +68,7 @@ locals {
       iam_principals = local.iam_principals
       logging = {
         writer_identities = module.organization-iam.0.sink_writer_identities
+        project_number    = module.factory.project_numbers["log-0"]
       }
       project_ids = merge(
         local.ctx.project_ids,

@@ -114,6 +114,30 @@
         "ABANDON"
       ]
     },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "custom_roles": {
+          "type": "string"
+        },
+        "observability": {
+          "type": "string"
+        },
+        "org_policies": {
+          "type": "string"
+        },
+        "quotas": {
+          "type": "string"
+        },
+        "scc_sha_custom_modules": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        }
+      }
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
