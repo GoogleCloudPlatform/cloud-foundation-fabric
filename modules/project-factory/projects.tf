@@ -77,11 +77,7 @@ module "projects" {
   })
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
-  factories_config = {
-    custom_roles = each.value.factories_config.custom_roles
-    org_policies = each.value.factories_config.org_policies
-    quotas       = each.value.factories_config.quotas
-  }
+  factories_config        = { for k, v in each.value.factories_config : k => v if k != "observability" }
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
@@ -127,9 +123,7 @@ module "projects-iam" {
     iam_principals       = local.ctx_iam_principals
     logging_bucket_names = local.ctx_logging_bucket_names
   })
-  factories_config = {
-    observability = each.value.factories_config.observability
-  }
+  factories_config           = { for k, v in each.value.factories_config : k => v if k == "observability" }
   iam                        = lookup(each.value, "iam", {})
   iam_bindings               = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})

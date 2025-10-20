@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,11 @@ output "organization_policies_ids" {
 output "scc_custom_sha_modules_ids" {
   description = "Map of SCC CUSTOM SHA MODULES => ID in the folder."
   value       = { for k, v in google_scc_management_folder_security_health_analytics_custom_module.scc_folder_custom_module : k => v.id }
+}
+
+output "service_agents" {
+  description = "Identities of all folder-level service agents."
+  value       = local.service_agents
 }
 
 output "sink_writer_identities" {

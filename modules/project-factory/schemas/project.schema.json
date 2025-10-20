@@ -117,8 +117,23 @@
     "factories_config": {
       "type": "object",
       "additionalProperties": false,
-      "patternProperties": {
-        "^[a-z0-9-]+$": {
+      "properties": {
+        "custom_roles": {
+          "type": "string"
+        },
+        "observability": {
+          "type": "string"
+        },
+        "org_policies": {
+          "type": "string"
+        },
+        "quotas": {
+          "type": "string"
+        },
+        "scc_sha_custom_modules": {
+          "type": "string"
+        },
+        "tags": {
           "type": "string"
         }
       }
@@ -628,6 +643,21 @@
           "type": "boolean"
         },
         "versioning": {
+          "type": "boolean"
+        },
+        "retention_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "retention_period": {
+              "type": "number"
+            },
+            "is_locked": {
+              "type": "boolean"
+            }
+          }
+        },
+        "enable_object_retention": {
           "type": "boolean"
         }
       }

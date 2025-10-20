@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,11 +38,11 @@ counts:
   google_monitoring_dashboard: 6
   google_project: 2
   google_project_iam_binding: 2
-  google_project_iam_member: 18
+  google_project_iam_member: 20
   google_project_service: 22
   google_project_service_identity: 18
   google_storage_bucket_object: 2
   google_tags_tag_binding: 2
   modules: 23
   random_id: 6
-  resources: 231
+  resources: 233

@@ -35,6 +35,14 @@
     - items: *string*
 - **deletion_policy**: *string*
   <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
+- **factories_config**: *object*
+  <br>*additional properties: false*
+  - **custom_roles**: *string*
+  - **observability**: *string*
+  - **org_policies**: *string*
+  - **quotas**: *string*
+  - **scc_sha_custom_modules**: *string*
+  - **tags**: *string*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
@@ -96,6 +104,7 @@
     - ⁺**number**: *number*
     - **services_enabled**: *array*
       - items: *string*
+- **project_template**: *string*
 - **service_accounts**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
@@ -143,6 +152,12 @@
 - **universe**: *object*
   <br>*additional properties: false*
   - **prefix**: *string*
+  - **forced_jit_service_identities**: *array*
+    - items: *string*
+  - **unavailable_services**: *array*
+    - items: *string*
+  - **unavailable_service_identities**: *array*
+    - items: *string*
 - **vpc_sc**: *object*
   - ⁺**perimeter_name**: *string*
   - **is_dry_run**: *boolean*
@@ -158,6 +173,7 @@
 - **bucket**<a name="refs-bucket"></a>: *object*
   <br>*additional properties: false*
   - **name**: *string*
+  - **create**: *boolean*
   - **description**: *string*
   - **iam**: *reference([iam](#refs-iam))*
   - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
@@ -178,6 +194,11 @@
   - **storage_class**: *string*
   - **uniform_bucket_level_access**: *boolean*
   - **versioning**: *boolean*
+  - **retention_policy**: *object*
+    <br>*additional properties: false*
+    - **retention_period**: *number*
+    - **is_locked**: *boolean*
+  - **enable_object_retention**: *boolean*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*
