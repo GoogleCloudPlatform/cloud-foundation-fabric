@@ -49,6 +49,10 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
+  ctx_log_buckets = merge(local.ctx.log_buckets, local.log_buckets)
+  log_buckets = {
+    for key, log_bucket in module.log-buckets : key => log_bucket.id
+  }
   projects_input = merge(var.projects, local._projects_output)
 }
 
@@ -123,6 +127,7 @@ module "projects-iam" {
     folder_ids     = local.ctx.folder_ids
     kms_keys       = local.ctx.kms_keys
     iam_principals = local.ctx_iam_principals
+    log_buckets    = local.ctx_log_buckets
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call

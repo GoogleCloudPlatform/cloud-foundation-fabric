@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/perimeter.schema.json
-
-use_explicit_dry_run_spec: true
-spec:
-  access_levels:
-    - geo
-  resources:
-    - $resource_sets:discovered_projects
-  ingress_policies:
-    - fast-org-log-sinks
-  restricted_services:
-    - $service_sets:restricted_services
+custom.gkeRequireCOSImage:
+  action_type: DENY
+  condition: |-
+    resource.config.imageType != "COS_CONTAINERD"
+  description: Enforce the nodes pool are using Container-Optimized OS for running
+    containers
+  display_name: Require Container-Optimized OS on node pools
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - container.googleapis.com/NodePool
