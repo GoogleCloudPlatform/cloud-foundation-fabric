@@ -18,7 +18,7 @@
 import filecmp
 import sys
 
-duplicates = [  #
+duplicates = [
     [
         "fast/stages/2-networking-a-simple/data/dns-policy-rules.yaml",
         "fast/stages/2-networking-b-nva/data/dns-policy-rules.yaml",
