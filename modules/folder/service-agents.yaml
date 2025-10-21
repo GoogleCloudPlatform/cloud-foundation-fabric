@@ -1,0 +1,85 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: accessapproval
+  display_name: Access Approval Service Agent
+  api: accessapproval.googleapis.com
+  identity: service-f${folder_number}@gcp-sa-accessapproval.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: assuredworkloads
+  display_name: Assured Workloads Service Agent
+  api: assuredworkloads.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-assuredworkloads.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: audit-manager
+  display_name: Audit Manager Service Agent
+  api: auditmanager.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-audit-manager.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: cloudcontrolspartner
+  display_name: Cloud Controls Partner Service Agent
+  api: cloudcontrolspartner.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-cloudcontrolspartner.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: logging
+  display_name: Cloud Logging Service Agent
+  api: logging.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-logging.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: observability
+  display_name: Cloud Observability Service Account
+  api: observability.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-observability.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: osconfig-rollout
+  display_name: Google Cloud OS Config Rollout Service Agent
+  api: osconfig.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-osconfig-rollout.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: osconfig
+  display_name: Google Cloud OS Config Service Agent
+  api: osconfig.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-osconfig.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: pam
+  display_name: Privileged Access Manager Service Agent
+  api: privilegedaccessmanager.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-pam.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+- name: progrollout
+  display_name: Progressive Rollout Service Agent
+  api: progressiverollout.googleapis.com
+  identity: service-folder-${folder_number}@gcp-sa-progrollout.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+

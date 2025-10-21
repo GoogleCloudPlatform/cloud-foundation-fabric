@@ -72,7 +72,7 @@ variable "repositories" {
     })), {})
     initial_config = optional(object({
       default_branch = optional(string)
-      gitignores     = optional(string)
+      gitignores     = optional(list(string))
       license        = optional(string)
       readme         = optional(string)
     }))

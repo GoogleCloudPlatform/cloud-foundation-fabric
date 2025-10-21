@@ -64,6 +64,21 @@
         }
       }
     },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "org_policies": {
+          "type": "string"
+        },
+        "pam_entitlements": {
+          "type": "string"
+        },
+        "scc_sha_custom_modules": {
+          "type": "string"
+        }
+      }
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },
@@ -156,8 +171,12 @@
         }
       }
     },
+    "pam_entitlements": {
+      "$ref": "#/$defs/pam_entitlements"
+    },
     "parent": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^(?:folders/[0-9]+|organizations/[0-9]+|\\$folder_ids:[a-z0-9_-]+)$"
     },
     "tag_bindings": {
       "type": "object",
@@ -269,7 +288,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -308,7 +327,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -415,6 +434,120 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "pam_entitlements": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]{0,61}[a-z0-9]$": {
+          "type": "object",
+          "properties": {
+            "max_request_duration": {
+              "type": "string"
+            },
+            "eligible_users": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "privileged_access": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "string"
+                  },
+                  "condition": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "role"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "requester_justification_config": {
+              "type": "object",
+              "properties": {
+                "not_mandatory": {
+                  "type": "boolean"
+                },
+                "unstructured": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            },
+            "manual_approvals": {
+              "type": "object",
+              "properties": {
+                "require_approver_justification": {
+                  "type": "boolean"
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "approvers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "approvals_needed": {
+                        "type": "number"
+                      },
+                      "approver_email_recipients": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "approvers"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "require_approver_justification",
+                "steps"
+              ],
+              "additionalProperties": false
+            },
+            "additional_notification_targets": {
+              "type": "object",
+              "properties": {
+                "admin_email_recipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "requester_email_recipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "max_request_duration",
+            "eligible_users",
+            "privileged_access"
+          ],
+          "additionalProperties": false
         }
       }
     }

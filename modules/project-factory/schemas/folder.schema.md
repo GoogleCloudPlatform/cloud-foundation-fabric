@@ -25,6 +25,11 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+- **factories_config**: *object*
+  <br>*additional properties: false*
+  - **org_policies**: *string*
+  - **pam_entitlements**: *string*
+  - **scc_sha_custom_modules**: *string*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
@@ -55,6 +60,7 @@
           - **expression**: *string*
           - **location**: *string*
           - **title**: *string*
+- **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **parent**: *string*
   <br>*pattern: ^(?:folders/[0-9]+|organizations/[0-9]+|\$folder_ids:[a-z0-9_-]+)$*
 - **tag_bindings**: *object*
@@ -99,7 +105,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -112,7 +118,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -147,3 +153,36 @@
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*
     - items: *string*
+- **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**max_request_duration**: *string*
+    - ⁺**eligible_users**: *array*
+      - items: *string*
+    - ⁺**privileged_access**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - ⁺**role**: *string*
+        - **condition**: *string*
+    - **requester_justification_config**: *object*
+      <br>*additional properties: false*
+      - **not_mandatory**: *boolean*
+      - **unstructured**: *boolean*
+    - **manual_approvals**: *object*
+      <br>*additional properties: false*
+      - ⁺**require_approver_justification**: *boolean*
+      - ⁺**steps**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - ⁺**approvers**: *array*
+            - items: *string*
+          - **approvals_needed**: *number*
+          - **approver_email_recipients**: *array*
+            - items: *string*
+    - **additional_notification_targets**: *object*
+      <br>*additional properties: false*
+      - **admin_email_recipients**: *array*
+        - items: *string*
+      - **requester_email_recipients**: *array*
+        - items: *string*

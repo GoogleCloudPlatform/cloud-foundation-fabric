@@ -1,0 +1,52 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.ssm_instance.google_secure_source_manager_instance.instance[0]:
+    deletion_policy: PREVENT
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    instance_id: my-instance
+    kms_key: null
+    labels: null
+    location: europe-west8
+    private_config:
+    - ca_pool: null
+      is_private: true
+    project: project-id
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    workforce_identity_federation_config: []
+  module.ssm_instance.google_secure_source_manager_repository.repositories["my-repository"]:
+    deletion_policy: PREVENT
+    description: null
+    initial_config:
+    - default_branch: main
+      gitignores:
+      - terraform.tfstate
+      license: null
+      readme: null
+    location: europe-west8
+    project: project-id
+    repository_id: my-repository
+    timeouts: null
+
+counts:
+  google_secure_source_manager_instance: 1
+  google_secure_source_manager_repository: 1
+  modules: 1
+  resources: 2
+
+outputs: {}

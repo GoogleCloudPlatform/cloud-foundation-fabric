@@ -16,7 +16,7 @@
 
 resource "google_compute_network_firewall_policy" "net-global" {
   count       = !local.use_hierarchical && !local.use_regional ? 1 : 0
-  project     = var.parent_id
+  project     = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
   name        = var.name
   description = var.description
 }
@@ -25,9 +25,9 @@ resource "google_compute_network_firewall_policy_association" "net-global" {
   for_each = (
     !local.use_hierarchical && !local.use_regional ? var.attachments : {}
   )
-  project           = var.parent_id
+  project           = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
   name              = "${var.name}-${each.key}"
-  attachment_target = each.value
+  attachment_target = lookup(local.ctx.networks, each.value, each.value)
   firewall_policy   = google_compute_network_firewall_policy.net-global[0].name
 }
 
@@ -38,24 +38,45 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
     ? keys(local.rules)
     : []
   )
-  project                 = var.parent_id
-  firewall_policy         = google_compute_network_firewall_policy.net-global[0].name
-  rule_name               = local.rules[each.key].name
-  action                  = local.rules[each.key].action
-  description             = local.rules[each.key].description
-  direction               = local.rules[each.key].direction
-  disabled                = local.rules[each.key].disabled
-  enable_logging          = local.rules[each.key].enable_logging
-  priority                = local.rules[each.key].priority
-  target_service_accounts = local.rules[each.key].target_service_accounts
-  tls_inspect             = local.rules[each.key].tls_inspect
+  project         = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
+  firewall_policy = google_compute_network_firewall_policy.net-global[0].name
+  rule_name       = local.rules[each.key].name
+  action          = local.rules[each.key].action
+  description     = local.rules[each.key].description
+  direction       = local.rules[each.key].direction
+  disabled        = local.rules[each.key].disabled
+  enable_logging  = local.rules[each.key].enable_logging
+  priority        = local.rules[each.key].priority
+  target_service_accounts = (
+    local.rules[each.key].target_service_accounts == null ? null : [
+      for n in local.rules[each.key].target_service_accounts :
+      lookup(local.ctx.iam_principals, n, n)
+    ]
+  )
+  tls_inspect = local.rules[each.key].tls_inspect
   security_profile_group = try(
     var.security_profile_group_ids[local.rules[each.key].security_profile_group],
     local.rules[each.key].security_profile_group
   )
   match {
-    dest_ip_ranges = local.rules[each.key].match.destination_ranges
-    src_ip_ranges  = local.rules[each.key].match.source_ranges
+    dest_ip_ranges = (
+      local.rules[each.key].match.destination_ranges == null ? null : distinct(flatten([
+        for r in local.rules[each.key].match.destination_ranges : try(
+          local.ctx.cidr_ranges_sets[r],
+          local.ctx.cidr_ranges[r],
+          r
+        )
+      ]))
+    )
+    src_ip_ranges = (
+      local.rules[each.key].match.source_ranges == null ? null : distinct(flatten([
+        for r in local.rules[each.key].match.source_ranges : try(
+          local.ctx.cidr_ranges_sets[r],
+          local.ctx.cidr_ranges[r],
+          r
+        )
+      ]))
+    )
     dest_address_groups = (
       local.rules[each.key].direction == "EGRESS"
       ? local.rules[each.key].match.address_groups
@@ -106,7 +127,9 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
     dynamic "src_secure_tags" {
       for_each = toset(coalesce(local.rules[each.key].match.source_tags, []))
       content {
-        name = src_secure_tags.key
+        name = lookup(
+          local.ctx.tag_values, src_secure_tags.key, src_secure_tags.key
+        )
       }
     }
   }
@@ -117,7 +140,9 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
       : local.rules[each.key].target_tags
     )
     content {
-      name = target_secure_tags.value
+      name = lookup(
+        local.ctx.tag_values, target_secure_tags.value, target_secure_tags.value
+      )
     }
   }
 }

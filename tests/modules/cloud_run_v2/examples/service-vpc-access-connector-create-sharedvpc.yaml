@@ -39,11 +39,20 @@ values:
     subnet:
       - name: fixture-subnet-28
         project_id: test-host
+  # those IAM grants from shared-vpc.tf fixture are necessary for successful connector deployment
+  module.project-service.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:cloudservices"]:
+    condition: []
+    project: test-host
+    role: roles/compute.networkUser
+  module.project-service.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:vpcaccess"]:
+    condition: []
+    project: test-host
+    role: roles/compute.networkUser
 
 counts:
   google_cloud_run_v2_service: 1
   google_vpc_access_connector: 1
   modules: 4
-  resources: 55
+  resources: 60
 
 outputs: {}

@@ -373,7 +373,7 @@ resource "google_bigquery_table" "default" {
 }
 
 resource "google_bigquery_table" "views" {
-  depends_on          = [google_bigquery_table.default]
+  depends_on          = [google_bigquery_table.default, google_bigquery_routine.default]
   for_each            = var.views
   project             = local.project_id
   dataset_id          = google_bigquery_dataset.default.dataset_id
@@ -382,7 +382,7 @@ resource "google_bigquery_table" "views" {
   description         = each.value.description
   labels              = each.value.labels
   deletion_protection = each.value.deletion_protection
-  schema              = try(jsonencode(each.value.schema), null)
+  schema              = each.value.schema != null ? jsonencode(each.value.schema) : null
 
   view {
     query          = each.value.query
@@ -445,6 +445,7 @@ resource "google_bigquery_routine" "default" {
   imported_libraries   = each.value.imported_libraries
   determinism_level    = each.value.determinism_level
   data_governance_type = each.value.data_governance_type
+  return_type          = each.value.return_type
   return_table_type    = each.value.return_table_type
   dynamic "arguments" {
     for_each = each.value.arguments
