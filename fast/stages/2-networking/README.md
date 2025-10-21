@@ -11,7 +11,8 @@
   - [Networking projects](#networking-projects)
   - [VPCs](#vpcs)
   - [DNS](#dns)
-  - [Hub-and-spoke topologies](#hub-and-spoke-topologies)
+  - [Cloud NAT and Routers](#cloud-nat-and-routers)
+- [Context-based interpolation](#context-based-interpolation)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -50,17 +51,10 @@ The high-level flow for running this stage is:
 
 ### Factory data set
 
-The default dataset provides multiple different "recipes".
-
-- **Hub and spoke (w/ NCC)**: Multiple VPCs interconnected through NCC, which allows for easier scalability ([recipe](./recipes/hub-and-spokes-ncc/))
-
-- **Hub and spoke (w/ NVA)**: Environment-based VPCs interconnected through a cluster of NVAs (router instances), allowing for instance-based packet inspection between different networks ([recipe](./recipes/hub-and-spokes-nva/))
+The default dataset will eventually multiple different "recipes".
+It currently implements the following:
 
 - **Hub and spoke (w/ VPC Peering)**: Environment-based VPCs interconnected through VPC peering, resulting in full isolation between spokes ([recipe](./recipes/hub-and-spokes-peerings/))
-
-- **Hub and spoke (w/ VPC Peering)**: Environment-based VPCs interconnected through GCP-to-GCP VPNs ([recipe](./recipes/hub-and-spokes-vpn/))
-
-#### Single VPC: TODO
 
 ### Defaults file
 
@@ -217,14 +211,113 @@ DNS zones are defined in YAML files in the `dns/zones` directory of your chosen 
 
 - **Cloud Routers:** The `factory-routers.tf` file manages Cloud Routers, which are used with Cloud VPN and Cloud Interconnect to exchange routes between your VPC network and your on-premises network.
 
-## Cross referencing resources
+## Context-based interpolation
 
-### Keys table
+Interpolation allow referring to resources which are either created at runtime, or externally managed via short aliases.
 
-## Extending your infrastructure
+This feature has two main benefits:
 
-TODO: describe how to use module outputs to extend the infra
+- being able to refer to resource ids which cannot be known before creation, for example the VPC self link for a VPC created at runtime
+- making YAML configuration files more easily readable and portable, by using mnemonic keys which are not specific to an organization or project
+
+The two VPC snippets below show an extended example:
+
+```yaml
+# Hub
+project_id: $project_ids:net-core-0
+name: hub
+delete_default_routes_on_create: false
+nat_config:
+  nat-ew8:
+    region: $locations:primary
+peering_config:
+  to-prod:
+    peer_network: $networks:prod
+```
+
+```yaml
+# Prod spoke
+project_id: $project_ids:net-prod-0
+name: prod
+delete_default_routes_on_create: false
+mtu: 1500
+nat_config:
+  nat-ew8:
+    region: $locations:primary
+peering_config:
+  to-hub:
+    peer_network: $networks:hub
+```
+
+Interpolations leverage contexts from two separate sources: resources managed by the different factories (projects, folders, vpcs, cloudnat, routers, vpns, etc...), and user-defined resource ids passed in via the `context` variable.
+
+Context replacements use the `$` prefix and are accessible via namespaces that match the attributes in the context variable.
+
+Context variables are accessed by keys that match the YAML file name for resources declared in individual files (projects, folders, custom roles, etc.), or the key in the YAML map where the resource is declared for other resources (service accounts, buckets, etc.). In case of objects that are logically part of another resource (e.g. NCC Groups part of NCC Hubs, Routers part of a VPC), the key will be composite.
+
+Assuming keys of the form `my_folder`, `my_project`, `my_vpc`, etc. this is an example of referencing the actual IDs via interpolation in YAML files.
+
+- `$addresses:my_vpc/my_address`
+- `$folder_ids:my_folder`
+- `$locations:my_region`
+- `$ncc_groups:my_hub/my_group`
+- `$ncc_hubs:my_hub`
+- `$networks:my_vpc`
+- `$project_ids:my_project`
+- `$routers:my_vpc/my_vpn`
+- `$vpn_gateways:my_vpc/my_gateway`
+
+Internally created resources are mapped to context namespaces, and use specific prefixes to express the relationship with their container.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [factory-cloudnat.tf](./factory-cloudnat.tf) | Cloud NAT factory. | <code>net-cloudnat</code> |  |
+| [factory-dns.tf](./factory-dns.tf) | DNS zones and RPZ factory. | <code>dns</code> · <code>dns-response-policy</code> |  |
+| [factory-firewall-policies.tf](./factory-firewall-policies.tf) | Firewall policies factory. | <code>net-firewall-policy</code> |  |
+| [factory-ncc.tf](./factory-ncc.tf) | NCC Hubs and Groups factory |  | <code>google_network_connectivity_group</code> · <code>google_network_connectivity_hub</code> · <code>google_network_connectivity_spoke</code> |
+| [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_instance_group</code> |
+| [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
+| [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
+| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> |
+| [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-firewall</code> |  |
+| [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. |  |  |
+| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
+| [variables-fast.tf](./variables-fast.tf) | None |  |  |
+| [variables.tf](./variables.tf) | Module variables. |  |  |
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [billing_account](variables-fast.tf#L26) | Billing account id. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [organization](variables-fast.tf#L58) | Organization details. | <code title="object&#40;&#123;&#10;  id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [prefix](variables-fast.tf#L67) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [custom_roles](variables-fast.tf#L34) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L32) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  defaults              &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;defaults.yaml&#34;&#41;&#10;  dns                   &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;dns&#47;zones&#34;&#41;&#10;  dns-response-policies &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;dns&#47;response-policies&#34;&#41;&#10;  firewall-policies     &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;firewall-policies&#34;&#41;&#10;  folders               &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;folders&#34;&#41;&#10;  interconnect          &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;interconnect&#34;&#41;&#10;  ncc-hubs              &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;ncc-hubs&#34;&#41;&#10;  nvas                  &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;nvas&#34;&#41;&#10;  projects              &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;projects&#34;&#41;&#10;  vpcs                  &#61; optional&#40;string, &#34;recipes&#47;hub-and-spokes-peerings&#47;vpcs&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [folder_ids](variables-fast.tf#L42) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_principals](variables-fast.tf#L50) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [outputs_location](variables.tf#L50) | Path where tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |
+| [project_ids](variables-fast.tf#L77) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts](variables-fast.tf#L85) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_keys](variables-fast.tf#L93) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_values](variables-fast.tf#L101) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables.tf#L56) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  domain                         &#61; string&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [host_project_ids](outputs.tf#L65) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L70) | Project numbers. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L80) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L85) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L75) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L90) | VPC self-links. |  |
 <!-- END TFDOC -->

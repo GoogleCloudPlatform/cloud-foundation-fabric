@@ -16,7 +16,6 @@
 
 # tfdoc:file:description Projects factory.
 
-
 locals {
   ctx_folders = merge(local.ctx.folder_ids, module.projects.folder_ids, {
     organization = "organizations/${var.organization.id}"

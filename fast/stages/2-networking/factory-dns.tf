@@ -14,7 +14,7 @@
 #  * limitations under the License.
 #  */
 
-# # tfdoc:file:description DNS factory.
+# tfdoc:file:description DNS zones and RPZ factory.
 
 locals {
   _dns_path  = try(pathexpand(var.factories_config.dns), null)

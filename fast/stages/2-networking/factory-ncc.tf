@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description NCC factory
+# tfdoc:file:description NCC Hubs and Groups factory
 
 locals {
   _ncc_path  = try(pathexpand(var.factories_config.ncc-hubs), null)
