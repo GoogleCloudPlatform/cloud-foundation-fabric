@@ -27,10 +27,6 @@ duplicates = [
         "fast/stages/0-org-setup/datasets/hardened/defaults.yaml",
     ],
     [
-        "fast/stages/0-org-setup/datasets/classic/organization/.config.yaml",
-        "fast/stages/0-org-setup/datasets/hardened/organization/.config.yaml",
-    ],
-    [
         "fast/stages/0-org-setup/datasets/classic/projects/core/billing-0.yaml",
         "fast/stages/0-org-setup/datasets/hardened/projects/core/billing-0.yaml",
     ],
