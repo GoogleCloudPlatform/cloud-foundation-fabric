@@ -21,7 +21,7 @@ import os
 
 # List of folders and files that are expected to have same content
 duplicates = [
-    # File comparison
+    # file comparison
     [
         "fast/stages/0-org-setup/datasets/classic/defaults.yaml",
         "fast/stages/0-org-setup/datasets/hardened/defaults.yaml",
@@ -40,7 +40,7 @@ duplicates = [
         "fast/stages/2-networking-b-nva/data/cidrs.yaml",
         "fast/stages/2-networking-c-separate-envs/data/cidrs.yaml",
     ],
-    # Deep recursive folder comparison
+    # deep recursive folder comparison
     [
         "fast/stages/0-org-setup/datasets/classic/organization/custom-roles",
         "fast/stages/0-org-setup/datasets/hardened/organization/custom-roles",
@@ -48,6 +48,92 @@ duplicates = [
     [
         "fast/stages/0-org-setup/datasets/classic/organization/tags",
         "fast/stages/0-org-setup/datasets/hardened/organization/tags",
+    ],
+    # schemas
+    [
+        "fast/stages/1-vpcsc/schemas/access-level.schema.json",
+        "modules/vpc-sc/schemas/access-level.schema.json",
+    ],
+    [
+        "fast/stages/3-data-platform-dev/schemas/aspect-type.schema.json",
+        "modules/dataplex-aspect-types/schemas/aspect-type.schema.json",
+    ],
+    [
+        "fast/stages/2-project-factory/schemas/budget.schema.json",
+        "fast/stages/0-org-setup/schemas/budget.schema.json",
+        "modules/billing-account/schemas/budget.schema.json",
+        "modules/project-factory/schemas/budget.schema.json",
+    ],
+    [
+        "fast/stages/0-org-setup/schemas/custom-constraint.schema.json",
+        "modules/organization/schemas/org-policy-custom-constraint.schema.json",
+    ],
+    [
+        "fast/stages/0-org-setup/schemas/custom-role.schema.json",
+        "modules/project/schemas/custom-role.schema.json",
+        "modules/organization/schemas/custom-role.schema.json",
+    ],
+    [
+        "fast/stages/1-vpcsc/schemas/egress-policy.schema.json",
+        "modules/vpc-sc/schemas/egress-policy.schema.json",
+    ],
+    [
+        "fast/stages/2-networking-a-simple/schemas/firewall-policy-rules.schema.json",
+        "fast/stages/2-networking-c-separate-envs/schemas/firewall-policy-rules.schema.json",
+        "fast/stages/2-networking-b-nva/schemas/firewall-policy-rules.schema.json",
+        "modules/net-firewall-policy/schemas/firewall-policy-rules.schema.json",
+    ],
+    [
+        "fast/stages/2-networking-a-simple/schemas/firewall-rules.schema.json",
+        "fast/stages/2-networking-c-separate-envs/schemas/firewall-rules.schema.json",
+        "fast/stages/2-networking-b-nva/schemas/firewall-rules.schema.json",
+        "modules/net-vpc-firewall/schemas/firewall-rules.schema.json",
+    ],
+    [
+        "fast/stages/2-project-factory/schemas/folder.schema.json",
+        "fast/stages/0-org-setup/schemas/folder.schema.json",
+        "modules/project-factory/schemas/folder.schema.json",
+    ],
+    [
+        "fast/stages/1-vpcsc/schemas/ingress-policy.schema.json",
+        "modules/vpc-sc/schemas/ingress-policy.schema.json",
+    ],
+    [
+        "fast/stages/0-org-setup/schemas/org-policies.schema.json",
+        "modules/folder/schemas/org-policies.schema.json",
+        "modules/project/schemas/org-policies.schema.json",
+        "modules/organization/schemas/org-policies.schema.json",
+    ],
+    [
+        "modules/folder/schemas/pam-entitlements.schema.json",
+        "modules/project/schemas/pam-entitlements.schema.json",
+        "modules/organization/schemas/pam-entitlements.schema.json",
+    ],
+    [
+        "fast/stages/1-vpcsc/schemas/perimeter.schema.json",
+        "modules/vpc-sc/schemas/perimeter.schema.json",
+    ],
+    [
+        "fast/stages/2-project-factory/schemas/project.schema.json",
+        "fast/stages/0-org-setup/schemas/project.schema.json",
+        "fast/stages/2-security/schemas/project.schema.json",
+        "modules/project-factory/schemas/project.schema.json",
+    ],
+    [
+        "modules/folder/schemas/scc-sha-custom-modules.schema.json",
+        "modules/project/schemas/scc-sha-custom-modules.schema.json",
+        "modules/organization/schemas/scc-sha-custom-modules.schema.json",
+    ],
+    [
+        "fast/stages/2-networking-a-simple/schemas/subnet.schema.json",
+        "fast/stages/2-networking-c-separate-envs/schemas/subnet.schema.json",
+        "fast/stages/2-networking-b-nva/schemas/subnet.schema.json",
+        "modules/net-vpc/schemas/subnet.schema.json",
+    ],
+    [
+        "fast/stages/0-org-setup/schemas/tags.schema.json",
+        "modules/project/schemas/tags.schema.json",
+        "modules/organization/schemas/tags.schema.json",
     ],
 ]
 

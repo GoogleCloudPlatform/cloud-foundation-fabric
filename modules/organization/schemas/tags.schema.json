@@ -65,7 +65,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
           }
         }
       }
@@ -82,7 +82,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
               }
             },
             "role": {
@@ -122,7 +122,7 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
             },
             "role": {
               "type": "string",
