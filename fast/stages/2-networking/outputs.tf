@@ -72,11 +72,6 @@ output "host_project_numbers" {
   value       = local.tfvars.host_project_numbers
 }
 
-output "subnet_self_links" {
-  description = "Subnet self-links."
-  value       = local.tfvars.subnet_self_links
-}
-
 output "subnet_proxy_only_self_links" {
   description = "Subnet proxy-only self-links."
   value       = local.tfvars.subnet_proxy_only_self_links
@@ -85,6 +80,11 @@ output "subnet_proxy_only_self_links" {
 output "subnet_psc_self_links" {
   description = "Subnet PSC self-links."
   value       = local.tfvars.subnet_psc_self_links
+}
+
+output "subnet_self_links" {
+  description = "Subnet self-links."
+  value       = local.tfvars.subnet_self_links
 }
 
 output "vpc_self_links" {
