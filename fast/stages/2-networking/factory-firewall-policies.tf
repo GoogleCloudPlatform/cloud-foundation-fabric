@@ -31,7 +31,7 @@ locals {
   firewall_policies = {
     for k, v in local._firewall_policies_data : try(v.name, k) => merge(v, {
       parent        = v.parent_id
-      attachments   = { for k in try(v.attachments, []) : k => k }
+      attachments   = try(v.attachments, {})
       ingress_rules = try(v.ingress_rules, {})
       egress_rules  = try(v.egress_rules, {})
     })

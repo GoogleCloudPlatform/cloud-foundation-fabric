@@ -1,13 +1,11 @@
 # skip boilerplate check
----
-# start of document (---) avoids errors if the file only contains comments
 
 # yaml-language-server: $schema=../../../schemas/firewall-policy.schema.json
 
 parent_id: $folder_ids:networking
 attachments:
-  - $folder_ids:networking
-name: network-policies-name-override
+  networking: $folder_ids:networking
+name: network-policies
 ingress_rules:
   allow-healthchecks:
     description: Enable SSH, HTTP and HTTPS healthchecks
