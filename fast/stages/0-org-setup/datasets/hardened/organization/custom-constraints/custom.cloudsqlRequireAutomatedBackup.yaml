@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/access-level.schema.json
-
-# this is just an example that reflects the FAST core team members' locations
-# and needs to be edited, or not referenced in the perimeter variable
-conditions:
-  - regions:
-      - ES
-      - IT
+custom.cloudsqlRequireAutomatedBackup:
+  action_type: DENY
+  condition: |-
+    resource.settings.backupConfiguration.enabled != true
+  description: Ensure that Cloud SQL instance have automated backup enabled
+  display_name: Require Cloud SQL instances to have automated backup enabled
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - sqladmin.googleapis.com/Instance
