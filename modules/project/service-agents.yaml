@@ -1163,13 +1163,6 @@
   role: null
   is_primary: true
   aliases: []
-- name: ns-authz
-  display_name: Google Cloud Network Security Authz Service Account
-  api: networksecurity.googleapis.com
-  identity: service-${project_number}@gcp-sa-ns-authz.${universe_domain}iam.gserviceaccount.com
-  role: roles/networksecurity.authzServiceAgent
-  is_primary: false
-  aliases: []
 - name: osconfig-rollout
   display_name: Google Cloud OS Config Rollout Service Agent
   api: osconfig.googleapis.com

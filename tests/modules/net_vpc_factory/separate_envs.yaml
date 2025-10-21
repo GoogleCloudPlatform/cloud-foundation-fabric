@@ -27,9 +27,9 @@ counts:
   google_compute_vpn_tunnel: 2
   google_dns_policy: 2
   google_project: 3
-  google_project_iam_member: 24
+  google_project_iam_member: 21
   google_project_service: 27
   google_project_service_identity: 21
   modules: 11
   random_id: 4
-  resources: 117
+  resources: 114
