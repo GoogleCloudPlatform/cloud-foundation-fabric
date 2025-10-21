@@ -22,7 +22,7 @@ locals {
   # if you pass the subnet, you must pass only the name, not the whole id
   _connector_subnet_name = (
     local._connector_subnet_name_ctx
-    ? provider::google::name_from_id(local.ctx.subnets[var.vpc_connector_create.subnet.name])
+    ? reverse(split("/", local.ctx.subnets[var.vpc_connector_create.subnet.name]))[0]
     : try(var.vpc_connector_create.subnet.name, null)
   )
   # if project is not provided, but subnet is coming from context, use project from subnet id in context
@@ -32,7 +32,7 @@ locals {
     local._connector_subnet_project_input == null
     ? (
       local._connector_subnet_name_ctx
-      ? provider::google::project_from_id(local.ctx.subnets[var.vpc_connector_create.subnet.name])
+      ? split("/", local.ctx.subnets[var.vpc_connector_create.subnet.name])[1]
       : null
     )
     : lookup(
