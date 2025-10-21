@@ -286,7 +286,7 @@ status:
       - "storage.googleapis.com"
     enable_restriction: yes
 
-# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeters.schema.json
+# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeter.schema.json
 ```
 
 ```yaml
@@ -309,7 +309,7 @@ status:
     allowed_services:
       - storage.googleapis.com
     enable_restriction: true
-# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeters.schema.json
+# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeter.schema.json
 ```
 
 ```yaml
