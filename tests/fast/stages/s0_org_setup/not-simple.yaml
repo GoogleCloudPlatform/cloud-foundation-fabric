@@ -2776,7 +2776,7 @@ counts:
   google_organization_iam_custom_role: 7
   google_project: 3
   google_project_iam_binding: 16
-  google_project_iam_member: 17
+  google_project_iam_member: 15
   google_project_service: 33
   google_project_service_identity: 9
   google_service_account: 16
@@ -2793,5 +2793,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 46
-  resources: 310
+  resources: 308
   terraform_data: 2
