@@ -316,8 +316,8 @@ Internally created resources are mapped to context namespaces, and use specific 
 |---|---|:---:|
 | [host_project_ids](outputs.tf#L65) | Project IDs. |  |
 | [host_project_numbers](outputs.tf#L70) | Project numbers. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L80) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L85) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L75) | Subnet self-links. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L75) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L80) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L85) | Subnet self-links. |  |
 | [vpc_self_links](outputs.tf#L90) | VPC self-links. |  |
 <!-- END TFDOC -->
