@@ -24,7 +24,7 @@ locals {
     for k, v in google_storage_bucket_object.providers :
     "$output_files:providers/${k}" => split("/", v.name)[1]
   }
-  cicd_context = merge(
+  cicd_ctx = merge(
     {
       for k, v in local.cicd_workflows : "cicd/${k}/apply" => (
         v.repository.branch == null
@@ -34,7 +34,7 @@ locals {
           v.repository.name
         ), null)
         : try(format(
-          v.iam_templates.principalset,
+          v.iam_templates.principal,
           v.identity_provider,
           v.repository.name,
           v.repository.branch
@@ -57,8 +57,8 @@ locals {
     for k, v in lookup(local._cicd, "workflows", {}) : k => {
       audiences = try(v.workload_identity_provider.audiences, [])
       iam_templates = {
-        principal    = try(local.wif_defs[v.template].principal, null)
-        principalset = try(local.wif_defs[v.template].principalset, null)
+        principal    = try(local.wif_defs[v.template].principal_branch, null)
+        principalset = try(local.wif_defs[v.template].principal_repo, null)
       }
       identity_provider = try(
         local._cicd_identity_providers[v.workload_identity_provider.id],
