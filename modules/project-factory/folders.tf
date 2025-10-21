@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,10 +56,14 @@ module "folder-1" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  parent              = coalesce(each.value.parent, "$folder_ids:default")
-  name                = each.value.name
-  factories_config    = lookup(each.value, "factories_config", {})
+  parent = coalesce(each.value.parent, "$folder_ids:default")
+  name   = each.value.name
+  factories_config = {
+    org_policies           = try(each.value.factories_config.org_policies, null)
+    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+  }
   org_policies        = lookup(each.value, "org_policies", {})
+  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
   context             = local.ctx
@@ -70,7 +74,11 @@ module "folder-1-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  id                    = module.folder-1[each.key].id
+  id = module.folder-1[each.key].id
+  factories_config = {
+    # we do anything that can refer to IAM and custom roles in this call
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+  }
   folder_create         = false
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
@@ -89,9 +97,13 @@ module "folder-2" {
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name                = each.value.name
-  factories_config    = lookup(each.value, "factories_config", {})
+  name = each.value.name
+  factories_config = {
+    org_policies           = try(each.value.factories_config.org_policies, null)
+    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+  }
   org_policies        = lookup(each.value, "org_policies", {})
+  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
   context = merge(local.ctx, {
@@ -107,7 +119,11 @@ module "folder-2-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  id                    = module.folder-2[each.key].id
+  id = module.folder-2[each.key].id
+  factories_config = {
+    # we do anything that can refer to IAM and custom roles in this call
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+  }
   folder_create         = false
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
@@ -129,9 +145,13 @@ module "folder-3" {
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name                = each.value.name
-  factories_config    = lookup(each.value, "factories_config", {})
+  name = each.value.name
+  factories_config = {
+    org_policies           = try(each.value.factories_config.org_policies, null)
+    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+  }
   org_policies        = lookup(each.value, "org_policies", {})
+  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
   tag_bindings        = lookup(each.value, "tag_bindings", {})
   logging_data_access = lookup(each.value, "logging_data_access", {})
   context = merge(local.ctx, {
@@ -147,7 +167,11 @@ module "folder-3-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  id                    = module.folder-3[each.key].id
+  id = module.folder-3[each.key].id
+  factories_config = {
+    # we do anything that can refer to IAM and custom roles in this call
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+  }
   folder_create         = false
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
@@ -160,4 +184,3 @@ module "folder-3-iam" {
     iam_principals = local.ctx_iam_principals
   })
 }
-

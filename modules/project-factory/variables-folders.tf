@@ -39,7 +39,31 @@ variable "folders" {
       }))
     })), {})
     iam_by_principals = optional(map(list(string)), {})
-    tag_bindings      = optional(map(string), {})
+    pam_entitlements = optional(map(object({
+      max_request_duration = string
+      eligible_users       = list(string)
+      privileged_access = list(object({
+        role      = string
+        condition = optional(string)
+      }))
+      requester_justification_config = optional(object({
+        not_mandatory = optional(bool, true)
+        unstructured  = optional(bool, false)
+      }), { not_mandatory = false, unstructured = true })
+      manual_approvals = optional(object({
+        require_approver_justification = bool
+        steps = list(object({
+          approvers                = list(string)
+          approvals_needed         = optional(number, 1)
+          aprover_email_recipients = optional(list(string))
+        }))
+      }))
+      additional_notification_targets = optional(object({
+        admin_email_recipients     = optional(list(string))
+        requester_email_recipients = optional(list(string))
+      }))
+    })), {})
+    tag_bindings = optional(map(string), {})
   }))
   nullable = false
   default  = {}
