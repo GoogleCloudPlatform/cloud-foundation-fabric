@@ -43,6 +43,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->
 - [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
 - [[#3438](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3438)] Add PAM support ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 12:50:37+00:00 -->
 - [[#3442](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3442)] Apply alerts and log based metrics after log buckets creation ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-20 06:13:42+00:00 -->
@@ -81,6 +82,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->
 - [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
 - [[#3444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3444)] fix Terraform version linter ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-20 11:52:11+00:00 -->
 - [[#3436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3436)] Add service agent outputs to folder and organization ([juliocc](https://github.com/juliocc)) <!-- 2025-10-17 15:23:08+00:00 -->
