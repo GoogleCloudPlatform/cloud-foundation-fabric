@@ -16,5 +16,3 @@ module: fast/stages/2-networking
 
 tests:
   peerings:
-    inventory:
-      - peerings.yaml

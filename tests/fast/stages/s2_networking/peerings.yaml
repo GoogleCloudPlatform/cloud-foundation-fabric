@@ -1253,10 +1253,6 @@ values:
     condition: []
     project: fast-prod-net-core-0
     role: roles/networkmanagement.serviceAgent
-  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["ns-authz"]:
-    condition: []
-    project: fast-prod-net-core-0
-    role: roles/networksecurity.authzServiceAgent
   module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["service-networking"]:
     condition: []
     project: fast-prod-net-core-0
@@ -1382,10 +1378,6 @@ values:
     condition: []
     project: fast-dev-net-dev-0
     role: roles/networkmanagement.serviceAgent
-  module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["ns-authz"]:
-    condition: []
-    project: fast-dev-net-dev-0
-    role: roles/networksecurity.authzServiceAgent
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["service-networking"]:
     condition: []
     project: fast-dev-net-dev-0
@@ -1511,10 +1503,6 @@ values:
     condition: []
     project: fast-prod-net-prod-0
     role: roles/networkmanagement.serviceAgent
-  module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["ns-authz"]:
-    condition: []
-    project: fast-prod-net-prod-0
-    role: roles/networksecurity.authzServiceAgent
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["service-networking"]:
     condition: []
     project: fast-prod-net-prod-0
@@ -2082,7 +2070,7 @@ counts:
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 42
   google_project: 3
-  google_project_iam_member: 24
+  google_project_iam_member: 21
   google_project_service: 27
   google_project_service_identity: 21
   google_service_networking_connection: 1
@@ -2090,5 +2078,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 25
   random_id: 3
-  resources: 188
+  resources: 185
   terraform_data: 1
