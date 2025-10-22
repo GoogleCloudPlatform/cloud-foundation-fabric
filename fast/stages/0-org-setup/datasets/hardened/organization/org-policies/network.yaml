@@ -18,6 +18,14 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+compute.requireVpcFlowLogs:
+  rules:
+    - allow:
+        values:
+            - "ESSENTIAL"
+            - "LIGHT"
+            - "COMPREHENSIVE"
+
 compute.restrictDedicatedInterconnectUsage:
   rules:
     - allow:
@@ -25,6 +33,12 @@ compute.restrictDedicatedInterconnectUsage:
             - "under:organizations/${organization.id}"
 
 compute.restrictPartnerInterconnectUsage:
+  rules:
+    - allow:
+        values:
+            - "under:organizations/${organization.id}"
+
+compute.restrictSharedVpcHostProjects:
   rules:
     - allow:
         values:
@@ -41,6 +55,10 @@ custom.networkDisableTargetHTTPProxy:
     - enforce: true
 
 custom.networkDisableWeakSSLPolicy:
+  rules:
+    - enforce: true
+
+custom.networkRequireBackendServiceLogging:
   rules:
     - enforce: true
 
