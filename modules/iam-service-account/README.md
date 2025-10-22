@@ -93,8 +93,8 @@ The `service_account_reuse.use_data_source` flag also allows to skip the data so
 
 ```hcl
 module "service-account" {
-  source     = "./fabric/modules/iam-service-account"
-  name       = "test-0@myproject.iam.gserviceaccount.com"
+  source = "./fabric/modules/iam-service-account"
+  name   = "test-0@myproject.iam.gserviceaccount.com"
   context = {
     folder_ids = {
       test = "folders/1234567890"
