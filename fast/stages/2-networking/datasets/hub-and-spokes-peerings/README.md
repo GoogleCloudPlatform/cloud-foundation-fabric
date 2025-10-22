@@ -93,25 +93,21 @@ The current setup adopts both firewall types, and uses [hierarchical rules on th
 
 ### DNS
 
-This dataset implements both DNS flows:
+This dataset implements a centralized DNS architecture that handles resolution between GCP and on-premises environments.
 
-- on-prem to cloud via private zones for cloud-managed domains, and an [inbound policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) used as forwarding target or via delegation (requires some extra configuration) from on-prem DNS resolvers
+-   **Cloud to on-prem:** A [forwarding zone](./dns/zones/net-core-0/fwd-root.yaml) for the `onprem.` domain is configured in the hub VPC. It forwards DNS queries for on-premises resources to the on-premises DNS resolvers.
+-   **On-prem to cloud:** An [inbound DNS policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) allows on-premises systems to resolve resources in GCP.
 
-- cloud to on-prem via forwarding zones for the on-prem managed domains
+DNS configuration is centralized in the hub project (`net-core-0`) and shared with the spokes using DNS peering:
 
-DNS configuration is further centralized by leveraging peering zones, so that
+-   The **hub** hosts:
+    -   A top-level private zone for the cloud environment (e.g., `test.`).
+    -   The forwarding zone to on-premises.
+-   The **spokes** (`net-dev-0`, `net-prod-0`) host private zones for their specific subdomains (e.g., `dev.test.`, `prod.test.`). These zones are visible to the hub.
+-   A **peering zone** for the `.` (root) domain is configured in the spokes, pointing to the hub. This delegates all DNS resolution from the spokes to the hub, creating a centralized model.
+-   **Private Google Access** is enabled via [DNS Response Policies](https://cloud.google.com/dns/docs/zones/manage-response-policies#create-response-policy-rule) for most of the [supported domains](https://cloud.google.com/vpc/docs/configure-private-google-access#domain-options).
 
-- the hub Cloud DNS hosts configurations for on-prem forwarding, Google API domains, and the top-level private zone/s (e.g. test.)
-- the spokes Cloud DNS host configurations for the environment-specific domains (e.g. prod.test.), which are bound to the hub leveraging [cross-project binding](https://cloud.google.com/dns/docs/zones/zones-overview#cross-project_binding); a peering zone for the `.` (root) zone is then created on each spoke, delegating all DNS resolution to hub/landing.
-- Private Google Access is enabled via [DNS Response Policies](https://cloud.google.com/dns/docs/zones/manage-response-policies#create-response-policy-rule) for most of the [supported domains](https://cloud.google.com/vpc/docs/configure-private-google-access#domain-options)
-
-To complete the configuration, the 35.199.192.0/19 range should be routed on the VPN tunnels from on-prem, and the following names configured for DNS forwarding to cloud:
-
-- `private.googleapis.com`
-- `restricted.googleapis.com`
-- `gcp.example.com` (used as a placeholder)
-
-From cloud, the `onprem.` domain (used as a placeholder) is forwarded to on-prem.
+To complete the configuration, on-premises DNS servers should be configured to forward queries for your cloud domain (e.g., `test.`) to the GCP inbound policy's IP addresses. Additionally, the `35.199.192.0/19` range (used by the inbound forwarder) should be routed over the VPN tunnels from on-premises.
 
 ### VPNs
 

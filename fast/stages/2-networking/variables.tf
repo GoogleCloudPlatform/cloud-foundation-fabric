@@ -37,7 +37,6 @@ variable "factories_config" {
     dns-response-policies = optional(string, "datasets/hub-and-spokes-peerings/dns/response-policies")
     firewall-policies     = optional(string, "datasets/hub-and-spokes-peerings/firewall-policies")
     folders               = optional(string, "datasets/hub-and-spokes-peerings/folders")
-    interconnect          = optional(string, "datasets/hub-and-spokes-peerings/interconnect")
     ncc-hubs              = optional(string, "datasets/hub-and-spokes-peerings/ncc-hubs")
     nvas                  = optional(string, "datasets/hub-and-spokes-peerings/nvas")
     projects              = optional(string, "datasets/hub-and-spokes-peerings/projects")
