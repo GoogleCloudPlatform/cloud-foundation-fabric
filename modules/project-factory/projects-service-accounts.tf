@@ -87,9 +87,6 @@ module "service_accounts-iam" {
   name = each.value.name
   service_account_reuse = {
     use_data_source = false
-    attributes = {
-      unique_id = module.service-accounts[each.key].unique_id
-    }
   }
   context = merge(local.ctx, {
     project_ids = local.ctx_project_ids
