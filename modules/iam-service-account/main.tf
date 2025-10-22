@@ -26,11 +26,19 @@ locals {
     ? "serviceAccount:${local.service_account.email}"
     : local.static_iam_email
   )
-  name       = split("@", var.name)[0]
-  prefix     = var.prefix == null ? "" : "${var.prefix}-"
-  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  name   = split("@", var.name)[0]
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  project_id = (
+    var.project_id == null
+    # if no project ID is passed we're reusing and can infer it from the email
+    ? try(regex("^[^@]+@([^.]+)", var.name)[0], null)
+    # otherwise check if we need context expansion
+    : lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  )
   static_email = (
-    "${local.prefix}${local.name}@${local.sa_domain}.iam.gserviceaccount.com"
+    var.project_id == null
+    ? var.name
+    : "${local.prefix}${local.name}@${local.sa_domain}.iam.gserviceaccount.com"
   )
   static_iam_email = "serviceAccount:${local.static_email}"
   static_id = (
@@ -70,7 +78,7 @@ data "google_service_account" "service_account" {
 }
 
 resource "google_service_account" "service_account" {
-  count                        = local.use_data_source ? 0 : 1
+  count                        = var.service_account_reuse == null ? 1 : 0
   project                      = local.project_id
   account_id                   = "${local.prefix}${local.name}"
   display_name                 = var.display_name

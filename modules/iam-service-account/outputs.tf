@@ -53,5 +53,5 @@ output "service_account" {
 
 output "unique_id" {
   description = "Fully qualified service account id."
-  value       = local.service_account.unique_id
+  value       = try(local.service_account.unique_id, null)
 }
