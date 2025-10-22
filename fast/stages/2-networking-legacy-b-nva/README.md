@@ -157,13 +157,13 @@ Internal connectivity (e.g. between the trusted landing VPC and the spokes) is r
 
 This is an options summary:
 
-- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the trusted landing VPC with the spokes, also used by [02-networking-a-simple](../2-networking-a-simple/))
+- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (used here to connect the trusted landing VPC with the spokes, also used by [02-networking-legacy-a-simple](../2-networking-legacy-a-simple/))
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
 - [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (used here to connect the trusted landing and DMZ)
   - Pros: provides additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup (for the "Simple NVA" setup), limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
-- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (used by [02-networking-a-simple](../2-networking-a-simple/) in VPN mode)
+- [HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (used by [02-networking-legacy-a-simple](../2-networking-legacy-a-simple/) in VPN mode)
   - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
   - Cons: additional costs, marginal increase in latency, requires multiple tunnels for full bandwidth
 

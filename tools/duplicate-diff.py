@@ -31,14 +31,14 @@ duplicates = [
         "fast/stages/0-org-setup/datasets/hardened/projects/core/billing-0.yaml",
     ],
     [
-        "fast/stages/2-networking-a-simple/data/dns-policy-rules.yaml",
-        "fast/stages/2-networking-b-nva/data/dns-policy-rules.yaml",
-        "fast/stages/2-networking-c-separate-envs/data/dns-policy-rules.yaml",
+        "fast/stages/2-networking-legacy-a-simple/data/dns-policy-rules.yaml",
+        "fast/stages/2-networking-legacy-b-nva/data/dns-policy-rules.yaml",
+        "fast/stages/2-networking-legacy-c-separate-envs/data/dns-policy-rules.yaml",
     ],
     [
-        "fast/stages/2-networking-a-simple/data/cidrs.yaml",
-        "fast/stages/2-networking-b-nva/data/cidrs.yaml",
-        "fast/stages/2-networking-c-separate-envs/data/cidrs.yaml",
+        "fast/stages/2-networking-legacy-a-simple/data/cidrs.yaml",
+        "fast/stages/2-networking-legacy-b-nva/data/cidrs.yaml",
+        "fast/stages/2-networking-legacy-c-separate-envs/data/cidrs.yaml",
     ],
     # deep recursive folder comparison
     [
@@ -78,15 +78,15 @@ duplicates = [
         "modules/vpc-sc/schemas/egress-policy.schema.json",
     ],
     [
-        "fast/stages/2-networking-a-simple/schemas/firewall-policy-rules.schema.json",
-        "fast/stages/2-networking-c-separate-envs/schemas/firewall-policy-rules.schema.json",
-        "fast/stages/2-networking-b-nva/schemas/firewall-policy-rules.schema.json",
+        "fast/stages/2-networking-legacy-a-simple/schemas/firewall-policy-rules.schema.json",
+        "fast/stages/2-networking-legacy-c-separate-envs/schemas/firewall-policy-rules.schema.json",
+        "fast/stages/2-networking-legacy-b-nva/schemas/firewall-policy-rules.schema.json",
         "modules/net-firewall-policy/schemas/firewall-policy-rules.schema.json",
     ],
     [
-        "fast/stages/2-networking-a-simple/schemas/firewall-rules.schema.json",
-        "fast/stages/2-networking-c-separate-envs/schemas/firewall-rules.schema.json",
-        "fast/stages/2-networking-b-nva/schemas/firewall-rules.schema.json",
+        "fast/stages/2-networking-legacy-a-simple/schemas/firewall-rules.schema.json",
+        "fast/stages/2-networking-legacy-c-separate-envs/schemas/firewall-rules.schema.json",
+        "fast/stages/2-networking-legacy-b-nva/schemas/firewall-rules.schema.json",
         "modules/net-vpc-firewall/schemas/firewall-rules.schema.json",
     ],
     [
@@ -125,9 +125,9 @@ duplicates = [
         "modules/organization/schemas/scc-sha-custom-modules.schema.json",
     ],
     [
-        "fast/stages/2-networking-a-simple/schemas/subnet.schema.json",
-        "fast/stages/2-networking-c-separate-envs/schemas/subnet.schema.json",
-        "fast/stages/2-networking-b-nva/schemas/subnet.schema.json",
+        "fast/stages/2-networking-legacy-a-simple/schemas/subnet.schema.json",
+        "fast/stages/2-networking-legacy-c-separate-envs/schemas/subnet.schema.json",
+        "fast/stages/2-networking-legacy-b-nva/schemas/subnet.schema.json",
         "modules/net-vpc/schemas/subnet.schema.json",
     ],
     [
@@ -139,62 +139,64 @@ duplicates = [
 
 
 def check_dir_diff(dcmp):
-  """
+    """
     Recursively checks a filecmp.dircmp object for any differences.
     Returns True if a difference is found, False otherwise.
     """
-  diff_found = False
+    diff_found = False
 
-  if dcmp.left_only:
-    print(f"[DIFF] Only in {dcmp.left}: {dcmp.left_only}")
-    diff_found = True
-  if dcmp.right_only:
-    print(f"[DIFF] Only in {dcmp.right}: {dcmp.right_only}")
-    diff_found = True
-  if dcmp.diff_files:
-    print(f"[DIFF] Mismatched files: {dcmp.diff_files}")
-    diff_found = True
+    if dcmp.left_only:
+        print(f"[DIFF] Only in {dcmp.left}: {dcmp.left_only}")
+        diff_found = True
+    if dcmp.right_only:
+        print(f"[DIFF] Only in {dcmp.right}: {dcmp.right_only}")
+        diff_found = True
+    if dcmp.diff_files:
+        print(f"[DIFF] Mismatched files: {dcmp.diff_files}")
+        diff_found = True
 
-  for sub_dcmp in dcmp.subdirs.values():
-    if check_dir_diff(sub_dcmp):
-      diff_found = True
+    for sub_dcmp in dcmp.subdirs.values():
+        if check_dir_diff(sub_dcmp):
+            diff_found = True
 
-  return diff_found
+    return diff_found
 
 
 has_diff = False
 for group in duplicates:
-  first = group[0]
-  if not os.path.exists(first):
-    print(f"[ERROR] Path not found: {first}. Skipping group.")
-    has_diff = True
-    continue
-
-  is_dir = os.path.isdir(first)
-  for second in group[1:]:
-    if not os.path.exists(second):
-      print(f"[DIFF] Path not found: {second}")
-      has_diff = True
-      continue
-
-    if is_dir != os.path.isdir(second):
-      print(f"[DIFF] Type mismatch: {first} is {'DIR' if is_dir else 'FILE'}, "
-            f"but {second} is {'DIR' if os.path.isdir(second) else 'FILE'}.")
-      has_diff = True
-      continue
-
-    if is_dir:
-      dcmp = filecmp.dircmp(first, second)
-      if check_dir_diff(dcmp):
-        print(
-            f"[DIFF] Found differences between directories {first} and {second}"
-        )
+    first = group[0]
+    if not os.path.exists(first):
+        print(f"[ERROR] Path not found: {first}. Skipping group.")
         has_diff = True
-    else:
-      if not filecmp.cmp(first, second, shallow=False):
-        print(f"[DIFF] Files are different: {first} and {second}")
-        has_diff = True
+        continue
+
+    is_dir = os.path.isdir(first)
+    for second in group[1:]:
+        if not os.path.exists(second):
+            print(f"[DIFF] Path not found: {second}")
+            has_diff = True
+            continue
+
+        if is_dir != os.path.isdir(second):
+            print(
+                f"[DIFF] Type mismatch: {first} is {'DIR' if is_dir else 'FILE'}, "
+                f"but {second} is {'DIR' if os.path.isdir(second) else 'FILE'}."
+            )
+            has_diff = True
+            continue
+
+        if is_dir:
+            dcmp = filecmp.dircmp(first, second)
+            if check_dir_diff(dcmp):
+                print(
+                    f"[DIFF] Found differences between directories {first} and {second}"
+                )
+                has_diff = True
+        else:
+            if not filecmp.cmp(first, second, shallow=False):
+                print(f"[DIFF] Files are different: {first} and {second}")
+                has_diff = True
 
 if has_diff:
-  print("\nCheck finished: Found differences.")
-  sys.exit(1)
+    print("\nCheck finished: Found differences.")
+    sys.exit(1)
