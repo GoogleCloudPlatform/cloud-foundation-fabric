@@ -89,7 +89,7 @@ Several other scenarios are possible through ad-hoc implementations, with varyin
 
 The GCP Firewall is a stateful, distributed feature that allows the creation of L4 policies, either via VPC-level rules or more recently via hierarchical policies applied on the resource hierarchy (organization, folders).
 
-The current setup adopts both firewall types, and uses [hierarchical rules on the Networking folder](./firewall-policies/network-policies.yaml) for common ingress rules, e.g. from health check or IAP forwarders ranges, and [VPC rules](./vpcs/prod/firewall-rules) for the environment or workload-level ingress.
+The current setup adopts both firewall types, and uses [hierarchical rules on the Networking folder](./firewall-policies/networking-policy.yaml) for common ingress rules, e.g. from health check or IAP forwarders ranges, and [VPC rules](./vpcs/prod/firewall-rules) for the environment or workload-level ingress.
 
 ### DNS
 
@@ -115,4 +115,4 @@ From cloud, the `onprem.` domain (used as a placeholder) is forwarded to on-prem
 
 ### VPNs
 
-Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in [`onprem.yaml`](./vpcs/hub/vpns/onprem.yaml). The file provisionally implements a single logical connection between onprem and the hub on the primary region through 2 IPSec tunnels.
+Connectivity to on-prem is implemented with HA VPN ([`net-vpn`](../../../../../modules/net-vpn-ha/)) and defined in [`onprem.yaml`](./vpcs/hub/vpns/onprem.yaml). The file provisionally implements a single logical connection between onprem and the hub on the primary region through 2 IPSec tunnels.

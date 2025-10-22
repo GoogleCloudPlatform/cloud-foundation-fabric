@@ -16,3 +16,5 @@ module: fast/stages/2-networking
 
 tests:
   peerings:
+    extra_dirs:
+      - ../../../fast/stages/2-networking/datasets/hub-and-spokes-peerings
