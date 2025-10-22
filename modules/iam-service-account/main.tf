@@ -30,7 +30,9 @@ locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   project_id = (
     var.project_id == null
+    # if no project ID is passed we're reusing and can infer it from the email
     ? try(regex("^[^@]+@([^.]+)", var.name)[0], null)
+    # otherwise check if we need context expansion
     : lookup(local.ctx.project_ids, var.project_id, var.project_id)
   )
   static_email = (
