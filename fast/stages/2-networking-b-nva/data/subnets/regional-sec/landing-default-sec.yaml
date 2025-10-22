@@ -6,3 +6,7 @@ name: regional-default
 region: $regions:secondary
 ip_cidr_range: 10.81.0.0/17
 description: Default secondary-region subnet for regional VPC
+flow_logs_config:
+  aggregation_interval: "INTERVAL_15_MIN"
+  flow_sampling: 0.5        
+  metadata: "INCLUDE_ALL_METADATA" 

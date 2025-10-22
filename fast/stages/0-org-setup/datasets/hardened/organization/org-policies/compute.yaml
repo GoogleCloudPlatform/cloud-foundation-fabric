@@ -56,6 +56,12 @@ compute.requireSslPolicy:
         values:
             - "under:organizations/${organization.id}"
 
+compute.restrictCloudNATUsage:
+  rules:
+    - allow:
+        values:
+            - "under:${folder_ids.networking}"
+
 compute.restrictLoadBalancerCreationForTypes:
   rules:
     - allow:

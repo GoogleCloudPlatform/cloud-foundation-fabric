@@ -6,3 +6,7 @@ name: landing-default
 region: $regions:primary
 ip_cidr_range: 10.64.0.0/24
 description: Default primary-region subnet for landing
+flow_logs_config:
+  aggregation_interval: "INTERVAL_15_MIN"
+  flow_sampling: 0.5        
+  metadata: "INCLUDE_ALL_METADATA" 
