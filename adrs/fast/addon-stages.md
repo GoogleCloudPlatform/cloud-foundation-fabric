@@ -54,6 +54,7 @@ fast
     ├── 0-bootstrap
     ├── 1-resman
     ├── 1-vpcsc
+    ├── 2-networking    
     ├── 2-networking-a-simple
     ├── 2-networking-b-nva
     ├── 2-networking-c-separate-envs
