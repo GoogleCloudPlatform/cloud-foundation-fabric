@@ -138,8 +138,8 @@ module "service-account-with-tags" {
 | [iam_storage_roles](variables-iam.tf#L103) | Storage roles granted to this service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L60) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
 | [project_number](variables.tf#L75) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L81) | Create service account. When set to false, uses a data source to reference an existing service account. | <code>bool</code> |  | <code>true</code> |
-| [tag_bindings](variables.tf#L88) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account_reuse](variables.tf#L81) | Reuse existing service account if not null. Data source can be forced disabled if tag bindings are not used, or unique id is set. | <code title="object&#40;&#123;&#10;  use_data_source &#61; optional&#40;bool, true&#41;&#10;  attributes &#61; optional&#40;object&#40;&#123;&#10;    unique_id &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L92) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -150,4 +150,5 @@ module "service-account-with-tags" {
 | [id](outputs.tf#L33) | Fully qualified service account id. |  |
 | [name](outputs.tf#L41) | Service account name. |  |
 | [service_account](outputs.tf#L49) | Service account resource. |  |
+| [unique_id](outputs.tf#L54) | Fully qualified service account id. |  |
 <!-- END TFDOC -->
