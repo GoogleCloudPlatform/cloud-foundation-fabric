@@ -542,6 +542,13 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.pod_security_policy
     }
   }
+  dynamic "rbac_binding_config" {
+    for_each = var.enable_features.rbac_binding_config != null ? [""] : []
+    content {
+      enable_insecure_binding_system_unauthenticated = var.enable_features.rbac_binding_config.enable_insecure_binding_system_unauthenticated
+      enable_insecure_binding_system_authenticated   = var.enable_features.rbac_binding_config.enable_insecure_binding_system_authenticated
+    }
+  }
   dynamic "secret_manager_config" {
     for_each = var.enable_features.secret_manager_config != null ? [""] : []
     content {

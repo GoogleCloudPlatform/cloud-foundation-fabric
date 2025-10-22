@@ -98,6 +98,51 @@ nodepools = {
 # tftest skip
 ```
 
+And here another example of declaring a private cluster following hardening guidelines with one nodepool via `tfvars` file:
+```hcl
+clusters = {
+  test-00 = {
+    description = "Hardened Cluster test 0"
+    location    = "europe-west1"
+    private_cluster_config = {
+      enable_private_endpoint = true
+      master_global_access    = true
+    }
+    access_config = {
+      dns_access = true
+      ip_access = {
+        disable_public_endpoint = true
+      }
+      private_nodes = true
+    }
+    vpc_config = {
+      subnetwork             = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
+      master_ipv4_cidr_block = "172.16.20.0/28"
+      master_authorized_ranges = {
+        private = "10.0.0.0/8"
+      }
+    }
+  }
+}
+nodepools = {
+  test-00 = {
+    00 = {
+      node_count  = { initial = 1 }
+      node_config = { 
+        disk_type = "pd-balanced"
+        kubelet_config = { cpu_manager_policy = "", insecure_kubelet_readonly_port_enabled = "FALSE" }
+        shielded_instance_config = {
+          enable_integrity_monitoring = true
+          enable_secure_boot          = true
+        }
+      }
+    }
+  }
+}
+# tftest skip
+```
+
+
 If clusters share similar configurations, those can be centralized via `locals` blocks in this stage's `main.tf` file, and merged in with clusters via a simple `for_each` loop.
 
 ### Fleet management
