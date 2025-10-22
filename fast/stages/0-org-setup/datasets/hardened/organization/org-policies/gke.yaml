@@ -52,7 +52,7 @@ container.managed.enablePrivateNodes:
 
 container.managed.enableSecurityBulletinNotifications:
   rules:
-    - enforce: true
+    - enforce: false
 
 container.managed.enableShieldedNodes:
   rules:
