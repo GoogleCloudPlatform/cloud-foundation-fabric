@@ -1634,13 +1634,6 @@ values:
     member: serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     timeouts: null
-  module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account.service_account[0]:
-    account_id: iac-org-cicd-ro
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform-managed.
-    timeouts: null
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
   : condition: []
     role: roles/iam.serviceAccountTokenCreator
@@ -1649,13 +1642,6 @@ values:
   : condition: []
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account.service_account[0]:
-    account_id: iac-org-cicd-rw
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: Terraform-managed.
-    timeouts: null
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
   : condition: []
     role: roles/iam.serviceAccountTokenCreator
@@ -2859,7 +2845,7 @@ counts:
   google_project_iam_member: 15
   google_project_service: 33
   google_project_service_identity: 9
-  google_service_account: 16
+  google_service_account: 14
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
@@ -2873,5 +2859,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 46
-  resources: 311
+  resources: 309
   terraform_data: 2
