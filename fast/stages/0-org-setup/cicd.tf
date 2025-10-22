@@ -15,126 +15,140 @@
  */
 
 locals {
-  _cicd = try(yamldecode(file(local.paths.cicd)), {})
-  _cicd_identity_providers = {
+  # dereferencing maps
+  _cicd_ctx_wif = {
     for k, v in google_iam_workload_identity_pool_provider.default :
     "$wif_providers:${k}" => v.name
   }
-  _cicd_output_files = {
-    for k, v in google_storage_bucket_object.providers :
-    "$output_files:providers/${k}" => split("/", v.name)[1]
+  _cicd_ctx_sa = {
+    for k, v in merge(local.ctx.iam_principals, module.factory.iam_principals) :
+    "$iam_principals:${k}" => v
   }
-  cicd_project_ids = {
-    for k, v in merge(
-      var.context.project_ids,
-      module.factory.project_ids
-    ) : "$project_ids:${k}" => v
-  }
-  cicd_workflows = {
-    for k, v in lookup(local._cicd, "workflows", {}) : k => {
-      outputs_bucket = lookup(
-        local.of_buckets,
-        v.output_files.storage_bucket,
-        v.output_files.storage_bucket
-      )
-      workflow = templatefile("assets/workflow-${v.template}.yaml", {
-        identity_provider = lookup(
-          local._cicd_identity_providers,
+  # normalized workflows
+  _cicd_workflows = {
+    for k, v in lookup(local.cicd, "workflows", {}) : k => {
+      provider_files = {
+        apply = try(v.provider_files.apply, null)
+        plan  = try(v.provider_files.apply, null)
+      }
+      repository = {
+        name           = try(v.repository.name, null)
+        type           = try(v.repository.type, null)
+        apply_branches = try(v.repository.apply_branches, [])
+      }
+      service_accounts = {
+        apply = try(v.service_accounts.apply, null)
+        plan  = try(v.service_accounts.apply, null)
+      }
+      tfvars_files = try(v.tfvars_files, [])
+      wif = {
+        id = try(
+          local._cicd_ctx_wif[v.workload_identity_provider.id],
           v.workload_identity_provider.id,
-          v.workload_identity_provider.id
+          null
         )
         audiences = try(v.workload_identity_provider.audiences, [])
-        service_accounts = {
-          apply = lookup(
-            local.of_service_accounts,
-            v.service_accounts.apply,
-            v.service_accounts.apply
-          )
-          plan = lookup(
-            local.of_service_accounts,
-            v.service_accounts.plan,
-            v.service_accounts.plan
-          )
-        }
-        outputs_bucket = lookup(
-          local.of_buckets,
-          v.output_files.storage_bucket,
-          v.output_files.storage_bucket
+      }
+    } if contains(["github", "gitlab"], try(v.repository.type, "-"))
+  }
+  # raw configuration (shared to the wif files)
+  cicd = try(yamldecode(file(local.paths.cicd)), {})
+  # iam bindings for service accounts
+  # cicd_iam = flatten([
+  #   for k, v in local.cicd_workflows : concat(
+  #     v.iam_principals.apply == null
+  #     # apply with no branches, use plan principalset
+  #     ? [
+  #       {
+  #         key             = "${k}-apply"
+  #         principal       = format(v.iam_principals.plan, v.wif.id, v.repository.name)
+  #         service_account = v.service_accounts.apply
+  #       }
+  #     ]
+  #     # apply with branches, one apply principal per branch
+  #     : [
+  #       for b in v.repository.apply_branches : {
+  #         key             = "${k}-apply-${b}"
+  #         principal       = format(v.iam_principals.apply, v.wif.id, v.repository.name, b)
+  #         service_account = v.service_accounts.apply
+  #       }
+  #     ],
+  #     # plan
+  #     [
+  #       {
+  #         key             = "${k}-plan"
+  #         principal       = format(v.iam_principals.plan, v.wif.id, v.repository.name)
+  #         service_account = v.service_accounts.plan
+  #       }
+  #     ]
+  #   )
+  # ])
+  # workflows configuration
+  cicd_workflows = {
+    for k, v in local._cicd_workflows : k => merge(v, {
+      iam_principals = {
+        apply = (
+          length(v.repository.apply_branches) > 0
+          ? local.wif_defs[v.repository.type].principal_branch
+          : null
         )
-        stage_name = k
-        tf_providers_files = {
-          apply = lookup(
-            local._cicd_output_files,
-            v.output_files.providers.apply,
-            v.output_files.providers.apply
-          )
-          plan = lookup(
-            local._cicd_output_files,
-            v.output_files.providers.plan,
-            v.output_files.providers.plan
-          )
-        }
-        tf_var_files = try(v.output_files.files, [])
-      })
-    }
-  }
-  wif_project = try(local._cicd.workload_identity_federation.project, null)
-  wif_providers = {
-    for k, v in try(local._cicd.workload_identity_federation.providers, {}) :
-    k => merge(v, lookup(local.wif_defs, v.issuer, {}))
-  }
-}
-
-resource "google_iam_workload_identity_pool" "default" {
-  count = local.wif_project == null ? 0 : 1
-  project = lookup(
-    local.cicd_project_ids, local.wif_project, local.wif_project
-  )
-  workload_identity_pool_id = try(
-    local._cicd.workload_identity_federation.pool_name, "iac-0"
-  )
-}
-
-resource "google_iam_workload_identity_pool_provider" "default" {
-  for_each = local.wif_providers
-  project = (
-    google_iam_workload_identity_pool.default[0].project
-  )
-  workload_identity_pool_id = (
-    google_iam_workload_identity_pool.default[0].workload_identity_pool_id
-  )
-  workload_identity_pool_provider_id = lookup(each.value, "provider_id", each.key)
-  attribute_condition = lookup(
-    each.value, "attribute_condition", null
-  )
-  attribute_mapping = lookup(
-    each.value, "attribute_mapping", {}
-  )
-  oidc {
-    # Setting an empty list configures allowed_audiences to the url of the provider
-    allowed_audiences = try(each.value.custom_settings.audiences, [])
-    # If users don't provide an issuer_uri, we set the public one for the platform chosen.
-    issuer_uri = (
-      try(each.value.custom_settings.issuer_uri, null) != null
-      ? each.value.custom_settings.issuer_uri
-      : try(each.value.issuer_uri, null)
+        plan = local.wif_defs[v.repository.type].principal_repo
+      }
+      service_accounts = {
+        apply = try(
+          local._cicd_ctx_sa[v.service_accounts.apply], v.service_accounts.apply
+        )
+        plan = try(
+          local._cicd_ctx_sa[v.service_accounts.plan], v.service_accounts.plan
+        )
+      }
+    })
+    if(
+      v.provider_files.apply != null && v.provider_files.plan != null &&
+      v.repository.name != null && v.wif.id != null &&
+      v.service_accounts.apply != null && v.service_accounts.plan != null
     )
-    # OIDC JWKs in JSON String format. If no value is provided, they key is
-    # fetched from the `.well-known` path for the issuer_uri
-    jwks_json = try(each.value.custom_settings.jwks_json, null)
   }
 }
 
-resource "local_file" "workflows" {
-  for_each        = local.of_path == null ? {} : local.cicd_workflows
-  file_permission = "0644"
-  filename        = "${local.of_path}/workflows/${each.key}.yaml"
-  content         = each.value.workflow
-}
 
-resource "google_storage_bucket_object" "workflows" {
-  for_each = local.cicd_workflows
-  bucket   = each.value.outputs_bucket
-  name     = "workflows/${each.key}.yaml"
-  content  = each.value.workflow
-}
+# resource "google_service_account_iam_member" "cicd_sa" {
+#   for_each           = { for v in local.cicd_iam : v.key => v }
+#   service_account_id = trimprefix(each.value.service_account, "serviceAccount:")
+#   role               = "roles/iam.workloadIdentityUser"
+#   member             = each.value.principal
+# }
+
+
+# module "cicd-sa-plan" {
+#   source   = "../../../modules/iam-service-account"
+#   for_each = { for k, v in local.cicd_workflows : k => v if v._is_valid }
+#   name     = v.service_accounts.plan
+#   service_account_reuse = {
+#     use_data_source = false
+#   }
+#   iam_bindings_additive = {
+#     cicd_wif_user = {
+#       member = format(
+#         v.iam_principals.plan,
+#         v.workload_identity_provider.id,
+#         v.repository.name
+#       )
+#       role = "roles/iam.workloadIdentityUser"
+#     }
+#   }
+# }
+
+# resource "local_file" "workflows" {
+#   for_each        = local.of_path == null ? {} : local.cicd_workflows_files
+#   file_permission = "0644"
+#   filename        = "${local.of_path}/workflows/${each.key}.yaml"
+#   content         = each.value.workflow
+# }
+
+# resource "google_storage_bucket_object" "workflows" {
+#   for_each = local.cicd_workflows_files
+#   bucket   = each.value.outputs_bucket
+#   name     = "workflows/${each.key}.yaml"
+#   content  = each.value.workflow
+# }

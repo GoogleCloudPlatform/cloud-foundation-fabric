@@ -27,21 +27,21 @@ workload_identity_federation:
       #   audiences: []
       #   jwks_json_path:
 workflows:
-  org-setup:
-    template: github
-    workload_identity_provider:
-      id: $wif_providers:github
-      audiences: []
-    repository:
-      name: org-setup
-      branch: main
-    output_files:
-      storage_bucket: $storage_buckets:iac-0/iac-outputs
-      providers:
-        apply: $output_files:providers/0-org-setup
-        plan: $output_files:providers/0-org-setup-ro
-      files:
-        - 0-org-setup.auto.tfvars.json
-    service_accounts:
-      apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
-      plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+  local_path: ~/dev/tf-playground/fast-config/ludo
+  storage_bucket: $storage_buckets:iac-0/iac-outputs
+  configs:
+    org-setup:
+      repository:
+        name: org-setup
+        type: github
+        apply_branches:
+          - master
+          - fast-dev
+      required_files:
+        - 0-org-setup.auto.tfvars
+      service_accounts:
+        apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+        plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+      workload_identity_provider:
+        id: $wif_providers:github
+        audiences: []
