@@ -19,6 +19,9 @@ locals {
     for k, v in merge(var.context.project_ids, module.factory.project_ids) :
     "$project_ids:${k}" => v
   }
+  wif_pool_name = try(
+    local.cicd.workload_identity_federation.pool_name, "iac-0"
+  )
   wif_project = try(local.cicd.workload_identity_federation.project, null)
   wif_providers = local.wif_project == null ? {} : {
     for k, v in try(local.cicd.workload_identity_federation.providers, {}) :
@@ -31,9 +34,7 @@ resource "google_iam_workload_identity_pool" "default" {
   project = lookup(
     local.wif_ctx_project_ids, local.wif_project, local.wif_project
   )
-  workload_identity_pool_id = try(
-    local.cicd.workload_identity_federation.pool_name, "iac-0"
-  )
+  workload_identity_pool_id = local.wif_pool_name
 }
 
 resource "google_iam_workload_identity_pool_provider" "default" {

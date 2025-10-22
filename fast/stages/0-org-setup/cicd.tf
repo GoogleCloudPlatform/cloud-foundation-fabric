@@ -16,18 +16,23 @@
 
 locals {
   # dereferencing maps
-  _cicd_ctx_wif = {
-    for k, v in google_iam_workload_identity_pool_provider.default :
-    "$wif_providers:${k}" => google_iam_workload_identity_pool.default.0.name
-  }
+  _cicd_ctx_wif = try({
+    "$wif_pools:${local.wif_pool_name}" = google_iam_workload_identity_pool.default.0.name
+  }, {})
   _cicd_ctx_sa = {
     for k, v in merge(local.ctx.iam_principals, module.factory.iam_principals) :
     "$iam_principals:${k}" => v
   }
-  # normalized workflows
+  # normalize workflow configurations
   _cicd_workflows = {
     for k, v in lookup(local.cicd, "workflows", {}) : k => {
-      provider_files = {
+      audiences = try(v.workload_identity_provider.audiences, [])
+      identity_provider = try(
+        local._cicd_ctx_wif[v.workload_identity_provider.id],
+        v.workload_identity_provider.id,
+        null
+      )
+      tf_providers_files = {
         apply = try(v.provider_files.apply, null)
         plan  = try(v.provider_files.plan, null)
       }
@@ -40,55 +45,56 @@ locals {
         apply = try(v.service_accounts.apply, null)
         plan  = try(v.service_accounts.plan, null)
       }
-      tfvars_files = try(v.tfvars_files, [])
-      wif = {
-        id = try(
-          local._cicd_ctx_wif[v.workload_identity_provider.id],
-          v.workload_identity_provider.id,
-          null
-        )
-        audiences = try(v.workload_identity_provider.audiences, [])
-      }
+      tf_var_files = try(v.tfvars_files, [])
     }
     if(
       contains(["github", "gitlab"], try(v.repository.type, "-")) &&
       local.of_outputs_bucket != null
     )
   }
-  # raw configuration (shared to the wif files)
+  # raw configuration (the wif files are also users of this local)
   cicd = try(yamldecode(file(local.paths.cicd)), {})
-  # iam bindings for service accounts
+  # iam bindings for WIF principals on service accounts
   cicd_iam = merge(flatten([
     for k, v in local.cicd_workflows : [
+      # apply service account
       {
         "${k}-apply" = {
-          service_account = trimprefix(v.service_accounts.apply, "serviceAccount:")
+          service_account = v.service_accounts.apply
           principals = (
             v.iam_principals.apply == null
+            # no branches, single principal for the whole repo
             ? {
-              all-repo = format(v.iam_principals.plan, v.wif.id, v.repository.name)
+              all-repo = format(
+                v.iam_principals.plan, v.identity_provider, v.repository.name
+              )
             }
+            # branches, one principal per branch
             : {
               for b in v.repository.apply_branches : "branch-${b}" => format(
-                v.iam_principals.apply, v.wif.id, v.repository.name, b
+                v.iam_principals.apply, v.identity_provider, v.repository.name, b
               )
             }
           )
         }
       },
+      # plan service account
       {
         "${k}-plan" = {
-          service_account = trimprefix(v.service_accounts.plan, "serviceAccount:")
+          service_account = v.service_accounts.plan
           principals = {
-            all-repo = format(v.iam_principals.plan, v.wif.id, v.repository.name)
+            all-repo = format(
+              v.iam_principals.plan, v.identity_provider, v.repository.name
+            )
           }
         }
       }
     ]
   ])...)
-  # workflows configuration
+  # final workflows configurations with dereferencing and WIF principal templates
   cicd_workflows = {
     for k, v in local._cicd_workflows : k => merge(v, {
+      # identity provider principal definitions
       iam_principals = {
         apply = (
           length(v.repository.apply_branches) > 0
@@ -97,38 +103,30 @@ locals {
         )
         plan = local.wif_defs[v.repository.type].principal_repo
       }
+      # dereference service account and strip IAM prefix
       service_accounts = {
-        apply = try(
+        apply = trimprefix(try(
           local._cicd_ctx_sa[v.service_accounts.apply], v.service_accounts.apply
-        )
-        plan = try(
+        ), "serviceAccount:")
+        plan = trimprefix(try(
           local._cicd_ctx_sa[v.service_accounts.plan], v.service_accounts.plan
-        )
+        ), "serviceAccount:")
       }
     })
+    # only keep valid workflow configurations
     if(
-      v.provider_files.apply != null && v.provider_files.plan != null &&
-      v.repository.name != null && v.wif.id != null &&
+      v.tf_providers_files.apply != null && v.tf_providers_files.plan != null &&
+      v.repository.name != null && v.identity_provider != null &&
       v.service_accounts.apply != null && v.service_accounts.plan != null
     )
   }
+  # generate workflows contents from template
   cicd_workflows_files = {
     for k, v in local.cicd_workflows : k => templatefile(
-      "assets/workflow-${v.repository.type}.yaml", {
-        identity_provider = v.wif.id
-        audiences         = v.wif.audiences
-        service_accounts = {
-          apply = trimprefix(v.service_accounts.apply, "serviceAccount:")
-          plan  = trimprefix(v.service_accounts.plan, "serviceAccount:")
-        }
+      "assets/workflow-${v.repository.type}.yaml", merge(v, {
         outputs_bucket = local.of_outputs_bucket
         stage_name     = k
-        tf_providers_files = {
-          apply = v.provider_files.apply
-          plan  = v.provider_files.plan
-        }
-        tf_var_files = v.tfvars_files
-      }
+      })
     )
   }
 }
