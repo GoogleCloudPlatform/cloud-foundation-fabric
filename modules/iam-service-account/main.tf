@@ -50,6 +50,7 @@ locals {
   sa_domain = join(".", compact([
     local.project_id_no_universe, local.universe
   ]))
+  # the condition here avoids referring to attributes not known at plan time
   tag_bindings = (
     var.service_account_reuse != null ||
     try(var.service_account_reuse.attributes.unique_id, null) != null
