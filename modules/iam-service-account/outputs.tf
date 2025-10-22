@@ -50,3 +50,11 @@ output "service_account" {
   description = "Service account resource."
   value       = local.service_account
 }
+
+output "unique_id" {
+  description = "Fully qualified service account id."
+  value       = local.service_account.unique_id
+  depends_on = [
+    local.service_account
+  ]
+}
