@@ -35,8 +35,8 @@ variable "create_ignore_already_exists" {
   type        = bool
   default     = null
   validation {
-    condition     = !(var.create_ignore_already_exists == true && var.service_account_create == false)
-    error_message = "Cannot set create_ignore_already_exists when service_account_create is false."
+    condition     = !(var.create_ignore_already_exists == true && var.service_account_reuse == null)
+    error_message = "Cannot set create_ignore_already_exists when service_account_reuse is null."
   }
 }
 
@@ -78,11 +78,15 @@ variable "project_number" {
   default     = null
 }
 
-variable "service_account_create" {
-  description = "Create service account. When set to false, uses a data source to reference an existing service account."
-  type        = bool
-  default     = true
-  nullable    = false
+variable "service_account_reuse" {
+  description = "Reuse existing service account if not null. Data source can be forced disabled if tag bindings are not used, or unique id is set."
+  type = object({
+    use_data_source = optional(bool, true)
+    attributes = optional(object({
+      unique_id = string
+    }))
+  })
+  default = null
 }
 
 variable "tag_bindings" {
