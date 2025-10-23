@@ -19,7 +19,7 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-org-ro:
     - roles/viewer
   $iam_principals:service_accounts/iac-0/iac-org-rw:
-    - roles/owner 
+    - roles/owner
 services:
   - bigquery.googleapis.com
   - bigquerydatatransfer.googleapis.com
