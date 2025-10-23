@@ -2800,7 +2800,6 @@ values:
     output: null
     triggers_replace: null
 
-
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
@@ -2822,6 +2821,7 @@ counts:
   google_project_service: 33
   google_project_service_identity: 9
   google_service_account: 14
+  google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
@@ -2834,6 +2834,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 46
-  resources: 309
+  modules: 48
+  resources: 311
   terraform_data: 2

@@ -15,10 +15,10 @@
 variables:
   GOOGLE_CREDENTIALS: cicd-sa-credentials.json
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
-  FAST_WIF_PROVIDER: ${identity_provider}
+  FAST_WIF_PROVIDER: ${workload_identity.pool_id}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  %{~ if tf_var_files != [] ~}
-  TF_VAR_FILES: ${join("\n    ", tf_var_files)}
+  %{~ if tfvars_files != [] ~}
+  TF_VAR_FILES: ${join("\n    ", tfvars_files)}
   %{~ endif ~}
 
 workflow:
@@ -28,13 +28,13 @@ workflow:
       variables:
         COMMAND: apply
         FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
-        TF_PROVIDERS_FILE: ${tf_providers_files.apply}
+        TF_PROVIDERS_FILE: ${provider_files.apply}
     # pr / plan
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       variables:
         COMMAND: plan
         FAST_SERVICE_ACCOUNT: ${service_accounts.plan}
-        TF_PROVIDERS_FILE: ${tf_providers_files.plan}
+        TF_PROVIDERS_FILE: ${provider_files.plan}
 
 stages:
   - gcp-setup
@@ -50,13 +50,13 @@ gcp-setup:
     paths:
       - cicd-sa-credentials.json
       - providers.tf
-      %{~ for f in tf_var_files ~}
+      %{~ for f in tfvars_files ~}
       - ${f}
       %{~ endfor ~}
   id_tokens:
     GITLAB_TOKEN:
       aud:
-      %{~ for aud in audiences ~}
+      %{~ for aud in workload_identity.audiences ~}
         - ${aud}
       %{~ endfor ~}
   before_script:
@@ -71,7 +71,7 @@ gcp-setup:
         --credential-source-file=token.txt
     - gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
     - gcloud storage cp -r "gs://$FAST_OUTPUTS_BUCKET/providers/$TF_PROVIDERS_FILE" ./providers.tf
-    %{~ for f in tf_var_files ~}
+    %{~ for f in tfvars_files ~}
     - gcloud storage cp gs://$FAST_OUTPUTS_BUCKET/tfvars/${f} ./
     %{~ endfor ~}
 
@@ -83,7 +83,7 @@ tf-plan-apply:
   id_tokens:
     GITLAB_TOKEN:
       aud:
-      %{~ for aud in audiences ~}
+      %{~ for aud in workload_identity.audiences ~}
         - ${aud}
       %{~ endfor ~}
   image:

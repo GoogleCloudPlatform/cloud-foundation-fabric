@@ -58,6 +58,6 @@ workflows:
       plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
     tfvars_files:
       - 0-org-setup.auto.tfvars
-    workload_identity_provider:
-      id: $wif_pools:iac-0
+    workload_identity:
+      pool_id: $wif_pools:iac-0
       audiences: []

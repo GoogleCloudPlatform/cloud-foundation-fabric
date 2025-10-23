@@ -15,7 +15,7 @@
             "provider_files",
             "repository",
             "service_accounts",
-            "workload_identity_provider"
+            "workload_identity"
           ],
           "properties": {
             "provider_files": {
@@ -82,14 +82,14 @@
                 "type": "string"
               }
             },
-            "workload_identity_provider": {
+            "workload_identity": {
               "type": "object",
               "additionalProperties": false,
               "required": [
-                "id"
+                "pool_id"
               ],
               "properties": {
-                "id": {
+                "pool_id": {
                   "type": "string"
                 },
                 "audiences": {
