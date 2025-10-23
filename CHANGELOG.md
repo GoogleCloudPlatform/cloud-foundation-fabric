@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/cloud-function-v1`: service_account and service_account_create were moved to service_account_config. By default, module now creates a service accounts and grants `roles/logging.logWriter` and `roles/monitoring.metricWriter` on project level
+`modules/cloud-function-v2`: service_account and service_account_create were moved to service_account_config. By default, module now creates a service accounts and grants `roles/logging.logWriter` and `roles/monitoring.metricWriter` on project level [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)]
 - `terraform-provider-google`:  Bump provider to 7.6.0, to allow use of `google_vertex_ai_reasoning_engine` in modules/agent-engine [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)]
 - `modules/project-factory`: the `factories_config` attribute has been removed from project defaults and overrides. [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)]
 - `modules/gke-hub`: Unified cluster configuration. The module now uses a single `clusters` variable to configure both cluster registration and feature enablement. [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
@@ -14,11 +16,15 @@ All notable changes to this project will be documented in this file.
 - `all modules`: Minimum supported OpenTofu version bumped 1.10.0 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `modules/project-factory`: the format for automation service account names has changed. [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)]
 
+- [[#3456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3456)] More knowledge -  ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 09:08:14+00:00 -->
+- [[#3455](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3455)] Service agents cursed knowledge ([juliocc](https://github.com/juliocc)) <!-- 2025-10-23 08:02:02+00:00 -->
+- [[#3446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3446)] Cursed knowledge of CFF ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-21 15:19:23+00:00 -->
 - [[#3428](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3428)] gitignore update ([juliocc](https://github.com/juliocc)) <!-- 2025-10-16 14:14:55+00:00 -->
 - [[#3361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3361)] Use pre-commit managed Python environment for pre-commit checks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-27 07:06:30+00:00 -->
 
 ### FAST
 
+- [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
 - [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
 - [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)] Support resource-level factories config in project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-18 10:41:19+00:00 -->
 - [[#3439](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3439)] compatiblity fix: Github CICD templates Terraform version bump to 1.12.2 ([ysolt](https://github.com/ysolt)) <!-- 2025-10-18 08:00:15+00:00 -->
@@ -43,6 +49,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
+- [[#3448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3448)] Skip IAM grants for service agents that are not created on API activation ([juliocc](https://github.com/juliocc)) <!-- 2025-10-21 14:31:33+00:00 -->
 - [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->
 - [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
 - [[#3438](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3438)] Add PAM support ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 12:50:37+00:00 -->
@@ -82,6 +90,8 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
+- [[#3448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3448)] Skip IAM grants for service agents that are not created on API activation ([juliocc](https://github.com/juliocc)) <!-- 2025-10-21 14:31:33+00:00 -->
 - [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->
 - [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
 - [[#3444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3444)] fix Terraform version linter ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-20 11:52:11+00:00 -->

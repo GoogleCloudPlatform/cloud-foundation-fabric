@@ -95,7 +95,9 @@ module "functions" {
     entry_point = "helloGET"
     runtime     = "nodejs22"
   }
-  service_account_create = true
+  service_account_config = {
+    create = true
+  }
   iam = {
     "roles/run.invoker" = [module.sa.iam_email]
   }

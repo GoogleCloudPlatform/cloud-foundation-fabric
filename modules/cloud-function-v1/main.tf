@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,12 @@
  */
 
 locals {
+  _ctx_p = "$"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
   bucket = (
     var.bucket_config == null
     ? var.bucket_name
@@ -24,39 +30,15 @@ locals {
       : null
     )
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-  service_account_email = (
-    var.service_account_create
-    ? google_service_account.service_account[0].email
-    : var.service_account
-  )
-  vpc_connector = (
-    var.vpc_connector == null
-    ? null
-    : (
-      try(var.vpc_connector.create, false) == false
-      ? var.vpc_connector.name
-      : google_vpc_access_connector.connector[0].id
-    )
-  )
-}
-
-resource "google_vpc_access_connector" "connector" {
-  count          = try(var.vpc_connector.create, false) == true ? 1 : 0
-  project        = var.project_id
-  name           = var.vpc_connector.name
-  region         = var.region
-  ip_cidr_range  = var.vpc_connector_config.ip_cidr_range
-  network        = var.vpc_connector_config.network
-  max_instances  = try(var.vpc_connector_config.instances.max, null)
-  min_instances  = try(var.vpc_connector_config.instances.min, null)
-  max_throughput = try(var.vpc_connector_config.throughput.max, null)
-  min_throughput = try(var.vpc_connector_config.throughput.min, null)
+  location      = lookup(local.ctx.locations, var.region, var.region)
+  prefix        = var.prefix == null ? "" : "${var.prefix}-"
+  project_id    = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  vpc_connector = var.vpc_connector.create ? google_vpc_access_connector.connector[0].id : var.vpc_connector.name
 }
 
 resource "google_cloudfunctions_function" "function" {
-  project               = var.project_id
-  region                = var.region
+  project               = local.project_id
+  region                = local.location
   name                  = "${local.prefix}${var.name}"
   description           = var.description
   runtime               = var.function_config.runtime
@@ -72,19 +54,17 @@ resource "google_cloudfunctions_function" "function" {
     ? replace(var.bundle_config.path, "/^gs:\\/\\/[^\\/]+\\//", "")
     : google_storage_bucket_object.bundle[0].name
   )
-  labels                       = var.labels
-  trigger_http                 = var.trigger_config == null ? true : null
-  https_trigger_security_level = var.https_security_level == null ? "SECURE_ALWAYS" : var.https_security_level
-  ingress_settings             = var.ingress_settings
-  build_worker_pool            = var.build_worker_pool
-  build_environment_variables  = var.build_environment_variables
-  kms_key_name                 = var.kms_key
-  docker_registry              = try(var.repository_settings.registry, "ARTIFACT_REGISTRY")
-  docker_repository            = try(var.repository_settings.repository, null)
-  vpc_connector                = local.vpc_connector
-  vpc_connector_egress_settings = try(
-    var.vpc_connector.egress_settings, null
-  )
+  labels                        = var.labels
+  trigger_http                  = var.trigger_config == null ? true : null
+  https_trigger_security_level  = var.https_security_level == null ? "SECURE_ALWAYS" : var.https_security_level
+  ingress_settings              = var.ingress_settings
+  build_worker_pool             = var.build_worker_pool
+  build_environment_variables   = var.build_environment_variables
+  kms_key_name                  = var.kms_key == null ? null : lookup(local.ctx.kms_keys, var.kms_key, var.kms_key)
+  docker_registry               = try(var.repository_settings.registry, "ARTIFACT_REGISTRY")
+  docker_repository             = try(var.repository_settings.repository, null)
+  vpc_connector                 = local.vpc_connector
+  vpc_connector_egress_settings = var.vpc_connector.egress_settings
 
   dynamic "event_trigger" {
     for_each = var.trigger_config == null ? [] : [""]
@@ -132,16 +112,12 @@ resource "google_cloudfunctions_function" "function" {
 
 resource "google_cloudfunctions_function_iam_binding" "default" {
   for_each       = var.iam
-  project        = var.project_id
-  region         = var.region
+  project        = local.project_id
+  region         = local.location
   cloud_function = google_cloudfunctions_function.function.id
-  role           = each.key
-  members        = each.value
-}
-
-resource "google_service_account" "service_account" {
-  count        = var.service_account_create ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-cf-${var.name}"
-  display_name = "Terraform Cloud Function ${var.name}."
+  role           = lookup(local.ctx.custom_roles, each.key, each.key)
+  members        = [for member in each.value : lookup(local.ctx.iam_principals, member, member)]
+  lifecycle {
+    replace_triggered_by = [google_cloudfunctions_function.function]
+  }
 }
