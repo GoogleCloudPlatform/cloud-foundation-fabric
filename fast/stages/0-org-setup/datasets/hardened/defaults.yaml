@@ -34,7 +34,7 @@ projects:
 context:
   # you can populate context variables here for use in YAML replacements
   iam_principals:
-    # this is the default group used in boostrap, initial user must be a member
+    # this is the default group used in bootstrap, initial user must be a member
     gcp-organization-admins: group:gcp-organization-admins@example.com
   locations:
     primary: europe-west1
