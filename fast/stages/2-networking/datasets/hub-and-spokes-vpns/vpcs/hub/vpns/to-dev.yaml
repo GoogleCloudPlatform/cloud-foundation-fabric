@@ -13,7 +13,7 @@
 # limitations under the License.
 
 name: to-dev
-region: europe-west8
+region: $locations:primary
 peer_gateways:
   default:
     gcp: $vpn_gateways:dev/to-hub

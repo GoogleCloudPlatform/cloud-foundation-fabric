@@ -9,7 +9,7 @@ name: hub
 delete_default_routes_on_create: false
 routers:
   vpn-router:
-    region: europe-west8
+    region: $locations:primary
     asn: 64514
 routes:
   gateway:
