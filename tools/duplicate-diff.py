@@ -84,7 +84,7 @@ duplicates = [
         "modules/net-firewall-policy/schemas/firewall-policy-rules.schema.json",
     ],
     [
-        "fast/stages/2-networking/schemas/firewall-rules.schema.json",      
+        "fast/stages/2-networking/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking-legacy-a-simple/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking-legacy-c-separate-envs/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking-legacy-b-nva/schemas/firewall-rules.schema.json",
@@ -128,7 +128,7 @@ duplicates = [
         "modules/organization/schemas/scc-sha-custom-modules.schema.json",
     ],
     [
-        "fast/stages/2-networking/schemas/subnet.schema.json",      
+        "fast/stages/2-networking/schemas/subnet.schema.json",
         "fast/stages/2-networking-legacy-a-simple/schemas/subnet.schema.json",
         "fast/stages/2-networking-legacy-c-separate-envs/schemas/subnet.schema.json",
         "fast/stages/2-networking-legacy-b-nva/schemas/subnet.schema.json",
