@@ -43,7 +43,7 @@ For example, the connection from the hub to the `prod` spoke is defined in `vpcs
 
 ```yaml
 name: to-prod
-region: europe-west8
+region: $locations:primary
 peer_gateways:
   default:
     gcp: $vpn_gateways:prod/to-hub
@@ -57,7 +57,7 @@ And the corresponding connection from the `prod` spoke to the hub is in `vpcs/pr
 
 ```yaml
 name: to-hub
-region: europe-west8
+region: $locations:primary
 peer_gateways:
   default:
     gcp: $vpn_gateways:hub/to-prod
@@ -79,7 +79,7 @@ e.g. in `vpcs/hub/.config.yaml`:
 # [...]
 nat_config:
   nat-ew8:
-    region: europe-west8
+    region: $locations:primary
 # [...]
 ```
 
