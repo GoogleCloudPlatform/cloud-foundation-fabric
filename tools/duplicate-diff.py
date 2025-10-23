@@ -84,6 +84,7 @@ duplicates = [
         "modules/net-firewall-policy/schemas/firewall-policy-rules.schema.json",
     ],
     [
+        "fast/stages/2-networking/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking-legacy-a-simple/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking-legacy-c-separate-envs/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking-legacy-b-nva/schemas/firewall-rules.schema.json",
@@ -91,6 +92,7 @@ duplicates = [
     ],
     [
         "fast/stages/2-project-factory/schemas/folder.schema.json",
+        "fast/stages/2-networking/schemas/folder.schema.json",
         "fast/stages/0-org-setup/schemas/folder.schema.json",
         "modules/project-factory/schemas/folder.schema.json",
     ],
@@ -114,6 +116,7 @@ duplicates = [
         "modules/vpc-sc/schemas/perimeter.schema.json",
     ],
     [
+        "fast/stages/2-networking/schemas/project.schema.json",
         "fast/stages/2-project-factory/schemas/project.schema.json",
         "fast/stages/0-org-setup/schemas/project.schema.json",
         "fast/stages/2-security/schemas/project.schema.json",
@@ -125,6 +128,7 @@ duplicates = [
         "modules/organization/schemas/scc-sha-custom-modules.schema.json",
     ],
     [
+        "fast/stages/2-networking/schemas/subnet.schema.json",
         "fast/stages/2-networking-legacy-a-simple/schemas/subnet.schema.json",
         "fast/stages/2-networking-legacy-c-separate-envs/schemas/subnet.schema.json",
         "fast/stages/2-networking-legacy-b-nva/schemas/subnet.schema.json",
