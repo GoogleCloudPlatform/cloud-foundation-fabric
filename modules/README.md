@@ -60,7 +60,6 @@ These modules are used in the examples included in this repository. If you are u
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
-- [VPC factory](./net-vpc-factory)
 - [VPC firewall](./net-vpc-firewall)
 - [VPN dynamic](./net-vpn-dynamic)
 - [VPC peering](./net-vpc-peering)

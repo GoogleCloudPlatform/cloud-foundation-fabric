@@ -55,9 +55,9 @@ fast
     ├── 1-resman
     ├── 1-vpcsc
     ├── 2-networking    
-    ├── 2-networking-a-simple
-    ├── 2-networking-b-nva
-    ├── 2-networking-c-separate-envs
+    ├── 2-networking-legacy-a-simple
+    ├── 2-networking-legacy-b-nva
+    ├── 2-networking-legacy-c-separate-envs
     ├── 2-project-factory
     ├── 2-security
     ├── 3-gcve-dev
