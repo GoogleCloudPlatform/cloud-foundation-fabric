@@ -139,6 +139,31 @@ duplicates = [
         "modules/project/schemas/tags.schema.json",
         "modules/organization/schemas/tags.schema.json",
     ],
+    [
+        "fast/stages/2-networking-legacy-a-simple/data/cidrs.yaml",
+        "fast/stages/2-networking-legacy-b-nva/data/cidrs.yaml",
+        "fast/stages/2-networking-legacy-c-separate-envs/data/cidrs.yaml",
+    ],
+    [
+        "modules/cloud-function-v1/bundle.tf",
+        "modules/cloud-function-v2/bundle.tf",
+    ],
+    [
+        "modules/cloud-function-v1/serviceaccount.tf",
+        "modules/cloud-function-v2/serviceaccount.tf",
+    ],
+    [
+        "modules/cloud-function-v1/variables-serviceaccount.tf",
+        "modules/cloud-function-v2/variables-serviceaccount.tf",
+    ],
+    [
+        "modules/cloud-function-v1/variables-vpcconnector.tf",
+        "modules/cloud-function-v2/variables-vpcconnector.tf",
+    ],
+    [
+        "modules/cloud-function-v1/vpcconnector.tf",
+        "modules/cloud-function-v2/vpcconnector.tf",
+    ],
 ]
 
 
@@ -167,6 +192,7 @@ def check_dir_diff(dcmp):
 
 
 has_diff = False
+
 for group in duplicates:
   first = group[0]
   if not os.path.exists(first):
