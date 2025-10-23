@@ -10,6 +10,8 @@ ignore: |
   fast/stages/0-org-setup/assets/workflow-*.yaml
   cloud-config.yaml
   *-cloud-config.yaml
+  modules/cloud-config-container/__need_fixing/onprem/static-vpn-gw-cloud-init.yaml
+  modules/net-lb-int/recipe-ilb-next-hop/assets/gw.yaml
 
 extends: default
 
