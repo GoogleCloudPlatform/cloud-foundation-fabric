@@ -32,7 +32,7 @@ values:
     project: project-id
     retention_policy:
     - locked: false
-   
+
 counts:
   google_container_cluster: 1
   google_gke_backup_backup_plan: 1
