@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.workstation-cluster.google_workstations_workstation.workstations["my-workstation-config-my-workstation"]:
     annotations: null

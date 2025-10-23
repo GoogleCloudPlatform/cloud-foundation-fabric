@@ -21,6 +21,6 @@ values:
   module.bucket.google_logging_linked_dataset.dataset[0]:
     link_id: log
     location: global
-  
+
 counts:
   google_logging_project_bucket_config: 1
