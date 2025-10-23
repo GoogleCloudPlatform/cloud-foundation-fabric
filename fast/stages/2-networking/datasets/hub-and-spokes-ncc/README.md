@@ -45,7 +45,7 @@ There's two main configurations controlling inter-VPC connectivity:
 
 The **NCC hub setup**, controlled by files in the [ncc-hubs](./ncc-hubs/) folder - each describing an hub and its configuration.
 
-[prod-hub](./ncc-hubs/prod-hub.yaml)
+[prod-hub](./ncc-hubs/hub.yaml)
 
 ```yaml
 name: the-hub

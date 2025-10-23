@@ -1,3 +1,9 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../schemas/ncc-hub.schema.json
+
 name: hub
 project_id: $project_ids:net-core-0
 groups:
