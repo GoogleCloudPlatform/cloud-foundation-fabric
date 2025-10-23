@@ -646,7 +646,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | name | description | modules | resources |
 |---|---|---|---|
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
-| [cicd.tf](./cicd.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> · <code>google_storage_bucket_object</code> · <code>local_file</code> |
+| [cicd.tf](./cicd.tf) | None | <code>iam-service-account</code> | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
@@ -655,6 +655,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [wif-definitions.tf](./wif-definitions.tf) | Workload Identity provider definitions. |  |  |
+| [wif-providers.tf](./wif-providers.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
 
 ## Variables
 

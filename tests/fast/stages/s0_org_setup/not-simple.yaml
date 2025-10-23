@@ -277,24 +277,6 @@ values:
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.workflows["org-setup"]:
-    bucket: ft0-prod-iac-core-0-iac-outputs
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: different hash
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: workflows/org-setup.yaml
-    retention: []
-    source: null
-    source_md5hash: null
-    temporary_hold: null
-    timeouts: null
   local_file.providers["0-org-setup"]:
     content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
       \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
@@ -438,13 +420,6 @@ values:
     directory_permission: '0777'
     file_permission: '0644'
     filename: /tmp/fast-config/tfvars/0-org-setup.auto.tfvars.json
-    sensitive_content: null
-    source: null
-  local_file.workflows["org-setup"]:
-    content_base64: null
-    directory_permission: '0777'
-    file_permission: '0644'
-    filename: /tmp/fast-config/workflows/org-setup.yaml
     sensitive_content: null
     source: null
   module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"]:
@@ -2846,6 +2821,7 @@ counts:
   google_project_service: 33
   google_project_service_identity: 9
   google_service_account: 14
+  google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
@@ -2858,6 +2834,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 46
-  resources: 309
+  modules: 48
+  resources: 311
   terraform_data: 2
