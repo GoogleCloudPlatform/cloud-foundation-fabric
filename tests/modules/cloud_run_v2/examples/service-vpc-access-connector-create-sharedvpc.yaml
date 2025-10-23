@@ -53,6 +53,6 @@ counts:
   google_cloud_run_v2_service: 1
   google_vpc_access_connector: 1
   modules: 4
-  resources: 60
+  resources: 59
 
 outputs: {}

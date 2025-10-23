@@ -53,9 +53,26 @@ ALIASES = {
     'serverless-robot-prod': ['cloudrun', 'run'],
 }
 
-IGNORED_AGENTS = [
-    # gcp-sa-ns-authz agent gets created on first create op
-    'service-PROJECT_NUMBER@gcp-sa-ns-authz.iam.gserviceaccount.com'
+IGNORED_AGENTS = []
+
+SKIP_IAM_AGENTS = [
+    # skips IAM role grants to the non-primary agents listed below as
+    # it's failing, possibly because the agents don't exist after API
+    # activation
+    'service-PROJECT_NUMBER@gcp-sa-apigateway-mgmt.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-apigateway.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-bigqueryspark.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-bigquerytardis.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-connectedsheets.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-firebase.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-krmapihosting-dataplane.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-krmapihosting.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-logging.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-networkactions.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-prod-bigqueryomni.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-scc-notification.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-securitycenter.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-ns-authz.iam.gserviceaccount.com',
 ]
 
 AGENT_NAME_OVERRIDE = {
@@ -115,6 +132,7 @@ class Agent:
   role: str
   is_primary: bool
   aliases: list[str]
+  skip_iam: bool
 
 
 @click.command()
@@ -173,6 +191,8 @@ def main(mode, e2e=False):
       name = identity.split('@')[1].split('.')[0]
       name = name.removeprefix('gcp-sa-')
 
+    skip_iam = identity in SKIP_IAM_AGENTS
+
     # Replace identifiers based on mode
     if mode == 'project':
       identity = identity.replace('PROJECT_NUMBER', '${project_number}')
@@ -200,6 +220,7 @@ def main(mode, e2e=False):
         role=col2.code.get_text() if 'roles/' in agent_text else None,
         is_primary=PRIMARY_OVERRIDE.get(name, is_primary),
         aliases=ALIASES.get(name, []),
+        skip_iam=skip_iam,
     )
 
     if mode == 'project' and agent.name == 'cloudservices':

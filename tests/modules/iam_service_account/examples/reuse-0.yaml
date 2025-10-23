@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.service-account.google_billing_account_iam_member.billing-roles["ABCDE-12345-ABCDE-roles/billing.user"]:
+    billing_account_id: ABCDE-12345-ABCDE
+    condition: []
+    role: roles/billing.user
+  module.service-account.google_folder_iam_member.folder-roles["$folder_ids:test-roles/resourcemanager.folderAdmin"]:
+    condition: []
+    folder: folders/1234567890
+    role: roles/resourcemanager.folderAdmin
+
 counts:
-  google_project: 3
-  google_project_iam_member: 21
-  google_project_service: 27
-  google_project_service_identity: 21
-  modules: 3
-  resources: 72
+  google_billing_account_iam_member: 1
+  google_folder_iam_member: 1
+  modules: 1
+  resources: 2

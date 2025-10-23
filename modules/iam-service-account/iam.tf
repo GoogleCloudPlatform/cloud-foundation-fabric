@@ -89,9 +89,11 @@ locals {
 }
 
 resource "google_service_account_iam_binding" "authoritative" {
-  for_each           = local.iam
-  service_account_id = local.service_account.name
-  role               = lookup(local.ctx.custom_roles, each.key, each.key)
+  for_each = local.iam
+  service_account_id = try(
+    local.service_account.name, local.static_id
+  )
+  role = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
     for v in each.value :
     lookup(local.ctx.iam_principals, v, v)
@@ -99,8 +101,10 @@ resource "google_service_account_iam_binding" "authoritative" {
 }
 
 resource "google_service_account_iam_binding" "bindings" {
-  for_each           = var.iam_bindings
-  service_account_id = local.service_account.name
+  for_each = var.iam_bindings
+  service_account_id = try(
+    local.service_account.name, local.static_id
+  )
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )
@@ -120,8 +124,10 @@ resource "google_service_account_iam_binding" "bindings" {
 }
 
 resource "google_service_account_iam_member" "bindings" {
-  for_each           = local.iam_bindings_additive
-  service_account_id = local.service_account.name
+  for_each = local.iam_bindings_additive
+  service_account_id = try(
+    local.service_account.name, local.static_id
+  )
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )

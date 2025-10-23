@@ -179,7 +179,7 @@ projects = {
       }
     }
     group         = "net-admins"
-    populate_from = "../../stages/2-networking-a-peering"
+    populate_from = "../../stages/2-networking-legacy-a-peering"
     workflow_file = "networking-workflow.yaml"
   }
 }
@@ -235,7 +235,7 @@ projects = {
       }
     }
     group           = "net-admins"
-    populate_from   = "../../stages/2-networking-a-peering"
+    populate_from   = "../../stages/2-networking-legacy-a-peering"
     populate_sample = true
     workflow_file   = "networking-workflow.yaml"
   }
@@ -290,7 +290,7 @@ projects = {
       }
     }
     group           = "net-admins"
-    populate_from   = "../../stages/2-networking-a-peering"
+    populate_from   = "../../stages/2-networking-legacy-a-peering"
     populate_sample = true
     workflow_file   = "networking-workflow.yaml"
   }

@@ -62,7 +62,7 @@ Refer to the [example](#example) below for actual examples of the YAML definitio
 
 ## Projects
 
-The project factory is configured in three ia the `factories_config.projects` variable, and project files are also additionally read from the folder tree described in the previous section. It's best to limit project definition via the hierarchy tree to a minimum to avoid cross dependencies between folders and projects, which could complicate their lifecycle.
+The project factory is configured via the `factories_config.projects` variable, and project files are also additionally read from the folder tree described in the previous section. It's best to limit project definition via the hierarchy tree to a minimum to avoid cross-dependencies between folders and projects, which could complicate their lifecycle.
 
 Projects can also be configured via the `projects` variable, which is internally merged in with the factory definitions.
 

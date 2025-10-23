@@ -273,9 +273,6 @@ values:
     - serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     role: roles/run.developer
-  module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
-    project: test-pf-dev-ta-app0-be
-    user_project: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_essential_contacts_contact.contact["admin@example.org"]:
     email: admin@example.org
     language_tag: en
@@ -405,9 +402,6 @@ values:
   module.project-factory.module.projects["dev-tb-app0-0"].google_project_service_identity.default["run.googleapis.com"]:
     project: test-pf-dev-tb-app0-0
     service: run.googleapis.com
-  module.project-factory.module.projects["dev-tb-app0-1"].data.google_storage_project_service_account.gcs_sa[0]:
-    project: test-pf-dev-tb-app0-1
-    user_project: null
   module.project-factory.module.projects["dev-tb-app0-1"].google_essential_contacts_contact.contact["admin@example.org"]:
     email: admin@example.org
     language_tag: en
@@ -462,9 +456,6 @@ values:
   ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service_identity.default["container.googleapis.com"]
   : project: test-pf-dev-tb-app0-1
     service: container.googleapis.com
-  module.project-factory.module.projects["teams-iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
-    project: test-pf-teams-iac-0
-    user_project: null
   module.project-factory.module.projects["teams-iac-0"].google_essential_contacts_contact.contact["admin@example.org"]:
     email: admin@example.org
     language_tag: en
@@ -604,8 +595,6 @@ values:
     email: app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
-  ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].data.google_service_account.service_account[0]
-  : account_id: vm-default
   ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
     members:
@@ -631,7 +620,7 @@ counts:
   google_project_iam_member: 21
   google_project_service: 13
   google_project_service_identity: 4
-  google_service_account: 7
+  google_service_account: 6
   google_service_account_iam_binding: 1
   google_storage_bucket: 1
   google_storage_bucket_iam_binding: 2
@@ -641,5 +630,5 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 23
-  resources: 90
+  resources: 89
   terraform_data: 1
