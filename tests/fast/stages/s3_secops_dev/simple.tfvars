@@ -6,7 +6,7 @@ billing_account = {
 }
 project_reuse = null
 folder_ids = {
-  "secops-dev" = "folders/123456789"
+  "secops/dev" = "folders/123456789"
 }
 tenant_config = {
   customer_id = "xxxxxx-xxxxxx-xxxxxx"
