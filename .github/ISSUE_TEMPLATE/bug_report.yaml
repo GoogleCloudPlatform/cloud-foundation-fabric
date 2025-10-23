@@ -88,5 +88,5 @@ body:
     attributes:
       label: Additional context
       description:
-         To help us understand the issue, please include any relevant screenshots,
-         Terraform plan/apply output, etc.
+        To help us understand the issue, please include any relevant screenshots,
+        Terraform plan/apply output, etc.

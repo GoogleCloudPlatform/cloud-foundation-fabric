@@ -15,6 +15,7 @@
 name: |
   Create daily release tags
 
+# yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
   schedule:
