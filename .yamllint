@@ -5,6 +5,12 @@ yaml-files:
 - '*.yml'
 - '.yamllint'
 
+## exclude
+ignore: |
+  fast/stages/0-org-setup/assets/workflow-*.yaml
+  cloud-config.yaml
+  *-cloud-config.yaml
+
 extends: default
 
 rules:
@@ -14,3 +20,9 @@ rules:
     max: 120
     level: warning
   braces: disable
+  document-start: disable
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 1
+  comments-indentation: disable
