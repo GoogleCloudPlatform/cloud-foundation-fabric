@@ -44,6 +44,7 @@ module "dp-automation-bucket" {
       ]
     )
   }
+  versioning = true
 }
 
 module "dp-automation-sa" {

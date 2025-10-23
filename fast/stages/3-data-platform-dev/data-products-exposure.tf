@@ -49,6 +49,7 @@ module "dp-buckets" {
       module.central-project.tag_values[var.exposure_config.tag_name].id
     )
   }
+  versioning = true
 }
 
 module "dp-datasets" {
