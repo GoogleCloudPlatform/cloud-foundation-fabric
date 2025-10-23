@@ -13,6 +13,7 @@ routers:
     asn: 64514
 routes:
   gateway:
+    # The configuration above is purely illustrative. Adjust as needed.
     dest_range: "8.8.8.8/32"
     priority: 100
     next_hop_type: "gateway"
