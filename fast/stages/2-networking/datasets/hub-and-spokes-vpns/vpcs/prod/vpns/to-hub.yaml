@@ -12,9 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/2-networking
-
-tests:
-  peerings:
-  ncc:
-  vpns:
+name: to-hub
+region: europe-west8
+peer_gateways:
+  default:
+    gcp: $vpn_gateways:hub/to-prod
+router_config:
+  create: false
+  name: $routers:prod/vpn-router
+tunnels:
+  remote-0:
+    shared_secret: foobar
+    bgp_peer:
+      address: 169.254.2.2
+      asn: 64514
+    bgp_session_range: "169.254.2.1/30"
+    vpn_gateway_interface: 0
+  remote-1:
+    shared_secret: foobar
+    bgp_peer:
+      address: 169.254.2.6
+      asn: 64514
+    bgp_session_range: "169.254.2.5/30"
+    vpn_gateway_interface: 1

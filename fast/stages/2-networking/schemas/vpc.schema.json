@@ -338,6 +338,22 @@
             },
             "asn": {
               "type": "number"
+            },
+            "custom_advertise": {
+              "type": "object",
+              "properties": {
+                "all_subnets": {
+                  "type": "boolean"
+                },
+                "ip_ranges": {
+                  "type": "object",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
             }
           }
         }

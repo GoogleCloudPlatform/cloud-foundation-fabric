@@ -85,10 +85,10 @@ module "vpn-ha" {
     }
   }
   context = {
-    gateways    = local.ctx_gateways
-    locations   = local.ctx.locations
-    network     = local.ctx_vpcs.names
-    project_ids = local.ctx_projects.project_ids
-    routers     = local.ctx_routers.names
+    locations    = local.ctx.locations
+    network      = local.ctx_vpcs.names
+    project_ids  = local.ctx_projects.project_ids
+    routers      = local.ctx_routers.names
+    vpn_gateways = local.ctx_gateways
   }
 }

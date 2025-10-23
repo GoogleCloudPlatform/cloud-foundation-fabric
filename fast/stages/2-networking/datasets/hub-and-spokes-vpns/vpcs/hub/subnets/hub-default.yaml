@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../../../schemas/subnet.schema.json
+
+name: hub-default
+region: $locations:secondary
+ip_cidr_range: 10.71.0.0/24
+description: Default europe-west12 subnet for hub

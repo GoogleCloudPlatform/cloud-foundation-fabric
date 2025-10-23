@@ -59,6 +59,7 @@ It currently implements the following:
 
 - **Hub and spoke (w/ NCC)**: Environment-based VPCs interconnected through an NCC full-mesh, resulting in full routing line-of-sight between spokes ([dataset](./datasets/hub-and-spokes-ncc/))
 - **Hub and spoke (w/ VPC Peering)**: Environment-based VPCs interconnected through VPC peering, resulting in full isolation between spokes ([dataset](./datasets/hub-and-spokes-peerings/))
+- **Hub and spoke (w/ VPN)**: Environment-based VPCs interconnected through HA VPN, resulting in full isolation between spokes ([dataset](./datasets/hub-and-spokes-vpns/))
 
 ### Defaults file
 
