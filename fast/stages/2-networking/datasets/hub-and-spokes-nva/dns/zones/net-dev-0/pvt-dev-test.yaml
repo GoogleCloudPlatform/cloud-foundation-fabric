@@ -8,8 +8,8 @@ project_id: $project_ids:net-dev-0
 domain: dev.test.
 private:
   client_networks:
-    - $networks:dev
     - $networks:hub
+    - $networks:dev
 recordsets:
   "A localhost":
     records: ["127.0.0.1"]

@@ -1,0 +1,42 @@
+# TODO: create schema
+
+project_id: $project_ids:net-core-0
+name: main
+image: projects/cos-cloud/global/images/family/cos-stable
+region: europe-west8
+instance_type: e2-standard-4
+
+health_check:
+  tcp:
+    port: 22
+instance_groups:
+  # Keyed by zone
+  b:
+    auto_create_instances: 1
+    attach_instances: {}
+      # - name1: self-link
+      # - name2: self-link
+  c:
+    auto_create_instances: 2
+
+tags:
+  - nva
+  - test
+
+attachments:
+  - network: $networks:hub
+    subnet: $subnets:hub/europe-west8/hub-default
+    routes:
+      - 10.71.0.0/16
+    masquerade: true
+  - network: $networks:prod
+    subnet: $subnets:prod/europe-west8/prod-default
+    routes:
+      - 10.72.0.0/16
+  - network: $networks:dev
+    subnet: $subnets:dev/europe-west8/dev-default
+    routes:
+      - 10.73.0.0/16
+  - network: $networks:mgmt
+    subnet: $subnets:mgmt/europe-west8/mgmt-default
+    create_ilb: false

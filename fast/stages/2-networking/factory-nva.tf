@@ -137,8 +137,9 @@ module "nva-instance" {
   }
   metadata = each.value.metadata
   context = {
+    locations   = local.ctx.locations
+    networks    = local.ctx_vpcs.self_links
     project_ids = local.ctx_projects.project_ids
-    vpcs        = local.ctx_vpcs.self_links
     subnets     = local.ctx_vpcs.subnets_by_vpc
   }
 }
@@ -150,9 +151,8 @@ resource "google_compute_instance_group" "nva" {
     replace(each.value.project_id, "$project_ids:", ""),
     each.value.project_id
   )
-  zone = each.value.zone
-  name = each.value.name
-  #network    = lookup(local.ctx_vpcs.self_links, replace(each.value.network, "$networks:", ""), each.value.network)
+  zone       = each.value.zone
+  name       = each.value.name
   instances  = each.value.instances
   depends_on = [module.nva-instance]
 }
@@ -172,7 +172,7 @@ module "ilb" {
   health_check_config = each.value.health_check
   context = {
     project_ids = local.ctx_projects.project_ids
-    vpcs        = local.ctx_vpcs.self_links
+    networks    = local.ctx_vpcs.self_links
     subnets     = local.ctx_vpcs.subnets_by_vpc
   }
   depends_on = [module.nva-instance]

@@ -9,5 +9,6 @@ domain: .
 peering:
   peer_network: $networks:hub
   client_networks:
-    - $networks:prod
     - $networks:dev
+    - $networks:mgmt
+    - $networks:prod
