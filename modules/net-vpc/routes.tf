@@ -72,9 +72,11 @@ resource "google_compute_route" "ilb" {
   dest_range = lookup(
     local.ctx.cidr_ranges, each.value.dest_range, each.value.dest_range
   )
-  priority     = each.value.priority
-  tags         = each.value.tags
-  next_hop_ilb = each.value.next_hop
+  priority = each.value.priority
+  tags     = each.value.tags
+  next_hop_ilb = lookup(
+    local.ctx.addresses, each.value.next_hop, each.value.next_hop
+  )
 }
 
 resource "google_compute_route" "instance" {
