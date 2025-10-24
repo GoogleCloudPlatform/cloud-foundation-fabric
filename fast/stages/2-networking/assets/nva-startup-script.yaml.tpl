@@ -86,10 +86,12 @@ runcmd:
 
       %{ for nic_index, nic in nva_nics_config ~}
       if [ "$${i}" == "${nic_index}" ]; then
+        %{ if can(nic.routes) ~}
         %{ for route in nic.routes ~}
         echo "Adding route for ${route} via $${GATEWAY} on $${IF_NAME}"
         ip route add ${route} via $${GATEWAY} dev $${IF_NAME} proto static
         %{ endfor ~}
+        %{ endif ~}
         %{ if try(nic.masquerade, false) ~}
         echo "Enabling NAT (Masquerade) on $${IF_NAME}."
         iptables -t nat -A POSTROUTING -o $${IF_NAME} -j MASQUERADE
