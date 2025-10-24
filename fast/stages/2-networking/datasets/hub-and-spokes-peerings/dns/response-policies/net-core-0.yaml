@@ -8,7 +8,6 @@ project_id: $project_ids:net-core-0
 networks:
   - $networks:dev
   - $networks:hub
-  - $networks:mgmt
   - $networks:prod
 rules:
   accounts:

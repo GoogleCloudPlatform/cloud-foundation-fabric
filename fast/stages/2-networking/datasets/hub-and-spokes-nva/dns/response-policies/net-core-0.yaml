@@ -6,9 +6,10 @@
 
 project_id: $project_ids:net-core-0
 networks:
-  - $networks:hub
-  - $networks:prod
   - $networks:dev
+  - $networks:hub
+  - $networks:mgmt
+  - $networks:prod
 rules:
   accounts:
     dns_name: "accounts.google.com."
