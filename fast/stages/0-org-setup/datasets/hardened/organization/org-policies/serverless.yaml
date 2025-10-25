@@ -22,7 +22,7 @@ cloudfunctions.allowedVpcConnectorEgressSettings:
   rules:
     - allow:
         values:
-            - "ALL_TRAFFIC"
+          - "ALL_TRAFFIC"
 
 cloudfunctions.requireVPCConnector:
   rules:
@@ -36,19 +36,19 @@ run.allowedBinaryAuthorizationPolicies:
   rules:
     - allow:
         values:
-            - "default"
+          - "default"
 
 run.allowedIngress:
   rules:
     - allow:
         values:
-            - "is:internal-and-cloud-load-balancing"
+          - "is:internal-and-cloud-load-balancing"
 
 run.allowedVPCEgress:
   rules:
     - allow:
         values:
-            - "all-traffic"
+          - "all-traffic"
 
 run.managed.requireInvokerIam:
   rules:
