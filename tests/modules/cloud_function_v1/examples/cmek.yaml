@@ -36,10 +36,10 @@ values:
     vulnerability_scanning_config:
     - enablement_config: null
   module.artifact-registry.google_artifact_registry_repository_iam_binding.authoritative["roles/artifactregistry.createOnPushWriter"]:
-      condition: []
-      location: europe-west9
-      project: test-cf-v1
-      role: roles/artifactregistry.createOnPushWriter
+    condition: []
+    location: europe-west9
+    project: test-cf-v1
+    role: roles/artifactregistry.createOnPushWriter
   module.kms.google_kms_crypto_key.default["key-regional"]:
     effective_labels:
       goog-terraform-provisioned: 'true'
