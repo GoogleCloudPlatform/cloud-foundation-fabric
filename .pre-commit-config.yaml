@@ -81,17 +81,13 @@ repos:
     require_serial: true
     files: ^fast/.*tf
   - id: versions
-    name: Align Terraform provider versions
-    language: script
-    files: (versions.tf|^default-versions.tf)$
+    name: Align Terraform/OpenTofu provider versions
+    language: python
+    additional_dependencies:
+    - click
+    files: (versions.tf|^default-versions.tf|versions.tofu|default-versions.tofu)$
     pass_filenames: false
-    entry: /usr/bin/find . -type f -name 'versions.tf' -exec cp default-versions.tf {} \;
-  - id: versions_tofu
-    name: Align OpenTofu provider versions
-    language: script
-    files: (versions.tofu|^default-versions.tofu)$
-    pass_filenames: false
-    entry: /usr/bin/find . -type f -name 'versions.tofu' -exec cp default-versions.tofu {} \;
+    entry: tools/versions.py --quiet
   - id: check-names
     name: Check name lengths for FAST
     language: python
@@ -149,7 +145,7 @@ repos:
     exclude: ".*tpl"
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
+  rev: v6.0.0
   hooks:
   - id: end-of-file-fixer
   - id: trailing-whitespace
@@ -164,7 +160,7 @@ repos:
   - id: yapf
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.2.6
+  rev: v2.4.1
   hooks:
   - id: codespell
     exclude: (requirements.txt$|excalidraw$|package-lock\.json$|go\.sum$|^CHANGELOG.md$)

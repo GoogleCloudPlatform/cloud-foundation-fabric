@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
 - [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
 - [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
 - [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)] Support resource-level factories config in project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-18 10:41:19+00:00 -->
@@ -49,6 +50,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
+- [[#3461](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3461)] fix(vpc-sc): correctly handle null `from.identities` in ingress/egress policies (regression since v39.0.0) ([viliampucik](https://github.com/viliampucik)) <!-- 2025-10-24 05:00:07+00:00 -->
 - [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
 - [[#3448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3448)] Skip IAM grants for service agents that are not created on API activation ([juliocc](https://github.com/juliocc)) <!-- 2025-10-21 14:31:33+00:00 -->
 - [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->
@@ -90,6 +93,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
 - [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
 - [[#3448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3448)] Skip IAM grants for service agents that are not created on API activation ([juliocc](https://github.com/juliocc)) <!-- 2025-10-21 14:31:33+00:00 -->
 - [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->

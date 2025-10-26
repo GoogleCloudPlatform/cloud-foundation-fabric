@@ -9,7 +9,7 @@ The NVAs run [Container-Optimized OS (COS)](https://cloud.google.com/container-o
 To configure the firewall, you can either
 
 - use the [open_ports](variables.tf#L84) variable
-- for a thiner grain control, pass a custom bash script at startup with iptables commands
+- for a thinner grain control, pass a custom bash script at startup with iptables commands
 
 ## Examples
 

@@ -551,7 +551,7 @@ tag_bindings:
 # tftest-file id=4 path=data/hierarchy/team-b/app-0/.config.yaml schema=folder.schema.json
 ```
 
-One project defined within the folder hierarchy, using a lower level factory for org polcies:
+One project defined within the folder hierarchy, using a lower level factory for org policies:
 
 ```yaml
 billing_account: 012345-67890A-BCDEF0

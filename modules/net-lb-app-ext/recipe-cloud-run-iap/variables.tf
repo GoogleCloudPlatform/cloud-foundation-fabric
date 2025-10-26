@@ -24,7 +24,7 @@ variable "_testing" {
   default = null
 }
 
-variable "accesors" {
+variable "accessors" {
   description = "List of identities able to access the service via IAP (e.g. group:mygroup@myorg.com)."
   type        = list(string)
   default     = []
