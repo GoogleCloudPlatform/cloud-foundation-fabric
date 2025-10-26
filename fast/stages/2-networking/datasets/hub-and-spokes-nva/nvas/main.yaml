@@ -15,6 +15,14 @@ auto_instance_config:
     - nva
     - test
   nics:
+    - network: $networks:dmz
+      subnet: $subnets:dmz/europe-west8/dmz-default
+      routes:
+        - 10.74.0.0/16
+      masquerade:
+        # This enables SNAT to CloudNAT for internet egress, and sets the
+        # default route via this NIC.
+        true
     - network: $networks:hub
       subnet: $subnets:hub/europe-west8/hub-default
       routes:
@@ -27,11 +35,6 @@ auto_instance_config:
       subnet: $subnets:dev/europe-west8/dev-default
       routes:
         - 10.73.0.0/16
-    - network: $networks:dmz
-      subnet: $subnets:dmz/europe-west8/dmz-default
-      routes:
-        - 10.74.0.0/16
-      masquerade: true
 
 ilb_config:
   health_check:
@@ -47,11 +50,11 @@ ilb_config:
     c:
       auto_create_instances: 2
   forwarding_rules:
+    - network: $networks:dmz
+      subnet: $subnets:dmz/europe-west8/dmz-default
     - network: $networks:hub
       subnet: $subnets:hub/europe-west8/hub-default
     - network: $networks:prod
       subnet: $subnets:prod/europe-west8/prod-default
     - network: $networks:dev
       subnet: $subnets:dev/europe-west8/dev-default
-    - network: $networks:dmz
-      subnet: $subnets:dmz/europe-west8/dmz-default

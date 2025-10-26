@@ -21,8 +21,23 @@ nat_config:
   nat-ew8:
     region: europe-west8
 routes:
-  gateway:
-    dest_range: "0.0.0.0/0"
+  rfc1918-10:
+    dest_range: "10.0.0.0/8"
     priority: 100
     next_hop_type: ilb
     next_hop: $addresses:dmz/main
+  rfc1918-172:
+    dest_range: "172.16.0.0/12"
+    priority: 100
+    next_hop_type: ilb
+    next_hop: $addresses:dmz/main
+  rfc1918-192:
+    dest_range: "192.168.0.0/16"
+    priority: 100
+    next_hop_type: ilb
+    next_hop: $addresses:dmz/main
+  internet:
+    dest_range: "0.0.0.0/0"
+    priority: 100
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"

@@ -96,7 +96,8 @@ runcmd:
         %{ endfor ~}
         %{ endif ~}
         %{ if try(nic.masquerade, false) ~}
-        echo "Enabling NAT (Masquerade) on $${IF_NAME}."
+        echo "Enabling NAT (Masquerade) on $${IF_NAME} and setting default route."
+        ip route replace default via $${GATEWAY} dev $${IF_NAME}
         iptables -t nat -A POSTROUTING -o $${IF_NAME} -j MASQUERADE
         %{ endif ~}
       fi
