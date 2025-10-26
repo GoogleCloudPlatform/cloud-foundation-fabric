@@ -19,7 +19,6 @@ auto_instance_config:
       subnet: $subnets:hub/europe-west8/hub-default
       routes:
         - 10.71.0.0/16
-      masquerade: true
     - network: $networks:prod
       subnet: $subnets:prod/europe-west8/prod-default
       routes:
@@ -28,8 +27,11 @@ auto_instance_config:
       subnet: $subnets:dev/europe-west8/dev-default
       routes:
         - 10.73.0.0/16
-    - network: $networks:mgmt
-      subnet: $subnets:mgmt/europe-west8/mgmt-default
+    - network: $networks:dmz
+      subnet: $subnets:dmz/europe-west8/dmz-default
+      routes:
+        - 10.74.0.0/16
+      masquerade: true
 
 ilb_config:
   health_check:
@@ -51,3 +53,5 @@ ilb_config:
       subnet: $subnets:prod/europe-west8/prod-default
     - network: $networks:dev
       subnet: $subnets:dev/europe-west8/dev-default
+    - network: $networks:dmz
+      subnet: $subnets:dmz/europe-west8/dmz-default

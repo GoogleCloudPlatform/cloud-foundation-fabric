@@ -2,7 +2,7 @@
 
 # yaml-language-server: $schema=../../../../../schemas/subnet.schema.json
 
-name: mgmt-default
+name: dmz-default
 region: $locations:primary
-ip_cidr_range: 172.17.0.0/24
-description: Default primary-region subnet for mgmt
+ip_cidr_range: 10.74.0.0/24
+description: Default primary-region subnet for dmz

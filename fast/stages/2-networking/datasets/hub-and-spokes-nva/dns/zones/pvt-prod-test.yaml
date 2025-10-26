@@ -4,12 +4,12 @@
 
 # yaml-language-server: $schema=../../../../../schemas/dns.schema.json
 
-project_id: $project_ids:net-dev-0
-domain: dev.test.
+project_id: $project_ids:net-core-0
+domain: prod.test.
 private:
   client_networks:
     - $networks:hub
-    - $networks:dev
+    - $networks:prod
 recordsets:
   "A localhost":
     records: ["127.0.0.1"]
