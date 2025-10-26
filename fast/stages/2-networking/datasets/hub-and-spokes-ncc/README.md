@@ -10,12 +10,7 @@ NCC allows for transitive connections between spokes, PSC endpoints transitivity
 
 The following diagram illustrates the high-level design, and should be used as a reference for the following sections.
 
-<p align="center">
-  <img src="diagram-ncc.svg" alt="NCC diagram">
-  </br>NCC diagram
-</p>
-
-### VPC design
+## VPC design
 
 The hub VPC hosts external connectivity (by default VPN tunnels), attached to the NCC Hub as a series of hybrid spokes.
 
@@ -23,7 +18,7 @@ The default recipe ships two different VPCs, mapping to hypotetical environments
 
 The design easily lends itself to implementing additional environments, or adopting a different logical mapping for spokes (e.g. one spoke for each company entity, etc.).
 
-### IP ranges, subnetting, routing
+## IP ranges, subnetting, routing
 
 Minimizing the number of routes (and subnets) in use on the cloud environment is an important consideration, as it simplifies management and avoids hitting [Cloud Router](https://cloud.google.com/network-connectivity/docs/router/quotas) and [VPC](https://cloud.google.com/vpc/docs/quota) quotas and limits. For this reason, we recommend careful planning of the IP space used in your cloud environment, to be able to use large IP CIDR blocks in routes whenever possible.
 
@@ -39,7 +34,7 @@ Furthermore:
 - each spoke exchanges routes with the NCC hub, and gets NCC routes belonging to other spoks from the hub
 - on-premises is connected to the hub VPC and dynamically exchanges BGP routes with GCP using HA VPN. The HA VPN tunnels are configured as Hybrid spokes on the NCC hub, and as such all spokes receive those dynamic routes.
 
-### NCC Configuration
+## NCC Configuration
 
 There's two main configurations controlling inter-VPC connectivity:
 
@@ -71,7 +66,7 @@ ncc_config:
 
 For more informations about cross referencing resources, please check the [main README.md file](../../README.md)
 
-### Internet egress
+## Internet egress
 
 Cloud NAT provides the simplest path for internet egress. This setup uses Cloud NAT, which is enabled by default on the primary region.
 
@@ -91,13 +86,13 @@ Several other scenarios are possible of course, with varying degrees of complexi
 - a default route to on-prem to leverage existing egress infrastructure
 - a full-fledged perimeter firewall to control egress and implement additional security features like IPS
 
-### VPC and Hierarchical Firewall
+## VPC and Hierarchical Firewall
 
 The GCP Firewall is a stateful, distributed feature that allows the creation of L4 policies, either via VPC-level rules or more recently via hierarchical policies applied on the resource hierarchy (organization, folders).
 
 The current setup adopts both firewall types, and uses [hierarchical rules on the Networking folder](./firewall-policies/networking-policy.yaml) for common ingress rules, e.g. from health check or IAP forwarders ranges, and [VPC rules](./vpcs/prod/firewall-rules) for the environment or workload-level ingress.
 
-### DNS
+## DNS
 
 This dataset implements a centralized DNS architecture that handles resolution between GCP and on-premises environments.
 
@@ -115,6 +110,6 @@ DNS configuration is centralized in the hub project (`net-core-0`) and shared wi
 
 To complete the configuration, on-premises DNS servers should be configured to forward queries for your cloud domain (e.g., `test.`) to the GCP inbound policy's IP addresses. Additionally, the `35.199.192.0/19` range (used by the GCP DNS forwarder) should be routed over the VPN tunnels from on-premises.
 
-### VPNs
+## VPNs
 
 Connectivity to on-prem is implemented with HA VPN ([`net-vpn-ha`](../../../../../modules/net-vpn-ha/)) and defined in [`onprem.yaml`](./vpcs/hub/vpns/onprem.yaml). The file provisionally implements a single logical connection between onprem and the hub on the primary region through 2 IPSec tunnels, which are connected to the NCC Hub as hybrid spokes.
