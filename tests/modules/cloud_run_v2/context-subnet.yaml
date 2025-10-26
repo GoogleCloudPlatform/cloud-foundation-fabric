@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.service.google_cloud_run_v2_service.service[0]:
+  google_cloud_run_v2_service.service[0]:
     annotations: null
     binary_authorization: []
     build_config: []
@@ -21,7 +21,7 @@ values:
     client_version: null
     custom_audiences: null
     default_uri_disabled: null
-    deletion_protection: false
+    deletion_protection: true
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -29,41 +29,50 @@ values:
     invoker_iam_disabled: false
     labels: null
     location: europe-west8
-    name: service
-    project: project-id
+    multi_region_settings: []
+    name: test-cf-kms
+    project: foo-test-0
     scaling: []
     template:
     - annotations: null
-      containers:
-      - args: null
-        base_image_uri: null
-        command: null
-        depends_on: null
-        env: []
-        image: us-docker.pkg.dev/cloudrun/container/hello
-        liveness_probe: []
-        name: hello
-        resources:
-        - cpu_idle: null
-          limits:
-            nvidia.com/gpu: '1'
-          startup_cpu_boost: null
-        volume_mounts: []
-        working_dir: null
+      containers: []
       encryption_key: null
-      execution_environment: EXECUTION_ENVIRONMENT_GEN2
-      gpu_zonal_redundancy_disabled: true
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      gpu_zonal_redundancy_disabled: null
       labels: null
-      node_selector:
-      - accelerator: nvidia-l4
+      node_selector: []
       revision: null
+      service_account: test-cf-kms@foo-test-0.iam.gserviceaccount.com
       service_mesh: []
       session_affinity: null
       volumes: []
-      vpc_access: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_cloud_run_v2_service_iam_binding.binding["$custom_roles:myrole_one"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_project_iam_member.default["organizations/366118655033/roles/myRoleOne"]:
+    condition: []
+    member: serviceAccount:test-cf-kms@foo-test-0.iam.gserviceaccount.com
+    project: foo-test-0
+    role: organizations/366118655033/roles/myRoleOne
+  google_vpc_access_connector.connector[0]:
+    ip_cidr_range: null
+    machine_type: e2-micro
+    max_instances: 10
+    min_instances: 3
+    name: test-cf-kms
+    project: foo-test-0
+    region: europe-west8
+    subnet:
+    - name: gce
+      project_id: foo-dev-net-spoke-0
     timeouts: null
 
 counts:
   google_cloud_run_v2_service: 1
+  google_cloud_run_v2_service_iam_binding: 1
+  google_vpc_access_connector: 1

@@ -42,15 +42,19 @@ service_account_config = {
     "$custom_roles:myrole_one"
   ]
 }
-vpc_connector = {
-  name = "connector_name"
+revision = {
+  vpc_access = {
+    egress_settings = "ALL_TRAFFIC"
+  }
 }
+
 vpc_connector_create = {
   instances = {
     max = 10
     min = 3
   }
   subnet = {
-    name = "$subnets:test"
+    name       = "$subnets:test"
+    project_id = "$project_ids:test"
   }
 }

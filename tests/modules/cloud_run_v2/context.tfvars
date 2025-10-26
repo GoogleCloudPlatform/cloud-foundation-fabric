@@ -1,8 +1,4 @@
-name        = "test-cf-kms"
-bucket_name = "bucket"
-bundle_config = {
-  path = "gs://assets/sample-function.zip"
-}
+name = "test-run-context"
 context = {
   cidr_ranges = {
     test = "10.10.20.0/28"
@@ -42,15 +38,17 @@ service_account_config = {
     "$custom_roles:myrole_one"
   ]
 }
-vpc_connector = {
-  name = "connector_name"
+revision = {
+  vpc_access = {
+    egress_settings = "ALL_TRAFFIC"
+  }
 }
 vpc_connector_create = {
+  ip_cidr_range = "$cidr_ranges:test"
+  name          = "connector_name"
+  network       = "$networks:test"
   instances = {
     max = 10
     min = 3
-  }
-  subnet = {
-    name = "$subnets:test"
   }
 }
