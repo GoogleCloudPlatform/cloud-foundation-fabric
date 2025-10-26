@@ -28,28 +28,30 @@ write_files:
 
       while true; do
         echo "Checking for PBR updates."
+
+        FORWARDED_IPS_LIST=()
         FORWARDED_IP_IDS=$(curl -s -H "$${METADATA_HEADER}" "$${METADATA_URL}/$${IF_INDEX}/forwarded-ips/")
-        FORWARDED_IPS=""
         for ID in $${FORWARDED_IP_IDS}; do
           IP=$(curl -s -H "$${METADATA_HEADER}" "$${METADATA_URL}/$${IF_INDEX}/forwarded-ips/$${ID}")
-          FORWARDED_IPS="$${FORWARDED_IPS} $${IP}"
+          FORWARDED_IPS_LIST+=("$${IP}")
         done
+        FORWARDED_IPS=$(printf "%s\n" "$${FORWARDED_IPS_LIST[@]}")
 
         CURRENT_RULE_IPS=$(ip rule show | grep "lookup $${TABLE_ID}" | awk -F 'from ' '/from/ {split($2, a, " "); print a[1]}' | sort -u || true)
 
-        for FW_IP in $${FORWARDED_IPS}; do
-          if ! echo "$${CURRENT_RULE_IPS}" | grep -q "^$${FW_IP}$"; then
-              echo "Adding PBR rules for forwarded IP $${FW_IP}."
-              ip rule add from $${FW_IP} to 35.191.0.0/16 lookup $${TABLE_ID}
-              ip rule add from $${FW_IP} to 130.211.0.0/22 lookup $${TABLE_ID}
+        for IP in $${FORWARDED_IPS}; do
+          if ! echo "$${CURRENT_RULE_IPS}" | grep -q "^$${IP}$"; then
+            echo "Adding PBR rules for forwarded IP $${IP}."
+            ip rule add from $${IP} to 35.191.0.0/16 lookup $${TABLE_ID}
+            ip rule add from $${IP} to 130.211.0.0/22 lookup $${TABLE_ID}
           fi
         done
 
-        for RULE_IP in $${CURRENT_RULE_IPS}; do
-          if ! echo "$${FORWARDED_IPS}" | grep -q "^$${RULE_IP}$"; then
-              echo "Removing PBR rules for forwarded IP $${RULE_IP}."
-              ip rule del from $${RULE_IP} to 35.191.0.0/16 lookup $${TABLE_ID} || true
-              ip rule del from $${RULE_IP} to 130.211.0.0/22 lookup $${TABLE_ID} || true
+        for IP in $${CURRENT_RULE_IPS}; do
+          if ! echo "$${FORWARDED_IPS}" | grep -q "^$${IP}$"; then
+            echo "Removing PBR rules for forwarded IP $${IP}."
+            ip rule del from $${IP} to 35.191.0.0/16 lookup $${TABLE_ID} || true
+            ip rule del from $${IP} to 130.211.0.0/22 lookup $${TABLE_ID} || true
           fi
         done
 
@@ -85,6 +87,7 @@ runcmd:
       echo "Gateway for $${IF_NAME} is $${GATEWAY}."
 
       %{ for nic_index, nic in nva_nics_config ~}
+      %{ if can(nic.routes) || try(nic.masquerade, false) ~}
       if [ "$${i}" == "${nic_index}" ]; then
         %{ if can(nic.routes) ~}
         %{ for route in nic.routes ~}
@@ -97,6 +100,7 @@ runcmd:
         iptables -t nat -A POSTROUTING -o $${IF_NAME} -j MASQUERADE
         %{ endif ~}
       fi
+      %{ endif ~}
       %{ endfor ~}
 
       echo "Starting continuous PBR update for eth$${i} in the background."
