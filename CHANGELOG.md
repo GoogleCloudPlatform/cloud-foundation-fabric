@@ -5,6 +5,74 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-09-20 12:38:37+00:00 to: None since: v45.0.0 -->
 
+## [46.0.0] - 2025-10-26
+
+### BREAKING CHANGES
+
+- `fast/stages/2-networking-a-simple`: The stage is being deprecated, and superseded the `2-networking` FAST stage, introduced in #3435
+`fast/stages/2-networking-b-nva`: The stage is being deprecated, and superseded the `2-networking` FAST stage, introduced in #3435
+`fast/stages/2-networking-c-separate-envs`: The stage is being deprecated, and superseded the `2-networking` FAST stage, introduced in #3435
+`modules/net-vpc-factory`:  The module has been deprecated, and superseded the `2-networking` FAST stage, introduced in #3435 [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)]
+- `modules/iam-service-account`:  The `service_account_create` variable has been renamed to `service_account_reuse` and its type has changed.
+`modules/project-factory` and `fast/stages/0-org-setup`:  Data sources for service accounts are no longer needed. [[#3450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3450)]
+- `modules/project-factory`: `storage_location` and `bigquery_location` have been replaced with `locations.storage` and `locations.bigquery` in defaults and overrides; the same applies to FAST org setup, security, project factory stages. [[#3392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3392)]
+
+### FAST
+
+- [[#3470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3470)] Implement proper validation for tag value names in schema ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 12:35:56+00:00 -->
+- [[#3463](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3463)] NVA Dataset for FAST networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-26 09:51:00+00:00 -->
+- [[#3466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3466)] Fix YAML linting on fast-dev ([ludoo](https://github.com/ludoo)) <!-- 2025-10-25 09:15:25+00:00 -->
+- [[#3464](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3464)] Make classic dataset link to hub-and-spokes-peerings ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 13:08:17+00:00 -->
+- [[#3460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3460)] Consistent subnetting across datasets + contexts ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 19:14:05+00:00 -->
+- [[#3458](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3458)] 2-networking - VPN Dataset ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 15:21:40+00:00 -->
+- [[#3454](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3454)] Fix issues with FAST CI/CD support ([ludoo](https://github.com/ludoo)) <!-- 2025-10-23 14:40:06+00:00 -->
+- [[#3457](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3457)] 2-networking - NCC Dataset ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 12:59:47+00:00 -->
+- [[#3435](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3435)] Factory based FAST Networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 12:17:44+00:00 -->
+- [[#3453](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3453)] Fix typos ([juliocc](https://github.com/juliocc)) <!-- 2025-10-22 18:52:09+00:00 -->
+- [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)] Start the deprecation process of the old networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-22 14:31:15+00:00 -->
+- [[#3447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3447)] Align schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-10-21 12:03:40+00:00 -->
+- [[#3410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3410)] Adding hardened datasets for preventive and detective Compliance Controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-21 10:34:26+00:00 -->
+- [[#3417](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3417)] Add retention support for project-factory buckets ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-17 10:30:20+00:00 -->
+- [[#3431](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3431)] Revert "Allow overriding individual factory paths from organization config in FAST org setup" ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 09:41:31+00:00 -->
+- [[#3430](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3430)] Allow overriding individual factory paths from organization config in FAST org setup ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 06:51:24+00:00 -->
+- [[#3409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3409)] Fix NGFW add-on instructions ([ludoo](https://github.com/ludoo)) <!-- 2025-10-13 16:52:54+00:00 -->
+- [[#3408](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3408)] Ngfw custom roles ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-13 16:29:28+00:00 -->
+- [[#3401](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3401)] Support context and add configurations factory to workstation cluster module, add FAST project template ([ludoo](https://github.com/ludoo)) <!-- 2025-10-10 16:59:37+00:00 -->
+- [[#3399](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3399)] Align FAST project templates project definitions to new format ([ludoo](https://github.com/ludoo)) <!-- 2025-10-09 13:36:47+00:00 -->
+- [[#3398](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3398)] Allow automation resources with bucket or service accounts only in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-10-09 11:37:47+00:00 -->
+- [[#3397](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3397)] Reorder org-setup to support new datasets ([juliocc](https://github.com/juliocc)) <!-- 2025-10-09 09:28:34+00:00 -->
+- [[#3392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3392)] Rationalize location defaults across project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-08 07:12:15+00:00 -->
+- [[#3390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3390)] Use location.bigquery for billing dataset ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 12:13:01+00:00 -->
+- [[#3387](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3387)] Support iam_by_principals_additive in 0-org-setup ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 06:56:35+00:00 -->
+- [[#3386](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3386)] Document log_buckets namespace ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 05:38:17+00:00 -->
+- [[#3373](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3373)] Add support for output files to FAST project factory stage ([ludoo](https://github.com/ludoo)) <!-- 2025-10-03 12:20:04+00:00 -->
+
+### MODULES
+
+- [[#3470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3470)] Implement proper validation for tag value names in schema ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 12:35:56+00:00 -->
+- [[#3467](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3467)] Add fourth folder level to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 09:34:03+00:00 -->
+- [[#3462](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3462)] Use context in ilb routes ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-24 09:06:54+00:00 -->
+- [[#3452](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3452)] Allow null project id in service account module when reusing service account ([ludoo](https://github.com/ludoo)) <!-- 2025-10-22 16:51:07+00:00 -->
+- [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)] Start the deprecation process of the old networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-22 14:31:15+00:00 -->
+- [[#3450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3450)] Allow skipping data source in service account module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-22 11:04:00+00:00 -->
+- [[#3447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3447)] Align schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-10-21 12:03:40+00:00 -->
+- [[#3410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3410)] Adding hardened datasets for preventive and detective Compliance Controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-21 10:34:26+00:00 -->
+- [[#3417](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3417)] Add retention support for project-factory buckets ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-17 10:30:20+00:00 -->
+- [[#3430](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3430)] Allow overriding individual factory paths from organization config in FAST org setup ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 06:51:24+00:00 -->
+- [[#3426](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3426)] Fix context bug on net-dns ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-16 13:58:27+00:00 -->
+- [[#3401](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3401)] Support context and add configurations factory to workstation cluster module, add FAST project template ([ludoo](https://github.com/ludoo)) <!-- 2025-10-10 16:59:37+00:00 -->
+- [[#3398](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3398)] Allow automation resources with bucket or service accounts only in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-10-09 11:37:47+00:00 -->
+- [[#3392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3392)] Rationalize location defaults across project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-08 07:12:15+00:00 -->
+- [[#3387](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3387)] Support iam_by_principals_additive in 0-org-setup ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 06:56:35+00:00 -->
+- [[#3386](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3386)] Document log_buckets namespace ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 05:38:17+00:00 -->
+
+### TOOLS
+
+- [[#3435](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3435)] Factory based FAST Networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 12:17:44+00:00 -->
+- [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)] Start the deprecation process of the old networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-22 14:31:15+00:00 -->
+- [[#3447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3447)] Align schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-10-21 12:03:40+00:00 -->
+- [[#3410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3410)] Adding hardened datasets for preventive and detective Compliance Controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-21 10:34:26+00:00 -->
+
 ## [45.1.0] - 2025-10-26
 
 ### BREAKING CHANGES
@@ -1718,7 +1786,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...HEAD
+[46.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...45.1.0
 [45.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...45.0.0
 [45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...44.2.0
 [44.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...44.1.0
