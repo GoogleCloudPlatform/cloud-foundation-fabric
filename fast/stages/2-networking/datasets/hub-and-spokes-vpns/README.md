@@ -6,11 +6,6 @@ This model provides a clear separation between environments while centralizing s
 
 The following diagram illustrates the high-level design, and should be used as a reference for the following sections.
 
-<p align="center">
-  <img src="diagram.svg" alt="VPN diagram">
-  </br>VPN diagram
-</p>
-
 ## VPC design
 
 The hub VPC hosts external connectivity to on-premises networks and centralizes DNS configuration.
@@ -35,7 +30,7 @@ In this dataset:
 - each spoke exchanges routes with the hub via BGP over the HA VPN tunnels.
 - on-premises is connected to the hub VPC and dynamically exchanges BGP routes with GCP using HA VPN. The hub's Cloud Router then advertises these routes (all of RFC1918) to the spoke VPCs.
 
-### VPN Configuration
+## VPN Configuration
 
 HA VPN connections are defined in the `vpcs/[vpc-name]/vpns` directory. The hub VPC has VPNs connecting to each spoke, and the spokes have corresponding VPNs connecting back to the hub.
 
@@ -69,7 +64,7 @@ router_config:
 
 For more information about cross-referencing resources, please check the [main README.md file](../../README.md).
 
-### Internet egress
+## Internet egress
 
 Cloud NAT provides the simplest path for internet egress. This setup uses Cloud NAT, which is enabled by default on the primary region in the hub VPC. All spokes route internet-bound traffic through the hub.
 
@@ -89,13 +84,13 @@ Several other scenarios are possible through ad-hoc implementations, with varyin
 - A default route to on-prem to leverage existing egress infrastructure.
 - A full-fledged perimeter firewall to control egress and implement additional security features like IPS.
 
-### VPC and Hierarchical Firewall
+## VPC and Hierarchical Firewall
 
 The GCP Firewall is a stateful, distributed feature that allows the creation of L4 policies, either via VPC-level rules or more recently via hierarchical policies applied on the resource hierarchy (organization, folders).
 
 The current setup adopts both firewall types, and uses [hierarchical rules on the Networking folder](./firewall-policies/networking-policy.yaml) for common ingress rules, e.g., from health check or IAP forwarders ranges, and [VPC rules](./vpcs/prod/firewall-rules) for the environment or workload-level ingress.
 
-### DNS
+## DNS
 
 This dataset implements a centralized DNS architecture that handles resolution between GCP and on-premises environments.
 
