@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### BREAKING CHANGES
 
+- `modules/cloud-run`: cloud-run module was deprecated in favor of cloud-run-v2, which supports more functionalities [[#3472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3472)]
 - `modules/cloud-function-v1`: service_account and service_account_create were moved to service_account_config. By default, module now creates a service accounts and grants `roles/logging.logWriter` and `roles/monitoring.metricWriter` on project level
 `modules/cloud-function-v2`: service_account and service_account_create were moved to service_account_config. By default, module now creates a service accounts and grants `roles/logging.logWriter` and `roles/monitoring.metricWriter` on project level [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)]
 - `terraform-provider-google`:  Bump provider to 7.6.0, to allow use of `google_vertex_ai_reasoning_engine` in modules/agent-engine [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)]
@@ -24,6 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3468)] Improve linting and fix agent-engine module name ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 10:56:41+00:00 -->
 - [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
 - [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
 - [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
@@ -50,6 +52,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3472)] Deprecate cloud-run module ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 14:51:46+00:00 -->
+- [[#3468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3468)] Improve linting and fix agent-engine module name ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 10:56:41+00:00 -->
 - [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
 - [[#3461](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3461)] fix(vpc-sc): correctly handle null `from.identities` in ingress/egress policies (regression since v39.0.0) ([viliampucik](https://github.com/viliampucik)) <!-- 2025-10-24 05:00:07+00:00 -->
 - [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
@@ -93,6 +97,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3468)] Improve linting and fix agent-engine module name ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 10:56:41+00:00 -->
 - [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
 - [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
 - [[#3448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3448)] Skip IAM grants for service agents that are not created on API activation ([juliocc](https://github.com/juliocc)) <!-- 2025-10-21 14:31:33+00:00 -->
