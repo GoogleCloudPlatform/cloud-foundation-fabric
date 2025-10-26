@@ -38,7 +38,8 @@ locals {
   folder_ids = merge(
     { for k, v in module.folder-1 : k => v.id },
     { for k, v in module.folder-2 : k => v.id },
-    { for k, v in module.folder-3 : k => v.id }
+    { for k, v in module.folder-3 : k => v.id },
+    { for k, v in module.folder-4 : k => v.id }
   )
   folders_input = {
     for key, data in local._folders_raw : key => merge(data, {
@@ -180,6 +181,54 @@ module "folder-3-iam" {
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
+    })
+    iam_principals = local.ctx_iam_principals
+  })
+}
+
+module "folder-4" {
+  source = "../folder"
+  for_each = {
+    for k, v in local.folders_input : k => v if v.level == 4
+  }
+  parent = coalesce(
+    each.value.parent, "$folder_ids:${each.value.parent_key}"
+  )
+  name = each.value.name
+  factories_config = {
+    org_policies           = try(each.value.factories_config.org_policies, null)
+    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+  }
+  org_policies        = lookup(each.value, "org_policies", {})
+  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
+  tag_bindings        = lookup(each.value, "tag_bindings", {})
+  logging_data_access = lookup(each.value, "logging_data_access", {})
+  context = merge(local.ctx, {
+    folder_ids = merge(local.ctx.folder_ids, {
+      for k, v in module.folder-3 : k => v.id
+    })
+  })
+  depends_on = [module.folder-3]
+}
+
+module "folder-4-iam" {
+  source = "../folder"
+  for_each = {
+    for k, v in local.folders_input : k => v if v.level == 4
+  }
+  id = module.folder-4[each.key].id
+  factories_config = {
+    # we do anything that can refer to IAM and custom roles in this call
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+  }
+  folder_create         = false
+  iam                   = lookup(each.value, "iam", {})
+  iam_bindings          = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  context = merge(local.ctx, {
+    folder_ids = merge(local.ctx.folder_ids, {
+      for k, v in module.folder-3 : k => v.id
     })
     iam_principals = local.ctx_iam_principals
   })
