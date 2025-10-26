@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-09-20 12:38:37+00:00 to: None since: v45.0.0 -->
 
+## [45.1.0] - 2025-10-26
+
 ### BREAKING CHANGES
 
 - `modules/cloud-run`: cloud-run module was deprecated in favor of cloud-run-v2, which supports more functionalities [[#3472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3472)]
@@ -1714,7 +1716,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...HEAD
+[45.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...45.0.0
 [45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...44.2.0
 [44.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...44.1.0
 [44.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...44.0.0
