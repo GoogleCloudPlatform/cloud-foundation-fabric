@@ -33,9 +33,6 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Shared resources (2)
 
-- [Security (Legacy)](2-security-legacy/README.md)  
-  Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
-  Exports: KMS key ids, CA ids
 - [Security](2-security/README.md)  
   Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
   Exports: KMS key ids, CA ids
