@@ -42,8 +42,10 @@ service_account_config = {
     "$custom_roles:myrole_one"
   ]
 }
-vpc_connector = {
-  name = "connector_name"
+revision = {
+  vpc_access = {
+    egress_settings = "ALL_TRAFFIC"
+  }
 }
 vpc_connector_create = {
   instances = {

@@ -64,5 +64,5 @@ module "test" {
     "group:mygroup3@myorg.com"
   ]
 }
-# tftest modules=6 resources=24
+# tftest modules=6 resources=26
 ```

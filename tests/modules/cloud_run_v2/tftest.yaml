@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,24 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  module.cloud_run.google_cloud_run_v2_service.service[0]:
-    location: europe-west8
-    name: example-hello
-    project: project-id
-    template:
-    - containers:
-      - image: us-docker.pkg.dev/cloudrun/container/hello
-        name: hello
-        volume_mounts:
-        - mount_path: /cloudsql
-          name: cloudsql
-      volumes:
-      - cloud_sql_instance:
-        - {}
-        name: cloudsql
-
-counts:
-  google_cloud_run_v2_service: 1
-  google_sql_database_instance: 1
-  modules: 2
+module: modules/cloud-run-v2
+tests:
+  context:
+  context-subnet:
+  context-subnet-project:
+  vpcconnector:

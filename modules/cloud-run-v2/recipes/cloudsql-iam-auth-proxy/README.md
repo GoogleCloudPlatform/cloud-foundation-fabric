@@ -89,13 +89,16 @@ module "database_run" {
       }
     }
   }
-  service_account     = module.run-sa.email
-  deletion_protection = false
+  service_account_config = {
+    create = false
+    email  = module.run-sa.email
+  }
   volumes = {
     custom_cloudsql = {
       empty_dir_size = "128k"
     }
   }
+  deletion_protection = false
 }
 # tftest inventory=recipe-cloudsql-iam-auth-proxy.yaml e2e
 ```
