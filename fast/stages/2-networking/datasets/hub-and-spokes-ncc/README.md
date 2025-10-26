@@ -14,7 +14,7 @@ The following diagram illustrates the high-level design, and should be used as a
 
 The hub VPC hosts external connectivity (by default VPN tunnels), attached to the NCC Hub as a series of hybrid spokes.
 
-The default recipe ships two different VPCs, mapping to hypotetical environments (dev and prod). Each VPC is created into its own project, and each project is configured as a Shared VPC host, so that network-related resources and access configurations via IAM are kept separate for each VPC.
+The default recipe ships two different VPCs, mapping to hypothetical environments (dev and prod). Each VPC is created into its own project, and each project is configured as a Shared VPC host, so that network-related resources and access configurations via IAM are kept separate for each VPC.
 
 The design easily lends itself to implementing additional environments, or adopting a different logical mapping for spokes (e.g. one spoke for each company entity, etc.).
 
@@ -64,7 +64,7 @@ ncc_config:
 # [...]
 ```
 
-For more informations about cross referencing resources, please check the [main README.md file](../../README.md)
+For more information about cross referencing resources, please check the [main README.md file](../../README.md)
 
 ## Internet egress
 

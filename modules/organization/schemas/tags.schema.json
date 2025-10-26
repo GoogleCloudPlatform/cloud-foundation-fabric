@@ -29,7 +29,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z-][a-z0-9-]+$": {
+        "^[a-z-][^\\\\'\"/]+$": {
           "type": "object",
           "additionalProperties": false,
           "properties": {

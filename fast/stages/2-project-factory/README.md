@@ -356,7 +356,7 @@ automation:
 
 ### Generated provider and Terraform variables for projects
 
-This stage can optionally be configured to generate provider and tfvars files ("output files") for projects. These files can then be distributed to project owners to help them boostrap automation, and will be used in future releases to configure project-level CI/CD from this factory.
+This stage can optionally be configured to generate provider and tfvars files ("output files") for projects. These files can then be distributed to project owners to help them bootstrap automation, and will be used in future releases to configure project-level CI/CD from this factory.
 
 Output file generation is configured in the defaults file, and supports two usage modes:
 
@@ -423,7 +423,7 @@ output_files:
     # storage_folders_create: true
 ```
 
-The above snippet will create zero, one, or two provider files depending on how many service accounts match for each indivdual project. One tfvars file will also be created for each project with at least one provider file.
+The above snippet will create zero, one, or two provider files depending on how many service accounts match for each individual project. One tfvars file will also be created for each project with at least one provider file.
 
 For example, a project with this definition will generate one provider and one tfvars file for each of the top-level storage options (`output_files.local_path`, `output_files.storage_bucket`) defined.
 
