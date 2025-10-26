@@ -58,6 +58,7 @@ The default dataset describes multiple different networking patterns.
 It currently implements the following:
 
 - **Hub and spoke (w/ NCC)**: Environment-based VPCs interconnected through an NCC full-mesh, resulting in full routing line-of-sight between spokes ([dataset](./datasets/hub-and-spokes-ncc/))
+- **Hub and spoke (w/ NVA)**: Environment-based VPCs interconnected through a Network Virtual Appliance, allowing for centralized traffic inspection and control ([dataset](./datasets/hub-and-spokes-nva/))
 - **Hub and spoke (w/ VPC Peering)**: Environment-based VPCs interconnected through VPC peering, resulting in full isolation between spokes ([dataset](./datasets/hub-and-spokes-peerings/))
 - **Hub and spoke (w/ VPN)**: Environment-based VPCs interconnected through HA VPN, with full routing line-of-sight between spokes ([dataset](./datasets/hub-and-spokes-vpns/))
 
@@ -162,6 +163,7 @@ The following diagram shows the canonical paths for the different factory config
 │   └── zones               # DNS zones (private, forwarding, peering).
 ├── firewall-policies       # Hierarchical firewall policies.
 ├── ncc-hubs                # NCC configurations.
+├── nvas                    # NVA configurations.
 ├── projects                # Project definitions.
 └── vpcs
     └── [vpc-name]          # Each subfolder represents a VPC.
