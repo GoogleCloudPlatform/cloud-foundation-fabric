@@ -19,12 +19,6 @@ All notable changes to this project will be documented in this file.
 - `all modules`: Minimum supported OpenTofu version bumped 1.10.0 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `modules/project-factory`: the format for automation service account names has changed. [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)]
 
-- [[#3456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3456)] More knowledge -  ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 09:08:14+00:00 -->
-- [[#3455](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3455)] Service agents cursed knowledge ([juliocc](https://github.com/juliocc)) <!-- 2025-10-23 08:02:02+00:00 -->
-- [[#3446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3446)] Cursed knowledge of CFF ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-21 15:19:23+00:00 -->
-- [[#3428](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3428)] gitignore update ([juliocc](https://github.com/juliocc)) <!-- 2025-10-16 14:14:55+00:00 -->
-- [[#3361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3361)] Use pre-commit managed Python environment for pre-commit checks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-27 07:06:30+00:00 -->
-
 ### FAST
 
 - [[#3468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3468)] Improve linting and fix agent-engine module name ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 10:56:41+00:00 -->
@@ -110,6 +104,14 @@ All notable changes to this project will be documented in this file.
 - [[#3407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3407)] remove tf version from matrix, to keep workflow names stable across upgrades ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-13 15:40:52+00:00 -->
 - [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)] Update gke-hub module to use new Policy Controller API ([juliocc](https://github.com/juliocc)) <!-- 2025-10-13 07:47:40+00:00 -->
 - [[#3404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3404)] Add tests for service agents iam_emails ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-12 13:02:13+00:00 -->
+
+### DOCS
+
+- [[#3456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3456)] More knowledge -  ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 09:08:14+00:00 -->
+- [[#3455](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3455)] Service agents cursed knowledge ([juliocc](https://github.com/juliocc)) <!-- 2025-10-23 08:02:02+00:00 -->
+- [[#3446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3446)] Cursed knowledge of CFF ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-21 15:19:23+00:00 -->
+- [[#3428](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3428)] gitignore update ([juliocc](https://github.com/juliocc)) <!-- 2025-10-16 14:14:55+00:00 -->
+- [[#3361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3361)] Use pre-commit managed Python environment for pre-commit checks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-27 07:06:30+00:00 -->
 
 ## [45.0.0] - 2025-09-20
 
