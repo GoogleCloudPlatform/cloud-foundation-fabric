@@ -39,6 +39,14 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "fast_context" {
+  # tfdoc:variable:source 0-org-setup
+  description = "FAST context values."
+  type        = map(map(any))
+  nullable    = false
+  default     = {}
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 0-org-setup
   description = "Folders created in the bootstrap stage."

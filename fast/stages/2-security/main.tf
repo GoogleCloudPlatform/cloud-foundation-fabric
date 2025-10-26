@@ -19,7 +19,15 @@ locals {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
   _ctx = {
-    for k, v in var.context : k => merge(v, try(local._defaults.context[k], {}))
+    for k, v in var.context : k => merge(
+      try(var.fast_context[k], {}),
+      v,
+      try(local._defaults.context[k], {})
+    )
+  }
+  # dereferencing for outputs bucket
+  _ctx_buckets = {
+    for k, v in local.ctx.storage_buckets : "$storage_buckets:${k}" => v
   }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
@@ -46,9 +54,12 @@ locals {
     stage_name  = try(local._defaults.global.stage_name, "2-security")
   }
   output_files = {
-    local_path     = try(local._defaults.output_files.local_path, null)
-    storage_bucket = try(local._defaults.output_files.storage_bucket, null)
-    providers      = try(local._defaults.output_files.providers, {})
+    local_path = try(local._defaults.output_files.local_path, null)
+    storage_bucket = try(
+      local._ctx_buckets[local._defaults.output_files.storage_bucket],
+      local._defaults.output_files.storage_bucket,
+      null
+    )
   }
   project_defaults = {
     defaults = merge(
