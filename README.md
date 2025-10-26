@@ -36,7 +36,7 @@ Currently available modules:
 - **AI** - [AI Applications](./modules/ai-applications/README.md)
 - **development** - [API Gateway](./modules/api-gateway), [Apigee](./modules/apigee), [Artifact Registry](./modules/artifact-registry), [Cloud Build V2 Connection](./modules/cloud-build-v2-connection), [Container Registry](./modules/container-registry), [Cloud Source Repository](./modules/source-repository), [Cloud Deploy](./modules/cloud-deploy), [Secure Source Manager instance](./modules/secure-source-manager-instance), [Workstation cluster](./modules/workstation-cluster)
 - **security** - [Binauthz](./modules/binauthz/), [Certificate Authority Service (CAS)](./modules/certificate-authority-service), [KMS](./modules/kms), [SecretManager](./modules/secret-manager), [VPC Service Control](./modules/vpc-sc), [Certificate Manager](./modules/certificate-manager/)
-- **serverless** - [Cloud Function v1](./modules/cloud-function-v1), [Cloud Function v2](./modules/cloud-function-v2), [Cloud Run](./modules/cloud-run), [Cloud Run v2](./modules/cloud-run-v2)
+- **serverless** - [Cloud Function v1](./modules/cloud-function-v1), [Cloud Function v2](./modules/cloud-function-v2), [Cloud Run v2](./modules/cloud-run-v2)
 
 For more information and usage examples see each module's README file.
 
