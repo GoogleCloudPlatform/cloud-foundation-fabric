@@ -66,6 +66,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+        # yamllint disable-line rule:line-length
         key: ${{ runner.os }}-${{ inputs.TERRAFORM_FLAVOUR  }}-${{ inputs.TERRAFORM_VERSION }}-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
     # avoid conflicts with user-installed providers on local machines
     - name: Pin provider versions

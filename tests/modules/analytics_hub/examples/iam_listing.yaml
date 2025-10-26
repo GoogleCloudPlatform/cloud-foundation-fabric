@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.analytics-hub.google_bigquery_analytics_hub_data_exchange.data_exchange:
     data_exchange_id: exchange

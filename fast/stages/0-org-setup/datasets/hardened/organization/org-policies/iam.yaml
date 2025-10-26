@@ -33,7 +33,7 @@ iam.allowedPolicyMemberDomains:
         title: Allow any member domain
         expression: |
           resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
-    
+
 iam.disableAuditLoggingExemption:
   rules:
     - enforce: true
@@ -54,7 +54,7 @@ iam.serviceAccountKeyExposureResponse:
   rules:
     - allow:
         values:
-            - "is:DISABLE_KEY"
+          - "is:DISABLE_KEY"
 
 iam.workloadIdentityPoolAwsAccounts:
   rules:
@@ -65,4 +65,3 @@ iam.workloadIdentityPoolProviders:
   rules:
     - deny:
         all: true
-

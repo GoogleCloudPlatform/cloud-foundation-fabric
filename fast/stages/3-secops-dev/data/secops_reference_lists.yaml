@@ -14,4 +14,4 @@
 
 private_ip_addresses:
   description: "Private CIDR ranges"
-  type: CIDR # either CIDR, STRING, REGEX
+  type: CIDR  # either CIDR, STRING, REGEX

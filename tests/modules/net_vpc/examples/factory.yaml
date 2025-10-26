@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false

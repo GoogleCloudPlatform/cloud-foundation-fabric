@@ -14,6 +14,7 @@
 
 # yaml-language-server: $schema=../../../../../../../modules/vpc-sc/schemas/access-level.schema.json
 
+# yamllint disable rule:indentation
 conditions:
   - members:
     - user:user@fast.example.com

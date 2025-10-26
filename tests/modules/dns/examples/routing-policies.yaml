@@ -63,8 +63,8 @@ values:
     routing_policy:
     - enable_geo_fencing: null
       geo:
-        - location: europe-west8
-          rrdatas: null
+      - location: europe-west8
+        rrdatas: null
       primary_backup: []
       wrr: []
     rrdatas: null

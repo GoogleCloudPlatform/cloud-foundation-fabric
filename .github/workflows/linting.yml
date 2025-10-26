@@ -13,6 +13,7 @@
 # limitations under the License.
 
 name: "Linting"
+# yamllint disable-line rule:truthy
 on:
   pull_request:
     branches:
@@ -100,12 +101,16 @@ jobs:
       - name: Check modules versions
         id: versions
         run: |
-          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;)
+          OUTPUT_TF=$(
+            find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;
+          )
           if [[ -n "${OUTPUT_TF}" ]] ; then
             echo "Terraform versions.tf:"
             echo "${OUTPUT_TF}"
           fi
-          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tofu {} \;)
+          OUTPUT_TOFU=$(
+            find . -type f -name 'versions.tofu' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tofu {} \;
+          )
           if [[ -n "${OUTPUT_TOFU}" ]] ; then
             echo "Terraform versions.tofu:"
             echo "${OUTPUT_TOFU}"
@@ -120,3 +125,6 @@ jobs:
         id: duplicates
         run: |
           python3 tools/duplicate-diff.py
+
+      - name: yaml-lint
+        uses: ibiqlik/action-yamllint@b74a2626a991d676b6ec243a6458ff86cccf2d2d

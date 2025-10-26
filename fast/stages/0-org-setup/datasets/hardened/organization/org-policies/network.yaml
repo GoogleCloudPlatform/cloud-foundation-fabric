@@ -22,19 +22,19 @@ compute.restrictDedicatedInterconnectUsage:
   rules:
     - allow:
         values:
-            - "under:organizations/${organization.id}"
+          - "under:organizations/${organization.id}"
 
 compute.restrictPartnerInterconnectUsage:
   rules:
     - allow:
         values:
-            - "under:organizations/${organization.id}"
+          - "under:organizations/${organization.id}"
 
 compute.restrictVpcPeering:
   rules:
     - allow:
         values:
-            - "under:organizations/${organization.id}"
+          - "under:organizations/${organization.id}"
 
 custom.networkDisableTargetHTTPProxy:
   rules:

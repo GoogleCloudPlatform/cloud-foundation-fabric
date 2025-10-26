@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
+
 alerts:
   projectOwnershipChange:
     combiner: OR
@@ -29,7 +31,9 @@ alerts:
           per_series_aligner: ALIGN_SUM
         comparison: COMPARISON_GT
         duration: 0s
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
+        filter: |
+          resource.type = "logging_bucket" AND
+          metric.type = "logging.googleapis.com/user/projectOwnershipChange"
         threshold_value: 0
         trigger:
           count: 1

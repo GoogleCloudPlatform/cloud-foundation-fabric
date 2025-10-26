@@ -23,9 +23,6 @@ repos:
     - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
     files: ^modules/
     exclude: (tests/fixtures/|tools/lockfile/|^fast)
-  # - id: terraform_validate
-  #   args:
-  #   - --hook-config=--retry-once-with-cleanup=true
 - repo: local
   hooks:
   - id: cff-readme
@@ -33,17 +30,17 @@ repos:
     entry: tools/pre-commit-tfdoc.sh
     language: python
     additional_dependencies:
-      - click
-      - deepdiff
-      - ghapi
-      - iso8601
-      - marko
-      - requests
-      - yamale
-      - yapf
-      - jsonschema
-      - BeautifulSoup4
-    #types: [terraform]
+    - click
+    - deepdiff
+    - ghapi
+    - iso8601
+    - marko
+    - requests
+    - yamale
+    - yapf
+    - jsonschema
+    - BeautifulSoup4
+    # types: [terraform]
     files: ^(modules|fast).*(tf|README.md)$
     pass_filenames: true
     require_serial: true
@@ -52,34 +49,34 @@ repos:
     language: python
     entry: tools/check_boilerplate.py
     additional_dependencies:
-      - click
-      - deepdiff
-      - ghapi
-      - iso8601
-      - marko
-      - requests
-      - yamale
-      - yapf
-      - jsonschema
-      - BeautifulSoup4
+    - click
+    - deepdiff
+    - ghapi
+    - iso8601
+    - marko
+    - requests
+    - yamale
+    - yapf
+    - jsonschema
+    - BeautifulSoup4
     pass_filenames: true
     args:
-    -  --scan-files
+    - --scan-files
   - id: tflint-fast
     name: Checking FAST code with tflint
     entry: tools/tflint-fast.py
     language: python
     additional_dependencies:
-      - click
-      - deepdiff
-      - ghapi
-      - iso8601
-      - marko
-      - requests
-      - yamale
-      - yapf
-      - jsonschema
-      - BeautifulSoup4
+    - click
+    - deepdiff
+    - ghapi
+    - iso8601
+    - marko
+    - requests
+    - yamale
+    - yapf
+    - jsonschema
+    - BeautifulSoup4
     pass_filenames: false
     require_serial: true
     files: ^fast/.*tf
@@ -99,16 +96,16 @@ repos:
     name: Check name lengths for FAST
     language: python
     additional_dependencies:
-      - click
-      - deepdiff
-      - ghapi
-      - iso8601
-      - marko
-      - requests
-      - yamale
-      - yapf
-      - jsonschema
-      - BeautifulSoup4
+    - click
+    - deepdiff
+    - ghapi
+    - iso8601
+    - marko
+    - requests
+    - yamale
+    - yapf
+    - jsonschema
+    - BeautifulSoup4
     pass_filenames: false
     files: ^fast
     entry: tools/check_names.py --prefix-length=10 --failed-only fast/stages
@@ -116,16 +113,16 @@ repos:
     name: Check links in markdown files
     language: python
     additional_dependencies:
-      - click
-      - deepdiff
-      - ghapi
-      - iso8601
-      - marko
-      - requests
-      - yamale
-      - yapf
-      - jsonschema
-      - BeautifulSoup4
+    - click
+    - deepdiff
+    - ghapi
+    - iso8601
+    - marko
+    - requests
+    - yamale
+    - yapf
+    - jsonschema
+    - BeautifulSoup4
     entry: tools/check_links.py --no-show-summary --scan-files
   - id: duplicate-diff
     name: duplicate-diff
@@ -136,13 +133,12 @@ repos:
     pass_filenames: true
     require_serial: true
 
-
-# - repo: https://github.com/adrienverge/yamllint
-#   rev: v1.34.0
-#   hooks:
-#   - id: yamllint
-#     args: [-c=.yamllint, --no-warnings]
-#     exclude: (/templates/|modules/cloud-config-container/)
+- repo: https://github.com/adrienverge/yamllint
+  rev: 79a6b2b1392eaf49cdd32ac4f14be1a809bbd8f7  # v1.37.0
+  hooks:
+  - id: yamllint
+    args: ["-c=.yamllint", "--no-warnings"]
+    exclude: (/templates/|modules/cloud-config-container/)
 
 - repo: https://github.com/jumanjihouse/pre-commit-hooks
   rev: "3.0.0"

@@ -17,9 +17,9 @@ values:
   module.ilb-l7.google_compute_forwarding_rule.default:
     description: Terraform managed.
     ip_protocol: TCP
-    load_balancing_scheme: INTERNAL_MANAGED                                                                                                                                                                         
-    name: ilb-test                                                                                                                                                                                                                                                                                                                                                                                                                      
-    network: projects/xxx/global/networks/aaa                
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: ilb-test
+    network: projects/xxx/global/networks/aaa
     port_range: '80'
     project: project-id
     region: europe-west8
