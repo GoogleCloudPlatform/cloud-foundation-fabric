@@ -190,6 +190,6 @@ variable "backend_service_configs" {
         )
       ]
     ]))
-    error_message = "When specified, all locality lb polcies must have EITHER policy or custom_policy filled, not both."
+    error_message = "When specified, all locality lb policies must have EITHER policy or custom_policy filled, not both."
   }
 }

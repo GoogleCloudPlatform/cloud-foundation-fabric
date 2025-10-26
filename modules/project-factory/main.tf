@@ -35,7 +35,7 @@ resource "terraform_data" "defaults_preconditions" {
         var.data_defaults.storage_location != null ||
         var.data_overrides.storage_location != null
       )
-      error_message = "No default storage location defined in defaults or overides variables."
+      error_message = "No default storage location defined in defaults or overrides variables."
     }
   }
 }

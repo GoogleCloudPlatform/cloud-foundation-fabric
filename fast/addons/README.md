@@ -13,7 +13,7 @@ Add-ons are currently only implemented for stage 1 (resource management and VPC-
 To configure an add-on:
 
 - its "parent stage" (the stage the add-on augments) needs to be enabled and applied, so that the IaC and IAM configurations the add-on uses are present
-- the `fast_addon` variable in the stage controlling the "parent stage" (boostrap for a stage 1 add-on, resource management for a stage 2 add-on) is configured and the stage applied, so that the add-on provider and optional CI/CD resources are created
+- the `fast_addon` variable in the stage controlling the "parent stage" (bootstrap for a stage 1 add-on, resource management for a stage 2 add-on) is configured and the stage applied, so that the add-on provider and optional CI/CD resources are created
 - the provider and relevant FAST output variable files are linked or copied in the add-on folder (e.g. via the `fast-links.sh` script)
 
 At this point the add-on can be run, and operate on the same folders, projects and resources controlled by its "parent stage".

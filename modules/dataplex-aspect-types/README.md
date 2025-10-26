@@ -170,5 +170,5 @@ metadata_template: |
 | [ids](outputs.tf#L17) | Aspect type IDs. |  |
 | [names](outputs.tf#L29) | Aspect type names. |  |
 | [timestamps](outputs.tf#L41) | Aspect type create and update timestamps. |  |
-| [uids](outputs.tf#L56) | Aspect type gobally unique IDs. |  |
+| [uids](outputs.tf#L56) | Aspect type globally unique IDs. |  |
 <!-- END TFDOC -->
