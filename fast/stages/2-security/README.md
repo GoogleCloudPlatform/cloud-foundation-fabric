@@ -128,7 +128,7 @@ gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-org-setup.au
 gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/2-security.auto.tfvars ./
 ```
 
-Once you have one of the above outputs, copy/paste it in your terminal from withing this stage's folder.
+Once you have one of the above outputs, copy/paste it in your terminal from within this stage's folder.
 
 Note that the last command in both outputs is optional: this is our recommended best practice to centrally store the tfvars file you created for this stage. If this convention works for you, move the tfvars file created in the previous steps to the path shown in the output, then run the command.
 
