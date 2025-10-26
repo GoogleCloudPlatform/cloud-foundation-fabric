@@ -50,7 +50,7 @@ The code is meant to be executed by a high level service account with powerful p
 
 ## Folder hierarchy
 
-The hierarchy supports up to three levels of folders, which are defined via filesystem directories each including a `.config.yaml` files detailing their attributes.
+The hierarchy supports up to four levels of folders, which are defined via filesystem directories each including a `.config.yaml` files detailing their attributes.
 
 The filesystem tree containing folder definitions is configured via the `factories_config.folders` variable, which sets the the path containing the YAML definitions for folders. It's also possible to configure the hierarchy via the `folders` variable, which is internally merged in with the factory definitions.
 
@@ -462,7 +462,7 @@ module "project-factory" {
     }
   }
 }
-# tftest files=t0,0,1,2,3,4,5,6,7,8,9,10 inventory=example.yaml
+# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10 inventory=example.yaml
 ```
 
 A project template for GKE projects:
@@ -506,6 +506,21 @@ name: Team C
 # explicit parent definition via folder id
 parent: folders/5678901234
 # tftest-file id=2 path=data/hierarchy/team-c/.config.yaml schema=folder.schema.json
+```
+
+```yaml
+name: Apps
+# tftest-file id=2.1 path=data/hierarchy/team-c/apps/.config.yaml schema=folder.schema.json
+```
+
+```yaml
+name: Test
+# tftest-file id=2.2 path=data/hierarchy/team-c/apps/test/.config.yaml schema=folder.schema.json
+```
+
+```yaml
+name: App X
+# tftest-file id=2.3 path=data/hierarchy/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
