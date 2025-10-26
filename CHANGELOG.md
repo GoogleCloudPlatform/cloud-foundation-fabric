@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3474)] Remove legacy security stage ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 16:49:53+00:00 -->
 - [[#3470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3470)] Implement proper validation for tag value names in schema ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 12:35:56+00:00 -->
 - [[#3463](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3463)] NVA Dataset for FAST networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-26 09:51:00+00:00 -->
 - [[#3466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3466)] Fix YAML linting on fast-dev ([ludoo](https://github.com/ludoo)) <!-- 2025-10-25 09:15:25+00:00 -->
