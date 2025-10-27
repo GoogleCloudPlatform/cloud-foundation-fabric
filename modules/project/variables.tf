@@ -21,7 +21,7 @@ variable "auto_create_network" {
 }
 
 variable "bigquery_reservations" {
-  description = "BigQuery reservations and assignments. Assignement specified as {JOB_TYPE = ['projects/PROJECT_ID']}."
+  description = "BigQuery reservations and assignments. Assignment specified as {JOB_TYPE = ['projects/PROJECT_ID']}."
   type = map(object({
     location           = string
     slot_capacity      = number
