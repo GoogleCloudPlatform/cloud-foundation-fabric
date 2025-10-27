@@ -298,6 +298,12 @@ resource "google_container_cluster" "cluster" {
       enabled_apis = var.enable_features.beta_apis
     }
   }
+  dynamic "fleet" {
+    for_each = var.fleet_project != null ? [""] : []
+    content {
+      project = var.fleet_project
+    }
+  }
   dynamic "gateway_api_config" {
     for_each = var.enable_features.gateway_api ? [""] : []
     content {
