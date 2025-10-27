@@ -1,0 +1,71 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_cloud_run_v2_service.service[0]:
+    annotations: null
+    binary_authorization: []
+    build_config: []
+    client: null
+    client_version: null
+    custom_audiences: null
+    default_uri_disabled: null
+    deletion_protection: true
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    iap_enabled: false
+    invoker_iam_disabled: false
+    labels: null
+    location: region
+    multi_region_settings: []
+    name: test-run-vpc
+    project: test-project
+    scaling: []
+    template:
+    - annotations: null
+      containers: []
+      encryption_key: null
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      gpu_zonal_redundancy_disabled: null
+      labels: null
+      node_selector: []
+      revision: null
+      service_account: test-run-vpc@test-project.iam.gserviceaccount.com
+      service_mesh: []
+      session_affinity: null
+      volumes: []
+      vpc_access:
+      - connector: projects/test-project/locations/region/connectors/vpc-connector
+        network_interfaces: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_cloud_run_v2_service: 1
+
+outputs:
+  id: __missing__
+  invoke_command: __missing__
+  job: null
+  resource: __missing__
+  resource_name: __missing__
+  service: __missing__
+  service_account: __missing__
+  service_account_email: test-run-vpc@test-project.iam.gserviceaccount.com
+  service_account_iam_email: serviceAccount:test-run-vpc@test-project.iam.gserviceaccount.com
+  service_name: __missing__
+  service_uri: __missing__
+  vpc_connector: null
