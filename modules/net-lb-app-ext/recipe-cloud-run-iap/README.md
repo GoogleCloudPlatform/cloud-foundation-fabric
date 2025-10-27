@@ -6,7 +6,7 @@ The architecture deployed by this recipe is the one depicted below:
 
 ![Architecture](./diagram.png)
 
-Note: Make sure that the email that you pass as support email for the IAP brand is the email of a group in which the identity executing terraform is a member with the role MANAGER. Otherwise an error will be raised. Also bear in mind only organization internal brands can be created using Terraform.  
+Note: Make sure that the email that you pass as support email for the IAP brand is the email of a group in which the identity executing terraform is a member with the role MANAGER. Otherwise an error will be raised. Also bear in mind only organization internal brands can be created using Terraform.
 
 This recipe addresses common requirements of backends protected by IAP:
 
@@ -33,7 +33,7 @@ This recipe addresses common requirements of backends protected by IAP:
 | [region](variables.tf#L44) | Region. | <code>string</code> | ✓ |  |
 | [support_email](variables.tf#L49) | Support email for IAP brand. | <code>string</code> | ✓ |  |
 | [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code title="object&#40;&#123;&#10;  name             &#61; string&#10;  number           &#61; number&#10;  services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [accesors](variables.tf#L27) | List of identities able to access the service via IAP (e.g. group:mygroup@myorg.com). | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [accessors](variables.tf#L27) | List of identities able to access the service via IAP (e.g. group:mygroup@myorg.com). | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [impersonators](variables.tf#L33) | List of identities able to impersonate the service account for programmatica access. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
@@ -57,12 +57,12 @@ module "test" {
   }
   region        = "europe-west1"
   support_email = "mygroup1@myorg.com"
-  accesors = [
+  accessors = [
     "group:mygroup2@myorg.com"
   ]
   impersonators = [
     "group:mygroup3@myorg.com"
   ]
 }
-# tftest modules=6 resources=24
+# tftest modules=6 resources=26
 ```

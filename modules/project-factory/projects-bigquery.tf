@@ -36,17 +36,18 @@ module "bigquery-datasets" {
   project_id = module.projects[each.value.project_key].project_id
   id         = each.value.id
   context = merge(local.ctx, {
-    project_ids = local.ctx_project_ids
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails
     )
+    locations   = local.ctx.locations
+    project_ids = local.ctx_project_ids
   })
   friendly_name = each.value.friendly_name
   location = coalesce(
-    local.data_defaults.overrides.bigquery_location,
+    local.data_defaults.overrides.locations.bigquery,
     lookup(each.value, "location", null),
-    local.data_defaults.defaults.bigquery_location
+    local.data_defaults.defaults.locations.bigquery
   )
 }

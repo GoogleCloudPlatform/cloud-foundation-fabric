@@ -79,7 +79,7 @@ module "ilb" {
 
 ### Externally managed instances
 
-This examples shows how to create an ILB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group. When using internally managed groups, remember to run `terraform apply` each time group instances change.
+This example shows how to create an ILB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group. When using internally managed groups, remember to run `terraform apply` each time group instances change.
 
 ```hcl
 module "ilb" {

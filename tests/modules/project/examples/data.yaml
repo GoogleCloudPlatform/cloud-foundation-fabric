@@ -516,7 +516,7 @@ counts:
   google_project: 2
   google_project_iam_audit_config: 2
   google_project_iam_binding: 7
-  google_project_iam_member: 15
+  google_project_iam_member: 14
   google_project_service: 7
   google_project_service_identity: 3
   google_pubsub_topic: 1
@@ -525,7 +525,6 @@ counts:
   google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 1
   modules: 8
-  resources: 64
-
+  resources: 63
 
 outputs: {}

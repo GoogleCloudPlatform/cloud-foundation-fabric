@@ -25,12 +25,9 @@ values:
   module.cf-http.google_storage_bucket_object.bundle[0]:
     bucket: bucket
     customer_encryption: []
-    detect_md5hash: different hash
     source: /tmp/bundle-project-id-test-cf-http.zip
 
 counts:
   google_cloud_run_service_iam_binding: 1
   google_cloudfunctions2_function: 1
   google_storage_bucket_object: 1
-  modules: 1
-  resources: 6

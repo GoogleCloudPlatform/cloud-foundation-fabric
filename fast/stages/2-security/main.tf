@@ -18,11 +18,14 @@ locals {
   paths = {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
+  _ctx = {
+    for k, v in var.context : k => merge(v, try(local._defaults.context[k], {}))
+  }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
-  ctx = merge(var.context, {
+  ctx = merge(local._ctx, {
     folder_ids = merge(
-      var.folder_ids, var.context.folder_ids
+      var.folder_ids, local._ctx.folder_ids
     )
     iam_principals = merge(
       var.iam_principals,
@@ -30,17 +33,13 @@ locals {
         for k, v in var.service_accounts :
         "service_accounts/${k}" => "serviceAccount:${v}"
       },
-      var.context.iam_principals,
-      try(local._defaults.context.iam_principals, {})
+      local._ctx.iam_principals
     )
-    locations = merge(
-      var.context.locations,
-      try(local._defaults.context.locations, {})
-    )
-    perimeters  = merge(var.perimeters, var.context.vpc_sc_perimeters)
-    project_ids = merge(var.project_ids, var.context.project_ids)
-    tag_keys    = merge(var.tag_keys, var.context.tag_keys)
-    tag_values  = merge(var.tag_values, var.context.tag_values)
+    locations   = local._ctx.locations
+    perimeters  = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
+    project_ids = merge(var.project_ids, local._ctx.project_ids)
+    tag_keys    = merge(var.tag_keys, local._ctx.tag_keys)
+    tag_values  = merge(var.tag_values, local._ctx.tag_values)
   })
   defaults = {
     folder_name = try(local._defaults.global.folder_id, "security")

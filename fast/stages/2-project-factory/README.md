@@ -16,6 +16,9 @@
   - [Folder parent-child relationship and variable substitutions](#folder-parent-child-relationship-and-variable-substitutions)
   - [Project Creation](#project-creation)
   - [Automation Resources for Projects](#automation-resources-for-projects)
+  - [Generated provider and Terraform variables for projects](#generated-provider-and-terraform-variables-for-projects)
+    - [Individual output files](#individual-output-files)
+    - [Pattern-defined output files](#pattern-defined-output-files)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -351,6 +354,112 @@ automation:
         - group:devops@example.org
 ```
 
+### Generated provider and Terraform variables for projects
+
+This stage can optionally be configured to generate provider and tfvars files ("output files") for projects. These files can then be distributed to project owners to help them bootstrap automation, and will be used in future releases to configure project-level CI/CD from this factory.
+
+Output file generation is configured in the defaults file, and supports two usage modes:
+
+- individual output files can be generated for specific bucket/service account pairs, or
+- a pattern can be defined to match automation service accounts defined in projects, and generate files for all projects that match the pattern
+
+The first use case is simple to use for small setups, or where output files are needed to manage multiple projects from a single service account. The second use case allows mass generation of output files, where project automation service accounts conform to a specific template.
+
+As is usual with FAST output files, their destination can be a storage bucket and/or a local filesystem folder. The two are not mutuallye exclusive and can be independently activated.
+
+The following sub-sections illustrate the specifics of each of the two patterns described above.
+
+#### Individual output files
+
+To define individual output files, populate the `output_files.providers` map in this stage's defaults file. Each element in the map will result in one provider file, with a name matching the key used in the map.
+
+```yaml
+output_files:
+  # where files are stored, either of these can be defined
+  local_path: ~/fast-config/projects
+  storage_bucket: $storage_buckets:iac-0/iac-shared-outputs
+  # the template file used for providers, defaults to the built-in one
+  # providers_template_path: assets/providers.tf.tpl
+  providers:
+    # a single explicit provider pointing to a specific bucket/service account
+    test-01:
+      storage_bucket: $storage_buckets:iac-0/iac-shared-state
+      service_account: $iam_principals:service_accounts/prod-os-apt-0/automation/rw
+      # the key is used as a backend prefix by default, use this to disable it
+      # set_prefix: false
+```
+
+The above snippet will result in two identical files being generated:
+
+- `~/fast-config/projects/providers/test-01.tf` in the local filesystem
+- `projects/providers/test-01.tf` in the storage bucket
+
+Individual files make specific assumptions:
+
+- the service account and bucket can refer to any valid resource, either internally (via context) or externally (explicitly) defined
+- where a backed prefix is set as in the example above, the assumption is the service account has permissions to use it
+- no tfvars files are generated as the provider might be designed to work across different projects (this may change ina  future release)
+
+#### Pattern-defined output files
+
+To automatically generate output files for all projects matching a pattern, populate the `output_files.providers_pattern` block in this stage's defaults file. Note that the `local_path`, `storage_bucket` and `providers_template` attribute are the same as in the example above, and shared between individual and pattern providers definitions.
+
+```yaml
+output_files:
+  # where files are stored, either of these can be defined
+  local_path: ~/fast-config/projects
+  storage_bucket: $storage_buckets:iac-0/iac-shared-outputs
+  # the template file used for providers, defaults to the built-in one
+  # providers_template_path: assets/providers.tf.tpl
+  providers_pattern:
+    # match automation service accounts in project definitions
+    service_accounts_match:
+      # at least one of the ro or rw matches needs to be defined
+      ro: automation/ro
+      rw: automation/rw
+    # which bucket is used for the provider backend
+    storage_bucket: $storage_buckets:iac-0/iac-shared-state
+    # create managed folders in the bucket by default and set IAM on them
+    # storage_folders_create: true
+```
+
+The above snippet will create zero, one, or two provider files depending on how many service accounts match for each individual project. One tfvars file will also be created for each project with at least one provider file.
+
+For example, a project with this definition will generate one provider and one tfvars file for each of the top-level storage options (`output_files.local_path`, `output_files.storage_bucket`) defined.
+
+```yaml
+# file name: dev-foo-0.yaml
+automation:
+  project: $project_ids:iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation service account.
+```
+
+And one with this definition will generate two providers (one for each service account) and one tfvars file for each of the top-level storage options (`output_files.local_path`, `output_files.storage_bucket`) defined.
+
+```yaml
+# file name: dev-foo-0.yaml
+automation:
+  project: $project_ids:iac-0
+  service_accounts:
+    ro:
+      description: Read-only automation service account.
+    rw:
+      description: Read/write automation service account.
+```
+
+Using the second example, these file names will be in the local filesystem (the bucket will have the same files save for the local path):
+
+- `~/fast-config/projects/providers/dev-foo-0-ro.tf`
+- `~/fast-config/projects/providers/dev-foo-0-rw.tf`
+- `~/fast-config/projects/tfvars/dev-foo-0.tf`
+
+Pattern-based files make specific assumptions:
+
+- service accounts can only refer to project-factory generated service accounts in each project definition
+- the backend prefix is always set, as the same bucket is used for all provider files
+
 <!-- TFDOC OPTS files:1 show_extra:1 exclude:2-project-factory-providers.tf -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -358,6 +467,8 @@ automation:
 | name | description | modules | resources |
 |---|---|---|---|
 | [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
+| [output-files-storage.tf](./output-files-storage.tf) | None | <code>gcs</code> |  |
+| [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> |
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
@@ -369,25 +480,24 @@ automation:
 |---|---|:---:|:---:|:---:|:---:|
 | [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
 | [billing_account](variables-fast.tf#L26) | Billing account id. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
-| [prefix](variables-fast.tf#L92) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
+| [prefix](variables-fast.tf#L82) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars        &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [custom_roles](variables-fast.tf#L34) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [data_defaults](variables-projects.tf#L17) | Optional default values used when corresponding project or folder data from files are missing. | <code title="object&#40;&#123;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  bucket &#61; optional&#40;object&#40;&#123;&#10;    force_destroy &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  factories_config &#61; optional&#40;object&#40;&#123;&#10;    custom_roles  &#61; optional&#40;string&#41;&#10;    observability &#61; optional&#40;string&#41;&#10;    org_policies  &#61; optional&#40;string&#41;&#10;    quotas        &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  labels        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  parent        &#61; optional&#40;string&#41;&#10;  prefix        &#61; optional&#40;string&#41;&#10;  project_reuse &#61; optional&#40;object&#40;&#123;&#10;    use_data_source &#61; optional&#40;bool, true&#41;&#10;    attributes &#61; optional&#40;object&#40;&#123;&#10;      name             &#61; string&#10;      number           &#61; number&#10;      services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  shared_vpc_service_config &#61; optional&#40;object&#40;&#123;&#10;    host_project &#61; string&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  storage_location &#61; optional&#40;string&#41;&#10;  tag_bindings     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  logging_data_access &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ADMIN_READ &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_READ  &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_WRITE &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [data_merges](variables-projects.tf#L89) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code title="object&#40;&#123;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [data_overrides](variables-projects.tf#L108) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code title="object&#40;&#123;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  bucket &#61; optional&#40;object&#40;&#123;&#10;    force_destroy &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  factories_config &#61; optional&#40;object&#40;&#123;&#10;    custom_roles  &#61; optional&#40;string&#41;&#10;    observability &#61; optional&#40;string&#41;&#10;    org_policies  &#61; optional&#40;string&#41;&#10;    quotas        &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  parent                     &#61; optional&#40;string&#41;&#10;  prefix                     &#61; optional&#40;string&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  storage_location           &#61; optional&#40;string&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  logging_data_access &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ADMIN_READ &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_READ  &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_WRITE &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [data_defaults](variables-projects.tf#L17) | Optional default values used when corresponding project or folder data from files are missing. | <code title="object&#40;&#123;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  bucket &#61; optional&#40;object&#40;&#123;&#10;    force_destroy &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  factories_config &#61; optional&#40;object&#40;&#123;&#10;    custom_roles  &#61; optional&#40;string&#41;&#10;    observability &#61; optional&#40;string&#41;&#10;    org_policies  &#61; optional&#40;string&#41;&#10;    quotas        &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  labels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations &#61; optional&#40;object&#40;&#123;&#10;    bigquery &#61; optional&#40;string&#41;&#10;    logging  &#61; optional&#40;string&#41;&#10;    storage  &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  logging_data_access &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ADMIN_READ &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_READ  &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_WRITE &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  metric_scopes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  parent        &#61; optional&#40;string&#41;&#10;  prefix        &#61; optional&#40;string&#41;&#10;  project_reuse &#61; optional&#40;object&#40;&#123;&#10;    use_data_source &#61; optional&#40;bool, true&#41;&#10;    attributes &#61; optional&#40;object&#40;&#123;&#10;      name             &#61; string&#10;      number           &#61; number&#10;      services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  shared_vpc_service_config &#61; optional&#40;object&#40;&#123;&#10;    host_project &#61; string&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [data_merges](variables-projects.tf#L93) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code title="object&#40;&#123;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [data_overrides](variables-projects.tf#L112) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code title="object&#40;&#123;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  bucket &#61; optional&#40;object&#40;&#123;&#10;    force_destroy &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  factories_config &#61; optional&#40;object&#40;&#123;&#10;    custom_roles  &#61; optional&#40;string&#41;&#10;    observability &#61; optional&#40;string&#41;&#10;    org_policies  &#61; optional&#40;string&#41;&#10;    quotas        &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  locations &#61; optional&#40;object&#40;&#123;&#10;    bigquery &#61; optional&#40;string&#41;&#10;    logging  &#61; optional&#40;string&#41;&#10;    storage  &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  logging_data_access &#61; optional&#40;map&#40;object&#40;&#123;&#10;    ADMIN_READ &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_READ  &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;,&#10;    DATA_WRITE &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;&#41; &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  parent &#61; optional&#40;string&#41;&#10;  prefix &#61; optional&#40;string&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [factories_config](variables.tf#L36) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  defaults &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders  &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  projects &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account_id &#61; string&#10;    data               &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L42) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [host_project_ids](variables-fast.tf#L58) | Host project for the shared VPC. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [iam_principals](variables-fast.tf#L50) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [kms_keys](variables-fast.tf#L66) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
-| [locations](variables-fast.tf#L74) | Optional locations for GCS, BigQuery, and logging buckets created here. | <code title="object&#40;&#123;&#10;  storage &#61; optional&#40;string, &#34;eu&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [perimeters](variables-fast.tf#L84) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
-| [project_ids](variables-fast.tf#L102) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [service_accounts](variables-fast.tf#L110) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [perimeters](variables-fast.tf#L74) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
+| [project_ids](variables-fast.tf#L92) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [service_accounts](variables-fast.tf#L100) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [stage_name](variables.tf#L57) | FAST stage name. Used to separate output files across different factories. | <code>string</code> |  | <code>&#34;2-project-factory&#34;</code> |  |
-| [subnet_self_links](variables-fast.tf#L118) | Shared VPC subnet IDs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-| [tag_values](variables-fast.tf#L126) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [universe](variables-fast.tf#L134) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  domain                         &#61; string&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
+| [subnet_self_links](variables-fast.tf#L108) | Shared VPC subnet IDs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [tag_values](variables-fast.tf#L116) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [universe](variables-fast.tf#L124) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  domain                         &#61; string&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
 
 ## Outputs
 

@@ -67,6 +67,8 @@ A minor glitch can surface running `terraform destroy`, where the service projec
 
 Just like before, we manually remove several resources (GCS buckets and BQ datasets). Note that `terrafom destroy` will fail. This is expected; just continue with the rest of the steps.
 
+Also, you can't create a custom constraint with the same name than a previously deleted custom constraint. To avoid issues during next future reprovisionning, *it is recommended to remove from Terraform state custom constraints*.
+
 ```bash
 cd $FAST_PWD/0-org-setup/
 export FAST_BU=$(gcloud config list --format 'value(core.account)')
@@ -79,6 +81,12 @@ for x in $(terraform state list | grep google_storage_bucket.bucket); do
 done
 
 for x in $(terraform state list | grep google_bigquery_dataset); do
+  terraform state rm "$x";
+done
+
+# remove custom constraint to avoid future issue during reprovisionnning. 
+# comment this part if permanent removed is needed
+for x in $(terraform state list | grep google_org_policy_custom_constraint); do
   terraform state rm "$x";
 done
 

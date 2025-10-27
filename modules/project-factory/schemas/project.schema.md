@@ -48,6 +48,7 @@
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **labels**: *object*
+- **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **log_buckets**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *reference([log_bucket](#refs-log_bucket))*
@@ -194,6 +195,11 @@
   - **storage_class**: *string*
   - **uniform_bucket_level_access**: *boolean*
   - **versioning**: *boolean*
+  - **retention_policy**: *object*
+    <br>*additional properties: false*
+    - **retention_period**: *number*
+    - **is_locked**: *boolean*
+  - **enable_object_retention**: *boolean*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*
@@ -269,3 +275,36 @@
     - **dataset_link_id**: *string*
     - **description**: *string*
   - **retention**: *number*
+- **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**max_request_duration**: *string*
+    - ⁺**eligible_users**: *array*
+      - items: *string*
+    - ⁺**privileged_access**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - ⁺**role**: *string*
+        - **condition**: *string*
+    - **requester_justification_config**: *object*
+      <br>*additional properties: false*
+      - **not_mandatory**: *boolean*
+      - **unstructured**: *boolean*
+    - **manual_approvals**: *object*
+      <br>*additional properties: false*
+      - ⁺**require_approver_justification**: *boolean*
+      - ⁺**steps**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - ⁺**approvers**: *array*
+            - items: *string*
+          - **approvals_needed**: *number*
+          - **approver_email_recipients**: *array*
+            - items: *string*
+    - **additional_notification_targets**: *object*
+      <br>*additional properties: false*
+      - **admin_email_recipients**: *array*
+        - items: *string*
+      - **requester_email_recipients**: *array*
+        - items: *string*

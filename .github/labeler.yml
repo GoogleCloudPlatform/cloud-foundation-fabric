@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:indentation
 'on:blueprints':
   - changed-files:
     - any-glob-to-any-file:
-      - 'blueprints/**'
+        - 'blueprints/**'
 
 'on:FAST':
   - changed-files:

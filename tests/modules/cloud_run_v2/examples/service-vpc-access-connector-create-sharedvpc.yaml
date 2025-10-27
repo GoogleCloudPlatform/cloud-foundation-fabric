@@ -15,7 +15,7 @@
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     location: europe-west8
-    name: hello
+    name: example-hello
     project: test-service
     template:
       - containers:
@@ -33,7 +33,7 @@ values:
     machine_type: e2-standard-4
     max_throughput: 300
     min_throughput: 200
-    name: hello
+    name: example-hello
     project: test-service
     region: europe-west8
     subnet:
@@ -52,7 +52,6 @@ values:
 counts:
   google_cloud_run_v2_service: 1
   google_vpc_access_connector: 1
-  modules: 4
-  resources: 60
+
 
 outputs: {}

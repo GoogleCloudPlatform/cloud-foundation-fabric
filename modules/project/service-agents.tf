@@ -116,16 +116,7 @@ locals {
       } if alltrue([
         var.service_agents_config.grant_default_roles,
         agent.role != null,
-        # TODO: improve the detection below
-        # this skips IAM role grants to the non-primary agents listed below
-        # as it's failing, possibly because the agents don't exist
-        # after API activation
-        !contains([
-          "apigateway", "apigateway-mgmt", "bigqueryspark", "bigquerytardis",
-          "firebase", "krmapihosting", "krmapihosting-dataplane", "logging",
-          "networkactions", "prod-bigqueryomni", "scc-notification",
-          "securitycenter"
-        ], agent.name)
+        !agent.skip_iam
     ])
   }
   services = [

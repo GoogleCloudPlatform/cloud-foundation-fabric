@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:comments
 #counts:
 #  google_compute_backend_bucket: 1
 #  google_compute_backend_service: 5

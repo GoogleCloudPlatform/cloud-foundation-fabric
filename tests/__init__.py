@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import sys
-if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 10):
-  raise RuntimeError("Tests require at least version 3.10 of Python. Current version is: {}".format(sys.version))
-
+if sys.version_info.major < 3 or (sys.version_info.major == 3 and
+                                  sys.version_info.minor < 10):
+  raise RuntimeError(
+      "Tests require at least version 3.10 of Python. Current version is: {}".
+      format(sys.version))

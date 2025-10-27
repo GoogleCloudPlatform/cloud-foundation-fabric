@@ -19,7 +19,8 @@ values:
     source: /tmp/bundle-project-id-test-cf-http-two.zip
 
 counts:
+  archive_file: 1
   google_cloudfunctions_function: 2
+  google_project_iam_member: 6
+  google_service_account: 2
   google_storage_bucket_object: 2
-  modules: 2
-  resources: 7

@@ -68,8 +68,7 @@ module "backend_service" {
       module.project.service_agents.iap.iam_email
     ]
   }
-  deletion_protection    = false
-  service_account_create = true
+  deletion_protection = false
 }
 
 module "addresses" {
@@ -131,7 +130,7 @@ resource "google_iap_web_backend_service_iam_binding" "iam_bindings" {
   web_backend_service = module.glb.backend_service_names["default"]
   role                = "roles/iap.httpsResourceAccessor"
   members = concat(
-    var.accesors,
+    var.accessors,
     [
       module.application_service_account.iam_email
   ])

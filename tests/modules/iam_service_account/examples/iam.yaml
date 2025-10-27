@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.service-account-with-tags.google_billing_account_iam_member.billing-roles["ABCDE-12345-ABCDE-roles/billing.user"]:
     billing_account_id: ABCDE-12345-ABCDE

@@ -25,7 +25,7 @@ values:
   module.org.google_tags_tag_value.default["environment/prod"]:
     description: Managed by the Terraform organization module.
     short_name: prod
-  module.project.google_project.project[0]: 
+  module.project.google_project.project[0]:
     project_id: test-project
   module.project.google_tags_tag_binding.binding["env-prod"]: {}
   module.project.google_tags_tag_binding.binding["foo"]:

@@ -1,0 +1,90 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.cloud_run.google_cloud_run_v2_service.service[0]:
+    annotations: null
+    binary_authorization: []
+    build_config: []
+    client: null
+    client_version: null
+    custom_audiences: null
+    default_uri_disabled: null
+    deletion_protection: false
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    iap_enabled: false
+    invoker_iam_disabled: false
+    labels: null
+    location: europe-west8
+    multi_region_settings: []
+    name: example-hello
+    project: test-cloudrun
+    scaling: []
+    template:
+    - annotations: null
+      containers:
+      - args: null
+        base_image_uri: null
+        command: null
+        depends_on: null
+        env: []
+        image: us-docker.pkg.dev/cloudrun/container/hello
+        liveness_probe: []
+        name: hello
+        volume_mounts: []
+        working_dir: null
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      gpu_zonal_redundancy_disabled: null
+      labels: null
+      node_selector: []
+      revision: null
+      service_account: example-hello@test-cloudrun.iam.gserviceaccount.com
+      service_mesh: []
+      session_affinity: null
+      volumes: []
+      vpc_access: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms.google_kms_crypto_key.default["key-regional"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: key-regional
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms.google_kms_key_ring.default[0]:
+    location: europe-west8
+    name: test-keyring
+    project: test-cloudrun
+    timeouts: null
+  module.kms.google_kms_key_ring_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]:
+    condition: []
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.project.google_project.project[0]:
+
+    name: test-cloudrun
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_kms_crypto_key: 1
+  google_kms_key_ring: 1
+  google_kms_key_ring_iam_binding: 1
+  google_project: 1

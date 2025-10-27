@@ -1,0 +1,14 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../../schemas/dns.schema.json
+
+project_id: $project_ids:net-core-0
+domain: .
+peering:
+  peer_network: $networks:hub
+  client_networks:
+    - $networks:dev
+    - $networks:dmz
+    - $networks:prod

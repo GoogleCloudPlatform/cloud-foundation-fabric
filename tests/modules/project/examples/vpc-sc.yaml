@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   ? module.project.google_access_context_manager_service_perimeter_resource.default["accessPolicies/1234567890/servicePerimeters/default"]
   : perimeter_name: accessPolicies/1234567890/servicePerimeters/default

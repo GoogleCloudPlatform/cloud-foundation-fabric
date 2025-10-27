@@ -25,103 +25,6 @@ locals {
     defaults  = try(var.data_defaults, {})
     overrides = try(var.data_overrides, {})
   }
-  data_defaults = {
-    defaults = merge(
-      {
-        billing_account = null
-        contacts        = {}
-        deletion_policy = null
-        labels          = {}
-        metric_scopes   = []
-        parent          = null
-        prefix          = null
-        project_reuse = merge(
-          {
-            use_data_source = true
-            attributes      = null
-          },
-          try(local._data_defaults.defaults.project_reuse, {
-            use_data_source = true
-            attributes      = null
-            }
-          )
-        )
-        service_encryption_key_ids = {}
-        services                   = []
-        shared_vpc_service_config = merge(
-          {
-            host_project             = null
-            iam_bindings_additive    = {}
-            network_users            = []
-            service_agent_iam        = {}
-            service_agent_subnet_iam = {}
-            service_iam_grants       = []
-            network_subnet_users     = {}
-          },
-          try(local._data_defaults.defaults.shared_vpc_service_config, {
-            host_project             = null
-            iam_bindings_additive    = {}
-            network_users            = []
-            service_agent_iam        = {}
-            service_agent_subnet_iam = {}
-            service_iam_grants       = []
-            network_subnet_users     = {}
-            }
-          )
-        )
-        storage_location = null
-        tag_bindings     = {}
-        service_accounts = {}
-        universe         = null
-        vpc_sc = merge(
-          {
-            perimeter_name = null
-            is_dry_run     = false
-          },
-          try(local._data_defaults.defaults.vpc_sc, {
-            perimeter_name = null
-            is_dry_run     = false
-            }
-          )
-        )
-        logging_data_access = {}
-        bigquery_location   = null
-      },
-      try(
-        local._data_defaults.defaults, {}
-      )
-    )
-    # data_overrides default to null's, to mark that they should not override
-    overrides = merge({
-      billing_account            = null
-      contacts                   = null
-      deletion_policy            = null
-      parent                     = null
-      prefix                     = null
-      service_encryption_key_ids = null
-      storage_location           = null
-      tag_bindings               = null
-      services                   = null
-      service_accounts           = null
-      universe                   = null
-      vpc_sc = try(
-        merge(
-          {
-            perimeter_name = null
-            is_dry_run     = false
-          },
-          local._data_defaults.overrides.vpc_sc
-        ),
-        null
-      )
-      logging_data_access = null
-      bigquery_location   = null
-      },
-      try(
-        local._data_defaults.overrides, {}
-      )
-    )
-  }
   _projects_output = {
     # Semantics of the merges are:
     #   - if data_overrides.<field> is not null, use this value
@@ -207,18 +110,15 @@ locals {
       )
       shared_vpc_service_config = ( # type: object({...})
         try(v.shared_vpc_service_config, null) != null
-        ? merge(
-          {
-            host_project             = null
-            iam_bindings_additive    = {}
-            network_users            = []
-            service_agent_iam        = {}
-            service_agent_subnet_iam = {}
-            service_iam_grants       = []
-            network_subnet_users     = {}
-          },
-          v.shared_vpc_service_config
-        )
+        ? {
+          host_project             = try(v.shared_vpc_service_config.host_project, null)
+          iam_bindings_additive    = try(v.shared_vpc_service_config.iam_bindings_additive, {})
+          network_users            = try(v.shared_vpc_service_config.network_users, [])
+          service_agent_iam        = try(v.shared_vpc_service_config.service_agent_iam, {})
+          service_agent_subnet_iam = try(v.shared_vpc_service_config.service_agent_subnet_iam, {})
+          service_iam_grants       = try(v.shared_vpc_service_config.service_iam_grants, [])
+          network_subnet_users     = try(v.shared_vpc_service_config.network_subnet_users, {})
+        }
         : local.data_defaults.defaults.shared_vpc_service_config
       )
       tag_bindings = coalesce( # type: map(string)
@@ -289,5 +189,96 @@ locals {
     # is used more than once
     for k, v in local._projects_output :
     "${v.prefix != null ? v.prefix : ""}-${v.name}" => k
+  }
+  data_defaults = {
+    defaults = merge(
+      {
+        billing_account = null
+        contacts        = {}
+        deletion_policy = null
+        labels          = {}
+        locations = {
+          bigquery = try(local._data_defaults.defaults.locations.bigquery, null)
+          logging  = try(local._data_defaults.defaults.locations.logging, null)
+          storage  = try(local._data_defaults.defaults.locations.storage, null)
+        }
+        logging_data_access = {}
+        metric_scopes       = []
+        parent              = null
+        prefix              = null
+        project_reuse = merge(
+          {
+            use_data_source = true
+            attributes      = null
+          },
+          try(local._data_defaults.defaults.project_reuse, {
+            use_data_source = true
+            attributes      = null
+            }
+          )
+        )
+        service_encryption_key_ids = {}
+        services                   = []
+        shared_vpc_service_config = {
+          host_project             = try(local._data_defaults.defaults.shared_vpc_service_config.host_project, null)
+          iam_bindings_additive    = try(local._data_defaults.defaults.shared_vpc_service_config.iam_bindings_additive, {})
+          network_users            = try(local._data_defaults.defaults.shared_vpc_service_config.network_users, [])
+          service_agent_iam        = try(local._data_defaults.defaults.shared_vpc_service_config.service_agent_iam, {})
+          service_agent_subnet_iam = try(local._data_defaults.defaults.shared_vpc_service_config.service_agent_subnet_iam, {})
+          service_iam_grants       = try(local._data_defaults.defaults.shared_vpc_service_config.service_iam_grants, [])
+          network_subnet_users     = try(local._data_defaults.defaults.shared_vpc_service_config.network_subnet_users, {})
+        }
+        tag_bindings     = {}
+        service_accounts = {}
+        universe         = null
+        vpc_sc = merge(
+          {
+            perimeter_name = null
+            is_dry_run     = false
+          },
+          try(local._data_defaults.defaults.vpc_sc, {
+            perimeter_name = null
+            is_dry_run     = false
+            }
+          )
+        )
+      },
+      try(
+        local._data_defaults.defaults, {}
+      )
+    )
+    # data_overrides default to null's, to mark that they should not override
+    overrides = merge({
+      billing_account = null
+      contacts        = null
+      deletion_policy = null
+      locations = {
+        bigquery = try(local._data_defaults.overrides.locations.bigquery, null)
+        logging  = try(local._data_defaults.overrides.locations.logging, null)
+        storage  = try(local._data_defaults.overrides.locations.storage, null)
+      }
+      logging_data_access        = null
+      parent                     = null
+      prefix                     = null
+      service_encryption_key_ids = null
+      tag_bindings               = null
+      services                   = null
+      service_accounts           = null
+      universe                   = null
+      vpc_sc = try(
+        merge(
+          {
+            perimeter_name = null
+            is_dry_run     = false
+          },
+          local._data_defaults.overrides.vpc_sc
+        ),
+        null
+      )
+      },
+      try(
+        local._data_defaults.overrides, {}
+      )
+    )
   }
 }

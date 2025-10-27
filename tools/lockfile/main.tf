@@ -19,6 +19,7 @@ resource "azurerm_resource_group" "default" {}
 resource "google_service_account" "sa1" {}
 resource "google_service_account" "sa2" { provider = google-beta }
 resource "local_file" "default" {}
+resource "null_resource" "default" {}
 resource "random_pet" "default" {}
 resource "time_static" "default" {}
 resource "tls_private_key" "default" {}
