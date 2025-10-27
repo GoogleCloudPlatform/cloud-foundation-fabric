@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,24 @@ variable "bundle_config" {
     )
     error_message = "Bundle path must be set to a GCS object URI, a local folder or a local zip file."
   }
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {}) # not needed here?
+    cidr_ranges    = optional(map(string), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    locations      = optional(map(string), {})
+    networks       = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    subnets        = optional(map(string), {})
+    tag_values     = optional(map(string), {}) # not needed here?
+  })
+  nullable = false
+  default  = {}
 }
 
 variable "description" {
@@ -185,18 +203,6 @@ variable "secrets" {
   default  = {}
 }
 
-variable "service_account" {
-  description = "Service account email. Unused if service account is auto-created."
-  type        = string
-  default     = null
-}
-
-variable "service_account_create" {
-  description = "Auto-create service account."
-  type        = bool
-  default     = false
-}
-
 variable "trigger_config" {
   description = "Function trigger configuration. Leave null for HTTP trigger."
   type = object({
@@ -205,39 +211,4 @@ variable "trigger_config" {
     retry    = optional(bool)
   })
   default = null
-}
-
-variable "vpc_connector" {
-  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
-  type = object({
-    create          = bool
-    name            = string
-    egress_settings = string
-  })
-  default = null
-}
-
-variable "vpc_connector_config" {
-  description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
-  type = object({
-    ip_cidr_range = string
-    network       = string
-    instances = optional(object({
-      max = optional(number)
-      min = optional(number, 2)
-    }))
-    throughput = optional(object({
-      max = optional(number, 300)
-      min = optional(number, 200)
-    }))
-  })
-  default = null
-  validation {
-    condition = (
-      var.vpc_connector_config == null ||
-      try(var.vpc_connector_config.instances, null) != null ||
-      try(var.vpc_connector_config.throughput, null) != null
-    )
-    error_message = "VPC connector must specify either instances or throughput."
-  }
 }

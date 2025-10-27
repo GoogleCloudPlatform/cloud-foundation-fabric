@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:indentation
 values:
   module.alloydb.google_alloydb_cluster.primary:
     annotations: null

@@ -17,8 +17,9 @@
 # environment-specific project defaults, merges and overrides can be defined here
 
 projects:
-  # defaults:
-  #   storage_location: europe-west8
+  defaults:
+    locations:
+      storage: $locations:primary
   merges:
     services:
       - logging.googleapis.com
@@ -28,6 +29,8 @@ projects:
 
 # environment-specific static contexts can be defined here
 
-# context:
+context:
 #   iam_principals:
 #     foo: group:foo@example.com
+  locations:
+    primary: europe-west1

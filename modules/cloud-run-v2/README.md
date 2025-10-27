@@ -189,7 +189,7 @@ You can use an existing [VPC Access Connector](https://cloud.google.com/vpc/docs
 module "cloud_run" {
   source     = "./fabric/modules/cloud-run-v2"
   project_id = var.project_id
-  region     = var.region
+  region     = var.regions.secondary
   name       = "hello"
   containers = {
     hello = {

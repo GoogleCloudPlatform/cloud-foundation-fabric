@@ -1,3 +1,4 @@
+name = "test"
 context = {
   addresses = {
     dns-external = "8.8.8.8"
@@ -52,6 +53,12 @@ routes = {
     description   = "Route to internal range."
     dest_range    = "$cidr_ranges:test"
     next_hop_type = "ip"
+    next_hop      = "$addresses:test"
+  }
+  next-hop-ilb = {
+    description   = "Route to ilb by ip."
+    dest_range    = "$cidr_ranges:test"
+    next_hop_type = "ilb"
     next_hop      = "$addresses:test"
   }
 }

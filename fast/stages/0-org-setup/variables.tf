@@ -37,13 +37,13 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    billing_accounts  = optional(string, "data/billing-accounts")
+    billing_accounts  = optional(string, "datasets/classic/billing-accounts")
     cicd              = optional(string)
-    defaults          = optional(string, "data/defaults.yaml")
-    folders           = optional(string, "data/folders")
-    organization      = optional(string, "data/organization")
-    project_templates = optional(string, "data/templates")
-    projects          = optional(string, "data/projects")
+    defaults          = optional(string, "datasets/classic/defaults.yaml")
+    folders           = optional(string, "datasets/classic/folders")
+    organization      = optional(string, "datasets/classic/organization")
+    project_templates = optional(string, "datasets/classic/templates")
+    projects          = optional(string, "datasets/classic/projects")
   })
   nullable = false
   default  = {}

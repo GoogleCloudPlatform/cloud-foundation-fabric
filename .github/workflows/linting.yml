@@ -13,6 +13,7 @@
 # limitations under the License.
 
 name: "Linting"
+# yamllint disable-line rule:truthy
 on:
   pull_request:
     branches:
@@ -22,7 +23,6 @@ on:
     branches:
       - master
       - fast-dev
-
 jobs:
   linting:
     runs-on: ubuntu-latest
@@ -92,31 +92,30 @@ jobs:
 
       - name: Check python formatting
         id: yapf
-        run: |
-          yapf -p -d -r \
-            tools/*.py \
-            fast
+        uses: pre-commit/action@1b06ec171f2f6faa71ed760c4042bd969e4f8b43
+        with:
+          extra_args: yapf --all-files
 
       - name: Check modules versions
         id: versions
-        run: |
-          OUTPUT_TF=$(find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;)
-          if [[ -n "${OUTPUT_TF}" ]] ; then
-            echo "Terraform versions.tf:"
-            echo "${OUTPUT_TF}"
-          fi
-          OUTPUT_TOFU=$(find . -type f -name 'versions.tofu' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tofu {} \;)
-          if [[ -n "${OUTPUT_TOFU}" ]] ; then
-            echo "Terraform versions.tofu:"
-            echo "${OUTPUT_TOFU}"
-          fi
-          egrep -v "(required_version|module_name)" default-versions.tf > /tmp/versions.tf
-          egrep -v "(required_version|module_name)" default-versions.tofu > /tmp/versions.tofu
-          diff -rub /tmp/versions.tf /tmp/versions.tofu
-          DIFF_EC=$?
-          [[ "${DIFF_EC}" -eq "0" ||  -z "${OUTPUT_TF}" || -z "${OUTPUT_TOFU}" ]]
+        uses: pre-commit/action@1b06ec171f2f6faa71ed760c4042bd969e4f8b43
+        with:
+          extra_args: versions --all-files
 
       - name: Check for diverging files
         id: duplicates
-        run: |
-          python3 tools/duplicate-diff.py
+        uses: pre-commit/action@1b06ec171f2f6faa71ed760c4042bd969e4f8b43
+        with:
+          extra_args: duplicate-diff --all-files
+
+      - name: Check YAML files
+        id: yaml-lint
+        uses: pre-commit/action@1b06ec171f2f6faa71ed760c4042bd969e4f8b43
+        with:
+          extra_args: yamllint --all-files
+
+      - name: Check for spelling mistakes
+        id: codespell
+        uses: pre-commit/action@1b06ec171f2f6faa71ed760c4042bd969e4f8b43
+        with:
+          extra_args: codespell --all-files

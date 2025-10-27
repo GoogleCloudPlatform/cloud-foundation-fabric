@@ -1,6 +1,6 @@
 # Cloud Build Connection (V2) Module
 
-This module allows to create a Cloud Build v2 connection with associated repositories and triggers linked to each of them. Additionaly it also familitates the creation of IAM bindings for the connection.
+This module allows to create a Cloud Build v2 connection with associated repositories and triggers linked to each of them. Additionally, it also facilitates the creation of IAM bindings for the connection.
 
 <!-- BEGIN TOC -->
 - [Github](#github)

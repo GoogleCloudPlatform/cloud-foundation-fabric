@@ -79,14 +79,13 @@ module "organization" {
         id = local.organization_id
       }
     }
-    locations = {
-      default = local.defaults.locations.logging
-    }
+    locations = local.ctx.locations
   }
   factories_config = {
     org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
     custom_roles                  = "${local.paths.organization}/custom-roles"
     tags                          = "${local.paths.organization}/tags"
+    scc_sha_custom_modules        = "${local.paths.organization}/scc-sha-custom-modules"
   }
   tags_config = {
     ignore_iam = true
@@ -136,6 +135,9 @@ module "organization-iam" {
   )
   iam_bindings_additive = lookup(
     local.organization, "iam_bindings_additive", {}
+  )
+  iam_by_principals_additive = lookup(
+    local.organization, "iam_by_principals_additive", {}
   )
   logging_sinks = try(local.organization.logging.sinks, {})
   tags_config = {

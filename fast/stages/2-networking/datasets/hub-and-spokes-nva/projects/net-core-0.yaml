@@ -1,0 +1,19 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../schemas/project.schema.json
+name: prod-net-core-0
+parent: $folder_ids:networking
+services:
+  - container.googleapis.com
+  - compute.googleapis.com
+  - dns.googleapis.com
+  - iap.googleapis.com
+  - networkmanagement.googleapis.com
+  - networksecurity.googleapis.com
+  - servicenetworking.googleapis.com
+  - stackdriver.googleapis.com
+  - vpcaccess.googleapis.com
+shared_vpc_host_config:
+  enabled: true

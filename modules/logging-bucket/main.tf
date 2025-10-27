@@ -27,6 +27,9 @@ locals {
     }
   }
   ctx_p = "$"
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
   parent_id = (
     var.parent_type == "project"
     ? lookup(local.ctx.project_ids, var.parent, var.parent)
@@ -40,11 +43,9 @@ locals {
 }
 
 resource "google_logging_project_bucket_config" "bucket" {
-  count   = var.parent_type == "project" ? 1 : 0
-  project = local.parent_id
-  location = lookup(
-    local.ctx.locations, var.location, var.location
-  )
+  count            = var.parent_type == "project" ? 1 : 0
+  project          = local.parent_id
+  location         = local.location
   retention_days   = var.retention
   bucket_id        = var.name
   description      = var.description
@@ -58,11 +59,9 @@ resource "google_logging_project_bucket_config" "bucket" {
 }
 
 resource "google_logging_folder_bucket_config" "bucket" {
-  count  = var.parent_type == "folder" ? 1 : 0
-  folder = local.parent_id
-  location = lookup(
-    local.ctx.locations, var.location, var.location
-  )
+  count          = var.parent_type == "folder" ? 1 : 0
+  folder         = local.parent_id
+  location       = local.location
   retention_days = var.retention
   bucket_id      = var.name
   description    = var.description
@@ -73,16 +72,14 @@ resource "google_logging_linked_dataset" "dataset" {
   link_id     = var.log_analytics.dataset_link_id
   parent      = "projects/${google_logging_project_bucket_config.bucket[0].project}"
   bucket      = google_logging_project_bucket_config.bucket[0].id
-  location    = var.location
+  location    = local.location
   description = var.log_analytics.description
 }
 
 resource "google_logging_organization_bucket_config" "bucket" {
-  count        = var.parent_type == "organization" ? 1 : 0
-  organization = local.parent_id
-  location = lookup(
-    local.ctx.locations, var.location, var.location
-  )
+  count          = var.parent_type == "organization" ? 1 : 0
+  organization   = local.parent_id
+  location       = local.location
   retention_days = var.retention
   bucket_id      = var.name
   description    = var.description
@@ -91,12 +88,10 @@ resource "google_logging_organization_bucket_config" "bucket" {
 resource "google_logging_billing_account_bucket_config" "bucket" {
   count           = var.parent_type == "billing_account" ? 1 : 0
   billing_account = local.parent_id
-  location = lookup(
-    local.ctx.locations, var.location, var.location
-  )
-  retention_days = var.retention
-  bucket_id      = var.name
-  description    = var.description
+  location        = local.location
+  retention_days  = var.retention
+  bucket_id       = var.name
+  description     = var.description
 }
 
 resource "google_logging_log_view" "views" {

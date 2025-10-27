@@ -5,19 +5,95 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-09-20 12:38:37+00:00 to: None since: v45.0.0 -->
 
+## [46.0.0] - 2025-10-26
+
 ### BREAKING CHANGES
 
+- `fast/stages/2-networking-a-simple`: The stage is being deprecated, and superseded the `2-networking` FAST stage, introduced in #3435
+`fast/stages/2-networking-b-nva`: The stage is being deprecated, and superseded the `2-networking` FAST stage, introduced in #3435
+`fast/stages/2-networking-c-separate-envs`: The stage is being deprecated, and superseded the `2-networking` FAST stage, introduced in #3435
+`modules/net-vpc-factory`:  The module has been deprecated, and superseded the `2-networking` FAST stage, introduced in #3435 [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)]
+- `modules/iam-service-account`:  The `service_account_create` variable has been renamed to `service_account_reuse` and its type has changed.
+`modules/project-factory` and `fast/stages/0-org-setup`:  Data sources for service accounts are no longer needed. [[#3450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3450)]
+- `modules/project-factory`: `storage_location` and `bigquery_location` have been replaced with `locations.storage` and `locations.bigquery` in defaults and overrides; the same applies to FAST org setup, security, project factory stages. [[#3392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3392)]
+
+### FAST
+
+- [[#3474](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3474)] Remove legacy security stage ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 16:49:53+00:00 -->
+- [[#3470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3470)] Implement proper validation for tag value names in schema ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 12:35:56+00:00 -->
+- [[#3463](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3463)] NVA Dataset for FAST networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-26 09:51:00+00:00 -->
+- [[#3466](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3466)] Fix YAML linting on fast-dev ([ludoo](https://github.com/ludoo)) <!-- 2025-10-25 09:15:25+00:00 -->
+- [[#3464](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3464)] Make classic dataset link to hub-and-spokes-peerings ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 13:08:17+00:00 -->
+- [[#3460](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3460)] Consistent subnetting across datasets + contexts ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 19:14:05+00:00 -->
+- [[#3458](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3458)] 2-networking - VPN Dataset ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 15:21:40+00:00 -->
+- [[#3454](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3454)] Fix issues with FAST CI/CD support ([ludoo](https://github.com/ludoo)) <!-- 2025-10-23 14:40:06+00:00 -->
+- [[#3457](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3457)] 2-networking - NCC Dataset ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 12:59:47+00:00 -->
+- [[#3435](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3435)] Factory based FAST Networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 12:17:44+00:00 -->
+- [[#3453](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3453)] Fix typos ([juliocc](https://github.com/juliocc)) <!-- 2025-10-22 18:52:09+00:00 -->
+- [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)] Start the deprecation process of the old networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-22 14:31:15+00:00 -->
+- [[#3447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3447)] Align schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-10-21 12:03:40+00:00 -->
+- [[#3410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3410)] Adding hardened datasets for preventive and detective Compliance Controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-21 10:34:26+00:00 -->
+- [[#3417](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3417)] Add retention support for project-factory buckets ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-17 10:30:20+00:00 -->
+- [[#3431](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3431)] Revert "Allow overriding individual factory paths from organization config in FAST org setup" ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 09:41:31+00:00 -->
+- [[#3430](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3430)] Allow overriding individual factory paths from organization config in FAST org setup ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 06:51:24+00:00 -->
+- [[#3409](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3409)] Fix NGFW add-on instructions ([ludoo](https://github.com/ludoo)) <!-- 2025-10-13 16:52:54+00:00 -->
+- [[#3408](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3408)] Ngfw custom roles ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-13 16:29:28+00:00 -->
+- [[#3401](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3401)] Support context and add configurations factory to workstation cluster module, add FAST project template ([ludoo](https://github.com/ludoo)) <!-- 2025-10-10 16:59:37+00:00 -->
+- [[#3399](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3399)] Align FAST project templates project definitions to new format ([ludoo](https://github.com/ludoo)) <!-- 2025-10-09 13:36:47+00:00 -->
+- [[#3398](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3398)] Allow automation resources with bucket or service accounts only in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-10-09 11:37:47+00:00 -->
+- [[#3397](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3397)] Reorder org-setup to support new datasets ([juliocc](https://github.com/juliocc)) <!-- 2025-10-09 09:28:34+00:00 -->
+- [[#3392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3392)] Rationalize location defaults across project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-08 07:12:15+00:00 -->
+- [[#3390](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3390)] Use location.bigquery for billing dataset ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 12:13:01+00:00 -->
+- [[#3387](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3387)] Support iam_by_principals_additive in 0-org-setup ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 06:56:35+00:00 -->
+- [[#3386](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3386)] Document log_buckets namespace ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 05:38:17+00:00 -->
+- [[#3373](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3373)] Add support for output files to FAST project factory stage ([ludoo](https://github.com/ludoo)) <!-- 2025-10-03 12:20:04+00:00 -->
+
+### MODULES
+
+- [[#3470](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3470)] Implement proper validation for tag value names in schema ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 12:35:56+00:00 -->
+- [[#3467](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3467)] Add fourth folder level to project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-26 09:34:03+00:00 -->
+- [[#3462](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3462)] Use context in ilb routes ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-24 09:06:54+00:00 -->
+- [[#3452](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3452)] Allow null project id in service account module when reusing service account ([ludoo](https://github.com/ludoo)) <!-- 2025-10-22 16:51:07+00:00 -->
+- [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)] Start the deprecation process of the old networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-22 14:31:15+00:00 -->
+- [[#3450](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3450)] Allow skipping data source in service account module ([ludoo](https://github.com/ludoo)) <!-- 2025-10-22 11:04:00+00:00 -->
+- [[#3447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3447)] Align schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-10-21 12:03:40+00:00 -->
+- [[#3410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3410)] Adding hardened datasets for preventive and detective Compliance Controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-21 10:34:26+00:00 -->
+- [[#3417](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3417)] Add retention support for project-factory buckets ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-10-17 10:30:20+00:00 -->
+- [[#3430](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3430)] Allow overriding individual factory paths from organization config in FAST org setup ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 06:51:24+00:00 -->
+- [[#3426](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3426)] Fix context bug on net-dns ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-16 13:58:27+00:00 -->
+- [[#3401](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3401)] Support context and add configurations factory to workstation cluster module, add FAST project template ([ludoo](https://github.com/ludoo)) <!-- 2025-10-10 16:59:37+00:00 -->
+- [[#3398](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3398)] Allow automation resources with bucket or service accounts only in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-10-09 11:37:47+00:00 -->
+- [[#3392](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3392)] Rationalize location defaults across project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-08 07:12:15+00:00 -->
+- [[#3387](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3387)] Support iam_by_principals_additive in 0-org-setup ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 06:56:35+00:00 -->
+- [[#3386](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3386)] Document log_buckets namespace ([juliocc](https://github.com/juliocc)) <!-- 2025-10-07 05:38:17+00:00 -->
+
+### TOOLS
+
+- [[#3435](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3435)] Factory based FAST Networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-23 12:17:44+00:00 -->
+- [[#3451](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3451)] Start the deprecation process of the old networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-22 14:31:15+00:00 -->
+- [[#3447](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3447)] Align schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-10-21 12:03:40+00:00 -->
+- [[#3410](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3410)] Adding hardened datasets for preventive and detective Compliance Controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-21 10:34:26+00:00 -->
+
+## [45.1.0] - 2025-10-26
+
+### BREAKING CHANGES
+
+- `modules/cloud-run`: cloud-run module was deprecated in favor of cloud-run-v2, which supports more functionalities [[#3472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3472)]
+- `modules/cloud-function-v1`: service_account and service_account_create were moved to service_account_config. By default, module now creates a service accounts and grants `roles/logging.logWriter` and `roles/monitoring.metricWriter` on project level
+`modules/cloud-function-v2`: service_account and service_account_create were moved to service_account_config. By default, module now creates a service accounts and grants `roles/logging.logWriter` and `roles/monitoring.metricWriter` on project level [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)]
+- `terraform-provider-google`:  Bump provider to 7.6.0, to allow use of `google_vertex_ai_reasoning_engine` in modules/agent-engine [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)]
 - `modules/project-factory`: the `factories_config` attribute has been removed from project defaults and overrides. [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)]
 - `modules/gke-hub`: Unified cluster configuration. The module now uses a single `clusters` variable to configure both cluster registration and feature enablement. [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `all modules`: Minimum supported Terraform version bumped 1.12.2 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `all modules`: Minimum supported OpenTofu version bumped 1.10.0 [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)]
 - `modules/project-factory`: the format for automation service account names has changed. [[#3345](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3345)]
 
-- [[#3428](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3428)] gitignore update ([juliocc](https://github.com/juliocc)) <!-- 2025-10-16 14:14:55+00:00 -->
-- [[#3361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3361)] Use pre-commit managed Python environment for pre-commit checks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-27 07:06:30+00:00 -->
-
 ### FAST
 
+- [[#3468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3468)] Improve linting and fix agent-engine module name ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 10:56:41+00:00 -->
+- [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
+- [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
+- [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
 - [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)] Support resource-level factories config in project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-18 10:41:19+00:00 -->
 - [[#3439](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3439)] compatiblity fix: Github CICD templates Terraform version bump to 1.12.2 ([ysolt](https://github.com/ysolt)) <!-- 2025-10-18 08:00:15+00:00 -->
 - [[#3432](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3432)] Revert "Added audience to workflow local in 0-org-setup" ([ludoo](https://github.com/ludoo)) <!-- 2025-10-17 12:38:08+00:00 -->
@@ -41,6 +117,15 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3472](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3472)] Deprecate cloud-run module ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 14:51:46+00:00 -->
+- [[#3468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3468)] Improve linting and fix agent-engine module name ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 10:56:41+00:00 -->
+- [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
+- [[#3461](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3461)] fix(vpc-sc): correctly handle null `from.identities` in ingress/egress policies (regression since v39.0.0) ([viliampucik](https://github.com/viliampucik)) <!-- 2025-10-24 05:00:07+00:00 -->
+- [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
+- [[#3448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3448)] Skip IAM grants for service agents that are not created on API activation ([juliocc](https://github.com/juliocc)) <!-- 2025-10-21 14:31:33+00:00 -->
+- [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->
+- [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
+- [[#3438](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3438)] Add PAM support ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 12:50:37+00:00 -->
 - [[#3442](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3442)] Apply alerts and log based metrics after log buckets creation ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-20 06:13:42+00:00 -->
 - [[#3440](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3440)] Support resource-level factories config in project factory module and FAST stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-18 10:41:19+00:00 -->
 - [[#3436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3436)] Add service agent outputs to folder and organization ([juliocc](https://github.com/juliocc)) <!-- 2025-10-17 15:23:08+00:00 -->
@@ -77,10 +162,25 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3468](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3468)] Improve linting and fix agent-engine module name ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-26 10:56:41+00:00 -->
+- [[#3459](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3459)] Add yamlint step to linting workflow ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-24 11:11:17+00:00 -->
+- [[#3443](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3443)] Cloud Function v1, v2 - contexts and service_account_config ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 13:50:17+00:00 -->
+- [[#3448](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3448)] Skip IAM grants for service agents that are not created on API activation ([juliocc](https://github.com/juliocc)) <!-- 2025-10-21 14:31:33+00:00 -->
+- [[#3445](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3445)] Remove Netsec Authz Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2025-10-20 19:36:03+00:00 -->
+- [[#3429](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3429)] Add Agent Engine module. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-10-20 15:02:39+00:00 -->
+- [[#3444](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3444)] fix Terraform version linter ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-20 11:52:11+00:00 -->
 - [[#3436](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3436)] Add service agent outputs to folder and organization ([juliocc](https://github.com/juliocc)) <!-- 2025-10-17 15:23:08+00:00 -->
 - [[#3407](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3407)] remove tf version from matrix, to keep workflow names stable across upgrades ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-13 15:40:52+00:00 -->
 - [[#3332](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3332)] Update gke-hub module to use new Policy Controller API ([juliocc](https://github.com/juliocc)) <!-- 2025-10-13 07:47:40+00:00 -->
 - [[#3404](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3404)] Add tests for service agents iam_emails ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-12 13:02:13+00:00 -->
+
+### DOCS
+
+- [[#3456](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3456)] More knowledge -  ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-23 09:08:14+00:00 -->
+- [[#3455](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3455)] Service agents cursed knowledge ([juliocc](https://github.com/juliocc)) <!-- 2025-10-23 08:02:02+00:00 -->
+- [[#3446](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3446)] Cursed knowledge of CFF ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-21 15:19:23+00:00 -->
+- [[#3428](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3428)] gitignore update ([juliocc](https://github.com/juliocc)) <!-- 2025-10-16 14:14:55+00:00 -->
+- [[#3361](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3361)] Use pre-commit managed Python environment for pre-commit checks ([wiktorn](https://github.com/wiktorn)) <!-- 2025-09-27 07:06:30+00:00 -->
 
 ## [45.0.0] - 2025-09-20
 
@@ -1687,7 +1787,9 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...HEAD
+[46.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...45.1.0
+[45.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...45.0.0
 [45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...44.2.0
 [44.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...44.1.0
 [44.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...44.0.0

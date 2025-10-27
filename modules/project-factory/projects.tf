@@ -49,6 +49,10 @@ locals {
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
+  ctx_log_buckets = merge(local.ctx.log_buckets, local.log_buckets)
+  log_buckets = {
+    for key, log_bucket in module.log-buckets : key => log_bucket.id
+  }
   projects_input = merge(var.projects, local._projects_output)
 }
 
@@ -73,7 +77,13 @@ module "projects" {
   })
   default_service_account = try(each.value.default_service_account, "keep")
   descriptive_name        = try(each.value.descriptive_name, null)
-  factories_config        = { for k, v in each.value.factories_config : k => v if k != "observability" }
+  factories_config = {
+    custom_roles           = try(each.value.factories_config.custom_roles, null)
+    org_policies           = try(each.value.factories_config.org_policies, null)
+    quotas                 = try(each.value.factories_config.quotas, null)
+    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    tags                   = try(each.value.factories_config.tags, null)
+  }
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
@@ -117,12 +127,19 @@ module "projects-iam" {
     folder_ids     = local.ctx.folder_ids
     kms_keys       = local.ctx.kms_keys
     iam_principals = local.ctx_iam_principals
+    log_buckets    = local.ctx_log_buckets
   })
-  factories_config      = { for k, v in each.value.factories_config : k => v if k == "observability" }
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  factories_config = {
+    # we do anything that can refer to IAM and custom roles in this call
+    observability    = try(each.value.factories_config.observability, null)
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+  }
+  iam                        = lookup(each.value, "iam", {})
+  iam_bindings               = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals          = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive = lookup(each.value, "iam_by_principals_additive", {})
+  pam_entitlements           = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false
     grant_default_roles   = false

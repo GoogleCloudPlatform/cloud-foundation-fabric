@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../../fast/stages/0-bootstrap-experimental/schemas/defaults.schema.json
+# yaml-language-server: $schema=../../../../../fast/stages/0-org-setup/schemas/defaults.schema.json
 
 # defaults:
 #   storage_location: europe-west1
 global:
   billing_account: 012345-012345-012345
-  locations:
-    bigquery: europe-west1
-    logging: europe-west1
   organization:
     domain: example.org
     id: 1234567890
@@ -28,8 +25,10 @@ global:
 projects:
   defaults:
     prefix: ft0
-    storage_location: europe-west1
-    bigquery_location: europe-west1
+    locations:
+      bigquery: $locations:primary
+      logging: $locations:primary
+      storage: $locations:primary
   overrides: {}
 output_files:
   local_path: /tmp/fast-config
@@ -60,3 +59,5 @@ output_files:
 context:
   iam_principals:
     gcp-organization-admins: group:fabric-fast-owners@google.com
+  locations:
+    primary: europe-west1

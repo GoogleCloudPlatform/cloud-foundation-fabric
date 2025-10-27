@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.project-factory.module.automation-bucket["dev-tb-app0-0/automation/tf-state"].google_storage_bucket.bucket[0]:
     autoclass: []
@@ -46,6 +47,7 @@ values:
     members:
     - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectCreator
+    timeouts: null
   ? module.project-factory.module.automation-bucket["dev-tb-app0-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
   : bucket: test-pf-dev-tb-app0-0-tf-state
     condition: []
@@ -55,6 +57,7 @@ values:
     - serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
+    timeouts: null
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
   : account_id: dev-tb-app0-0-ro
     create_ignore_already_exists: null
@@ -158,6 +161,34 @@ values:
         parameters: null
         values: []
     timeouts: null
+  ? module.project-factory.module.folder-2["team-a/app-0"].google_privileged_access_manager_entitlement.default["app-0-admins"]
+  : additional_notification_targets: []
+    approval_workflow:
+    - manual_approvals:
+      - require_approver_justification: true
+        steps:
+        - approvals_needed: 1
+          approver_email_recipients: null
+          approvers:
+          - principals:
+            - group:app-0-admins@example.org
+    eligible_users:
+    - principals:
+      - group:app-a-ops@example.org
+    entitlement_id: app-0-admins
+    location: global
+    max_request_duration: 3600s
+    privileged_access:
+    - gcp_iam_access:
+      - resource_type: cloudresourcemanager.googleapis.com/Folder
+        role_bindings:
+        - condition_expression: null
+          role: roles/writer
+    requester_justification_config:
+    - not_mandatory: []
+      unstructured:
+      - {}
+    timeouts: null
   module.project-factory.module.folder-2["team-b/app-0"].google_folder.folder[0]:
     deletion_protection: false
     display_name: App 0
@@ -165,6 +196,21 @@ values:
     timeouts: null
   module.project-factory.module.folder-2["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
     tag_value: tagValues/123456
+    timeouts: null
+  module.project-factory.module.folder-2["team-c/apps"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Apps
+    tags: null
+    timeouts: null
+  module.project-factory.module.folder-3["team-c/apps/test"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Test
+    tags: null
+    timeouts: null
+  module.project-factory.module.folder-4["team-c/apps/test/app-x"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: App X
+    tags: null
     timeouts: null
   ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_shared_vpc_service_project.shared_vpc_service[0]
   : deletion_policy: null
@@ -179,6 +225,38 @@ values:
   : condition: []
     crypto_key_id: projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_privileged_access_manager_entitlement.default["project-admins"]
+  : additional_notification_targets: []
+    approval_workflow:
+    - manual_approvals:
+      - require_approver_justification: true
+        steps:
+        - approvals_needed: 1
+          approver_email_recipients: null
+          approvers:
+          - principals:
+            - group:team-a-admins@example
+    eligible_users:
+    - principals:
+      - group:team-a-ops@example.org
+    entitlement_id: project-admins
+    location: global
+    max_request_duration: 3600s
+    parent: projects/test-pf-dev-ta-app0-be
+    privileged_access:
+    - gcp_iam_access:
+      - resource: //cloudresourcemanager.googleapis.com/projects/test-pf-dev-ta-app0-be
+        resource_type: cloudresourcemanager.googleapis.com/Project
+        role_bindings:
+        - condition_expression: null
+          role: roles/compute.admin
+        - condition_expression: null
+          role: roles/bigquery.admin
+    requester_justification_config:
+    - not_mandatory: []
+      unstructured:
+      - {}
+    timeouts: null
   ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_project_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
@@ -594,8 +672,6 @@ values:
     member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     timeouts: null
-  ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].data.google_service_account.service_account[0]
-  : account_id: vm-default
   ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
     members:
@@ -611,17 +687,18 @@ counts:
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 4
-  google_folder: 5
+  google_folder: 8
   google_folder_iam_binding: 1
   google_kms_crypto_key_iam_member: 2
   google_monitoring_notification_channel: 1
   google_org_policy_policy: 2
+  google_privileged_access_manager_entitlement: 2
   google_project: 4
   google_project_iam_binding: 6
   google_project_iam_member: 21
   google_project_service: 13
   google_project_service_identity: 4
-  google_service_account: 7
+  google_service_account: 6
   google_service_account_iam_binding: 1
   google_storage_bucket: 1
   google_storage_bucket_iam_binding: 2
@@ -630,6 +707,6 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 23
-  resources: 88
+  modules: 26
+  resources: 92
   terraform_data: 1

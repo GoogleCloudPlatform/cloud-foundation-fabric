@@ -4,7 +4,7 @@ This module offers a unified interface to manage VPC Service Controls [Access Po
 
 Given the complexity of the underlying resources, the module intentionally mimics their interfaces to make it easier to map their documentation onto its variables, and reduce the internal complexity.
 
-If you are using [Application Default Credentials](https://cloud.google.com/sdk/gcloud/reference/auth/application-default) with Terraform and run into permissions issues, make sure to check out the recommended provider configuration in the [VPC SC resources documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_access_level).
+If you are using [Application Default Credentials](https://cloud.google.com/sdk/gcloud/reference/auth/application-default) with Terraform and run into permission issues, make sure to check out the recommended provider configuration in the [VPC SC resources documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_access_level).
 
 <!-- BEGIN TOC -->
 - [Examples](#examples)
@@ -286,7 +286,7 @@ status:
       - "storage.googleapis.com"
     enable_restriction: yes
 
-# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeters.schema.json
+# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeter.schema.json
 ```
 
 ```yaml
@@ -309,7 +309,7 @@ status:
     allowed_services:
       - storage.googleapis.com
     enable_restriction: true
-# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeters.schema.json
+# tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeter.schema.json
 ```
 
 ```yaml

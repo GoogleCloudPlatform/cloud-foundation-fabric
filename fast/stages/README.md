@@ -33,14 +33,11 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Shared resources (2)
 
-- [Security (Legacy)](2-security-legacy/README.md)  
-  Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
-  Exports: KMS key ids, CA ids
 - [Security](2-security/README.md)  
   Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
   Exports: KMS key ids, CA ids
-- Networking ([Peering/VPN](2-networking-a-simple/README.md)/[NVA (w/ optional BGP support)](2-networking-b-nva/README.md)/[Separate environments](2-networking-c-separate-envs/README.md))  
-  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets. It's currently available in four flavors: [spokes connected via VPC peering/VPN](2-networking-a-simple/README.md), [spokes connected via appliances (w/ optional BGP support)](2-networking-b-nva/README.md) and [separated network environments](2-networking-c-separate-envs/README.md).\
+- Networking ([Networking factory](2-networking/README.md))/Networking ([Peering/VPN](2-networking-legacy-a-simple/README.md)/[NVA (w/ optional BGP support)](2-networking-legacy-b-nva/README.md)/[Separate environments](2-networking-legacy-c-separate-envs/README.md))  
+  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets. It's currently available in four flavors: [spokes connected via VPC peering/VPN](2-networking-legacy-a-simple/README.md), [spokes connected via appliances (w/ optional BGP support)](2-networking-legacy-b-nva/README.md) and [separated network environments](2-networking-legacy-c-separate-envs/README.md).\
   Exports: host project ids and numbers, vpc self links
 - [Project Factory](./2-project-factory/)  
   YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.

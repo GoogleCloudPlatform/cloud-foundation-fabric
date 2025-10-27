@@ -58,6 +58,21 @@
                 }
               }
             },
+            "locations": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "bigquery": {
+                  "type": "string"
+                },
+                "logging": {
+                  "type": "string"
+                },
+                "storage": {
+                  "type": "string"
+                }
+              }
+            },
             "logging_data_access": {
               "type": "object",
               "default": {},
@@ -244,9 +259,6 @@
                 "host_project"
               ]
             },
-            "storage_location": {
-              "type": "string"
-            },
             "tag_bindings": {
               "type": "object",
               "default": {},
@@ -404,6 +416,21 @@
                 "ABANDON"
               ]
             },
+            "locations": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "bigquery": {
+                  "type": "string"
+                },
+                "logging": {
+                  "type": "string"
+                },
+                "storage": {
+                  "type": "string"
+                }
+              }
+            },
             "logging_data_access": {
               "type": "object",
               "default": {},
@@ -491,9 +518,6 @@
                 "type": "string"
               }
             },
-            "storage_location": {
-              "type": "string"
-            },
             "tag_bindings": {
               "type": "object",
               "default": {},
@@ -542,7 +566,73 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "custom_roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "folder_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "kms_keys": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "iam_principals": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "locations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "notification_channels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "project_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "service_account_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tag_keys": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tag_values": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "vpc_host_projects": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "vpc_sc_perimeters": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -557,8 +647,42 @@
         "local_path": {
           "type": "string"
         },
+        "providers_template_path": {
+          "type": "string",
+          "default": "assets/providers.tf.tpl"
+        },
         "storage_bucket": {
           "type": "string"
+        },
+        "providers_pattern": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service_accounts_match",
+            "storage_bucket"
+          ],
+          "properties": {
+            "service_accounts_match": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "ro": {
+                  "type": "string"
+                },
+                "rw": {
+                  "type": "string"
+                }
+              }
+            },
+            "storage_bucket": {
+              "type": "string"
+            },
+            "storage_folders_create": {
+              "type": "boolean",
+              "default": true
+            }
+          }
         },
         "providers": {
           "type": "object",
@@ -568,17 +692,18 @@
               "type": "object",
               "additionalProperties": false,
               "required": [
-                "bucket",
-                "service_account"
+                "service_account",
+                "storage_bucket"
               ],
               "properties": {
-                "bucket": {
-                  "type": "string"
-                },
-                "prefix": {
-                  "type": "string"
-                },
                 "service_account": {
+                  "type": "string"
+                },
+                "set_prefix": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "storage_bucket": {
                   "type": "string"
                 }
               }

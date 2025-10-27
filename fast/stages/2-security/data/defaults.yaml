@@ -18,6 +18,8 @@ context:
   locations:
     primary: europe-west1
     secondary: europe-west3
+    storage-default: eu
 projects:
   defaults:
-    storage_location: eu
+    locations:
+      storage: $locations:storage-default
