@@ -23,7 +23,7 @@ values:
       goog-terraform-provisioned: 'true'
     labels: null
     location: europe-west8
-    name: job
+    name: example-job
     project: project-id
     run_execution_token: null
     start_execution_token: null
@@ -57,5 +57,3 @@ values:
 
 counts:
   google_cloud_run_v2_job: 1
-  modules: 1
-  resources: 1

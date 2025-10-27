@@ -15,7 +15,7 @@
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     location: europe-west8
-    name: hello
+    name: example-hello
     project: project-id
     template:
       - containers:
@@ -35,15 +35,11 @@ values:
     destination:
       - cloud_run_service:
           - path: null
-            region: europe-west8
-            service: hello
-    location: europe-west8
     matching_criteria:
       - attribute: type
         operator: ''
         value: google.cloud.pubsub.topic.v1.messagePublished
     name: pubsub-topic-1
-    project: project-id
     service_account: null
     transport:
       - pubsub:
@@ -52,7 +48,5 @@ values:
 counts:
   google_cloud_run_v2_service: 1
   google_eventarc_trigger: 1
-  modules: 2
-  resources: 4
 
 outputs: {}

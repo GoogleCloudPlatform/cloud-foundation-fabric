@@ -1,0 +1,78 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_cloud_run_v2_service.service[0]:
+    annotations: null
+    binary_authorization: []
+    build_config: []
+    client: null
+    client_version: null
+    custom_audiences: null
+    default_uri_disabled: null
+    deletion_protection: true
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    iap_enabled: false
+    invoker_iam_disabled: false
+    labels: null
+    location: europe-west8
+    multi_region_settings: []
+    name: test-cf-kms
+    project: foo-test-0
+    scaling: []
+    template:
+    - annotations: null
+      containers: []
+      encryption_key: null
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      gpu_zonal_redundancy_disabled: null
+      labels: null
+      node_selector: []
+      revision: null
+      service_account: test-cf-kms@foo-test-0.iam.gserviceaccount.com
+      service_mesh: []
+      session_affinity: null
+      volumes: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_cloud_run_v2_service_iam_binding.binding["$custom_roles:myrole_one"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_project_iam_member.default["organizations/366118655033/roles/myRoleOne"]:
+    condition: []
+    member: serviceAccount:test-cf-kms@foo-test-0.iam.gserviceaccount.com
+    project: foo-test-0
+    role: organizations/366118655033/roles/myRoleOne
+  google_vpc_access_connector.connector[0]:
+    ip_cidr_range: null
+    machine_type: e2-micro
+    max_instances: 10
+    min_instances: 3
+    name: test-cf-kms
+    project: foo-test-0
+    region: europe-west8
+    subnet:
+    - name: gce
+      project_id: foo-dev-net-spoke-0
+    timeouts: null
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_cloud_run_v2_service_iam_binding: 1
+  google_vpc_access_connector: 1

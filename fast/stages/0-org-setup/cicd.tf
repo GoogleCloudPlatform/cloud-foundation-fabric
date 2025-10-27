@@ -23,7 +23,7 @@ locals {
     "$iam_principals:${k}" => v
   }
   cicd_ctx_wif = try({
-    "$wif_pools:${local.wif_pool_name}" = google_iam_workload_identity_pool.default.0.name
+    "$wif_pools:${local.wif_pool_name}" = google_iam_workload_identity_pool.default[0].name
   }, {})
   # normalize workflow configurations
   cicd_workflows = {

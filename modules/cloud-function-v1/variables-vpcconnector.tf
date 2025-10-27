@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-variable "vpc_connector" {
-  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
-  type = object({
-    create          = optional(bool, false)
-    name            = optional(string)
-    egress_settings = optional(string)
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "vpc_connector_create" {
   description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
   type = object({
@@ -50,7 +39,7 @@ variable "vpc_connector_create" {
   default = null
   validation {
     condition = (
-      var.vpc_connector.create == false ||
+      var.vpc_connector_create == null ||
       try(var.vpc_connector_create.instances, null) != null ||
       try(var.vpc_connector_create.throughput, null) != null
     )

@@ -15,7 +15,7 @@
 values:
   module.cloud_run.google_cloud_run_v2_job.job[0]:
     location: europe-west8
-    name: hello
+    name: example-hello
     project: project-id
     template:
       - template:
@@ -46,7 +46,5 @@ values:
 counts:
   google_cloud_run_v2_job: 1
   google_cloud_run_v2_job_iam_binding: 1
-  modules: 1
-  resources: 2
 
 outputs: {}
