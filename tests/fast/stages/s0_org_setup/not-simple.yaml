@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   google_iam_workload_identity_pool.default[0]:
     description: null
@@ -277,24 +278,6 @@ values:
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.workflows["org-setup"]:
-    bucket: ft0-prod-iac-core-0-iac-outputs
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: different hash
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: workflows/org-setup.yaml
-    retention: []
-    source: null
-    source_md5hash: null
-    temporary_hold: null
-    timeouts: null
   local_file.providers["0-org-setup"]:
     content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
       \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
@@ -440,13 +423,6 @@ values:
     filename: /tmp/fast-config/tfvars/0-org-setup.auto.tfvars.json
     sensitive_content: null
     source: null
-  local_file.workflows["org-setup"]:
-    content_base64: null
-    directory_permission: '0777'
-    file_permission: '0644'
-    filename: /tmp/fast-config/workflows/org-setup.yaml
-    sensitive_content: null
-    source: null
   module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"]:
     billing_account_id: 012345-012345-012345
     condition: []
@@ -530,12 +506,14 @@ values:
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/storageViewer
+    timeouts: null
   ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]
   : bucket: ft0-prod-iac-core-0-iac-org-state
     condition: []
     members:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/storage.admin
+    timeouts: null
   module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -576,6 +554,7 @@ values:
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/storageViewer
+    timeouts: null
   module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     condition: []
@@ -587,6 +566,7 @@ values:
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/storage.admin
+    timeouts: null
   module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
@@ -1630,8 +1610,6 @@ values:
     member: serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     timeouts: null
-  module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].data.google_service_account.service_account[0]:
-    account_id: iac-org-cicd-ro
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
   : condition: []
     role: roles/iam.serviceAccountTokenCreator
@@ -1640,8 +1618,6 @@ values:
   : condition: []
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].data.google_service_account.service_account[0]:
-    account_id: iac-org-cicd-rw
   ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
   : condition: []
     role: roles/iam.serviceAccountTokenCreator
@@ -2395,6 +2371,12 @@ values:
     - group:fabric-fast-owners@google.com
     org_id: '1234567890'
     role: roles/compute.osLoginExternalUser
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/compute.viewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
@@ -2402,12 +2384,6 @@ values:
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/compute.xpnAdmin
-  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.viewer"]:
-    condition: []
-    members:
-    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    org_id: '1234567890'
-    role: roles/compute.viewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"]:
     condition: []
     members:
@@ -2623,6 +2599,66 @@ values:
     role_id: networkFirewallPoliciesAdmin
     stage: GA
     title: Custom role networkFirewallPoliciesAdmin
+  module.organization[0].google_organization_iam_custom_role.roles["ngfw_enterprise_admin"]:
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - networksecurity.firewallEndpoints.create
+    - networksecurity.firewallEndpoints.delete
+    - networksecurity.firewallEndpoints.get
+    - networksecurity.firewallEndpoints.list
+    - networksecurity.firewallEndpoints.update
+    - networksecurity.firewallEndpoints.use
+    - networksecurity.locations.get
+    - networksecurity.locations.list
+    - networksecurity.operations.cancel
+    - networksecurity.operations.delete
+    - networksecurity.operations.get
+    - networksecurity.operations.list
+    - networksecurity.securityProfileGroups.create
+    - networksecurity.securityProfileGroups.delete
+    - networksecurity.securityProfileGroups.get
+    - networksecurity.securityProfileGroups.list
+    - networksecurity.securityProfileGroups.update
+    - networksecurity.securityProfileGroups.use
+    - networksecurity.securityProfiles.create
+    - networksecurity.securityProfiles.delete
+    - networksecurity.securityProfiles.get
+    - networksecurity.securityProfiles.list
+    - networksecurity.securityProfiles.update
+    - networksecurity.securityProfiles.use
+    - networksecurity.tlsInspectionPolicies.create
+    - networksecurity.tlsInspectionPolicies.delete
+    - networksecurity.tlsInspectionPolicies.get
+    - networksecurity.tlsInspectionPolicies.list
+    - networksecurity.tlsInspectionPolicies.update
+    - networksecurity.tlsInspectionPolicies.use
+    role_id: ngfwEnterpriseAdmin
+    stage: GA
+    title: Custom role ngfwEnterpriseAdmin
+  module.organization[0].google_organization_iam_custom_role.roles["ngfw_enterprise_viewer"]:
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - networksecurity.firewallEndpoints.get
+    - networksecurity.firewallEndpoints.list
+    - networksecurity.firewallEndpoints.use
+    - networksecurity.locations.get
+    - networksecurity.locations.list
+    - networksecurity.operations.get
+    - networksecurity.operations.list
+    - networksecurity.securityProfileGroups.get
+    - networksecurity.securityProfileGroups.list
+    - networksecurity.securityProfileGroups.use
+    - networksecurity.securityProfiles.get
+    - networksecurity.securityProfiles.list
+    - networksecurity.securityProfiles.use
+    - networksecurity.tlsInspectionPolicies.get
+    - networksecurity.tlsInspectionPolicies.list
+    - networksecurity.tlsInspectionPolicies.use
+    role_id: ngfwEnterpriseViewer
+    stage: GA
+    title: Custom role ngfwEnterpriseViewer
   module.organization[0].google_organization_iam_custom_role.roles["organization_admin_viewer"]:
     description: Terraform-managed.
     org_id: '1234567890'
@@ -2764,6 +2800,7 @@ values:
     input: null
     output: null
     triggers_replace: null
+
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
@@ -2781,10 +2818,11 @@ counts:
   google_organization_iam_custom_role: 9
   google_project: 3
   google_project_iam_binding: 16
-  google_project_iam_member: 17
+  google_project_iam_member: 15
   google_project_service: 33
   google_project_service_identity: 9
-  google_service_account: 16
+  google_service_account: 14
+  google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
@@ -2797,6 +2835,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 46
-  resources: 313
+  modules: 48
+  resources: 311
   terraform_data: 2

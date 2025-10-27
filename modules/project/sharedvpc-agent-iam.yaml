@@ -34,7 +34,7 @@
     container:
       - roles/compute.networkUser
       - roles/container.hostServiceAgentUser
-      - roles/compute.securityAdmin # to manage firewall rules
+      - roles/compute.securityAdmin  # to manage firewall rules
     cloudservices:
       - roles/compute.networkUser
 

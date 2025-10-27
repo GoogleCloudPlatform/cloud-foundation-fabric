@@ -1,0 +1,443 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VPC Configuration",
+  "description": "Schema for a VPC .config.yaml file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "project_id"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "auto_create_subnetworks": {
+      "type": "boolean"
+    },
+    "delete_default_routes_on_create": {
+      "type": "boolean"
+    },
+    "mtu": {
+      "type": "number"
+    },
+    "routing_mode": {
+      "type": "string",
+      "enum": [
+        "GLOBAL",
+        "REGIONAL"
+      ]
+    },
+    "firewall_policy_enforcement_order": {
+      "type": "string",
+      "enum": [
+        "BEFORE_CLASSIC_FIREWALL",
+        "AFTER_CLASSIC_FIREWALL"
+      ]
+    },
+    "create_googleapis_routes": {
+      "$ref": "#/$defs/create_googleapis_routes"
+    },
+    "dns_policy": {
+      "$ref": "#/$defs/dns_policy"
+    },
+    "ipv6_config": {
+      "$ref": "#/$defs/ipv6_config"
+    },
+    "network_attachments": {
+      "$ref": "#/$defs/network_attachments"
+    },
+    "policy_based_routes": {
+      "$ref": "#/$defs/policy_based_routes"
+    },
+    "routes": {
+      "$ref": "#/$defs/routes"
+    },
+    "routers": {
+      "$ref": "#/$defs/routers"
+    },
+    "peering_config": {
+      "$ref": "#/$defs/peering_config"
+    },
+    "psa_configs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/psa_config"
+      }
+    },
+    "subnets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/subnet"
+      }
+    },
+    "subnets_private_nat": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/simple_subnet"
+      }
+    },
+    "subnets_proxy_only": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/proxy_only_subnet"
+      }
+    },
+    "subnets_psc": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/simple_subnet"
+      }
+    },
+    "nat_config": {
+      "$ref": "#/$defs/nat_config"
+    },
+    "ncc_config": {
+      "$ref": "#/$defs/ncc_config"
+    }
+  },
+  "$defs": {
+    "create_googleapis_routes": {
+      "type": "object",
+      "properties": {
+        "directpath": {
+          "type": "boolean"
+        },
+        "directpath-6": {
+          "type": "boolean"
+        },
+        "private": {
+          "type": "boolean"
+        },
+        "private-6": {
+          "type": "boolean"
+        },
+        "restricted": {
+          "type": "boolean"
+        },
+        "restricted-6": {
+          "type": "boolean"
+        }
+      }
+    },
+    "dns_policy": {
+      "type": "object",
+      "properties": {
+        "inbound": {
+          "type": "boolean"
+        },
+        "logging": {
+          "type": "boolean"
+        },
+        "outbound": {
+          "type": "object",
+          "properties": {
+            "private_ns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "public_ns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ipv6_config": {
+      "type": "object",
+      "properties": {
+        "enable_ula_internal": {
+          "type": "boolean"
+        },
+        "internal_range": {
+          "type": "string"
+        }
+      }
+    },
+    "nat_config": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "required": [
+            "region"
+          ],
+          "properties": {
+            "region": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "ncc_config": {
+      "type": "object",
+      "required": [
+        "hub"
+      ],
+      "properties": {
+        "hub": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        }
+      }
+    },
+    "network_attachments": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "properties": {
+            "subnet": {
+              "type": "string"
+            },
+            "automatic_connection": {
+              "type": "boolean"
+            },
+            "description": {
+              "type": "string"
+            },
+            "producer_accept_lists": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "producer_reject_lists": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "peering_config": {
+      "type": "object",
+      "properties": {
+        "peer_vpc_self_link": {
+          "type": "string"
+        },
+        "create_remote_peer": {
+          "type": "boolean"
+        },
+        "export_routes": {
+          "type": "boolean"
+        },
+        "import_routes": {
+          "type": "boolean"
+        }
+      }
+    },
+    "policy_based_routes": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object"
+        }
+      }
+    },
+    "psa_config": {
+      "type": "object",
+      "properties": {
+        "deletion_policy": {
+          "type": "string"
+        },
+        "ranges": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z0-9-]+$": {
+              "type": "string"
+            }
+          }
+        },
+        "export_routes": {
+          "type": "boolean"
+        },
+        "import_routes": {
+          "type": "boolean"
+        },
+        "peered_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "range_prefix": {
+          "type": "string"
+        },
+        "service_producer": {
+          "type": "string"
+        }
+      }
+    },
+    "routes": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "required": [
+            "dest_range",
+            "next_hop_type",
+            "next_hop"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "dest_range": {
+              "type": "string"
+            },
+            "next_hop_type": {
+              "type": "string"
+            },
+            "next_hop": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "number"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "routers": {
+      "type": "object",
+      "description": "A map of Cloud Routers to create in this VPC.",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "region",
+            "asn"
+          ],
+          "properties": {
+            "region": {
+              "type": "string"
+            },
+            "asn": {
+              "type": "number"
+            },
+            "custom_advertise": {
+              "type": "object",
+              "properties": {
+                "all_subnets": {
+                  "type": "boolean"
+                },
+                "ip_ranges": {
+                  "type": "object",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "simple_subnet": {
+      "type": "object",
+      "required": [
+        "name",
+        "ip_cidr_range",
+        "region"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ip_cidr_range": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "subnet": {
+      "type": "object",
+      "required": [
+        "name",
+        "region"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ip_cidr_range": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enable_private_access": {
+          "type": "boolean"
+        },
+        "allow_subnet_cidr_routes_overlap": {
+          "type": "boolean"
+        },
+        "reserved_internal_range": {
+          "type": "string"
+        }
+      }
+    },
+    "proxy_only_subnet": {
+      "type": "object",
+      "required": [
+        "name",
+        "ip_cidr_range",
+        "region"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ip_cidr_range": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "global": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

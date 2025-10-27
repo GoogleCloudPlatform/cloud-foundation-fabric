@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     annotations: null

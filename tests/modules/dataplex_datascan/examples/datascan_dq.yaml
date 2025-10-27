@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# yamllint disable rule:line-length
 values:
   module.dataplex-datascan.google_dataplex_datascan.datascan:
     data:
@@ -65,8 +67,8 @@ values:
         range_expectation:
         - max_value: '9'
           min_value: '3'
-          strict_max_enabled: False
-          strict_min_enabled: False
+          strict_max_enabled: false
+          strict_min_enabled: false
         regex_expectation: []
         row_condition_expectation: []
         set_expectation: []

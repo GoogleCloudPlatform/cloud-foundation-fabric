@@ -63,17 +63,17 @@ This case is highlighted in red in the the diagram above. The process is as foll
 #### Scenario 1: changes that don't break FAST for existing users
 
 - Start a new branch from `master`.
-- Devolop changes.
+- Develop changes.
 - Open and merge a PR against master. In the description, use the `breaks-modules` (if needed) label in the PR.
 
 #### Scenario 2: changes that break FAST for existing users
 
 - Start a new branch from `fast-dev`.
-- Devolop changes.
+- Develop changes.
 - Open and merge a PR against fast-dev. In the description, use the `breaks-Fast` (if needed) label in the PR.
 
 > [!TIP]
-> Aas part of the development of your changes, we encourage merge `master` frequently into your own branch to simplify the final merge back to master.
+> As part of the development of your changes, we encourage merge `master` frequently into your own branch to simplify the final merge back to master.
 
 ## Decision
 

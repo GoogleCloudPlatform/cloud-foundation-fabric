@@ -19,6 +19,7 @@
   role: roles/aiplatform.customCodeServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-es
   display_name: AI Platform Example Store Service Agent
   api: aiplatform.googleapis.com
@@ -26,6 +27,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: aiplatform-ft
   display_name: AI Platform Fine Tuning Service Agent
   api: aiplatform.googleapis.com
@@ -33,6 +35,7 @@
   role: roles/aiplatform.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: aiplatform-is
   display_name: AI Platform Infra Spanner Service Agent
   api: aiplatform.googleapis.com
@@ -40,6 +43,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-eval
   display_name: AI Platform Rapid Eval Service Agent
   api: aiplatform.googleapis.com
@@ -47,6 +51,7 @@
   role: roles/aiplatform.rapidevalServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: aiplatform-re
   display_name: AI Platform Reasoning Engine Service Agent
   api: aiplatform.googleapis.com
@@ -54,6 +59,7 @@
   role: roles/aiplatform.reasoningEngineServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: gcp-ri-aiplatform
   display_name: AI Platform Resource Identity
   api: aiplatform.googleapis.com
@@ -61,6 +67,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: aiplatform
   display_name: AI Platform Service Agent
   api: aiplatform.googleapis.com
@@ -68,6 +75,7 @@
   role: roles/aiplatform.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: apihub
   display_name: API Hub Service Account
   api: apihub.googleapis.com
@@ -75,6 +83,7 @@
   role: roles/apihub.runtimeProjectServiceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: apikeys
   display_name: API Keys Service Account
   api: apikeys.googleapis.com
@@ -82,6 +91,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: apim
   display_name: APIM Service Account
   api: apim.googleapis.com
@@ -89,6 +99,7 @@
   role: roles/apim.apiDiscoveryServiceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: meshcontrolplane
   display_name: ASM Mesh Control Plane Service Account
   api: meshconfig.googleapis.com
@@ -96,6 +107,7 @@
   role: roles/meshcontrolplane.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: meshdataplane
   display_name: ASM Mesh Data Plane Service Account
   api: meshconfig.googleapis.com
@@ -103,6 +115,7 @@
   role: roles/meshdataplane.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: accessapproval
   display_name: Access Approval Service Agent
   api: accessapproval.googleapis.com
@@ -110,6 +123,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: adsdatahub
   display_name: Ads Data Hub Service Account
   api: adsdatahub.googleapis.com
@@ -117,6 +131,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: alloydb
   display_name: AlloyDB Service Account
   api: alloydb.googleapis.com
@@ -124,6 +139,7 @@
   role: roles/alloydb.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: anthosaudit
   display_name: Anthos Audit Service Account
   api: anthosaudit.googleapis.com
@@ -131,6 +147,7 @@
   role: roles/anthosaudit.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: anthosconfigmanagement
   display_name: Anthos Config Management Service Account
   api: anthosconfigmanagement.googleapis.com
@@ -138,6 +155,7 @@
   role: roles/anthosconfigmanagement.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: anthosidentityservice
   display_name: Anthos Identity Service Account
   api: anthosidentityservice.googleapis.com
@@ -145,6 +163,7 @@
   role: roles/anthosidentityservice.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gkemulticloudcontainer
   display_name: Anthos Multi-Cloud Container Service Agent
   api: gkemulticloud.googleapis.com
@@ -152,6 +171,7 @@
   role: roles/gkemulticloud.containerServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: gkemulticloudcpmachine
   display_name: Anthos Multi-Cloud Control Plane Machine Service Agent
   api: gkemulticloud.googleapis.com
@@ -159,6 +179,7 @@
   role: roles/gkemulticloud.controlPlaneMachineServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: gkemulticloudnpmachine
   display_name: Anthos Multi-Cloud Node Pool Machine Service Agent
   api: gkemulticloud.googleapis.com
@@ -166,6 +187,7 @@
   role: roles/gkemulticloud.nodePoolMachineServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: gkemulticloud
   display_name: Anthos Multi-Cloud Service Agent
   api: gkemulticloud.googleapis.com
@@ -173,6 +195,7 @@
   role: roles/gkemulticloud.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: anthospolicycontroller
   display_name: Anthos Policy Controller Service Account
   api: anthospolicycontroller.googleapis.com
@@ -180,6 +203,7 @@
   role: roles/anthospolicycontroller.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: anthos
   display_name: Anthos Service Account
   api: anthos.googleapis.com
@@ -187,6 +211,7 @@
   role: roles/anthos.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: servicemesh
   display_name: Anthos Service Mesh Service Account
   api: meshconfig.googleapis.com
@@ -194,6 +219,7 @@
   role: roles/anthosservicemesh.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: anthossupport
   display_name: Anthos Support Service Account
   api: connectgateway.googleapis.com
@@ -201,6 +227,7 @@
   role: roles/anthossupport.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: apigeeregistry
   display_name: Apigee Registry Service Account
   api: apigeeregistry.googleapis.com
@@ -208,6 +235,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: apigee
   display_name: Apigee Service Agent
   api: apigee.googleapis.com
@@ -215,6 +243,7 @@
   role: roles/apigee.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: appdevexperience
   display_name: App Development Experience Service Account
   api: appdevelopmentexperience.googleapis.com
@@ -222,6 +251,7 @@
   role: roles/appdevelopmentexperience.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gae-api-prod
   display_name: App Engine Flexible Environment Service Agent
   api: appengineflex.googleapis.com
@@ -230,6 +260,7 @@
   is_primary: true
   aliases:
   - gae-flex
+  skip_iam: false
 - name: gcp-gae-service
   display_name: App Engine Standard Environment Service Agent
   api: appenginestandard.googleapis.com
@@ -237,6 +268,7 @@
   role: roles/appengine.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: apphub
   display_name: App Hub Service Account
   api: apphub.googleapis.com
@@ -244,6 +276,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: integrations
   display_name: Application Integration Service Agent
   api: integrations.googleapis.com
@@ -251,6 +284,7 @@
   role: roles/integrations.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: artifactregistry
   display_name: Artifact Registry Service Agent
   api: artifactregistry.googleapis.com
@@ -258,6 +292,7 @@
   role: roles/artifactregistry.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: assuredworkloads
   display_name: AssuredWorkloads Service Account
   api: assuredworkloads.googleapis.com
@@ -265,6 +300,7 @@
   role: roles/assuredworkloads.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: audit-manager
   display_name: Audit Manager Service Agent
   api: auditmanager.googleapis.com
@@ -272,6 +308,7 @@
   role: roles/auditmanager.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: recommendationengine
   display_name: AutoML Recommendations Service Account
   api: recommendationengine.googleapis.com
@@ -279,6 +316,7 @@
   role: roles/automlrecommendations.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: automl
   display_name: AutoML Service Agent
   api: automl.googleapis.com
@@ -286,6 +324,7 @@
   role: roles/automl.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: backupdr-run
   display_name: Backup and DR Runner Service Agent
   api: backupdr.googleapis.com
@@ -293,6 +332,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: backupdr
   display_name: Backup and DR Service Agent
   api: backupdr.googleapis.com
@@ -300,6 +340,7 @@
   role: roles/backupdr.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gkebackup
   display_name: Backup for GKE Service Account
   api: gkebackup.googleapis.com
@@ -307,6 +348,7 @@
   role: roles/gkebackup.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: bms
   display_name: Bare Metal Solution Service Account
   api: baremetalsolution.googleapis.com
@@ -314,6 +356,7 @@
   role: roles/baremetalsolution.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudbatch
   display_name: Batch Service Account
   api: batch.googleapis.com
@@ -321,6 +364,7 @@
   role: roles/batch.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: bigquery-encryption
   display_name: Big Query Service Agent
   api: bigquery.googleapis.com
@@ -329,6 +373,7 @@
   is_primary: false
   aliases:
   - bq
+  skip_iam: false
 - name: connectedsheets
   display_name: BigQuery Connected Sheets Service Agent
   api: bigquery.googleapis.com
@@ -336,6 +381,7 @@
   role: roles/bigquery.connectedSheetsServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: bigqueryconnection
   display_name: BigQuery Connection Service Agent
   api: bigqueryconnection.googleapis.com
@@ -343,6 +389,7 @@
   role: roles/bigqueryconnection.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: bigquerytardis
   display_name: BigQuery Continuous Query Service Agent
   api: bigquery.googleapis.com
@@ -350,6 +397,7 @@
   role: roles/bigquerycontinuousquery.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: bigquerydatatransfer
   display_name: BigQuery Data Transfer Service Agent
   api: bigquerydatatransfer.googleapis.com
@@ -357,6 +405,7 @@
   role: roles/bigquerydatatransfer.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: prod-bigqueryomni
   display_name: BigQuery Omni Service Agent
   api: bigquery.googleapis.com
@@ -364,6 +413,7 @@
   role: roles/bigqueryomni.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: bigqueryri
   display_name: BigQuery Resource Identity Service Account
   api: bigquery.googleapis.com
@@ -371,6 +421,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: bigqueryspark
   display_name: BigQuery Spark Service Agent
   api: bigquery.googleapis.com
@@ -378,6 +429,7 @@
   role: roles/bigqueryspark.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: binaryauthorization
   display_name: Binary Authorization Service Agent
   api: binaryauthorization.googleapis.com
@@ -385,6 +437,7 @@
   role: roles/binaryauthorization.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: bne
   display_name: Blockchain Node Engine Service Account
   api: blockchainnodeengine.googleapis.com
@@ -392,6 +445,7 @@
   role: roles/blockchainnodeengine.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: chronicle-sv
   display_name: Chronicle Security Validation Service Account
   api: chronicle.googleapis.com
@@ -399,6 +453,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: chronicle
   display_name: Chronicle Service Account
   api: chronicle.googleapis.com
@@ -406,6 +461,7 @@
   role: roles/chronicle.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: notebooks
   display_name: Cloud AI Platform Notebooks Service Account
   api: notebooks.googleapis.com
@@ -413,6 +469,7 @@
   role: roles/notebooks.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: notebooks-vm
   display_name: Cloud AI Platform Notebooks VM Service Account
   api: notebooks.googleapis.com
@@ -420,6 +477,7 @@
   role: roles/aiplatform.notebookServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: apigateway-mgmt
   display_name: Cloud API Gateway Management Plane Service Account
   api: apigateway.googleapis.com
@@ -427,6 +485,7 @@
   role: roles/apigateway_management.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: apigateway
   display_name: Cloud API Gateway Service Account
   api: apigateway.googleapis.com
@@ -434,6 +493,7 @@
   role: roles/apigateway.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: cloudasset
   display_name: Cloud Asset Service Agent
   api: cloudasset.googleapis.com
@@ -441,6 +501,7 @@
   role: roles/cloudasset.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: bigtable
   display_name: Cloud Bigtable Service Agent
   api: bigtableadmin.googleapis.com
@@ -448,6 +509,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudbuild
   display_name: Cloud Build Service Agent
   api: cloudbuild.googleapis.com
@@ -455,6 +517,7 @@
   role: roles/cloudbuild.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: certificatemanager
   display_name: Cloud Certificate Manager Service Account
   api: certificatemanager.googleapis.com
@@ -462,6 +525,7 @@
   role: roles/certificatemanager.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudcomposer-accounts
   display_name: Cloud Composer Service Agent
   api: composer.googleapis.com
@@ -470,6 +534,7 @@
   is_primary: true
   aliases:
   - composer
+  skip_iam: false
 - name: dns
   display_name: Cloud DNS Service Account
   api: dns.googleapis.com
@@ -477,6 +542,7 @@
   role: roles/dns.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: datafusion
   display_name: Cloud Data Fusion Service Account
   api: datafusion.googleapis.com
@@ -484,6 +550,7 @@
   role: roles/datafusion.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: dlp-api
   display_name: Cloud Data Loss Prevention Service Agent
   api: dlp.googleapis.com
@@ -491,6 +558,7 @@
   role: roles/dlp.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: datamigration
   display_name: Cloud Database Migration Service Account
   api: datamigration.googleapis.com
@@ -498,6 +566,7 @@
   role: roles/datamigration.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: dataflow-service-producer-prod
   display_name: Cloud Dataflow Service Account
   api: dataflow.googleapis.com
@@ -506,6 +575,7 @@
   is_primary: true
   aliases:
   - dataflow
+  skip_iam: false
 - name: dataplex
   display_name: Cloud Dataplex Service Account
   api: dataplex.googleapis.com
@@ -513,6 +583,7 @@
   role: roles/dataplex.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: datastream
   display_name: Cloud Datastream Service Account
   api: datastream.googleapis.com
@@ -520,6 +591,7 @@
   role: roles/datastream.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: clouddeploy
   display_name: Cloud Deploy Service Account
   api: clouddeploy.googleapis.com
@@ -527,6 +599,7 @@
   role: roles/clouddeploy.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: endpoints
   display_name: Cloud Endpoints Service Agent
   api: endpoints.googleapis.com
@@ -534,6 +607,7 @@
   role: roles/endpoints.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-filer
   display_name: Cloud File Storage Service Account
   api: file.googleapis.com
@@ -541,6 +615,7 @@
   role: roles/file.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firestore
   display_name: Cloud Firestore Service Agent
   api: firestore.googleapis.com
@@ -548,6 +623,7 @@
   role: roles/firestore.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: healthcare
   display_name: Cloud Healthcare Service Agent
   api: healthcare.googleapis.com
@@ -555,6 +631,7 @@
   role: roles/healthcare.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: identitytoolkit
   display_name: Cloud Identity Platform Service Agent
   api: identitytoolkit.googleapis.com
@@ -562,6 +639,7 @@
   role: roles/identitytoolkit.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudkms
   display_name: Cloud KMS Service Agent
   api: cloudkms.googleapis.com
@@ -569,6 +647,7 @@
   role: roles/cloudkms.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: lifesciences
   display_name: Cloud Life Sciences Service Agent
   api: lifesciences.googleapis.com
@@ -576,6 +655,7 @@
   role: roles/lifesciences.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: logging
   display_name: Cloud Logging Service Account
   api: logging.googleapis.com
@@ -583,6 +663,7 @@
   role: roles/logging.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: mi
   display_name: Cloud Managed Identities Service Agent
   api: managedidentities.googleapis.com
@@ -590,6 +671,7 @@
   role: roles/managedidentities.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-memcache-sa
   display_name: Cloud Memorystore Memcache Service Agent
   api: memcache.googleapis.com
@@ -597,6 +679,7 @@
   role: roles/memcache.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-redis
   display_name: Cloud Memorystore Redis Service Agent
   api: redis.googleapis.com
@@ -604,6 +687,7 @@
   role: roles/redis.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: migcenter
   display_name: Cloud Migration Center Service Account
   api: migrationcenter.googleapis.com
@@ -611,6 +695,7 @@
   role: roles/migrationcenter.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: networkmanagement
   display_name: Cloud Network Management Service Account
   api: networkmanagement.googleapis.com
@@ -618,6 +703,7 @@
   role: roles/networkmanagement.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: notebooksecurityscanner
   display_name: Cloud Notebook Security Scanner Service Agent
   api: notebooksecurityscanner.googleapis.com
@@ -625,6 +711,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: nss-hpsa
   display_name: Cloud Notebook Security Scanner Service Agent
   api: notebooksecurityscanner.googleapis.com
@@ -632,6 +719,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: observability
   display_name: Cloud Observability Service Account
   api: observability.googleapis.com
@@ -639,6 +727,7 @@
   role: roles/observability.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudoptim
   display_name: Cloud Optimization Service Agent
   api: cloudoptimization.googleapis.com
@@ -646,6 +735,7 @@
   role: roles/cloudoptimization.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: routeoptim
   display_name: Cloud Optimization Service Agent
   api: routeoptimization.googleapis.com
@@ -653,6 +743,7 @@
   role: roles/routeoptimization.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: pubsub
   display_name: Cloud Pub/Sub Service Account
   api: pubsub.googleapis.com
@@ -660,6 +751,7 @@
   role: roles/pubsub.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-sql
   display_name: Cloud SQL Service Account
   api: sqladmin.googleapis.com
@@ -667,6 +759,7 @@
   role: roles/cloudsql.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudscheduler
   display_name: Cloud Scheduler Service Account
   api: cloudscheduler.googleapis.com
@@ -674,6 +767,7 @@
   role: roles/cloudscheduler.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: scc-notification
   display_name: Cloud Security Command Center Notification Service Account
   api: securitycenter.googleapis.com
@@ -681,6 +775,7 @@
   role: roles/securitycenter.notificationServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: securitycenter
   display_name: Cloud Security Command Center Service Account
   api: securitycenter.googleapis.com
@@ -688,6 +783,7 @@
   role: roles/securitycenter.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: spanner
   display_name: Cloud Spanner Production Service Account
   api: spanner.googleapis.com
@@ -695,6 +791,7 @@
   role: roles/spanner.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebasestorage
   display_name: Cloud Storage for Firebase Service Agent
   api: firebasestorage.googleapis.com
@@ -702,6 +799,7 @@
   role: roles/firebasestorage.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudtasks
   display_name: Cloud Tasks Service Account
   api: cloudtasks.googleapis.com
@@ -709,6 +807,7 @@
   role: roles/cloudtasks.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-trace
   display_name: Cloud Trace Service Account
   api: cloudtrace.googleapis.com
@@ -716,6 +815,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: translation
   display_name: Cloud Translation Service Agent
   api: translate.googleapis.com
@@ -723,6 +823,7 @@
   role: roles/cloudtranslate.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: vmmigration
   display_name: Cloud VM Migration Service Account
   api: vmmigration.googleapis.com
@@ -730,6 +831,7 @@
   role: roles/vmmigration.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: websecurityscanner
   display_name: Cloud Web Security Scanner Service Agent
   api: websecurityscanner.googleapis.com
@@ -737,6 +839,7 @@
   role: roles/websecurityscanner.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: workflows
   display_name: Cloud Workflows Service Agent
   api: workflows.googleapis.com
@@ -744,6 +847,7 @@
   role: roles/workflows.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: workstations
   display_name: Cloud Workstations Service Agent
   api: workstations.googleapis.com
@@ -751,6 +855,7 @@
   role: roles/workstations.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: compute-system
   display_name: Compute Engine Service Agent
   api: compute.googleapis.com
@@ -759,6 +864,7 @@
   is_primary: false
   aliases:
   - compute
+  skip_iam: false
 - name: compute-usage
   display_name: Compute Usage Export Service Agent
   api: compute.googleapis.com
@@ -766,6 +872,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: configdelivery
   display_name: Config Delivery Service Account
   api: configdelivery.googleapis.com
@@ -773,6 +880,7 @@
   role: roles/configdelivery.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: connectors
   display_name: Connectors Service Account
   api: connectors.googleapis.com
@@ -780,6 +888,7 @@
   role: roles/connectors.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: contactcenterinsights
   display_name: Contact Center AI Insights Service Account
   api: contactcenterinsights.googleapis.com
@@ -787,6 +896,7 @@
   role: roles/contactcenterinsights.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: ccinsights-cmek
   display_name: Contact Center AI Insights Service Account for CMEK (prod)
   api: contactcenterinsights.googleapis.com
@@ -794,6 +904,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: ccaip
   display_name: Contact Center AI Platform Service Account
   api: contactcenteraiplatform.googleapis.com
@@ -801,6 +912,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: ccai-cmek
   display_name: Contact Center AI shared Service Account for CMEK (prod)
   api: contactcenterinsights.googleapis.com
@@ -808,6 +920,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: gcp-ri-contactcenterinsights
   display_name: Contact Center Insights Resource Identity (prod)
   api: contactcenterinsights.googleapis.com
@@ -815,6 +928,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: container-analysis
   display_name: Container Analysis Service Agent
   api: containeranalysis.googleapis.com
@@ -822,6 +936,7 @@
   role: roles/containeranalysis.ServiceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: containerscanning
   display_name: Container Scanning Service Agent
   api: containerscanning.googleapis.com
@@ -829,6 +944,7 @@
   role: roles/containerscanning.ServiceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: containersec
   display_name: Container Security Service Agent
   api: containersecurity.googleapis.com
@@ -836,6 +952,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: ktd-control
   display_name: Container Threat Detection Service Agent
   api: containerthreatdetection.googleapis.com
@@ -843,6 +960,7 @@
   role: roles/containerthreatdetection.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: ktd-hpsa
   display_name: Container Threat Detection Service Agent
   api: containerthreatdetection.googleapis.com
@@ -850,6 +968,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: cloud-cw
   display_name: Content Warehouse Service Account
   api: contentwarehouse.googleapis.com
@@ -857,6 +976,7 @@
   role: roles/contentwarehouse.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: dataconnectors
   display_name: Data Connectors Service Account
   api: dataconnectors.googleapis.com
@@ -864,6 +984,7 @@
   role: roles/dataconnectors.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: datalabeling
   display_name: Data Labeling Service Account
   api: datalabeling.googleapis.com
@@ -871,6 +992,7 @@
   role: roles/datalabeling.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: datapipelines
   display_name: Data Pipelines Service Agent
   api: datapipelines.googleapis.com
@@ -878,6 +1000,7 @@
   role: roles/datapipelines.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: datastudio
   display_name: Data Studio Service Account
   api: datastudio.googleapis.com
@@ -885,6 +1008,7 @@
   role: roles/datastudio.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: dataform
   display_name: Dataform Service Account
   api: dataform.googleapis.com
@@ -892,6 +1016,7 @@
   role: roles/dataform.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: metastore
   display_name: Dataproc Metastore Service Account
   api: metastore.googleapis.com
@@ -899,6 +1024,7 @@
   role: roles/metastore.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: monitoring-deprecated
   display_name: Deprecated Monitoring Service Account
   api: monitoring.googleapis.com
@@ -906,6 +1032,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: designcenter
   display_name: Design Center Service Account
   api: designcenter.googleapis.com
@@ -913,6 +1040,7 @@
   role: roles/designcenter.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: devconnect
   display_name: Developer Connect Service Account
   api: developerconnect.googleapis.com
@@ -920,6 +1048,7 @@
   role: roles/developerconnect.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: dialogflow-cmek
   display_name: Dialogflow Service Account for CMEK (prod)
   api: dialogflow.googleapis.com
@@ -927,6 +1056,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: dialogflow
   display_name: Dialogflow Service Agent
   api: dialogflow.googleapis.com
@@ -934,6 +1064,7 @@
   role: roles/dialogflow.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: discoveryengine
   display_name: Discovery Engine Service Account
   api: discoveryengine.googleapis.com
@@ -941,6 +1072,7 @@
   role: roles/discoveryengine.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-cw-cmek
   display_name: Document AI Warehouse CMEK Infra Spanner Service Account
   api: contentwarehouse.googleapis.com
@@ -948,6 +1080,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: prod-dai-core
   display_name: DocumentAI Core Service Agent
   api: documentai.googleapis.com
@@ -955,6 +1088,7 @@
   role: roles/documentaicore.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: edgecontainercluster
   display_name: Edge Container Cluster Service Agent
   api: edgecontainer.googleapis.com
@@ -962,6 +1096,7 @@
   role: roles/edgecontainer.clusterServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: edgecontainergcr
   display_name: Edge Container GCR Service Agent
   api: edgecontainer.googleapis.com
@@ -969,6 +1104,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: edgecontainer
   display_name: Edge Container Service Agent
   api: edgecontainer.googleapis.com
@@ -976,6 +1112,7 @@
   role: roles/edgecontainer.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-ekg
   display_name: Enterprise Knowledge Graph Service Agent
   api: enterpriseknowledgegraph.googleapis.com
@@ -983,6 +1120,7 @@
   role: roles/enterpriseknowledgegraph.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: eventarc
   display_name: Eventarc Service Agent
   api: eventarc.googleapis.com
@@ -990,6 +1128,7 @@
   role: roles/eventarc.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: ekms
   display_name: External Key Management Service Service Account
   api: cloudkms.googleapis.com
@@ -997,6 +1136,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebasevertexai
   display_name: Firebase AI Logic Service Account
   api: firebasevertexai.googleapis.com
@@ -1004,6 +1144,7 @@
   role: roles/firebaseml.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebaseappcheck
   display_name: Firebase App Check Service Account
   api: firebaseappcheck.googleapis.com
@@ -1011,6 +1152,7 @@
   role: roles/firebaseappcheck.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebaseapphosting
   display_name: Firebase App Hosting Service Account
   api: firebaseapphosting.googleapis.com
@@ -1018,6 +1160,7 @@
   role: roles/firebaseapphosting.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: crashlytics
   display_name: Firebase Crashlytics Service Agent
   api: firebasecrashlytics.googleapis.com
@@ -1025,6 +1168,7 @@
   role: roles/firebasecrashlytics.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebasedataconnect
   display_name: Firebase Data Connect Service Account
   api: firebasedataconnect.googleapis.com
@@ -1032,6 +1176,7 @@
   role: roles/firebasedataconnect.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebasemods
   display_name: Firebase Extensions Service Agent
   api: firebaseextensions.googleapis.com
@@ -1039,6 +1184,7 @@
   role: roles/firebasemods.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebaseml
   display_name: Firebase Machine Learning Service Account
   api: firebaseml.googleapis.com
@@ -1046,6 +1192,7 @@
   role: roles/firebaseml.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebase
   display_name: Firebase Management Service Agent
   api: firebase.googleapis.com
@@ -1053,6 +1200,7 @@
   role: roles/firebase.managementServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: firebasedatabase
   display_name: Firebase Realtime Database Service Agent
   api: firebasedatabase.googleapis.com
@@ -1060,6 +1208,7 @@
   role: roles/firebasedatabase.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firebase-rules
   display_name: Firebase Rules Service Agent
   api: firebaserules.googleapis.com
@@ -1067,6 +1216,7 @@
   role: roles/firebaserules.system
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: firewallinsights
   display_name: Firewall Insights Service Account
   api: firewallinsights.googleapis.com
@@ -1074,6 +1224,7 @@
   role: roles/firewallinsights.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gsuiteaddons
   display_name: G Suite Add-ons Service Account
   api: gsuiteaddons.googleapis.com
@@ -1081,6 +1232,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gkedataplanev2
   display_name: GKE Dataplane V2 Service Account
   api: gkedataplanev2.googleapis.com
@@ -1088,6 +1240,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gkehub
   display_name: GKE Hub API Service Account
   api: gkehub.googleapis.com
@@ -1096,6 +1249,7 @@
   is_primary: true
   aliases:
   - fleet
+  skip_iam: false
 - name: geminicodeassistmp
   display_name: Gemini Code Assist Management Service Agent
   api: geminicodeassistmanagement.googleapis.com
@@ -1103,6 +1257,7 @@
   role: roles/geminicodeassistmanagement.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudaicompanion
   display_name: Gemini for Google Cloud Service Agent
   api: cloudaicompanion.googleapis.com
@@ -1110,6 +1265,7 @@
   role: roles/cloudaicompanion.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gkeonprem
   display_name: Gke On-Prem Service Account
   api: gkeonprem.googleapis.com
@@ -1117,6 +1273,7 @@
   role: roles/gkeonprem.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloudservices
   display_name: Google APIs Service Agent
   api: null
@@ -1125,6 +1282,7 @@
   is_primary: false
   aliases:
   - cloudsvc
+  skip_iam: false
 - name: dataprocrmnode
   display_name: Google Cloud Dataproc Resource Manager Node Service Agent
   api: dataprocrm.googleapis.com
@@ -1132,6 +1290,7 @@
   role: roles/dataprocrm.nodeServiceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: dataproc-accounts
   display_name: Google Cloud Dataproc Service Agent
   api: dataproc.googleapis.com
@@ -1140,6 +1299,7 @@
   is_primary: true
   aliases:
   - dataproc
+  skip_iam: false
 - name: gcf-admin-robot
   display_name: Google Cloud Functions Service Agent
   api: cloudfunctions.googleapis.com
@@ -1149,6 +1309,7 @@
   aliases:
   - cloudfunctions
   - gcf
+  skip_iam: false
 - name: cloud-ml
   display_name: Google Cloud ML Engine Service Agent
   api: ml.googleapis.com
@@ -1156,6 +1317,7 @@
   role: roles/ml.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: netapp
   display_name: Google Cloud NetApp Volumes Service Account
   api: netapp.googleapis.com
@@ -1163,6 +1325,15 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
+- name: ns-authz
+  display_name: Google Cloud Network Security Authz Service Account
+  api: networksecurity.googleapis.com
+  identity: service-${project_number}@gcp-sa-ns-authz.${universe_domain}iam.gserviceaccount.com
+  role: roles/networksecurity.authzServiceAgent
+  is_primary: false
+  aliases: []
+  skip_iam: true
 - name: osconfig-rollout
   display_name: Google Cloud OS Config Rollout Service Agent
   api: osconfig.googleapis.com
@@ -1170,6 +1341,7 @@
   role: roles/osconfig.rolloutServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: osconfig
   display_name: Google Cloud OS Config Service Agent
   api: osconfig.googleapis.com
@@ -1177,6 +1349,7 @@
   role: roles/osconfig.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: serverless-robot-prod
   display_name: Google Cloud Run Service Agent
   api: run.googleapis.com
@@ -1186,6 +1359,7 @@
   aliases:
   - cloudrun
   - run
+  skip_iam: false
 - name: dep
   display_name: Google Cloud Service Extensions Service Account
   api: networkservices.googleapis.com
@@ -1193,6 +1367,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: containerregistry
   display_name: Google Container Registry Service Agent
   api: containerregistry.googleapis.com
@@ -1200,6 +1375,7 @@
   role: roles/containerregistry.ServiceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gs-project-accounts
   display_name: Google Storage Service Agent
   api: storage.googleapis.com
@@ -1208,6 +1384,7 @@
   is_primary: false
   aliases:
   - storage
+  skip_iam: false
 - name: iap
   display_name: IAP Service Account
   api: iap.googleapis.com
@@ -1215,6 +1392,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: gcp-ri-identitypool
   display_name: Identity Pool Resource Identity
   api: iam.googleapis.com
@@ -1222,6 +1400,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: config
   display_name: Infrastructure Manager Service Account
   api: config.googleapis.com
@@ -1229,6 +1408,7 @@
   role: roles/cloudconfig.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: ivs
   display_name: Integrated Vulnerability Scanner Service Account
   api: securitycenter.googleapis.com
@@ -1236,6 +1416,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: fs-spanner
   display_name: Internal Cloud Firestore Spanner Service Agent
   api: firestore.googleapis.com
@@ -1243,6 +1424,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: krmapihosting
   display_name: KRM API Hosting Service Account
   api: krmapihosting.googleapis.com
@@ -1250,6 +1432,7 @@
   role: roles/krmapihosting.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: krmapihosting-dataplane
   display_name: KRM API Hosting Service Account
   api: krmapihosting.googleapis.com
@@ -1257,6 +1440,7 @@
   role: roles/krmapihosting.anthosApiEndpointServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: gkenode
   display_name: Kubernetes Engine Node Service Agent
   api: container.googleapis.com
@@ -1264,6 +1448,7 @@
   role: roles/container.defaultNodeServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: container-engine-robot
   display_name: Kubernetes Engine Service Agent
   api: container.googleapis.com
@@ -1273,6 +1458,7 @@
   aliases:
   - container
   - container-engine
+  skip_iam: false
 - name: cloudbuild-sa
   display_name: Legacy Cloud Build service account
   api: cloudbuild.googleapis.com
@@ -1280,6 +1466,7 @@
   role: roles/cloudbuild.builds.builder
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: livestream
   display_name: Livestream Service Account
   api: livestream.googleapis.com
@@ -1287,6 +1474,7 @@
   role: roles/livestream.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: looker
   display_name: Looker Service Account
   api: looker.googleapis.com
@@ -1294,6 +1482,7 @@
   role: roles/looker.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: lustre
   display_name: Lustre Service Agent
   api: lustre.googleapis.com
@@ -1301,6 +1490,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: managedflink
   display_name: Managed Flink Service Agent
   api: managedflink.googleapis.com
@@ -1308,6 +1498,7 @@
   role: roles/managedflink.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: managedkafka
   display_name: Managed Kafka Service Account
   api: managedkafka.googleapis.com
@@ -1315,6 +1506,7 @@
   role: roles/managedkafka.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: memorystore
   display_name: Memorystore Service Agent
   api: memorystore.googleapis.com
@@ -1322,6 +1514,7 @@
   role: roles/memorystore.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: meshconfig
   display_name: Mesh Config Service Account
   api: meshconfig.googleapis.com
@@ -1329,6 +1522,7 @@
   role: roles/meshconfig.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: modelarmor
   display_name: Model Armor Service Account
   api: modelarmor.googleapis.com
@@ -1336,6 +1530,7 @@
   role: roles/modelarmor.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: monitoring-notification
   display_name: Monitoring Service Account
   api: monitoring.googleapis.com
@@ -1344,6 +1539,7 @@
   is_primary: true
   aliases:
   - monitoring
+  skip_iam: false
 - name: multiclusteringress
   display_name: Multi Cluster Ingress Service Account
   api: multiclusteringress.googleapis.com
@@ -1351,6 +1547,7 @@
   role: roles/multiclusteringress.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: mcmetering
   display_name: Multi cluster metering Service Account
   api: multiclustermetering.googleapis.com
@@ -1358,6 +1555,7 @@
   role: roles/multiclustermetering.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: mcsd
   display_name: Multi-cluster Service Discovery Service Account
   api: multiclusterservicediscovery.googleapis.com
@@ -1365,6 +1563,7 @@
   role: roles/multiclusterservicediscovery.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: networkactions
   display_name: Network Actions Service Account
   api: networkservices.googleapis.com
@@ -1372,6 +1571,7 @@
   role: roles/networkactions.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: true
 - name: networkconnectivity
   display_name: Network Connectivity Service Account
   api: networkconnectivity.googleapis.com
@@ -1379,6 +1579,7 @@
   role: roles/networkconnectivity.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: networksecurity
   display_name: Network Security Service Account
   api: networksecurity.googleapis.com
@@ -1386,6 +1587,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: ondemandscanning
   display_name: On-Demand Scanning Service Account
   api: ondemandscanning.googleapis.com
@@ -1393,6 +1595,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: oci
   display_name: Oracle Database@Google Cloud Service Account
   api: oracledatabase.googleapis.com
@@ -1400,6 +1603,7 @@
   role: roles/oci.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: parallelstore
   display_name: Parallelstore Service Agent
   api: parallelstore.googleapis.com
@@ -1407,6 +1611,7 @@
   role: roles/parallelstore.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: pm
   display_name: Parameter Manager Service Account
   api: parametermanager.googleapis.com
@@ -1414,6 +1619,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: privateca
   display_name: Private CA Service Account
   api: privateca.googleapis.com
@@ -1421,6 +1627,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: pam
   display_name: Privileged Access Manager Service Agent
   api: privilegedaccessmanager.googleapis.com
@@ -1428,6 +1635,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: progrollout
   display_name: Progressive Rollout Service Agent
   api: progressiverollout.googleapis.com
@@ -1435,6 +1643,7 @@
   role: roles/progressiverollout.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: pubsublite
   display_name: Pub/Sub Lite Service Account
   api: pubsublite.googleapis.com
@@ -1442,6 +1651,7 @@
   role: roles/pubsublite.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: rma
   display_name: Rapid Migration Assessment Service Account
   api: rapidmigrationassessment.googleapis.com
@@ -1449,6 +1659,7 @@
   role: roles/rapidmigrationassessment.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: rbe
   display_name: Remote Build Execution Service Agent
   api: remotebuildexecution.googleapis.com
@@ -1456,6 +1667,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: remotebuildexecution
   display_name: Remote Build Execution Service Agent
   api: remotebuildexecution.googleapis.com
@@ -1463,6 +1675,7 @@
   role: roles/remotebuildexecution.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: remotebuild
   display_name: Remote Build Execution Service Agent
   api: remotebuildexecution.googleapis.com
@@ -1470,6 +1683,7 @@
   role: roles/remotebuildexecution.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: retail
   display_name: Retail Service Account
   api: retail.googleapis.com
@@ -1477,6 +1691,7 @@
   role: roles/retail.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: saasservicemgmt
   display_name: SaaS Service Management Service Account
   api: saasservicemgmt.googleapis.com
@@ -1484,6 +1699,7 @@
   role: roles/saasservicemgmt.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: secretmanager
   display_name: Secret Manager Service Account
   api: secretmanager.googleapis.com
@@ -1491,6 +1707,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: sourcemanager
   display_name: Secure Source Manager Service Account
   api: securesourcemanager.googleapis.com
@@ -1498,6 +1715,7 @@
   role: roles/securesourcemanager.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: securewebproxy
   display_name: Secure Web Proxy Service Account
   api: networkservices.googleapis.com
@@ -1505,6 +1723,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: runapps
   display_name: Serverless Integrations Service Account
   api: runapps.googleapis.com
@@ -1512,6 +1731,7 @@
   role: roles/runapps.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: vpcaccess
   display_name: Serverless VPC Access Service Agent
   api: vpcaccess.googleapis.com
@@ -1519,6 +1739,7 @@
   role: roles/vpcaccess.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: service-consumer-management
   display_name: Service Consumer Management Service Agent
   api: serviceconsumermanagement.googleapis.com
@@ -1526,6 +1747,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: servicedirectory
   display_name: Service Directory Service Account
   api: servicedirectory.googleapis.com
@@ -1533,6 +1755,7 @@
   role: roles/servicedirectory.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: service-networking
   display_name: Service Networking Service Agent
   api: servicenetworking.googleapis.com
@@ -1540,6 +1763,7 @@
   role: roles/servicenetworking.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: spectrumsas
   display_name: Spectrum SAS Service Account
   api: sasportal.googleapis.com
@@ -1547,6 +1771,7 @@
   role: roles/spectrumsas.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: speech
   display_name: Speech-to-Text Service Account
   api: speech.googleapis.com
@@ -1554,6 +1779,7 @@
   role: roles/speech.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: storageinsights
   display_name: Storage Insights Service Account
   api: storageinsights.googleapis.com
@@ -1561,6 +1787,7 @@
   role: roles/storageinsights.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: storage-transfer-service
   display_name: Storage Transfer Service Service Agent
   api: storagetransfer.googleapis.com
@@ -1568,6 +1795,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: stream
   display_name: Stream Service Account
   api: stream.googleapis.com
@@ -1575,6 +1803,7 @@
   role: roles/stream.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: cloud-tpu
   display_name: TPU Service Agent
   api: tpu.googleapis.com
@@ -1582,6 +1811,7 @@
   role: roles/tpu.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: tpu
   display_name: TPU Service Agent (v2)
   api: tpu.googleapis.com
@@ -1589,6 +1819,7 @@
   role: roles/cloudtpu.serviceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: transcoder
   display_name: Transcoder Service Account
   api: transcoder.googleapis.com
@@ -1596,6 +1827,7 @@
   role: roles/transcoder.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: transferappliance
   display_name: Transfer Appliance Service Account
   api: transferappliance.googleapis.com
@@ -1603,6 +1835,7 @@
   role: null
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: vmwareengine
   display_name: VMwareEngine Service Account
   api: vmwareengine.googleapis.com
@@ -1610,6 +1843,7 @@
   role: roles/vmwareengine.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: vertex-shtune
   display_name: Vertex AI Ancillary Secure Fine Tuning Service Agent
   api: aiplatform.googleapis.com
@@ -1617,6 +1851,7 @@
   role: roles/aiplatform.user
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-bp
   display_name: Vertex AI Batch Prediction Service Agent
   api: aiplatform.googleapis.com
@@ -1624,6 +1859,7 @@
   role: roles/aiplatform.batchPredictionServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-nb
   display_name: Vertex AI Colab Service Account
   api: aiplatform.googleapis.com
@@ -1631,6 +1867,7 @@
   role: roles/aiplatform.colabServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-ex
   display_name: Vertex AI Extension Service Agent
   api: aiplatform.googleapis.com
@@ -1638,6 +1875,7 @@
   role: roles/aiplatform.extensionServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-ex-cc
   display_name: Vertex AI Extension Service Agent for Custom Code
   api: aiplatform.googleapis.com
@@ -1645,6 +1883,7 @@
   role: roles/aiplatform.extensionCustomCodeServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-logging
   display_name: Vertex AI Logging Service Agent
   api: aiplatform.googleapis.com
@@ -1652,6 +1891,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-moss-ft
   display_name: Vertex AI Managed OSS Fine Tuning Service Agent
   api: aiplatform.googleapis.com
@@ -1659,6 +1899,7 @@
   role: roles/aiplatform.tuningServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-mm
   display_name: Vertex AI Model Monitoring Service Agent
   api: aiplatform.googleapis.com
@@ -1666,6 +1907,7 @@
   role: roles/aiplatform.modelMonitoringServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: aiplatform-vm
   display_name: Vertex AI Notebook Service Account
   api: aiplatform.googleapis.com
@@ -1673,6 +1915,7 @@
   role: roles/aiplatform.notebookServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-op
   display_name: Vertex AI Online Prediction Service Agent
   api: aiplatform.googleapis.com
@@ -1680,6 +1923,7 @@
   role: roles/aiplatform.onlinePredictionServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-tune
   display_name: Vertex AI Secure Fine Tuning Service Agent
   api: aiplatform.googleapis.com
@@ -1687,6 +1931,7 @@
   role: roles/aiplatform.tuningServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-telemetry
   display_name: Vertex AI Telemetry Service Agent
   api: aiplatform.googleapis.com
@@ -1694,6 +1939,7 @@
   role: roles/aiplatform.telemetryServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-agent
   display_name: Vertex Agent Service Agent
   api: aiplatform.googleapis.com
@@ -1701,6 +1947,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: vertex-rag
   display_name: Vertex RAG Data Service Agent
   api: aiplatform.googleapis.com
@@ -1708,6 +1955,7 @@
   role: roles/aiplatform.ragServiceAgent
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: scc-vmtd
   display_name: Virtual Machine Threat Detection Service Account
   api: securitycenter.googleapis.com
@@ -1715,6 +1963,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: visionai
   display_name: Vision AI Service Account
   api: visionai.googleapis.com
@@ -1722,6 +1971,7 @@
   role: roles/visionai.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: workloadmanager
   display_name: Workload Manager Service Account
   api: workloadmanager.googleapis.com
@@ -1729,6 +1979,7 @@
   role: roles/workloadmanager.serviceAgent
   is_primary: true
   aliases: []
+  skip_iam: false
 - name: workstationsvm
   display_name: Workstations VM Default Service Account
   api: workstations.googleapis.com
@@ -1736,4 +1987,5 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 

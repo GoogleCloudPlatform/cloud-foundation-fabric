@@ -50,7 +50,7 @@ The code is meant to be executed by a high level service account with powerful p
 
 ## Folder hierarchy
 
-The hierarchy supports up to three levels of folders, which are defined via filesystem directories each including a `.config.yaml` files detailing their attributes.
+The hierarchy supports up to four levels of folders, which are defined via filesystem directories each including a `.config.yaml` files detailing their attributes.
 
 The filesystem tree containing folder definitions is configured via the `factories_config.folders` variable, which sets the the path containing the YAML definitions for folders. It's also possible to configure the hierarchy via the `folders` variable, which is internally merged in with the factory definitions.
 
@@ -62,7 +62,7 @@ Refer to the [example](#example) below for actual examples of the YAML definitio
 
 ## Projects
 
-The project factory is configured in three ia the `factories_config.projects` variable, and project files are also additionally read from the folder tree described in the previous section. It's best to limit project definition via the hierarchy tree to a minimum to avoid cross dependencies between folders and projects, which could complicate their lifecycle.
+The project factory is configured via the `factories_config.projects` variable, and project files are also additionally read from the folder tree described in the previous section. It's best to limit project definition via the hierarchy tree to a minimum to avoid cross-dependencies between folders and projects, which could complicate their lifecycle.
 
 Projects can also be configured via the `projects` variable, which is internally merged in with the factory definitions.
 
@@ -462,7 +462,7 @@ module "project-factory" {
     }
   }
 }
-# tftest files=t0,0,1,2,3,4,5,6,7,8,9,10 inventory=example.yaml
+# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10 inventory=example.yaml
 ```
 
 A project template for GKE projects:
@@ -509,6 +509,21 @@ parent: folders/5678901234
 ```
 
 ```yaml
+name: Apps
+# tftest-file id=2.1 path=data/hierarchy/team-c/apps/.config.yaml schema=folder.schema.json
+```
+
+```yaml
+name: Test
+# tftest-file id=2.2 path=data/hierarchy/team-c/apps/test/.config.yaml schema=folder.schema.json
+```
+
+```yaml
+name: App X
+# tftest-file id=2.3 path=data/hierarchy/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
+```
+
+```yaml
 name: App 0
 factories_config:
   org_policies: data/factories/org-policies
@@ -536,7 +551,7 @@ tag_bindings:
 # tftest-file id=4 path=data/hierarchy/team-b/app-0/.config.yaml schema=folder.schema.json
 ```
 
-One project defined within the folder hierarchy, using a lower level factory for org polcies:
+One project defined within the folder hierarchy, using a lower level factory for org policies:
 
 ```yaml
 billing_account: 012345-67890A-BCDEF0

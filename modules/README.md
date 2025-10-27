@@ -60,7 +60,6 @@ These modules are used in the examples included in this repository. If you are u
 - [NAT](./net-cloudnat)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
-- [VPC factory](./net-vpc-factory)
 - [VPC firewall](./net-vpc-firewall)
 - [VPN dynamic](./net-vpn-dynamic)
 - [VPC peering](./net-vpc-peering)
@@ -82,7 +81,7 @@ These modules are used in the examples included in this repository. If you are u
 
 - [AlloyDB](./alloydb)
 - [Analytics Hub](./analytics-hub)
-- [BigQuery connectio](./bigquery-connection)
+- [BigQuery connection](./bigquery-connection)
 - [BigQuery dataset](./bigquery-dataset)
 - [Bigtable instance](./bigtable-instance)
 - [Biglake catalog](./biglake-catalog)
@@ -132,5 +131,4 @@ These modules are used in the examples included in this repository. If you are u
 
 - [Cloud Functions v1](./cloud-function-v1)
 - [Cloud Functions v2](./cloud-function-v2)
-- [Cloud Run](./cloud-run)
 - [Cloud Run v2](./cloud-run-v2)

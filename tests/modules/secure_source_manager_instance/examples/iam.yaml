@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.ssm_instance.google_secure_source_manager_instance.instance[0]:
     deletion_policy: PREVENT

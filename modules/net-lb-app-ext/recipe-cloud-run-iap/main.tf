@@ -131,7 +131,7 @@ resource "google_iap_web_backend_service_iam_binding" "iam_bindings" {
   web_backend_service = module.glb.backend_service_names["default"]
   role                = "roles/iap.httpsResourceAccessor"
   members = concat(
-    var.accesors,
+    var.accessors,
     [
       module.application_service_account.iam_email
   ])

@@ -19,7 +19,7 @@ workload_identity_federation:
   project: $project_ids:iac-0
   providers:
     github:
-      # the condition is optional but recommented, use your GitHub org name
+      # the condition is optional but recommended, use your GitHub org name
       attribute_condition: attribute.repository_owner=="my_org"
       issuer: github
       # custom_settings:
@@ -28,20 +28,20 @@ workload_identity_federation:
       #   jwks_json_path:
 workflows:
   org-setup:
-    template: github
-    workload_identity_provider:
-      id: $wif_providers:github
-      audiences: []
+    provider_files:
+      apply: 0-org-setup-providers.tf
+      plan: 0-org-setup-providers-ro.tf
     repository:
-      name: org-setup
-      branch: main
-    output_files:
-      storage_bucket: $storage_buckets:iac-0/iac-outputs
-      providers:
-        apply: $output_files:providers/0-org-setup
-        plan: $output_files:providers/0-org-setup-ro
-      files:
-        - 0-org-setup.auto.tfvars.json
+      name: gh-org/gh-repo
+      type: github
+      apply_branches:
+        - master
+        - fast-dev
     service_accounts:
       apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
       plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+    tfvars_files:
+      - 0-org-setup.auto.tfvars
+    workload_identity:
+      pool_id: $wif_pools:iac-0
+      audiences: []

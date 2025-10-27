@@ -26,9 +26,9 @@ values:
       selected_applications:
       - namespaced_names:
         - namespace: namespace-1
-          name:  app-1
+          name: app-1
         - namespace: namespace-1
-          name:  app-2
+          name: app-2
       selected_namespaces: []
     backup_schedule:
     - cron_schedule: 0 9 * * 1
@@ -37,7 +37,7 @@ values:
     project: project-id
     retention_policy:
     - locked: false
-   
+
 counts:
   google_container_cluster: 1
   google_gke_backup_backup_plan: 1

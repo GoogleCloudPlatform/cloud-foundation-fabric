@@ -15,7 +15,7 @@
 node:
   # The id must be in the following format: projects/<project number>/networks/<network name>/nodes/<node id>
   id: "projects/CONFIG_PROJECT_NUMBER/networks/VPC_NETWORK_NAME/nodes/ENVOY_NODE_ID"
-  cluster: cluster # unused
+  cluster: cluster  # unused
   locality:
     zone: "ENVOY_ZONE"
   metadata:
@@ -80,7 +80,7 @@ admin:
   access_log_path: /dev/stdout
   address:
     socket_address:
-      address: 127.0.0.1 # Admin page is only accessible locally.
+      address: 127.0.0.1  # Admin page is only accessible locally.
       port_value: 15000
 
 tracing:

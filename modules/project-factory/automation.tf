@@ -156,8 +156,10 @@ module "automation-service-accounts-iam" {
   project_id = (
     module.automation-service-accounts[each.key].service_account.project
   )
-  name                   = module.automation-service-accounts[each.key].name
-  service_account_create = false
+  name = module.automation-service-accounts[each.key].name
+  service_account_reuse = {
+    use_data_source = false
+  }
   context = merge(local.ctx, {
     service_account_ids = local.project_sas_ids
   })

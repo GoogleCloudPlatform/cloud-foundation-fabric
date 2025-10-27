@@ -67,6 +67,20 @@ values:
     project: foo-test-0
     tags: null
     timeouts: null
+  google_compute_route.ilb["next-hop-ilb"]:
+    description: Route to ilb by ip.
+    dest_range: 8.8.8.8/32
+    name: test-next-hop-ilb
+    network: test
+    next_hop_gateway: null
+    next_hop_ilb: 10.20.20.20
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: foo-test-0
+    tags: null
+    timeouts: null
   google_compute_route.ip["next-hop"]:
     description: Route to internal range.
     dest_range: 8.8.8.8/32
@@ -95,27 +109,27 @@ values:
     region: europe-west8
     role: null
     secondary_ip_range:
-    - range_name: pods
-    - ip_cidr_range: 192.168.0.0/16
-      range_name: traditional
-      reserved_internal_range: null
+      - range_name: pods
+      - ip_cidr_range: 192.168.0.0/16
+        range_name: traditional
+        reserved_internal_range: null
     send_secondary_ip_range_if_empty: true
     timeouts: null
   google_compute_subnetwork_iam_binding.authoritative["europe-west8/production.organizations/366118655033/roles/myRoleOne"]:
     condition: []
     members:
-    - iam_principals:test
+      - iam_principals:test
     project: foo-test-0
     region: europe-west8
     role: organizations/366118655033/roles/myRoleOne
     subnetwork: production
   google_compute_subnetwork_iam_binding.bindings["myrole_two"]:
     condition:
-    - description: null
-      expression: resource.matchTag('1234567890/environment', 'development')
-      title: Test
+      - description: null
+        expression: resource.matchTag('1234567890/environment', 'development')
+        title: Test
     members:
-    - serviceAccount:test@test-project.iam.gserviceaccount.com
+      - serviceAccount:test@test-project.iam.gserviceaccount.com
     project: foo-test-0
     region: europe-west8
     role: organizations/366118655033/roles/myRoleOne
@@ -129,24 +143,24 @@ values:
     subnetwork: production
   google_dns_policy.default[0]:
     alternative_name_server_config:
-    - target_name_servers:
-      - forwarding_path: ''
-        ipv4_address: 8.8.8.8
-      - forwarding_path: private
-        ipv4_address: 10.10.10.10
+      - target_name_servers:
+          - forwarding_path: ""
+            ipv4_address: 8.8.8.8
+          - forwarding_path: private
+            ipv4_address: 10.10.10.10
     description: Managed by Terraform
     enable_inbound_forwarding: true
     enable_logging: null
     name: test
     networks:
-    - {}
+      - {}
     project: foo-test-0
     timeouts: null
   google_network_connectivity_internal_range.internal_range["pods-range"]:
     allocation_options: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     exclude_cidr_ranges: null
     immutable: null
     ip_cidr_range: 172.16.10.0/12
@@ -159,17 +173,17 @@ values:
     project: foo-test-0
     target_cidr_range: null
     terraform_labels:
-      goog-terraform-provisioned: 'true'
+      goog-terraform-provisioned: "true"
     timeouts: null
     usage: FOR_VPC
 
 counts:
   google_compute_network: 1
-  google_compute_route: 4
+  google_compute_route: 5
   google_compute_subnetwork: 1
   google_compute_subnetwork_iam_binding: 2
   google_compute_subnetwork_iam_member: 1
   google_dns_policy: 1
   google_network_connectivity_internal_range: 1
   modules: 0
-  resources: 11
+  resources: 12

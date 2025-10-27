@@ -27,7 +27,7 @@ cloudbuild.allowedWorkerPools:
   rules:
     - allow:
         values:
-            - "under:organizations/${organization.id}"
+          - "under:organizations/${organization.id}"
 
 cloudbuild.disableCreateDefaultServiceAccount:
   rules:

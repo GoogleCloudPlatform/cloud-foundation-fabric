@@ -54,7 +54,7 @@ output "timestamps" {
 }
 
 output "uids" {
-  description = "Aspect type gobally unique IDs."
+  description = "Aspect type globally unique IDs."
   value = {
     for k, v in google_dataplex_aspect_type.default : k => v.uid
   }
