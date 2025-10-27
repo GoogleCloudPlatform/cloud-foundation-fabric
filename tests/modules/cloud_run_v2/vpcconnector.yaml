@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.service.google_cloud_run_v2_service.service[0]:
+  google_cloud_run_v2_service.service[0]:
     annotations: null
     binary_authorization: []
     build_config: []
@@ -21,49 +21,51 @@ values:
     client_version: null
     custom_audiences: null
     default_uri_disabled: null
-    deletion_protection: false
+    deletion_protection: true
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
     iap_enabled: false
     invoker_iam_disabled: false
     labels: null
-    location: europe-west8
-    name: service
-    project: project-id
+    location: region
+    multi_region_settings: []
+    name: test-run-vpc
+    project: test-project
     scaling: []
     template:
     - annotations: null
-      containers:
-      - args: null
-        base_image_uri: null
-        command: null
-        depends_on: null
-        env: []
-        image: us-docker.pkg.dev/cloudrun/container/hello
-        liveness_probe: []
-        name: hello
-        resources:
-        - cpu_idle: null
-          limits:
-            nvidia.com/gpu: '1'
-          startup_cpu_boost: null
-        volume_mounts: []
-        working_dir: null
+      containers: []
       encryption_key: null
-      execution_environment: EXECUTION_ENVIRONMENT_GEN2
-      gpu_zonal_redundancy_disabled: true
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      gpu_zonal_redundancy_disabled: null
       labels: null
-      node_selector:
-      - accelerator: nvidia-l4
+      node_selector: []
       revision: null
+      service_account: test-run-vpc@test-project.iam.gserviceaccount.com
       service_mesh: []
       session_affinity: null
       volumes: []
-      vpc_access: []
+      vpc_access:
+      - connector: projects/test-project/locations/region/connectors/vpc-connector
+        network_interfaces: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
 
 counts:
   google_cloud_run_v2_service: 1
+
+outputs:
+  id: __missing__
+  invoke_command: __missing__
+  job: null
+  resource: __missing__
+  resource_name: __missing__
+  service: __missing__
+  service_account: __missing__
+  service_account_email: test-run-vpc@test-project.iam.gserviceaccount.com
+  service_account_iam_email: serviceAccount:test-run-vpc@test-project.iam.gserviceaccount.com
+  service_name: __missing__
+  service_uri: __missing__
+  vpc_connector: null
