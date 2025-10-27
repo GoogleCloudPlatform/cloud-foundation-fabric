@@ -80,9 +80,7 @@ locals {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
-      custom_roles = local.of_ctx.custom_roles
-      # prepare move of fast variables to fast context
-      fast_context   = local.of_ctx
+      custom_roles   = local.of_ctx.custom_roles
       folder_ids     = local.of_ctx.folder_ids
       iam_principals = local.of_ctx.iam_principals
       logging = {

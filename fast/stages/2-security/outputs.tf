@@ -42,7 +42,7 @@ resource "google_storage_bucket_object" "version" {
     local.output_files.storage_bucket != null &&
     fileexists("fast_version.txt") ? 1 : 0
   )
-  bucket = var.automation.outputs_bucket
+  bucket = local.output_files.storage_bucket
   name   = "versions/2-security-version.txt"
   source = "fast_version.txt"
 }

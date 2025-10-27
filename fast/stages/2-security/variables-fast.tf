@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-variable "automation" {
-  # tfdoc:variable:source 0-org-setup
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-  nullable = false
-}
-
 variable "billing_account" {
   # tfdoc:variable:source 0-org-setup
   description = "Billing account id."
@@ -35,14 +26,6 @@ variable "custom_roles" {
   # tfdoc:variable:source 0-org-setup
   description = "Custom roles defined at the org level, in key => id format."
   type        = map(string)
-  nullable    = false
-  default     = {}
-}
-
-variable "fast_context" {
-  # tfdoc:variable:source 0-org-setup
-  description = "FAST context values."
-  type        = map(map(any))
   nullable    = false
   default     = {}
 }
@@ -100,6 +83,14 @@ variable "project_ids" {
 variable "service_accounts" {
   # tfdoc:variable:source 0-org-setup
   description = "Service accounts created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "storage_buckets" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Storage buckets created in the bootstrap stage."
   type        = map(string)
   nullable    = false
   default     = {}

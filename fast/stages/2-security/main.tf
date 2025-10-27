@@ -20,9 +20,7 @@ locals {
   }
   _ctx = {
     for k, v in var.context : k => merge(
-      try(var.fast_context[k], {}),
-      v,
-      try(local._defaults.context[k], {})
+      v, try(local._defaults.context[k], {})
     )
   }
   # dereferencing for outputs bucket
@@ -32,9 +30,7 @@ locals {
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
   ctx = merge(local._ctx, {
-    folder_ids = merge(
-      var.folder_ids, local._ctx.folder_ids
-    )
+    folder_ids = merge(var.folder_ids, local._ctx.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {
@@ -43,11 +39,12 @@ locals {
       },
       local._ctx.iam_principals
     )
-    locations   = local._ctx.locations
-    perimeters  = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
-    project_ids = merge(var.project_ids, local._ctx.project_ids)
-    tag_keys    = merge(var.tag_keys, local._ctx.tag_keys)
-    tag_values  = merge(var.tag_values, local._ctx.tag_values)
+    locations       = local._ctx.locations
+    perimeters      = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
+    project_ids     = merge(var.project_ids, local._ctx.project_ids)
+    storage_buckets = merge(var.storage_buckets, local._ctx.storage_buckets)
+    tag_keys        = merge(var.tag_keys, local._ctx.tag_keys)
+    tag_values      = merge(var.tag_values, local._ctx.tag_values)
   })
   defaults = {
     folder_name = try(local._defaults.global.folder_id, "security")
