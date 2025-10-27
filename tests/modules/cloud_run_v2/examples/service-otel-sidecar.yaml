@@ -52,7 +52,5 @@ counts:
   google_secret_manager_secret: 1
   google_secret_manager_secret_iam_binding: 1
   google_secret_manager_secret_version: 1
-  modules: 2
-  resources: 4
 
 outputs: {}

@@ -151,18 +151,22 @@ duplicates = [
     [
         "modules/cloud-function-v1/serviceaccount.tf",
         "modules/cloud-function-v2/serviceaccount.tf",
+        "modules/cloud-run-v2/serviceaccount.tf",
     ],
     [
         "modules/cloud-function-v1/variables-serviceaccount.tf",
         "modules/cloud-function-v2/variables-serviceaccount.tf",
+        "modules/cloud-run-v2/variables-serviceaccount.tf",
     ],
     [
         "modules/cloud-function-v1/variables-vpcconnector.tf",
         "modules/cloud-function-v2/variables-vpcconnector.tf",
+        "modules/cloud-run-v2/variables-vpcconnector.tf",
     ],
     [
         "modules/cloud-function-v1/vpcconnector.tf",
         "modules/cloud-function-v2/vpcconnector.tf",
+        "modules/cloud-run-v2/vpcconnector.tf",
     ],
 ]
 
