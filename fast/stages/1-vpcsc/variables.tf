@@ -183,12 +183,6 @@ variable "ingress_policies" {
   }
 }
 
-variable "outputs_location" {
-  description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
-  type        = string
-  default     = null
-}
-
 variable "perimeters" {
   description = "Perimeter definitions."
   type = map(object({
