@@ -14,7 +14,7 @@
 
 name: |
   Create a new release
-
+# yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
     inputs:
@@ -37,6 +37,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: "Validate input"
+        # yamllint disable rule:line-length
         run: |
           [[ "${{ github.event.inputs.changelog }}" != "true" ]] && { echo 'You didn''t update the changelog.' ; exit 1; }
           [[ -n "${{ github.event.inputs.version }}" ]] || { echo 'Version not specified!'; exit 1; }

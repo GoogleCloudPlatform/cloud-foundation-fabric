@@ -1,0 +1,34 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../../schemas/vpn.schema.json
+
+name: to-onprem
+region: $locations:primary
+peer_gateways:
+  default:
+    external:
+      redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
+      interfaces:
+        - 8.8.8.8
+router_config:
+  create: false
+  name: $routers:dmz/vpn-router
+tunnels:
+  remote-0:
+    bgp_peer:
+      address: 169.254.128.1
+      asn: 64513
+    bgp_session_range: "169.254.128.2/30"
+    peer_external_gateway_interface: 0
+    shared_secret: "mySecret"
+    vpn_gateway_interface: 0
+  remote-1:
+    bgp_peer:
+      address: 169.254.128.5
+      asn: 64513
+    bgp_session_range: "169.254.128.6/30"
+    peer_external_gateway_interface: 0
+    shared_secret: "mySecret"
+    vpn_gateway_interface: 1

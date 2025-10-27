@@ -14,6 +14,7 @@
 #
 # file: tests/modules/net_swp/examples/rules.yaml
 
+# yamllint disable rule:line-length
 values:
   module.secure-web-proxy.google_network_security_gateway_security_policy.default:
     description: Managed by Terraform.

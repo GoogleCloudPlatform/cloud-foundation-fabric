@@ -89,4 +89,3 @@ output_files:
       bucket: $storage_buckets:iac-0/iac-stage-state
       prefix: 3-data-platform-dev
       service_account: $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
-

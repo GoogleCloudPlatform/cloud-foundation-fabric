@@ -1,6 +1,6 @@
 # Hardened Dataset for FAST Organization Setup
 
-This hardened dataset contains a set of compliance controls that can be applied to your Google Cloud environment. 
+This hardened dataset contains a set of compliance controls that can be applied to your Google Cloud environment.
 It includes preventive controls (custom constraints and organization policies) and detective controls (Security Command Center custom module detectors and observability alerts).
 
 ## Prerequisites
@@ -10,18 +10,19 @@ This dataset configuration configures a set of compliance and security controls 
 The **preventive controls** are based on a recommended list of organization policies and custom organization policies. Many of these help enforce CIS Benchmarks and PCI-DSS requirements and are broadly applicable.
 
 The **detective controls** are based on the following:
-  - Security Health Analytics (SHA) and Custom SHA modules: These require **a Security Command Center (SCC) Premium or Enterprise subscription.**
-  - Log-based metrics and Monitoring Alerts: These can be used by any organization.
+
+- Security Health Analytics (SHA) and Custom SHA modules: These require **a Security Command Center (SCC) Premium or Enterprise subscription.**
+- Log-based metrics and Monitoring Alerts: These can be used by any organization.
 
 ## High level architecture
 
 The dataset contains the configurations for various controls, which are consumed by the Terraform modules using the factory configuration.
 
-|                                     	| Organization Policies 	|    Custom Constraint    	|  Monitoring Alerts 	|                    SCC SHA                   	|        SCC Custom SHA       	|
-|:-----------------------------------:	|:---------------------:	|:-----------------------:	|:------------------:	|:--------------------------------------------:	|:---------------------------:	|
-|           **Type of controls**          	|       Preventive      	|        Preventive       	|      Detective     	|                   Detective                  	|          Detective          	|
-|            **Factory folder**           	|   data/org-policies   	| data/custom-constraints 	| data/observability 	| Already included as part of SCC Subscription 	| data/scc-custom-sha-modules 	|
-| **Requires SCC Premium or Enterprise ?** 	|           NO          	|            NO           	|         NO         	|                      YES                     	|             YES             	|
+|                                      | Organization Policies  |    Custom Constraint     |  Monitoring Alerts  |                    SCC SHA                    |        SCC Custom SHA        |
+|:-----------------------------------: |:---------------------: |:-----------------------: |:------------------: |:--------------------------------------------: |:---------------------------: |
+|           **Type of controls**           |       Preventive       |        Preventive        |      Detective      |                   Detective                   |          Detective           |
+|            **Factory folder**            |   data/org-policies    | data/custom-constraints  | data/observability  | Already included as part of SCC Subscription  | data/scc-custom-sha-modules  |
+| **Requires SCC Premium or Enterprise ?**  |           NO           |            NO            |         NO          |                      YES                      |             YES              |
 
 The diagram below shows the relationships between the components:
 
@@ -38,6 +39,7 @@ factories_config = {
 ```
 
 For organizations not using **SCC Premium or Enterprise**, the following error will appear:
+
 ```
 ╷
 │ Error: Error creating OrganizationSecurityHealthAnalyticsCustomModule: googleapi: Error 403: Security Command Center Management API has not been used in project 111111111111 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/securitycentermanagement.googleapis.com/overview?project=111111111111 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
@@ -50,6 +52,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 ### Preventive Controls
 
 #### Organization Policies
+
 | Policy | Description | Compliance Mapping |
 |---|---|---|
 | `ainotebooks.disableFileDownloads` | Prevent file downloads on new Vertex AI Workbench instances. |  |
@@ -115,6 +118,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 **Note:** For organizations with strict requirements to ensure all resources are created and stored within specific geographic regions (e.g., for data sovereignty or regulatory compliance), the `gcp.resourceLocations` Organization Policy present in file [gcp.yaml](organization/org-policies/gcp.yaml)  can be enabled.
 
 #### Custom Constraints
+
 | Constraint | Description | Compliance Mapping |
 |---|---|---|
 | `accesscontextmanagerDisableBridgePerimeters` | Ensure no perimeter bridges are used. Instead, use ingress and egress rules. |  |
@@ -135,7 +139,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `firewallRestrictRdpPolicyRule` | Prevent RDP access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictSshPolicyRule` | Prevent SSH access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `gkeAllowedNodePoolImages` | Enforce that GKE nodes are using authorized node images | **CIS for GKE 1.5**: 5.5.1<br>**PCI-DSS 4.0**: 2.2.6, 5.2, 6.2.1 |
-| `gkeAllowedReleaseChannels` | Enfore that GKE cluster are using authorized release channels | **CIS for GKE 1.5**: 5.5.4 |
+| `gkeAllowedReleaseChannels` | Enforce that GKE cluster are using authorized release channels | **CIS for GKE 1.5**: 5.5.4 |
 | `gkeDisableAlphaCluster` | Prevent the use of alpha features for GKE clusters in production workloads. | **CIS for GKE 1.5**: 5.10.2 |
 | `gkeDisableKubernetesDashboard` | Prevent the enablement of the GKE Web UI dashboard. | **CIS for GKE 1.5**: 5.10.1<br>**PCI-DSS 4.0**: 6.4 |
 | `gkeDisableLegacyAbac` | Enforce that GKE clusters is configured with no legacy ABAC enabled | **CIS for GKE 1.5**: 5.8.3<br>**PCI-DSS 4.0**: 4.1 |
@@ -156,19 +160,17 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `networkRequireCustomModeVpc` | Ensure That the Default Network Does Not Exist in a Project | **CIS for GKE 1.5**: 3.1<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `networkRequireSubnetPrivateGoogleAccess` | Enforce Private Google Access for all VPC network subnets. |  |
 
-
 ### Detective Controls
 
 #### SCC Built-in Modules Detectors
-SCC SHA Detectors are available only for organization have subscribed to SCC Premium or Enterprise. Refer to https://cloud.google.com/security-command-center/docs/service-tiers for more information.
 
+SCC SHA Detectors are available only for organization have subscribed to SCC Premium or Enterprise. Refer to <https://cloud.google.com/security-command-center/docs/service-tiers> for more information.
 
-Complete list of built-in SCC SHA detectors is available here https://cloud.google.com/security-command-center/docs/concepts-vulnerabilities-findings.
-
+Complete list of built-in SCC SHA detectors is available here <https://cloud.google.com/security-command-center/docs/concepts-vulnerabilities-findings>.
 
 #### SCC Custom Modules Detectors
-SCC Custom SHA Detectors are available only for organization have subscribed to SCC Premium or Enterprise. Refer to https://cloud.google.com/security-command-center/docs/service-tiers for more information.
 
+SCC Custom SHA Detectors are available only for organization have subscribed to SCC Premium or Enterprise. Refer to <https://cloud.google.com/security-command-center/docs/service-tiers> for more information.
 
 | Module | Description | Compliance Mapping |
 |---|---|---|
@@ -183,8 +185,8 @@ SCC Custom SHA Detectors are available only for organization have subscribed to 
 | `gkeRequireDataplaneV2` | Enforce that the GKE clusters is configured to use dataplane v2 |  |
 | `gkeRequireRegionalCluster` | Enforce the creation of regional GKE clusters |  |
 
-
 #### Observability
+
 | Alert | Description | Compliance Mapping |
 |---|---|---|
 | `auditConfigChanges` | Ensure log metric filters and alerts exist for audit configuration changes. | **PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
@@ -195,8 +197,8 @@ SCC Custom SHA Detectors are available only for organization have subscribed to 
 
 ### Custom Organization Policy Concurrency Issue
 
-The following error below might appears when you are trying to create multiple custom organization policies concurrently. 
-As per October 2025, a bug exits providing misleading error message `Error 409: Requested entity already exists`. 
+The following error below might appears when you are trying to create multiple custom organization policies concurrently.
+As per October 2025, a bug exits providing misleading error message `Error 409: Requested entity already exists`.
 
 ```
 │ Error: Error creating Policy: googleapi: Error 409: Requested entity already exists
@@ -212,19 +214,19 @@ As per now, the workaround is to force terraform do not use concurrent requests.
 terraform apply -parallelism=1
 ```
 
-
 ### Custom Constraint Deletion
 
 If you delete a custom constraint, any policies that have been created using that constraint continue to exist, but are ignored. You can't create another custom constraint with the same name than a previously deleted custom constraint.
 
-See https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-custom-constraints#delete_custom_constraint for more information.
+See <https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-custom-constraints#delete_custom_constraint> for more information.
 
-As per October 2025, a feature request is still opened to fix that behavior https://issuetracker.google.com/issues/434909712.
-Meanwhile, we recommend to not remove any custom constraint created except if this is certain that the constraint will never be used anymore. 
+As per October 2025, a feature request is still opened to fix that behavior <https://issuetracker.google.com/issues/434909712>.
+Meanwhile, we recommend to not remove any custom constraint created except if this is certain that the constraint will never be used anymore.
 
 If you need to cleanup Fabric FAST Stage 0, and want to avoid issues during next reprovisionning, it is recommended to remove from Terraform state custom constraints to avoid any future issue later.
 
 Retrieve the custom constraint part of Terraform state
+
 ```bash
 $ terraform state list | grep google_org_policy_custom_constraint
 module.organization[0].google_org_policy_custom_constraint.constraint["custom.accesscontextmanagerDisableBridgePerimeters"]
@@ -235,6 +237,7 @@ module.organization[0].google_org_policy_custom_constraint.constraint["custom.cl
 ```
 
 Remove the constraints from the state. You can do that for every constraints. Do not execute this part if permanent removal is needed.
+
 ```bash
 for x in $(terraform state list | grep google_org_policy_custom_constraint); do
   terraform state rm "$x";
@@ -244,14 +247,14 @@ done
 ### Security Command Center Management API not enabled
 
 For organizations not using **SCC Premium or Enterprise**, the kind of error error appear when `securitycentermanagement.googleapis.com` has not been enabled.
+
 ```
 │ Error: Error creating OrganizationSecurityHealthAnalyticsCustomModule: googleapi: Error 403: Security Command Center Management API has not been used in project 111111111111 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/securitycentermanagement.googleapis.com/overview?project=111111111111 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
 ```
 
 In the case you do not want to use SCC detectors and do not have an SCC Premium or Enterprise subscription,  **the controls placed in the `organization/scc-sha-custom-modules` folder need to be removed to ensure they are not provisioned.**
 
-In the case you want to use SCC detectors and have an SCC Premium or Enterprise subscription, **ensure that the API `securitycentermanagement.googleapis.com`** has been enabled successfully. 
-
+In the case you want to use SCC detectors and have an SCC Premium or Enterprise subscription, **ensure that the API `securitycentermanagement.googleapis.com`** has been enabled successfully.
 
 ### Security Command Center Premium or Enterprise not enabled
 
@@ -265,5 +268,4 @@ Error: Error creating OrganizationSecurityHealthAnalyticsCustomModule: googleapi
 │   49: resource "google_scc_management_organization_security_health_analytics_custom_module" "scc_organization_custom_module" {
 ```
 
-In the case you want to use SCC detectors and have an SCC Premium or Enterprise subscription, **ensure that the Security Command Center Premium or Enterprise`** has been enabled successfully enabled on the organization. 
-
+In the case you want to use SCC detectors and have an SCC Premium or Enterprise subscription, **ensure that the Security Command Center Premium or Enterprise`** has been enabled successfully enabled on the organization.

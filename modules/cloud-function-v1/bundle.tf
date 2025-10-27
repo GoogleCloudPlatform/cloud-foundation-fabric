@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ locals {
 
 resource "google_storage_bucket" "bucket" {
   count                       = var.bucket_config == null ? 0 : 1
-  project                     = var.project_id
+  project                     = local.project_id
   name                        = "${local.prefix}${var.bucket_name}"
   uniform_bucket_level_access = true
   location = (
     var.bucket_config.location == null
-    ? var.region
-    : var.bucket_config.location
+    ? local.location
+    : lookup(local.ctx.locations, var.bucket_config.location, var.bucket_config.location)
   )
   labels = var.labels
   dynamic "lifecycle_rule" {
@@ -66,7 +66,7 @@ data "archive_file" "bundle" {
   output_path = (
     var.bundle_config.folder_options.archive_path != null
     ? pathexpand(var.bundle_config.folder_options.archive_path)
-    : "/tmp/bundle-${var.project_id}-${var.name}.zip"
+    : "/tmp/bundle-${local.project_id}-${var.name}.zip"
   )
   output_file_mode = "0644"
   excludes         = var.bundle_config.folder_options.excludes
@@ -76,13 +76,20 @@ data "archive_file" "bundle" {
 
 resource "google_storage_bucket_object" "bundle" {
   count = local.bundle_type != "gcs" ? 1 : 0
-  name = try(
-    "bundle-${data.archive_file.bundle[0].output_md5}.zip",
-    basename(var.bundle_config.path)
+  name = (
+    local.bundle_type == "local-folder"
+    ? "bundle-${data.archive_file.bundle[0].output_md5}.zip"
+    : basename(var.bundle_config.path)
   )
   bucket = local.bucket
-  source = try(
-    data.archive_file.bundle[0].output_path,
-    pathexpand(var.bundle_config.path)
+  source = (
+    local.bundle_type == "local-folder"
+    ? data.archive_file.bundle[0].output_path
+    : pathexpand(var.bundle_config.path)
+  )
+  source_md5hash = (
+    local.bundle_type == "local-folder"
+    ? data.archive_file.bundle[0].output_md5
+    : filemd5(pathexpand(var.bundle_config.path))
   )
 }

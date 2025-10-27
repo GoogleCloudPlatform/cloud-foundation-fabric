@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NVA Configuration",
+  "description": "Schema for an NVA YAML file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "project_id",
+    "name",
+    "region"
+  ],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "auto_instance_config": {
+      "$ref": "#/$defs/auto_instance_config"
+    },
+    "ilb_config": {
+      "$ref": "#/$defs/ilb_config"
+    }
+  },
+  "$defs": {
+    "auto_instance_config": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "instance_type": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nic"
+          }
+        }
+      }
+    },
+    "nic": {
+      "type": "object",
+      "properties": {
+        "network": {
+          "type": "string"
+        },
+        "subnet": {
+          "type": "string"
+        },
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "masquerade": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "network",
+        "subnet"
+      ]
+    },
+    "ilb_config": {
+      "type": "object",
+      "properties": {
+        "health_check": {
+          "type": "object"
+        },
+        "instance_groups": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z]$": {
+              "$ref": "#/$defs/instance_group"
+            }
+          }
+        },
+        "forwarding_rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/forwarding_rule"
+          }
+        }
+      }
+    },
+    "instance_group": {
+      "type": "object",
+      "properties": {
+        "auto_create_instances": {
+          "type": "number"
+        },
+        "attach_instances": {
+          "type": "object"
+        }
+      }
+    },
+    "forwarding_rule": {
+      "type": "object",
+      "properties": {
+        "network": {
+          "type": "string"
+        },
+        "subnet": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "network",
+        "subnet"
+      ]
+    }
+  }
+}

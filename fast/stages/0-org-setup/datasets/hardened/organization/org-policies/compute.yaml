@@ -54,7 +54,7 @@ compute.requireSslPolicy:
   rules:
     - allow:
         values:
-            - "under:organizations/${organization.id}"
+          - "under:organizations/${organization.id}"
 
 compute.restrictCloudNATUsage:
   rules:
@@ -66,13 +66,13 @@ compute.restrictLoadBalancerCreationForTypes:
   rules:
     - allow:
         values:
-            - "in:INTERNAL"
+          - "in:INTERNAL"
 
 compute.restrictProtocolForwardingCreationForTypes:
   rules:
     - allow:
         values:
-            - "is:INTERNAL"
+          - "is:INTERNAL"
 
 compute.setNewProjectDefaultToZonalDNSOnly:
   rules:
@@ -86,29 +86,29 @@ compute.trustedImageProjects:
   rules:
     - allow:
         values:
-            - "is:projects/centos-cloud"
-            - "is:projects/cos-cloud"
-            - "is:projects/debian-cloud"
-            - "is:projects/fedora-cloud"
-            - "is:projects/fedora-coreos-cloud"
-            - "is:projects/opensuse-cloud"
-            - "is:projects/rhel-cloud"
-            - "is:projects/rhel-sap-cloud"
-            - "is:projects/rocky-linux-cloud"
-            - "is:projects/suse-cloud"
-            - "is:projects/suse-sap-cloud"
-            - "is:projects/ubuntu-os-cloud"
-            - "is:projects/ubuntu-os-pro-cloud"
-            - "is:projects/windows-cloud"
-            - "is:projects/windows-sql-cloud"
-            - "is:projects/confidential-vm-images"
-            - "is:projects/confidential-space-images"
-            - "is:projects/backupdr-images"
-            - "is:projects/deeplearning-platform-release"
-            - "is:projects/serverless-vpc-access-images"
-            - "is:projects/gke-node-images"
-            - "is:projects/gke-windows-node-images"
-            - "is:projects/ubuntu-os-gke-cloud"
+          - "is:projects/centos-cloud"
+          - "is:projects/cos-cloud"
+          - "is:projects/debian-cloud"
+          - "is:projects/fedora-cloud"
+          - "is:projects/fedora-coreos-cloud"
+          - "is:projects/opensuse-cloud"
+          - "is:projects/rhel-cloud"
+          - "is:projects/rhel-sap-cloud"
+          - "is:projects/rocky-linux-cloud"
+          - "is:projects/suse-cloud"
+          - "is:projects/suse-sap-cloud"
+          - "is:projects/ubuntu-os-cloud"
+          - "is:projects/ubuntu-os-pro-cloud"
+          - "is:projects/windows-cloud"
+          - "is:projects/windows-sql-cloud"
+          - "is:projects/confidential-vm-images"
+          - "is:projects/confidential-space-images"
+          - "is:projects/backupdr-images"
+          - "is:projects/deeplearning-platform-release"
+          - "is:projects/serverless-vpc-access-images"
+          - "is:projects/gke-node-images"
+          - "is:projects/gke-windows-node-images"
+          - "is:projects/ubuntu-os-gke-cloud"
 
 compute.vmExternalIpAccess:
   rules:
@@ -123,14 +123,14 @@ gcp.restrictTLSCipherSuites:
   rules:
     - allow:
         values:
-            - "in:NIST-800-52-recommended-ciphers"
+          - "in:NIST-800-52-recommended-ciphers"
 
 gcp.restrictTLSVersion:
   rules:
     - deny:
         values:
-            - "TLS_VERSION_1"
-            - "TLS_VERSION_1_1"
+          - "TLS_VERSION_1"
+          - "TLS_VERSION_1_1"
 
 iam.automaticIamGrantsForDefaultServiceAccounts:
   rules:

@@ -85,7 +85,7 @@ The final number of subnets, and their IP addressing will depend on the user-spe
 
 This stage support three different deployment models that can be controlled by `var.network_mode`. The stage deploys networking resources in two different regions and supports both regional and multi-regional VPCs. Depending on the selected deployment model different routing strategies and NVAs failover modes can be implemented.
 
-- **Simple NVA**: This network mode deploys multi-regional VPCs, the network appliances are configured behind a "ILB Sandwitch" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
+- **Simple NVA**: This network mode deploys multi-regional VPCs, the network appliances are configured behind a "ILB Sandwich" (two different network passthrough internal load balancers on each of `dmz` and `landing` VPCs), with static routes sending traffic for specific destinations to specific network appliances group through the load balancer.
 - **NCC-RA**: This network mode deploys multi-regional VPCs as the simple mode but provides a different routing strategy. The network appliances establish BGP sessions with a Cloud Router on both `dmz` and `landing` VPCs, which comes with the following benefits, at the cost of additional initial setup complexity:
   - avoid using network tags to route traffic
   - automatically send all traffic through the cross-regional NVAs if the ones in-region fail

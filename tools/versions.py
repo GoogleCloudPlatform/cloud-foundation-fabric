@@ -85,7 +85,8 @@ def process_file(template, file_path, context):
 @click.option("--tofu-version", help="Override OpenTofu version")
 @click.option("--write-defaults/--no-write-defaults", default=False,
               help="Also rewrite default-versions.t*f*")
-def main(write_defaults, **kwargs):
+@click.option("-q", "--quiet", is_flag=True)
+def main(write_defaults, quiet, **kwargs):
   root_path = Path(__file__).parents[1]
   overrides = {k: v for k, v in kwargs.items() if v is not None}
   # process versions.tf and versions.tofu
@@ -98,19 +99,22 @@ def main(write_defaults, **kwargs):
       context['engine_version'] = kwargs[f'{engine}_version']
 
     for file_path in root_path.rglob(f"versions.{engine}"):
-      click.echo(f"Processing {file_path}")
+      if not quiet:
+        click.echo(f"Processing {file_path}")
       process_file(FABRIC_VERSIONS_TEMPLATE, file_path, context | {
           "path": file_path.parent.relative_to(root_path),
       })
 
     if write_defaults:
-      click.echo(f"Processing {defaults_fname}")
+      if not quiet:
+        click.echo(f"Processing {defaults_fname}")
       process_file(FABRIC_VERSIONS_TEMPLATE, defaults_fname, context)
 
   # process fast_version.txt.
   fast_context = {"fast_release": context["fabric_release"]}
   for file_path in root_path.rglob(f"fast_version.txt"):
-    click.echo(f"Processing {file_path}")
+    if not quiet:
+      click.echo(f"Processing {file_path}")
     process_file(FAST_VERSIONS_TEMPLATE, file_path, fast_context)
 
 

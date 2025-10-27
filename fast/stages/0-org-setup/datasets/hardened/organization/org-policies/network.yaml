@@ -34,7 +34,7 @@ compute.restrictDedicatedInterconnectUsage:
   rules:
     - allow:
         values:
-            - "under:${folder_ids.networking}"
+          - "under:${folder_ids.networking}"
 
 compute.restrictPartnerInterconnectUsage:
   rules:
@@ -46,14 +46,13 @@ compute.restrictSharedVpcHostProjects:
   rules:
     - allow:
         values:
-            - "under:${folder_ids.networking}"
-
+          - "under:${folder_ids.networking}"
 
 compute.restrictVpcPeering:
   rules:
     - allow:
         values:
-            - "under:organizations/${organization.id}"
+          - "under:organizations/${organization.id}"
 
 custom.networkDisableTargetHTTPProxy:
   rules:

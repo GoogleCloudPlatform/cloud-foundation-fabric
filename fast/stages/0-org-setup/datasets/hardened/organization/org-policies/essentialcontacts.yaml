@@ -33,4 +33,3 @@ essentialcontacts.allowedContactDomains:
         title: Allow essential contacts from any domain
         expression: |
           resource.matchTag('${organization.id}/org-policies', 'allowed-essential-contacts-domains-all')
-    

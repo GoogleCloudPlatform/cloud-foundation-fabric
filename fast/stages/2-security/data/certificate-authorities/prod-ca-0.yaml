@@ -20,5 +20,3 @@ ca_pool_config:
   create_pool: {}
 ca_configs:
   prod-ca-0-0: {}
-
-

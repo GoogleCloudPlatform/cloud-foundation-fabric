@@ -30,7 +30,7 @@ storage.restrictAuthTypes:
   rules:
     - deny:
         values:
-            - "in:ALL_HMAC_SIGNED_REQUESTS"
+          - "in:ALL_HMAC_SIGNED_REQUESTS"
 
 storage.secureHttpTransport:
   rules:
