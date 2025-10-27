@@ -1543,7 +1543,7 @@ module "project-bq-data" {
     "stackdriver.googleapis.com"
   ]
 }
-# tftest modules=2 resources=19 inventory=bigqueryreservation.yaml
+# tftest modules=2 resources=20 inventory=bigqueryreservation.yaml
 ```
 
 ## Project Related Outputs
