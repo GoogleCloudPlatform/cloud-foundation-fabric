@@ -517,13 +517,16 @@
       "additionalProperties": false,
       "properties": {
         "auto_create_subnetworks": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
         "delete_default_route_on_create": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         "mtu": {
-          "type": "number"
+          "type": "number",
+          "default": 1500
         }
       }
     },

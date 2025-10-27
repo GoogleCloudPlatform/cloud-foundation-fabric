@@ -70,6 +70,13 @@ locals {
     )
     overrides = try(local._defaults.projects.overrides, {})
   }
-  vpc_defaults = try(local._defaults.vpcs, {})
+  vpc_defaults = merge(
+    {
+      auto_create_subnetworks        = false
+      delete_default_route_on_create = true
+      mtu                            = 1500
+    },
+    try(local._defaults.vpcs, {})
+  )
 }
 
