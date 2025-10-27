@@ -37,7 +37,6 @@ repos:
     - marko
     - requests
     - yamale
-    - yapf
     - jsonschema
     - BeautifulSoup4
     # types: [terraform]
@@ -56,7 +55,6 @@ repos:
     - marko
     - requests
     - yamale
-    - yapf
     - jsonschema
     - BeautifulSoup4
     pass_filenames: true
@@ -74,7 +72,6 @@ repos:
     - marko
     - requests
     - yamale
-    - yapf
     - jsonschema
     - BeautifulSoup4
     pass_filenames: false
@@ -99,7 +96,6 @@ repos:
     - marko
     - requests
     - yamale
-    - yapf
     - jsonschema
     - BeautifulSoup4
     pass_filenames: false
@@ -116,7 +112,6 @@ repos:
     - marko
     - requests
     - yamale
-    - yapf
     - jsonschema
     - BeautifulSoup4
     entry: tools/check_links.py --no-show-summary --scan-files
@@ -158,6 +153,7 @@ repos:
   rev: v0.40.2
   hooks:
   - id: yapf
+    require_serial: true
 
 - repo: https://github.com/codespell-project/codespell
   rev: v2.4.1
