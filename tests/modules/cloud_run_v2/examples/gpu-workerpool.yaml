@@ -56,5 +56,3 @@ values:
 
 counts:
   google_cloud_run_v2_worker_pool: 1
-  modules: 1
-  resources: 1

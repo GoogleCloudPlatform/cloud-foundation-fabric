@@ -84,7 +84,7 @@ locals {
       folder_ids     = local.of_ctx.folder_ids
       iam_principals = local.of_ctx.iam_principals
       logging = {
-        writer_identities = module.organization-iam.0.sink_writer_identities
+        writer_identities = module.organization-iam[0].sink_writer_identities
         project_number    = module.factory.project_numbers["log-0"]
       }
       project_ids     = local.of_ctx.project_ids,

@@ -39,6 +39,11 @@ output "endpoint" {
   value       = google_container_cluster.cluster.endpoint
 }
 
+output "fleet" {
+  description = "GKE Fleet Membership."
+  value       = google_container_cluster.cluster.endpoint
+}
+
 output "id" {
   description = "Fully qualified cluster ID."
   value       = google_container_cluster.cluster.id

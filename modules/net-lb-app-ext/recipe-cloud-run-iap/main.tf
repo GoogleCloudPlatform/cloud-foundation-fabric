@@ -68,8 +68,7 @@ module "backend_service" {
       module.project.service_agents.iap.iam_email
     ]
   }
-  deletion_protection    = false
-  service_account_create = true
+  deletion_protection = false
 }
 
 module "addresses" {

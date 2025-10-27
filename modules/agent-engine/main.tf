@@ -16,15 +16,6 @@
 
 locals {
   _ctx_p = "$"
-  _service_account_external_email = (
-    var.service_account_config.email == null
-    ? null
-    : lookup(
-      local.ctx.iam_principals,
-      var.service_account_config.email,
-      var.service_account_config.email
-    )
-  )
   bucket_name = (
     var.bucket_config.create
     ? google_storage_bucket.default[0].name
@@ -41,15 +32,6 @@ locals {
   project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
   )
-  service_account_email = (
-    var.service_account_config.create
-    ? google_service_account.default[0].email
-    : local._service_account_external_email
-  )
-  service_account_roles = [
-    for role in var.service_account_config.roles
-    : lookup(local.ctx.custom_roles, role, role)
-  ]
 }
 
 resource "google_vertex_ai_reasoning_engine" "default" {
@@ -191,22 +173,4 @@ resource "google_storage_bucket_object" "requirements" {
   bucket         = local.bucket_name
   source         = "${var.source_files.path}/${var.source_files.requirements}"
   source_md5hash = filemd5("${var.source_files.path}/${var.source_files.requirements}")
-}
-
-resource "google_service_account" "default" {
-  count        = var.service_account_config.create ? 1 : 0
-  account_id   = coalesce(var.service_account_config.name, var.name)
-  project      = local.project_id
-  display_name = "Agent Engine ${coalesce(var.service_account_config.name, var.name)}."
-}
-
-resource "google_project_iam_member" "default" {
-  for_each = (
-    var.service_account_config.create
-    ? toset(local.service_account_roles)
-    : toset([])
-  )
-  role    = each.key
-  project = local.project_id
-  member  = google_service_account.default[0].member
 }
