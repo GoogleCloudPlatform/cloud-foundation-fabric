@@ -28,12 +28,12 @@ values:
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/viewer
-  module.agent_engine.google_service_account.default[0]:
+  module.agent_engine.google_service_account.service_account[0]:
     account_id: my-agent
     create_ignore_already_exists: null
     description: null
     disabled: false
-    display_name: Agent Engine my-agent.
+    display_name: my-agent
     email: my-agent@project-id.iam.gserviceaccount.com
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id

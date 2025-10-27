@@ -17,11 +17,13 @@
 locals {
   service_account_email = (
     var.service_account_config.create
-    ? google_service_account.service_account[0].email
-    : lookup(
-      local.ctx.iam_principals,
-      var.service_account_config.email,
-      var.service_account_config.email
+    ? google_service_account.service_account[0].email  # use managed SA, when creating
+    : (var.service_account_config.email == null ? null # set to null, if no email provided
+      : lookup(                                        # lookup SA in context
+        local.ctx.iam_principals,
+        var.service_account_config.email,
+        var.service_account_config.email
+      )
     )
   )
   service_account_roles = [
