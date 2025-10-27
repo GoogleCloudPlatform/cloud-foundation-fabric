@@ -12,15 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../../fast/stages/2-security/schemas/defaults.schema.json
+# yaml-language-server: $schema=../../schemas/defaults.schema.json
 
-context:
-  locations:
-    primary: europe-west1
-    secondary: europe-west3
-projects:
-  defaults:
-    locations:
-      storage: eu
 output_files:
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/fast-test-00
   storage_bucket: $storage_buckets:iac-0/iac-outputs
