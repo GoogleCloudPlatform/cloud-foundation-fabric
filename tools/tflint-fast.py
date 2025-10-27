@@ -67,9 +67,31 @@ def tflint_module(module_path, var_path, extra_dirs, junit):
       return subprocess.run(args, stderr=subprocess.STDOUT).returncode
 
 
+def is_affected(files, module_path, tftest_path, extra_dirs):
+  # no files provided, run all tftests
+  if not files:
+    return True
+  absolute_files = [Path(x).absolute() for x in files]
+  # check if the files modified the module
+  ret = any(x.is_relative_to(module_path.absolute()) for x in absolute_files)
+  if ret:
+    return ret
+  # check if the files modified the test definition
+  ret = any(x.is_relative_to(tftest_path.absolute()) for x in absolute_files)
+  if ret:
+    return ret
+  # check if the files modified extra dirs
+  for extra_dir in extra_dirs:
+    ret = any(x.is_relative_to(extra_dir.absolute()) for x in absolute_files)
+    if ret:
+      return ret
+  return False
+
+
 @click.option('--junit', default=False, is_flag=True)
+@click.argument('files', nargs=-1, type=click.Path(), required=False)
 @click.command()
-def main(junit):
+def main(junit, files):
   ret = 0
   for tftest_yaml in sorted(
       glob.glob(f'{BASEDIR}/tests/fast/**/tftest.yaml', recursive=True)):
@@ -86,12 +108,17 @@ def main(junit):
     ] if relative_extra_dirs else []
     var_path = (tftest_path / 'simple.tfvars')
 
+    if not var_path.exists():
+      print(f'## {module_path}: skipping stage as no simple.tfvars found there')
+      continue
+    if not is_affected(files, module_path, tftest_path, extra_dirs):
+      print(
+          f'## {module_path}: skipping stage as it is not affected by provided files'
+      )
+      continue
     click.echo(f'## {module_path}')
-    if var_path.exists():
-      ret |= tflint_module(module_path, var_path, extra_dirs, junit)
-    else:
-      print(f'Skipping stage: {tftest_yaml} as no simple.tfvars found there')
-  # end for
+    ret |= tflint_module(module_path, var_path, extra_dirs, junit)
+    # end for
   exit(ret)
 
 
