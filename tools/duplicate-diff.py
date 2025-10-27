@@ -149,6 +149,7 @@ duplicates = [
         "modules/cloud-function-v2/bundle.tf",
     ],
     [
+        "modules/agent-engine/serviceaccount.tf",
         "modules/cloud-function-v1/serviceaccount.tf",
         "modules/cloud-function-v2/serviceaccount.tf",
         "modules/cloud-run-v2/serviceaccount.tf",

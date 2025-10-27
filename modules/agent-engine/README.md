@@ -190,7 +190,7 @@ module "agent_engine" {
 
 ## Define environment variables and use secrets
 
-You can define environment variables and load existing secrets as environment variables into your agent. 
+You can define environment variables and load existing secrets as environment variables into your agent.
 
 ```hcl
 module "agent_engine" {
@@ -236,8 +236,8 @@ The module allows you to dynamically reference context values for resources crea
 | [description](variables.tf#L57) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
 | [encryption_key](variables.tf#L64) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
 | [generate_pickle](variables.tf#L70) | Generate the pickle file from a source file. | <code>bool</code> |  | <code>true</code> |
-| [service_account_config](variables.tf#L95) | Service account configurations. | <code title="object&#40;&#123;&#10;  create &#61; optional&#40;bool, true&#41;&#10;  email  &#61; optional&#40;string&#41;&#10;  name   &#61; optional&#40;string&#41;&#10;  roles &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;roles&#47;aiplatform.user&#34;,&#10;    &#34;roles&#47;storage.objectViewer&#34;,&#10;    &#34;roles&#47;viewer&#34;&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [source_files](variables.tf#L112) | The to source files path and names. | <code title="object&#40;&#123;&#10;  dependencies        &#61; optional&#40;string, &#34;dependencies.tar.gz&#34;&#41;&#10;  path                &#61; optional&#40;string, &#34;.&#47;src&#34;&#41;&#10;  pickle_out          &#61; optional&#40;string, &#34;pickle.pkl&#34;&#41;&#10;  pickle_src          &#61; optional&#40;string, &#34;agent.py&#34;&#41;&#10;  pickle_src_var_name &#61; optional&#40;string, &#34;local_agent&#34;&#41;&#10;  requirements        &#61; optional&#40;string, &#34;requirements.txt&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account_config](variables-serviceaccount.tf#L18) | Service account configurations. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, true&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  email        &#61; optional&#40;string&#41;&#10;  name         &#61; optional&#40;string&#41;&#10;  roles &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;roles&#47;aiplatform.user&#34;,&#10;    &#34;roles&#47;storage.objectViewer&#34;,&#10;    &#34;roles&#47;viewer&#34;&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [source_files](variables.tf#L95) | The to source files path and names. | <code title="object&#40;&#123;&#10;  dependencies        &#61; optional&#40;string, &#34;dependencies.tar.gz&#34;&#41;&#10;  path                &#61; optional&#40;string, &#34;.&#47;src&#34;&#41;&#10;  pickle_out          &#61; optional&#40;string, &#34;pickle.pkl&#34;&#41;&#10;  pickle_src          &#61; optional&#40;string, &#34;agent.py&#34;&#41;&#10;  pickle_src_var_name &#61; optional&#40;string, &#34;local_agent&#34;&#41;&#10;  requirements        &#61; optional&#40;string, &#34;requirements.txt&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

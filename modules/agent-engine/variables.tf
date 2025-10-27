@@ -92,23 +92,6 @@ variable "region" {
   nullable    = false
 }
 
-variable "service_account_config" {
-  description = "Service account configurations."
-  type = object({
-    create = optional(bool, true)
-    email  = optional(string)
-    name   = optional(string)
-    roles = optional(list(string), [
-      "roles/aiplatform.user",
-      "roles/storage.objectViewer",
-      # TODO: remove when b/441480710 is solved
-      "roles/viewer"
-    ])
-  })
-  nullable = false
-  default  = {}
-}
-
 variable "source_files" {
   description = "The to source files path and names."
   type = object({
