@@ -15,8 +15,8 @@
 module: fast/stages/2-security
 
 tests:
-  not-simple:
+  simple:
     inventory:
-      - not-simple.yaml
+      - simple.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s2_security/data-simple
