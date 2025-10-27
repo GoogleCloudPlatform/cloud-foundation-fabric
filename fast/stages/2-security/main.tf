@@ -29,6 +29,7 @@ locals {
   }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
+  # extend context with our own data
   ctx = merge(local._ctx, {
     folder_ids = merge(var.folder_ids, local._ctx.folder_ids)
     iam_principals = merge(
@@ -46,6 +47,7 @@ locals {
     tag_keys        = merge(var.tag_keys, local._ctx.tag_keys)
     tag_values      = merge(var.tag_values, local._ctx.tag_values)
   })
+  # normalize defaults
   defaults = {
     folder_name = try(local._defaults.global.folder_id, "security")
     stage_name  = try(local._defaults.global.stage_name, "2-security")

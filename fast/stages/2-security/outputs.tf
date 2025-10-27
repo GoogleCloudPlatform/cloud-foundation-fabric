@@ -43,21 +43,21 @@ resource "google_storage_bucket_object" "version" {
     fileexists("fast_version.txt") ? 1 : 0
   )
   bucket = local.output_files.storage_bucket
-  name   = "versions/2-security-version.txt"
+  name   = "versions/${local.defaults.stage_name}-version.txt"
   source = "fast_version.txt"
 }
 
 resource "local_file" "tfvars" {
   for_each        = local.output_files.local_path == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(local.output_files.local_path)}/tfvars/2-security.auto.tfvars.json"
+  filename        = "${pathexpand(local.output_files.local_path)}/tfvars/${local.defaults.stage_name}.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 
 resource "google_storage_bucket_object" "tfvars" {
   count   = local.output_files.storage_bucket != null ? 1 : 0
   bucket  = local.output_files.storage_bucket
-  name    = "tfvars/2-security.auto.tfvars.json"
+  name    = "tfvars/${local.defaults.stage_name}.auto.tfvars.json"
   content = jsonencode(local.tfvars)
 }
 

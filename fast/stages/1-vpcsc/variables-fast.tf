@@ -81,3 +81,11 @@ variable "service_accounts" {
   nullable    = false
   default     = {}
 }
+
+variable "storage_buckets" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Storage buckets created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
