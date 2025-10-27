@@ -64,6 +64,14 @@ variable "organization" {
   nullable = false
 }
 
+variable "perimeters" {
+  # tfdoc:variable:source 1-vpcsc
+  description = "Optional VPC-SC perimeter ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "prefix" {
   # tfdoc:variable:source 0-org-setup
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
@@ -85,6 +93,14 @@ variable "project_ids" {
 variable "service_accounts" {
   # tfdoc:variable:source 0-org-setup
   description = "Service accounts created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "storage_buckets" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Storage buckets created in the bootstrap stage."
   type        = map(string)
   nullable    = false
   default     = {}

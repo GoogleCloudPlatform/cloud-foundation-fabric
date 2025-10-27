@@ -77,7 +77,7 @@ values:
     project: fast-prod-net-core-0
     region: europe-west8
     timeouts: null
-  google_storage_bucket_object.tfvars["1"]:
+  google_storage_bucket_object.tfvars[0]:
     bucket: test
     cache_control: null
     content_disposition: null
@@ -95,7 +95,7 @@ values:
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.version["1"]:
+  google_storage_bucket_object.version[0]:
     bucket: test
     cache_control: null
     content_disposition: null

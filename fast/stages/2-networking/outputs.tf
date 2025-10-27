@@ -39,25 +39,28 @@ locals {
 
 # generate tfvars file for subsequent stages
 
+resource "google_storage_bucket_object" "version" {
+  count = (
+    local.output_files.storage_bucket != null &&
+    fileexists("fast_version.txt") ? 1 : 0
+  )
+  bucket = local.output_files.storage_bucket
+  name   = "versions/${local.defaults.stage_name}-version.txt"
+  source = "fast_version.txt"
+}
+
 resource "local_file" "tfvars" {
-  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  for_each        = local.output_files.local_path == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${try(pathexpand(var.outputs_location), "")}tfvars/2-networking.auto.tfvars.json"
+  filename        = "${pathexpand(local.output_files.local_path)}/tfvars/${local.defaults.stage_name}.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 
 resource "google_storage_bucket_object" "tfvars" {
-  for_each = try(var.automation.outputs_bucket, null) == null ? {} : { 1 = 1 }
-  bucket   = var.automation.outputs_bucket
-  name     = "tfvars/2-networking.auto.tfvars.json"
-  content  = jsonencode(local.tfvars)
-}
-
-resource "google_storage_bucket_object" "version" {
-  for_each = try(var.automation.outputs_bucket, null) == null || !fileexists("fast_version.txt") ? {} : { 1 = 1 }
-  bucket   = var.automation.outputs_bucket
-  name     = "versions/2-networking-version.txt"
-  source   = "fast_version.txt"
+  count   = local.output_files.storage_bucket != null ? 1 : 0
+  bucket  = local.output_files.storage_bucket
+  name    = "tfvars/${local.defaults.stage_name}.auto.tfvars.json"
+  content = jsonencode(local.tfvars)
 }
 
 # outputs

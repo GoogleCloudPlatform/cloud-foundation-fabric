@@ -40,7 +40,6 @@ locals {
       },
       local._ctx.iam_principals
     )
-    locations       = local._ctx.locations
     perimeters      = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
     project_ids     = merge(var.project_ids, local._ctx.project_ids)
     storage_buckets = merge(var.storage_buckets, local._ctx.storage_buckets)
