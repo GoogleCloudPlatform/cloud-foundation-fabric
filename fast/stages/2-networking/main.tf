@@ -29,7 +29,8 @@ locals {
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
   ctx = merge(local._ctx, {
-    folder_ids = merge(var.folder_ids, var.context.folder_ids)
+    custom_roles = merge(var.custom_roles, local._ctx.custom_roles)
+    folder_ids   = merge(var.folder_ids, var.context.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {

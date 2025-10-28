@@ -50,12 +50,6 @@ variable "factories_config" {
   default  = {}
 }
 
-variable "outputs_location" {
-  description = "Path where tfvars files for the following stages are written. Leave empty to disable."
-  type        = string
-  default     = null
-}
-
 variable "universe" {
   # tfdoc:variable:source 0-org-setup
   description = "GCP universe where to deploy projects. The prefix will be prepended to the project id."

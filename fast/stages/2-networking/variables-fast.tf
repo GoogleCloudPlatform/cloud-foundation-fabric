@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-variable "automation" {
-  # tfdoc:variable:source 0-org-setup
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-  nullable = false
-}
-
 variable "billing_account" {
   # tfdoc:variable:source 0-org-setup
   description = "Billing account id."
