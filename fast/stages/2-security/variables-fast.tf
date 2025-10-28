@@ -46,14 +46,6 @@ variable "iam_principals" {
   default     = {}
 }
 
-variable "kms_keys" {
-  # tfdoc:variable:source 2-security
-  description = "KMS key ids."
-  type        = map(string)
-  nullable    = false
-  default     = {}
-}
-
 variable "perimeters" {
   # tfdoc:variable:source 1-vpcsc
   description = "Optional VPC-SC perimeter ids."

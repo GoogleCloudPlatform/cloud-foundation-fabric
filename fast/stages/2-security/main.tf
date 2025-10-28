@@ -31,7 +31,8 @@ locals {
   _defaults = yamldecode(file(local.paths.defaults))
   # extend context with our own data
   ctx = merge(local._ctx, {
-    folder_ids = merge(var.folder_ids, local._ctx.folder_ids)
+    custom_roles = merge(var.custom_roles, local._ctx.custom_roles)
+    folder_ids   = merge(var.folder_ids, local._ctx.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {
