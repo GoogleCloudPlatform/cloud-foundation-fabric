@@ -15,7 +15,7 @@
 module: fast/stages/2-networking
 
 tests:
-  peerings:
+  simple:
   ncc:
   nva:
   vpns:
