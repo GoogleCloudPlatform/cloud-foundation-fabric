@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../schemas/defaults.schema.json
+
 context:
   cidr_ranges_sets:
     healthchecks:
@@ -27,13 +29,15 @@ context:
     primary: europe-west8
     secondary: europe-west12
   iam_principals: {}
-
 projects:
   defaults:
     locations:
       storage: eu
-
 vpcs:
   auto_create_subnetworks: false
   delete_default_route_on_create: true
   mtu: 1500
+output_files:
+  # local path is optional but recommended when starting
+  # local_path: ~/fast-config/fast-test-00
+  storage_bucket: $storage_buckets:iac-0/iac-outputs
