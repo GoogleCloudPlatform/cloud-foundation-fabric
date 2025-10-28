@@ -15,6 +15,7 @@
 module: fast/stages/2-networking
 
 tests:
+  # peering is renamed to simple so as to trigger tflint
   simple:
   ncc:
   nva:
