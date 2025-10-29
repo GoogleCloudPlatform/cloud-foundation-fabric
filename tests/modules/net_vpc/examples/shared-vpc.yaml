@@ -23,7 +23,7 @@ values:
   module.vpc-host.google_compute_shared_vpc_service_project.service_projects["test-prj1"]:
     host_project: project-id
     service_project: test-prj1
-  module.vpc-host.google_compute_subnetwork.subnetwork["europe-west1/subnet-1"]:
+  module.vpc-host.google_compute_subnetwork.subnetwork["europe-west1/subnet-1/10.0.0.0/24"]:
     secondary_ip_range:
     - ip_cidr_range: 172.16.0.0/20
       range_name: pods

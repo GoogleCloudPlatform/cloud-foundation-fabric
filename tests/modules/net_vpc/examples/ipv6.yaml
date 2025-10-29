@@ -48,7 +48,7 @@ values:
     project: project-id
     tags: null
     timeouts: null
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/test"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/test/10.0.0.0/24"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.0.0/24
     ipv6_access_type: INTERNAL
@@ -60,7 +60,7 @@ values:
     role: null
     stack_type: IPV4_IPV6
     timeouts: null
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west3/test"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west3/test/10.0.1.0/24"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.1.0/24
     ipv6_access_type: EXTERNAL

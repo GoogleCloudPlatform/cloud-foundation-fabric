@@ -34,7 +34,7 @@ values:
     export_custom_routes: false
     import_custom_routes: false
     project: project-id
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production/10.0.0.0/24"]:
     ip_cidr_range: 10.0.0.0/24
     name: production
     project: project-id
