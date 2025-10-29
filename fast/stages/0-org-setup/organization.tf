@@ -91,7 +91,6 @@ module "organization" {
   tags_config = {
     ignore_iam = true
   }
-
 }
 
 module "organization-iam" {
