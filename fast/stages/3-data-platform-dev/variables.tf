@@ -174,6 +174,6 @@ variable "stage_config" {
   })
   default = {
     environment = "dev"
-    name        = "data-platform/dev"
+    name        = "data-platform-dev"
   }
 }
