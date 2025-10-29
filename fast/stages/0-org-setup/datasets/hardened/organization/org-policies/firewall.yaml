@@ -45,4 +45,3 @@ custom.firewallRestrictSshPolicyRule:
 custom.firewallRestrictSshRule:
   rules:
     - enforce: true
-

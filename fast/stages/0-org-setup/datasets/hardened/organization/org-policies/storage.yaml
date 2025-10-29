@@ -18,10 +18,6 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
-custom.storageRequireBucketObjectVersionning:
-  rules:
-    - enforce: true
-
 storage.publicAccessPrevention:
   rules:
     - enforce: true
@@ -39,4 +35,3 @@ storage.secureHttpTransport:
 storage.uniformBucketLevelAccess:
   rules:
     - enforce: true
-

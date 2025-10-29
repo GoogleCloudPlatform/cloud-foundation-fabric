@@ -53,4 +53,3 @@ run.allowedVPCEgress:
 run.managed.requireInvokerIam:
   rules:
     - enforce: true
-

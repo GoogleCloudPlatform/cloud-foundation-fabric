@@ -73,6 +73,7 @@ buckets:
   # Terraform state bucket for this stage
   iac-org-state:
     description: Terraform state for the org-level automation.
+    versioning: true
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
@@ -81,6 +82,7 @@ buckets:
   # Terraform state bucket for additional FAST stages
   iac-stage-state:
     description: Terraform state for stage automation.
+    versioning: true
     managed_folders:
       1-vpcsc:
         iam:
@@ -115,6 +117,7 @@ buckets:
   # Terraform state bucket for FAST outputs
   iac-outputs:
     description: Terraform state for the org-level automation.
+    versioning: true
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw

@@ -39,17 +39,6 @@ module "dd-composer-sa" {
   description = "Composer Service Account."
 }
 
-module "dd-composer-bucket" {
-  source     = "../../../modules/gcs"
-  for_each   = local.dd_composer
-  project_id = module.dd-projects[each.key].project_id
-  prefix     = local.prefix
-  name       = "${each.value.short_name}-cmp-storage-config"
-  location   = var.location
-  versioning = true
-}
-
-
 resource "google_composer_environment" "default" {
   for_each = local.dd_composer
   project  = module.dd-projects-iam[each.key].project_id
@@ -126,8 +115,5 @@ resource "google_composer_environment" "default" {
         max_count  = try(each.value.workloads_config.worker.max_count, 1)
       }
     }
-  }
-  storage_config {
-    bucket = module.dd-composer-bucket[each.key].id
   }
 }

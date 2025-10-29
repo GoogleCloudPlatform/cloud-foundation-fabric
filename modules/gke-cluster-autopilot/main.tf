@@ -282,7 +282,7 @@ resource "google_container_cluster" "cluster" {
   }
   node_pool_auto_config {
     node_kubelet_config {
-      insecure_kubelet_readonly_port_enabled = upper(var.node_config.kubelet_readonly_port_enabled)
+      insecure_kubelet_readonly_port_enabled = try(upper(var.node_config.kubelet_readonly_port_enabled), null)
     }
     dynamic "network_tags" {
       for_each = var.node_config.tags != null ? [""] : []
@@ -322,6 +322,13 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.pod_security_policy ? [""] : []
     content {
       enabled = var.enable_features.pod_security_policy
+    }
+  }
+  dynamic "rbac_binding_config" {
+    for_each = var.enable_features.rbac_binding_config != null ? [""] : []
+    content {
+      enable_insecure_binding_system_unauthenticated = var.enable_features.rbac_binding_config.enable_insecure_binding_system_unauthenticated
+      enable_insecure_binding_system_authenticated   = var.enable_features.rbac_binding_config.enable_insecure_binding_system_authenticated
     }
   }
   dynamic "secret_manager_config" {

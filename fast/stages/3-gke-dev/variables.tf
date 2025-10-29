@@ -36,13 +36,8 @@ variable "clusters" {
       horizontal_pod_autoscaling = true, http_load_balancing = true
     })
     enable_features = optional(any, {
-      shielded_nodes       = true
-      workload_identity    = true
-      intranode_visibility = true
-      rbac_binding_config = {
-        enable_insecure_binding_system_unauthenticated = false
-        enable_insecure_binding_system_authenticated   = false
-      }
+      shielded_nodes    = true
+      workload_identity = true
     })
     fleet_config = optional(object({
       register                  = optional(bool, true)

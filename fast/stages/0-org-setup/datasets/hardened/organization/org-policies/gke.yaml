@@ -52,7 +52,7 @@ container.managed.enablePrivateNodes:
 
 container.managed.enableSecurityBulletinNotifications:
   rules:
-    - enforce: false
+    - enforce: true
 
 container.managed.enableShieldedNodes:
   rules:
@@ -137,4 +137,3 @@ custom.gkeRequireSecureBoot:
 custom.gkeRequireVPCNativeCluster:
   rules:
     - enforce: true
-

@@ -21,4 +21,3 @@
 appengine.disableCodeDownload:
   rules:
     - enforce: true
-

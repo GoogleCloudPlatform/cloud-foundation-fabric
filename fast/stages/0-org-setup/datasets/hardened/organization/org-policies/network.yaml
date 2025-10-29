@@ -22,13 +22,19 @@ compute.requireVpcFlowLogs:
   rules:
     - allow:
         values:
-            - "ESSENTIAL"
-            - "LIGHT"
-            - "COMPREHENSIVE"
+          - "ESSENTIAL"
+          - "LIGHT"
+          - "COMPREHENSIVE"
       condition:
         title: Enforce configuration of VPC Flow Logs
         expression: |
           resource.matchTag('${organization.id}/environment', 'production')
+
+compute.restrictCloudNATUsage:
+  rules:
+    - allow:
+        values:
+          - "under:${folder_ids.networking}"
 
 compute.restrictDedicatedInterconnectUsage:
   rules:
@@ -40,7 +46,7 @@ compute.restrictPartnerInterconnectUsage:
   rules:
     - allow:
         values:
-            - "under:${folder_ids.networking}"
+          - "under:${folder_ids.networking}"
 
 compute.restrictSharedVpcHostProjects:
   rules:
@@ -69,4 +75,3 @@ custom.networkRequireBackendServiceLogging:
 custom.networkRequireCustomModeVpc:
   rules:
     - enforce: true
-

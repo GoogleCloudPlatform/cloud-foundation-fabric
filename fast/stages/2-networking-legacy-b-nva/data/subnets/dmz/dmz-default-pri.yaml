@@ -6,7 +6,3 @@ name: dmz-default
 region: $regions:primary
 ip_cidr_range: 10.64.128.0/24
 description: Default primary-region subnet for landing dmz
-flow_logs_config:
-  aggregation_interval: "INTERVAL_15_MIN"
-  flow_sampling: 0.5        
-  metadata: "INCLUDE_ALL_METADATA" 

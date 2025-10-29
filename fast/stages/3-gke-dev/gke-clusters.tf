@@ -75,7 +75,6 @@ module "gke-cluster" {
       ? module.gke-nodes-service-account.email
       : each.value.service_account
     )
-    kubelet_readonly_port_enabled = false
   }
 }
 

@@ -412,7 +412,7 @@ variable "node_config" {
     service_account               = optional(string)
     tags                          = optional(list(string))
     workload_metadata_config_mode = optional(string)
-    kubelet_readonly_port_enabled = optional(bool, true)
+    kubelet_readonly_port_enabled = optional(bool)
     resource_manager_tags         = optional(map(string), {})
   })
   default  = {}
@@ -437,7 +437,7 @@ variable "node_pool_auto_config" {
   description = "Node pool configs that apply to auto-provisioned node pools in autopilot clusters and node auto-provisioning-enabled clusters."
   type = object({
     cgroup_mode                   = optional(string)
-    kubelet_readonly_port_enabled = optional(bool, true)
+    kubelet_readonly_port_enabled = optional(bool)
     network_tags                  = optional(list(string), [])
     resource_manager_tags         = optional(map(string), {})
   })
