@@ -270,6 +270,12 @@ variable "enable_features" {
   }
 }
 
+variable "fleet_project" {
+  description = "The name of the fleet host project where this cluster will be registered."
+  type        = string
+  default     = null
+}
+
 variable "issue_client_certificate" {
   description = "Enable issuing client certificate."
   type        = bool

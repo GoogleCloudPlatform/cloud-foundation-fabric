@@ -15,6 +15,12 @@
  */
 
 locals {
+  _ctx_p = "$"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
   connector = (
     var.vpc_connector_create != null
     ? google_vpc_access_connector.connector[0].id
@@ -37,13 +43,11 @@ locals {
   }
   invoke_command = local._invoke_command[var.type]
 
+  location   = lookup(local.ctx.locations, var.region, var.region)
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+
   revision_name = (
     var.revision.name == null ? null : "${var.name}-${var.revision.name}"
-  )
-  service_account_email = (
-    var.service_account_create
-    ? google_service_account.service_account[0].email
-    : var.service_account
   )
   _resource = {
     "JOB" : (
@@ -66,83 +70,4 @@ locals {
     project  = local._resource[var.type].project
     uri      = var.type == "SERVICE" ? local._resource[var.type].uri : ""
   }
-}
-
-resource "google_service_account" "service_account" {
-  count        = var.service_account_create ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-cr-${var.name}"
-  display_name = "Terraform Cloud Run ${var.name}."
-}
-
-resource "google_eventarc_trigger" "audit_log_triggers" {
-  for_each = coalesce(var.service_config.eventarc_triggers.audit_log, tomap({}))
-  name     = "audit-log-${each.key}"
-  location = google_cloud_run_v2_service.service[0].location
-  project  = google_cloud_run_v2_service.service[0].project
-  matching_criteria {
-    attribute = "type"
-    value     = "google.cloud.audit.log.v1.written"
-  }
-  matching_criteria {
-    attribute = "serviceName"
-    value     = each.value.service
-  }
-  matching_criteria {
-    attribute = "methodName"
-    value     = each.value.method
-  }
-  destination {
-    cloud_run_service {
-      service = google_cloud_run_v2_service.service[0].name
-      region  = google_cloud_run_v2_service.service[0].location
-    }
-  }
-  service_account = var.service_config.eventarc_triggers.service_account_email
-}
-
-resource "google_eventarc_trigger" "pubsub_triggers" {
-  for_each = coalesce(var.service_config.eventarc_triggers.pubsub, tomap({}))
-  name     = "pubsub-${each.key}"
-  location = google_cloud_run_v2_service.service[0].location
-  project  = google_cloud_run_v2_service.service[0].project
-  matching_criteria {
-    attribute = "type"
-    value     = "google.cloud.pubsub.topic.v1.messagePublished"
-  }
-  transport {
-    pubsub {
-      topic = each.value
-    }
-  }
-  destination {
-    cloud_run_service {
-      service = google_cloud_run_v2_service.service[0].name
-      region  = google_cloud_run_v2_service.service[0].location
-    }
-  }
-  service_account = var.service_config.eventarc_triggers.service_account_email
-}
-
-resource "google_eventarc_trigger" "storage_triggers" {
-  for_each = coalesce(var.service_config.eventarc_triggers.storage, tomap({}))
-  name     = "storage-${each.key}"
-  location = google_cloud_run_v2_service.service[0].location
-  project  = google_cloud_run_v2_service.service[0].project
-  matching_criteria {
-    attribute = "type"
-    value     = "google.cloud.storage.object.v1.finalized"
-  }
-  matching_criteria {
-    attribute = "bucket"
-    value     = each.value.bucket
-  }
-  destination {
-    cloud_run_service {
-      service = google_cloud_run_v2_service.service[0].name
-      region  = google_cloud_run_v2_service.service[0].location
-      path    = try(each.value.path, null)
-    }
-  }
-  service_account = var.service_config.eventarc_triggers.service_account_email
 }

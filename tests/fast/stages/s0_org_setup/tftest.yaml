@@ -15,9 +15,8 @@
 
 module: fast/stages/0-org-setup
 tests:
-  # TODO: rename to simple once fast lint setup accepts extra dirs
-  not-simple:
+  simple:
     inventory:
-      - not-simple.yaml
+      - simple.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s0_org_setup/data-simple

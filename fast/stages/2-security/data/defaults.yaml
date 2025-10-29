@@ -23,3 +23,7 @@ projects:
   defaults:
     locations:
       storage: $locations:storage-default
+output_files:
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/fast-test-00
+  storage_bucket: $storage_buckets:iac-0/iac-outputs

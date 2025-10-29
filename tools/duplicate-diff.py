@@ -30,16 +30,6 @@ duplicates = [
         "fast/stages/0-org-setup/datasets/classic/projects/core/billing-0.yaml",
         "fast/stages/0-org-setup/datasets/hardened/projects/core/billing-0.yaml",
     ],
-    [
-        "fast/stages/2-networking-legacy-a-simple/data/dns-policy-rules.yaml",
-        "fast/stages/2-networking-legacy-b-nva/data/dns-policy-rules.yaml",
-        "fast/stages/2-networking-legacy-c-separate-envs/data/dns-policy-rules.yaml",
-    ],
-    [
-        "fast/stages/2-networking-legacy-a-simple/data/cidrs.yaml",
-        "fast/stages/2-networking-legacy-b-nva/data/cidrs.yaml",
-        "fast/stages/2-networking-legacy-c-separate-envs/data/cidrs.yaml",
-    ],
     # deep recursive folder comparison
     [
         "fast/stages/0-org-setup/datasets/classic/organization/custom-roles",
@@ -78,16 +68,7 @@ duplicates = [
         "modules/vpc-sc/schemas/egress-policy.schema.json",
     ],
     [
-        "fast/stages/2-networking-legacy-a-simple/schemas/firewall-policy-rules.schema.json",
-        "fast/stages/2-networking-legacy-c-separate-envs/schemas/firewall-policy-rules.schema.json",
-        "fast/stages/2-networking-legacy-b-nva/schemas/firewall-policy-rules.schema.json",
-        "modules/net-firewall-policy/schemas/firewall-policy-rules.schema.json",
-    ],
-    [
         "fast/stages/2-networking/schemas/firewall-rules.schema.json",
-        "fast/stages/2-networking-legacy-a-simple/schemas/firewall-rules.schema.json",
-        "fast/stages/2-networking-legacy-c-separate-envs/schemas/firewall-rules.schema.json",
-        "fast/stages/2-networking-legacy-b-nva/schemas/firewall-rules.schema.json",
         "modules/net-vpc-firewall/schemas/firewall-rules.schema.json",
     ],
     [
@@ -129,9 +110,6 @@ duplicates = [
     ],
     [
         "fast/stages/2-networking/schemas/subnet.schema.json",
-        "fast/stages/2-networking-legacy-a-simple/schemas/subnet.schema.json",
-        "fast/stages/2-networking-legacy-c-separate-envs/schemas/subnet.schema.json",
-        "fast/stages/2-networking-legacy-b-nva/schemas/subnet.schema.json",
         "modules/net-vpc/schemas/subnet.schema.json",
     ],
     [
@@ -140,29 +118,29 @@ duplicates = [
         "modules/organization/schemas/tags.schema.json",
     ],
     [
-        "fast/stages/2-networking-legacy-a-simple/data/cidrs.yaml",
-        "fast/stages/2-networking-legacy-b-nva/data/cidrs.yaml",
-        "fast/stages/2-networking-legacy-c-separate-envs/data/cidrs.yaml",
-    ],
-    [
         "modules/cloud-function-v1/bundle.tf",
         "modules/cloud-function-v2/bundle.tf",
     ],
     [
+        "modules/agent-engine/serviceaccount.tf",
         "modules/cloud-function-v1/serviceaccount.tf",
         "modules/cloud-function-v2/serviceaccount.tf",
+        "modules/cloud-run-v2/serviceaccount.tf",
     ],
     [
         "modules/cloud-function-v1/variables-serviceaccount.tf",
         "modules/cloud-function-v2/variables-serviceaccount.tf",
+        "modules/cloud-run-v2/variables-serviceaccount.tf",
     ],
     [
         "modules/cloud-function-v1/variables-vpcconnector.tf",
         "modules/cloud-function-v2/variables-vpcconnector.tf",
+        "modules/cloud-run-v2/variables-vpcconnector.tf",
     ],
     [
         "modules/cloud-function-v1/vpcconnector.tf",
         "modules/cloud-function-v2/vpcconnector.tf",
+        "modules/cloud-run-v2/vpcconnector.tf",
     ],
 ]
 

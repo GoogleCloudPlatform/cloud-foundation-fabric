@@ -218,3 +218,13 @@ variable "trigger_config" {
   })
   default = null
 }
+
+variable "vpc_connector" {
+  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
+  type = object({
+    name            = optional(string)
+    egress_settings = optional(string)
+  })
+  nullable = false
+  default  = {}
+}

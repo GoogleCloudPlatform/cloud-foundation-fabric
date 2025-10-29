@@ -73,10 +73,12 @@ variable "access_policy" {
 variable "context" {
   description = "External context used in replacements."
   type = object({
+    iam_principals  = optional(map(string), {})
     identity_sets   = optional(map(list(string)), {})
     project_numbers = optional(map(number), {})
     resource_sets   = optional(map(list(string)), {})
     service_sets    = optional(map(list(string)), {})
+    storage_buckets = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -129,6 +131,7 @@ variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
     access_levels       = optional(string, "datasets/classic/access-levels")
+    defaults            = optional(string, "datasets/classic/defaults.yaml")
     egress_policies     = optional(string, "datasets/classic/egress-policies")
     ingress_policies    = optional(string, "datasets/classic/ingress-policies")
     perimeters          = optional(string, "datasets/classic/perimeters")
@@ -178,12 +181,6 @@ variable "ingress_policies" {
     ])
     error_message = "Invalid `from.identity`. It needs to start with on of the prefixes: 'serviceAccount:', 'user:', 'group:', 'principal:', 'principalSet:'."
   }
-}
-
-variable "outputs_location" {
-  description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
-  type        = string
-  default     = null
 }
 
 variable "perimeters" {

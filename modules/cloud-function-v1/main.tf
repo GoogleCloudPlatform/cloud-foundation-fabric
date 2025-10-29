@@ -33,7 +33,7 @@ locals {
   location      = lookup(local.ctx.locations, var.region, var.region)
   prefix        = var.prefix == null ? "" : "${var.prefix}-"
   project_id    = lookup(local.ctx.project_ids, var.project_id, var.project_id)
-  vpc_connector = var.vpc_connector.create ? google_vpc_access_connector.connector[0].id : var.vpc_connector.name
+  vpc_connector = var.vpc_connector_create != null ? google_vpc_access_connector.connector[0].id : var.vpc_connector.name
 }
 
 resource "google_cloudfunctions_function" "function" {

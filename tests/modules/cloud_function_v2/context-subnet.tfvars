@@ -43,8 +43,7 @@ service_account_config = {
   ]
 }
 vpc_connector = {
-  create = true
-  name   = "connector_name"
+  name = "connector_name"
 }
 vpc_connector_create = {
   instances = {

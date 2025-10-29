@@ -15,7 +15,7 @@
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     location: europe-west8
-    name: hello
+    name: example-hello
     project: project-id
     template:
     - containers:
