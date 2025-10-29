@@ -17,40 +17,67 @@ locals {
   paths = {
     for k, v in var.factories_config : k => try(pathexpand(v), null)
   }
+  _ctx = {
+    for k, v in var.context : k => merge(
+      v, try(local._defaults.context[k], {})
+    )
+  }
+  # dereferencing for outputs bucket
+  _ctx_buckets = {
+    for k, v in local.ctx.storage_buckets : "$storage_buckets:${k}" => v
+  }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
-  ctx = merge(var.context, {
-    cidr_ranges_sets = try(local._defaults.context.cidr_ranges_sets, {})
-    folder_ids = merge(
-      var.folder_ids, var.context.folder_ids
-    )
+  ctx = merge(local._ctx, {
+    custom_roles = merge(var.custom_roles, local._ctx.custom_roles)
+    folder_ids   = merge(var.folder_ids, var.context.folder_ids)
     iam_principals = merge(
       var.iam_principals,
       {
         for k, v in var.service_accounts :
         "service_accounts/${k}" => "serviceAccount:${v}"
       },
-      var.context.iam_principals,
-      try(local._defaults.context.iam_principals, {})
+      local._ctx.iam_principals
     )
-    locations = merge(
-      var.context.locations,
-      try(local._defaults.context.locations, {})
-    )
-    project_ids = merge(var.project_ids, var.context.project_ids)
-    tag_keys    = merge(var.tag_keys, var.context.tag_keys)
-    tag_values  = merge(var.tag_values, var.context.tag_values)
+    perimeters      = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
+    project_ids     = merge(var.project_ids, local._ctx.project_ids)
+    storage_buckets = merge(var.storage_buckets, local._ctx.storage_buckets)
+    tag_keys        = merge(var.tag_keys, local._ctx.tag_keys)
+    tag_values      = merge(var.tag_values, local._ctx.tag_values)
   })
-
+  # normalize defaults
   defaults = {
     folder_name = try(local._defaults.global.folder_id, "networking")
     stage_name  = try(local._defaults.global.stage_name, "2-networking")
-    vpcs        = try(local._defaults.vpcs, {})
   }
   output_files = {
-    local_path     = try(local._defaults.output_files.local_path, null)
-    storage_bucket = try(local._defaults.output_files.storage_bucket, null)
-    providers      = try(local._defaults.output_files.providers, {})
+    local_path = try(local._defaults.output_files.local_path, null)
+    storage_bucket = try(
+      local._ctx_buckets[local._defaults.output_files.storage_bucket],
+      local._defaults.output_files.storage_bucket,
+      null
+    )
   }
+  project_defaults = {
+    defaults = merge(
+      {
+        billing_account = var.billing_account.id
+        prefix          = var.prefix
+      },
+      lookup(var.folder_ids, local.defaults.folder_name, null) == null ? {} : {
+        parent = lookup(var.folder_ids, local.defaults.folder_name, null)
+      },
+      try(local._defaults.projects.defaults, {})
+    )
+    overrides = try(local._defaults.projects.overrides, {})
+  }
+  vpc_defaults = merge(
+    {
+      auto_create_subnetworks        = false
+      delete_default_route_on_create = true
+      mtu                            = 1500
+    },
+    try(local._defaults.vpcs, {})
+  )
 }
 

@@ -94,6 +94,24 @@ variable "containers" {
   }
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {}) # not needed here?
+    cidr_ranges    = optional(map(string), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    locations      = optional(map(string), {})
+    networks       = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+    subnets        = optional(map(string), {})
+    tag_values     = optional(map(string), {})
+  })
+  nullable = false
+  default  = {}
+}
+
 variable "deletion_protection" {
   description = "Deletion protection setting for this Cloud Run service."
   type        = string
@@ -231,18 +249,12 @@ variable "revision" {
     )
     error_message = "When providing vpc_access.network provide also vpc_access.subnet."
   }
-}
-
-variable "service_account" {
-  description = "Service account email. Unused if service account is auto-created."
-  type        = string
-  default     = null
-}
-
-variable "service_account_create" {
-  description = "Auto-create service account."
-  type        = bool
-  default     = false
+  validation {
+    condition = try(var.revision.vpc_access.connector, null) == null || (
+      try(var.revision.vpc_access.connector, null) != null && var.vpc_connector_create == null
+    )
+    error_message = "Either provide connector to create in var.vpc_connector_create or provide externally managed connector in var.revision.vpc_access.connector"
+  }
 }
 
 variable "service_config" {

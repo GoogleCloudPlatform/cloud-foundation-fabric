@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  google_storage_bucket_object.tfvars:
+  google_storage_bucket_object.tfvars[0]:
     bucket: test
     cache_control: null
     content_disposition: null
@@ -222,5 +222,6 @@ counts:
   google_access_context_manager_access_policy: 1
   google_access_context_manager_service_perimeter: 1
   google_storage_bucket_object: 2
+  local_file: 1
   modules: 1
-  resources: 6
+  resources: 7

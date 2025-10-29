@@ -41,7 +41,7 @@ locals {
     var.trigger_config.service_account_email,
     null
   )
-  vpc_connector = var.vpc_connector.create ? google_vpc_access_connector.connector[0].id : var.vpc_connector.name
+  vpc_connector = var.vpc_connector_create != null ? google_vpc_access_connector.connector[0].id : var.vpc_connector.name
 }
 
 resource "google_cloudfunctions2_function" "function" {
