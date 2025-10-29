@@ -81,7 +81,7 @@ values:
     region: europe-west4
     role: null
     timeouts: null
-  ? module.vpc.google_compute_subnetwork.subnetwork["europe-west1/subnet-detailed"]
+  ? module.vpc.google_compute_subnetwork.subnetwork["europe-west1/subnet-detailed/10.0.0.0/24"]
   : description: Sample description
     ip_cidr_range: 10.0.0.0/24
     ipv6_access_type: null
@@ -94,7 +94,7 @@ values:
       - ip_cidr_range: 192.168.0.0/24
         range_name: secondary-range-a
     timeouts: null
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west4/simple"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west4/simple/10.0.1.0/24"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.1.0/24
     ipv6_access_type: null
@@ -105,7 +105,7 @@ values:
     region: europe-west4
     role: null
     timeouts: null
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west8/simple"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west8/simple/10.0.2.0/24"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.2.0/24
     ipv6_access_type: null

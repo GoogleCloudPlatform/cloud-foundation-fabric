@@ -25,7 +25,7 @@ values:
     project: project-id
     routing_mode: GLOBAL
     timeouts: null
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production/null"]:
     description: Terraform-managed.
     ip_collection: null
     ipv6_access_type: null

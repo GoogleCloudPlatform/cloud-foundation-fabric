@@ -92,7 +92,7 @@ locals {
     var.subnets, var.subnets_psc, var.subnets_proxy_only, values(local._factory_subnets)
   )
   all_subnets = merge(
-    { for k, v in google_compute_subnetwork.subnetwork : k => v },
+    { for k, v in local.subnets : k => google_compute_subnetwork.subnetwork[v.resource_key] },
     { for k, v in google_compute_subnetwork.proxy_only : k => v },
     { for k, v in google_compute_subnetwork.psc : k => v }
   )
@@ -132,13 +132,16 @@ locals {
       }
     }
   ]...)
-  subnets = merge(
+  _subnets = merge(
     {
       for s in var.subnets :
       "${lookup(local.ctx.locations, s.region, s.region)}/${s.name}" => s
     },
     { for k, v in local._factory_subnets : k => v if v._is_regular }
   )
+  subnets = { for k, v in local._subnets : k => merge(v,
+    { resource_key = "${k}/${coalesce(v.ip_cidr_range, "null")}" }
+  ) }
   subnets_proxy_only = merge(
     {
       for s in var.subnets_proxy_only :
@@ -164,7 +167,7 @@ locals {
 
 resource "google_compute_subnetwork" "subnetwork" {
   provider = google-beta
-  for_each = local.subnets
+  for_each = { for k, v in local.subnets : v.resource_key => v }
   project  = local.project_id
   network  = local.network.name
   name     = each.value.name
@@ -360,14 +363,14 @@ resource "google_compute_network_attachment" "default" {
   provider    = google-beta
   for_each    = var.network_attachments
   project     = local.project_id
-  region      = google_compute_subnetwork.subnetwork[each.value.subnet].region
+  region      = local.all_subnets[each.value.subnet].region
   name        = each.key
   description = each.value.description
   connection_preference = (
     each.value.automatic_connection ? "ACCEPT_AUTOMATIC" : "ACCEPT_MANUAL"
   )
   subnetworks = [
-    google_compute_subnetwork.subnetwork[each.value.subnet].self_link
+    local.all_subnets[each.value.subnet].self_link
   ]
   producer_accept_lists = each.value.producer_accept_lists
   producer_reject_lists = each.value.producer_reject_lists

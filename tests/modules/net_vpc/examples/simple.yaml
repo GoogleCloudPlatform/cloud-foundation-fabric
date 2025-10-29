@@ -20,7 +20,7 @@ values:
     name: my-network
     project: project-id
     routing_mode: GLOBAL
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west1/production/10.0.0.0/24"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.0.0/24
     log_config: []
@@ -34,7 +34,7 @@ values:
         range_name: pods
       - ip_cidr_range: 192.168.0.0/24
         range_name: services
-  module.vpc.google_compute_subnetwork.subnetwork["europe-west2/production"]:
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west2/production/10.0.16.0/24"]:
     description: Terraform-managed.
     ip_cidr_range: 10.0.16.0/24
     log_config: []

@@ -119,7 +119,9 @@ output "self_link" {
 
 output "subnet_ids" {
   description = "Map of subnet IDs keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.id }
+  value = {
+    for k, v in local.subnets : k => google_compute_subnetwork.subnetwork[v.resource_key].id
+  }
   depends_on = [
     # allows correct destruction of internal application load balancers
     google_compute_subnetwork.proxy_only
@@ -129,31 +131,29 @@ output "subnet_ids" {
 output "subnet_ips" {
   description = "Map of subnet address ranges keyed by name."
   value = {
-    for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range
+    for k, v in local.subnets : k => google_compute_subnetwork.subnetwork[v.resource_key].ip_cidr_range
   }
 }
 
 output "subnet_ipv6_external_prefixes" {
   description = "Map of subnet external IPv6 prefixes keyed by name."
   value = {
-    for k, v in google_compute_subnetwork.subnetwork :
-    k => try(v.external_ipv6_prefix, null)
+    for k, v in local.subnets : k => try(google_compute_subnetwork.subnetwork[v.resource_key].external_ipv6_prefix)
   }
 }
 
 output "subnet_regions" {
   description = "Map of subnet regions keyed by name."
   value = {
-    for k, v in google_compute_subnetwork.subnetwork : k => v.region
+    for k, v in local.subnets : k => google_compute_subnetwork.subnetwork[v.resource_key].region
   }
 }
 
 output "subnet_secondary_ranges" {
   description = "Map of subnet secondary ranges keyed by name."
   value = {
-    for k, v in google_compute_subnetwork.subnetwork :
-    k => {
-      for range in v.secondary_ip_range :
+    for k, v in local.subnets : k => {
+      for range in google_compute_subnetwork.subnetwork[v.resource_key].secondary_ip_range :
       range.range_name => range.ip_cidr_range
     }
   }
@@ -161,7 +161,10 @@ output "subnet_secondary_ranges" {
 
 output "subnet_self_links" {
   description = "Map of subnet self links keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.self_link }
+  # value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.self_link }
+  value = {
+    for k, v in local.subnets : k => google_compute_subnetwork.subnetwork[v.resource_key].self_link
+  }
   depends_on = [
     # allows correct destruction of internal application load balancers
     google_compute_subnetwork.proxy_only
@@ -170,7 +173,9 @@ output "subnet_self_links" {
 
 output "subnets" {
   description = "Subnet resources."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
+  value = {
+    for k, v in local.subnets : k => google_compute_subnetwork.subnetwork[v.resource_key]
+  }
   depends_on = [
     # allows correct destruction of internal application load balancers
     google_compute_subnetwork.proxy_only
