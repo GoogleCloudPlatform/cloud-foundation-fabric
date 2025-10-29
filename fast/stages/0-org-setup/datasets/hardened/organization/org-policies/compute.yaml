@@ -129,4 +129,3 @@ gcp.restrictTLSVersion:
 iam.automaticIamGrantsForDefaultServiceAccounts:
   rules:
     - enforce: true
-

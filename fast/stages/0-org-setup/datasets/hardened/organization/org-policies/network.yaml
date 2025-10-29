@@ -18,17 +18,41 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+compute.requireVpcFlowLogs:
+  rules:
+    - allow:
+        values:
+          - "ESSENTIAL"
+          - "LIGHT"
+          - "COMPREHENSIVE"
+      condition:
+        title: Enforce configuration of VPC Flow Logs
+        expression: |
+          resource.matchTag('${organization.id}/environment', 'production')
+
+compute.restrictCloudNATUsage:
+  rules:
+    - allow:
+        values:
+          - "under:${folder_ids.networking}"
+
 compute.restrictDedicatedInterconnectUsage:
   rules:
     - allow:
         values:
-          - "under:organizations/${organization.id}"
+          - "under:${folder_ids.networking}"
 
 compute.restrictPartnerInterconnectUsage:
   rules:
     - allow:
         values:
-          - "under:organizations/${organization.id}"
+          - "under:${folder_ids.networking}"
+
+compute.restrictSharedVpcHostProjects:
+  rules:
+    - allow:
+        values:
+          - "under:${folder_ids.networking}"
 
 compute.restrictVpcPeering:
   rules:
@@ -44,7 +68,10 @@ custom.networkDisableWeakSSLPolicy:
   rules:
     - enforce: true
 
-custom.networkRequireCustomModeVpc:
+custom.networkRequireBackendServiceLogging:
   rules:
     - enforce: true
 
+custom.networkRequireCustomModeVpc:
+  rules:
+    - enforce: true
