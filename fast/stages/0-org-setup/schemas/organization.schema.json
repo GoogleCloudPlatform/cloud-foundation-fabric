@@ -11,7 +11,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9_-]+$": {
+        "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$": {
           "type": "array",
           "items": {
             "type": "string"
@@ -45,7 +45,7 @@
           "type": "object",
           "additionalProperties": false,
           "patternProperties": {
-            "^[a-z][a-z0-9-]+$": {
+            "^[a-z][a-z0-9-_]+$": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
