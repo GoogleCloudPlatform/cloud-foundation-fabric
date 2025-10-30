@@ -124,10 +124,13 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
-    folder_ids     = local.ctx.folder_ids
-    kms_keys       = local.ctx.kms_keys
-    iam_principals = local.ctx_iam_principals
-    log_buckets    = local.ctx_log_buckets
+    folder_ids = local.ctx.folder_ids
+    kms_keys   = local.ctx.kms_keys
+    iam_principals = merge(
+      local.ctx_iam_principals,
+      lookup(local.self_sas_iam_emails, each.key, {})
+    )
+    log_buckets = local.ctx_log_buckets
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call

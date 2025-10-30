@@ -44,7 +44,7 @@ locals {
   projects_sas_iam_emails = {
     for k, v in module.service-accounts : "service_accounts/${k}" => v.iam_email
   }
-  project_sas_ids = merge(
+  projects_sas_ids = merge(
     {
       for k, v in module.service-accounts : k => v.id
     },
@@ -52,6 +52,22 @@ locals {
       for k, v in module.automation-service-accounts : k => v.id
     }
   )
+  self_sas = {
+    for k in local.projects_service_accounts :
+    k.project_key => { key = "${k.project_key}/${k.name}", name = k.name }...
+  }
+  self_sas_iam_emails = {
+    for k, v in local.self_sas : k => {
+      for vv in v :
+      "service_accounts/_self_/${vv.name}" => module.service-accounts[vv.key].iam_email
+    }
+  }
+  self_sas_ids = {
+    for k, v in local.self_sas : k => {
+      for vv in v :
+      "_self_/${vv.name}" => module.service-accounts[vv.key].id
+    }
+  }
 }
 
 module "service-accounts" {
@@ -93,9 +109,13 @@ module "service_accounts-iam" {
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
-      local.automation_sas_iam_emails
+      local.automation_sas_iam_emails,
+      lookup(local.self_sas_iam_emails, each.value.project_key, {})
     )
-    service_account_ids = local.project_sas_ids
+    service_account_ids = merge(
+      local.projects_sas_ids,
+      lookup(local.self_sas_ids, each.value.project_key, {})
+    )
   })
   iam          = each.value.iam
   iam_sa_roles = each.value.iam_sa_roles
