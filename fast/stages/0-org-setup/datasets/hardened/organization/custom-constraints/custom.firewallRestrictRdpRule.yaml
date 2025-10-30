@@ -26,6 +26,7 @@ custom.firewallRestrictRdpRule:
     !resource.sourceRanges.all(range,
       range == '35.235.240.0/20' ||
       range.startsWith('10.') ||
+      range.matches('^172\\.(?:1[6-9]|2\\d|3[0-1]).*') ||
       range.startsWith('192.168.')
     )
   description: Ensure that RDP access is restricted from the Internet when using VPC Firewall Rule
