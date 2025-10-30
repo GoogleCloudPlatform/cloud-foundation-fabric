@@ -81,6 +81,7 @@ module "organization" {
     }
     locations = local.ctx.locations
   }
+  contacts = lookup(local.organization, "contacts", {})
   factories_config = {
     org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
     custom_roles                  = "${local.paths.organization}/custom-roles"
