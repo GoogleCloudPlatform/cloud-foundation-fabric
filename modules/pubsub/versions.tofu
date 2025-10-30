@@ -12,24 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v45.0.0
+# Fabric release: v46.0.0
 
 terraform {
   required_version = ">= 1.10.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 7.0.1, < 8.0.0" # tftest
+      version = ">= 7.6.0, < 8.0.0" # tftest
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 7.0.1, < 8.0.0" # tftest
+      version = ">= 7.6.0, < 8.0.0" # tftest
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/pubsub:v45.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/pubsub:v46.0.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/pubsub:v45.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/pubsub:v46.0.0-tofu"
   }
 }

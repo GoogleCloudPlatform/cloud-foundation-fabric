@@ -67,5 +67,3 @@ values:
 
 counts:
   google_cloud_run_v2_service: 1
-  modules: 1
-  resources: 1

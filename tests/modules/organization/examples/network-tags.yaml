@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values: 
+values:
   module.org.google_tags_tag_key.default["net-environment"]:
     description: This is a network tag.
     parent: organizations/1122334455

@@ -1,6 +1,12 @@
 automation = {
   outputs_bucket = "test"
 }
+factories_config = {
+  access_levels    = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/access-levels"
+  egress_policies  = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/egress-policies"
+  ingress_policies = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/ingress-policies"
+  perimeters       = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/perimeters"
+}
 logging = {
   project_number = "1234567890"
   writer_identities = {
@@ -16,12 +22,9 @@ organization = {
   customer_id = "C00000000"
 }
 prefix = "fast"
-factories_config = {
-  access_levels    = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/access-levels"
-  egress_policies  = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/egress-policies"
-  ingress_policies = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/ingress-policies"
-  perimeters       = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/perimeters"
-}
 resource_discovery = {
   enabled = false
+}
+storage_buckets = {
+  "iac-0/iac-outputs" = "test"
 }

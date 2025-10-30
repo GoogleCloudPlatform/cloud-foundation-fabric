@@ -22,7 +22,9 @@ values:
     role: roles/cloudfunctions.invoker
 
 counts:
+  archive_file: 1
   google_cloudfunctions_function: 1
+  google_cloudfunctions_function_iam_binding: 1
+  google_project_iam_member: 4
+  google_service_account: 1
   google_storage_bucket_object: 1
-  modules: 1
-  resources: 6

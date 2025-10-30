@@ -13,6 +13,7 @@
   - [Provider setup and final apply cycle](#provider-setup-and-final-apply-cycle)
 - [Default factory datasets](#default-factory-datasets)
   - ["Classic FAST" dataset](#classic-fast-dataset)
+  - ["Hardened" dataset](#hardened-dataset)
   - ["Minimal" dataset (TBD)](#minimal-dataset-tbd)
   - ["Tenants" dataset (TBD)](#tenants-dataset-tbd)
 - [Detailed configuration](#detailed-configuration)
@@ -77,12 +78,12 @@ If this configuration matches requirements, no changes are necessary at this sta
 # create a file named 0-org-setup.auto.tfvars containing the following
 # and replace paths by pointing them to the desired data folder
 factories_config = {
-  billing_accounts = "data/billing-accounts"
-  cicd             = "data/cicd.yaml"
-  defaults         = "data/defaults.yaml"
-  folders          = "data/folders"
-  organization     = "data/organization"
-  projects         = "data/projects"
+  billing_accounts = "datasets/classic/billing-accounts"
+  cicd             = "datasets/classic/cicd.yaml"
+  defaults         = "datasets/classic/defaults.yaml"
+  folders          = "datasets/classic/folders"
+  organization     = "datasets/classic/organization"
+  projects         = "datasets/classic/projects"
 }
 ```
 
@@ -253,6 +254,12 @@ The organizational layout mirrors the consolidated FAST one, where shared infras
   <img src="diagram-classic-fast.png" alt="Classic FAST organization-level diagram.">
 </p>
 
+### "Hardened" dataset
+
+This dataset implements a hardened design focusing on strict security and compliance requirements. It expands on the "Classic FAST" layout by incorporating more advanced and granular preventive and detective controls from the start.
+
+This dataset provides a stronger and centrally-managed security baseline, ensuring that projects and resources deployed adhere to stricter security and compliance from inception. It includes both **preventive controls** (organization policies and custom constraints) and **detective controls** (monitoring alerts and Security Command Center custom module detectors). For more details on the content of this hardened dataset and the various controls provisioned, refer to the [hardened dataset documentation](./datasets/hardened/README.md).
+
 ### "Minimal" dataset (TBD)
 
 This dataset is meant as a minimalistic starting point for organizations where a security baseline and a project factory are all that's needed, at least initially. The design can then organically grow to support more functionality, converging to the Classic or other types of layouts.
@@ -293,28 +300,28 @@ The resources created by this stage are controlled by several factories, which p
 
 The default paths point to the dataset in the `data` folder which deploys a FAST-compliant configuration. These are the available factories in this stage, with file-level factories based on a single YAML file, and folder-level factories based on sets of YAML files contained within a filesystem folder:
 
-- **defaults** (`data/defaults.yaml`) \
+- **defaults** (`datasets/classic/defaults.yaml`) \
   file-level factory to define stage defaults (organization id, locations, prefix, etc.) and static context mappings
-- **billing_accounts** (`data/billing-accounts`) \
+- **billing_accounts** (`datasets/classic/billing-accounts`) \
   folder-level factory where each YAML file defines billing-account level IAM for one billing account; only used for externally managed accounts
-- **organization** (`data/organization/.config.yaml`) \
+- **organization** (`datasets/classic/organization/.config.yaml`) \
   file-level factory to define organization IAM and log sinks
-  - **custom roles** (`data/organization/custom-roles`) \
+  - **custom roles** (`datasets/classic/organization/custom-roles`) \
     folder-level factory to define organization-level custom roles
-  - **org policies** (`data/organization/org-policies`) \
+  - **org policies** (`datasets/classic/organization/org-policies`) \
     folder-level factory to define organization-level org policies
-  - **tags** (`data/organization/tags`) \
+  - **tags** (`datasets/classic/organization/tags`) \
     folder-level factory to define organization-level resource management tags
-- **folders** (`data/folders`) \
+- **folders** (`datasets/classic/folders`) \
   folder-level factory to define the resource management hierarchy and individual folder attributes (IAM, org policies, tag bindings, etc.); also supports defining folder-level IaC resources
-- **projects** (`data/projects`) \
+- **projects** (`datasets/classic/projects`) \
   folder-level factory to define projects and their attributes (projejct factory)
-- **cicd** (`data/cicd.yaml`) \
+- **cicd** (`datasets/classic/cicd.yaml`) \
   file-level factory to define CI/CD configurations for this and subsequent stages
 
 ### Defaults configuration
 
-The prerequisite configuration for this stage is done via a `defaults.yaml` file, which implements part or all of the [relevant JSON schema](./schemas/defaults.schema.json). The location of the file defaults to `data/defaults.yaml` but can be easily changed via the `factories_config.defaults` variable.
+The prerequisite configuration for this stage is done via a `defaults.yaml` file, which implements part or all of the [relevant JSON schema](./schemas/defaults.schema.json). The location of the file defaults to `datasets/classic/defaults.yaml` but can be easily changed via the `factories_config.defaults` variable.
 
 This is a commented example of a defaults file, showing a minimal working configuration. Refer to the YAML schema for all available options.
 
@@ -422,7 +429,7 @@ Principal expansion leverages the `$iam_principals:` context, which is populated
 
 ```yaml
 # example principal-level context interpolation
-# file: data/organization/.config.yaml
+# file: datasets/classic/organization/.config.yaml
 iam_by_principals:
   # statically defined principal (via defaults.yaml)
   $iam_principals:gcp-organization-admins:
@@ -445,7 +452,7 @@ Log sinks can refer to project-level destination via different contexts.
 
 ```yaml
 # example log sinks showing different destination contexts
-# file: data/organization/.config.yaml
+# file: datasets/classic/organization/.config.yaml
 logging:
   storage_location: $locations:default
   sinks:
@@ -475,7 +482,7 @@ Context-based expansion is not limited to the organization's `.config.yaml` file
 
 ```yaml
 # example usage of context interpolation in tag values IAM
-# file: data/organization/tags/environment.yaml
+# file: datasets/classic/organization/tags/environment.yaml
 description: "Organization-level environments."
 values:
   development:
@@ -515,7 +522,7 @@ The folder hierarchy is managed via a filesystem tree of YAML configuration file
 The default dataset implements a classic FAST layout, with top-level folders for stage 2 and stage 3, and can be easily tweaked by adding or removing any needed folder.
 
 ```bash
-data/folders
+datasets/classic/folders
 ├── networking
 │   ├── .config.yaml
 │   ├── dev
@@ -542,7 +549,7 @@ As with the factories described above, context replacements can be used in folde
 As with other examples before, the main use case is to infer IAM principals from either the static or internally defined context. One additional context which is often useful here is tag values, which allows defining a scope for organization-level conditional IAM bindings or org policies.
 
 ```yaml
-# file: data/folders/teams/.config.yaml
+# file: datasets/classic/folders/teams/.config.yaml
 name: Teams
 iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-pf-rw:
@@ -639,7 +646,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | name | description | modules | resources |
 |---|---|---|---|
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
-| [cicd.tf](./cicd.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> · <code>google_storage_bucket_object</code> · <code>local_file</code> |
+| [cicd.tf](./cicd.tf) | None | <code>iam-service-account</code> | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
@@ -648,6 +655,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [wif-definitions.tf](./wif-definitions.tf) | Workload Identity provider definitions. |  |  |
+| [wif-providers.tf](./wif-providers.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
 
 ## Variables
 

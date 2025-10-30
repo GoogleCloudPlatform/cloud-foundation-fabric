@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     annotations: null
@@ -29,7 +30,7 @@ values:
     invoker_iam_disabled: false
     labels: null
     location: europe-west8
-    name: hello
+    name: example-hello
     project: project-id
     scaling: []
     template:
@@ -112,8 +113,8 @@ values:
 counts:
   google_cloud_run_v2_service: 1
   google_cloud_run_v2_service_iam_binding: 1
+  google_project_iam_member: 2
   google_secret_manager_secret: 1
   google_secret_manager_secret_iam_binding: 1
   google_secret_manager_secret_version: 1
-  modules: 2
-  resources: 5
+  google_service_account: 1

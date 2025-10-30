@@ -1,0 +1,112 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
+
+container.managed.disableABAC:
+  rules:
+    - enforce: true
+
+container.managed.disableLegacyClientCertificateIssuance:
+  rules:
+    - enforce: true
+
+container.managed.enableCloudLogging:
+  rules:
+    - enforce: true
+
+container.managed.enableNetworkPolicy:
+  rules:
+    - enforce: true
+
+container.managed.enablePrivateNodes:
+  rules:
+    - enforce: true
+
+container.managed.enableShieldedNodes:
+  rules:
+    - enforce: true
+
+container.managed.enableWorkloadIdentityFederation:
+  rules:
+    - enforce: true
+
+custom.gkeAllowedNodePoolImages:
+  rules:
+    - enforce: true
+
+custom.gkeAllowedReleaseChannels:
+  rules:
+    - enforce: true
+
+custom.gkeDisableAlphaCluster:
+  rules:
+    - enforce: true
+
+custom.gkeDisableKubernetesDashboard:
+  rules:
+    - enforce: true
+
+custom.gkeDisableLegacyAbac:
+  rules:
+    - enforce: true
+
+custom.gkeDisableLegacyMetadataEndpoints:
+  rules:
+    - enforce: true
+
+custom.gkeRequireCOSImage:
+  rules:
+    - enforce: true
+
+custom.gkeRequireDataplaneV2:
+  rules:
+    - enforce: true
+
+custom.gkeRequireGKEMetadataServer:
+  rules:
+    - enforce: true
+
+custom.gkeRequireIntegrityMonitoring:
+  rules:
+    - enforce: true
+
+custom.gkeRequireMonitoring:
+  rules:
+    - enforce: true
+
+custom.gkeRequireNodePoolAutoRepair:
+  rules:
+    - enforce: true
+
+custom.gkeRequireNodePoolAutoUpgrade:
+  rules:
+    - enforce: true
+
+custom.gkeRequireRegionalClusters:
+  rules:
+    - enforce: true
+
+custom.gkeRequireSecureBoot:
+  rules:
+    - enforce: true
+
+custom.gkeRequireVPCNativeCluster:
+  rules:
+    - enforce: true
+

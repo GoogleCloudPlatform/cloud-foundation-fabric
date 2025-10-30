@@ -92,7 +92,7 @@ terraform apply
 
 #### Step 5: Test solution
 
-Test the solution triggering an export from the Cloud Scheduler page, after few hours (accoding to the size of the export) logs should be available on secops-export bucket. Please check for any issue during export using the corresponding APIs and the export ID.
+Test the solution triggering an export from the Cloud Scheduler page, after few hours (according to the size of the export) logs should be available on secops-export bucket. Please check for any issue during export using the corresponding APIs and the export ID.
 
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -144,5 +144,5 @@ module "test" {
     secondary = "europe-west1"
   }
 }
-# tftest modules=7 resources=49
+# tftest modules=7 resources=51
 ```

@@ -1,0 +1,113 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_project_iam_member.artifact_writer:
+    condition: []
+    member: serviceAccount:123-compute@developer.gserviceaccount.com
+    project: project-id
+    role: roles/artifactregistry.createOnPushWriter
+  google_project_iam_member.bucket_default_compute_account_grant:
+    condition: []
+    member: serviceAccount:123-compute@developer.gserviceaccount.com
+    project: project-id
+    role: roles/storage.objectViewer
+  module.cf-http.data.archive_file.bundle[0]:
+    exclude_symlink_directories: null
+    excludes:
+    - __pycache__
+    output_file_mode: '0644'
+    output_path: bundle.zip
+    source: []
+    source_content: null
+    source_content_filename: null
+    source_dir: assets/sample-function/
+    source_file: null
+    type: zip
+  module.cf-http.google_cloudfunctions_function.function:
+    available_memory_mb: 256
+    build_environment_variables: null
+    build_worker_pool: null
+    description: Terraform managed.
+    docker_registry: ARTIFACT_REGISTRY
+    docker_repository: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    entry_point: main
+    environment_variables: null
+    https_trigger_security_level: SECURE_ALWAYS
+    ingress_settings: ALLOW_ALL
+    kms_key_name: null
+    labels: null
+    max_instances: 1
+    min_instances: null
+    name: test-cf-http
+    on_deploy_update_policy: []
+    project: project-id
+    region: europe-west9
+    runtime: python310
+    secret_environment_variables: []
+    secret_volumes: []
+    service_account_email: test-cf-http@project-id.iam.gserviceaccount.com
+    source_archive_bucket: bucket
+    source_repository: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeout: 180
+    timeouts: null
+    trigger_http: true
+    vpc_connector: null
+  module.cf-http.google_project_iam_member.default["roles/logging.logWriter"]:
+    condition: []
+    member: serviceAccount:test-cf-http@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/logging.logWriter
+  module.cf-http.google_project_iam_member.default["roles/monitoring.metricWriter"]:
+    condition: []
+    member: serviceAccount:test-cf-http@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/monitoring.metricWriter
+  module.cf-http.google_service_account.service_account[0]:
+    account_id: test-cf-http
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: test-cf-http
+    email: test-cf-http@project-id.iam.gserviceaccount.com
+    member: serviceAccount:test-cf-http@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
+  module.cf-http.google_storage_bucket_object.bundle[0]:
+    bucket: bucket
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    retention: []
+    source: bundle.zip
+    temporary_hold: null
+    timeouts: null
+
+counts:
+  archive_file: 1
+  google_cloudfunctions_function: 1
+  google_project_iam_member: 4
+  google_service_account: 1
+  google_storage_bucket_object: 1

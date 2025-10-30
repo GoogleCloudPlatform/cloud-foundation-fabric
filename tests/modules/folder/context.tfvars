@@ -54,6 +54,23 @@ iam_bindings_additive = {
     member = "$iam_principals:myuser"
   }
 }
+pam_entitlements = {
+  net-admins = {
+    max_request_duration = "3600s"
+    manual_approvals = {
+      require_approver_justification = true
+      steps = [{
+        approvers = ["$iam_principals:mygroup"]
+      }]
+    }
+    eligible_users = ["$iam_principals:mygroup"]
+    privileged_access = [
+      { role = "roles/compute.networkAdmin" },
+      { role = "roles/compute.admin" },
+      { role = "$custom_roles:myrole_two" }
+    ]
+  }
+}
 tag_bindings = {
   foo = "$tag_values:test/one"
 }

@@ -589,6 +589,18 @@
           }
         }
       }
+    },
+    "output_files": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "local_path": {
+          "type": "string"
+        },
+        "storage_bucket": {
+          "type": "string"
+        }
+      }
     }
   },
   "$defs": {

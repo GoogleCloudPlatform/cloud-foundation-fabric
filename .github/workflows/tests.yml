@@ -13,6 +13,7 @@
 # limitations under the License.
 
 name: "Tests"
+# yamllint disable-line rule:truthy
 on:
   push:
     branches:
@@ -82,7 +83,8 @@ jobs:
           sed -i -e 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/versions.tf tools/lockfile/versions.tofu
 
           # change terraform version to the one that is running
-          sed -i 's/required_version = .*$/required_version = ">= ${{ env.TERRAFORM_VERSION  }}"/g' tools/lockfile/versions.tf
+          sed -i 's/required_version = .*$/required_version = ">= ${{ env.TERRAFORM_VERSION  }}"/g' \
+            tools/lockfile/versions.tf
 
           cd tools/lockfile
           ${{ matrix.flavour }} init -upgrade=true
@@ -91,6 +93,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          # yamllint disable-line rule:line-length
           key: ${{ runner.os }}-${{ matrix.flavour }}-${{ env.TERRAFORM_VERSION }}-${{ hashFiles('tools/lockfile/.terraform.lock.hcl') }}
 
       - name: Upload lockfile
@@ -156,7 +159,9 @@ jobs:
       - name: Run tests on documentation examples
         env:
           TERRAFORM: ${{ matrix.flavour }}
-        run: pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '-n4' }} --tb=line --junit-xml=test-results-raw.xml -k "terraform and modules/" tests/examples
+        run: |
+          pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '-n4' }} --tb=line \
+            --junit-xml=test-results-raw.xml -k "terraform and modules/" tests/examples
 
       - name: Create report
         uses: ./.github/actions/post-fabric-tests
@@ -199,7 +204,9 @@ jobs:
       - name: Run tests modules
         env:
           TERRAFORM: ${{ matrix.flavour }}
-        run: pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '-n4' }} --tb=line --junit-xml=test-results-raw.xml tests/modules
+        run: |
+          pytest -vv ${{ matrix.flavour == 'terraform' && '-n4' || '-n4' }} --tb=line \
+            --junit-xml=test-results-raw.xml tests/modules
 
       - name: Create report
         uses: ./.github/actions/post-fabric-tests
@@ -213,8 +220,8 @@ jobs:
     strategy:
       matrix:
         include:
-        - flavour: terraform
-        # - flavour: tofu # tofu fails to find the terraform binary for FAST tests
+          - flavour: terraform
+          # - flavour: tofu # tofu fails to find the terraform binary for FAST tests
     steps:
       - uses: actions/checkout@v4
       - name: Set Terraform versions
@@ -258,7 +265,9 @@ jobs:
           TERRAFORM_FLAVOUR: ${{ env.DEFAULT_TERRAFORM_FLAVOUR }}
 
       - name: Run schema tests
-        run: pytest -vv --tb=line --junit-xml=test-results-raw.xml -k "(tests and schemas) or (fast and schema) or (examples and yaml)"
+        run: |
+          pytest -vv --tb=line --junit-xml=test-results-raw.xml \
+            -k "(tests and schemas) or (fast and schema) or (examples and yaml)"
 
       - name: Create report
         uses: ./.github/actions/post-fabric-tests

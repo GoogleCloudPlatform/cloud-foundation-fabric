@@ -17,7 +17,7 @@ This Terraform can of course be deployed using any pre-existing project. In that
 
 This example assumes a private cluster is needed, and provisions a PSC Endpoint for private connectivity. For more details on private clusters and VPC-SC see [this documentation page](https://cloud.google.com/workstations/docs/configure-vpc-service-controls-private-clusters).
 
-An additional egress policy is needed to allow monitoring traffic for the cluster to the tenant project on the Google side. The following snippet can be added to the egress policy factory in the VPC-SC stage, and editied so that project numbers match. It should of course also be enabled in the perimeter definition.
+An additional egress policy is needed to allow monitoring traffic for the cluster to the tenant project on the Google side. The following snippet can be added to the egress policy factory in the VPC-SC stage, and edited so that project numbers match. It should of course also be enabled in the perimeter definition.
 
 ```yaml
 from:

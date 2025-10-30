@@ -26,20 +26,20 @@ on:
 env:
   FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
   FAST_SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
-  FAST_WIF_PROVIDER: ${identity_provider}
+  FAST_WIF_PROVIDER: ${workload_identity.pool_id}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-  TF_PROVIDERS_FILE: ${tf_providers_files.apply}
-  TF_PROVIDERS_FILE_PLAN: ${tf_providers_files.plan}
-  TF_VERSION: 1.11.4
+  TF_PROVIDERS_FILE: ${provider_files.apply}
+  TF_PROVIDERS_FILE_PLAN: ${provider_files.plan}
+  TF_VERSION: 1.12.2
 
 jobs:
   fast-pr:
     # Skip PRs which are closed without being merged.
     if: >-
-      github.event.action == 'closed' && 
+      github.event.action == 'closed' &&
       github.event.pull_request.merged == true ||
       github.event.action == 'opened' ||
-      github.event.action == 'synchronize'  
+      github.event.action == 'synchronize'
     permissions:
       contents: read
       id-token: write
@@ -99,7 +99,7 @@ jobs:
         run: |
           gcloud storage cp -r \
             "gs://${outputs_bucket}/providers/$${{env.provider_file}}" ./
-          %{~ for f in tf_var_files ~}
+          %{~ for f in tfvars_files ~}
           gcloud storage cp -r \
             "gs://${outputs_bucket}/tfvars/${f}" ./
           %{~ endfor ~}

@@ -1,4 +1,4 @@
-# Google Cloud Binary Authroization Module
+# Google Cloud Binary Authorization Module
 
 This module simplifies the creation of a Binary Authorization policy, attestors and attestor IAM bindings.
 

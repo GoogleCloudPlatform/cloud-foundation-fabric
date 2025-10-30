@@ -53,10 +53,34 @@ ALIASES = {
     'serverless-robot-prod': ['cloudrun', 'run'],
 }
 
-IGNORED_AGENTS = [
-    # Alloydb has two agents. Ignore the non-primary one
-    'c-PROJECT_NUMBER-IDENTIFIER@gcp-sa-alloydb.iam.gserviceaccount.com'
+IGNORED_AGENTS = []
+
+SKIP_IAM_AGENTS = [
+    # skips IAM role grants to the non-primary agents listed below as
+    # it's failing, possibly because the agents don't exist after API
+    # activation
+    'service-PROJECT_NUMBER@gcp-sa-apigateway-mgmt.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-apigateway.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-bigqueryspark.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-bigquerytardis.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-connectedsheets.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-firebase.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-krmapihosting-dataplane.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-krmapihosting.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-logging.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-networkactions.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-prod-bigqueryomni.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-scc-notification.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-securitycenter.iam.gserviceaccount.com',
+    'service-PROJECT_NUMBER@gcp-sa-ns-authz.iam.gserviceaccount.com',
 ]
+
+AGENT_NAME_OVERRIDE = {
+    # special case for Cloud Build that has two service agents:
+    # - %s@cloudbuild.gserviceaccount.com
+    # - service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com
+    'PROJECT_NUMBER@cloudbuild.gserviceaccount.com': 'cloudbuild-sa',
+}
 
 E2E_SERVICES = [
     "alloydb.googleapis.com",
@@ -108,11 +132,18 @@ class Agent:
   role: str
   is_primary: bool
   aliases: list[str]
+  skip_iam: bool
 
 
 @click.command()
 @click.option('--e2e', is_flag=True, default=False)
-def main(e2e=False):
+@click.option('--organization', 'mode', flag_value='organization',
+              default=False, help='Extract organization-level service agents')
+@click.option('--folder', 'mode', flag_value='folder', default=False,
+              help='Extract folder-level service agents')
+@click.option('--project', 'mode', flag_value='project', default=False,
+              help='Extract project-level service agents')
+def main(mode, e2e=False):
   page = requests.get(SERVICE_AGENTS_URL).content
   soup = BeautifulSoup(page, 'html.parser')
   agents = []
@@ -120,32 +151,60 @@ def main(e2e=False):
     agent_text = content.get_text()
     col1, col2 = content.find_all('td')
 
-    # skip agents with more than one identity
+    # Extract all identities from col1 (could be in a single <p> or multiple in a <ul>)
+    identities = []
     if col1.find('ul'):
+      # Multiple identities in a list
+      for li in col1.find_all('li'):
+        identities.append(li.get_text().strip())
+    elif col1.find('p'):
+      # Single identity
+      identities.append(col1.p.get_text().strip())
+
+    # Filter identities based on mode and find the matching one
+    identity = None
+    for id_candidate in identities:
+      if mode == 'project' and 'PROJECT_NUMBER' in id_candidate:
+        identity = id_candidate
+        break
+      elif mode == 'organization' and 'ORGANIZATION_NUMBER' in id_candidate:
+        identity = id_candidate
+        break
+      elif mode == 'folder' and 'FOLDER_NUMBER' in id_candidate:
+        identity = id_candidate
+        break
+    # Skip if no matching identity found for this mode
+    if not identity:
       continue
 
-    identity = col1.p.get_text()
-    if identity in IGNORED_AGENTS:
+    if identity in IGNORED_AGENTS or '-IDENTIFIER' in identity:
       continue
 
-    # skip agents that are not contained in a project
-    if 'PROJECT_NUMBER' not in identity:
-      continue
-
-    # special case for Cloud Build that has two service agents:
-    # - %s@cloudbuild.gserviceaccount.com
-    # - service-%s@gcp-sa-cloudbuild.iam.gserviceaccount.com
-    if identity == 'PROJECT_NUMBER@cloudbuild.gserviceaccount.com':
-      name = "cloudbuild-sa"  # Cloud Build Service Account
+    if identity in AGENT_NAME_OVERRIDE:
+      name = AGENT_NAME_OVERRIDE[identity]
     else:
       # most service agents have the format
-      # service-PROJECT_NUMBER@gcp-sa-SERVICE_NAME.iam.gserviceaccount.com.
+      # service-PROJECT_NUMBER@gcp-sa-SERVICE_NAME.iam.gserviceaccount.com
+      # or service-ORGANIZATION_NUMBER@gcp-sa-SERVICE_NAME.iam.gserviceaccount.com
+      # or service-FOLDER_NUMBER@gcp-sa-SERVICE_NAME.iam.gserviceaccount.com
       # We keep the SERVICE_NAME part as the agent's name
       name = identity.split('@')[1].split('.')[0]
       name = name.removeprefix('gcp-sa-')
-    identity = identity.replace('PROJECT_NUMBER', '${project_number}')
-    identity = identity.replace('.iam.gserviceaccount.',
-                                '.${universe_domain}iam.gserviceaccount.')
+
+    skip_iam = identity in SKIP_IAM_AGENTS
+
+    # Replace identifiers based on mode
+    if mode == 'project':
+      identity = identity.replace('PROJECT_NUMBER', '${project_number}')
+      identity = identity.replace('.iam.gserviceaccount.',
+                                  '.${universe_domain}iam.gserviceaccount.')
+    elif mode == 'organization':
+      identity = identity.replace('ORGANIZATION_NUMBER',
+                                  '${organization_number}')
+      # Skip universe domain replacement for organization agents
+    elif mode == 'folder':
+      identity = identity.replace('FOLDER_NUMBER', '${folder_number}')
+      # Skip universe domain replacement for folder agents
 
     if name == 'monitoring':
       # monitoring is deprecated in favor of monitoring-notification.
@@ -161,9 +220,10 @@ def main(e2e=False):
         role=col2.code.get_text() if 'roles/' in agent_text else None,
         is_primary=PRIMARY_OVERRIDE.get(name, is_primary),
         aliases=ALIASES.get(name, []),
+        skip_iam=skip_iam,
     )
 
-    if agent.name == 'cloudservices':
+    if mode == 'project' and agent.name == 'cloudservices':
       # cloudservices role is granted automatically, we don't want to manage it
       agent.role = None
 
@@ -174,6 +234,10 @@ def main(e2e=False):
   assert len(names) == len(agents)
   aliases = set(chain.from_iterable(agent.aliases for agent in agents))
   assert aliases.isdisjoint(names)
+
+  # ensure there are no aliases for folders or organization service agents
+  # mode \in [O, F] => empty(aliases)
+  assert mode not in ['organization', 'folder'] or len(aliases) == 0
 
   if not e2e:
     # take the header from the first lines of this file

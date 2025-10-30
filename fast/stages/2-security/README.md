@@ -128,7 +128,7 @@ gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/tfvars/0-org-setup.au
 gcloud storage cp gs://myprefix-prod-iac-org-0-iac-outputs/2-security.auto.tfvars ./
 ```
 
-Once you have one of the above outputs, copy/paste it in your terminal from withing this stage's folder.
+Once you have one of the above outputs, copy/paste it in your terminal from within this stage's folder.
 
 Note that the last command in both outputs is optional: this is our recommended best practice to centrally store the tfvars file you created for this stage. If this convention works for you, move the tfvars file created in the previous steps to the path shown in the output, then run the command.
 
@@ -181,28 +181,26 @@ A reference Certificate Authority Services (CAS) is also part of this stage, all
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
-| [billing_account](variables-fast.tf#L26) | Billing account id. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
-| [prefix](variables-fast.tf#L74) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
-| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars    &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [custom_roles](variables-fast.tf#L34) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [factories_config](variables.tf#L34) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  certificate_authorities &#61; optional&#40;string&#41; &#35; &#34;data&#47;certificate-authorities&#34;&#10;  defaults                &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders                 &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  keyrings                &#61; optional&#40;string, &#34;data&#47;keyrings&#34;&#41;&#10;  projects                &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [folder_ids](variables-fast.tf#L42) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [iam_principals](variables-fast.tf#L50) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [kms_keys](variables-fast.tf#L58) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-security</code> |
-| [outputs_location](variables.tf#L47) | Path where tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
-| [perimeters](variables-fast.tf#L66) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
-| [project_ids](variables-fast.tf#L84) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [service_accounts](variables-fast.tf#L92) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_keys](variables-fast.tf#L100) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_values](variables-fast.tf#L108) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [universe](variables-fast.tf#L116) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  domain                         &#61; string&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
+| [billing_account](variables-fast.tf#L17) | Billing account id. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
+| [prefix](variables-fast.tf#L57) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars    &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage_buckets   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [factories_config](variables.tf#L35) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  certificate_authorities &#61; optional&#40;string&#41; &#35; &#34;data&#47;certificate-authorities&#34;&#10;  defaults                &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders                 &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  keyrings                &#61; optional&#40;string, &#34;data&#47;keyrings&#34;&#41;&#10;  projects                &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [perimeters](variables-fast.tf#L49) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
+| [project_ids](variables-fast.tf#L67) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [service_accounts](variables-fast.tf#L75) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [storage_buckets](variables-fast.tf#L83) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_keys](variables-fast.tf#L91) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_values](variables-fast.tf#L99) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [universe](variables-fast.tf#L107) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  domain                         &#61; string&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [ca_pools](outputs.tf#L63) | Certificate Authority Service pools and CAs. |  |  |
-| [kms_keys_ids](outputs.tf#L68) | KMS keys IDs. |  |  |
-| [tfvars](outputs.tf#L73) | Terraform variable files for the following stages. | ✓ |  |
+| [ca_pools](outputs.tf#L64) | Certificate Authority Service pools and CAs. |  |  |
+| [kms_keys_ids](outputs.tf#L69) | KMS keys IDs. |  |  |
+| [tfvars](outputs.tf#L74) | Terraform variable files for the following stages. | ✓ |  |
 <!-- END TFDOC -->

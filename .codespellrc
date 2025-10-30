@@ -1,0 +1,3 @@
+[codespell]
+skip = *.pem
+ignore-words-list = BU,lien

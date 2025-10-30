@@ -14,7 +14,7 @@
 
 # TODO: data access logs
 
-# yaml-language-server: $schema=../../schemas/organization.schema.json
+# yaml-language-server: $schema=../../../schemas/organization.schema.json
 
 id: $defaults:organization/id
 contacts:
