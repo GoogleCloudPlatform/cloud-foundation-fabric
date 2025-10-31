@@ -12,26 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-# sample subset of useful organization policies, edit to suit requirements
-# start of document (---) avoids errors if the file only contains comments
-
-# yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
-
-storage.publicAccessPrevention:
-  rules:
-    - enforce: true
-
-storage.restrictAuthTypes:
-  rules:
-    - deny:
-        values:
-          - "in:ALL_HMAC_SIGNED_REQUESTS"
-
-storage.secureHttpTransport:
-  rules:
-    - enforce: true
-
-storage.uniformBucketLevelAccess:
-  rules:
-    - enforce: true
+custom.cloudbuildDisableWorkerPoolExternalIP:
+  action_type: DENY
+  condition: |-
+    (resource.privatePoolV1Config.networkConfig.egressOption != "NO_PUBLIC_EGRESS")
+  description: Ensure no unauthorized worker pools external ip used for each build
+  display_name: Deny unauthorized worker pools external ip used for each build
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - cloudbuild.googleapis.com/WorkerPool

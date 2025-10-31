@@ -18,6 +18,14 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+custom.firewallEnforcePolicyRuleLogging:
+  rules:
+    - enforce: true
+
+custom.firewallEnforceRuleLogging:
+  rules:
+    - enforce: true
+
 custom.firewallRestrictOpenWorldRule:
   rules:
     - enforce: true
@@ -26,7 +34,14 @@ custom.firewallRestrictRdpPolicyRule:
   rules:
     - enforce: true
 
+custom.firewallRestrictRdpRule:
+  rules:
+    - enforce: true
+
 custom.firewallRestrictSshPolicyRule:
   rules:
     - enforce: true
 
+custom.firewallRestrictSshRule:
+  rules:
+    - enforce: true

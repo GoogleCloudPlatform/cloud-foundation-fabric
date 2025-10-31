@@ -139,7 +139,6 @@ values:
       - containerd_config: []
         gcfs_config:
         - enabled: false
-        insecure_kubelet_readonly_port_enabled: 'TRUE'
     pod_security_policy_config: []
     private_cluster_config: []
     project: myproject

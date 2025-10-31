@@ -135,15 +135,12 @@ values:
       - {}
       network_tags:
       - tags: []
-      node_kubelet_config:
-      - insecure_kubelet_readonly_port_enabled: 'TRUE'
       resource_manager_tags: null
     node_pool_defaults:
     - node_config_defaults:
       - containerd_config: []
         gcfs_config:
         - enabled: false
-        insecure_kubelet_readonly_port_enabled: 'TRUE'
     pod_security_policy_config: []
     private_cluster_config:
     - enable_private_endpoint: null

@@ -108,11 +108,15 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    gateway_api           = optional(bool, false)
-    groups_for_rbac       = optional(string)
-    l4_ilb_subsetting     = optional(bool, false)
-    mesh_certificates     = optional(bool)
-    pod_security_policy   = optional(bool, false)
+    gateway_api         = optional(bool, false)
+    groups_for_rbac     = optional(string)
+    l4_ilb_subsetting   = optional(bool, false)
+    mesh_certificates   = optional(bool)
+    pod_security_policy = optional(bool, false)
+    rbac_binding_config = optional(object({
+      enable_insecure_binding_system_unauthenticated = optional(bool)
+      enable_insecure_binding_system_authenticated   = optional(bool)
+    }))
     secret_manager_config = optional(bool)
     security_posture_config = optional(object({
       mode               = string
@@ -256,7 +260,7 @@ variable "node_config" {
     service_account               = optional(string)
     tags                          = optional(list(string))
     workload_metadata_config_mode = optional(string)
-    kubelet_readonly_port_enabled = optional(bool, true)
+    kubelet_readonly_port_enabled = optional(bool)
     resource_manager_tags         = optional(map(string), {})
   })
   default  = {}

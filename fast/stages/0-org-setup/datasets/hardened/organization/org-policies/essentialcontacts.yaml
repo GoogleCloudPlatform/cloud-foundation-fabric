@@ -22,7 +22,7 @@ essentialcontacts.allowedContactDomains:
   rules:
     - allow:
         values:
-          - '@${organization.domain}'
+          - "@${organization.domain}"
       condition:
         title: Restrict essential contacts domains
         expression: |

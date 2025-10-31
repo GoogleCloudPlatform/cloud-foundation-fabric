@@ -131,7 +131,6 @@ values:
       - containerd_config: []
         gcfs_config:
         - enabled: false
-        insecure_kubelet_readonly_port_enabled: 'TRUE'
     notification_config:
     - pubsub:
       - enabled: true
