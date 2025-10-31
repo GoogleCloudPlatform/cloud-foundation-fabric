@@ -768,7 +768,7 @@ compute.disableSerialPortAccess:
 | [projects-defaults.tf](./projects-defaults.tf) | None |  |  |
 | [projects-log-buckets.tf](./projects-log-buckets.tf) | None | <code>logging-bucket</code> |  |
 | [projects-service-accounts.tf](./projects-service-accounts.tf) | None | <code>iam-service-account</code> |  |
-| [projects.tf](./projects.tf) | None | <code>project</code> |  |
+| [projects.tf](./projects.tf) | None | <code>project</code> | <code>terraform_data</code> |
 | [variables-billing.tf](./variables-billing.tf) | None |  |  |
 | [variables-folders.tf](./variables-folders.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
@@ -831,7 +831,7 @@ module "project-factory" {
     projects = "data/projects"
   }
 }
-# tftest modules=4 resources=23 files=test-0,test-1,test-2
+# tftest modules=4 resources=24 files=test-0,test-1,test-2
 ```
 
 ```yaml

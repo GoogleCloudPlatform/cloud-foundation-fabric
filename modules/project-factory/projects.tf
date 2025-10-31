@@ -28,7 +28,8 @@ locals {
   _projects_input = {
     for k, v in merge(local._folder_projects_raw, local._projects_raw) :
     basename(k) => merge(
-      try(local._templates_raw[v.project_template], {}), v
+      try(local._templates_raw[v.project_template], {}),
+      v
     )
   }
   _projects_path = try(
@@ -55,6 +56,19 @@ locals {
     for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
   projects_input = merge(var.projects, local._projects_output)
+}
+
+resource "terraform_data" "project-preconditions" {
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for k, v in local._projects_input :
+        try(v.project_template, null) == null ||
+        lookup(local._templates_raw, v.project_template, null) != null
+      ])
+      error_message = "Missing project templates referenced in projects."
+    }
+  }
 }
 
 module "projects" {

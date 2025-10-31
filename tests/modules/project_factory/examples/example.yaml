@@ -719,5 +719,5 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 27
-  resources: 94
-  terraform_data: 1
+  resources: 95
+  terraform_data: 2
