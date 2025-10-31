@@ -1,7 +1,6 @@
-<img width="1392" height="541" alt="image" src="https://github.com/user-attachments/assets/786ffd8d-e354-4419-93a7-46994ca80f91" /># FAST Organization Setup
+# FAST Organization Setup
 
 <!-- BEGIN TOC -->
-
 - [Quickstart](#quickstart)
   - [Prerequisites](#prerequisites)
   - [Select/configure a factory dataset](#selectconfigure-a-factory-dataset)
@@ -14,13 +13,14 @@
   - [Provider setup and final apply cycle](#provider-setup-and-final-apply-cycle)
 - [Default factory datasets](#default-factory-datasets)
   - ["Classic FAST" dataset](#classic-fast-dataset)
+  - ["Hardened" dataset](#hardened-dataset)
   - ["Minimal" dataset (TBD)](#minimal-dataset-tbd)
   - ["Tenants" dataset (TBD)](#tenants-dataset-tbd)
 - [Detailed configuration](#detailed-configuration)
   - [Context interpolation](#context-interpolation)
   - [Factory data](#factory-data)
   - [Defaults configuration](#defaults-configuration)
-  - [Billing account IAM](#billing-account-iam)
+  - [Billing account IAM and billing export](#billing-account-iam-and-billing-export)
     - [Context-based replacement in the billing account factory](#context-based-replacement-in-the-billing-account-factory)
   - [Organization configuration](#organization-configuration)
     - [Context-based replacement in organization factories](#context-based-replacement-in-organization-factories)
@@ -50,7 +50,7 @@ The high-level flow for running this stage is:
 
 - ensure all **pre-requisites** are in place, and identify at least one GCP organization admin principal (ideally a group)
 - select the **factory data set** for the factories among those available - populate the **defaults file** with attributes matching your configuration (organization id, billing account, etc.)
-  (`data`, `data-minimal`, etc.) or edit/create your own
+(`data`, `data-minimal`, etc.) or edit/create your own
 - assign a set of **initial IAM roles** to the admin principal
 - run a **first init/apply cycle** using user credentials
 - copy the generated provider file, **migrate state**, then run a second init/apply cycle using service account impersonated credentials
@@ -78,12 +78,12 @@ If this configuration matches requirements, no changes are necessary at this sta
 # create a file named 0-org-setup.auto.tfvars containing the following
 # and replace paths by pointing them to the desired data folder
 factories_config = {
-  billing_accounts = "data/billing-accounts"
-  cicd             = "data/cicd.yaml"
-  defaults         = "data/defaults.yaml"
-  folders          = "data/folders"
-  organization     = "data/organization"
-  projects         = "data/projects"
+  billing_accounts = "datasets/classic/billing-accounts"
+  cicd             = "datasets/classic/cicd.yaml"
+  defaults         = "datasets/classic/defaults.yaml"
+  folders          = "datasets/classic/folders"
+  organization     = "datasets/classic/organization"
+  projects         = "datasets/classic/projects"
 }
 ```
 
@@ -97,9 +97,6 @@ The standard datasets use the `gcp-organization-admins` alias to assign administ
 global:
   # gcloud beta billing accounts list
   billing_account: 123456-123456-123456
-  locations:
-    bigquery: europe-west1
-    logging: europe-west1
   organization:
     # gcloud organizations list
     domain: example.org
@@ -109,11 +106,16 @@ projects:
   defaults:
     # define a unique prefix with a maximum of 9 characters
     prefix: foo-1
-    storage_location: europe-west1
+  locations:
+    bigquery: $locations:primary
+    logging: $locations:primary
+    storage: $locations:primary
 context:
   iam_principals:
     # make sure the user running apply is a member of this group
     gcp-organization-admins: group:fabric-fast-owners@example.com
+  locations:
+    primary: europe-west1
 ```
 
 A more detailed example containing a few other attributes that can be set in the file is in a [later section](#defaults-configuration) in this document.
@@ -252,6 +254,12 @@ The organizational layout mirrors the consolidated FAST one, where shared infras
   <img src="diagram-classic-fast.png" alt="Classic FAST organization-level diagram.">
 </p>
 
+### "Hardened" dataset
+
+This dataset implements a hardened design focusing on strict security and compliance requirements. It expands on the "Classic FAST" layout by incorporating more advanced and granular preventive and detective controls from the start.
+
+This dataset provides a stronger and centrally-managed security baseline, ensuring that projects and resources deployed adhere to stricter security and compliance from inception. It includes both **preventive controls** (organization policies and custom constraints) and **detective controls** (monitoring alerts and Security Command Center custom module detectors). For more details on the content of this hardened dataset and the various controls provisioned, refer to the [hardened dataset documentation](./datasets/hardened/README.md).
+
 ### "Minimal" dataset (TBD)
 
 This dataset is meant as a minimalistic starting point for organizations where a security baseline and a project factory are all that's needed, at least initially. The design can then organically grow to support more functionality, converging to the Classic or other types of layouts.
@@ -275,6 +283,7 @@ This is a simple reference table of available interpolation namespaces, refer to
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
 - `$kms_keys:my_key`
+- `$log_buckets:my_project/my_bucket`
 - `$locations:my_location`
 - `$notification_channels:my_channel`
 - `$project_ids:my_project`
@@ -291,28 +300,28 @@ The resources created by this stage are controlled by several factories, which p
 
 The default paths point to the dataset in the `data` folder which deploys a FAST-compliant configuration. These are the available factories in this stage, with file-level factories based on a single YAML file, and folder-level factories based on sets of YAML files contained within a filesystem folder:
 
-- **defaults** (`data/defaults.yaml`) \
+- **defaults** (`datasets/classic/defaults.yaml`) \
   file-level factory to define stage defaults (organization id, locations, prefix, etc.) and static context mappings
-- **billing_accounts** (`data/billing-accounts`) \
+- **billing_accounts** (`datasets/classic/billing-accounts`) \
   folder-level factory where each YAML file defines billing-account level IAM for one billing account; only used for externally managed accounts
-- **organization** (`data/organization/.config.yaml`) \
+- **organization** (`datasets/classic/organization/.config.yaml`) \
   file-level factory to define organization IAM and log sinks
-  - **custom roles** (`data/organization/custom-roles`) \
+  - **custom roles** (`datasets/classic/organization/custom-roles`) \
     folder-level factory to define organization-level custom roles
-  - **org policies** (`data/organization/org-policies`) \
+  - **org policies** (`datasets/classic/organization/org-policies`) \
     folder-level factory to define organization-level org policies
-  - **tags** (`data/organization/tags`) \
+  - **tags** (`datasets/classic/organization/tags`) \
     folder-level factory to define organization-level resource management tags
-- **folders** (`data/folders`) \
+- **folders** (`datasets/classic/folders`) \
   folder-level factory to define the resource management hierarchy and individual folder attributes (IAM, org policies, tag bindings, etc.); also supports defining folder-level IaC resources
-- **projects** (`data/projects`) \
+- **projects** (`datasets/classic/projects`) \
   folder-level factory to define projects and their attributes (projejct factory)
-- **cicd** (`data/cicd.yaml`) \
+- **cicd** (`datasets/classic/cicd.yaml`) \
   file-level factory to define CI/CD configurations for this and subsequent stages
 
 ### Defaults configuration
 
-The prerequisite configuration for this stage is done via a `defaults.yaml` file, which implements part or all of the [relevant JSON schema](./schemas/defaults.schema.json). The location of the file defaults to `data/defaults.yaml` but can be easily changed via the `factories_config.defaults` variable.
+The prerequisite configuration for this stage is done via a `defaults.yaml` file, which implements part or all of the [relevant JSON schema](./schemas/defaults.schema.json). The location of the file defaults to `datasets/classic/defaults.yaml` but can be easily changed via the `factories_config.defaults` variable.
 
 This is a commented example of a defaults file, showing a minimal working configuration. Refer to the YAML schema for all available options.
 
@@ -356,7 +365,7 @@ context:
     gcp-organization-admins: group:fabric-fast-owners@example.com
 ```
 
-### Billing account IAM
+### Billing account IAM and billing export
 
 FAST traditionally supports three different billing configurations:
 
@@ -371,6 +380,8 @@ This stage allows the same flexibility, and even makes it possible to mix and ma
 - if no billing IAM can be managed here, it's enough to disable the billing account factory by pointing it to an empty or non-existent filesystem folder
 
 The default dataset assumes an externally managed billing account is used, and configures its IAM accordingly via the billing account factory. The example below shows some of the IAM bindings configured at the billing account level, and how context-based interpolation is used there.
+
+Where billing exports need to be configured as part of a FAST installation, the default dataset includes a dedicated project and a BigQuery dataset that can be used as part of [manual process to set up exports](https://cloud.google.com/billing/docs/how-to/export-data-bigquery-setup#enable-bq-export).
 
 <details>
 <summary>Context-based replacement examples for the billing accounts factory</summary>
@@ -418,7 +429,7 @@ Principal expansion leverages the `$iam_principals:` context, which is populated
 
 ```yaml
 # example principal-level context interpolation
-# file: data/organization/.config.yaml
+# file: datasets/classic/organization/.config.yaml
 iam_by_principals:
   # statically defined principal (via defaults.yaml)
   $iam_principals:gcp-organization-admins:
@@ -432,13 +443,16 @@ iam_by_principals:
     - roles/cloudasset.viewer
     - roles/essentialcontacts.admin
     # [...]
+iam_by_principals_additive:
+  $iam_principals:gcp-billing-admins:
+    - roles/billing.admin
 ```
 
 Log sinks can refer to project-level destination via different contexts.
 
 ```yaml
 # example log sinks showing different destination contexts
-# file: data/organization/.config.yaml
+# file: datasets/classic/organization/.config.yaml
 logging:
   storage_location: $locations:default
   sinks:
@@ -468,7 +482,7 @@ Context-based expansion is not limited to the organization's `.config.yaml` file
 
 ```yaml
 # example usage of context interpolation in tag values IAM
-# file: data/organization/tags/environment.yaml
+# file: datasets/classic/organization/tags/environment.yaml
 description: "Organization-level environments."
 values:
   development:
@@ -508,7 +522,7 @@ The folder hierarchy is managed via a filesystem tree of YAML configuration file
 The default dataset implements a classic FAST layout, with top-level folders for stage 2 and stage 3, and can be easily tweaked by adding or removing any needed folder.
 
 ```bash
-data/folders
+datasets/classic/folders
 ├── networking
 │   ├── .config.yaml
 │   ├── dev
@@ -535,7 +549,7 @@ As with the factories described above, context replacements can be used in folde
 As with other examples before, the main use case is to infer IAM principals from either the static or internally defined context. One additional context which is often useful here is tag values, which allows defining a scope for organization-level conditional IAM bindings or org policies.
 
 ```yaml
-# file: data/folders/teams/.config.yaml
+# file: datasets/classic/folders/teams/.config.yaml
 name: Teams
 iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-pf-rw:
@@ -709,37 +723,36 @@ Define values for the `var.environments` variable in a tfvars file.
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
-
 ## Files
 
-| name                                       | description                             | modules                      | resources                                                                                                                                                                      |
-| ------------------------------------------ | --------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [billing.tf](./billing.tf)                 | None                                    | <code>billing-account</code> |                                                                                                                                                                                |
-| [cicd.tf](./cicd.tf)                       | None                                    |                              | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> · <code>google_storage_bucket_object</code> · <code>local_file</code> |
-| [factory.tf](./factory.tf)                 | None                                    | <code>project-factory</code> |                                                                                                                                                                                |
-| [imports.tf](./imports.tf)                 | None                                    |                              |                                                                                                                                                                                |
-| [main.tf](./main.tf)                       | Module-level locals and resources.      |                              | <code>terraform_data</code>                                                                                                                                                    |
-| [organization.tf](./organization.tf)       | None                                    | <code>organization</code>    |                                                                                                                                                                                |
-| [output-files.tf](./output-files.tf)       | None                                    |                              | <code>google_storage_bucket_object</code> · <code>local_file</code>                                                                                                            |
-| [outputs.tf](./outputs.tf)                 | Module outputs.                         |                              |                                                                                                                                                                                |
-| [variables.tf](./variables.tf)             | Module variables.                       |                              |                                                                                                                                                                                |
-| [wif-definitions.tf](./wif-definitions.tf) | Workload Identity provider definitions. |                              |                                                                                                                                                                                |
+| name | description | modules | resources |
+|---|---|---|---|
+| [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
+| [cicd.tf](./cicd.tf) | None | <code>iam-service-account</code> | <code>google_storage_bucket_object</code> · <code>local_file</code> |
+| [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
+| [imports.tf](./imports.tf) | None |  |  |
+| [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
+| [organization.tf](./organization.tf) | None | <code>organization</code> |  |
+| [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |  |
+| [variables.tf](./variables.tf) | Module variables. |  |  |
+| [wif-definitions.tf](./wif-definitions.tf) | Workload Identity provider definitions. |  |  |
+| [wif-providers.tf](./wif-providers.tf) | None |  | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
 
 ## Variables
 
-| name                                     | description                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | required |          default          |
-| ---------------------------------------- | ---------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------: | :-----------------------: |
-| [context](variables.tf#L17)              | Context-specific interpolations.                                             | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |          | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L37)     | Configuration for the resource factories or external data.                   |                                                                                                                                                                                                                                     <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;data&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;data&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;data&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;data&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;data&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;data&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code>                                                                                                                                                                                                                                     |          | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L52) | List of org policies to import. These need to also be defined in data files. |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <code>list&#40;string&#41;</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |          |  <code>&#91;&#93;</code>  |
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;datasets&#47;classic&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;datasets&#47;classic&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;datasets&#47;classic&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;datasets&#47;classic&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L52) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
-| name                             | description                      | sensitive |
-| -------------------------------- | -------------------------------- | :-------: |
-| [iam_principals](outputs.tf#L17) | IAM principals.                  |           |
-| [locations](outputs.tf#L22)      | Default locations.               |           |
-| [projects](outputs.tf#L27)       | Attributes for managed projects. |           |
-| [tfvars](outputs.tf#L32)         | Stage tfvars.                    |     ✓     |
-
+| name | description | sensitive |
+|---|---|:---:|
+| [iam_principals](outputs.tf#L17) | IAM principals. |  |
+| [projects](outputs.tf#L22) | Attributes for managed projects. |  |
+| [tfvars](outputs.tf#L27) | Stage tfvars. | ✓ |
 <!-- END TFDOC -->
+
