@@ -22,6 +22,27 @@ output "alert_ids" {
   }
 }
 
+output "bigquery_reservations" {
+  description = "BigQuery reservations and assignments."
+  value = {
+    reservations = google_bigquery_reservation.default
+    assignments = {
+      for reservation_name, reservation in google_bigquery_reservation.default :
+      reservation_name => {
+        (reservation.location) = {
+          for job_type in distinct([
+            for a in values(google_bigquery_reservation_assignment.default) : a.job_type
+            if a.reservation == reservation.id
+            ]) : job_type => [
+            for a in values(google_bigquery_reservation_assignment.default) : a.assignee
+            if a.reservation == reservation.id && a.job_type == job_type
+          ]
+        }
+      }
+    }
+  }
+}
+
 output "custom_role_id" {
   description = "Map of custom role IDs created in the project."
   value       = local.custom_role_ids
