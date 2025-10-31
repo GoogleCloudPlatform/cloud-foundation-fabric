@@ -617,6 +617,7 @@ workflows:
 
 <details>
 <summary>Configure Okta as  Workload Identity provider</summary>
+
 Okta is a special case. Unlike providers such as GitHub or GitLab, it's an identity provider that doesn't manage repositories. To use Okta as a Workload Identity provider, configure it in your `datasets/classic/cicd.yaml` file as shown in the following example:
 
 ```yaml
