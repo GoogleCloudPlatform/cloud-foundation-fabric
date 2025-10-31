@@ -161,7 +161,7 @@ module "automation-service-accounts-iam" {
     use_data_source = false
   }
   context = merge(local.ctx, {
-    service_account_ids = local.project_sas_ids
+    service_account_ids = local.projects_sas_ids
   })
   iam_sa_roles = lookup(each.value, "iam_sa_roles", {})
 }

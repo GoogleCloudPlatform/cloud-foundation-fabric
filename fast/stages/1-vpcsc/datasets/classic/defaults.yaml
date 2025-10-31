@@ -12,16 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values: {}
-counts:
-  google_compute_shared_vpc_service_project: 2
-  google_folder: 3
-  google_project: 2
-  google_project_iam_member: 2
-  google_project_service: 4
-  google_project_service_identity: 2
-  google_storage_bucket_object: 1
-  google_tags_tag_binding: 2
-  modules: 8
-  resources: 20
-  terraform_data: 2
+# yaml-language-server: $schema=../../schemas/defaults.schema.json
+
+output_files:
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/fast-test-00
+  storage_bucket: $storage_buckets:iac-0/iac-outputs

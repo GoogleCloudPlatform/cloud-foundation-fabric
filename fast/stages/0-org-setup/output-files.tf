@@ -19,6 +19,26 @@ locals {
     for k, v in module.factory.storage_buckets :
     "$storage_buckets:${k}" => v
   }
+  of_ctx = merge(local.ctx, {
+    custom_roles = merge(
+      local.ctx.custom_roles,
+      module.organization[0].custom_role_id
+    )
+    folder_ids = merge(
+      local.ctx.folder_ids,
+      module.factory.folder_ids
+    )
+    iam_principals = local.iam_principals
+    project_ids = merge(
+      local.ctx.project_ids,
+      module.factory.project_ids
+    )
+    storage_buckets = module.factory.storage_buckets
+    tag_values = merge(
+      local.ctx.tag_values,
+      local.org_tag_values
+    )
+  })
   of_outputs_bucket = (
     local.output_files.storage_bucket == null
     ? null
@@ -60,28 +80,19 @@ locals {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
-      custom_roles = module.organization[0].custom_role_id
-      folder_ids = merge(
-        local.ctx.folder_ids,
-        module.factory.folder_ids
-      )
-      iam_principals = local.iam_principals
+      custom_roles   = local.of_ctx.custom_roles
+      folder_ids     = local.of_ctx.folder_ids
+      iam_principals = local.of_ctx.iam_principals
       logging = {
         writer_identities = module.organization-iam[0].sink_writer_identities
         project_number    = module.factory.project_numbers["log-0"]
       }
-      project_ids = merge(
-        local.ctx.project_ids,
-        module.factory.project_ids
-      )
+      project_ids     = local.of_ctx.project_ids,
       project_numbers = module.factory.project_numbers
       # project_numbers = module.factory.project_numbers
       service_accounts = module.factory.service_account_emails
       storage_buckets  = module.factory.storage_buckets
-      tag_values = merge(
-        local.ctx.project_ids,
-        local.org_tag_values
-      )
+      tag_values       = local.of_ctx.tag_values
     }
   }
   of_universe_domain = try(

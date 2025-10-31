@@ -10,11 +10,11 @@
       "properties": {
         "folder_name": {
           "type": "string",
-          "default": "security"
+          "default": "networking"
         },
         "stage_name": {
           "type": "string",
-          "default": "2-security"
+          "default": "2-networking"
         }
       },
       "required": []
@@ -512,10 +512,37 @@
         }
       }
     },
+    "vpcs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "auto_create_subnetworks": {
+          "type": "boolean",
+          "default": false
+        },
+        "delete_default_route_on_create": {
+          "type": "boolean",
+          "default": true
+        },
+        "mtu": {
+          "type": "number",
+          "default": 1500
+        }
+      }
+    },
     "context": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "cidr_ranges_sets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
         "custom_roles": {
           "type": "object",
           "additionalProperties": {
@@ -546,19 +573,13 @@
             "type": "string"
           }
         },
-        "notification_channels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
         "project_ids": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "service_account_ids": {
+        "storage_buckets": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -571,12 +592,6 @@
           }
         },
         "tag_values": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "vpc_host_projects": {
           "type": "object",
           "additionalProperties": {
             "type": "string"

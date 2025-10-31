@@ -30,6 +30,7 @@ The code is meant to be executed by a high level service account with powerful p
 - [Projects](#projects)
   - [Factory-wide project defaults, merges, optionals](#factory-wide-project-defaults-merges-optionals)
   - [Project templates](#project-templates)
+    - [Context expansion for template-derived resources](#context-expansion-for-template-derived-resources)
   - [Service accounts and buckets](#service-accounts-and-buckets)
   - [Automation resources](#automation-resources)
     - [Prefix handling](#prefix-handling)
@@ -87,6 +88,10 @@ When referenced in a project configuration file, a template attributes are used 
 For example, declaring `iam` or `org_policies` in the template and then doing the same in the project file will result in those two attributes in the template being ignored.
 
 The set of available templates is defined via a dedicated path in the `factories_config` file, and then a template can be referenced from a project definition via the `project_template` YAML attribute.
+
+#### Context expansion for template-derived resources
+
+Using a template makes it hard or impossible to reference project-level resources that contain the project key in the context id, as for example `$iam_principals:service_accounts/my-project/rw`. In those cases, alternate context ids are provided of the form `$iam_principals:service_accounts/_self_/rw`. Those are only available within the scope of the project itself and are currently only supported for service accounts in the `$iam_principals` and `$service_account_ids` context namespaces.
 
 ### Service accounts and buckets
 
@@ -577,6 +582,9 @@ parent: $folder_ids:team-a/app-0
 iam_by_principals:
   $iam_principals:service_accounts/dev-ta-app0-be/app-0-be:
     - roles/storage.objectViewer
+  # alternate context lookup, mainly for project template use
+  $iam_principals:service_accounts/_self_/app-0-fe:
+    - roles/storage.objectViewer
 iam:
   roles/cloudkms.cryptoKeyEncrypterDecrypter:
     - $service_agents:storage
@@ -589,6 +597,13 @@ service_accounts:
     iam_self_roles:
       - roles/logging.logWriter
       - roles/monitoring.metricWriter
+    # this is just for illustrative/test purposes
+    iam:
+      roles/iam.serviceAccountUser:
+        - $iam_principals:service_accounts/_self_/app-0-fe
+    iam_sa_roles:
+      $service_account_ids:_self_/app-0-fe:
+        - roles/iam.serviceAccountUser
   app-0-fe:
     display_name: "Frontend instances."
     iam_project_roles:
@@ -753,7 +768,7 @@ compute.disableSerialPortAccess:
 | [projects-defaults.tf](./projects-defaults.tf) | None |  |  |
 | [projects-log-buckets.tf](./projects-log-buckets.tf) | None | <code>logging-bucket</code> |  |
 | [projects-service-accounts.tf](./projects-service-accounts.tf) | None | <code>iam-service-account</code> |  |
-| [projects.tf](./projects.tf) | None | <code>project</code> |  |
+| [projects.tf](./projects.tf) | None | <code>project</code> | <code>terraform_data</code> |
 | [variables-billing.tf](./variables-billing.tf) | None |  |  |
 | [variables-folders.tf](./variables-folders.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
@@ -816,7 +831,7 @@ module "project-factory" {
     projects = "data/projects"
   }
 }
-# tftest modules=4 resources=23 files=test-0,test-1,test-2
+# tftest modules=4 resources=24 files=test-0,test-1,test-2
 ```
 
 ```yaml

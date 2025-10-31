@@ -13,34 +13,6 @@
 # limitations under the License.
 
 values:
-  google_compute_ha_vpn_gateway.default["dev/to-hub"]:
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    gateway_ip_version: IPV4
-    labels: null
-    name: dev-to-hub
-    network: dev
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    stack_type: IPV4_ONLY
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-  google_compute_ha_vpn_gateway.default["hub/to-dev"]:
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    gateway_ip_version: IPV4
-    labels: null
-    name: hub-to-dev
-    network: hub
-    project: fast-prod-net-core-0
-    region: europe-west8
-    stack_type: IPV4_ONLY
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
   google_compute_ha_vpn_gateway.default["hub/to-onprem"]:
     description: null
     effective_labels:
@@ -55,59 +27,47 @@ values:
     terraform_labels:
       goog-terraform-provisioned: "true"
     timeouts: null
-  google_compute_ha_vpn_gateway.default["hub/to-prod"]:
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    gateway_ip_version: IPV4
-    labels: null
+  google_compute_network_peering.default["dev/to-hub"]:
+    export_custom_routes: true
+    export_subnet_routes_with_public_ip: true
+    import_custom_routes: true
+    import_subnet_routes_with_public_ip: null
+    name: dev-to-hub
+    stack_type: IPV4_ONLY
+    timeouts: null
+    update_strategy: INDEPENDENT
+  google_compute_network_peering.default["hub/to-dev"]:
+    export_custom_routes: true
+    export_subnet_routes_with_public_ip: true
+    import_custom_routes: true
+    import_subnet_routes_with_public_ip: null
+    name: hub-to-dev
+    stack_type: IPV4_ONLY
+    timeouts: null
+    update_strategy: INDEPENDENT
+  google_compute_network_peering.default["hub/to-prod"]:
+    export_custom_routes: true
+    export_subnet_routes_with_public_ip: true
+    import_custom_routes: true
+    import_subnet_routes_with_public_ip: null
     name: hub-to-prod
-    network: hub
-    project: fast-prod-net-core-0
-    region: europe-west8
     stack_type: IPV4_ONLY
-    terraform_labels:
-      goog-terraform-provisioned: "true"
     timeouts: null
-  google_compute_ha_vpn_gateway.default["prod/to-hub"]:
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    gateway_ip_version: IPV4
-    labels: null
+    update_strategy: INDEPENDENT
+  google_compute_network_peering.default["prod/to-hub"]:
+    export_custom_routes: true
+    export_subnet_routes_with_public_ip: true
+    import_custom_routes: true
+    import_subnet_routes_with_public_ip: null
     name: prod-to-hub
-    network: prod
-    project: fast-prod-net-prod-0
-    region: europe-west8
     stack_type: IPV4_ONLY
-    terraform_labels:
-      goog-terraform-provisioned: "true"
     timeouts: null
-  google_compute_router.default["dev/vpn-router"]:
+    update_strategy: INDEPENDENT
+  google_compute_router.default["hub/vpn-router"]:
     bgp:
       - advertise_mode: DEFAULT
         advertised_groups: []
         advertised_ip_ranges: []
-        asn: 64516
-        keepalive_interval: 20
-    description: null
-    encrypted_interconnect_router: null
-    md5_authentication_keys: []
-    name: dev-vpn-router
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    timeouts: null
-  google_compute_router.default["hub/vpn-router"]:
-    bgp:
-      - advertise_mode: CUSTOM
-        advertised_groups: []
-        advertised_ip_ranges:
-          - description: rfc1918-10
-            range: 10.0.0.0/8
-          - description: rfc1918-172
-            range: 172.16.0.0/12
-          - description: rfc1918-192
-            range: 192.168.0.0/16
         asn: 64514
         keepalive_interval: 20
     description: null
@@ -115,20 +75,6 @@ values:
     md5_authentication_keys: []
     name: hub-vpn-router
     project: fast-prod-net-core-0
-    region: europe-west8
-    timeouts: null
-  google_compute_router.default["prod/vpn-router"]:
-    bgp:
-      - advertise_mode: DEFAULT
-        advertised_groups: []
-        advertised_ip_ranges: []
-        asn: 64515
-        keepalive_interval: 20
-    description: null
-    encrypted_interconnect_router: null
-    md5_authentication_keys: []
-    name: prod-vpn-router
-    project: fast-prod-net-prod-0
     region: europe-west8
     timeouts: null
   google_storage_bucket_object.tfvars[0]:
@@ -1154,6 +1100,40 @@ values:
     target_service_accounts: null
     timeouts: null
     tls_inspect: null
+  module.nat["dev/nat-ew8"].google_compute_router.router[0]:
+    bgp: []
+    description: null
+    encrypted_interconnect_router: null
+    md5_authentication_keys: []
+    name: dev-nat-ew8-nat
+    project: fast-dev-net-dev-0
+    region: europe-west8
+    timeouts: null
+  module.nat["dev/nat-ew8"].google_compute_router_nat.nat:
+    enable_dynamic_port_allocation: false
+    enable_endpoint_independent_mapping: true
+    icmp_idle_timeout_sec: 30
+    initial_nat_ips: null
+    log_config:
+      - enable: false
+        filter: ALL
+    max_ports_per_vm: 65536
+    name: dev-nat-ew8
+    nat64_subnetwork: []
+    nat_ip_allocate_option: AUTO_ONLY
+    project: fast-dev-net-dev-0
+    region: europe-west8
+    router: dev-nat-ew8-nat
+    rules: []
+    source_subnetwork_ip_ranges_to_nat: ALL_SUBNETWORKS_ALL_IP_RANGES
+    source_subnetwork_ip_ranges_to_nat64: null
+    subnetwork: []
+    tcp_established_idle_timeout_sec: 1200
+    tcp_time_wait_timeout_sec: 120
+    tcp_transitory_idle_timeout_sec: 30
+    timeouts: null
+    type: PUBLIC
+    udp_idle_timeout_sec: 30
   module.nat["hub/nat-ew8"].google_compute_router.router[0]:
     bgp: []
     description: null
@@ -1178,6 +1158,40 @@ values:
     project: fast-prod-net-core-0
     region: europe-west8
     router: hub-nat-ew8-nat
+    rules: []
+    source_subnetwork_ip_ranges_to_nat: ALL_SUBNETWORKS_ALL_IP_RANGES
+    source_subnetwork_ip_ranges_to_nat64: null
+    subnetwork: []
+    tcp_established_idle_timeout_sec: 1200
+    tcp_time_wait_timeout_sec: 120
+    tcp_transitory_idle_timeout_sec: 30
+    timeouts: null
+    type: PUBLIC
+    udp_idle_timeout_sec: 30
+  module.nat["prod/nat-ew8"].google_compute_router.router[0]:
+    bgp: []
+    description: null
+    encrypted_interconnect_router: null
+    md5_authentication_keys: []
+    name: prod-nat-ew8-nat
+    project: fast-prod-net-prod-0
+    region: europe-west8
+    timeouts: null
+  module.nat["prod/nat-ew8"].google_compute_router_nat.nat:
+    enable_dynamic_port_allocation: false
+    enable_endpoint_independent_mapping: true
+    icmp_idle_timeout_sec: 30
+    initial_nat_ips: null
+    log_config:
+      - enable: false
+        filter: ALL
+    max_ports_per_vm: 65536
+    name: prod-nat-ew8
+    nat64_subnetwork: []
+    nat_ip_allocate_option: AUTO_ONLY
+    project: fast-prod-net-prod-0
+    region: europe-west8
+    router: prod-nat-ew8-nat
     rules: []
     source_subnetwork_ip_ranges_to_nat: ALL_SUBNETWORKS_ALL_IP_RANGES
     source_subnetwork_ip_ranges_to_nat64: null
@@ -1741,6 +1755,21 @@ values:
       - {}
     project: fast-prod-net-core-0
     timeouts: null
+  module.vpcs["prod"].google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-psa"]:
+    address: 10.72.224.0
+    address_type: INTERNAL
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: "true"
+    ip_version: null
+    labels: null
+    name: servicenetworking-googleapis-com-psa
+    prefix_length: 24
+    project: fast-prod-net-prod-0
+    purpose: VPC_PEERING
+    terraform_labels:
+      goog-terraform-provisioned: "true"
+    timeouts: null
   module.vpcs["prod"].google_compute_network.network[0]:
     auto_create_subnetworks: false
     delete_default_routes_on_create: false
@@ -1752,6 +1781,12 @@ values:
     network_profile: null
     project: fast-prod-net-prod-0
     routing_mode: GLOBAL
+    timeouts: null
+  module.vpcs["prod"].google_compute_network_peering_routes_config.psa_routes["servicenetworking.googleapis.com"]:
+    export_custom_routes: true
+    import_custom_routes: true
+    network: prod
+    project: fast-prod-net-prod-0
     timeouts: null
   module.vpcs["prod"].google_compute_route.gateway["directpath-googleapis"]:
     description: Terraform-managed.
@@ -1792,6 +1827,23 @@ values:
     project: fast-prod-net-prod-0
     tags: null
     timeouts: null
+  module.vpcs["prod"].google_compute_subnetwork.proxy_only["europe-west8/primary-region-proxy-only"]:
+    description:
+      Terraform-managed proxy-only subnet for Regional HTTPS, Internal
+      HTTPS or Cross-Regional HTTPS Internal LB.
+    ip_cidr_range: 10.72.240.0/24
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: primary-region-proxy-only
+    network: prod
+    project: fast-prod-net-prod-0
+    purpose: REGIONAL_MANAGED_PROXY
+    region: europe-west8
+    reserved_internal_range: null
+    role: ACTIVE
+    send_secondary_ip_range_if_empty: null
+    timeouts: null
   module.vpcs["prod"].google_compute_subnetwork.subnetwork["europe-west8/prod-default"]:
     description: Default primary-region subnet for prod
     ip_cidr_range: 10.72.0.0/24
@@ -1817,250 +1869,20 @@ values:
       - {}
     project: fast-prod-net-prod-0
     timeouts: null
-  module.vpn-ha["dev/to-hub"].google_compute_router_interface.router_interface["remote-0"]:
-    interconnect_attachment: null
-    ip_range: 169.254.3.1/30
-    name: dev-to-hub-remote-0
-    private_ip_address: null
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    router: dev-vpn-router
-    subnetwork: null
+  module.vpcs["prod"].google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
+    deletion_policy: null
+    reserved_peering_ranges:
+      - servicenetworking-googleapis-com-psa
+    service: servicenetworking.googleapis.com
     timeouts: null
-    vpn_tunnel: dev-to-hub-remote-0
-  module.vpn-ha["dev/to-hub"].google_compute_router_interface.router_interface["remote-1"]:
-    interconnect_attachment: null
-    ip_range: 169.254.3.5/30
-    name: dev-to-hub-remote-1
-    private_ip_address: null
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    router: dev-vpn-router
-    subnetwork: null
+    update_on_creation_fail: null
+  module.vpcs["prod"].google_service_networking_peered_dns_domain.name["servicenetworking-googleapis-com-test"]:
+    dns_suffix: test.
+    name: servicenetworking-googleapis-com-test
+    network: prod
+    project: fast-prod-net-prod-0
+    service: servicenetworking.googleapis.com
     timeouts: null
-    vpn_tunnel: dev-to-hub-remote-1
-  module.vpn-ha["dev/to-hub"].google_compute_router_peer.bgp_peer["remote-0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: dev-to-hub-remote-0
-    md5_authentication_key: []
-    name: dev-to-hub-remote-0
-    peer_asn: 64514
-    peer_ip_address: 169.254.3.2
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    router: dev-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["dev/to-hub"].google_compute_router_peer.bgp_peer["remote-1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: dev-to-hub-remote-1
-    md5_authentication_key: []
-    name: dev-to-hub-remote-1
-    peer_asn: 64514
-    peer_ip_address: 169.254.3.6
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    router: dev-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["dev/to-hub"].google_compute_vpn_tunnel.tunnels["remote-0"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: dev-to-hub-remote-0
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    router: dev-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 0
-  module.vpn-ha["dev/to-hub"].google_compute_vpn_tunnel.tunnels["remote-1"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: dev-to-hub-remote-1
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-dev-net-dev-0
-    region: europe-west8
-    router: dev-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 1
-  module.vpn-ha["dev/to-hub"].random_id.md5_keys["remote-0"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["dev/to-hub"].random_id.md5_keys["remote-1"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["dev/to-hub"].random_id.secret:
-    byte_length: 8
-    keepers: null
-    prefix: null
-  module.vpn-ha["hub/to-dev"].google_compute_router_interface.router_interface["remote-0"]:
-    interconnect_attachment: null
-    ip_range: 169.254.3.2/30
-    name: hub-to-dev-remote-0
-    private_ip_address: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    subnetwork: null
-    timeouts: null
-    vpn_tunnel: hub-to-dev-remote-0
-  module.vpn-ha["hub/to-dev"].google_compute_router_interface.router_interface["remote-1"]:
-    interconnect_attachment: null
-    ip_range: 169.254.3.6/30
-    name: hub-to-dev-remote-1
-    private_ip_address: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    subnetwork: null
-    timeouts: null
-    vpn_tunnel: hub-to-dev-remote-1
-  module.vpn-ha["hub/to-dev"].google_compute_router_peer.bgp_peer["remote-0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: hub-to-dev-remote-0
-    md5_authentication_key: []
-    name: hub-to-dev-remote-0
-    peer_asn: 64516
-    peer_ip_address: 169.254.3.1
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["hub/to-dev"].google_compute_router_peer.bgp_peer["remote-1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: hub-to-dev-remote-1
-    md5_authentication_key: []
-    name: hub-to-dev-remote-1
-    peer_asn: 64516
-    peer_ip_address: 169.254.3.5
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["hub/to-dev"].google_compute_vpn_tunnel.tunnels["remote-0"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: hub-to-dev-remote-0
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 0
-  module.vpn-ha["hub/to-dev"].google_compute_vpn_tunnel.tunnels["remote-1"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: hub-to-dev-remote-1
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 1
-  module.vpn-ha["hub/to-dev"].random_id.md5_keys["remote-0"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["hub/to-dev"].random_id.md5_keys["remote-1"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["hub/to-dev"].random_id.secret:
-    byte_length: 8
-    keepers: null
-    prefix: null
   module.vpn-ha["hub/to-onprem"].google_compute_external_vpn_gateway.external_gateway["default"]:
     description: Terraform managed external VPN gateway
     effective_labels:
@@ -2198,250 +2020,6 @@ values:
     byte_length: 8
     keepers: null
     prefix: null
-  module.vpn-ha["hub/to-prod"].google_compute_router_interface.router_interface["remote-0"]:
-    interconnect_attachment: null
-    ip_range: 169.254.2.2/30
-    name: hub-to-prod-remote-0
-    private_ip_address: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    subnetwork: null
-    timeouts: null
-    vpn_tunnel: hub-to-prod-remote-0
-  module.vpn-ha["hub/to-prod"].google_compute_router_interface.router_interface["remote-1"]:
-    interconnect_attachment: null
-    ip_range: 169.254.2.6/30
-    name: hub-to-prod-remote-1
-    private_ip_address: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    subnetwork: null
-    timeouts: null
-    vpn_tunnel: hub-to-prod-remote-1
-  module.vpn-ha["hub/to-prod"].google_compute_router_peer.bgp_peer["remote-0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: hub-to-prod-remote-0
-    md5_authentication_key: []
-    name: hub-to-prod-remote-0
-    peer_asn: 64515
-    peer_ip_address: 169.254.2.1
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["hub/to-prod"].google_compute_router_peer.bgp_peer["remote-1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: hub-to-prod-remote-1
-    md5_authentication_key: []
-    name: hub-to-prod-remote-1
-    peer_asn: 64515
-    peer_ip_address: 169.254.2.5
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["hub/to-prod"].google_compute_vpn_tunnel.tunnels["remote-0"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: hub-to-prod-remote-0
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 0
-  module.vpn-ha["hub/to-prod"].google_compute_vpn_tunnel.tunnels["remote-1"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: hub-to-prod-remote-1
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-prod-net-core-0
-    region: europe-west8
-    router: hub-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 1
-  module.vpn-ha["hub/to-prod"].random_id.md5_keys["remote-0"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["hub/to-prod"].random_id.md5_keys["remote-1"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["hub/to-prod"].random_id.secret:
-    byte_length: 8
-    keepers: null
-    prefix: null
-  module.vpn-ha["prod/to-hub"].google_compute_router_interface.router_interface["remote-0"]:
-    interconnect_attachment: null
-    ip_range: 169.254.2.1/30
-    name: prod-to-hub-remote-0
-    private_ip_address: null
-    project: fast-prod-net-prod-0
-    region: europe-west8
-    router: prod-vpn-router
-    subnetwork: null
-    timeouts: null
-    vpn_tunnel: prod-to-hub-remote-0
-  module.vpn-ha["prod/to-hub"].google_compute_router_interface.router_interface["remote-1"]:
-    interconnect_attachment: null
-    ip_range: 169.254.2.5/30
-    name: prod-to-hub-remote-1
-    private_ip_address: null
-    project: fast-prod-net-prod-0
-    region: europe-west8
-    router: prod-vpn-router
-    subnetwork: null
-    timeouts: null
-    vpn_tunnel: prod-to-hub-remote-1
-  module.vpn-ha["prod/to-hub"].google_compute_router_peer.bgp_peer["remote-0"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: prod-to-hub-remote-0
-    md5_authentication_key: []
-    name: prod-to-hub-remote-0
-    peer_asn: 64514
-    peer_ip_address: 169.254.2.2
-    project: fast-prod-net-prod-0
-    region: europe-west8
-    router: prod-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["prod/to-hub"].google_compute_router_peer.bgp_peer["remote-1"]:
-    advertise_mode: DEFAULT
-    advertised_groups: []
-    advertised_ip_ranges: []
-    advertised_route_priority: 1000
-    custom_learned_ip_ranges: []
-    custom_learned_route_priority: null
-    enable: true
-    enable_ipv6: false
-    export_policies: null
-    import_policies: null
-    interface: prod-to-hub-remote-1
-    md5_authentication_key: []
-    name: prod-to-hub-remote-1
-    peer_asn: 64514
-    peer_ip_address: 169.254.2.6
-    project: fast-prod-net-prod-0
-    region: europe-west8
-    router: prod-vpn-router
-    router_appliance_instance: null
-    timeouts: null
-    zero_advertised_route_priority: null
-    zero_custom_learned_route_priority: false
-  module.vpn-ha["prod/to-hub"].google_compute_vpn_tunnel.tunnels["remote-0"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: prod-to-hub-remote-0
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-prod-net-prod-0
-    region: europe-west8
-    router: prod-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 0
-  module.vpn-ha["prod/to-hub"].google_compute_vpn_tunnel.tunnels["remote-1"]:
-    cipher_suite: []
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: "true"
-    ike_version: 2
-    labels: null
-    name: prod-to-hub-remote-1
-    peer_external_gateway: null
-    peer_external_gateway_interface: null
-    project: fast-prod-net-prod-0
-    region: europe-west8
-    router: prod-vpn-router
-    shared_secret: foobar
-    shared_secret_wo: null
-    shared_secret_wo_version: null
-    target_vpn_gateway: null
-    terraform_labels:
-      goog-terraform-provisioned: "true"
-    timeouts: null
-    vpn_gateway_interface: 1
-  module.vpn-ha["prod/to-hub"].random_id.md5_keys["remote-0"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["prod/to-hub"].random_id.md5_keys["remote-1"]:
-    byte_length: 12
-    keepers: null
-    prefix: null
-  module.vpn-ha["prod/to-hub"].random_id.secret:
-    byte_length: 8
-    keepers: null
-    prefix: null
 
 counts:
   google_compute_external_vpn_gateway: 1
@@ -2449,16 +2027,19 @@ counts:
   google_compute_firewall_policy: 1
   google_compute_firewall_policy_association: 1
   google_compute_firewall_policy_rule: 5
-  google_compute_ha_vpn_gateway: 5
+  google_compute_global_address: 1
+  google_compute_ha_vpn_gateway: 1
   google_compute_network: 3
+  google_compute_network_peering: 4
+  google_compute_network_peering_routes_config: 1
   google_compute_route: 10
   google_compute_router: 4
-  google_compute_router_interface: 10
-  google_compute_router_nat: 1
-  google_compute_router_peer: 10
+  google_compute_router_interface: 2
+  google_compute_router_nat: 3
+  google_compute_router_peer: 2
   google_compute_shared_vpc_host_project: 3
-  google_compute_subnetwork: 3
-  google_compute_vpn_tunnel: 10
+  google_compute_subnetwork: 4
+  google_compute_vpn_tunnel: 2
   google_dns_managed_zone: 5
   google_dns_policy: 3
   google_dns_record_set: 3
@@ -2468,8 +2049,10 @@ counts:
   google_project_iam_member: 21
   google_project_service: 27
   google_project_service_identity: 21
+  google_service_networking_connection: 1
+  google_service_networking_peered_dns_domain: 1
   google_storage_bucket_object: 2
-  modules: 27
-  random_id: 15
-  resources: 215
+  modules: 25
+  random_id: 3
+  resources: 186
   terraform_data: 2

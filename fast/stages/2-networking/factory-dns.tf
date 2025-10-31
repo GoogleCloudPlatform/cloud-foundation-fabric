@@ -25,7 +25,7 @@ locals {
     })
   ]
   dns_zones = {
-    for zone_config in local._dns_preprocess : "${zone_config.key}" => merge(
+    for zone_config in local._dns_preprocess : zone_config.key => merge(
       zone_config,
       {
         project_id    = zone_config.project_id
@@ -85,7 +85,7 @@ locals {
     )
   ]
   dns_response_policies = {
-    for policy_config in local._dns_response_policies_preprocess : "${policy_config.key}" => {
+    for policy_config in local._dns_response_policies_preprocess : policy_config.key => {
       project_id = policy_config.project_id
       name       = policy_config.key
       networks   = policy_config.networks
