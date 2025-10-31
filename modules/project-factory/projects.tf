@@ -37,6 +37,7 @@ locals {
   _projects_raw = {
     for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
+    if !endswith(f, ".config.yaml")
   }
   _templates_path = try(
     pathexpand(var.factories_config.project_templates), null
