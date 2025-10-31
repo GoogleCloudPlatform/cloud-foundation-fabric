@@ -28,6 +28,7 @@
     - [Context-based replacement in the folders factory](#context-based-replacement-in-the-folders-factory)
   - [Project factory](#project-factory)
   - [CI/CD configuration](#cicd-configuration)
+    - [Okta](#okta)
 - [Leveraging classic FAST Stages](#leveraging-classic-fast-stages)
   - [VPC Service Controls](#vpc-service-controls)
   - [Security](#security)
