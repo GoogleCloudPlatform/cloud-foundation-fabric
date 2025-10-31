@@ -16,16 +16,16 @@
 
 global:
   # use `gcloud beta billing accounts list` to populate
-  billing_account: ABCDEF-0123456-ABCDEF
+  billing_account: 0155C1-CD27DA-72687B
   organization:
     # use `gcloud organizations list`` to populate
-    domain: fast-test-00.example.com
-    id: 1234567890
-    customer_id: abcd123456
+    domain: aviatoconsultinglab.com
+    id: 1000383692021
+    customer_id: C018eixs7
 projects:
   defaults:
     # prefix must be unique and less than 9 characters
-    prefix: test00
+    prefix: avlab
     locations:
       bigquery: $locations:primary
       logging: $locations:primary
@@ -35,12 +35,12 @@ context:
   # you can populate context variables here for use in YAML replacements
   iam_principals:
     # this is the default group used in bootstrap, initial user must be a member
-    gcp-organization-admins: group:gcp-organization-admins@example.com
+    gcp-organization-admins: group:gcp-organization-admins@aviatoconsultinglab.com
   locations:
-    primary: europe-west1
+    primary: australia-southeast1
 output_files:
   # local path is optional but recommended when starting
-  local_path: ~/fast-config/fast-test-00
+  local_path: ~/fast-config/aviatoconsultinglab
   storage_bucket: $storage_buckets:iac-0/iac-outputs
   providers:
     0-org-setup:
