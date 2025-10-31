@@ -831,7 +831,7 @@ module "project-factory" {
     projects = "data/projects"
   }
 }
-# tftest modules=4 resources=23 files=test-0,test-1,test-2
+# tftest modules=4 resources=24 files=test-0,test-1,test-2
 ```
 
 ```yaml
