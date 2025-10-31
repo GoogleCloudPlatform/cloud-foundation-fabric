@@ -34,7 +34,7 @@ nodepools = {
   }
 }
 folder_ids = {
-  gke-dev = "folders/12345678"
+  "gke/dev" = "folders/12345678"
 }
 host_project_ids = {
   dev-spoke-0 = "fast-dev-net-spoke-0"

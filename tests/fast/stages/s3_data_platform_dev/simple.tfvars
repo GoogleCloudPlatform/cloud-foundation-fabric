@@ -23,7 +23,7 @@ factories_config = {
   }
 }
 folder_ids = {
-  data-platform-dev = "folders/00000000000000"
+  "data-platform/dev" = "folders/00000000000000"
 }
 host_project_ids = {
   dev-spoke-0 = "fast2-dev-net-spoke-0"
