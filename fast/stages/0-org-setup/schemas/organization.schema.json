@@ -11,7 +11,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^\\S+@\\S+\\.\\S+$": {
+        "^(\\S+@\\S+\\.\\S+|\\$email_addresses:\\S+)$": {
           "type": "array",
           "items": {
             "type": "string",
