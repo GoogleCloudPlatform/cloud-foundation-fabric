@@ -11,10 +11,19 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$": {
+        "^\\S+@\\S+\\.\\S+$": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "ALL",
+              "BILLING",
+              "LEGAL",
+              "SECURITY",
+              "PRODUCT_UPDATES",
+              "SUSPENSION",
+              "TECHNICAL"
+            ]
           }
         }
       }
