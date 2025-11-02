@@ -80,10 +80,19 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9_-]+$": {
+        "^\\S+@\\S+\\.\\S+$": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "ALL",
+              "BILLING",
+              "LEGAL",
+              "SECURITY",
+              "PRODUCT_UPDATES",
+              "SUSPENSION",
+              "TECHNICAL"
+            ]
           }
         }
       }

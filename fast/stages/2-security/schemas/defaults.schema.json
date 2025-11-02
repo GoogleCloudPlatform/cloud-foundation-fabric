@@ -523,6 +523,7 @@
           }
         },
         "email_addresses": {
+          "type": "object",
           "additionalProperties": {
             "type": "string"
           }

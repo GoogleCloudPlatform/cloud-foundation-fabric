@@ -64,6 +64,27 @@
         }
       }
     },
+    "contacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\S+@\\S+\\.\\S+$": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ALL",
+              "BILLING",
+              "LEGAL",
+              "SECURITY",
+              "PRODUCT_UPDATES",
+              "SUSPENSION",
+              "TECHNICAL"
+            ]
+          }
+        }
+      }
+    },
     "factories_config": {
       "type": "object",
       "additionalProperties": false,
