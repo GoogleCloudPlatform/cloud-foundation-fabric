@@ -38,6 +38,17 @@ variable "contacts" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.contacts : [
+        for vv in v : contains([
+          "ALL", "SUSPENSION", "SECURITY", "TECHNICAL", "BILLING", "LEGAL",
+          "PRODUCT_UPDATES"
+        ], vv)
+      ]
+    ]))
+    error_message = "Invalid contact notification value."
+  }
 }
 
 variable "context" {
@@ -45,6 +56,7 @@ variable "context" {
   type = object({
     condition_vars        = optional(map(map(string)), {})
     custom_roles          = optional(map(string), {})
+    email_addresses       = optional(map(string), {})
     folder_ids            = optional(map(string), {})
     kms_keys              = optional(map(string), {})
     iam_principals        = optional(map(string), {})

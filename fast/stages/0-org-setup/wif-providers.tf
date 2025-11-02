@@ -52,7 +52,7 @@ resource "google_iam_workload_identity_pool_provider" "default" {
     # If users don't provide an issuer_uri, we set the public one for the platform chosen.
     issuer_uri = coalesce(
       try(each.value.custom_settings.issuer_uri, null),
-      try(each.value.custom_settings.okta == null ? null : "https://${each.value.custom_settings.okta.organization_name}/oauth2/${each.value.custom_settings.okta.auth_server_name}", null),
+      try("https://${each.value.custom_settings.okta.organization_name}/oauth2/${each.value.custom_settings.okta.auth_server_name}", null),
       try(each.value.issuer_uri, null),
     )
     # OIDC JWKs in JSON String format. If no value is provided, they key is
