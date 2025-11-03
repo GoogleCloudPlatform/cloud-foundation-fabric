@@ -36,7 +36,8 @@ resource "google_essential_contacts_contact" "contact" {
   depends_on = [
     google_organization_iam_binding.authoritative,
     google_organization_iam_binding.bindings,
-    google_organization_iam_member.bindings
+    google_organization_iam_member.bindings,
+    google_org_policy_policy.default
   ]
 }
 
