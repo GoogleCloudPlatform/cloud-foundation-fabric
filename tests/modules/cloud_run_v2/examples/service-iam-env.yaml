@@ -99,6 +99,7 @@ values:
   ? module.secret-manager.google_secret_manager_secret_iam_binding.authoritative["credentials.roles/secretmanager.secretAccessor"]
   : condition: []
     members:
+    - principalSet://cloudresourcemanager.googleapis.com/projects/123/type/ServiceAccount
     - serviceAccount:123-compute@developer.gserviceaccount.com
     - serviceAccount:project-id@appspot.gserviceaccount.com
     role: roles/secretmanager.secretAccessor

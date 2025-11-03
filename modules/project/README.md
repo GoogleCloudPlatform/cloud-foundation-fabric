@@ -93,15 +93,12 @@ module "project" {
     "stackdriver.googleapis.com"
   ]
   context = {
-    custom_roles = {
-      my_role = google_organization_iam_custom_role.custom_role.id # or module.organization.custom_roles["my_role"].id
-    }
     iam_principals = {
       org_admins = "group:${var.group_email}"
     }
   }
   iam = {
-    "$custom_roles:my_role" = [
+    "roles/cloudasset.owner" = [
       "$iam_principals:org_admins"
     ]
   }
@@ -119,9 +116,6 @@ module "project" {
   parent          = var.folder_id
   prefix          = var.prefix
   context = {
-    custom_roles = {
-      my_role = google_organization_iam_custom_role.custom_role.id # or module.organization.custom_roles["my_role"].id
-    }
     iam_principals = {
       org_admins = "group:${var.group_email}"
     }
@@ -132,7 +126,6 @@ module "project" {
       "roles/cloudsupport.techSupportEditor",
       "roles/iam.securityReviewer",
       "roles/logging.admin",
-      "$custom_roles:my_role"
     ]
     "$iam_principals:org_admins" = [
       "roles/owner"
