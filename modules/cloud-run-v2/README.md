@@ -493,9 +493,7 @@ module "secrets" {
   secrets = {
     otel-config = {
       iam = {
-        "roles/secretmanager.secretAccessor" = [
-          "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com"
-        ]
+        "roles/secretmanager.secretAccessor" = [module.cloud_run.service_account_iam_email]
       }
       versions = {
         v1 = {
