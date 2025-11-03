@@ -179,29 +179,6 @@ variable "projects" {
     iam_by_principals = optional(map(list(string)), {})
     labels            = optional(map(string), {})
     metric_scopes     = optional(list(string), [])
-    name              = optional(string)
-    org_policies = optional(map(object({
-      inherit_from_parent = optional(bool) # for list policies only.
-      reset               = optional(bool)
-      rules = optional(list(object({
-        allow = optional(object({
-          all    = optional(bool)
-          values = optional(list(string))
-        }))
-        deny = optional(object({
-          all    = optional(bool)
-          values = optional(list(string))
-        }))
-        enforce = optional(bool) # for boolean policies only.
-        condition = optional(object({
-          description = optional(string)
-          expression  = optional(string)
-          location    = optional(string)
-          title       = optional(string)
-        }), {})
-        parameters = optional(string)
-      })), [])
-    })), {})
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)
@@ -226,9 +203,31 @@ variable "projects" {
         requester_email_recipients = optional(list(string))
       }))
     })), {})
-    parent           = optional(string)
-    prefix           = optional(string)
-    project_template = optional(string)
+    name = optional(string)
+    org_policies = optional(map(object({
+      inherit_from_parent = optional(bool) # for list policies only.
+      reset               = optional(bool)
+      rules = optional(list(object({
+        allow = optional(object({
+          all    = optional(bool)
+          values = optional(list(string))
+        }))
+        deny = optional(object({
+          all    = optional(bool)
+          values = optional(list(string))
+        }))
+        enforce = optional(bool) # for boolean policies only.
+        condition = optional(object({
+          description = optional(string)
+          expression  = optional(string)
+          location    = optional(string)
+          title       = optional(string)
+        }), {})
+        parameters = optional(string)
+      })), [])
+    })), {})
+    parent = optional(string)
+    prefix = optional(string)
     service_accounts = optional(map(object({
       display_name      = optional(string)
       iam_self_roles    = optional(list(string), [])
