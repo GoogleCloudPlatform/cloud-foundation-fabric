@@ -18,8 +18,8 @@
 
 id: $defaults:organization/id
 contacts:
-  default:
-    - $iam_principals:gcp-organization-admins
+  $email_addresses:gcp-organization-admins:
+    - ALL
 # conditional authoritative IAM bindings
 iam_bindings:
   # these don't conflict with IAM / IAM by principal

@@ -18,6 +18,12 @@ values:
     dataset_id: logs
     project: test-prod-audit-logs-0
     role: roles/bigquery.dataEditor
+  google_essential_contacts_contact.contact["$email_addresses:default"]:
+    email: foo@example.com
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    timeouts: null
   google_logging_organization_settings.default[0]:
     organization: '1234567890'
     storage_location: europe-west8
@@ -198,6 +204,7 @@ values:
 
 counts:
   google_bigquery_dataset_iam_member: 1
+  google_essential_contacts_contact: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 5
   google_organization_iam_binding: 4
@@ -212,4 +219,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 24
+  resources: 25

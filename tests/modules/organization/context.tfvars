@@ -11,6 +11,9 @@ context = {
     myrole_one = "organizations/366118655033/roles/myRoleOne"
     myrole_two = "organizations/366118655033/roles/myRoleTwo"
   }
+  email_addresses = {
+    default = "foo@example.com"
+  }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
@@ -37,6 +40,9 @@ context = {
   tag_values = {
     "test/one" = "tagValues/1234567890"
   }
+}
+contacts = {
+  "$email_addresses:default" = ["ALL"]
 }
 iam = {
   "$custom_roles:myrole_one" = [
