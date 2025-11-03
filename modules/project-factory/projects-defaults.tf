@@ -18,14 +18,14 @@
 #   local._projects_input: raw projects data
 # outputs:
 #   local.data_defaults: normalized defaults/overrides
-#   local.projects_input: normalized project data
+#   local._projects_output: normalized project data
 
 locals {
   _data_defaults = {
     defaults  = try(var.data_defaults, {})
     overrides = try(var.data_overrides, {})
   }
-  projects_input = {
+  _projects_output = {
     # Semantics of the merges are:
     #   - if data_overrides.<field> is not null, use this value
     #   - if  _projects_inputs.<field> is not null, use this value
@@ -187,7 +187,7 @@ locals {
   _projects_uniqueness_validation = {
     # will raise error, if the same project (derived from file name, or provided in the YAML file)
     # is used more than once
-    for k, v in local.projects_input :
+    for k, v in local._projects_output :
     "${v.prefix != null ? v.prefix : ""}-${v.name}" => k
   }
   data_defaults = {
