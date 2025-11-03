@@ -2047,26 +2047,26 @@ alerts:
 |---|---|:---:|
 | [alert_ids](outputs.tf#L17) | Monitoring alert IDs. |  |
 | [bigquery_reservations](outputs.tf#L25) | BigQuery reservations and assignments. |  |
-| [custom_role_id](outputs.tf#L46) | Map of custom role IDs created in the project. |  |
-| [custom_roles](outputs.tf#L51) | Map of custom roles resources created in the project. |  |
-| [default_service_accounts](outputs.tf#L56) | Emails of the default service accounts for this project. |  |
-| [id](outputs.tf#L64) | Project id. |  |
-| [name](outputs.tf#L82) | Project name. |  |
-| [network_tag_keys](outputs.tf#L94) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L103) | Tag value resources. |  |
-| [notification_channel_names](outputs.tf#L111) | Notification channel names. |  |
-| [notification_channels](outputs.tf#L119) | Full notification channel objects. |  |
-| [number](outputs.tf#L124) | Project number. |  |
-| [organization_policies_ids](outputs.tf#L139) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [project_id](outputs.tf#L146) | Project id. |  |
-| [quota_configs](outputs.tf#L164) | Quota configurations. |  |
-| [quotas](outputs.tf#L175) | Quota resources. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L180) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
-| [service_agents](outputs.tf#L185) | List of all (active) service agents for this project. |  |
-| [services](outputs.tf#L194) | Service APIs to enable in the project. |  |
-| [sink_writer_identities](outputs.tf#L203) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L210) | Tag key resources. |  |
-| [tag_values](outputs.tf#L219) | Tag value resources. |  |
+| [custom_role_id](outputs.tf#L33) | Map of custom role IDs created in the project. |  |
+| [custom_roles](outputs.tf#L38) | Map of custom roles resources created in the project. |  |
+| [default_service_accounts](outputs.tf#L43) | Emails of the default service accounts for this project. |  |
+| [id](outputs.tf#L51) | Project id. |  |
+| [name](outputs.tf#L69) | Project name. |  |
+| [network_tag_keys](outputs.tf#L81) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L90) | Tag value resources. |  |
+| [notification_channel_names](outputs.tf#L98) | Notification channel names. |  |
+| [notification_channels](outputs.tf#L106) | Full notification channel objects. |  |
+| [number](outputs.tf#L111) | Project number. |  |
+| [organization_policies_ids](outputs.tf#L126) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [project_id](outputs.tf#L133) | Project id. |  |
+| [quota_configs](outputs.tf#L151) | Quota configurations. |  |
+| [quotas](outputs.tf#L162) | Quota resources. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L167) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
+| [service_agents](outputs.tf#L172) | List of all (active) service agents for this project. |  |
+| [services](outputs.tf#L181) | Service APIs to enable in the project. |  |
+| [sink_writer_identities](outputs.tf#L190) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L197) | Tag key resources. |  |
+| [tag_values](outputs.tf#L206) | Tag value resources. |  |
 
 ## Fixtures
 
