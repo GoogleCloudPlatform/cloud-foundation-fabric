@@ -66,7 +66,15 @@ resource "terraform_data" "project-preconditions" {
         try(v.project_template, null) == null ||
         lookup(local._templates_raw, v.project_template, null) != null
       ])
-      error_message = "Missing project templates referenced in projects."
+      error_message = "Missing project templates referenced in factory projects."
+    }
+    precondition {
+      condition = alltrue([
+        for k, v in var.projects :
+        try(v.project_template, null) == null ||
+        lookup(local._templates_raw, v.project_template, null) != null
+      ])
+      error_message = "Missing project templates referenced in variable projects."
     }
   }
 }
