@@ -79,7 +79,8 @@ module "organization" {
         id = local.organization_id
       }
     }
-    locations = local.ctx.locations
+    email_addresses = local.ctx.email_addresses
+    locations       = local.ctx.locations
   }
   contacts = lookup(local.organization, "contacts", {})
   factories_config = {
