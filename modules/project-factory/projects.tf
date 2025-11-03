@@ -26,7 +26,7 @@ locals {
     ) if !endswith(f, "/.config.yaml")
   }
   _projects_input = {
-    for k, v in merge(local._folder_projects_raw, local._projects_raw) :
+    for k, v in merge(var.projects, local._folder_projects_raw, local._projects_raw) :
     basename(k) => merge(
       try(local._templates_raw[v.project_template], {}),
       v
@@ -55,7 +55,6 @@ locals {
   log_buckets = {
     for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
-  projects_input = merge(var.projects, local._projects_output)
 }
 
 resource "terraform_data" "project-preconditions" {
@@ -66,7 +65,7 @@ resource "terraform_data" "project-preconditions" {
         try(v.project_template, null) == null ||
         lookup(local._templates_raw, v.project_template, null) != null
       ])
-      error_message = "Missing project templates referenced in projects."
+      error_message = "Missing project templates referenced in factory projects."
     }
   }
 }
