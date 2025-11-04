@@ -20,7 +20,7 @@ custom.firewallRestrictRdpPolicyRule:
         rule.direction == 'INGRESS' &&
         !rule.match.srcIpRanges.all(ipRange,
             ipRange == '35.235.240.0/20' ||
-            ipRange.startsWith('192.168.') |
+            ipRange.startsWith('192.168.') ||
             ipRange.matches('^172\\.(?:1[6-9]|2\\d|3[0-1]).*') ||
             ipRange.startsWith('10.')
         ) &&
