@@ -2805,6 +2805,7 @@ counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
+  google_essential_contacts_contact: 1
   google_folder: 8
   google_folder_iam_binding: 44
   google_iam_workload_identity_pool: 1
@@ -2836,5 +2837,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 48
-  resources: 311
-  terraform_data: 2
+  resources: 313
+  terraform_data: 3

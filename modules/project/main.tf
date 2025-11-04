@@ -137,10 +137,12 @@ resource "google_resource_manager_lien" "lien" {
 }
 
 resource "google_essential_contacts_contact" "contact" {
-  provider                            = google-beta
-  for_each                            = var.contacts
-  parent                              = "projects/${local.project.project_id}"
-  email                               = each.key
+  provider = google-beta
+  for_each = var.contacts
+  parent   = "projects/${local.project.project_id}"
+  email = lookup(
+    local.ctx.email_addresses, each.key, each.key
+  )
   language_tag                        = "en"
   notification_category_subscriptions = each.value
   depends_on = [

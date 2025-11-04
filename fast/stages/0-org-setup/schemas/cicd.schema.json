@@ -147,19 +147,32 @@
                     },
                     "jwks_json_path": {
                       "type": "string"
+                    },
+                    "okta": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "organization_name": {
+                          "type": "string"
+                        },
+                        "auth_server_name": {
+                          "type": "string"
+                        }
+                      }
                     }
+                  },
+                  "issuer": {
+                    "type": "string",
+                    "enum": [
+                      "github",
+                      "gitlab",
+                      "terraform",
+                      "okta"
+                    ]
+                  },
+                  "provider_id": {
+                    "type": "string"
                   }
-                },
-                "issuer": {
-                  "type": "string",
-                  "enum": [
-                    "github",
-                    "gitlab",
-                    "terraform"
-                  ]
-                },
-                "provider_id": {
-                  "type": "string"
                 }
               }
             }

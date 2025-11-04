@@ -522,6 +522,12 @@
             "type": "string"
           }
         },
+        "email_addresses": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "folder_ids": {
           "type": "object",
           "additionalProperties": {

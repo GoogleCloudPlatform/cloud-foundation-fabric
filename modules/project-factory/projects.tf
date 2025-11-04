@@ -28,7 +28,8 @@ locals {
   _projects_input = {
     for k, v in merge(local._folder_projects_raw, local._projects_raw) :
     basename(k) => merge(
-      try(local._templates_raw[v.project_template], {}), v
+      try(local._templates_raw[v.project_template], {}),
+      v
     )
   }
   _projects_path = try(
@@ -37,6 +38,7 @@ locals {
   _projects_raw = {
     for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
+    if !endswith(f, ".config.yaml")
   }
   _templates_path = try(
     pathexpand(var.factories_config.project_templates), null
@@ -54,6 +56,19 @@ locals {
     for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
   projects_input = merge(var.projects, local._projects_output)
+}
+
+resource "terraform_data" "project-preconditions" {
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for k, v in local._projects_input :
+        try(v.project_template, null) == null ||
+        lookup(local._templates_raw, v.project_template, null) != null
+      ])
+      error_message = "Missing project templates referenced in projects."
+    }
+  }
 }
 
 module "projects" {
@@ -124,10 +139,13 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
-    folder_ids     = local.ctx.folder_ids
-    kms_keys       = local.ctx.kms_keys
-    iam_principals = local.ctx_iam_principals
-    log_buckets    = local.ctx_log_buckets
+    folder_ids = local.ctx.folder_ids
+    kms_keys   = local.ctx.kms_keys
+    iam_principals = merge(
+      local.ctx_iam_principals,
+      lookup(local.self_sas_iam_emails, each.key, {})
+    )
+    log_buckets = local.ctx_log_buckets
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call

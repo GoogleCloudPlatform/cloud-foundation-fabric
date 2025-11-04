@@ -51,10 +51,12 @@ resource "google_folder" "folder" {
 }
 
 resource "google_essential_contacts_contact" "contact" {
-  provider                            = google-beta
-  for_each                            = var.contacts
-  parent                              = local.folder_id
-  email                               = each.key
+  provider = google-beta
+  for_each = var.contacts
+  parent   = local.folder_id
+  email = lookup(
+    local.ctx.email_addresses, each.key, each.key
+  )
   language_tag                        = "en"
   notification_category_subscriptions = each.value
   depends_on = [

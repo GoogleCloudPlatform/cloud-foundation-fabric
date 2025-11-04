@@ -2047,5 +2047,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 23
   random_id: 3
-  resources: 183
-  terraform_data: 1
+  resources: 184
+  terraform_data: 2
