@@ -91,6 +91,14 @@ resource "google_storage_bucket" "bucket" {
   depends_on                  = [google_project_service.project_service]
 }
 
+resource "google_storage_bucket_iam_binding" "binding" {
+  bucket = google_storage_bucket.bucket.id
+  members = [
+    "principalSet://cloudresourcemanager.googleapis.com/projects/${google_project.project.number}/type/ServiceAccount"
+  ]
+  role = "roles/storage.admin"
+}
+
 resource "google_compute_network" "network" {
   name                    = "e2e-test"
   project                 = google_project.project.project_id

@@ -19,6 +19,20 @@ locals {
   _observability_factory_path = pathexpand(coalesce(
     var.factories_config.observability, "-"
   ))
+  bigquery_reservations_assigments = {
+    for reservation_name, reservation in google_bigquery_reservation.default :
+    reservation_name => {
+      (reservation.location) = {
+        for job_type in distinct([
+          for a in values(google_bigquery_reservation_assignment.default) : a.job_type
+          if a.reservation == reservation.id
+          ]) : job_type => [
+          for a in values(google_bigquery_reservation_assignment.default) : a.assignee
+          if a.reservation == reservation.id && a.job_type == job_type
+        ]
+      }
+    }
+  }
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
