@@ -8,7 +8,13 @@ This stage sets up VPC Service Controls (VPC-SC) for the whole organization and 
   - [Factories for VPC-SC configuration](#factories-for-vpc-sc-configuration)
   - [Default geo-based access level](#default-geo-based-access-level)
   - [Ingress policy for organization-level log sinks](#ingress-policy-for-organization-level-log-sinks)
-  - [Asset Inventory for perimeter membership](#asset-inventory-for-perimeter-membership)
+  - [Perimeter membership](#perimeter-membership)
+    - [Resource discovery](#resource-discovery)
+    - [Manual resource membership](#manual-resource-membership)
+  - [Enforced vs dry-run perimeters](#enforced-vs-dry-run-perimeters)
+- [Context expansion](#context-expansion)
+  - [Static contexts](#static-contexts)
+  - [Stage-generated contexts](#stage-generated-contexts)
 - [How to run this stage](#how-to-run-this-stage)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Impersonating the automation service account](#impersonating-the-automation-service-account)
@@ -16,7 +22,7 @@ This stage sets up VPC Service Controls (VPC-SC) for the whole organization and 
   - [Running the stage](#running-the-stage)
 - [Customizations](#customizations)
   - [Access policy](#access-policy)
-  - [Default perimeter](#default-perimeter)
+  - [Perimeters](#perimeters)
   - [Access levels](#access-levels)
   - [Ingress/egress policies](#ingressegress-policies)
 - [Notes](#notes)
@@ -38,12 +44,12 @@ The perimeter is set to dry-run mode by default, but the suggestion is to switch
 The stage is designed to allow defining additional perimeters via the `perimeters` variable, with a few caveats:
 
 - there's no support for perimeter bridges, if those are needed they need to be integrated via code (which is easy enough to do anyway)
-- resource discovery is only supported for the default perimeter, using the `default` key in the `perimeters` variable (again, that is reasonably easy to change via code if needed)
-- the factory files for access levels and ingress/egress policies use the same folder regardless of perimeter, but their inclusion in a perimeter is controlled by the individual perimeters `access_levels`, `ingress_policies`, and `egress_policies` attributes.
+- only one set of discovered resources is supported and made available via the `$resource_sets:discovered_projects` context expansion
+- the factory files for access levels and ingress/egress policies use the same folder regardless of perimeter, but their inclusion in a perimeter is controlled by the perimeter-level `access_levels`, `ingress_policies`, and `egress_policies` attributes.
 
 ### Factories for VPC-SC configuration
 
-Restricted services, access levels, ingress and egress policies can all be configured via YAML-based files, which allow intuitive editing and minimize the complexity of running operations.
+Restricted services, access levels, ingress and egress policies and perimeters can all be configured via YAML-based files, which allow intuitive editing and minimize the complexity of running operations.
 
 The default setup only contains a single access level and an initial list of restricted services in the `datasets/classic/access-levels` folder and the `datasets/classic/restricted-services.yaml` file.
 
@@ -69,17 +75,153 @@ More access levels can be of course added to better tailor the configuration to 
 
 ### Ingress policy for organization-level log sinks
 
-An ingress policy that allows ingress to the perimeter for identities used in organization-level sinks is automatically created, but needs to be explicitly referenced in the perimeter via the `fast-org-log-sinks` key.
+An ingress policy that allows ingress to the perimeter for identities used in organization-level sinks is automatically created, but needs to be explicitly referenced in the perimeter via the `$identity_sets:logging_identities` context expansion.
 
 This only supports sinks defined in the bootstrap stage, but it can easily be used as a reference for different, specific needs (or replaced with a policy leveraging Asset Inventory for automatic inclusion of folder-level sinks).
 
-### Asset Inventory for perimeter membership
+### Perimeter membership
 
-One more feature this setup provides out of the box to reduce toil, is semi-automatic resource discovery and management of perimeter membership via Cloud Asset Inventory.
+The set of resources protected by each perimeter can be defined in two main ways:
 
-This is only supported for the `default` perimeters, and requires this stage to be run every time new projects are created. It is mainly meant for simple installations where project churn is low and the organization is fairly stable. For large installations, direct perimeter inclusion of projects at creation time via the project factory is probably a better choice.
+- authoritatively, where protected resources are only defined in this stage
+- cooperatively, where some resources are defined in this stage, and additional resources can be added separately (e.g. by a project factory)
 
-Resource discovery can be configured (or turned off if needed) via the `resource_discovery` variable.
+The first approach is more secure as it does not require granting editing permission to other actors, but it's also operationally heavier as it requires adding projects to the perimeter right after creation, before many operations can be run. For example, Shared VPC attachment for a service project cannot happen until the project is in the same perimeter as its host project. The main advantage of this approach is being able to leverage the resource discovery features provided by this stage.
+
+The second approach is more flexible, but requires delegating a measure of control over perimeters to other actors, and losing control over perimeter membership which stops being enforced by Terraform.
+
+#### Resource discovery
+
+If the first approach is desired in combination with resource discovery, you can simply tweak exclusions via the `resource_discovery` variable as the feature is enabled by default.
+
+Discovered resources are made available via the `$resource_sets:discovered_projects` context expansion, which is already part of the definition of the default perimeter.
+
+This approach is suitable for simple requirements, and provided out of the box in this stage's default configuration.
+
+#### Manual resource membership
+
+When resource discovery is not used, resources can be added to perimeters via a combination of:
+
+- explicit project numbers inclusion
+- individual project expansion via the `$project_numbers:xxx` context namespace
+- set-based project expansion via the `$resource_sets:xxx` context namespace
+
+A selected number of auto-generated context expansions are generated by this stage, and described in the [Context section below](#stage-generated-contexts).This is what each of three methods above looks like in a perimeter definition.
+
+```yaml
+spec:
+  resources:
+    # explicit reference
+    - projects/123456
+    # individual expansion
+    - $project_numbers:iac-0
+    # set expansion
+    - $resource_sets:org_setup_projects
+```
+
+When partial control is delegated to external actors, the perimeter needs to be configured to ignore changes to member resources so as not to trigger permadiffs between different stages. This is achieved via the `ignore_resource_changes` perimeter attribute.
+
+```yaml
+ignore_resource_changes: true
+use_explicit_dry_run_spec: true
+spec:
+  # spec definition
+```
+
+### Enforced vs dry-run perimeters
+
+As mentioned above, the default configuration uses a single perimeter configured in dry-run mode. A dry-run mode perimeter has the following format.
+
+```yaml
+# datasets/xxx/perimeters/myperimeter.yaml
+use_explicit_dry_run_spec: true
+spec:
+  # perimeter definition here
+```
+
+A perimeter in enforced mode uses `status` instead of `spec`.
+
+```yaml
+# datasets/xxx/perimeters/myperimeter.yaml
+use_explicit_dry_run_spec: true
+status:
+  # perimeter definition here
+```
+
+ If the dry-run and enforced configurations are different, define both explicitly in separate `spec` and `status` blocks, and set the `use_explicit_dry_run_spec` to `false`.
+
+## Context expansion
+
+In much the same way as other FAST stages and underlying modules, context expansion is supported here in two ways:
+
+- static values can be defined in the stage's `defaults.yaml` file or `context` variable
+- specific values derived by other FAST stages are automatically added to the relevant context namespaces
+
+These are the available context namespaces in this stage.
+
+| context           | type               |
+| :---------------- | :----------------- |
+| `iam_principals`  | `map(string)`      |
+| `identity_sets`   | `map(map(string))` |
+| `project_numbers` | `map(string)`      |
+| `resource_sets`   | `map(map(string))` |
+| `service_sets`    | `map(map(string))` |
+| `storage_buckets` | `map(string)`      |
+
+The following sub-sections illustrate how both work.
+
+### Static contexts
+
+Static contexts can be defined via the `defaults.yaml` file or the `context` variable, and are internally merged together and with the stage's built-in contexts.
+
+This is an example of defining a context via `defaults.yaml`.
+
+```yaml
+# datasets/xxx/defaults.yaml
+context:
+  iam_principals:
+    me: user:foo@example.com
+  resource_sets:
+    my_projects:
+      - projects/12345
+      - projects/67890
+```
+
+These can then be reused in YAML definitions like shown below.
+
+```yaml
+# datasets/xxx/perimeters/myperimeter.yaml
+use_explicit_dry_run_spec: true
+status:
+  resources:
+    - $resource_sets:my_projects
+```
+
+```yaml
+# datasets/xxx/access-levels/identity_me.yaml
+conditions:
+  - members:
+    - $iam_principals:me
+```
+
+### Stage-generated contexts
+
+When this stage is used as part of a FAST installation, it consumes data made available from other stages and makes it available as context expansions. The resource discovery feature when enabled also add its own context expansion.
+
+- `$iam_principals:service_accounts/xxx` \
+  service accounts created in the 0-org-setup stage
+- `$identity_sets:logging_identities` \
+  set of identities used by the log sinks created in the 0-org-setup stage
+- `$project_numbers:xxx` \
+  project numbers for projects created in the 0-org-setup stage
+- `$resource_sets:discovered_projects` \
+  set of projects numbers for discovered projects (when discovery is enabled)
+- `$resource_sets:org_setup_projects` \
+  set of projects numbers for projects created in the 0-org-setup stage
+- `$service_sets:restricted_services` \
+  set of services defined in the services factory file
+- `$storage_buckets:xxx` \
+  storage buckets created in the 0-org-setup stage
 
 ## How to run this stage
 
@@ -163,35 +305,27 @@ The stage is a thin wrapper that implements a single-perimeter design via the [`
 
 The stage creates the org-level access policy by default. A pre-existing policy can instead be used by populating the `access_policy` variable with the policy id. In tenant-level mode this is done automatically by the FAST input/output files mechanism.
 
-### Default perimeter
+### Perimeters
 
-The default perimeter is exposed via the `perimeters.default` variable which allows customizing most of its features.
+The default perimeter is defined in the `perimeters/default.yaml` file within each dataset. The file can be easily customized and used as a basis to create additional perimeters.
 
-The only exception is the list of restricted services, which is configured via a YAML file with a list of services. To configure restricted services edit the list in `datasets/classic/restricted-services.yaml`, or set the list of services in the `restricted_services` perimeter attribute.
+```yaml
+# yaml-language-server: $schema=../../../schemas/perimeter.schema.json
 
-Note that it's not enough to define access levels and ingress/egress policies via their variables or via factory files: in order for them to be deployed they also need to be referenced by name in the perimeter via the attributes shown in this example.
+use_explicit_dry_run_spec: true
+# default to dr-run
+spec:
+  access_levels:
+    - geo
+  # include discovered projects
+  resources:
+    - $resource_sets:discovered_projects
+  ingress_policies:
+    - fast-org-log-sinks
+  # protect the full list of services
+  restricted_services:
+    - $service_sets:restricted_services
 
-```tfvars
-perimeters = {
-  default = {
-    # enable access levels defined in YAML and/or variables
-    access_levels    = ["geo"]
-    # switch to enforced mode (defaults to true)
-    dry_run          = false
-    # enable egress policies defined in YAML and/or variables
-    egress_policies  = []
-    # enable ingress policies defined in YAML and/or variables
-    # and/or the built-in ingress policy for org-level log sinks
-    ingress_policies = ["fast-org-log-sinks"]
-    # list resources part of this perimeter
-    resources        = []
-    # turn on VPC accessible services
-    vpc_accessible_services = {
-      allowed_services   = []
-      enable_restriction = false
-    }
-  }
-}
 ```
 
 ### Access levels
