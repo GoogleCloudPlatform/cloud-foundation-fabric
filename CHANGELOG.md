@@ -3,7 +3,38 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-09-20 12:38:37+00:00 to: None since: v45.0.0 -->
+## [Unreleased] <!-- from: 2025-10-26 16:55:32+00:00 to: None since: v46.0.0 -->
+
+### BREAKING CHANGES
+
+- `modules/cloud-function`: Removed field `vpc_connector.create`, populate `vpc_connector_create` instead
+`modules/cloud-function-v2`: Removed field `vpc_connector.create`, populate `vpc_connector_create` instead
+`modules/cloud-run-v2`: Removed `service_account` and `service_account_create`.  Use `service_account_config` instead [[#3473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3473)]
+
+- [[#3489](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3489)] Explain cursed Create Before Destroy ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-30 18:36:40+00:00 -->
+- [[#3475](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3475)] Run yapf in single thread to prevent EOFError errors ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 06:43:01+00:00 -->
+
+### FAST
+
+- [[#3486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3486)] Fenyvesi levi/fix essential contact ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-10-29 13:15:54+00:00 -->
+- [[#3469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3469)] Enable extra_dirs for tflint_fast ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 14:42:37+00:00 -->
+- [[#3478](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3478)] Add CIS Benchmarks for GCP 3.0 to documentation of controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-27 09:23:16+00:00 -->
+
+### MODULES
+
+- [[#3500](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3500)] Fix E2E tests. ([wiktorn](https://github.com/wiktorn)) <!-- 2025-11-04 09:23:55+00:00 -->
+- [[#3441](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3441)] BigQuery reservation ([lcaggio](https://github.com/lcaggio)) <!-- 2025-11-03 10:36:42+00:00 -->
+- [[#3488](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3488)] Exclude folder config files from project factory paths ([ludoo](https://github.com/ludoo)) <!-- 2025-10-30 16:25:14+00:00 -->
+- [[#3482](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3482)] chore: cleanup remove fleet output ([danistrebel](https://github.com/danistrebel)) <!-- 2025-10-28 11:40:33+00:00 -->
+- [[#3476](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3476)] Align agent-engine with interface for Cloud Functions and Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 15:14:37+00:00 -->
+- [[#3477](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3477)] feat: add GKE fleet property for Standard and Autopilot Cluster Modules ([danistrebel](https://github.com/danistrebel)) <!-- 2025-10-27 08:58:46+00:00 -->
+- [[#3473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3473)] service_account_config for Cloud Run v2 ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 07:03:53+00:00 -->
+
+### TOOLS
+
+- [[#3476](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3476)] Align agent-engine with interface for Cloud Functions and Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 15:14:37+00:00 -->
+- [[#3469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3469)] Enable extra_dirs for tflint_fast ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 14:42:37+00:00 -->
+- [[#3473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3473)] service_account_config for Cloud Run v2 ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 07:03:53+00:00 -->
 
 ## [46.0.0] - 2025-10-26
 
