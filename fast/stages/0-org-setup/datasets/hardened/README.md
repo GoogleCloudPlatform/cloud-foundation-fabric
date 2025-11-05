@@ -122,8 +122,6 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `storage.secureHttpTransport` | Restrict unencrypted HTTP access to Cloud Storage. |  |
 | `storage.uniformBucketLevelAccess` | Enforce the enablement of uniform bucket-level access to Cloud Storage buckets. | **CIS for GCP 3.0**: 5.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 
-**Note:** For organizations with strict requirements to ensure all resources are created and stored within specific geographic regions (e.g., for data sovereignty or regulatory compliance), the `gcp.resourceLocations` Organization Policy present in file [gcp.yaml](organization/org-policies/gcp.yaml)  can be enabled.
-
 #### Custom Constraints
 
 | Constraint | Description | Compliance Mapping |
@@ -213,6 +211,55 @@ SCC Custom SHA Detectors are available only for organization have subscribed to 
 | `networkRouteChanges` | Ensure log metric filters and alerts exist for VPC network route changes. | **CIS for GCP 3.0**: 2.8<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
 | `projectOwnershipChange` | Ensure log metric filters and alerts exist for project ownership changes. | **CIS for GCP 3.0**: 2.4<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
 | `storageIamChanges` | Ensure log metric filters and alerts exist for Cloud Storage IAM permission changes. | **CIS for GCP 3.0**: 2.10<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
+
+##  Configuration changes for Hardened Policies
+
+* For organizations with strict requirements to ensure resources are created and stored within specific geographic regions (e.g., for data sovereignty or regulatory compliance), you can enforce this by enabling the `gcp.resourceLocations` Organization Policy, which is defined in the [gcp.yaml](organization/org-policies/gcp.yaml) file.
+
+* The `compute.requireVpcFlowLogs` policy is enabled by default in the hardened datasets. This requires to update the `2-networking` stage to configure all subnets with **VPC Flow Logs**. Here is an example of a subnet configuration with `flow_logs_config` enabled:
+```yaml
+name: dev-default
+region: $locations:primary
+ip_cidr_range: 10.73.0.0/24
+description: Default primary-region subnet for dev
+flow_logs_config: # This section enables VPC Flow Logs
+  aggregation_interval: "INTERVAL_15_MIN"
+  flow_sampling: 0.5
+  metadata: "INCLUDE_ALL_METADATA"
+```
+
+* The `custom.firewallEnforcePolicyRuleLogging` policy is enabled by default in the hardened datasets. This requires to update the `2-networking` stage to configure firewall policies with logging enabled. Here is an example of a firewall policy rule with `enable_logging: true`:
+```yaml
+parent_id: $folder_ids:networking
+attachments:
+  networking: $folder_ids:networking
+name: network-policy
+ingress_rules:
+  allow-healthchecks:
+    description: Enable SSH, HTTP and HTTPS healthchecks
+    priority: 1001
+    enable_logging: true # Logging must be enabled per policy
+    match:
+      source_ranges:
+        - $cidr_ranges_sets:healthchecks
+      layer4_configs:
+        - protocol: tcp
+          ports: ["22", "80", "443"]
+```
+
+* The `compute.restrictVpcPeering` policy is enabled by default in the hardened datasets with all VPC peerings restricted to networks **within** your organization (as defined by `under:organizations/${organization.id}`). This policy will block connections from Google-managed services (e.g., Cloud SQL, Cloud Memorystore, Cloud Build) that use **Private Service Access**, as they peer from an external Google-owned network. To allow these essential services to peer, you must explicitly add Google's `servicenetworking` network to the policy's `allow` list.
+
+Here is the required policy configuration:
+```yaml
+compute.restrictVpcPeering:
+  rules:
+    - allow:
+        values:
+          # Allows all peering within your organization
+          - "under:organizations/${organization.id}"
+          # Allows peering for Google's Private Service Access
+          - "projects/<google-project-id>/global/networks/servicenetworking"
+```
 
 ## Troubleshooting
 
