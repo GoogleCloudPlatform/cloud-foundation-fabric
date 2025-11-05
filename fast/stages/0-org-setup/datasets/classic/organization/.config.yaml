@@ -88,6 +88,9 @@ iam_by_principals:
     # - roles/accesscontextmanager.policyViewer
     - roles/compute.orgFirewallPolicyUser
     - roles/compute.viewer
+  # uncomment for cooperative VPC-SC configurations
+  # $iam_principals:service_accounts/iac-0/iac-pw-rw:
+  #   - roles/accesscontextmanager.policyEditor
   $iam_principals:service_accounts/iac-0/iac-security-rw:
     # uncomment for cooperative VPC-SC configurations
     # - roles/accesscontextmanager.policyEditor
