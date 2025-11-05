@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
-- [[#3486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3486)] Fenyvesi levi/fix essential contact ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-10-29 13:15:54+00:00 -->
+- [[#3486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3486)] Enable essential contacts in org setup stage ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-10-29 13:15:54+00:00 -->
 - [[#3469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3469)] Enable extra_dirs for tflint_fast ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 14:42:37+00:00 -->
 - [[#3478](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3478)] Add CIS Benchmarks for GCP 3.0 to documentation of controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-27 09:23:16+00:00 -->
 
