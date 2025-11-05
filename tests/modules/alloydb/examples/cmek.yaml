@@ -24,7 +24,9 @@ values:
     deletion_policy: DEFAULT
     display_name: primary
     etag: null
-    initial_user: []
+    initial_user:
+    - password: changeit
+      user: postgres
     labels: null
     location: europe-west8
     maintenance_update_policy: []
