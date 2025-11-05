@@ -11,8 +11,10 @@ All notable changes to this project will be documented in this file.
 `modules/cloud-function-v2`: Removed field `vpc_connector.create`, populate `vpc_connector_create` instead
 `modules/cloud-run-v2`: Removed `service_account` and `service_account_create`.  Use `service_account_config` instead [[#3473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3473)]
 
+
+### DOCUMENTATION
+
 - [[#3489](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3489)] Explain cursed Create Before Destroy ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-30 18:36:40+00:00 -->
-- [[#3475](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3475)] Run yapf in single thread to prevent EOFError errors ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 06:43:01+00:00 -->
 
 ### FAST
 
@@ -35,6 +37,7 @@ All notable changes to this project will be documented in this file.
 - [[#3476](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3476)] Align agent-engine with interface for Cloud Functions and Cloud Run ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 15:14:37+00:00 -->
 - [[#3469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3469)] Enable extra_dirs for tflint_fast ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 14:42:37+00:00 -->
 - [[#3473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3473)] service_account_config for Cloud Run v2 ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 07:03:53+00:00 -->
+- [[#3475](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3475)] Run yapf in single thread to prevent EOFError errors ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 06:43:01+00:00 -->
 
 ## [46.0.0] - 2025-10-26
 
