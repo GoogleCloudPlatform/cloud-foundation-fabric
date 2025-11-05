@@ -92,7 +92,7 @@ The second approach is more flexible, but requires delegating a measure of contr
 
 #### Resource discovery
 
-If the first approach is desired in combination with resource discovery, you can simply tweak exclusions via the `resource_discovery` variable as the featue is enabled by default.
+If the first approach is desired in combination with resource discovery, you can simply tweak exclusions via the `resource_discovery` variable as the feature is enabled by default.
 
 Discovered resources are made available via the `$resource_sets:discovered_projects` context expansion, which is already part of the definition of the default perimeter.
 
