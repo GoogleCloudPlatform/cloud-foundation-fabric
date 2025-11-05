@@ -5,12 +5,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-10-26 16:55:32+00:00 to: None since: v46.0.0 -->
 
+## [46.1.0] - 2025-11-05
+
 ### BREAKING CHANGES
 
 - `modules/cloud-function`: Removed field `vpc_connector.create`, populate `vpc_connector_create` instead
 `modules/cloud-function-v2`: Removed field `vpc_connector.create`, populate `vpc_connector_create` instead
 `modules/cloud-run-v2`: Removed `service_account` and `service_account_create`.  Use `service_account_config` instead [[#3473](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3473)]
-
 
 ### DOCUMENTATION
 
@@ -18,7 +19,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
-- [[#3486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3486)] Fenyvesi levi/fix essential contact ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-10-29 13:15:54+00:00 -->
+- [[#3486](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3486)] Enable essential contacts in org setup stage ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-10-29 13:15:54+00:00 -->
 - [[#3469](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3469)] Enable extra_dirs for tflint_fast ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-27 14:42:37+00:00 -->
 - [[#3478](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3478)] Add CIS Benchmarks for GCP 3.0 to documentation of controls ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-10-27 09:23:16+00:00 -->
 
@@ -1821,7 +1822,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.1.0...HEAD
+[46.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.1.0...46.0.0
 [46.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...45.1.0
 [45.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...45.0.0
 [45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...44.2.0
