@@ -92,6 +92,9 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-vpcsc-ro:
     - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
+  # Uncomment if you want to use PAM.
+  # $service_agents:pam:
+  #   - roles/privilegedaccessmanager.serviceAgent
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary
