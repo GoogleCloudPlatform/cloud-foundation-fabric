@@ -46,6 +46,7 @@ variable "attached_disks" {
     source_type       = optional(string)
     options = optional(
       object({
+        architecture           = optional(string)
         auto_delete            = optional(bool, false) # applies only to vm templates
         mode                   = optional(string, "READ_WRITE")
         provisioned_iops       = optional(number)
@@ -80,6 +81,12 @@ variable "attached_disks" {
     ]) == length(var.attached_disks)
     error_message = "auto_delete can only be specified on READ_WRITE disks."
   }
+  validation {
+    condition = alltrue([for d in var.attached_disks :
+      (d.options.architecture == null || contains(["ARM64", "x86_64"], d.options.architecture))
+    ])
+    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
+  }
 }
 
 variable "boot_disk" {
@@ -89,6 +96,7 @@ variable "boot_disk" {
     snapshot_schedule = optional(list(string))
     source            = optional(string)
     initialize_params = optional(object({
+      architecture           = optional(string)
       image                  = optional(string, "projects/debian-cloud/global/images/family/debian-11")
       provisioned_iops       = optional(number)
       provisioned_throughput = optional(number) # in MiB/s
@@ -113,6 +121,13 @@ variable "boot_disk" {
       var.boot_disk.initialize_params != null
     )
     error_message = "Using an independent disk for boot requires initialize params."
+  }
+  validation {
+    condition = (
+      var.boot_disk.initialize_params.architecture == null ||
+      contains(["ARM64", "x86_64"], var.boot_disk.initialize_params.architecture)
+    )
+    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
   }
 }
 
