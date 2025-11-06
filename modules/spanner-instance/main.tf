@@ -91,6 +91,7 @@ resource "google_spanner_database" "spanner_databases" {
   project                  = var.project_id
   instance                 = local.spanner_instance.name
   name                     = each.key
+  database_dialect         = each.value.database_dialect
   ddl                      = each.value.ddl
   enable_drop_protection   = each.value.enable_drop_protection
   deletion_protection      = false
