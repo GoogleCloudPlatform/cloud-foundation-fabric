@@ -57,6 +57,7 @@ resource "google_compute_instance_template" "default" {
   }
 
   disk {
+    architecture           = var.boot_disk.initialize_params.architecture
     auto_delete            = var.boot_disk.auto_delete
     boot                   = true
     disk_size_gb           = var.boot_disk.initialize_params.size
@@ -96,7 +97,8 @@ resource "google_compute_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      auto_delete = config.value.options.auto_delete
+      architecture = config.value.options.architecture
+      auto_delete  = config.value.options.auto_delete
       device_name = coalesce(
         config.value.device_name, config.value.name, config.key
       )
@@ -280,6 +282,7 @@ resource "google_compute_region_instance_template" "default" {
   }
 
   disk {
+    architecture           = var.boot_disk.initialize_params.architecture
     auto_delete            = var.boot_disk.auto_delete
     boot                   = true
     disk_size_gb           = var.boot_disk.initialize_params.size
@@ -318,7 +321,8 @@ resource "google_compute_region_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      auto_delete = config.value.options.auto_delete
+      architecture = config.value.options.architecture
+      auto_delete  = config.value.options.auto_delete
       device_name = coalesce(
         config.value.device_name, config.value.name, config.key
       )

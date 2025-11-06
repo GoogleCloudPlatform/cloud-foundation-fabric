@@ -85,6 +85,7 @@ resource "google_compute_disk" "boot" {
   name                   = "${var.name}-boot"
   type                   = var.boot_disk.initialize_params.type
   size                   = var.boot_disk.initialize_params.size
+  architecture           = var.boot_disk.initialize_params.architecture
   image                  = var.boot_disk.initialize_params.image
   provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
   provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
@@ -116,6 +117,7 @@ resource "google_compute_disk" "disks" {
   name                   = "${var.name}-${each.key}"
   type                   = each.value.options.type
   size                   = each.value.size
+  architecture           = each.value.options.architecture
   image                  = each.value.source_type == "image" ? each.value.source : null
   provisioned_iops       = each.value.options.provisioned_iops
   provisioned_throughput = each.value.options.provisioned_throughput
@@ -284,6 +286,7 @@ resource "google_compute_instance" "default" {
         : [""]
       )
       content {
+        architecture           = var.boot_disk.initialize_params.architecture
         image                  = var.boot_disk.initialize_params.image
         size                   = var.boot_disk.initialize_params.size
         type                   = var.boot_disk.initialize_params.type
