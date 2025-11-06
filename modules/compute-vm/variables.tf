@@ -46,10 +46,13 @@ variable "attached_disks" {
     source_type       = optional(string)
     options = optional(
       object({
-        auto_delete  = optional(bool, false)
-        mode         = optional(string, "READ_WRITE")
-        replica_zone = optional(string)
-        type         = optional(string, "pd-balanced")
+        auto_delete            = optional(bool, false) # applies only to vm templates
+        mode                   = optional(string, "READ_WRITE")
+        provisioned_iops       = optional(number)
+        provisioned_throughput = optional(number) # in MiB/s
+        replica_zone           = optional(string)
+        storage_pool           = optional(string)
+        type                   = optional(string, "pd-balanced")
       }),
       {
         auto_delete  = true
@@ -86,9 +89,12 @@ variable "boot_disk" {
     snapshot_schedule = optional(list(string))
     source            = optional(string)
     initialize_params = optional(object({
-      image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
-      size  = optional(number, 10)
-      type  = optional(string, "pd-balanced")
+      image                  = optional(string, "projects/debian-cloud/global/images/family/debian-11")
+      provisioned_iops       = optional(number)
+      provisioned_throughput = optional(number) # in MiB/s
+      size                   = optional(number, 10)
+      storage_pool           = optional(string)
+      type                   = optional(string, "pd-balanced")
     }), {})
     use_independent_disk = optional(bool, false)
   })
@@ -420,9 +426,9 @@ variable "service_account" {
 variable "shielded_config" {
   description = "Shielded VM configuration of the instances."
   type = object({
-    enable_secure_boot          = bool
-    enable_vtpm                 = bool
-    enable_integrity_monitoring = bool
+    enable_secure_boot          = optional(bool, true)
+    enable_vtpm                 = optional(bool, true)
+    enable_integrity_monitoring = optional(bool, true)
   })
   default = null
 }

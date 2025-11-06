@@ -82,10 +82,13 @@ resource "google_compute_disk" "boot" {
   zone    = local.zone
   # by default, GCP creates boot disks with the same name as instance, the deviation here is kept for backwards
   # compatibility
-  name  = "${var.name}-boot"
-  type  = var.boot_disk.initialize_params.type
-  size  = var.boot_disk.initialize_params.size
-  image = var.boot_disk.initialize_params.image
+  name                   = "${var.name}-boot"
+  type                   = var.boot_disk.initialize_params.type
+  size                   = var.boot_disk.initialize_params.size
+  image                  = var.boot_disk.initialize_params.image
+  provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
+  provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+  storage_pool           = var.boot_disk.initialize_params.storage_pool
   labels = merge(var.labels, {
     disk_name = "boot"
     disk_type = var.boot_disk.initialize_params.type
@@ -108,13 +111,16 @@ resource "google_compute_disk" "disks" {
     for k, v in local.attached_disks_zonal :
     k => v if v.source_type != "attach"
   }
-  project  = local.project_id
-  zone     = local.zone
-  name     = "${var.name}-${each.key}"
-  type     = each.value.options.type
-  size     = each.value.size
-  image    = each.value.source_type == "image" ? each.value.source : null
-  snapshot = each.value.source_type == "snapshot" ? each.value.source : null
+  project                = local.project_id
+  zone                   = local.zone
+  name                   = "${var.name}-${each.key}"
+  type                   = each.value.options.type
+  size                   = each.value.size
+  image                  = each.value.source_type == "image" ? each.value.source : null
+  provisioned_iops       = each.value.options.provisioned_iops
+  provisioned_throughput = each.value.options.provisioned_throughput
+  snapshot               = each.value.source_type == "snapshot" ? each.value.source : null
+  storage_pool           = each.value.options.storage_pool
   labels = merge(var.labels, {
     disk_name = each.value.name
     disk_type = each.value.options.type
@@ -278,10 +284,13 @@ resource "google_compute_instance" "default" {
         : [""]
       )
       content {
-        image                 = var.boot_disk.initialize_params.image
-        size                  = var.boot_disk.initialize_params.size
-        type                  = var.boot_disk.initialize_params.type
-        resource_manager_tags = var.tag_bindings_immutable
+        image                  = var.boot_disk.initialize_params.image
+        size                   = var.boot_disk.initialize_params.size
+        type                   = var.boot_disk.initialize_params.type
+        resource_manager_tags  = var.tag_bindings_immutable
+        provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
+        provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+        storage_pool           = var.boot_disk.initialize_params.storage_pool
       }
     }
   }
