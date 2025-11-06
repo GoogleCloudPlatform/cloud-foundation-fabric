@@ -16,6 +16,6 @@
 
 parent: $folder_ids:team-a/prod
 shared_vpc_service_config:
-  host_project: $project_ids:prod-spoke-0
+  host_project: $project_ids:net-prod-0
   # network_users:
   #   - group:team-a-admins@example.com
