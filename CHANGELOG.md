@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-10-26 16:55:32+00:00 to: None since: v46.0.0 -->
 
+## [47.0.0] - 2025-11-05
+
+### BREAKING CHANGES
+
+- `fast/stages/2-networking-legacy-a-simple`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435 
+`fast/stages/2-networking-legacy-b-nva`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435 
+`fast/stages/2-networking-legacy-c-separate-envs`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435 [[#3479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3479)]
+
+### FAST
+
+- [[#3497](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3497)] Add resource set for org setup projects to vpc sc stage ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 09:36:40+00:00 -->
+- [[#3496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3496)] Pass email addresses context to organization module in stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 08:43:15+00:00 -->
+- [[#3495](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3495)] Support essential contacts in FAST stages and project factory YAML definitions, add email context namespace ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 07:53:29+00:00 -->
+- [[#3494](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3494)] Okta as Workload identity provider  ([lhoet-google](https://github.com/lhoet-google)) <!-- 2025-11-01 08:00:06+00:00 -->
+- [[#3490](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3490)] Allow referencing template-derived resources in project configuration files ([ludoo](https://github.com/ludoo)) <!-- 2025-10-30 16:42:14+00:00 -->
+- [[#3481](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3481)] Align network stage defaults/outputs to other stages, add defaults schema ([ludoo](https://github.com/ludoo)) <!-- 2025-10-28 07:47:28+00:00 -->
+- [[#3480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3480)] Enable tflint on 2-security ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-28 06:33:15+00:00 -->
+- [[#3479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3479)] Removes legacy FAST networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-27 14:38:28+00:00 -->
+- [[#3471](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3471)] Streamline stage variables and output files for vpc-sc and security stages ([ludoo](https://github.com/ludoo)) <!-- 2025-10-27 13:27:10+00:00 -->
+
+### MODULES
+
+- [[#3499](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3499)] Revert "Add support for project templates to projects variable in project factory module" ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 10:35:30+00:00 -->
+- [[#3498](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3498)] Add support for project templates to projects variable in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 09:53:14+00:00 -->
+- [[#3496](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3496)] Pass email addresses context to organization module in stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 08:43:15+00:00 -->
+- [[#3495](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3495)] Support essential contacts in FAST stages and project factory YAML definitions, add email context namespace ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 07:53:29+00:00 -->
+- [[#3493](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3493)] Implement precondition check in project factory to ensure declared templates exist ([ludoo](https://github.com/ludoo)) <!-- 2025-10-31 15:32:34+00:00 -->
+- [[#3490](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3490)] Allow referencing template-derived resources in project configuration files ([ludoo](https://github.com/ludoo)) <!-- 2025-10-30 16:42:14+00:00 -->
+
+### TOOLS
+
+- [[#3495](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3495)] Support essential contacts in FAST stages and project factory YAML definitions, add email context namespace ([ludoo](https://github.com/ludoo)) <!-- 2025-11-03 07:53:29+00:00 -->
+- [[#3490](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3490)] Allow referencing template-derived resources in project configuration files ([ludoo](https://github.com/ludoo)) <!-- 2025-10-30 16:42:14+00:00 -->
+- [[#3480](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3480)] Enable tflint on 2-security ([wiktorn](https://github.com/wiktorn)) <!-- 2025-10-28 06:33:15+00:00 -->
+- [[#3479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3479)] Removes legacy FAST networking stages ([sruffilli](https://github.com/sruffilli)) <!-- 2025-10-27 14:38:28+00:00 -->
+
 ## [46.1.0] - 2025-11-05
 
 ### BREAKING CHANGES
@@ -1822,7 +1858,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.0.0...HEAD
+[47.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.0.0...46.1.0
 [46.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.1.0...46.0.0
 [46.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...45.1.0
 [45.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...45.0.0

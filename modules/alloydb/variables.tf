@@ -177,7 +177,6 @@ variable "initial_user" {
     user     = optional(string, "postgres")
     password = string
   })
-  default = null
 }
 
 variable "instance_name" {

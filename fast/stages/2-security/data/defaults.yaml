@@ -23,6 +23,11 @@ projects:
   defaults:
     locations:
       storage: $locations:storage-default
+  # edit and uncomment for vpc-sc cooperative configuration
+  # overrides:
+  #   vpc_sc:
+  #     perimeter_name: $vpc_sc_perimeters:default
+  #     is_dry_run: true
 output_files:
   # local path is optional but recommended when starting
   local_path: ~/fast-config/fast-test-00

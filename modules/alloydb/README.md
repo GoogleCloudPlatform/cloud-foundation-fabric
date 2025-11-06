@@ -61,13 +61,16 @@ module "alloydb" {
   project_id     = module.project.project_id
   project_number = var.project_number
   cluster_name   = "db"
+  instance_name  = "db"
+  location       = var.region
+  initial_user = {
+    password = "changeit"
+  }
   network_config = {
     psa_config = {
       network = module.vpc.id
     }
   }
-  instance_name       = "db"
-  location            = var.region
   deletion_protection = false
 }
 # tftest modules=3 resources=17 inventory=simple.yaml e2e
@@ -85,6 +88,9 @@ module "alloydb" {
   cluster_name   = "db"
   location       = var.region
   instance_name  = "db"
+  initial_user = {
+    password = "changeit"
+  }
   network_config = {
     psa_config = {
       network = var.vpc.id
@@ -96,6 +102,7 @@ module "alloydb" {
       node_count = 2
     }
   }
+
   deletion_protection = false
 }
 # tftest modules=1 resources=4 inventory=read_pool.yaml e2e
@@ -111,6 +118,9 @@ module "alloydb" {
   cluster_name   = "db"
   location       = var.region
   instance_name  = "db"
+  initial_user = {
+    password = "changeit"
+  }
   network_config = {
     psa_config = {
       network = var.vpc.id
@@ -120,6 +130,7 @@ module "alloydb" {
     enabled = true
     region  = "europe-west12"
   }
+
   deletion_protection = false
 }
 # tftest modules=1 resources=4 inventory=cross_region_replication.yaml e2e
@@ -141,9 +152,13 @@ module "alloydb" {
   cluster_name   = "db"
   location       = var.region
   instance_name  = "db"
+  initial_user = {
+    password = "changeit"
+  }
   network_config = {
     psc_config = { allowed_consumer_projects = [var.project_number] }
   }
+
   deletion_protection = false
 }
 # tftest modules=1 resources=2 inventory=psc.yaml e2e
@@ -165,6 +180,9 @@ module "alloydb" {
     idle_in_transaction_session_timeout = "900000"
     timezone                            = "'UTC'"
   }
+  initial_user = {
+    password = "changeit"
+  }
   network_config = {
     psa_config = {
       network = var.vpc.id
@@ -180,6 +198,7 @@ module "alloydb" {
       password = "mypassword"
     }
   }
+
   deletion_protection = false
 }
 # tftest modules=1 resources=5 inventory=custom.yaml e2e
@@ -243,6 +262,9 @@ module "alloydb" {
   cluster_name   = "primary"
   location       = var.region
   instance_name  = "primary"
+  initial_user = {
+    password = "changeit"
+  }
   network_config = {
     psa_config = {
       network = module.vpc.id
@@ -251,6 +273,7 @@ module "alloydb" {
   encryption_config = {
     primary_kms_key_name = module.kms.keys.key-regional.id
   }
+
   deletion_protection = false
 }
 
@@ -284,6 +307,9 @@ module "alloydb" {
   cluster_name   = "primary"
   location       = var.region
   instance_name  = "primary"
+  initial_user = {
+    password = "changeit"
+  }
   network_config = {
     psa_config = {
       network = var.vpc.id
@@ -302,10 +328,11 @@ module "alloydb" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [cluster_name](variables.tf#L81) | Name of the primary cluster. | <code>string</code> | ✓ |  |
-| [instance_name](variables.tf#L183) | Name of primary instance. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L195) | Region or zone of the cluster and instance. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L240) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code title="object&#40;&#123;&#10;  psa_config &#61; optional&#40;object&#40;&#123;&#10;    network                      &#61; string&#10;    allocated_ip_range           &#61; optional&#40;string&#41;&#10;    authorized_external_networks &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    enable_public_ip             &#61; optional&#40;bool, false&#41;&#10;    enable_outbound_public_ip    &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  psc_config &#61; optional&#40;object&#40;&#123;&#10;    allowed_consumer_projects &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L275) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [initial_user](variables.tf#L174) | AlloyDB cluster initial user credentials. | <code title="object&#40;&#123;&#10;  user     &#61; optional&#40;string, &#34;postgres&#34;&#41;&#10;  password &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [instance_name](variables.tf#L182) | Name of primary instance. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L194) | Region or zone of the cluster and instance. | <code>string</code> | ✓ |  |
+| [network_config](variables.tf#L239) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code title="object&#40;&#123;&#10;  psa_config &#61; optional&#40;object&#40;&#123;&#10;    network                      &#61; string&#10;    allocated_ip_range           &#61; optional&#40;string&#41;&#10;    authorized_external_networks &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    enable_public_ip             &#61; optional&#40;bool, false&#41;&#10;    enable_outbound_public_ip    &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  psc_config &#61; optional&#40;object&#40;&#123;&#10;    allowed_consumer_projects &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L274) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
 | [annotations](variables.tf#L17) | Map FLAG_NAME=>VALUE for annotations which allow client tools to store small amount of arbitrary data. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [automated_backup_configuration](variables.tf#L23) | Automated backup settings for cluster. | <code title="object&#40;&#123;&#10;  enabled       &#61; optional&#40;bool, false&#41;&#10;  backup_window &#61; optional&#40;string, &#34;1800s&#34;&#41;&#10;  location      &#61; optional&#40;string&#41;&#10;  weekly_schedule &#61; optional&#40;object&#40;&#123;&#10;    days_of_week &#61; optional&#40;list&#40;string&#41;, &#91;&#10;      &#34;MONDAY&#34;, &#34;TUESDAY&#34;, &#34;WEDNESDAY&#34;, &#34;THURSDAY&#34;, &#34;FRIDAY&#34;, &#34;SATURDAY&#34;, &#34;SUNDAY&#34;&#10;    &#93;&#41;&#10;    start_times &#61; optional&#40;object&#40;&#123;&#10;      hours &#61; optional&#40;number, 23&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  retention_count  &#61; optional&#40;number, 7&#41;&#10;  retention_period &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [availability_type](variables.tf#L58) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;REGIONAL&#34;</code> |
@@ -320,18 +347,17 @@ module "alloydb" {
 | [encryption_config](variables.tf#L153) | Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code title="object&#40;&#123;&#10;  primary_kms_key_name   &#61; string&#10;  secondary_kms_key_name &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [flags](variables.tf#L162) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [gce_zone](variables.tf#L168) | The GCE zone that the instance should serve from. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. | <code>string</code> |  | <code>null</code> |
-| [initial_user](variables.tf#L174) | AlloyDB cluster initial user credentials. | <code title="object&#40;&#123;&#10;  user     &#61; optional&#40;string, &#34;postgres&#34;&#41;&#10;  password &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [labels](variables.tf#L189) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [machine_config](variables.tf#L201) | AlloyDB machine config. | <code title="object&#40;&#123;&#10;  cpu_count    &#61; optional&#40;number, 2&#41;&#10;  machine_type &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [maintenance_config](variables.tf#L215) | Set maintenance window configuration. | <code title="object&#40;&#123;&#10;  enabled &#61; optional&#40;bool, false&#41;&#10;  day     &#61; optional&#40;string, &#34;SUNDAY&#34;&#41;&#10;  start_time &#61; optional&#40;object&#40;&#123;&#10;    hours &#61; optional&#40;number, 23&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L265) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [project_number](variables.tf#L280) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
-| [query_insights_config](variables.tf#L286) | Query insights config. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, true&#41;&#10;  record_client_address   &#61; optional&#40;bool, true&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [read_pool](variables.tf#L297) | Map of read pool instances to create in the primary cluster. | <code title="map&#40;object&#40;&#123;&#10;  display_name &#61; optional&#40;string&#41;&#10;  node_count   &#61; optional&#40;number, 1&#41;&#10;  flags        &#61; optional&#40;map&#40;string&#41;&#41;&#10;  client_connection_config &#61; optional&#40;object&#40;&#123;&#10;    require_connectors &#61; optional&#40;bool, false&#41;&#10;    ssl_config &#61; optional&#40;object&#40;&#123;&#10;      ssl_mode &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  machine_config &#61; optional&#40;object&#40;&#123;&#10;    cpu_count    &#61; optional&#40;number, 2&#41;&#10;    machine_type &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  network_config &#61; optional&#40;object&#40;&#123;&#10;    authorized_external_networks &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    enable_public_ip             &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  query_insights_config &#61; optional&#40;object&#40;&#123;&#10;    query_string_length     &#61; optional&#40;number, 1024&#41;&#10;    record_application_tags &#61; optional&#40;bool, true&#41;&#10;    record_client_address   &#61; optional&#40;bool, true&#41;&#10;    query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [skip_await_major_version_upgrade](variables.tf#L342) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
-| [subscription_type](variables.tf#L348) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
-| [tag_bindings](variables.tf#L354) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [users](variables.tf#L361) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#34;alloydbsuperuser&#34;&#93;&#41;&#10;  type     &#61; optional&#40;string, &#34;ALLOYDB_BUILT_IN&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L188) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [machine_config](variables.tf#L200) | AlloyDB machine config. | <code title="object&#40;&#123;&#10;  cpu_count    &#61; optional&#40;number, 2&#41;&#10;  machine_type &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [maintenance_config](variables.tf#L214) | Set maintenance window configuration. | <code title="object&#40;&#123;&#10;  enabled &#61; optional&#40;bool, false&#41;&#10;  day     &#61; optional&#40;string, &#34;SUNDAY&#34;&#41;&#10;  start_time &#61; optional&#40;object&#40;&#123;&#10;    hours &#61; optional&#40;number, 23&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L264) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [project_number](variables.tf#L279) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
+| [query_insights_config](variables.tf#L285) | Query insights config. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, true&#41;&#10;  record_client_address   &#61; optional&#40;bool, true&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [read_pool](variables.tf#L296) | Map of read pool instances to create in the primary cluster. | <code title="map&#40;object&#40;&#123;&#10;  display_name &#61; optional&#40;string&#41;&#10;  node_count   &#61; optional&#40;number, 1&#41;&#10;  flags        &#61; optional&#40;map&#40;string&#41;&#41;&#10;  client_connection_config &#61; optional&#40;object&#40;&#123;&#10;    require_connectors &#61; optional&#40;bool, false&#41;&#10;    ssl_config &#61; optional&#40;object&#40;&#123;&#10;      ssl_mode &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  machine_config &#61; optional&#40;object&#40;&#123;&#10;    cpu_count    &#61; optional&#40;number, 2&#41;&#10;    machine_type &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  network_config &#61; optional&#40;object&#40;&#123;&#10;    authorized_external_networks &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    enable_public_ip             &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  query_insights_config &#61; optional&#40;object&#40;&#123;&#10;    query_string_length     &#61; optional&#40;number, 1024&#41;&#10;    record_application_tags &#61; optional&#40;bool, true&#41;&#10;    record_client_address   &#61; optional&#40;bool, true&#41;&#10;    query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [skip_await_major_version_upgrade](variables.tf#L341) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
+| [subscription_type](variables.tf#L347) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
+| [tag_bindings](variables.tf#L353) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [users](variables.tf#L360) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#34;alloydbsuperuser&#34;&#93;&#41;&#10;  type     &#61; optional&#40;string, &#34;ALLOYDB_BUILT_IN&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
