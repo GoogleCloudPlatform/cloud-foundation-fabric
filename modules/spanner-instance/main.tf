@@ -55,12 +55,15 @@ resource "google_spanner_instance" "spanner_instance" {
     ? var.instance.config.name
     : google_spanner_instance_config.spanner_instance_config[0].name
   )
-  name             = var.instance.name
-  display_name     = coalesce(var.instance.display_name, var.instance.name)
-  num_nodes        = var.instance.num_nodes
-  labels           = var.instance.labels
-  force_destroy    = var.instance.force_destroy
-  processing_units = var.instance.processing_units
+  name                         = var.instance.name
+  display_name                 = coalesce(var.instance.display_name, var.instance.name)
+  num_nodes                    = var.instance.num_nodes
+  labels                       = var.instance.labels
+  force_destroy                = var.instance.force_destroy
+  processing_units             = var.instance.processing_units
+  edition                      = var.instance.instance_settings.edition
+  instance_type                = var.instance.instance_settings.instance_type
+  default_backup_schedule_type = var.instance.instance_settings.default_backup_schedule_type
   dynamic "autoscaling_config" {
     for_each = var.instance.autoscaling == null ? [] : [""]
     content {
