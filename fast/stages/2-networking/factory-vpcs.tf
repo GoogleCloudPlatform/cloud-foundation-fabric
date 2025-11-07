@@ -54,6 +54,7 @@ locals {
         project_id                        = v.project_id
         description                       = try(v.description, "Terraform managed")
         create_googleapis_routes          = try(v.create_googleapis_routes, {})
+        delete_default_routes_on_create   = try(v.delete_default_routes_on_create, true)
         dns_policy                        = try(v.dns_policy, {})
         firewall_policy_enforcement_order = try(v.firewall_policy_enforcement_order, "AFTER_CLASSIC_FIREWALL")
         ipv6_config                       = try(v.ipv6_config, {})
