@@ -15,11 +15,18 @@
  */
 
 locals {
-  ctx = {
+  _ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if k != "condition_vars"
   }
+  # add service agents into the iam_principals context namespace
+  ctx = merge(
+    local._ctx,
+    {
+      iam_principals = merge(local._ctx.iam_principals, local.service_agents_ctx)
+    }
+  )
   ctx_p                   = "$"
   organization_id_numeric = split("/", var.organization_id)[1]
 }

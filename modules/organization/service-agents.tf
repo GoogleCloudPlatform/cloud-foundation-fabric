@@ -37,4 +37,8 @@ locals {
       iam_email = "serviceAccount:${v.email}"
     })
   }
+  service_agents_ctx = {
+    for k, v in local.service_agents :
+    "$service_agents:${k}" => v.iam_email
+  }
 }
