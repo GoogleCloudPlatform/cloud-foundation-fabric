@@ -10,7 +10,7 @@
 # testing and development.
 # It should be deleted in a production deployment.
 
-name: dev-net-dev-0
+name: dev-net-spoke-0
 parent: $folder_ids:networking/dev
 services:
   - container.googleapis.com
