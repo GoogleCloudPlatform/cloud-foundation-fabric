@@ -426,6 +426,29 @@ module "folder" {
 # tftest modules=1 resources=3 inventory=logging-data-access.yaml e2e
 ```
 
+## KMS Autokey
+
+To enable KMS Autokey at the folder level, set `autokey_config.project` to a valid project id or number, prefixed by `projects/`. The project must already be [configured correctly](https://docs.cloud.google.com/kms/docs/enable-autokey) for Autokey to work.
+
+If `autokey_config.project` leverages context expansion, the `projects/` prefix is added automatically by the module.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  autokey_config = {
+    project = "$project_numbers:test"
+  }
+  context = {
+    project_numbers = {
+      test = 1234567890
+    }
+  }
+}
+# tftest modules=1 resources=2
+```
+
 ## Custom Security Health Analytics Modules
 
 [Security Health Analytics custom modules](https://cloud.google.com/security-command-center/docs/custom-modules-sha-create) can be defined via the `scc_sha_custom_modules` variable:
@@ -451,6 +474,7 @@ module "folder" {
 }
 # tftest modules=1 resources=2 inventory=custom-modules-sha.yaml
 ```
+
 ### Custom Security Health Analytics Modules Factory
 
 Custom modules can also be specified via a factory. Each file is mapped to a custom module, where the module name defaults to the file name.
@@ -483,7 +507,6 @@ cloudkmKeyRotationPeriod:
 ```
 
 ## Tags
-
 
 Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
 

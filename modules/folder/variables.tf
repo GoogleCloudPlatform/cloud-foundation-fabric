@@ -67,6 +67,15 @@ variable "assured_workload_config" {
   }
 }
 
+variable "autokey_config" {
+  description = "Enable autokey support for this folder's children. Project accepts either project id or number."
+  type = object({
+    project = string
+  })
+  nullable = true
+  default  = null
+}
+
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
   type        = map(list(string))
@@ -94,6 +103,8 @@ variable "context" {
     email_addresses = optional(map(string), {})
     folder_ids      = optional(map(string), {})
     iam_principals  = optional(map(string), {})
+    project_ids     = optional(map(string), {})
+    project_number  = optional(map(string), {})
     tag_values      = optional(map(string), {})
   })
   default  = {}
