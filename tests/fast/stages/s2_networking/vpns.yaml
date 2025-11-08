@@ -94,7 +94,6 @@ values:
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: dev-vpn-router
-    params: []
     project: fast-dev-net-spoke-0
     region: europe-west8
     timeouts: null
@@ -115,7 +114,6 @@ values:
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: hub-vpn-router
-    params: []
     project: fast-prod-net-core-0
     region: europe-west8
     timeouts: null
@@ -130,7 +128,6 @@ values:
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: prod-vpn-router
-    params: []
     project: fast-prod-net-spoke-0
     region: europe-west8
     timeouts: null
@@ -944,7 +941,6 @@ values:
     - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-dev-deny
     network: dev-0
-    params: []
     priority: 65535
     project: fast-dev-net-spoke-0
     source_ranges:
@@ -966,7 +962,6 @@ values:
     - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-landing-deny
     network: hub-0
-    params: []
     priority: 65535
     project: fast-prod-net-core-0
     source_ranges:
@@ -988,7 +983,6 @@ values:
     - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-prod-deny
     network: prod-0
-    params: []
     priority: 65535
     project: fast-prod-net-spoke-0
     source_ranges:
@@ -1166,7 +1160,6 @@ values:
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: hub-nat-ew8-nat
-    params: []
     project: fast-prod-net-core-0
     region: europe-west8
     timeouts: null
@@ -1596,7 +1589,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 100
     project: fast-prod-net-core-0
     tags: null
@@ -1610,7 +1602,6 @@ values:
     name: dev-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
-    params: []
     project: fast-dev-net-spoke-0
     routing_mode: GLOBAL
     timeouts: null
@@ -1623,7 +1614,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-dev-net-spoke-0
     tags: null
@@ -1637,7 +1627,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-dev-net-spoke-0
     tags: null
@@ -1651,7 +1640,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-dev-net-spoke-0
     tags: null
@@ -1664,7 +1652,6 @@ values:
     log_config: []
     name: dev-default
     network: dev-0
-    params: []
     private_ip_google_access: true
     project: fast-dev-net-spoke-0
     region: europe-west8
@@ -1691,7 +1678,6 @@ values:
     name: hub-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
-    params: []
     project: fast-prod-net-core-0
     routing_mode: GLOBAL
     timeouts: null
@@ -1704,7 +1690,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -1718,7 +1703,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -1732,7 +1716,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -1745,7 +1728,6 @@ values:
     log_config: []
     name: hub-default
     network: hub-0
-    params: []
     private_ip_google_access: true
     project: fast-prod-net-core-0
     region: europe-west8
@@ -1772,7 +1754,6 @@ values:
     name: prod-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
-    params: []
     project: fast-prod-net-spoke-0
     routing_mode: GLOBAL
     timeouts: null
@@ -1785,7 +1766,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-spoke-0
     tags: null
@@ -1799,7 +1779,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-spoke-0
     tags: null
@@ -1813,7 +1792,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-spoke-0
     tags: null
@@ -1826,7 +1804,6 @@ values:
     log_config: []
     name: prod-default
     network: prod-0
-    params: []
     private_ip_google_access: true
     project: fast-prod-net-spoke-0
     region: europe-west8
