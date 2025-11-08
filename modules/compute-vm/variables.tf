@@ -46,10 +46,14 @@ variable "attached_disks" {
     source_type       = optional(string)
     options = optional(
       object({
-        auto_delete  = optional(bool, false)
-        mode         = optional(string, "READ_WRITE")
-        replica_zone = optional(string)
-        type         = optional(string, "pd-balanced")
+        architecture           = optional(string)
+        auto_delete            = optional(bool, false) # applies only to vm templates
+        mode                   = optional(string, "READ_WRITE")
+        provisioned_iops       = optional(number)
+        provisioned_throughput = optional(number) # in MiB/s
+        replica_zone           = optional(string)
+        storage_pool           = optional(string)
+        type                   = optional(string, "pd-balanced")
       }),
       {
         auto_delete  = true
@@ -77,6 +81,12 @@ variable "attached_disks" {
     ]) == length(var.attached_disks)
     error_message = "auto_delete can only be specified on READ_WRITE disks."
   }
+  validation {
+    condition = alltrue([for d in var.attached_disks :
+      (d.options.architecture == null || contains(["ARM64", "x86_64"], d.options.architecture))
+    ])
+    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
+  }
 }
 
 variable "boot_disk" {
@@ -86,9 +96,13 @@ variable "boot_disk" {
     snapshot_schedule = optional(list(string))
     source            = optional(string)
     initialize_params = optional(object({
-      image = optional(string, "projects/debian-cloud/global/images/family/debian-11")
-      size  = optional(number, 10)
-      type  = optional(string, "pd-balanced")
+      architecture           = optional(string)
+      image                  = optional(string, "projects/debian-cloud/global/images/family/debian-11")
+      provisioned_iops       = optional(number)
+      provisioned_throughput = optional(number) # in MiB/s
+      size                   = optional(number, 10)
+      storage_pool           = optional(string)
+      type                   = optional(string, "pd-balanced")
     }), {})
     use_independent_disk = optional(bool, false)
   })
@@ -107,6 +121,13 @@ variable "boot_disk" {
       var.boot_disk.initialize_params != null
     )
     error_message = "Using an independent disk for boot requires initialize params."
+  }
+  validation {
+    condition = (
+      var.boot_disk.initialize_params.architecture == null ||
+      contains(["ARM64", "x86_64"], var.boot_disk.initialize_params.architecture)
+    )
+    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
   }
 }
 
@@ -420,9 +441,9 @@ variable "service_account" {
 variable "shielded_config" {
   description = "Shielded VM configuration of the instances."
   type = object({
-    enable_secure_boot          = bool
-    enable_vtpm                 = bool
-    enable_integrity_monitoring = bool
+    enable_secure_boot          = optional(bool, true)
+    enable_vtpm                 = optional(bool, true)
+    enable_integrity_monitoring = optional(bool, true)
   })
   default = null
 }

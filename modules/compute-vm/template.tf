@@ -57,12 +57,15 @@ resource "google_compute_instance_template" "default" {
   }
 
   disk {
-    auto_delete           = var.boot_disk.auto_delete
-    boot                  = true
-    disk_size_gb          = var.boot_disk.initialize_params.size
-    disk_type             = var.boot_disk.initialize_params.type
-    resource_manager_tags = var.tag_bindings_immutable
-    source_image          = var.boot_disk.initialize_params.image
+    architecture           = var.boot_disk.initialize_params.architecture
+    auto_delete            = var.boot_disk.auto_delete
+    boot                   = true
+    disk_size_gb           = var.boot_disk.initialize_params.size
+    disk_type              = var.boot_disk.initialize_params.type
+    provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
+    provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+    resource_manager_tags  = var.tag_bindings_immutable
+    source_image           = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
       for_each = var.encryption != null ? [""] : []
@@ -94,7 +97,8 @@ resource "google_compute_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      auto_delete = config.value.options.auto_delete
+      architecture = config.value.options.architecture
+      auto_delete  = config.value.options.auto_delete
       device_name = coalesce(
         config.value.device_name, config.value.name, config.key
       )
@@ -106,7 +110,9 @@ resource "google_compute_instance_template" "default" {
       disk_size_gb = (
         config.value.source_type != "attach" ? config.value.size : null
       )
-      mode = config.value.options.mode
+      mode                   = config.value.options.mode
+      provisioned_iops       = config.value.options.provisioned_iops
+      provisioned_throughput = config.value.options.provisioned_throughput
       source_image = (
         config.value.source_type == "image" ? config.value.source : null
       )
@@ -276,12 +282,15 @@ resource "google_compute_region_instance_template" "default" {
   }
 
   disk {
-    auto_delete           = var.boot_disk.auto_delete
-    boot                  = true
-    disk_size_gb          = var.boot_disk.initialize_params.size
-    disk_type             = var.boot_disk.initialize_params.type
-    resource_manager_tags = var.tag_bindings_immutable
-    source_image          = var.boot_disk.initialize_params.image
+    architecture           = var.boot_disk.initialize_params.architecture
+    auto_delete            = var.boot_disk.auto_delete
+    boot                   = true
+    disk_size_gb           = var.boot_disk.initialize_params.size
+    disk_type              = var.boot_disk.initialize_params.type
+    provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
+    provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+    resource_manager_tags  = var.tag_bindings_immutable
+    source_image           = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
       for_each = var.encryption != null ? [""] : []
@@ -312,7 +321,8 @@ resource "google_compute_region_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      auto_delete = config.value.options.auto_delete
+      architecture = config.value.options.architecture
+      auto_delete  = config.value.options.auto_delete
       device_name = coalesce(
         config.value.device_name, config.value.name, config.key
       )
@@ -324,7 +334,9 @@ resource "google_compute_region_instance_template" "default" {
       disk_size_gb = (
         config.value.source_type != "attach" ? config.value.size : null
       )
-      mode = config.value.options.mode
+      mode                   = config.value.options.mode
+      provisioned_iops       = config.value.options.provisioned_iops
+      provisioned_throughput = config.value.options.provisioned_throughput
       source_image = (
         config.value.source_type == "image" ? config.value.source : null
       )
