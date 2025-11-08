@@ -104,7 +104,7 @@ variable "context" {
     folder_ids      = optional(map(string), {})
     iam_principals  = optional(map(string), {})
     project_ids     = optional(map(string), {})
-    project_number  = optional(map(string), {})
+    project_numbers = optional(map(string), {})
     tag_values      = optional(map(string), {})
   })
   default  = {}
