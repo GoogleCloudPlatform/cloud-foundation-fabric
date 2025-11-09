@@ -240,6 +240,24 @@ variable "hostname" {
   default     = null
 }
 
+variable "kms_autokeys" {
+  description = "KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokey/` prefix."
+  type = map(object({
+    location               = optional(string)
+    resource_type_selector = optional(string, "compute.googleapis.com/Disk")
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.kms_autokeys : k == try(regex(
+        "^[a-z][a-z0-9-]+[a-z0-9]$", k
+      ), null)
+    ])
+    error_message = "Autokey keys need to be valid GCP resource names."
+  }
+}
+
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))

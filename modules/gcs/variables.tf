@@ -33,6 +33,7 @@ variable "context" {
     condition_vars = optional(map(map(string)), {})
     custom_roles   = optional(map(string), {})
     iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
     locations      = optional(map(string), {})
     project_ids    = optional(map(string), {})
     tag_values     = optional(map(string), {})
@@ -97,6 +98,24 @@ variable "ip_filter" {
     vpc_network_sources            = optional(map(list(string)), {})
   })
   default = null
+}
+
+variable "kms_autokeys" {
+  description = "KMS Autokey key handles. If location is not specified the bucket location will be used. Key handle names will be added to the kms_keys context with an `autokey/` prefix."
+  type = map(object({
+    location               = optional(string)
+    resource_type_selector = optional(string, "storage.googleapis.com/Bucket")
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.kms_autokeys : k == try(regex(
+        "^[a-z][a-z0-9-]+[a-z0-9]$", k
+      ), null)
+    ])
+    error_message = "Autokey keys need to be valid GCP resource names."
+  }
 }
 
 variable "labels" {
