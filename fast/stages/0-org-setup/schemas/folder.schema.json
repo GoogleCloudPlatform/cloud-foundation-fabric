@@ -64,6 +64,16 @@
         }
       }
     },
+    "autokey_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project": {
+          "type": "string",
+          "pattern": "^(projects/|\\$project_ids:|\\$project_numbers:)"
+        }
+      }
+    },
     "contacts": {
       "type": "object",
       "additionalProperties": false,

@@ -81,12 +81,15 @@ module "folder-1-iam" {
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
   folder_create         = false
+  autokey_config        = lookup(each.value, "autokey_config", null)
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
   context = merge(local.ctx, {
-    iam_principals = local.ctx_iam_principals
+    iam_principals  = local.ctx_iam_principals
+    project_ids     = local.ctx_project_ids
+    project_numbers = local.ctx_project_numbers
   })
 }
 
@@ -126,6 +129,7 @@ module "folder-2-iam" {
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
   folder_create         = false
+  autokey_config        = lookup(each.value, "autokey_config", null)
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
@@ -134,7 +138,9 @@ module "folder-2-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
-    iam_principals = local.ctx_iam_principals
+    iam_principals  = local.ctx_iam_principals
+    project_ids     = local.ctx_project_ids
+    project_numbers = local.ctx_project_numbers
   })
 }
 
@@ -174,6 +180,7 @@ module "folder-3-iam" {
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
   folder_create         = false
+  autokey_config        = lookup(each.value, "autokey_config", null)
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
@@ -182,7 +189,9 @@ module "folder-3-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
-    iam_principals = local.ctx_iam_principals
+    iam_principals  = local.ctx_iam_principals
+    project_ids     = local.ctx_project_ids
+    project_numbers = local.ctx_project_numbers
   })
 }
 
@@ -222,6 +231,7 @@ module "folder-4-iam" {
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
   folder_create         = false
+  autokey_config        = lookup(each.value, "autokey_config", null)
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
@@ -230,6 +240,8 @@ module "folder-4-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
     })
-    iam_principals = local.ctx_iam_principals
+    iam_principals  = local.ctx_iam_principals
+    project_ids     = local.ctx_project_ids
+    project_numbers = local.ctx_project_numbers
   })
 }
