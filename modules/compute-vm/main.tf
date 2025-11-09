@@ -36,6 +36,9 @@ locals {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     }
   }
+  ctx_kms_keys = merge(local.ctx.kms_keys, {
+    for k, v in google_kms_key_handle.default : "$kms_keys:autokey/${k}" => v.kms_key
+  })
   ctx_p = "$"
   gpu   = var.gpu != null
   on_host_maintenance = (
@@ -76,6 +79,18 @@ locals {
   zone = lookup(local.ctx.locations, var.zone, var.zone)
 }
 
+resource "google_kms_key_handle" "default" {
+  for_each = var.kms_autokeys
+  project  = local.project_id
+  name     = each.key
+  location = coalesce(
+    try(local.ctx.locations[each.value.location], null),
+    each.value.location,
+    local.region
+  )
+  resource_type_selector = each.value.resource_type_selector
+}
+
 resource "google_compute_disk" "boot" {
   count   = !local.template_create && var.boot_disk.use_independent_disk ? 1 : 0
   project = local.project_id
@@ -99,7 +114,7 @@ resource "google_compute_disk" "boot" {
     content {
       raw_key = var.encryption.disk_encryption_key_raw
       kms_key_self_link = lookup(
-        local.ctx.kms_keys,
+        local.ctx_kms_keys,
         var.encryption.kms_key_self_link,
         var.encryption.kms_key_self_link
       )
@@ -132,7 +147,7 @@ resource "google_compute_disk" "disks" {
     content {
       raw_key = var.encryption.disk_encryption_key_raw
       kms_key_self_link = lookup(
-        local.ctx.kms_keys,
+        local.ctx_kms_keys,
         var.encryption.kms_key_self_link,
         var.encryption.kms_key_self_link
       )
@@ -164,7 +179,7 @@ resource "google_compute_region_disk" "disks" {
       raw_key = var.encryption.disk_encryption_key_raw
       # TODO: check if self link works here
       kms_key_name = lookup(
-        local.ctx.kms_keys,
+        local.ctx_kms_keys,
         var.encryption.kms_key_self_link,
         var.encryption.kms_key_self_link
       )
@@ -262,7 +277,7 @@ resource "google_compute_instance" "default" {
     disk_encryption_key_raw = (
       var.encryption != null ?
       try(
-        local.ctx.kms_keys[var.encryption.disk_encryption_key_raw],
+        local.ctx_kms_keys[var.encryption.disk_encryption_key_raw],
         var.encryption.disk_encryption_key_raw
       )
       : null
@@ -270,7 +285,7 @@ resource "google_compute_instance" "default" {
     kms_key_self_link = (
       var.encryption != null
       ? try(
-        local.ctx.kms_keys[var.encryption.kms_key_self_link],
+        local.ctx_kms_keys[var.encryption.kms_key_self_link],
         var.encryption.kms_key_self_link
       )
       : null

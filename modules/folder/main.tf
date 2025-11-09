@@ -50,6 +50,17 @@ resource "google_folder" "folder" {
   deletion_protection = var.deletion_protection
 }
 
+resource "google_kms_autokey_config" "default" {
+  provider = google-beta
+  count    = var.autokey_config != null ? 1 : 0
+  folder   = local.folder_id
+  key_project = try(
+    "projects/${local.ctx.project_ids[var.autokey_config.project]}",
+    "projects/${local.ctx.project_numbers[var.autokey_config.project]}",
+    var.autokey_config.project
+  )
+}
+
 resource "google_essential_contacts_contact" "contact" {
   provider = google-beta
   for_each = var.contacts
