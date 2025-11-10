@@ -29,4 +29,3 @@ bigquery.disableBQOmniAzure:
 custom.iamDisablePublicBindings:
   rules:
     - enforce: true
-

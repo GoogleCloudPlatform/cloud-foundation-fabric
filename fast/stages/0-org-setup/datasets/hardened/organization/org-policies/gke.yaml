@@ -22,7 +22,19 @@ container.managed.disableABAC:
   rules:
     - enforce: true
 
+container.managed.disableInsecureKubeletReadOnlyPort:
+  rules:
+    - enforce: true
+
 container.managed.disableLegacyClientCertificateIssuance:
+  rules:
+    - enforce: true
+
+container.managed.disableRBACSystemBindings:
+  rules:
+    - enforce: true
+
+container.managed.disallowDefaultComputeServiceAccount:
   rules:
     - enforce: true
 
@@ -35,6 +47,10 @@ container.managed.enableNetworkPolicy:
     - enforce: true
 
 container.managed.enablePrivateNodes:
+  rules:
+    - enforce: true
+
+container.managed.enableSecurityBulletinNotifications:
   rules:
     - enforce: true
 
@@ -86,6 +102,14 @@ custom.gkeRequireIntegrityMonitoring:
   rules:
     - enforce: true
 
+custom.gkeRequireIntraNodeVisibility:
+  rules:
+    - enforce: true
+
+custom.gkeRequireMasterAuthorizedNetworks:
+  rules:
+    - enforce: true
+
 custom.gkeRequireMonitoring:
   rules:
     - enforce: true
@@ -95,6 +119,10 @@ custom.gkeRequireNodePoolAutoRepair:
     - enforce: true
 
 custom.gkeRequireNodePoolAutoUpgrade:
+  rules:
+    - enforce: true
+
+custom.gkeRequirePrivateEndpoint:
   rules:
     - enforce: true
 
@@ -109,4 +137,3 @@ custom.gkeRequireSecureBoot:
 custom.gkeRequireVPCNativeCluster:
   rules:
     - enforce: true
-
