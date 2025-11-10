@@ -21,7 +21,7 @@ locals {
     google_compute_resource_policy.schedule[0].id
   ]
   disk_zonal_schedule_attachments = flatten([
-    for disk_key, disk_data in try(local.attached_disks_zonal, []) :
+    for disk_key, disk_data in local.attached_disks_zonal :
     disk_data.snapshot_schedule != null ? [
       for schedule in disk_data.snapshot_schedule : {
         disk_key          = disk_key

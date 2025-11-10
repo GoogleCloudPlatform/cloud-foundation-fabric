@@ -346,7 +346,7 @@ module "cf_http" {
     egress_setting = "ALL_TRAFFIC"
   }
 }
-# tftest fixtures=fixtures/vpc-connector.tf inventory=service-vpc-access-connector.yaml e2e
+# tftest fixtures=fixtures/vpc-connector.tf inventory=service-vpc-access-connector.yaml
 ```
 
 If creation of the VPC Access Connector is required, use the `vpc_connector.create` and `vpc_connector_create` variable which also supports optional attributes like number of instances, machine type, or throughput.
@@ -373,7 +373,7 @@ module "cf_http" {
     }
   }
 }
-# tftest inventory=service-vpc-access-connector-create.yaml e2e
+# tftest inventory=service-vpc-access-connector-create.yaml
 ```
 
 Note that if you are using a Shared VPC for the connector, you need to specify a subnet and the host project if this is not where the Cloud Run service is deployed.
@@ -403,7 +403,7 @@ module "cf_http" {
     }
   }
 }
-# tftest fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml e2e
+# tftest fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
