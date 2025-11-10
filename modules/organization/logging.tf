@@ -75,10 +75,10 @@ resource "google_organization_iam_audit_config" "default" {
     for_each = { for k, v in each.value : k => v if v != null }
     content {
       log_type = audit_log_config.key
-      exempted_members = try([
-        for m in audit_log_config.value.exempted_members :
+      exempted_members = [
+        for m in try(audit_log_config.value.exempted_members, []) :
         lookup(local.ctx.iam_principals, m, m)
-      ], null)
+      ]
     }
   }
 }
