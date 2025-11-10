@@ -78,6 +78,7 @@ variable "clusters" {
     }), {})
     node_locations  = optional(list(string))
     release_channel = optional(string)
+    service_account = optional(string)
     vpc_config = object({
       subnetwork = string
       network    = optional(string)

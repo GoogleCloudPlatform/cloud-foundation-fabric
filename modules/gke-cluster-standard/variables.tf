@@ -216,15 +216,19 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
-    dataplane_v2          = optional(bool, true)
-    fqdn_network_policy   = optional(bool, true)
-    gateway_api           = optional(bool, false)
-    groups_for_rbac       = optional(string)
-    image_streaming       = optional(bool, false)
-    intranode_visibility  = optional(bool, false)
-    l4_ilb_subsetting     = optional(bool, false)
-    mesh_certificates     = optional(bool)
-    pod_security_policy   = optional(bool, false)
+    dataplane_v2         = optional(bool, true)
+    fqdn_network_policy  = optional(bool, true)
+    gateway_api          = optional(bool, false)
+    groups_for_rbac      = optional(string)
+    image_streaming      = optional(bool, false)
+    intranode_visibility = optional(bool, false)
+    l4_ilb_subsetting    = optional(bool, false)
+    mesh_certificates    = optional(bool)
+    pod_security_policy  = optional(bool, false)
+    rbac_binding_config = optional(object({
+      enable_insecure_binding_system_unauthenticated = optional(bool)
+      enable_insecure_binding_system_authenticated   = optional(bool)
+    }))
     secret_manager_config = optional(bool)
     security_posture_config = optional(object({
       mode               = string
@@ -414,7 +418,7 @@ variable "node_config" {
     service_account               = optional(string)
     tags                          = optional(list(string))
     workload_metadata_config_mode = optional(string)
-    kubelet_readonly_port_enabled = optional(bool, true)
+    kubelet_readonly_port_enabled = optional(bool)
     resource_manager_tags         = optional(map(string), {})
   })
   default  = {}
@@ -439,7 +443,7 @@ variable "node_pool_auto_config" {
   description = "Node pool configs that apply to auto-provisioned node pools in autopilot clusters and node auto-provisioning-enabled clusters."
   type = object({
     cgroup_mode                   = optional(string)
-    kubelet_readonly_port_enabled = optional(bool, true)
+    kubelet_readonly_port_enabled = optional(bool)
     network_tags                  = optional(list(string), [])
     resource_manager_tags         = optional(map(string), {})
   })

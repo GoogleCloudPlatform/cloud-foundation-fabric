@@ -99,7 +99,10 @@ module "organization-iam" {
   count           = local.organization.id != null ? 1 : 0
   organization_id = module.organization[0].id
   context = merge(local.ctx, {
-    condition_vars = local.ctx_condition_vars
+    condition_vars = merge(
+      local.ctx_condition_vars,
+      { folder_ids = module.factory.folder_ids }
+    )
     custom_roles = merge(
       local.ctx.custom_roles,
       module.organization[0].custom_role_id

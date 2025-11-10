@@ -61,4 +61,3 @@ sql.restrictAuthorizedNetworks:
 sql.restrictPublicIp:
   rules:
     - enforce: true
-

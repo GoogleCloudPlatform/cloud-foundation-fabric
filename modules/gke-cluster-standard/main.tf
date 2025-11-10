@@ -83,7 +83,7 @@ resource "google_container_cluster" "cluster" {
   # gcfs_config deactivation need the block to be defined so it can't be dynamic
   node_pool_defaults {
     node_config_defaults {
-      insecure_kubelet_readonly_port_enabled = upper(var.node_config.kubelet_readonly_port_enabled)
+      insecure_kubelet_readonly_port_enabled = try(upper(var.node_config.kubelet_readonly_port_enabled), null)
       gcfs_config {
         enabled = var.enable_features.image_streaming
       }
@@ -97,7 +97,7 @@ resource "google_container_cluster" "cluster" {
       }
       resource_manager_tags = var.node_pool_auto_config.resource_manager_tags
       node_kubelet_config {
-        insecure_kubelet_readonly_port_enabled = upper(var.node_pool_auto_config.kubelet_readonly_port_enabled)
+        insecure_kubelet_readonly_port_enabled = try(upper(var.node_pool_auto_config.kubelet_readonly_port_enabled), null)
       }
       linux_node_config {
         cgroup_mode = var.node_pool_auto_config.cgroup_mode
@@ -546,6 +546,13 @@ resource "google_container_cluster" "cluster" {
     for_each = var.enable_features.pod_security_policy ? [""] : []
     content {
       enabled = var.enable_features.pod_security_policy
+    }
+  }
+  dynamic "rbac_binding_config" {
+    for_each = var.enable_features.rbac_binding_config != null ? [""] : []
+    content {
+      enable_insecure_binding_system_unauthenticated = var.enable_features.rbac_binding_config.enable_insecure_binding_system_unauthenticated
+      enable_insecure_binding_system_authenticated   = var.enable_features.rbac_binding_config.enable_insecure_binding_system_authenticated
     }
   }
   dynamic "secret_manager_config" {

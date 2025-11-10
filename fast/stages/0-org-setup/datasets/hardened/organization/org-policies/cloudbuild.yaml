@@ -33,3 +33,6 @@ cloudbuild.disableCreateDefaultServiceAccount:
   rules:
     - enforce: true
 
+custom.cloudbuildDisableWorkerPoolExternalIP:
+  rules:
+    - enforce: true
