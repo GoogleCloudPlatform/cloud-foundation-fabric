@@ -86,6 +86,7 @@ module "folder-1-iam" {
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  logging_data_access   = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
     iam_principals  = local.ctx_iam_principals
     project_ids     = local.ctx_project_ids
@@ -134,6 +135,7 @@ module "folder-2-iam" {
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  logging_data_access   = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
@@ -185,6 +187,7 @@ module "folder-3-iam" {
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  logging_data_access   = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
@@ -236,6 +239,7 @@ module "folder-4-iam" {
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals     = lookup(each.value, "iam_by_principals", {})
+  logging_data_access   = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id

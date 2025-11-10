@@ -59,6 +59,7 @@ locals {
         try(v.labels, null),
         local.data_defaults.defaults.labels
       )
+      logging_data_access = try(v.data_access_logs, {})
       metric_scopes = coalesce( # type: list(string)
         try(v.metric_scopes, null),
         local.data_defaults.defaults.metric_scopes

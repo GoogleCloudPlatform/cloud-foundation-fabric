@@ -161,6 +161,7 @@ module "projects-iam" {
   iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals          = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive = lookup(each.value, "iam_by_principals_additive", {})
+  logging_data_access        = lookup(each.value, "logging_data_access", {})
   pam_entitlements           = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false
