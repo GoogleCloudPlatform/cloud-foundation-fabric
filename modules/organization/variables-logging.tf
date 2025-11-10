@@ -17,9 +17,9 @@
 variable "logging_data_access" {
   description = "Control activation of data access logs. The special 'allServices' key denotes configuration for all services."
   type = map(object({
-    ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
-    DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
-    DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
+    ADMIN_READ = optional(object({ exempted_members = optional(list(string), []) })),
+    DATA_READ  = optional(object({ exempted_members = optional(list(string), []) })),
+    DATA_WRITE = optional(object({ exempted_members = optional(list(string), []) }))
   }))
   default  = {}
   nullable = false

@@ -141,8 +141,9 @@ module "organization-iam" {
   iam_by_principals_additive = lookup(
     local.organization, "iam_by_principals_additive", {}
   )
-  logging_sinks    = try(local.organization.logging.sinks, {})
-  pam_entitlements = try(local.organization.pam_entitlements, {})
+  logging_data_access = try(local.organization.data_access_logs, {})
+  logging_sinks       = try(local.organization.logging.sinks, {})
+  pam_entitlements    = try(local.organization.pam_entitlements, {})
   tags_config = {
     force_context_ids = true
   }

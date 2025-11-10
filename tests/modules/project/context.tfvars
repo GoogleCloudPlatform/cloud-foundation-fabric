@@ -38,7 +38,6 @@ context = {
 contacts = {
   "$email_addresses:default" = ["ALL"]
 }
-parent = "$folder_ids:test/prod"
 iam = {
   "$custom_roles:myrole_one" = [
     "$iam_principals:myuser"
@@ -75,6 +74,14 @@ iam_bindings_additive = {
     member = "$service_agents:compute"
   }
 }
+logging_data_access = {
+  allServices = {
+    ADMIN_READ = {
+      exempted_members = ["$iam_principals:mygroup"]
+    }
+    DATA_READ = {}
+  }
+}
 pam_entitlements = {
   net-admins = {
     max_request_duration = "3600s"
@@ -92,6 +99,7 @@ pam_entitlements = {
     ]
   }
 }
+parent = "$folder_ids:test/prod"
 services = [
   "compute.googleapis.com"
 ]
