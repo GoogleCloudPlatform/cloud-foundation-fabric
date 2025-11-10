@@ -106,12 +106,11 @@ module "projects" {
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
-  lien_reason         = try(each.value.lien_reason, null)
-  log_scopes          = try(each.value.log_scopes, null)
-  logging_data_access = try(each.value.logging_data_access, {})
-  logging_exclusions  = try(each.value.logging_exclusions, {})
-  logging_metrics     = try(each.value.logging_metrics, null)
-  logging_sinks       = try(each.value.logging_sinks, {})
+  lien_reason        = try(each.value.lien_reason, null)
+  log_scopes         = try(each.value.log_scopes, null)
+  logging_exclusions = try(each.value.logging_exclusions, {})
+  logging_metrics    = try(each.value.logging_metrics, null)
+  logging_sinks      = try(each.value.logging_sinks, {})
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))

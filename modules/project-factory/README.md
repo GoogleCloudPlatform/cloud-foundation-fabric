@@ -496,6 +496,11 @@ iam:
   roles/viewer:
     - group:team-a-admins@example.org
     - $iam_principals:gcp-devops
+data_access_logs:
+  storage.googleapis.com:
+    DATA_READ:
+      exempted_members:
+        - $iam_principals:gcp-devops
 # tftest-file id=0 path=data/hierarchy/team-a/.config.yaml schema=folder.schema.json
 ```
 
@@ -672,6 +677,11 @@ service_accounts:
     iam:
       roles/iam.serviceAccountTokenCreator:
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
+data_access_logs:
+  storage.googleapis.com:
+    DATA_READ:
+      exempted_members:
+        - $iam_principals:gcp-devops
 automation:
   project: test-pf-teams-iac-0
   # prefix used for automation resources can be explicitly set if needed
