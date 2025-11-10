@@ -17,9 +17,12 @@
 # tfdoc:file:description Project factory.
 
 locals {
-  context = {
+  _context = {
     for k, v in var.context : k => merge(v, try(local.defaults.context[k], {}))
   }
+  context = merge(local._context, {
+    vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
+  })
   defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
   fast_defaults = {
     billing_account = coalesce(

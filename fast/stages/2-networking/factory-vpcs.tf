@@ -49,7 +49,7 @@ locals {
   }
   vpcs = {
     for k, v in local._vpcs : k => merge(
-      local.defaults.vpcs, v,
+      local.vpc_defaults, v,
       {
         project_id                        = v.project_id
         description                       = try(v.description, "Terraform managed")
@@ -78,7 +78,6 @@ locals {
       }
     )
   }
-  vpc_defaults = try(local._defaults.vpcs.defaults, {})
 }
 
 module "vpcs" {

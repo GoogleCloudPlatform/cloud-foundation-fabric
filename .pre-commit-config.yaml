@@ -74,9 +74,8 @@ repos:
     - yamale
     - jsonschema
     - BeautifulSoup4
-    pass_filenames: false
+    pass_filenames: true
     require_serial: true
-    files: ^fast/.*tf
   - id: versions
     name: Align Terraform/OpenTofu provider versions
     language: python

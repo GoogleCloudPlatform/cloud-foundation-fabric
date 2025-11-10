@@ -1,0 +1,192 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vm-disk-options-example.google_compute_disk.disks["data1"]:
+    architecture: null
+    async_primary_disk: []
+    create_snapshot_before_destroy: false
+    create_snapshot_before_destroy_prefix: null
+    description: null
+    disk_encryption_key: []
+    effective_labels:
+      disk_name: data1
+      disk_type: hyperdisk-balanced
+      goog-terraform-provisioned: 'true'
+    image: null
+    labels:
+      disk_name: data1
+      disk_type: hyperdisk-balanced
+    name: test-data1
+    params: []
+    project: project-id
+    provisioned_iops: 3000
+    provisioned_throughput: 140
+    size: 10
+    snapshot: null
+    source_disk: null
+    source_image_encryption_key: []
+    source_instant_snapshot: null
+    source_snapshot_encryption_key: []
+    source_storage_object: null
+    storage_pool: null
+    terraform_labels:
+      disk_name: data1
+      disk_type: hyperdisk-balanced
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: hyperdisk-balanced
+    zone: europe-west8-b
+  module.vm-disk-options-example.google_compute_disk.disks["data2"]:
+    architecture: null
+    async_primary_disk: []
+    create_snapshot_before_destroy: false
+    create_snapshot_before_destroy_prefix: null
+    description: null
+    disk_encryption_key: []
+    effective_labels:
+      disk_name: data2
+      disk_type: hyperdisk-balanced
+      goog-terraform-provisioned: 'true'
+    image: projects/debian-cloud/global/images/family/debian-12
+    labels:
+      disk_name: data2
+      disk_type: hyperdisk-balanced
+    name: test-data2
+    params: []
+    project: project-id
+    provisioned_iops: 5000
+    provisioned_throughput: 500
+    size: 10
+    snapshot: null
+    source_disk: null
+    source_image_encryption_key: []
+    source_instant_snapshot: null
+    source_snapshot_encryption_key: []
+    source_storage_object: null
+    storage_pool: null
+    terraform_labels:
+      disk_name: data2
+      disk_type: hyperdisk-balanced
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: hyperdisk-balanced
+    zone: europe-west8-b
+  module.vm-disk-options-example.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk:
+    - device_name: data1
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      mode: READ_WRITE
+      source: test-data1
+    - device_name: data2
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      mode: READ_WRITE
+      source: test-data2
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      initialize_params:
+      - image: projects/debian-cloud/global/images/family/debian-12
+        provisioned_iops: 3000
+        provisioned_throughput: 140
+        resource_manager_tags: null
+        size: 10
+        source_image_encryption_key: []
+        source_snapshot_encryption_key: []
+        storage_pool: null
+        type: hyperdisk-balanced
+      interface: null
+      mode: READ_WRITE
+    can_ip_forward: false
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    instance_encryption_key: []
+    key_revocation_action_type: null
+    labels: null
+    machine_type: n4-standard-2
+    metadata: null
+    metadata_startup_script: null
+    name: test
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: subnet_self_link
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      provisioning_model: STANDARD
+      skip_guest_os_shutdown: false
+      termination_time: null
+    scratch_disk: []
+    service_account:
+    - email: tf-vm-test@project-id.iam.gserviceaccount.com
+      scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/userinfo.email
+    shielded_instance_config:
+    - enable_integrity_monitoring: true
+      enable_secure_boot: true
+      enable_vtpm: true
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west8-b
+  module.vm-disk-options-example.google_service_account.service_account[0]:
+    account_id: tf-vm-test
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform VM test.
+    email: tf-vm-test@project-id.iam.gserviceaccount.com
+    member: serviceAccount:tf-vm-test@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null

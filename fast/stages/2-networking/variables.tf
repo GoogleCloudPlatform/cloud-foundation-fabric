@@ -17,13 +17,18 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    custom_roles   = optional(map(string), {})
-    folder_ids     = optional(map(string), {})
-    iam_principals = optional(map(string), {})
-    locations      = optional(map(string), {})
-    project_ids    = optional(map(string), {})
-    tag_keys       = optional(map(string), {})
-    tag_values     = optional(map(string), {})
+    cidr_ranges_sets  = optional(map(list(string)), {})
+    custom_roles      = optional(map(string), {})
+    email_addresses   = optional(map(string), {})
+    folder_ids        = optional(map(string), {})
+    kms_keys          = optional(map(string), {})
+    iam_principals    = optional(map(string), {})
+    locations         = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    storage_buckets   = optional(map(string), {})
+    tag_keys          = optional(map(string), {})
+    tag_values        = optional(map(string), {})
+    vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -44,12 +49,6 @@ variable "factories_config" {
   })
   nullable = false
   default  = {}
-}
-
-variable "outputs_location" {
-  description = "Path where tfvars files for the following stages are written. Leave empty to disable."
-  type        = string
-  default     = null
 }
 
 variable "universe" {

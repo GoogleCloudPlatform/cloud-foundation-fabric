@@ -123,7 +123,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: "true"
     timeouts: null
-  google_storage_bucket_object.tfvars["1"]:
+  google_storage_bucket_object.tfvars[0]:
     bucket: test
     cache_control: null
     content_disposition: null
@@ -141,7 +141,7 @@ values:
     source_md5hash: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.version["1"]:
+  google_storage_bucket_object.version[0]:
     bucket: test
     cache_control: null
     content_disposition: null
@@ -2047,5 +2047,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 23
   random_id: 3
-  resources: 183
-  terraform_data: 1
+  resources: 184
+  terraform_data: 2

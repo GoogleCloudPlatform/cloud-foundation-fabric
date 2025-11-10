@@ -8,6 +8,9 @@ context = {
     myrole_one = "organizations/366118655033/roles/myRoleOne"
     myrole_two = "organizations/366118655033/roles/myRoleTwo"
   }
+  email_addresses = {
+    default = "foo@example.com"
+  }
   folder_ids = {
     "test/prod" = "folders/6789012345"
   }
@@ -31,6 +34,9 @@ context = {
   vpc_sc_perimeters = {
     default = "accessPolicies/888933661165/servicePerimeters/default"
   }
+}
+contacts = {
+  "$email_addresses:default" = ["ALL"]
 }
 parent = "$folder_ids:test/prod"
 iam = {

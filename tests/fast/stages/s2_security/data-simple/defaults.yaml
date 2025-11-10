@@ -22,3 +22,5 @@ projects:
   defaults:
     locations:
       storage: eu
+output_files:
+  storage_bucket: $storage_buckets:iac-0/iac-outputs

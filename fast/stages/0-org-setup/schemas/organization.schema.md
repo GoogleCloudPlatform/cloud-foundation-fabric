@@ -9,18 +9,19 @@
 - **id**: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
-  - **`^[a-z0-9_-]+$`**: *array*
+  - **`^[^@\s]+@[^@\s]+\.[^@\s]+$`**: *array*
     - items: *string*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_by_principals_additive**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **logging**: *object*
   <br>*additional properties: false*
   - **storage_location**: *string*
   - **sinks**: *object*
     <br>*additional properties: false*
-    - **`^[a-z][a-z0-9-]+$`**: *object*
+    - **`^[a-z][a-z0-9-_]+$`**: *object*
       <br>*additional properties: false*
       - **description**: *string*
       - **destination**: *string*

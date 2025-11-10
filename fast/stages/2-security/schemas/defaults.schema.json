@@ -522,6 +522,12 @@
             "type": "string"
           }
         },
+        "email_addresses": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "folder_ids": {
           "type": "object",
           "additionalProperties": {
@@ -587,6 +593,18 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "output_files": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "local_path": {
+          "type": "string"
+        },
+        "storage_bucket": {
+          "type": "string"
         }
       }
     }

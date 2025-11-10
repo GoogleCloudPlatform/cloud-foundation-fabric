@@ -23,6 +23,7 @@ module "secret-manager" {
         "roles/secretmanager.secretAccessor" = [
           "serviceAccount:${var.project_number}-compute@developer.gserviceaccount.com",
           "serviceAccount:${var.project_id}@appspot.gserviceaccount.com",
+          "principalSet://cloudresourcemanager.googleapis.com/projects/${var.project_number}/type/ServiceAccount",
         ]
       }
       versions = {

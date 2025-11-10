@@ -25,16 +25,19 @@ locals {
 }
 
 resource "google_essential_contacts_contact" "contact" {
-  provider                            = google-beta
-  for_each                            = var.contacts
-  parent                              = var.organization_id
-  email                               = each.key
+  provider = google-beta
+  for_each = var.contacts
+  parent   = var.organization_id
+  email = lookup(
+    local.ctx.email_addresses, each.key, each.key
+  )
   language_tag                        = "en"
   notification_category_subscriptions = each.value
   depends_on = [
     google_organization_iam_binding.authoritative,
     google_organization_iam_binding.bindings,
-    google_organization_iam_member.bindings
+    google_organization_iam_member.bindings,
+    google_org_policy_policy.default
   ]
 }
 

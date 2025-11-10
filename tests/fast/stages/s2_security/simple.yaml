@@ -1,0 +1,423 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yamllint disable rule:line-length
+values:
+  google_storage_bucket_object.version[0]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: different hash
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: versions/2-security-version.txt
+    retention: []
+    source: fast_version.txt
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  module.cas["prod-ca-0"].google_privateca_ca_pool.default[0]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    issuance_policy: []
+    labels: null
+    location: europe-west1
+    name: prod-ca-0
+    project: fast-prod-sec-core-0
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
+    timeouts: null
+  module.cas["prod-ca-0"].google_privateca_certificate_authority.default["prod-ca-0-0"]:
+    certificate_authority_id: prod-ca-0-0
+    config:
+    - subject_config:
+      - subject:
+        - common_name: test.example.com
+          country_code: null
+          locality: null
+          organization: Test Example
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_protection: true
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: RSA_PKCS1_2048_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 315360000s
+    location: europe-west1
+    pem_ca_certificate: null
+    project: fast-prod-sec-core-0
+    skip_grace_period: true
+    subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SELF_SIGNED
+    user_defined_access_urls: []
+  module.factory.module.folder-1["dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    parent: folders/12345678
+    tags: null
+    timeouts: null
+  module.factory.module.folder-1["dev"].google_tags_tag_binding.binding["environment"]:
+    tag_value: tagValues/12345
+    timeouts: null
+  module.factory.module.folder-1["prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    parent: folders/12345678
+    tags: null
+    timeouts: null
+  module.factory.module.folder-1["prod"].google_tags_tag_binding.binding["environment"]:
+    tag_value: tagValues/12346
+    timeouts: null
+  module.factory.module.log-buckets["dev-sec-core-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: audit-logs
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: fast-dev-sec-core-0
+    retention_days: 30
+  module.factory.module.log-buckets["dev-sec-core-0/iam"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: iam
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: fast-dev-sec-core-0
+    retention_days: 30
+  module.factory.module.log-buckets["dev-sec-core-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: vpc-sc
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: fast-dev-sec-core-0
+    retention_days: 30
+  module.factory.module.log-buckets["prod-sec-core-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: audit-logs
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: fast-prod-sec-core-0
+    retention_days: 30
+  module.factory.module.log-buckets["prod-sec-core-0/iam"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: iam
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: fast-prod-sec-core-0
+    retention_days: 30
+  module.factory.module.log-buckets["prod-sec-core-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: vpc-sc
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: global
+    locked: null
+    project: fast-prod-sec-core-0
+    retention_days: 30
+  module.factory.module.projects-iam["dev-sec-core-0"].google_project_iam_binding.bindings["key_delegated"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
+        \ [])\n  .hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter']\n)\n"
+      title: Delegated IAM grant on keys.
+    members:
+    - serviceAccount:iac-pf-rw@test.iam.gserviceaccount.com
+    project: fast-dev-sec-core-0
+    role: roles/cloudkms.admin
+  module.factory.module.projects-iam["prod-sec-core-0"].google_project_iam_binding.bindings["key_delegated"]:
+    condition:
+    - description: null
+      expression: "api.getAttribute(\n  'iam.googleapis.com/modifiedGrantsByRole',\
+        \ [])\n  .hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter']\n)\n"
+      title: Delegated IAM grant on keys.
+    members:
+    - serviceAccount:iac-pf-rw@test.iam.gserviceaccount.com
+    project: fast-prod-sec-core-0
+    role: roles/cloudkms.admin
+  module.factory.module.projects["dev-sec-core-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: development
+    name: fast-dev-sec-core-0
+    org_id: null
+    project_id: fast-dev-sec-core-0
+    tags: null
+    terraform_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_iam_member.service_agents["certificatemanager"]:
+    condition: []
+    project: fast-dev-sec-core-0
+    role: roles/certificatemanager.serviceAgent
+  module.factory.module.projects["dev-sec-core-0"].google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: fast-dev-sec-core-0
+    role: roles/cloudkms.serviceAgent
+  module.factory.module.projects["dev-sec-core-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: fast-dev-sec-core-0
+    role: roles/monitoring.notificationServiceAgent
+  ? module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["certificatemanager.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["privateca.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["secretmanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+  ? module.factory.module.projects["dev-sec-core-0"].google_project_service_identity.default["certificatemanager.googleapis.com"]
+  : project: fast-dev-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service_identity.default["privateca.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-sec-core-0"].google_project_service_identity.default["secretmanager.googleapis.com"]:
+    project: fast-dev-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    labels:
+      environment: development
+    name: fast-prod-sec-core-0
+    org_id: null
+    project_id: fast-prod-sec-core-0
+    tags: null
+    terraform_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_iam_member.service_agents["certificatemanager"]:
+    condition: []
+    project: fast-prod-sec-core-0
+    role: roles/certificatemanager.serviceAgent
+  module.factory.module.projects["prod-sec-core-0"].google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: fast-prod-sec-core-0
+    role: roles/cloudkms.serviceAgent
+  module.factory.module.projects["prod-sec-core-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: fast-prod-sec-core-0
+    role: roles/monitoring.notificationServiceAgent
+  ? module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["certificatemanager.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["privateca.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["secretmanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+  ? module.factory.module.projects["prod-sec-core-0"].google_project_service_identity.default["certificatemanager.googleapis.com"]
+  : project: fast-prod-sec-core-0
+    service: certificatemanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service_identity.default["privateca.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: privateca.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].google_project_service_identity.default["secretmanager.googleapis.com"]:
+    project: fast-prod-sec-core-0
+    service: secretmanager.googleapis.com
+    timeouts: null
+  module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.kms["prod-primary-default"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms["prod-primary-default"].google_kms_crypto_key.default["storage"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: storage
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms["prod-primary-default"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: prod-primary-default
+    project: fast-prod-sec-core-0
+    timeouts: null
+
+counts:
+  google_folder: 2
+  google_kms_crypto_key: 2
+  google_kms_key_ring: 1
+  google_logging_project_bucket_config: 6
+  google_privateca_ca_pool: 1
+  google_privateca_certificate_authority: 1
+  google_project: 2
+  google_project_iam_binding: 2
+  google_project_iam_member: 6
+  google_project_service: 12
+  google_project_service_identity: 10
+  google_storage_bucket_object: 2
+  google_tags_tag_binding: 2
+  modules: 15
+  resources: 51
+  terraform_data: 2

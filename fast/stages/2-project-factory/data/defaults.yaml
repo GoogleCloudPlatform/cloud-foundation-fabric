@@ -24,8 +24,11 @@ projects:
     services:
       - logging.googleapis.com
       - monitoring.googleapis.com
+  # edit and uncomment for vpc-sc cooperative configuration
   # overrides:
-  #   prefix: tf-playground
+  #   vpc_sc:
+  #     perimeter_name: $vpc_sc_perimeters:default
+  #     is_dry_run: true
 
 # environment-specific static contexts can be defined here
 

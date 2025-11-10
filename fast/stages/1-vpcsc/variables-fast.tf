@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-variable "automation" {
-  # tfdoc:variable:source 0-org-setup
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-  nullable = false
-}
-
 variable "iam_principals" {
   # tfdoc:variable:source 0-org-setup
   description = "Org-level IAM principals."
@@ -77,6 +68,14 @@ variable "root_node" {
 variable "service_accounts" {
   # tfdoc:variable:source 0-org-setup
   description = "Org-level service accounts."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "storage_buckets" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Storage buckets created in the bootstrap stage."
   type        = map(string)
   nullable    = false
   default     = {}

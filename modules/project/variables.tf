@@ -20,6 +20,43 @@ variable "auto_create_network" {
   default     = false
 }
 
+variable "bigquery_reservations" {
+  description = "BigQuery reservations and assignments. Assignment specified as {JOB_TYPE = ['projects/PROJECT_ID']}."
+  type = map(object({
+    location           = string
+    slot_capacity      = number
+    ignore_idle_slots  = optional(bool, false)
+    concurrency        = optional(number)
+    edition            = optional(string, "STANDARD")
+    secondary_location = optional(string)
+    max_slots          = optional(number)
+    scaling_mode       = optional(string, "AUTOSCALE_ONLY")
+    assignments        = optional(map(list(string)), {})
+  }))
+  validation {
+    condition = alltrue([
+      for name, reservation in var.bigquery_reservations :
+      # Check the keys of the 'assignments' map within each reservation object.
+      # If 'assignments' is omitted (defaults to {}), the inner 'alltrue' evaluates to true.
+      alltrue([
+        for key in keys(reservation.assignments) :
+        contains(["JOB_TYPE_UNSPECIFIED",
+          "PIPELINE",
+          "QUERY",
+          "ML_EXTERNAL",
+          "BACKGROUND",
+          "CONTINUOUS",
+          "BACKGROUND_CHANGE_DATA_CAPTURE",
+          "BACKGROUND_COLUMN_METADATA_INDEX",
+        "BACKGROUND_SEARCH_INDEX_REFRESH"], key)
+      ])
+    ])
+    error_message = "All keys in the nested 'assignments' map (within 'bigquery_reservations') must be one of the following allowed values: ML_EXTERNAL, QUERY, or BACKGROUND."
+  }
+  default  = {}
+  nullable = false
+}
+
 variable "billing_account" {
   description = "Billing account id."
   type        = string
@@ -38,6 +75,17 @@ variable "contacts" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.contacts : [
+        for vv in v : contains([
+          "ALL", "SUSPENSION", "SECURITY", "TECHNICAL", "BILLING", "LEGAL",
+          "PRODUCT_UPDATES"
+        ], vv)
+      ]
+    ]))
+    error_message = "Invalid contact notification value."
+  }
 }
 
 variable "context" {
@@ -45,6 +93,7 @@ variable "context" {
   type = object({
     condition_vars        = optional(map(map(string)), {})
     custom_roles          = optional(map(string), {})
+    email_addresses       = optional(map(string), {})
     folder_ids            = optional(map(string), {})
     kms_keys              = optional(map(string), {})
     iam_principals        = optional(map(string), {})

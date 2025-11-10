@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-variable "automation" {
-  # tfdoc:variable:source 0-org-setup
-  description = "Automation resources created by the bootstrap stage."
-  type = object({
-    outputs_bucket = string
-  })
-  nullable = false
-}
-
 variable "billing_account" {
   # tfdoc:variable:source 0-org-setup
   description = "Billing account id."
@@ -50,14 +41,6 @@ variable "folder_ids" {
 variable "iam_principals" {
   # tfdoc:variable:source 0-org-setup
   description = "IAM-format principals."
-  type        = map(string)
-  nullable    = false
-  default     = {}
-}
-
-variable "kms_keys" {
-  # tfdoc:variable:source 2-security
-  description = "KMS key ids."
   type        = map(string)
   nullable    = false
   default     = {}
@@ -92,6 +75,14 @@ variable "project_ids" {
 variable "service_accounts" {
   # tfdoc:variable:source 0-org-setup
   description = "Service accounts created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "storage_buckets" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Storage buckets created in the bootstrap stage."
   type        = map(string)
   nullable    = false
   default     = {}
