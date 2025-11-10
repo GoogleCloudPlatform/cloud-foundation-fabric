@@ -37,6 +37,10 @@ locals {
           }
         }
       }
+      keys = merge([
+        for kk, kv in lookup(v, "kms", {}) : module.kms["${k}/${kk}"].key_ids
+        if try(kv.location, null) != null
+      ]...)
       number     = module.projects[k].number
       project_id = module.projects[k].project_id
       log_buckets = {
