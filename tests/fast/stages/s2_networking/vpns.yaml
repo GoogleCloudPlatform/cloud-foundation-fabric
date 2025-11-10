@@ -1659,16 +1659,6 @@ values:
     role: null
     send_secondary_ip_range_if_empty: true
     timeouts: null
-  module.vpcs["dev"].google_dns_policy.default[0]:
-    alternative_name_server_config: []
-    description: Managed by Terraform
-    enable_inbound_forwarding: null
-    enable_logging: null
-    name: dev-0
-    networks:
-    - {}
-    project: fast-dev-net-spoke-0
-    timeouts: null
   module.vpcs["hub"].google_compute_network.network[0]:
     auto_create_subnetworks: false
     delete_default_routes_on_create: false
@@ -1735,16 +1725,6 @@ values:
     role: null
     send_secondary_ip_range_if_empty: true
     timeouts: null
-  module.vpcs["hub"].google_dns_policy.default[0]:
-    alternative_name_server_config: []
-    description: Managed by Terraform
-    enable_inbound_forwarding: null
-    enable_logging: null
-    name: hub-0
-    networks:
-    - {}
-    project: fast-prod-net-core-0
-    timeouts: null
   module.vpcs["prod"].google_compute_network.network[0]:
     auto_create_subnetworks: false
     delete_default_routes_on_create: false
@@ -1810,16 +1790,6 @@ values:
     reserved_internal_range: null
     role: null
     send_secondary_ip_range_if_empty: true
-    timeouts: null
-  module.vpcs["prod"].google_dns_policy.default[0]:
-    alternative_name_server_config: []
-    description: Managed by Terraform
-    enable_inbound_forwarding: null
-    enable_logging: null
-    name: prod-0
-    networks:
-    - {}
-    project: fast-prod-net-spoke-0
     timeouts: null
   module.vpn-ha["dev/to-hub"].google_compute_router_interface.router_interface["remote-0"]:
     interconnect_attachment: null
@@ -2464,7 +2434,6 @@ counts:
   google_compute_subnetwork: 3
   google_compute_vpn_tunnel: 10
   google_dns_managed_zone: 5
-  google_dns_policy: 3
   google_dns_record_set: 3
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 42
@@ -2475,5 +2444,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 27
   random_id: 15
-  resources: 215
+  resources: 212
   terraform_data: 2
