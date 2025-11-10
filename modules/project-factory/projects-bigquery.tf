@@ -42,7 +42,7 @@ module "bigquery-datasets" {
       local.automation_sas_iam_emails,
       lookup(local.self_sas_iam_emails, each.value.project_key, {})
     )
-    kms_keys    = merge(local.ctx.kms_keys, local.kms_keys)
+    kms_keys    = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids
   })

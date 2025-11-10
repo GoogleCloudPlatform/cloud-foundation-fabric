@@ -60,6 +60,11 @@ locals {
     for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
   projects_input = merge(var.projects, local._projects_output)
+  projects_service_agents = merge([
+    for k, v in module.projects : {
+      for kk, vv in v.service_agents : "service_agents/${k}/${kk}" => vv.iam_email
+    }
+  ]...)
 }
 
 resource "terraform_data" "project-preconditions" {
@@ -103,6 +108,7 @@ module "projects" {
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
     tags                   = try(each.value.factories_config.tags, null)
   }
+  kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
@@ -146,7 +152,8 @@ module "projects-iam" {
     kms_keys   = local.ctx.kms_keys
     iam_principals = merge(
       local.ctx_iam_principals,
-      lookup(local.self_sas_iam_emails, each.key, {})
+      lookup(local.self_sas_iam_emails, each.key, {}),
+      local.projects_service_agents
     )
     log_buckets = local.ctx_log_buckets
   })

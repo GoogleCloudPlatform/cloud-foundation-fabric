@@ -15,9 +15,9 @@
  */
 
 locals {
-  projects_kms = flatten([
+  projects_keyrings = flatten([
     for k, v in local.projects_input : [
-      for name, opts in lookup(v, "kms", {}) : {
+      for name, opts in v.kms.keyrings : {
         project_key           = k
         project_name          = v.name
         name                  = name
@@ -31,12 +31,17 @@ locals {
   ])
   projects_kms_keys = {
     for k, v in local.projects_input : k => merge([
-      for kk, kv in lookup(v, "kms", {}) : {
+      for kk, kv in v.kms.keyrings : {
         for key_k, key_v in module.kms["${k}/${kk}"].key_ids :
         "${k}/${kk}/${key_k}" => key_v if try(kv.location, null) != null
       }
     ]...)
   }
+  kms_autokeys = merge([
+    for k, v in module.projects : {
+      for kk, kv in v.kms_autokeys : "autokey/${k}/${kk}" => v
+    }
+  ])
   kms_keys = merge([
     for k, v in local.projects_kms_keys : v
   ]...)
@@ -45,7 +50,7 @@ locals {
 module "kms" {
   source = "../kms"
   for_each = {
-    for k in local.projects_kms : "${k.project_key}/${k.name}" => k
+    for k in local.projects_keyrings : "${k.project_key}/${k.name}" => k
   }
   project_id = module.projects[each.value.project_key].project_id
   keyring = {
@@ -65,7 +70,8 @@ module "kms" {
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails,
-      lookup(local.self_sas_iam_emails, each.value.project_key, {})
+      lookup(local.self_sas_iam_emails, each.value.project_key, {}),
+      local.projects_service_agents
     )
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids
