@@ -41,7 +41,7 @@ locals {
     for k, v in module.projects : {
       for kk, kv in v.kms_autokeys : "autokey/${k}/${kk}" => v
     }
-  ])
+  ]...)
   kms_keys = merge([
     for k, v in local.projects_kms_keys : v
   ]...)
