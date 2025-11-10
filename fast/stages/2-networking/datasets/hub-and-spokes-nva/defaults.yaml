@@ -33,6 +33,11 @@ projects:
   defaults:
     locations:
       storage: eu
+  # edit and uncomment for vpc-sc cooperative configuration
+  # overrides:
+  #   vpc_sc:
+  #     perimeter_name: $vpc_sc_perimeters:default
+  #     is_dry_run: true
 vpcs:
   auto_create_subnetworks: false
   delete_default_route_on_create: true

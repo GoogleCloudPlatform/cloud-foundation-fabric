@@ -64,6 +64,85 @@
         }
       }
     },
+    "autokey_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project": {
+          "type": "string",
+          "pattern": "^(projects/|\\$project_ids:|\\$project_numbers:)"
+        }
+      }
+    },
+    "contacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(\\S+@\\S+\\.\\S+|\\$email_addresses:\\S+)$": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ALL",
+              "BILLING",
+              "LEGAL",
+              "SECURITY",
+              "PRODUCT_UPDATES",
+              "SUSPENSION",
+              "TECHNICAL"
+            ]
+          }
+        }
+      }
+    },
+    "data_access_logs": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^([a-z][a-z-]+\\.googleapis\\.com|allServices)$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ADMIN_READ": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "DATA_READ": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "DATA_WRITE": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "factories_config": {
       "type": "object",
       "additionalProperties": false,

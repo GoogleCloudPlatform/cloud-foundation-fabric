@@ -33,6 +33,8 @@ projects:
   overrides: {}
 context:
   # you can populate context variables here for use in YAML replacements
+  email_addresses:
+    gcp-organization-admins: gcp-organization-admins@example.com
   iam_principals:
     # this is the default group used in bootstrap, initial user must be a member
     gcp-organization-admins: group:gcp-organization-admins@example.com

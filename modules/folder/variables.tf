@@ -67,22 +67,45 @@ variable "assured_workload_config" {
   }
 }
 
+variable "autokey_config" {
+  description = "Enable autokey support for this folder's children. Project accepts either project id or number."
+  type = object({
+    project = string
+  })
+  nullable = true
+  default  = null
+}
+
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
   type        = map(list(string))
   default     = {}
   nullable    = false
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.contacts : [
+        for vv in v : contains([
+          "ALL", "SUSPENSION", "SECURITY", "TECHNICAL", "BILLING", "LEGAL",
+          "PRODUCT_UPDATES"
+        ], vv)
+      ]
+    ]))
+    error_message = "Invalid contact notification value."
+  }
 }
 
 
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    condition_vars = optional(map(map(string)), {})
-    custom_roles   = optional(map(string), {})
-    folder_ids     = optional(map(string), {})
-    iam_principals = optional(map(string), {})
-    tag_values     = optional(map(string), {})
+    condition_vars  = optional(map(map(string)), {})
+    custom_roles    = optional(map(string), {})
+    email_addresses = optional(map(string), {})
+    folder_ids      = optional(map(string), {})
+    iam_principals  = optional(map(string), {})
+    project_ids     = optional(map(string), {})
+    project_numbers = optional(map(string), {})
+    tag_values      = optional(map(string), {})
   })
   default  = {}
   nullable = false

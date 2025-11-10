@@ -8,6 +8,9 @@ context = {
     myrole_one = "organizations/366118655033/roles/myRoleOne"
     myrole_two = "organizations/366118655033/roles/myRoleTwo"
   }
+  email_addresses = {
+    default = "foo@example.com"
+  }
   folder_ids = {
     "test/prod" = "folders/6789012345"
   }
@@ -32,7 +35,9 @@ context = {
     default = "accessPolicies/888933661165/servicePerimeters/default"
   }
 }
-parent = "$folder_ids:test/prod"
+contacts = {
+  "$email_addresses:default" = ["ALL"]
+}
 iam = {
   "$custom_roles:myrole_one" = [
     "$iam_principals:myuser"
@@ -69,6 +74,14 @@ iam_bindings_additive = {
     member = "$service_agents:compute"
   }
 }
+logging_data_access = {
+  allServices = {
+    ADMIN_READ = {
+      exempted_members = ["$iam_principals:mygroup"]
+    }
+    DATA_READ = {}
+  }
+}
 pam_entitlements = {
   net-admins = {
     max_request_duration = "3600s"
@@ -86,6 +99,7 @@ pam_entitlements = {
     ]
   }
 }
+parent = "$folder_ids:test/prod"
 services = [
   "compute.googleapis.com"
 ]

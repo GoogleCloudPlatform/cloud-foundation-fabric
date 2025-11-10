@@ -16,100 +16,100 @@ values:
   google_compute_ha_vpn_gateway.default["dev/to-hub"]:
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     gateway_ip_version: IPV4
     labels: null
     name: dev-to-hub
-    network: dev
-    project: fast-dev-net-dev-0
+    network: dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     stack_type: IPV4_ONLY
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   google_compute_ha_vpn_gateway.default["hub/to-dev"]:
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     gateway_ip_version: IPV4
     labels: null
     name: hub-to-dev
-    network: hub
+    network: hub-0
     project: fast-prod-net-core-0
     region: europe-west8
     stack_type: IPV4_ONLY
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   google_compute_ha_vpn_gateway.default["hub/to-onprem"]:
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     gateway_ip_version: IPV4
     labels: null
     name: hub-to-onprem
-    network: hub
+    network: hub-0
     project: fast-prod-net-core-0
     region: europe-west8
     stack_type: IPV4_ONLY
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   google_compute_ha_vpn_gateway.default["hub/to-prod"]:
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     gateway_ip_version: IPV4
     labels: null
     name: hub-to-prod
-    network: hub
+    network: hub-0
     project: fast-prod-net-core-0
     region: europe-west8
     stack_type: IPV4_ONLY
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   google_compute_ha_vpn_gateway.default["prod/to-hub"]:
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     gateway_ip_version: IPV4
     labels: null
     name: prod-to-hub
-    network: prod
-    project: fast-prod-net-prod-0
+    network: prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     stack_type: IPV4_ONLY
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   google_compute_router.default["dev/vpn-router"]:
     bgp:
-      - advertise_mode: DEFAULT
-        advertised_groups: []
-        advertised_ip_ranges: []
-        asn: 64516
-        keepalive_interval: 20
+    - advertise_mode: DEFAULT
+      advertised_groups: []
+      advertised_ip_ranges: []
+      asn: 64516
+      keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: dev-vpn-router
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     timeouts: null
   google_compute_router.default["hub/vpn-router"]:
     bgp:
-      - advertise_mode: CUSTOM
-        advertised_groups: []
-        advertised_ip_ranges:
-          - description: rfc1918-10
-            range: 10.0.0.0/8
-          - description: rfc1918-172
-            range: 172.16.0.0/12
-          - description: rfc1918-192
-            range: 192.168.0.0/16
-        asn: 64514
-        keepalive_interval: 20
+    - advertise_mode: CUSTOM
+      advertised_groups: []
+      advertised_ip_ranges:
+      - description: rfc1918-10
+        range: 10.0.0.0/8
+      - description: rfc1918-172
+        range: 172.16.0.0/12
+      - description: rfc1918-192
+        range: 192.168.0.0/16
+      asn: 64514
+      keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
     md5_authentication_keys: []
@@ -119,16 +119,16 @@ values:
     timeouts: null
   google_compute_router.default["prod/vpn-router"]:
     bgp:
-      - advertise_mode: DEFAULT
-        advertised_groups: []
-        advertised_ip_ranges: []
-        asn: 64515
-        keepalive_interval: 20
+    - advertise_mode: DEFAULT
+      advertised_groups: []
+      advertised_ip_ranges: []
+      asn: 64515
+      keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: prod-vpn-router
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     timeouts: null
   google_storage_bucket_object.tfvars[0]:
@@ -171,9 +171,9 @@ values:
     description: Terraform managed.
     gke_clusters: []
     networks:
-      - {}
-      - {}
-      - {}
+    - {}
+    - {}
+    - {}
     project: fast-prod-net-core-0
     response_policy_name: net-core-0
     timeouts: null
@@ -187,28 +187,28 @@ values:
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["aiplatform-notebook-cloud-all"]:
     behavior: null
-    dns_name: "*.aiplatform-notebook.cloud.google.com."
+    dns_name: '*.aiplatform-notebook.cloud.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.aiplatform-notebook.cloud.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.aiplatform-notebook.cloud.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: aiplatform-notebook-cloud-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["aiplatform-notebook-gu-all"]:
     behavior: null
-    dns_name: "*.aiplatform-notebook.googleusercontent.com."
+    dns_name: '*.aiplatform-notebook.googleusercontent.com.'
     local_data:
-      - local_datas:
-          - name: "*.aiplatform-notebook.googleusercontent.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.aiplatform-notebook.googleusercontent.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: aiplatform-notebook-gu-all
@@ -217,26 +217,26 @@ values:
     behavior: null
     dns_name: appengine.google.com.
     local_data:
-      - local_datas:
-          - name: appengine.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: appengine.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: appengine
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["appspot-all"]:
     behavior: null
-    dns_name: "*.appspot.com."
+    dns_name: '*.appspot.com.'
     local_data:
-      - local_datas:
-          - name: "*.appspot.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.appspot.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: appspot-all
@@ -245,26 +245,26 @@ values:
     behavior: null
     dns_name: backupdr.cloud.google.com.
     local_data:
-      - local_datas:
-          - name: backupdr.cloud.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: backupdr.cloud.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: backupdr-cloud
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["backupdr-cloud-all"]:
     behavior: null
-    dns_name: "*.backupdr.cloud.google.com."
+    dns_name: '*.backupdr.cloud.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.backupdr.cloud.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.backupdr.cloud.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: backupdr-cloud-all
@@ -273,110 +273,110 @@ values:
     behavior: null
     dns_name: backupdr.googleusercontent.google.com.
     local_data:
-      - local_datas:
-          - name: backupdr.googleusercontent.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: backupdr.googleusercontent.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: backupdr-gu
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["backupdr-gu-all"]:
     behavior: null
-    dns_name: "*.backupdr.googleusercontent.google.com."
+    dns_name: '*.backupdr.googleusercontent.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.backupdr.googleusercontent.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.backupdr.googleusercontent.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: backupdr-gu-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["cloudfunctions"]:
     behavior: null
-    dns_name: "*.cloudfunctions.net."
+    dns_name: '*.cloudfunctions.net.'
     local_data:
-      - local_datas:
-          - name: "*.cloudfunctions.net."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.cloudfunctions.net.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: cloudfunctions
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["cloudproxy"]:
     behavior: null
-    dns_name: "*.cloudproxy.app."
+    dns_name: '*.cloudproxy.app.'
     local_data:
-      - local_datas:
-          - name: "*.cloudproxy.app."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.cloudproxy.app.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: cloudproxy
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["composer-cloud-all"]:
     behavior: null
-    dns_name: "*.composer.cloud.google.com."
+    dns_name: '*.composer.cloud.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.composer.cloud.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.composer.cloud.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: composer-cloud-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["composer-gu-all"]:
     behavior: null
-    dns_name: "*.composer.googleusercontent.com."
+    dns_name: '*.composer.googleusercontent.com.'
     local_data:
-      - local_datas:
-          - name: "*.composer.googleusercontent.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.composer.googleusercontent.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: composer-gu-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["datafusion-all"]:
     behavior: null
-    dns_name: "*.datafusion.cloud.google.com."
+    dns_name: '*.datafusion.cloud.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.datafusion.cloud.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.datafusion.cloud.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: datafusion-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["datafusion-gu-all"]:
     behavior: null
-    dns_name: "*.datafusion.googleusercontent.com."
+    dns_name: '*.datafusion.googleusercontent.com.'
     local_data:
-      - local_datas:
-          - name: "*.datafusion.googleusercontent.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.datafusion.googleusercontent.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: datafusion-gu-all
@@ -385,26 +385,26 @@ values:
     behavior: null
     dns_name: dataproc.cloud.google.com.
     local_data:
-      - local_datas:
-          - name: dataproc.cloud.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: dataproc.cloud.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: dataproc
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["dataproc-all"]:
     behavior: null
-    dns_name: "*.dataproc.cloud.google.com."
+    dns_name: '*.dataproc.cloud.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.dataproc.cloud.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.dataproc.cloud.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: dataproc-all
@@ -413,26 +413,26 @@ values:
     behavior: null
     dns_name: dataproc.googleusercontent.com.
     local_data:
-      - local_datas:
-          - name: dataproc.googleusercontent.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: dataproc.googleusercontent.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: dataproc-gu
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["dataproc-gu-all"]:
     behavior: null
-    dns_name: "*.dataproc.googleusercontent.com."
+    dns_name: '*.dataproc.googleusercontent.com.'
     local_data:
-      - local_datas:
-          - name: "*.dataproc.googleusercontent.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.dataproc.googleusercontent.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: dataproc-gu-all
@@ -441,12 +441,12 @@ values:
     behavior: null
     dns_name: dl.google.com.
     local_data:
-      - local_datas:
-          - name: dl.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: dl.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: dl
@@ -455,54 +455,54 @@ values:
     behavior: null
     dns_name: gcr.io.
     local_data:
-      - local_datas:
-          - name: gcr.io.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: gcr.io.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: gcr
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["gcr-all"]:
     behavior: null
-    dns_name: "*.gcr.io."
+    dns_name: '*.gcr.io.'
     local_data:
-      - local_datas:
-          - name: "*.gcr.io."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.gcr.io.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: gcr-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["gke-all"]:
     behavior: null
-    dns_name: "*.gke.goog."
+    dns_name: '*.gke.goog.'
     local_data:
-      - local_datas:
-          - name: "*.gke.goog."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.gke.goog.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: gke-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["googleapis-all"]:
     behavior: null
-    dns_name: "*.googleapis.com."
+    dns_name: '*.googleapis.com.'
     local_data:
-      - local_datas:
-          - name: "*.googleapis.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.googleapis.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: googleapis-all
@@ -511,20 +511,20 @@ values:
     behavior: null
     dns_name: private.googleapis.com.
     local_data:
-      - local_datas:
-          - name: private.googleapis.com.
-            rrdatas:
-              - 199.36.153.8
-              - 199.36.153.9
-              - 199.36.153.10
-              - 199.36.153.11
-            ttl: null
-            type: A
-          - name: private.googleapis.com.
-            rrdatas:
-              - "2600:2d00:2:2000::"
-            ttl: null
-            type: AAAA
+    - local_datas:
+      - name: private.googleapis.com.
+        rrdatas:
+        - 199.36.153.8
+        - 199.36.153.9
+        - 199.36.153.10
+        - 199.36.153.11
+        ttl: null
+        type: A
+      - name: private.googleapis.com.
+        rrdatas:
+        - '2600:2d00:2:2000::'
+        ttl: null
+        type: AAAA
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: googleapis-private
@@ -533,34 +533,34 @@ values:
     behavior: null
     dns_name: restricted.googleapis.com.
     local_data:
-      - local_datas:
-          - name: restricted.googleapis.com.
-            rrdatas:
-              - 199.36.153.4
-              - 199.36.153.5
-              - 199.36.153.6
-              - 199.36.153.7
-            ttl: null
-            type: A
-          - name: restricted.googleapis.com.
-            rrdatas:
-              - "2600:2d00:2:1000::"
-            ttl: null
-            type: AAAA
+    - local_datas:
+      - name: restricted.googleapis.com.
+        rrdatas:
+        - 199.36.153.4
+        - 199.36.153.5
+        - 199.36.153.6
+        - 199.36.153.7
+        ttl: null
+        type: A
+      - name: restricted.googleapis.com.
+        rrdatas:
+        - '2600:2d00:2:1000::'
+        ttl: null
+        type: AAAA
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: googleapis-restricted
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["gstatic-all"]:
     behavior: null
-    dns_name: "*.gstatic.com."
+    dns_name: '*.gstatic.com.'
     local_data:
-      - local_datas:
-          - name: "*.gstatic.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.gstatic.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: gstatic-all
@@ -569,40 +569,40 @@ values:
     behavior: null
     dns_name: kernels.googleusercontent.com.
     local_data:
-      - local_datas:
-          - name: kernels.googleusercontent.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: kernels.googleusercontent.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: kernels-gu
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["kernels-gu-all"]:
     behavior: null
-    dns_name: "*.kernels.googleusercontent.com."
+    dns_name: '*.kernels.googleusercontent.com.'
     local_data:
-      - local_datas:
-          - name: "*.kernels.googleusercontent.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.kernels.googleusercontent.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: kernels-gu-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["ltsapis-all"]:
     behavior: null
-    dns_name: "*.ltsapis.goog."
+    dns_name: '*.ltsapis.goog.'
     local_data:
-      - local_datas:
-          - name: "*.ltsapis.goog."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.ltsapis.goog.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: ltsapis-all
@@ -611,40 +611,40 @@ values:
     behavior: null
     dns_name: notebooks.cloud.google.com.
     local_data:
-      - local_datas:
-          - name: notebooks.cloud.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: notebooks.cloud.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: notebooks
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["notebooks-all"]:
     behavior: null
-    dns_name: "*.notebooks.cloud.google.com."
+    dns_name: '*.notebooks.cloud.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.notebooks.cloud.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.notebooks.cloud.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: notebooks-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["notebooks-gu-all"]:
     behavior: null
-    dns_name: "*.notebooks.googleusercontent.com."
+    dns_name: '*.notebooks.googleusercontent.com.'
     local_data:
-      - local_datas:
-          - name: "*.notebooks.googleusercontent.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.notebooks.googleusercontent.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: notebooks-gu-all
@@ -653,26 +653,26 @@ values:
     behavior: null
     dns_name: packages.cloud.google.com.
     local_data:
-      - local_datas:
-          - name: packages.cloud.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: packages.cloud.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: packages-cloud
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["packages-cloud-all"]:
     behavior: null
-    dns_name: "*.packages.cloud.google.com."
+    dns_name: '*.packages.cloud.google.com.'
     local_data:
-      - local_datas:
-          - name: "*.packages.cloud.google.com."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.packages.cloud.google.com.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: packages-cloud-all
@@ -681,26 +681,26 @@ values:
     behavior: null
     dns_name: pkg.dev.
     local_data:
-      - local_datas:
-          - name: pkg.dev.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: pkg.dev.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: pkgdev
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["pkgdev-all"]:
     behavior: null
-    dns_name: "*.pkg.dev."
+    dns_name: '*.pkg.dev.'
     local_data:
-      - local_datas:
-          - name: "*.pkg.dev."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.pkg.dev.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: pkgdev-all
@@ -709,40 +709,40 @@ values:
     behavior: null
     dns_name: pki.goog.
     local_data:
-      - local_datas:
-          - name: pki.goog.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: pki.goog.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: pkigoog
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["pkigoog-all"]:
     behavior: null
-    dns_name: "*.pki.goog."
+    dns_name: '*.pki.goog.'
     local_data:
-      - local_datas:
-          - name: "*.pki.goog."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.pki.goog.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: pkigoog-all
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy_rule.default["run-all"]:
     behavior: null
-    dns_name: "*.run.app."
+    dns_name: '*.run.app.'
     local_data:
-      - local_datas:
-          - name: "*.run.app."
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: '*.run.app.'
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: run-all
@@ -751,12 +751,12 @@ values:
     behavior: null
     dns_name: source.developers.google.com.
     local_data:
-      - local_datas:
-          - name: source.developers.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: source.developers.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: source
@@ -765,93 +765,93 @@ values:
     behavior: null
     dns_name: storage.cloud.google.com.
     local_data:
-      - local_datas:
-          - name: storage.cloud.google.com.
-            rrdatas:
-              - private.googleapis.com.
-            ttl: null
-            type: CNAME
+    - local_datas:
+      - name: storage.cloud.google.com.
+        rrdatas:
+        - private.googleapis.com.
+        ttl: null
+        type: CNAME
     project: fast-prod-net-core-0
     response_policy: net-core-0
     rule_name: storage
     timeouts: null
   module.dns-zones["net-core-0/fwd-root"].google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-      - enable_logging: false
+    - enable_logging: false
     description: Terraform-managed.
     dns_name: onprem.
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     force_destroy: false
     forwarding_config:
-      - target_name_servers:
-          - domain_name: ""
-            forwarding_path: default
-            ipv4_address: 1.1.1.1
-          - domain_name: ""
-            forwarding_path: default
-            ipv4_address: 8.8.8.8
+    - target_name_servers:
+      - domain_name: ''
+        forwarding_path: default
+        ipv4_address: 1.1.1.1
+      - domain_name: ''
+        forwarding_path: default
+        ipv4_address: 8.8.8.8
     labels: null
     name: net-core-0-fwd-root
     peering_config: []
     private_visibility_config:
-      - gke_clusters: []
-        networks:
-          - {}
+    - gke_clusters: []
+      networks:
+      - {}
     project: fast-prod-net-core-0
     reverse_lookup: false
     service_directory_config: []
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     visibility: private
   module.dns-zones["net-core-0/peer-root"].google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-      - enable_logging: false
+    - enable_logging: false
     description: Terraform-managed.
     dns_name: .
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     force_destroy: false
     forwarding_config: []
     labels: null
     name: net-core-0-peer-root
     peering_config:
-      - target_network:
-          - {}
+    - target_network:
+      - {}
     private_visibility_config:
-      - gke_clusters: []
-        networks:
-          - {}
-          - {}
+    - gke_clusters: []
+      networks:
+      - {}
+      - {}
     project: fast-prod-net-core-0
     reverse_lookup: false
     service_directory_config: []
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     visibility: private
   module.dns-zones["net-core-0/pvt-test"].google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-      - enable_logging: false
+    - enable_logging: false
     description: Terraform-managed.
     dns_name: test.
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     force_destroy: false
     forwarding_config: []
     labels: null
     name: net-core-0-pvt-test
     peering_config: []
     private_visibility_config:
-      - gke_clusters: []
-        networks:
-          - {}
+    - gke_clusters: []
+      networks:
+      - {}
     project: fast-prod-net-core-0
     reverse_lookup: false
     service_directory_config: []
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     visibility: private
   module.dns-zones["net-core-0/pvt-test"].google_dns_record_set.dns_record_set["A localhost"]:
@@ -860,91 +860,91 @@ values:
     project: fast-prod-net-core-0
     routing_policy: []
     rrdatas:
-      - 127.0.0.1
+    - 127.0.0.1
     ttl: 300
     type: A
   module.dns-zones["net-dev-0/pvt-dev-test"].google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-      - enable_logging: false
+    - enable_logging: false
     description: Terraform-managed.
     dns_name: dev.test.
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     force_destroy: false
     forwarding_config: []
     labels: null
     name: net-dev-0-pvt-dev-test
     peering_config: []
     private_visibility_config:
-      - gke_clusters: []
-        networks:
-          - {}
-          - {}
-    project: fast-dev-net-dev-0
+    - gke_clusters: []
+      networks:
+      - {}
+      - {}
+    project: fast-dev-net-spoke-0
     reverse_lookup: false
     service_directory_config: []
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     visibility: private
   module.dns-zones["net-dev-0/pvt-dev-test"].google_dns_record_set.dns_record_set["A localhost"]:
     managed_zone: net-dev-0-pvt-dev-test
     name: localhost.dev.test.
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     routing_policy: []
     rrdatas:
-      - 127.0.0.1
+    - 127.0.0.1
     ttl: 300
     type: A
   module.dns-zones["net-prod-0/pvt-prod-test"].google_dns_managed_zone.dns_managed_zone[0]:
     cloud_logging_config:
-      - enable_logging: false
+    - enable_logging: false
     description: Terraform-managed.
     dns_name: prod.test.
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     force_destroy: false
     forwarding_config: []
     labels: null
     name: net-prod-0-pvt-prod-test
     peering_config: []
     private_visibility_config:
-      - gke_clusters: []
-        networks:
-          - {}
-          - {}
-    project: fast-prod-net-prod-0
+    - gke_clusters: []
+      networks:
+      - {}
+      - {}
+    project: fast-prod-net-spoke-0
     reverse_lookup: false
     service_directory_config: []
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     visibility: private
   module.dns-zones["net-prod-0/pvt-prod-test"].google_dns_record_set.dns_record_set["A localhost"]:
     managed_zone: net-prod-0-pvt-prod-test
     name: localhost.prod.test.
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     routing_policy: []
     rrdatas:
-      - 127.0.0.1
+    - 127.0.0.1
     ttl: 300
     type: A
   module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-dev-deny"]:
     allow: []
     deny:
-      - ports: []
-        protocol: all
+    - ports: []
+      protocol: all
     description: Deny and log any unmatched ingress traffic.
     direction: INGRESS
     disabled: false
     log_config:
-      - metadata: EXCLUDE_ALL_METADATA
+    - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-dev-deny
-    network: dev
+    network: dev-0
     priority: 65535
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     source_ranges:
-      - 0.0.0.0/0
+    - 0.0.0.0/0
     source_service_accounts: null
     source_tags: null
     target_service_accounts: null
@@ -953,19 +953,19 @@ values:
   module.firewall["hub"].google_compute_firewall.custom-rules["ingress-default-landing-deny"]:
     allow: []
     deny:
-      - ports: []
-        protocol: all
+    - ports: []
+      protocol: all
     description: Deny and log any unmatched ingress traffic.
     direction: INGRESS
     disabled: false
     log_config:
-      - metadata: EXCLUDE_ALL_METADATA
+    - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-landing-deny
-    network: hub
+    network: hub-0
     priority: 65535
     project: fast-prod-net-core-0
     source_ranges:
-      - 0.0.0.0/0
+    - 0.0.0.0/0
     source_service_accounts: null
     source_tags: null
     target_service_accounts: null
@@ -974,19 +974,19 @@ values:
   module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-prod-deny"]:
     allow: []
     deny:
-      - ports: []
-        protocol: all
+    - ports: []
+      protocol: all
     description: Deny and log any unmatched ingress traffic.
     direction: INGRESS
     disabled: false
     log_config:
-      - metadata: EXCLUDE_ALL_METADATA
+    - metadata: EXCLUDE_ALL_METADATA
     name: ingress-default-prod-deny
-    network: prod
+    network: prod-0
     priority: 65535
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     source_ranges:
-      - 0.0.0.0/0
+    - 0.0.0.0/0
     source_service_accounts: null
     source_tags: null
     target_service_accounts: null
@@ -1008,21 +1008,21 @@ values:
     disabled: false
     enable_logging: null
     match:
-      - dest_address_groups: null
-        dest_fqdns: null
-        dest_ip_ranges:
-          - 1.2.3.4/32
-        dest_region_codes: null
-        dest_threat_intelligences: null
-        layer4_configs:
-          - ip_protocol: all
-            ports: null
-        src_address_groups: null
-        src_fqdns: null
-        src_ip_ranges: null
-        src_region_codes: null
-        src_secure_tags: []
-        src_threat_intelligences: null
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges:
+      - 1.2.3.4/32
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges: null
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
     priority: 2000
     security_profile_group: null
     target_resources: null
@@ -1037,27 +1037,27 @@ values:
     disabled: false
     enable_logging: null
     match:
-      - dest_address_groups: null
-        dest_fqdns: null
-        dest_ip_ranges: null
-        dest_region_codes: null
-        dest_threat_intelligences: null
-        layer4_configs:
-          - ip_protocol: tcp
-            ports:
-              - "22"
-              - "80"
-              - "443"
-        src_address_groups: null
-        src_fqdns: null
-        src_ip_ranges:
-          - 35.191.0.0/16
-          - 130.211.0.0/22
-          - 209.85.152.0/22
-          - 209.85.204.0/22
-        src_region_codes: null
-        src_secure_tags: []
-        src_threat_intelligences: null
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '22'
+        - '80'
+        - '443'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 35.191.0.0/16
+      - 130.211.0.0/22
+      - 209.85.152.0/22
+      - 209.85.204.0/22
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
     priority: 1001
     security_profile_group: null
     target_resources: null
@@ -1072,21 +1072,21 @@ values:
     disabled: false
     enable_logging: null
     match:
-      - dest_address_groups: null
-        dest_fqdns: null
-        dest_ip_ranges: null
-        dest_region_codes: null
-        dest_threat_intelligences: null
-        layer4_configs:
-          - ip_protocol: icmp
-            ports: null
-        src_address_groups: null
-        src_fqdns: null
-        src_ip_ranges:
-          - 0.0.0.0/0
-        src_region_codes: null
-        src_secure_tags: []
-        src_threat_intelligences: null
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: icmp
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 0.0.0.0/0
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
     priority: 1003
     security_profile_group: null
     target_resources: null
@@ -1101,22 +1101,22 @@ values:
     disabled: false
     enable_logging: null
     match:
-      - dest_address_groups: null
-        dest_fqdns: null
-        dest_ip_ranges: null
-        dest_region_codes: null
-        dest_threat_intelligences: null
-        layer4_configs:
-          - ip_protocol: all
-            ports: null
-        src_address_groups: null
-        src_fqdns: null
-        src_ip_ranges:
-          - 107.178.230.64/26
-          - 35.199.224.0/19
-        src_region_codes: null
-        src_secure_tags: []
-        src_threat_intelligences: null
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: all
+        ports: null
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 107.178.230.64/26
+      - 35.199.224.0/19
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
     priority: 1004
     security_profile_group: null
     target_resources: null
@@ -1131,22 +1131,22 @@ values:
     disabled: false
     enable_logging: true
     match:
-      - dest_address_groups: null
-        dest_fqdns: null
-        dest_ip_ranges: null
-        dest_region_codes: null
-        dest_threat_intelligences: null
-        layer4_configs:
-          - ip_protocol: tcp
-            ports:
-              - "22"
-        src_address_groups: null
-        src_fqdns: null
-        src_ip_ranges:
-          - 35.235.240.0/20
-        src_region_codes: null
-        src_secure_tags: []
-        src_threat_intelligences: null
+    - dest_address_groups: null
+      dest_fqdns: null
+      dest_ip_ranges: null
+      dest_region_codes: null
+      dest_threat_intelligences: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '22'
+      src_address_groups: null
+      src_fqdns: null
+      src_ip_ranges:
+      - 35.235.240.0/20
+      src_region_codes: null
+      src_secure_tags: []
+      src_threat_intelligences: null
     priority: 1002
     security_profile_group: null
     target_resources: null
@@ -1169,8 +1169,8 @@ values:
     icmp_idle_timeout_sec: 30
     initial_nat_ips: null
     log_config:
-      - enable: false
-        filter: ALL
+    - enable: false
+      filter: ALL
     max_ports_per_vm: 65536
     name: hub-nat-ew8
     nat64_subnetwork: []
@@ -1192,25 +1192,25 @@ values:
     project: fast-prod-net-core-0
     timeouts: null
   module.projects.module.projects-iam["net-dev-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     timeouts: null
   module.projects.module.projects-iam["net-prod-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     timeouts: null
   module.projects.module.projects["net-core-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 000000-111111-222222
     deletion_policy: DELETE
     effective_labels:
-      goog-terraform-provisioned: "true"
-    folder_id: "12345678"
+      goog-terraform-provisioned: 'true'
+    folder_id: '12345678'
     labels: null
     name: fast-prod-net-core-0
     org_id: null
     project_id: fast-prod-net-core-0
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["compute-system"]:
     condition: []
@@ -1327,124 +1327,124 @@ values:
     billing_account: 000000-111111-222222
     deletion_policy: DELETE
     effective_labels:
-      goog-terraform-provisioned: "true"
-    folder_id: "34567890"
+      goog-terraform-provisioned: 'true'
+    folder_id: '34567890'
     labels: null
-    name: fast-dev-net-dev-0
+    name: fast-dev-net-spoke-0
     org_id: null
-    project_id: fast-dev-net-dev-0
+    project_id: fast-dev-net-spoke-0
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["compute-system"]:
     condition: []
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     role: roles/compute.serviceAgent
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     role: roles/container.serviceAgent
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["dns"]:
     condition: []
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     role: roles/dns.serviceAgent
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["gkenode"]:
     condition: []
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     role: roles/container.defaultNodeServiceAgent
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["networkmanagement"]:
     condition: []
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     role: roles/networkmanagement.serviceAgent
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["service-networking"]:
     condition: []
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     role: roles/servicenetworking.serviceAgent
   module.projects.module.projects["net-dev-0"].google_project_iam_member.service_agents["vpcaccess"]:
     condition: []
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     role: roles/vpcaccess.serviceAgent
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: compute.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["container.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: container.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["dns.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: dns.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["iap.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["networkmanagement.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: networkmanagement.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["networksecurity.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: networksecurity.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["servicenetworking.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: servicenetworking.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["stackdriver.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: stackdriver.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service.project_services["vpcaccess.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: vpcaccess.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service_identity.default["container.googleapis.com"]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: container.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service_identity.default["dns.googleapis.com"]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: dns.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service_identity.default["iap.googleapis.com"]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service_identity.default["networkmanagement.googleapis.com"]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: networkmanagement.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service_identity.default["networksecurity.googleapis.com"]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: networksecurity.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service_identity.default["servicenetworking.googleapis.com"]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: servicenetworking.googleapis.com
     timeouts: null
   module.projects.module.projects["net-dev-0"].google_project_service_identity.default["vpcaccess.googleapis.com"]:
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     service: vpcaccess.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project.project[0]:
@@ -1452,135 +1452,139 @@ values:
     billing_account: 000000-111111-222222
     deletion_policy: DELETE
     effective_labels:
-      goog-terraform-provisioned: "true"
-    folder_id: "23456789"
+      goog-terraform-provisioned: 'true'
+    folder_id: '23456789'
     labels: null
-    name: fast-prod-net-prod-0
+    name: fast-prod-net-spoke-0
     org_id: null
-    project_id: fast-prod-net-prod-0
+    project_id: fast-prod-net-spoke-0
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["compute-system"]:
     condition: []
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     role: roles/compute.serviceAgent
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     role: roles/container.serviceAgent
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["dns"]:
     condition: []
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     role: roles/dns.serviceAgent
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["gkenode"]:
     condition: []
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     role: roles/container.defaultNodeServiceAgent
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["networkmanagement"]:
     condition: []
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     role: roles/networkmanagement.serviceAgent
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["service-networking"]:
     condition: []
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     role: roles/servicenetworking.serviceAgent
   module.projects.module.projects["net-prod-0"].google_project_iam_member.service_agents["vpcaccess"]:
     condition: []
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     role: roles/vpcaccess.serviceAgent
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: compute.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["container.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: container.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["dns.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: dns.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["iap.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["networkmanagement.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: networkmanagement.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["networksecurity.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: networksecurity.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["servicenetworking.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: servicenetworking.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["stackdriver.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: stackdriver.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service.project_services["vpcaccess.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: vpcaccess.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service_identity.default["container.googleapis.com"]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: container.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service_identity.default["dns.googleapis.com"]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: dns.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service_identity.default["iap.googleapis.com"]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: iap.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service_identity.default["networkmanagement.googleapis.com"]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: networkmanagement.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service_identity.default["networksecurity.googleapis.com"]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: networksecurity.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service_identity.default["servicenetworking.googleapis.com"]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: servicenetworking.googleapis.com
     timeouts: null
   module.projects.module.projects["net-prod-0"].google_project_service_identity.default["vpcaccess.googleapis.com"]:
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     service: vpcaccess.googleapis.com
     timeouts: null
   module.projects.terraform_data.defaults_preconditions:
     input: null
     output: null
     triggers_replace: null
+  module.projects.terraform_data.project-preconditions:
+    input: null
+    output: null
+    triggers_replace: null
   module.vpc_routes["hub"].google_compute_route.gateway["gateway"]:
     description: Terraform-managed.
     dest_range: 8.8.8.8/32
-    name: hub-gateway
-    network: hub
+    name: hub-0-gateway
+    network: hub-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1595,49 +1599,49 @@ values:
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
-    name: dev
+    name: dev-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     routing_mode: GLOBAL
     timeouts: null
   module.vpcs["dev"].google_compute_route.gateway["directpath-googleapis"]:
     description: Terraform-managed.
     dest_range: 34.126.0.0/18
-    name: dev-directpath-googleapis
-    network: dev
+    name: dev-0-directpath-googleapis
+    network: dev-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     tags: null
     timeouts: null
   module.vpcs["dev"].google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
-    name: dev-private-googleapis
-    network: dev
+    name: dev-0-private-googleapis
+    network: dev-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     tags: null
     timeouts: null
   module.vpcs["dev"].google_compute_route.gateway["restricted-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
-    name: dev-restricted-googleapis
-    network: dev
+    name: dev-0-restricted-googleapis
+    network: dev-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     tags: null
     timeouts: null
   module.vpcs["dev"].google_compute_subnetwork.subnetwork["europe-west8/dev-default"]:
@@ -1647,9 +1651,9 @@ values:
     ipv6_access_type: null
     log_config: []
     name: dev-default
-    network: dev
+    network: dev-0
     private_ip_google_access: true
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     reserved_internal_range: null
     role: null
@@ -1660,10 +1664,10 @@ values:
     description: Managed by Terraform
     enable_inbound_forwarding: null
     enable_logging: null
-    name: dev
+    name: dev-0
     networks:
-      - {}
-    project: fast-dev-net-dev-0
+    - {}
+    project: fast-dev-net-spoke-0
     timeouts: null
   module.vpcs["hub"].google_compute_network.network[0]:
     auto_create_subnetworks: false
@@ -1671,7 +1675,7 @@ values:
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
-    name: hub
+    name: hub-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
     project: fast-prod-net-core-0
@@ -1680,8 +1684,8 @@ values:
   module.vpcs["hub"].google_compute_route.gateway["directpath-googleapis"]:
     description: Terraform-managed.
     dest_range: 34.126.0.0/18
-    name: hub-directpath-googleapis
-    network: hub
+    name: hub-0-directpath-googleapis
+    network: hub-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1693,8 +1697,8 @@ values:
   module.vpcs["hub"].google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
-    name: hub-private-googleapis
-    network: hub
+    name: hub-0-private-googleapis
+    network: hub-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1706,8 +1710,8 @@ values:
   module.vpcs["hub"].google_compute_route.gateway["restricted-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
-    name: hub-restricted-googleapis
-    network: hub
+    name: hub-0-restricted-googleapis
+    network: hub-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
@@ -1723,7 +1727,7 @@ values:
     ipv6_access_type: null
     log_config: []
     name: hub-default
-    network: hub
+    network: hub-0
     private_ip_google_access: true
     project: fast-prod-net-core-0
     region: europe-west8
@@ -1736,9 +1740,9 @@ values:
     description: Managed by Terraform
     enable_inbound_forwarding: null
     enable_logging: null
-    name: hub
+    name: hub-0
     networks:
-      - {}
+    - {}
     project: fast-prod-net-core-0
     timeouts: null
   module.vpcs["prod"].google_compute_network.network[0]:
@@ -1747,49 +1751,49 @@ values:
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
-    name: prod
+    name: prod-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     routing_mode: GLOBAL
     timeouts: null
   module.vpcs["prod"].google_compute_route.gateway["directpath-googleapis"]:
     description: Terraform-managed.
     dest_range: 34.126.0.0/18
-    name: prod-directpath-googleapis
-    network: prod
+    name: prod-0-directpath-googleapis
+    network: prod-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     tags: null
     timeouts: null
   module.vpcs["prod"].google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
-    name: prod-private-googleapis
-    network: prod
+    name: prod-0-private-googleapis
+    network: prod-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     tags: null
     timeouts: null
   module.vpcs["prod"].google_compute_route.gateway["restricted-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
-    name: prod-restricted-googleapis
-    network: prod
+    name: prod-0-restricted-googleapis
+    network: prod-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
     priority: 1000
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     tags: null
     timeouts: null
   module.vpcs["prod"].google_compute_subnetwork.subnetwork["europe-west8/prod-default"]:
@@ -1799,9 +1803,9 @@ values:
     ipv6_access_type: null
     log_config: []
     name: prod-default
-    network: prod
+    network: prod-0
     private_ip_google_access: true
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     reserved_internal_range: null
     role: null
@@ -1812,17 +1816,17 @@ values:
     description: Managed by Terraform
     enable_inbound_forwarding: null
     enable_logging: null
-    name: prod
+    name: prod-0
     networks:
-      - {}
-    project: fast-prod-net-prod-0
+    - {}
+    project: fast-prod-net-spoke-0
     timeouts: null
   module.vpn-ha["dev/to-hub"].google_compute_router_interface.router_interface["remote-0"]:
     interconnect_attachment: null
     ip_range: 169.254.3.1/30
     name: dev-to-hub-remote-0
     private_ip_address: null
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     router: dev-vpn-router
     subnetwork: null
@@ -1833,7 +1837,7 @@ values:
     ip_range: 169.254.3.5/30
     name: dev-to-hub-remote-1
     private_ip_address: null
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     router: dev-vpn-router
     subnetwork: null
@@ -1855,7 +1859,7 @@ values:
     name: dev-to-hub-remote-0
     peer_asn: 64514
     peer_ip_address: 169.254.3.2
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     router: dev-vpn-router
     router_appliance_instance: null
@@ -1878,7 +1882,7 @@ values:
     name: dev-to-hub-remote-1
     peer_asn: 64514
     peer_ip_address: 169.254.3.6
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     router: dev-vpn-router
     router_appliance_instance: null
@@ -1889,13 +1893,13 @@ values:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: dev-to-hub-remote-0
     peer_external_gateway: null
     peer_external_gateway_interface: null
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     router: dev-vpn-router
     shared_secret: foobar
@@ -1903,20 +1907,20 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 0
   module.vpn-ha["dev/to-hub"].google_compute_vpn_tunnel.tunnels["remote-1"]:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: dev-to-hub-remote-1
     peer_external_gateway: null
     peer_external_gateway_interface: null
-    project: fast-dev-net-dev-0
+    project: fast-dev-net-spoke-0
     region: europe-west8
     router: dev-vpn-router
     shared_secret: foobar
@@ -1924,7 +1928,7 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 1
   module.vpn-ha["dev/to-hub"].random_id.md5_keys["remote-0"]:
@@ -2011,7 +2015,7 @@ values:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: hub-to-dev-remote-0
@@ -2025,14 +2029,14 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 0
   module.vpn-ha["hub/to-dev"].google_compute_vpn_tunnel.tunnels["remote-1"]:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: hub-to-dev-remote-1
@@ -2046,7 +2050,7 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 1
   module.vpn-ha["hub/to-dev"].random_id.md5_keys["remote-0"]:
@@ -2064,17 +2068,17 @@ values:
   module.vpn-ha["hub/to-onprem"].google_compute_external_vpn_gateway.external_gateway["default"]:
     description: Terraform managed external VPN gateway
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     interface:
-      - id: 0
-        ip_address: 8.8.8.8
-        ipv6_address: null
+    - id: 0
+      ip_address: 8.8.8.8
+      ipv6_address: null
     labels: null
     name: hub-to-onprem-default
     project: fast-prod-net-core-0
     redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.vpn-ha["hub/to-onprem"].google_compute_router_interface.router_interface["remote-0"]:
     interconnect_attachment: null
@@ -2148,7 +2152,7 @@ values:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: hub-to-onprem-remote-0
@@ -2162,14 +2166,14 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 0
   module.vpn-ha["hub/to-onprem"].google_compute_vpn_tunnel.tunnels["remote-1"]:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: hub-to-onprem-remote-1
@@ -2183,7 +2187,7 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 1
   module.vpn-ha["hub/to-onprem"].random_id.md5_keys["remote-0"]:
@@ -2270,7 +2274,7 @@ values:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: hub-to-prod-remote-0
@@ -2284,14 +2288,14 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 0
   module.vpn-ha["hub/to-prod"].google_compute_vpn_tunnel.tunnels["remote-1"]:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: hub-to-prod-remote-1
@@ -2305,7 +2309,7 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 1
   module.vpn-ha["hub/to-prod"].random_id.md5_keys["remote-0"]:
@@ -2325,7 +2329,7 @@ values:
     ip_range: 169.254.2.1/30
     name: prod-to-hub-remote-0
     private_ip_address: null
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     router: prod-vpn-router
     subnetwork: null
@@ -2336,7 +2340,7 @@ values:
     ip_range: 169.254.2.5/30
     name: prod-to-hub-remote-1
     private_ip_address: null
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     router: prod-vpn-router
     subnetwork: null
@@ -2358,7 +2362,7 @@ values:
     name: prod-to-hub-remote-0
     peer_asn: 64514
     peer_ip_address: 169.254.2.2
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     router: prod-vpn-router
     router_appliance_instance: null
@@ -2381,7 +2385,7 @@ values:
     name: prod-to-hub-remote-1
     peer_asn: 64514
     peer_ip_address: 169.254.2.6
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     router: prod-vpn-router
     router_appliance_instance: null
@@ -2392,13 +2396,13 @@ values:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: prod-to-hub-remote-0
     peer_external_gateway: null
     peer_external_gateway_interface: null
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     router: prod-vpn-router
     shared_secret: foobar
@@ -2406,20 +2410,20 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 0
   module.vpn-ha["prod/to-hub"].google_compute_vpn_tunnel.tunnels["remote-1"]:
     cipher_suite: []
     description: null
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     ike_version: 2
     labels: null
     name: prod-to-hub-remote-1
     peer_external_gateway: null
     peer_external_gateway_interface: null
-    project: fast-prod-net-prod-0
+    project: fast-prod-net-spoke-0
     region: europe-west8
     router: prod-vpn-router
     shared_secret: foobar
@@ -2427,7 +2431,7 @@ values:
     shared_secret_wo_version: null
     target_vpn_gateway: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     vpn_gateway_interface: 1
   module.vpn-ha["prod/to-hub"].random_id.md5_keys["remote-0"]:
@@ -2471,5 +2475,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 27
   random_id: 15
-  resources: 214
-  terraform_data: 1
+  resources: 215
+  terraform_data: 2

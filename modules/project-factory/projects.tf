@@ -28,7 +28,8 @@ locals {
   _projects_input = {
     for k, v in merge(local._folder_projects_raw, local._projects_raw) :
     basename(k) => merge(
-      try(local._templates_raw[v.project_template], {}), v
+      try(local._templates_raw[v.project_template], {}),
+      v
     )
   }
   _projects_path = try(
@@ -37,6 +38,7 @@ locals {
   _projects_raw = {
     for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
+    if !endswith(f, ".config.yaml")
   }
   _templates_path = try(
     pathexpand(var.factories_config.project_templates), null
@@ -45,15 +47,32 @@ locals {
     for f in try(fileset(local._templates_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._templates_path}/${f}"))
   }
-  ctx_project_ids = merge(local.ctx.project_ids, local.project_ids)
+  ctx_project_ids     = merge(local.ctx.project_ids, local.project_ids)
+  ctx_project_numbers = merge(local.ctx.project_ids, local.project_numbers)
   project_ids = {
     for k, v in module.projects : k => v.project_id
+  }
+  project_numbers = {
+    for k, v in module.projects : k => v.number
   }
   ctx_log_buckets = merge(local.ctx.log_buckets, local.log_buckets)
   log_buckets = {
     for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
   projects_input = merge(var.projects, local._projects_output)
+}
+
+resource "terraform_data" "project-preconditions" {
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for k, v in local._projects_input :
+        try(v.project_template, null) == null ||
+        lookup(local._templates_raw, v.project_template, null) != null
+      ])
+      error_message = "Missing project templates referenced in projects."
+    }
+  }
 }
 
 module "projects" {
@@ -87,12 +106,11 @@ module "projects" {
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
-  lien_reason         = try(each.value.lien_reason, null)
-  log_scopes          = try(each.value.log_scopes, null)
-  logging_data_access = try(each.value.logging_data_access, {})
-  logging_exclusions  = try(each.value.logging_exclusions, {})
-  logging_metrics     = try(each.value.logging_metrics, null)
-  logging_sinks       = try(each.value.logging_sinks, {})
+  lien_reason        = try(each.value.lien_reason, null)
+  log_scopes         = try(each.value.log_scopes, null)
+  logging_exclusions = try(each.value.logging_exclusions, {})
+  logging_metrics    = try(each.value.logging_metrics, null)
+  logging_sinks      = try(each.value.logging_sinks, {})
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))
@@ -124,10 +142,13 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
-    folder_ids     = local.ctx.folder_ids
-    kms_keys       = local.ctx.kms_keys
-    iam_principals = local.ctx_iam_principals
-    log_buckets    = local.ctx_log_buckets
+    folder_ids = local.ctx.folder_ids
+    kms_keys   = local.ctx.kms_keys
+    iam_principals = merge(
+      local.ctx_iam_principals,
+      lookup(local.self_sas_iam_emails, each.key, {})
+    )
+    log_buckets = local.ctx_log_buckets
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
@@ -139,6 +160,7 @@ module "projects-iam" {
   iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals          = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive = lookup(each.value, "iam_by_principals_additive", {})
+  logging_data_access        = lookup(each.value, "logging_data_access", {})
   pam_entitlements           = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false

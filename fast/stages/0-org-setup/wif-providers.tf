@@ -50,10 +50,10 @@ resource "google_iam_workload_identity_pool_provider" "default" {
     # Setting an empty list configures allowed_audiences to the url of the provider
     allowed_audiences = try(each.value.custom_settings.audiences, [])
     # If users don't provide an issuer_uri, we set the public one for the platform chosen.
-    issuer_uri = (
-      try(each.value.custom_settings.issuer_uri, null) != null
-      ? each.value.custom_settings.issuer_uri
-      : try(each.value.issuer_uri, null)
+    issuer_uri = coalesce(
+      try(each.value.custom_settings.issuer_uri, null),
+      try("https://${each.value.custom_settings.okta.organization_name}/oauth2/${each.value.custom_settings.okta.auth_server_name}", null),
+      try(each.value.issuer_uri, null),
     )
     # OIDC JWKs in JSON String format. If no value is provided, they key is
     # fetched from the `.well-known` path for the issuer_uri
