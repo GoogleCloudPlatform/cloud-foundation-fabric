@@ -79,6 +79,15 @@ values:
     intercept_children: false
     name: test-storage
     org_id: '1234567890'
+  google_organization_iam_audit_config.default["allServices"]:
+    audit_log_config:
+    - exempted_members:
+      - group:test-group@example.com
+      log_type: ADMIN_READ
+    - exempted_members: []
+      log_type: DATA_READ
+    org_id: '1234567890'
+    service: allServices
   google_organization_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     members:
@@ -207,6 +216,7 @@ counts:
   google_essential_contacts_contact: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 5
+  google_organization_iam_audit_config: 1
   google_organization_iam_binding: 4
   google_organization_iam_member: 1
   google_privileged_access_manager_entitlement: 1
@@ -219,4 +229,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 25
+  resources: 26

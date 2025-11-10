@@ -69,6 +69,13 @@ org_policies:
             - https://token.actions.githubusercontent.com
             - https://gitlab.com
             - https://app.terraform.io
+data_access_logs:
+  storage.googleapis.com:
+    DATA_READ: {}
+    DATA_WRITE: {}
+  sts.googleapis.com:
+    DATA_READ: {}
+    DATA_WRITE: {}
 buckets:
   # Terraform state bucket for this stage
   iac-org-state:

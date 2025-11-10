@@ -28,6 +28,54 @@
         }
       }
     },
+    "data_access_logs": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^([a-z][a-z-]+\\.googleapis\\.com|allServices)$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ADMIN_READ": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "DATA_READ": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "DATA_WRITE": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "iam": {
       "$ref": "#/$defs/iam"
     },

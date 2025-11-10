@@ -59,6 +59,7 @@ locals {
         try(v.labels, null),
         local.data_defaults.defaults.labels
       )
+      logging_data_access = try(v.data_access_logs, {})
       metric_scopes = coalesce( # type: list(string)
         try(v.metric_scopes, null),
         local.data_defaults.defaults.metric_scopes
@@ -175,11 +176,6 @@ locals {
           : local.data_defaults.defaults.vpc_sc
         )
       )
-      logging_data_access = coalesce( # type: map(object({...}))
-        local.data_defaults.overrides.logging_data_access,
-        try(v.logging_data_access, null),
-        local.data_defaults.defaults.logging_data_access
-      )
       quotas = try(v.quotas, {})
     })
   }
@@ -202,10 +198,9 @@ locals {
           logging  = try(local._data_defaults.defaults.locations.logging, null)
           storage  = try(local._data_defaults.defaults.locations.storage, null)
         }
-        logging_data_access = {}
-        metric_scopes       = []
-        parent              = null
-        prefix              = null
+        metric_scopes = []
+        parent        = null
+        prefix        = null
         project_reuse = merge(
           {
             use_data_source = true
@@ -257,7 +252,6 @@ locals {
         logging  = try(local._data_defaults.overrides.locations.logging, null)
         storage  = try(local._data_defaults.overrides.locations.storage, null)
       }
-      logging_data_access        = null
       parent                     = null
       prefix                     = null
       service_encryption_key_ids = null
