@@ -29,6 +29,17 @@ locals {
       } if try(opts.location, null) != null
     ]
   ])
+  projects_kms_keys = {
+    for k, v in local.projects_input : k => merge([
+      for kk, kv in lookup(v, "kms", {}) : {
+        for key_k, key_v in module.kms["${k}/${kk}"].key_ids :
+        "${k}/${kk}/${key_k}" => key_v if try(kv.location, null) != null
+      }
+    ]...)
+  }
+  kms_keys = merge([
+    for k, v in local.projects_kms_keys : v
+  ]...)
 }
 
 module "kms" {

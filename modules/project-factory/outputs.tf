@@ -37,10 +37,7 @@ locals {
           }
         }
       }
-      keys = merge([
-        for kk, kv in lookup(v, "kms", {}) : module.kms["${k}/${kk}"].key_ids
-        if try(kv.location, null) != null
-      ]...)
+      kms_keys   = local.projects_kms_keys[k]
       number     = module.projects[k].number
       project_id = module.projects[k].project_id
       log_buckets = {
@@ -87,6 +84,11 @@ output "folder_ids" {
 output "iam_principals" {
   description = "IAM principals mappings."
   value       = local.iam_principals
+}
+
+output "kms_keys" {
+  description = "KMS key ids."
+  value       = local.kms_keys
 }
 
 output "log_buckets" {
