@@ -21,7 +21,13 @@ locals {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if k != "condition_vars"
   }
-  ctx_p  = "$"
+  ctx_kms_keys = merge(local.ctx.kms_keys, {
+    for k, v in google_kms_key_handle.default : "$kms_keys:autokey/${k}" => v.kms_key
+  })
+  ctx_p = "$"
+  location = lookup(
+    local.ctx.locations, var.location, var.location
+  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   project_id = var.project_id == null ? null : lookup(
     local.ctx.project_ids, var.project_id, var.project_id
@@ -42,13 +48,23 @@ locals {
   )
 }
 
-resource "google_storage_bucket" "bucket" {
-  count   = var.bucket_create ? 1 : 0
-  name    = local._name
-  project = local.project_id
-  location = lookup(
-    local.ctx.locations, var.location, var.location
+resource "google_kms_key_handle" "default" {
+  for_each = var.kms_autokeys
+  project  = local.project_id
+  name     = each.key
+  location = coalesce(
+    try(local.ctx.locations[each.value.location], null),
+    each.value.location,
+    local.location
   )
+  resource_type_selector = each.value.resource_type_selector
+}
+
+resource "google_storage_bucket" "bucket" {
+  count                       = var.bucket_create ? 1 : 0
+  name                        = local._name
+  project                     = local.project_id
+  location                    = local.location
   storage_class               = var.storage_class
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = var.uniform_bucket_level_access
@@ -85,7 +101,6 @@ resource "google_storage_bucket" "bucket" {
 
   dynamic "custom_placement_config" {
     for_each = var.custom_placement_config == null ? [] : [""]
-
     content {
       data_locations = var.custom_placement_config
     }
@@ -93,15 +108,17 @@ resource "google_storage_bucket" "bucket" {
 
   dynamic "encryption" {
     for_each = var.encryption_key == null ? [] : [""]
-
     content {
-      default_kms_key_name = var.encryption_key
+      default_kms_key_name = lookup(
+        local.ctx_kms_keys,
+        var.encryption_key,
+        var.encryption_key
+      )
     }
   }
 
   dynamic "hierarchical_namespace" {
     for_each = var.enable_hierarchical_namespace == null ? [] : [""]
-
     content {
       enabled = var.enable_hierarchical_namespace
     }
@@ -202,10 +219,12 @@ resource "google_storage_bucket_object" "objects" {
   temporary_hold      = each.value.temporary_hold
   detect_md5hash      = each.value.detect_md5hash
   storage_class       = each.value.storage_class
-  kms_key_name        = each.value.kms_key_name
+  kms_key_name = try(
+    local.ctx_kms_keys[each.value.kms_key_name],
+    each.value.kms_key_name
+  )
   dynamic "customer_encryption" {
     for_each = each.value.customer_encryption == null ? [] : [""]
-
     content {
       encryption_algorithm = each.value.customer_encryption.encryption_algorithm
       encryption_key       = each.value.customer_encryption.encryption_key
