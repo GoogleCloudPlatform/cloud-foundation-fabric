@@ -25,10 +25,6 @@ compute.requireVpcFlowLogs:
           - "ESSENTIAL"
           - "LIGHT"
           - "COMPREHENSIVE"
-      condition:
-        title: Enforce configuration of VPC Flow Logs
-        expression: |
-          resource.matchTag('${organization.id}/environment', 'production')
 
 compute.restrictCloudNATUsage:
   rules:
