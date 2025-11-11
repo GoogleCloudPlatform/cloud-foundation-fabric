@@ -55,7 +55,11 @@ locals {
       iam_bindings_additive      = try(v.iam_bindings_additive, {})      # type: map(object({...}))
       iam_by_principals_additive = try(v.iam_by_principals_additive, {}) # type: map(list(string))
       iam_by_principals          = try(v.iam_by_principals, {})          # map(list(string))
-      labels = coalesce(                                                 # type: map(string)
+      kms = {
+        autokeys = try(v.kms.autokeys, {})
+        keyrings = try(v.kms.keyrings, {})
+      }
+      labels = coalesce( # type: map(string)
         try(v.labels, null),
         local.data_defaults.defaults.labels
       )
