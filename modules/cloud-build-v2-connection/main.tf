@@ -165,6 +165,9 @@ resource "google_cloudbuild_trigger" "triggers" {
       }
     }
   }
-
-  filename = each.value.filename
+  include_build_logs = each.value.include_build_logs
+  tags               = each.value.tags
+  substitutions      = each.value.substitutions
+  service_account    = each.value.service_account
+  filename           = each.value.filename
 }
