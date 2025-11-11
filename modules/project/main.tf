@@ -19,6 +19,20 @@ locals {
   _observability_factory_path = pathexpand(coalesce(
     var.factories_config.observability, "-"
   ))
+  bigquery_reservations_assigments = {
+    for reservation_name, reservation in google_bigquery_reservation.default :
+    reservation_name => {
+      (reservation.location) = {
+        for job_type in distinct([
+          for a in values(google_bigquery_reservation_assignment.default) : a.job_type
+          if a.reservation == reservation.id
+          ]) : job_type => [
+          for a in values(google_bigquery_reservation_assignment.default) : a.assignee
+          if a.reservation == reservation.id && a.job_type == job_type
+        ]
+      }
+    }
+  }
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
@@ -137,10 +151,12 @@ resource "google_resource_manager_lien" "lien" {
 }
 
 resource "google_essential_contacts_contact" "contact" {
-  provider                            = google-beta
-  for_each                            = var.contacts
-  parent                              = "projects/${local.project.project_id}"
-  email                               = each.key
+  provider = google-beta
+  for_each = var.contacts
+  parent   = "projects/${local.project.project_id}"
+  email = lookup(
+    local.ctx.email_addresses, each.key, each.key
+  )
   language_tag                        = "en"
   notification_category_subscriptions = each.value
   depends_on = [

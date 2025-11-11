@@ -23,5 +23,5 @@ counts:
   google_storage_bucket_object: 1
   google_tags_tag_binding: 2
   modules: 8
-  resources: 19
-  terraform_data: 1
+  resources: 20
+  terraform_data: 2

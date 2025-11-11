@@ -34,7 +34,6 @@ counts:
   google_compute_subnetwork: 4
   google_compute_vpn_tunnel: 2
   google_dns_managed_zone: 5
-  google_dns_policy: 4
   google_dns_record_set: 3
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 42
@@ -45,5 +44,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 35
   random_id: 3
-  resources: 202
-  terraform_data: 1
+  resources: 199
+  terraform_data: 2

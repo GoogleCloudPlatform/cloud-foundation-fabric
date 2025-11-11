@@ -35,4 +35,3 @@ storage.secureHttpTransport:
 storage.uniformBucketLevelAccess:
   rules:
     - enforce: true
-

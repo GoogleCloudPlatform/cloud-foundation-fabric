@@ -1,0 +1,71 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.folder-iam.google_kms_autokey_config.default[0]:
+    timeouts: null
+  module.folder.google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Folder name
+    parent: folders/1122334455
+    tags: null
+    timeouts: null
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: test-autokey
+    project_id: test-autokey
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project.google_project_iam_binding.authoritative["roles/cloudkms.admin"]:
+    condition: []
+    project: test-autokey
+    role: roles/cloudkms.admin
+  module.project.google_project_iam_binding.authoritative["roles/cloudkms.autokeyUser"]:
+    condition: []
+    members:
+    - group:key-user@example.com
+    project: test-autokey
+    role: roles/cloudkms.autokeyUser
+  module.project.google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: test-autokey
+    role: roles/cloudkms.serviceAgent
+  module.project.google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-autokey
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.project.google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: test-autokey
+    service: cloudkms.googleapis.com
+    timeouts: null
+
+counts:
+  google_folder: 1
+  google_kms_autokey_config: 1
+  google_project: 1
+  google_project_iam_binding: 2
+  google_project_iam_member: 1
+  google_project_service: 1
+  google_project_service_identity: 1
+  modules: 3
+  resources: 8

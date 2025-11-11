@@ -28,6 +28,7 @@
     - [Context-based replacement in the folders factory](#context-based-replacement-in-the-folders-factory)
   - [Project factory](#project-factory)
   - [CI/CD configuration](#cicd-configuration)
+    - [Okta](#okta)
 - [Leveraging classic FAST Stages](#leveraging-classic-fast-stages)
   - [VPC Service Controls](#vpc-service-controls)
   - [Security](#security)
@@ -612,6 +613,89 @@ workflows:
       plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
 ```
 
+#### Okta
+
+<details>
+<summary>Configure Okta as  Workload Identity provider</summary>
+
+Okta is a special case. Unlike providers such as GitHub or GitLab, it's an identity provider that doesn't manage repositories. To use Okta as a Workload Identity provider, configure it in your `datasets/classic/cicd.yaml` file as shown in the following example:
+
+```yaml
+workload_identity_federation:
+  pool_name: iac-0
+  project: $project_ids:iac-0
+  providers:
+    okta:
+      issuer: okta
+      provider_id: okta
+      custom_settings:
+        audiences:
+          - <REPLACE_WITH_CUSTOM_AUDIENCE>   // Modify this
+        okta:
+          auth_server_name: <REPLACE_WITH_SERVER_NAME>   // Modify this
+          organization_name: <REPLACE_WITH_ORG_NAME>.okta.com   // Modify this
+workflows:
+  org-setup:
+    template: okta
+    workload_identity_provider:
+      id: $wif_providers:okta
+      audiences: []
+    output_files:
+      storage_bucket: $storage_buckets:iac-0/iac-outputs
+      providers:
+        apply: $output_files:providers/0-org-setup
+        plan: $output_files:providers/0-org-setup-ro
+      files:
+        - 0-org-setup.auto.tfvars.json
+    service_accounts:
+      apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+      plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+```
+
+Finally you will need to modify the following org policies and IAM permissions in `datasets/classic/organization/org-policies/iam.yaml` file: 
+
+- Under `org_polices` add your Okta provider URL :
+
+```yaml
+org_policies:
+  iam.workloadIdentityPoolProviders:
+    rules:
+      - allow:
+          values:
+            - https://token.actions.githubusercontent.com
+            - https://gitlab.com
+            - https://app.terraform.io
+            - https://<REPLACE_WITH_ORG_NAME>.okta.com/oauth2/default   // Modify this
+```
+This configuration adds Okta to the list of allowed Workload Identity providers in your GCP organization.
+
+- Under `iac-org-cicd-ro` and `iac-org-cicd-rw` service accounts add `roles/iam.workloadIdentityUser` to each of them:
+
+
+```yaml
+  iac-org-cicd-ro:
+    display_name: IaC service account for org setup CI/CD (read-only).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-ro:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+    iam: 
+      roles/iam.workloadIdentityUser: 
+        - principalSet://iam.googleapis.com/projects/<REPLACE_WITH_IAC_PROJECT_NUMBER>/locations/global/workloadIdentityPools/iac-0/*    // Modify this
+
+  iac-org-cicd-rw:
+    display_name: IaC service account for org setup CI/CD (read-write).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-rw:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+    iam: 
+      roles/iam.workloadIdentityUser: 
+        - principalSet://iam.googleapis.com/projects/<REPLACE_WITH_IAC_PROJECT_NUMBER>/locations/global/workloadIdentityPools/iac-0/*    // Modify this
+```
+This allows identities from the Workload Identity Pool to impersonate both IaC service accounts.
+</details>
+
 ## Leveraging classic FAST Stages
 
 Classic Fast stage 2 and 3 can be directly used after applying this if the [Classic FAST layout](#classic-fast-dataset) is used, or similar identities and permissions are implemented in a different design.
@@ -661,9 +745,9 @@ Define values for the `var.environments` variable in a tfvars file.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;datasets&#47;classic&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;datasets&#47;classic&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;datasets&#47;classic&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;datasets&#47;classic&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L52) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L38) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;datasets&#47;classic&#47;billing-accounts&#34;&#41;&#10;  cicd              &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;datasets&#47;classic&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;datasets&#47;classic&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;datasets&#47;classic&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L53) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

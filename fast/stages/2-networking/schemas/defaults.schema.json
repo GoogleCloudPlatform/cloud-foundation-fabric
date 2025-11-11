@@ -88,48 +88,6 @@
                 }
               }
             },
-            "logging_data_access": {
-              "type": "object",
-              "default": {},
-              "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "ADMIN_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_WRITE": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "metric_scopes": {
               "type": "array",
               "default": [],
@@ -378,48 +336,6 @@
                 }
               }
             },
-            "logging_data_access": {
-              "type": "object",
-              "default": {},
-              "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "ADMIN_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_READ": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "DATA_WRITE": {
-                    "type": "object",
-                    "properties": {
-                      "exempted_members": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
             "parent": {
               "type": "string"
             },
@@ -545,6 +461,11 @@
         },
         "custom_roles": {
           "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "email_addresses": {
           "additionalProperties": {
             "type": "string"
           }

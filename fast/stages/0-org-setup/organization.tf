@@ -79,8 +79,10 @@ module "organization" {
         id = local.organization_id
       }
     }
-    locations = local.ctx.locations
+    email_addresses = local.ctx.email_addresses
+    locations       = local.ctx.locations
   }
+  contacts = lookup(local.organization, "contacts", {})
   factories_config = {
     org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
     custom_roles                  = "${local.paths.organization}/custom-roles"
@@ -97,7 +99,10 @@ module "organization-iam" {
   count           = local.organization.id != null ? 1 : 0
   organization_id = module.organization[0].id
   context = merge(local.ctx, {
-    condition_vars = local.ctx_condition_vars
+    condition_vars = merge(
+      local.ctx_condition_vars,
+      { folder_ids = module.factory.folder_ids }
+    )
     custom_roles = merge(
       local.ctx.custom_roles,
       module.organization[0].custom_role_id
@@ -139,7 +144,9 @@ module "organization-iam" {
   iam_by_principals_additive = lookup(
     local.organization, "iam_by_principals_additive", {}
   )
-  logging_sinks = try(local.organization.logging.sinks, {})
+  logging_data_access = try(local.organization.data_access_logs, {})
+  logging_sinks       = try(local.organization.logging.sinks, {})
+  pam_entitlements    = try(local.organization.pam_entitlements, {})
   tags_config = {
     force_context_ids = true
   }

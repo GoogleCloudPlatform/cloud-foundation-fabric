@@ -19,6 +19,7 @@ variable "context" {
   type = object({
     cidr_ranges_sets  = optional(map(list(string)), {})
     custom_roles      = optional(map(string), {})
+    email_addresses   = optional(map(string), {})
     folder_ids        = optional(map(string), {})
     kms_keys          = optional(map(string), {})
     iam_principals    = optional(map(string), {})

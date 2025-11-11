@@ -52,6 +52,9 @@ locals {
       {
         discovered_projects = local.discovered_projects
         logging_project     = try(["projects/${var.logging.project_number}"], [])
+        org_setup_projects = [
+          for k, v in var.project_numbers : "projects/${v}"
+        ]
       },
       local._ctx.resource_sets
     )

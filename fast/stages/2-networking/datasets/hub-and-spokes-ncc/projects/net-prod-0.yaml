@@ -4,7 +4,7 @@
 
 # yaml-language-server: $schema=../../../schemas/project.schema.json
 
-name: prod-net-prod-0
+name: prod-net-spoke-0
 parent: $folder_ids:networking/prod
 services:
   - container.googleapis.com

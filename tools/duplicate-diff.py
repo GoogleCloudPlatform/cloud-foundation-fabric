@@ -72,9 +72,10 @@ duplicates = [
         "modules/net-vpc-firewall/schemas/firewall-rules.schema.json",
     ],
     [
-        "fast/stages/2-project-factory/schemas/folder.schema.json",
-        "fast/stages/2-networking/schemas/folder.schema.json",
         "fast/stages/0-org-setup/schemas/folder.schema.json",
+        "fast/stages/2-networking/schemas/folder.schema.json",
+        "fast/stages/2-project-factory/schemas/folder.schema.json",
+        "fast/stages/2-security/schemas/folder.schema.json",
         "modules/project-factory/schemas/folder.schema.json",
     ],
     [

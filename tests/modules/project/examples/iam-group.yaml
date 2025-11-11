@@ -13,11 +13,6 @@
 # limitations under the License.
 
 values:
-  module.project.google_project_iam_binding.authoritative["$custom_roles:my_role"]:
-    condition: []
-    members:
-    - group:organization-admins@example.org
-    project: test-project
   module.project.google_project_iam_binding.authoritative["roles/cloudasset.owner"]:
     condition: []
     members:
@@ -51,6 +46,6 @@ values:
 
 counts:
   google_project: 1
-  google_project_iam_binding: 6
+  google_project_iam_binding: 5
   modules: 1
-  resources: 8
+  resources: 7

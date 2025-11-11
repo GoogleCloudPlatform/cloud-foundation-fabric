@@ -76,20 +76,27 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `compute.requireOsLogin` | Enforce the use of OS Login for all Compute Engine instances. | **CIS for GCP 3.0**: 4.4<br>**CIS Controls 8.0**: 5.6, 6.7<br>**PCI-DSS 4.0**: 1.2.5,<br>2.2.4<br>6.4.1<br>**NIST 800-53 R5**: AC-2<br>**ISO-2700-1 v2022**: A.5.15<br>**SOC2 v2017**: CC6.1.4, CC6.1.6, CC6.1.8, CC6.1.9 |
 | `compute.requireShieldedVm` | Enforce the use of Shielded VM for all Compute Engine instances. | **CIS for GCP 3.0**: 4.8 |
 | `compute.requireSslPolicy` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
+| `compute.requireVpcFlowLogs` | Enforce the enablement of VPC Flow Logs for every subnet in a VPC network. | **CIS for GCP 3.0**: 3.8<br>**CIS Controls 8.0**: 13.6, 8.2<br>**NIST 800-53 R4**: SI-4<br>**ISO-2700-1 v2013**: A.13.1.1 |
+| `compute.restrictCloudNATUsage` | Restrict Cloud NAT usage to an authorized list. |  |
 | `compute.restrictDedicatedInterconnectUsage` | Restrict the use of Dedicated Interconnect. |  |
 | `compute.restrictLoadBalancerCreationForTypes` | Restrict the creation of load balancers based on type. |  |
 | `compute.restrictPartnerInterconnectUsage` | Restrict the use of Partner Interconnect. |  |
 | `compute.restrictProtocolForwardingCreationForTypes` | Restrict the creation of forwarding rules based on type. |  |
+| `compute.restrictSharedVpcHostProjects` | Restrict the use of Shared VPC host projects. |  |
 | `compute.restrictVpcPeering` | Restrict the use of VPC peering. |  |
 | `compute.setNewProjectDefaultToZonalDNSOnly` | Ensure project created use Zonal DNS instead of global. |  |
 | `compute.skipDefaultNetworkCreation` | Prevent the automatic creation of the default VPC network in new projects. | **CIS Controls 8.0**: 4.2<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `compute.trustedImageProjects` | Restrict the use of VM images to an authorized list of projects. |  |
 | `compute.vmExternalIpAccess` | Prevent Compute Engine instances from having public IP addresses. | **CIS for GCP 3.0**: 4.9<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: CA-3, SC-7<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `container.managed.disableABAC` | Require that Attribute-Based Access Control is disabled |  |
+| `container.managed.disableInsecureKubeletReadOnlyPort` | Require disabling the insecure kubelet read-only port in GKE clusters |  |
 | `container.managed.disableLegacyClientCertificateIssuance` | Prevent the use of legacy authentication methods for GKE API servers. | **CIS for GKE 1.5**: 2.1.1<br>5.8.1<br>**PCI-DSS 4.0**: 4.1 |
+| `container.managed.disableRBACSystemBindings` | Requires disabling RBAC bindings to system identities in GKE clusters. |  |
+| `container.managed.disallowDefaultComputeServiceAccount` | Enforce that GKE cluster nodes are assigned with the least privileged service accounts | **CIS for GKE 1.5**: 5.2.1<br>**PCI-DSS 4.0**: 2.2.4, 7.2<br>**NIST 800-53 R4**: AC-6, SC-7<br>**ISO-2700-1 v2013**: A.9.2.3 |
 | `container.managed.enableCloudLogging` | Enforce that GKE clusters logging is enabled | **CIS for GKE 1.5**: 5.7.1<br>**PCI-DSS 4.0**: 10.2 |
 | `container.managed.enableNetworkPolicy` | Enforce that GKE clusters are configured with Network Policy enabled | **CIS for GKE 1.5**: 5.6.7<br>**PCI-DSS 4.0**: 1.2,1.1,1.4<br>**ISO-2700-1 v2013**: A.13.1.1 |
 | `container.managed.enablePrivateNodes` | Enforce that GKE clusters are created as private clusters with private nodes | **CIS for GKE 1.5**: 5.6.5<br>**PCI-DSS 4.0**: 1.3.1 |
+| `container.managed.enableSecurityBulletinNotifications` | Require enabling Security Bulletin Notifications in GKE clusters. |  |
 | `container.managed.enableShieldedNodes` | Enforce that GKE nodes is configured with shielded GKE nodes | **CIS for GKE 1.5**: 5.5.5 |
 | `container.managed.enableWorkloadIdentityFederation` | Enforce that GKE clusters are enabled with Workload Identity  | **CIS for GKE 1.5**: 5.2.2<br>**PCI-DSS 4.0**: 7.2.2 |
 | `essentialcontacts.allowedContactDomains` | Restrict essential contact domains to an authorized list. |  |
@@ -115,13 +122,12 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `storage.secureHttpTransport` | Restrict unencrypted HTTP access to Cloud Storage. |  |
 | `storage.uniformBucketLevelAccess` | Enforce the enablement of uniform bucket-level access to Cloud Storage buckets. | **CIS for GCP 3.0**: 5.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 
-**Note:** For organizations with strict requirements to ensure all resources are created and stored within specific geographic regions (e.g., for data sovereignty or regulatory compliance), the `gcp.resourceLocations` Organization Policy present in file [gcp.yaml](organization/org-policies/gcp.yaml)  can be enabled.
-
 #### Custom Constraints
 
 | Constraint | Description | Compliance Mapping |
 |---|---|---|
 | `accesscontextmanagerDisableBridgePerimeters` | Ensure no perimeter bridges are used. Instead, use ingress and egress rules. |  |
+| `cloudbuildDisableWorkerPoolExternalIP` | Prevent the configuration of Cloud Build worker pools with external IP addresses. |  |
 | `cloudrunDisableEnvironmentVariablePattern` | Prevent secrets from being stored in Cloud Run environment variables. | **CIS for GCP 3.0**: 1.17 |
 | `cloudsqlDisablePublicAuthorizedNetworks` | Ensure That Cloud SQL Database Instances Do Not Implicitly Whitelist All Public IP Addresses | **CIS for GCP 3.0**: 6.5<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: CA-3, SC-7<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.13.1.3, A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `cloudsqlEnforcePasswordComplexity` | Enforce password complexity for Cloud SQL instance users. |  |
@@ -135,9 +141,13 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `dnsAllowedSigningAlgorithms` | Prevent the use of the RSASHA1 algorithm for the Key-Signing Key in Cloud DNS DNSSEC. | **CIS for GCP 3.0**: 3.4<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R4**: 4.2<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: IVS-04 |
 | `dnsRequireManageZoneDNSSEC` | Enforce the enablement of DNSSEC for all Cloud DNS zones. | **CIS for GCP 3.0**: 3.3<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2013**: A.8.2.3<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `dnsRequirePolicyLogging` | Enforce the enablement of Cloud DNS logging for all VPC networks. | **CIS for GCP 3.0**: 2.12<br>**PCI-DSS 4.0**: 10.4.1, 10.4.1.1, 10.4.2, 10.4.3<br>**NIST 800-53 R5**: AU-6, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-2, PR-PT-1, RS-AN-1<br>**ISO-2700-1 v2022**: A.5.25<br>**SOC2 v2017**: CC4.1.1, CC4.1.2, CC4.1.3, CC4.1.4, CC4.1.5, CC4.1.6, CC4.1.7, CC4.1.8, CC7.3.1, CC7.3.2, CC7.3.3, CC7.3.4, CC7.3.5<br>**HIPAA**: 164.308(a)(1)(ii), 164.312(b)<br>**Cloud Controls Matrix 4**: LOG-05 |
+| `firewallEnforcePolicyRuleLogging` | Enforce logging for Firewall Policy rules | **NIST 800-53 R4**: SI-4<br>**ISO-2700-1 v2013**: A.13.1.1 |
+| `firewallEnforceRuleLogging` | Enforce logging for VPC firewall rules | **NIST 800-53 R4**: SI-4<br>**ISO-2700-1 v2013**: A.13.1.1 |
 | `firewallRestrictOpenWorldRule` | Prevent the creation of VPC firewall rules with a source or destination of `0.0.0.0/0`. |  |
 | `firewallRestrictRdpPolicyRule` | Prevent RDP access from the internet via firewall policies. | **CIS for GCP 3.0**: 3.7<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
+| `firewallRestrictRdpRule` | Prevent RDP access from the internet via VPC firewall rules. | **CIS for GCP 3.0**: 3.7<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictSshPolicyRule` | Prevent SSH access from the internet via firewall policies. | **CIS for GCP 3.0**: 3.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
+| `firewallRestrictSshRule` | Prevent SSH access from the internet via VPC firewall rules. | **CIS for GCP 3.0**: 3.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `gkeAllowedNodePoolImages` | Enforce that GKE nodes are using authorized node images | **CIS for GKE 1.5**: 5.5.1<br>**PCI-DSS 4.0**: 2.2.6, 5.2, 6.2.1 |
 | `gkeAllowedReleaseChannels` | Enforce that GKE cluster are using authorized release channels | **CIS for GKE 1.5**: 5.5.4 |
 | `gkeDisableAlphaCluster` | Prevent the use of alpha features for GKE clusters in production workloads. | **CIS for GKE 1.5**: 5.10.2 |
@@ -148,15 +158,19 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `gkeRequireDataplaneV2` | Enforce that the GKE clusters is configured to use dataplane v2 |  |
 | `gkeRequireGKEMetadataServer` | Enforce that GKE clusters are configured with GKE metadata server enabled | **CIS for GKE 1.5**: 5.4.2 |
 | `gkeRequireIntegrityMonitoring` | Enforce that GKE nodes are configured with integrity monitoring enabled | **CIS for GKE 1.5**: 5.5.6 |
+| `gkeRequireIntraNodeVisibility` | Enforce that GKE clusters intranode visibility is enabled | **CIS for GKE 1.5**: 5.6.1<br>**PCI-DSS 4.0**: 10.2 |
+| `gkeRequireMasterAuthorizedNetworks` | Restrict network access to GKE control planes using master authorized networks with authorized CIDR IP ranges. | **CIS for GKE 1.5**: 5.6.3<br>**PCI-DSS 4.0**: 1.2.5 |
 | `gkeRequireMonitoring` | Enforce that GKE clusters monitoring is enabled | **CIS for GKE 1.5**: 5.7.1<br>**PCI-DSS 4.0**: 10.2 |
 | `gkeRequireNodePoolAutoRepair` | Enforce that GKE clusters are configured with node auto-repair enabled | **CIS for GKE 1.5**: 5.5.2<br>**PCI-DSS 4.0**: 2.2.6 |
 | `gkeRequireNodePoolAutoUpgrade` | Enforce that GKE clusters are configured with node auto-upgrade enabled  | **CIS for GKE 1.5**: 5.5.3<br>**PCI-DSS 4.0**: 2.2.6 |
+| `gkeRequirePrivateEndpoint` | Enforce that GKE clusters are created as private clusters with public endpoint disabled | **CIS for GKE 1.5**: 5.6.4<br>**PCI-DSS 4.0**: 1.3.1 |
 | `gkeRequireRegionalClusters` | Enforce the creation of regional GKE clusters |  |
 | `gkeRequireSecureBoot` | Enforce that GKE nodes are configured with secure boot enabled | **CIS for GKE 1.5**: 5.5.7 |
 | `gkeRequireVPCNativeCluster` | Enforce that GKE clusters are created with VPC-native  | **CIS for GKE 1.5**: 5.6.2<br>**PCI-DSS 4.0**: 1.4.3 |
 | `iamDisablePublicBindings` | Ensure That BigQuery Datasets Are Not Anonymously or Publicly Accessible | **CIS for GCP 3.0**: 7.1<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: AC-2<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `networkDisableTargetHTTPProxy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkDisableWeakSSLPolicy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
+| `networkRequireBackendServiceLogging` | Enforce the enablement of logging for all HTTP(S) load balancers. | **CIS for GCP 3.0**: 2.16<br>**CIS Controls 8.0**: 8.2<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2<br>**NIST 800-53 R5**: AU-12, AU-2, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, PR-PT-1<br>**ISO-2700-1 v2022**: A.8.15, A.8.20<br>**HIPAA**: 164.312(b) |
 | `networkRequireCustomModeVpc` | Ensure That the Default Network Does Not Exist in a Project | **CIS for GCP 3.0**: 3.1<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `networkRequireSubnetPrivateGoogleAccess` | Enforce Private Google Access for all VPC network subnets. |  |
 
@@ -186,12 +200,66 @@ SCC Custom SHA Detectors are available only for organization have subscribed to 
 | `gkeRequireRegionalCluster` | Enforce the creation of regional GKE clusters |  |
 
 #### Observability
-
 | Alert | Description | Compliance Mapping |
 |---|---|---|
 | `auditConfigChanges` | Ensure log metric filters and alerts exist for audit configuration changes. | **CIS for GCP 3.0**: 2.5<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
+| `cloudsqlInstanceChanges` | Ensure log metric filters and alerts exist for Cloud SQL instance configuration changes. | **CIS for GCP 3.0**: 2.11<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
 | `customRoleChanges` | Ensure log metric filters and alerts exist for custom role changes. | **CIS for GCP 3.0**: 2.6<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
+| `firewallPolicyRuleChanges` | Ensure log metric filters and alerts exist for firewall policy rule changes. | **CIS for GCP 3.0**: 2.7<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
+| `firewallRuleChanges` | Ensure log metric filters and alerts exist for VPC network firewall rule changes. | **CIS for GCP 3.0**: 2.7<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
+| `networkChanges` | Ensure log metric filters and alerts exist for VPC network changes. | **CIS for GCP 3.0**: 2.9 |
+| `networkRouteChanges` | Ensure log metric filters and alerts exist for VPC network route changes. | **CIS for GCP 3.0**: 2.8<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
 | `projectOwnershipChange` | Ensure log metric filters and alerts exist for project ownership changes. | **CIS for GCP 3.0**: 2.4<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
+| `storageIamChanges` | Ensure log metric filters and alerts exist for Cloud Storage IAM permission changes. | **CIS for GCP 3.0**: 2.10<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2 |
+
+##  Configuration changes for Hardened Policies
+
+* For organizations with strict requirements to ensure resources are created and stored within specific geographic regions (e.g., for data sovereignty or regulatory compliance), you can enforce this by enabling the `gcp.resourceLocations` Organization Policy, which is defined in the [gcp.yaml](organization/org-policies/gcp.yaml) file.
+
+* The `compute.requireVpcFlowLogs` policy is enabled by default in the hardened datasets. This requires to update the `2-networking` stage to configure all subnets with **VPC Flow Logs**. Here is an example of a subnet configuration with `flow_logs_config` enabled:
+```yaml
+name: dev-default
+region: $locations:primary
+ip_cidr_range: 10.73.0.0/24
+description: Default primary-region subnet for dev
+flow_logs_config: # This section enables VPC Flow Logs
+  aggregation_interval: "INTERVAL_15_MIN"
+  flow_sampling: 0.5
+  metadata: "INCLUDE_ALL_METADATA"
+```
+
+* The `custom.firewallEnforcePolicyRuleLogging` policy is enabled by default in the hardened datasets. This requires to update the `2-networking` stage to configure firewall policies with logging enabled. Here is an example of a firewall policy rule with `enable_logging: true`:
+```yaml
+parent_id: $folder_ids:networking
+attachments:
+  networking: $folder_ids:networking
+name: network-policy
+ingress_rules:
+  allow-healthchecks:
+    description: Enable SSH, HTTP and HTTPS healthchecks
+    priority: 1001
+    enable_logging: true # Logging must be enabled per policy
+    match:
+      source_ranges:
+        - $cidr_ranges_sets:healthchecks
+      layer4_configs:
+        - protocol: tcp
+          ports: ["22", "80", "443"]
+```
+
+* The `compute.restrictVpcPeering` policy is enabled by default in the hardened datasets with all VPC peerings restricted to networks **within** your organization (as defined by `under:organizations/${organization.id}`). This policy will block connections from Google-managed services (e.g., Cloud SQL, Cloud Memorystore, Cloud Build) that use **Private Service Access**, as they peer from an external Google-owned network. To allow these essential services to peer, you must explicitly add Google's `servicenetworking` network to the policy's `allow` list.
+
+Here is the required policy configuration:
+```yaml
+compute.restrictVpcPeering:
+  rules:
+    - allow:
+        values:
+          # Allows all peering within your organization
+          - "under:organizations/${organization.id}"
+          # Allows peering for Google's Private Service Access
+          - "projects/<google-project-id>/global/networks/servicenetworking"
+```
 
 ## Troubleshooting
 

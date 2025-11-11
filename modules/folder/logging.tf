@@ -49,8 +49,11 @@ resource "google_folder_iam_audit_config" "default" {
   dynamic "audit_log_config" {
     for_each = { for k, v in each.value : k => v if v != null }
     content {
-      log_type         = audit_log_config.key
-      exempted_members = audit_log_config.value.exempted_members
+      log_type = audit_log_config.key
+      exempted_members = [
+        for m in try(audit_log_config.value.exempted_members, []) :
+        lookup(local.ctx.iam_principals, m, m)
+      ]
     }
   }
 }

@@ -499,7 +499,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: false
+    - enabled: true
   ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-org-state
     condition: []
@@ -540,7 +540,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: false
+    - enabled: true
   ? module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-outputs
     condition: []
@@ -593,7 +593,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: false
+    - enabled: true
   module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["1-vpcsc/"]:
     bucket: ft0-prod-iac-core-0-iac-stage-state
     force_destroy: false
@@ -2336,6 +2336,7 @@ values:
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -2805,6 +2806,7 @@ counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
+  google_essential_contacts_contact: 1
   google_folder: 8
   google_folder_iam_binding: 44
   google_iam_workload_identity_pool: 1
@@ -2817,6 +2819,7 @@ counts:
   google_organization_iam_binding: 36
   google_organization_iam_custom_role: 9
   google_project: 3
+  google_project_iam_audit_config: 2
   google_project_iam_binding: 16
   google_project_iam_member: 15
   google_project_service: 33
@@ -2836,5 +2839,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 48
-  resources: 311
-  terraform_data: 2
+  resources: 315
+  terraform_data: 3
