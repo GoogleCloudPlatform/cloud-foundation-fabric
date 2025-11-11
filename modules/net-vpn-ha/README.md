@@ -140,7 +140,7 @@ module "vpn_ha" {
           ip_ranges = {
             "onprem-range" = "10.128.0.0/16"
           }
-        }        
+        }
         # MD5 Authentication is optional
         md5_authentication_key = {
           name = "foo"
