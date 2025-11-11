@@ -96,6 +96,10 @@ variable "tunnels" {
         all_subnets = bool
         ip_ranges   = map(string)
       }))
+      custom_learned_ip_ranges = optional(object({
+        route_priority = optional(number, 1000)
+        ip_ranges      = map(string)
+      }))
       md5_authentication_key = optional(object({
         name = string
         key  = optional(string)

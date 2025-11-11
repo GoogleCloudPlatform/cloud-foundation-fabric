@@ -15,32 +15,48 @@
 values:
   module.vpn_ha.google_compute_external_vpn_gateway.external_gateway["default"]:
     description: Terraform managed external VPN gateway
+    effective_labels:
+      goog-terraform-provisioned: "true"
     interface:
-    - id: 0
-      ip_address: 8.8.8.8
+      - id: 0
+        ip_address: 8.8.8.8
+        ipv6_address: null
+    labels: null
     name: mynet-to-onprem-default
     project: project-id
     redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
+    terraform_labels:
+      goog-terraform-provisioned: "true"
+    timeouts: null
   module.vpn_ha.google_compute_ha_vpn_gateway.ha_gateway[0]:
     description: Terraform managed external VPN gateway
+    effective_labels:
+      goog-terraform-provisioned: "true"
+    gateway_ip_version: IPV4
+    labels: null
     name: mynet-to-onprem
     network: projects/xxx/global/networks/aaa
     project: project-id
     region: europe-west8
     stack_type: IPV4_ONLY
+    terraform_labels:
+      goog-terraform-provisioned: "true"
+    timeouts: null
   module.vpn_ha.google_compute_router.router[0]:
     bgp:
-    - advertise_mode: DEFAULT
-      advertised_groups: []
-      advertised_ip_ranges: []
-      asn: 64514
-      keepalive_interval: 20
+      - advertise_mode: DEFAULT
+        advertised_groups: []
+        advertised_ip_ranges: []
+        asn: 64514
+        keepalive_interval: 20
     description: null
     encrypted_interconnect_router: null
+    md5_authentication_keys: []
     name: vpn-mynet-to-onprem
     network: projects/xxx/global/networks/aaa
     project: project-id
     region: europe-west8
+    timeouts: null
   module.vpn_ha.google_compute_router_interface.router_interface["remote-0"]:
     interconnect_attachment: null
     ip_range: 169.254.1.2/30
@@ -50,6 +66,7 @@ values:
     region: europe-west8
     router: vpn-mynet-to-onprem
     subnetwork: null
+    timeouts: null
     vpn_tunnel: mynet-to-onprem-remote-0
   module.vpn_ha.google_compute_router_interface.router_interface["remote-1"]:
     interconnect_attachment: null
@@ -60,15 +77,24 @@ values:
     region: europe-west8
     router: vpn-mynet-to-onprem
     subnetwork: null
+    timeouts: null
     vpn_tunnel: mynet-to-onprem-remote-1
   module.vpn_ha.google_compute_router_peer.bgp_peer["remote-0"]:
     advertise_mode: DEFAULT
     advertised_groups: []
     advertised_ip_ranges: []
     advertised_route_priority: 1000
+    custom_learned_ip_ranges:
+      - range: 10.128.0.0/16
+    custom_learned_route_priority: 1000
     enable: true
     enable_ipv6: false
+    export_policies: null
+    import_policies: null
     interface: mynet-to-onprem-remote-0
+    md5_authentication_key:
+      - key: bar
+        name: foo
     name: mynet-to-onprem-remote-0
     peer_asn: 64513
     peer_ip_address: 169.254.1.1
@@ -76,14 +102,25 @@ values:
     region: europe-west8
     router: vpn-mynet-to-onprem
     router_appliance_instance: null
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
   module.vpn_ha.google_compute_router_peer.bgp_peer["remote-1"]:
     advertise_mode: DEFAULT
     advertised_groups: []
     advertised_ip_ranges: []
     advertised_route_priority: 1000
+    custom_learned_ip_ranges:
+      - range: 10.128.0.0/16
+    custom_learned_route_priority: 1000
     enable: true
     enable_ipv6: false
+    export_policies: null
+    import_policies: null
     interface: mynet-to-onprem-remote-1
+    md5_authentication_key:
+      - key: bar
+        name: foo
     name: mynet-to-onprem-remote-1
     peer_asn: 64513
     peer_ip_address: 169.254.2.1
@@ -91,9 +128,16 @@ values:
     region: europe-west8
     router: vpn-mynet-to-onprem
     router_appliance_instance: null
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-0"]:
+    cipher_suite: []
     description: null
+    effective_labels:
+      goog-terraform-provisioned: "true"
     ike_version: 2
+    labels: null
     name: mynet-to-onprem-remote-0
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
@@ -101,11 +145,20 @@ values:
     region: europe-west8
     router: vpn-mynet-to-onprem
     shared_secret: mySecret
+    shared_secret_wo: null
+    shared_secret_wo_version: null
     target_vpn_gateway: null
+    terraform_labels:
+      goog-terraform-provisioned: "true"
+    timeouts: null
     vpn_gateway_interface: 0
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-1"]:
+    cipher_suite: []
     description: null
+    effective_labels:
+      goog-terraform-provisioned: "true"
     ike_version: 2
+    labels: null
     name: mynet-to-onprem-remote-1
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
@@ -113,10 +166,25 @@ values:
     region: europe-west8
     router: vpn-mynet-to-onprem
     shared_secret: mySecret
+    shared_secret_wo: null
+    shared_secret_wo_version: null
     target_vpn_gateway: null
+    terraform_labels:
+      goog-terraform-provisioned: "true"
+    timeouts: null
     vpn_gateway_interface: 1
+  module.vpn_ha.random_id.md5_keys["remote-0"]:
+    byte_length: 12
+    keepers: null
+    prefix: null
+  module.vpn_ha.random_id.md5_keys["remote-1"]:
+    byte_length: 12
+    keepers: null
+    prefix: null
   module.vpn_ha.random_id.secret:
     byte_length: 8
+    keepers: null
+    prefix: null
 
 counts:
   google_compute_external_vpn_gateway: 1
