@@ -283,7 +283,9 @@ This is a simple reference table of available interpolation namespaces, refer to
 - `$folder_ids:my_folder`
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
+- `$iam_principals:service_agents/my_project/my_api`
 - `$kms_keys:my_key`
+- `$kms_keys:autokeys/my_key`
 - `$log_buckets:my_project/my_bucket`
 - `$locations:my_location`
 - `$notification_channels:my_channel`
