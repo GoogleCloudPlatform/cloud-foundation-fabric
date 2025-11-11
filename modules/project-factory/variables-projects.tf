@@ -177,8 +177,64 @@ variable "projects" {
       }))
     })), {})
     iam_by_principals = optional(map(list(string)), {})
-    labels            = optional(map(string), {})
-    metric_scopes     = optional(list(string), [])
+    kms = optional(object({
+      autokeys = optional(map(object({
+        location               = string
+        resource_type_selector = string
+      })), {})
+      keyrings = optional(map(object({
+        location = string
+        iam      = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          role    = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        keys = optional(map(object({
+          destroy_scheduled_duration = optional(string)
+          rotation_period            = optional(string)
+          purpose                    = optional(string, "ENCRYPT_DECRYPT")
+          iam                        = optional(map(list(string)), {})
+          iam_bindings = optional(map(object({
+            members = list(string)
+            role    = string
+            condition = optional(object({
+              expression  = string
+              title       = string
+              description = optional(string)
+            }))
+          })), {})
+          iam_bindings_additive = optional(map(object({
+            member = string
+            role   = string
+            condition = optional(object({
+              expression  = string
+              title       = string
+              description = optional(string)
+            }))
+          })), {})
+          version_template = optional(object({
+            algorithm        = string
+            protection_level = optional(string, "SOFTWARE")
+          }))
+        })), {})
+      })), {})
+    }), {})
+    labels        = optional(map(string), {})
+    metric_scopes = optional(list(string), [])
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)
