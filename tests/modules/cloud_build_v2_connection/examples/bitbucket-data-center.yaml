@@ -40,7 +40,7 @@ values:
     service_account: null
     source_to_build: []
     substitutions: null
-    tags: null
+    tags: []
     timeouts: null
     trigger_template: []
     webhook_config: []

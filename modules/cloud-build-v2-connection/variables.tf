@@ -138,7 +138,7 @@ variable "repositories" {
       include_build_logs = optional(string)
       substitutions      = optional(map(string), {})
       service_account    = optional(string)
-      tags               = optional(map(string))
+      tags               = optional(list(string), [])
     })), {})
   }))
   default  = {}
