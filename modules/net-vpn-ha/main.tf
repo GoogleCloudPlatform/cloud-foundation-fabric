@@ -131,7 +131,6 @@ resource "google_compute_router_peer" "bgp_peer" {
       description = range.value
     }
   }
-
   dynamic "custom_learned_ip_ranges" {
     for_each = try(each.value.bgp_peer.custom_learned_ip_ranges.ip_ranges, {})
     iterator = range
@@ -139,12 +138,10 @@ resource "google_compute_router_peer" "bgp_peer" {
       range = range.value
     }
   }
-
   custom_learned_route_priority = try(
     each.value.bgp_peer.custom_learned_ip_ranges.route_priority,
     null
   )
-
   dynamic "md5_authentication_key" {
     for_each = each.value.bgp_peer.md5_authentication_key != null ? toset([each.value.bgp_peer.md5_authentication_key]) : []
     content {
