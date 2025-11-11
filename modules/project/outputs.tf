@@ -66,6 +66,13 @@ output "id" {
   ]
 }
 
+output "kms_autokeys" {
+  description = "KMS Autokey key ids."
+  value = {
+    for k, v in google_kms_key_handle.default : k => v.kms_key
+  }
+}
+
 output "name" {
   description = "Project name."
   value       = local.project.name

@@ -22,7 +22,7 @@ locals {
     } if k != "condition_vars"
   }
   ctx_kms_keys = merge(local.ctx.kms_keys, {
-    for k, v in google_kms_key_handle.default : "$kms_keys:autokey/${k}" => v.kms_key
+    for k, v in google_kms_key_handle.default : "$kms_keys:autokeys/${k}" => v.kms_key
   })
   ctx_p = "$"
   location = lookup(

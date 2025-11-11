@@ -166,6 +166,24 @@ variable "factories_config" {
   default  = {}
 }
 
+variable "kms_autokeys" {
+  description = "KMS Autokey key handles."
+  type = map(object({
+    location               = string
+    resource_type_selector = optional(string, "compute.googleapis.com/Disk")
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.kms_autokeys : k == try(regex(
+        "^[a-z][a-z0-9-]+[a-z0-9]$", k
+      ), null)
+    ])
+    error_message = "Autokey keys need to be valid GCP resource names."
+  }
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)

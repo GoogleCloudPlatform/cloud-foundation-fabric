@@ -3,14 +3,31 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-10-26 16:55:32+00:00 to: None since: v46.0.0 -->
+## [Unreleased] <!-- from: 2025-11-05 08:29:41+00:00 to: None since: v47.0.0 -->
+
+## [47.1.0] - 2025-11-11
+
+### DOCUMENTATION
+
+- [[#3507](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3507)] Cursed knowledge - try & known after apply structures ([wiktorn](https://github.com/wiktorn)) <!-- 2025-11-06 14:10:31+00:00 -->
+
+### FAST
+
+- [[#3508](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3508)] [FAST] fix host project ids in sample yaml files in project factory ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-11-06 22:02:20+00:00 -->
+- [[#3504](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3504)] Refactor FAST VPC-SC docs, ensure cooperative VPC-SC resource control works ([ludoo](https://github.com/ludoo)) <!-- 2025-11-05 13:19:03+00:00 -->
+
+### MODULES
+
+- [[#3519](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3519)] Added missing parameters in cloud build trigger ([apichick](https://github.com/apichick)) <!-- 2025-11-11 06:40:33+00:00 -->
+- [[#3509](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3509)] compute-vm: hyperdisk and ARM support ([wiktorn](https://github.com/wiktorn)) <!-- 2025-11-07 07:46:12+00:00 -->
+- [[#3503](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3503)] Password for initial_user for AlloyDB is now required ([wiktorn](https://github.com/wiktorn)) <!-- 2025-11-05 12:08:11+00:00 -->
 
 ## [47.0.0] - 2025-11-05
 
 ### BREAKING CHANGES
 
-- `fast/stages/2-networking-legacy-a-simple`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435 
-`fast/stages/2-networking-legacy-b-nva`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435 
+- `fast/stages/2-networking-legacy-a-simple`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435
+`fast/stages/2-networking-legacy-b-nva`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435
 `fast/stages/2-networking-legacy-c-separate-envs`: The stage is being removed, and superseded by the `2-networking` FAST stage, introduced in #3435 [[#3479](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3479)]
 
 ### FAST
