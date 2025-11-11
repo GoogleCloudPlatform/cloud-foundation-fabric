@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
-
 cloudrunRequireIngressInternalAndLoadBalancer:
   description: Detect if Cloud Run services are not configured to allow only internal
     traffic and traffic from load balancer
   predicate:
-    expression: (!resource.metadata.annotations['run.googleapis.com/ingress'].matches('internal-and-cloud-load-balancing'))
+    expression: |-
+      (
+        !resource.metadata.annotations['run.googleapis.com/ingress'].matches('internal-and-cloud-load-balancing')
+      )
   recommendation: Ensure Cloud Run services are configured to allow only internal
     traffic and traffic from load balancer
   resource_selector:
