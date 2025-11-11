@@ -32,7 +32,7 @@ AnyOf = collections.namedtuple('AnyOf', 'name default pattern types')
 OneOf = collections.namedtuple('OneOf', 'properties')
 Number = collections.namedtuple('Number', 'name default enum')
 Object = collections.namedtuple(
-    'Object', 'name required additional pattern properties defs one_of')
+    'Object', 'name required additional pattern properties defs')
 Reference = collections.namedtuple('Reference', 'name to')
 String = collections.namedtuple('String', 'name default enum pattern')
 
@@ -57,7 +57,6 @@ def parse_node(node, name=None):
       el = Boolean(name, default)
     case 'object':
       logging.debug('  start object parsing')
-      one_of = None
       additional = node.get('additionalProperties')
       if isinstance(additional, dict):
         if 'type' in additional:
@@ -65,8 +64,7 @@ def parse_node(node, name=None):
           additional = parse_node(additional)
         elif 'oneOf' in additional:
           additional = OneOf([parse_node(p) for p in additional['oneOf']])
-      el = Object(name, node.get('required', []), additional, [], [], [],
-                  one_of)
+      el = Object(name, node.get('required', []), additional, [], [], [])
       properties = node.get('properties')
       if properties:
         for k in properties:
