@@ -8,12 +8,10 @@
 
 - **global**: *object*
   <br>*additional properties: false*
-  - ⁺**billing_account**: *string*
-  - ⁺**organization**: *object*
-    <br>*additional properties: false*
-    - **customer_id**: *string*
-    - **domain**: *string*
-    - ⁺**id**: *integer*
+  - **folder_name**: *string*
+    <br>*default: networking*
+  - **stage_name**: *string*
+    <br>*default: 2-networking*
 - **projects**: *object*
   <br>*additional properties: false*
   - **defaults**: *object*
@@ -123,8 +121,16 @@
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
+- **vpcs**: *object*
+  <br>*additional properties: false*
+  - **auto_create_subnetworks**: *boolean*
+  - **delete_default_route_on_create**: *boolean*
+  - **mtu**: *number*
+    <br>*default: 1500*
 - **context**: *object*
   <br>*additional properties: false*
+  - **cidr_ranges_sets**: *object*
+    *additional properties: Array*
   - **custom_roles**: *object*
     *additional properties: String*
   - **email_addresses**: *object*
@@ -137,17 +143,13 @@
     *additional properties: String*
   - **locations**: *object*
     *additional properties: String*
-  - **notification_channels**: *object*
-    *additional properties: String*
   - **project_ids**: *object*
     *additional properties: String*
-  - **service_account_ids**: *object*
+  - **storage_buckets**: *object*
     *additional properties: String*
   - **tag_keys**: *object*
     *additional properties: String*
   - **tag_values**: *object*
-    *additional properties: String*
-  - **vpc_host_projects**: *object*
     *additional properties: String*
   - **vpc_sc_perimeters**: *object*
     *additional properties: String*
@@ -155,13 +157,6 @@
   <br>*additional properties: false*
   - **local_path**: *string*
   - **storage_bucket**: *string*
-  - **providers**: *object*
-    <br>*additional properties: false*
-    - **`^[a-z0-9][a-z0-9_-]+$`**: *object*
-      <br>*additional properties: false*
-      - ⁺**bucket**: *string*
-      - **prefix**: *string*
-      - ⁺**service_account**: *string*
 
 ## Definitions
 

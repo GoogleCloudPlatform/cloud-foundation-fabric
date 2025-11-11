@@ -1,4 +1,4 @@
-# Resource Manager Tags
+# Bootstrap Defaults
 
 <!-- markdownlint-disable MD036 -->
 
@@ -6,31 +6,34 @@
 
 *additional properties: false*
 
-- **name**: *string*
-- **description**: *string*
-- **id**: *string*
-- **network**: *string*
-- **iam**: *reference([iam](#refs-iam))*
-- **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
-- **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
-- **values**: *object*
+- **global**: *object*
   <br>*additional properties: false*
-  - **`^[a-z-][^\\'"/]+$`**: *object*
-    <br>*additional properties: false*
-    - **name**: *string*
-    - **description**: *string*
-    - **id**: *string*
-    - **iam**: *reference([iam](#refs-iam))*
-    - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
-    - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+  - **stage_name**: *string*
+    <br>*default: 1-vpcsc*
+- **context**: *object*
+  <br>*additional properties: false*
+  - **iam_principals**: *object*
+    *additional properties: String*
+  - **identity_sets**: *object*
+    *additional properties: Array*
+  - **project_numbers**: *object*
+    *additional properties: String*
+  - **resource_sets**: *object*
+    *additional properties: Array*
+  - **service_sets**: *object*
+    *additional properties: Array*
+- **output_files**: *object*
+  <br>*additional properties: false*
+  - **local_path**: *string*
+  - **storage_bucket**: *string*
 
 ## Definitions
 
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^roles/`**: *array*
+  - **`^(?:roles/|\$custom_roles:)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
+      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
@@ -39,7 +42,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -52,9 +55,14 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^[a-zA-Z0-9_/]+$*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
       - ⁺**title**: *string*
       - **description**: *string*
+- **iam_by_principals**<a name="refs-iam_by_principals"></a>: *object*
+  <br>*additional properties: false*
+  - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)`**: *array*
+    - items: *string*
+      <br>*pattern: ^(?:roles/|\$custom_roles:)*

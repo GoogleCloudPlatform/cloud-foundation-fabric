@@ -6,14 +6,6 @@
 
 *additional properties: false*
 
-- **global**: *object*
-  <br>*additional properties: false*
-  - ⁺**billing_account**: *string*
-  - ⁺**organization**: *object*
-    <br>*additional properties: false*
-    - **customer_id**: *string*
-    - **domain**: *string*
-    - ⁺**id**: *integer*
 - **projects**: *object*
   <br>*additional properties: false*
   - **defaults**: *object*
@@ -50,6 +42,8 @@
         - ⁺**number**: *number*
         - **services_enabled**: *array*
           - items: *string*
+    - **service_accounts**: *object*
+      *additional properties: Object*
     - **service_encryption_key_ids**: *object*
       <br>*additional properties: false*
       - **`^[a-z0-9_-]+$`**: *array*
@@ -72,19 +66,34 @@
         *additional properties: Array*
     - **tag_bindings**: *object*
       *additional properties: String*
-    - **service_accounts**: *object*
-      *additional properties: Object*
     - **universe**: *object*
       <br>*additional properties: false*
-      - ⁺**domain**: *string*
-      - **forced_jit_service_identities**: *array*
-        - items: *string*
       - ⁺**prefix**: *string*
       - **unavailable_service_identities**: *array*
         - items: *string*
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
+  - **merges**: *object*
+    <br>*additional properties: false*
+    - **contacts**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z0-9_-]+$`**: *array*
+        - items: *string*
+    - **labels**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z0-9_-]+$`**: *array*
+        - items: *string*
+    - **metric_scopes**: *array*
+      - items: *string*
+    - **service_encryption_key_ids**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z0-9_-]+$`**: *array*
+        - items: *string*
+    - **service_accounts**: *object*
+      *additional properties: Object*
+    - **services**: *array*
+      - items: *string*
   - **overrides**: *object*
     <br>*additional properties: false*
     - **billing_account**: *string*
@@ -104,19 +113,18 @@
       - **storage**: *string*
     - **parent**: *string*
     - **prefix**: *string*
+    - **service_accounts**: *object*
+      *additional properties: Object*
     - **service_encryption_key_ids**: *object*
       <br>*additional properties: false*
       - **`^[a-z0-9_-]+$`**: *array*
         - items: *string*
+    - **services**: *array*
+      - items: *string*
     - **tag_bindings**: *object*
       *additional properties: String*
-    - **service_accounts**: *object*
-      *additional properties: Object*
     - **universe**: *object*
       <br>*additional properties: false*
-      - ⁺**domain**: *string*
-      - **forced_jit_service_identities**: *array*
-        - items: *string*
       - ⁺**prefix**: *string*
       - **unavailable_service_identities**: *array*
         - items: *string*
@@ -154,14 +162,24 @@
 - **output_files**: *object*
   <br>*additional properties: false*
   - **local_path**: *string*
+  - **providers_template_path**: *string*
+    <br>*default: assets/providers.tf.tpl*
   - **storage_bucket**: *string*
+  - **providers_pattern**: *object*
+    <br>*additional properties: false*
+    - ⁺**service_accounts_match**: *object*
+      <br>*additional properties: false*
+      - **ro**: *string*
+      - **rw**: *string*
+    - ⁺**storage_bucket**: *string*
+    - **storage_folders_create**: *boolean*
   - **providers**: *object*
     <br>*additional properties: false*
     - **`^[a-z0-9][a-z0-9_-]+$`**: *object*
       <br>*additional properties: false*
-      - ⁺**bucket**: *string*
-      - **prefix**: *string*
       - ⁺**service_account**: *string*
+      - **set_prefix**: *boolean*
+      - ⁺**storage_bucket**: *string*
 
 ## Definitions
 

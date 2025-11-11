@@ -267,52 +267,56 @@
                   "additionalProperties": false,
                   "patternProperties": {
                     "^[a-z][a-z0-9-]+[a-z0-9]$": {
-                      "destroy_scheduled_duration": {
-                        "type": "string"
-                      },
-                      "rotation_period": {
-                        "type": "string"
-                      },
-                      "iam": {
-                        "$ref": "#/$defs/iam"
-                      },
-                      "iam_bindings": {
-                        "$ref": "#/$defs/iam_bindings"
-                      },
-                      "iam_bindings_additive": {
-                        "$ref": "#/$defs/iam_bindings_additive"
-                      },
-                      "purpose": {
-                        "type": "string",
-                        "default": "ENCRYPT_DECRYPT",
-                        "enum": [
-                          "CRYPTO_KEY_PURPOSE_UNSPECIFIED",
-                          "ENCRYPT_DECRYPT",
-                          "ASYMMETRIC_SIGN",
-                          "ASYMMETRIC_DECRYPT",
-                          "RAW_ENCRYPT_DECRYPT",
-                          "MAC"
-                        ]
-                      },
-                      "version_template": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": [
-                          "algorithm"
-                        ],
-                        "properties": {
-                          "algorithm": {
-                            "type": "string"
-                          },
-                          "protection_level": {
-                            "type": "string",
-                            "default": "SOFTWARE",
-                            "enum": [
-                              "SOFTWARE",
-                              "HSM",
-                              "EXTERNAL",
-                              "EXTERNAL_VPC"
-                            ]
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "destroy_scheduled_duration": {
+                          "type": "string"
+                        },
+                        "rotation_period": {
+                          "type": "string"
+                        },
+                        "iam": {
+                          "$ref": "#/$defs/iam"
+                        },
+                        "iam_bindings": {
+                          "$ref": "#/$defs/iam_bindings"
+                        },
+                        "iam_bindings_additive": {
+                          "$ref": "#/$defs/iam_bindings_additive"
+                        },
+                        "purpose": {
+                          "type": "string",
+                          "default": "ENCRYPT_DECRYPT",
+                          "enum": [
+                            "CRYPTO_KEY_PURPOSE_UNSPECIFIED",
+                            "ENCRYPT_DECRYPT",
+                            "ASYMMETRIC_SIGN",
+                            "ASYMMETRIC_DECRYPT",
+                            "RAW_ENCRYPT_DECRYPT",
+                            "MAC"
+                          ]
+                        },
+                        "version_template": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "algorithm"
+                          ],
+                          "properties": {
+                            "algorithm": {
+                              "type": "string"
+                            },
+                            "protection_level": {
+                              "type": "string",
+                              "default": "SOFTWARE",
+                              "enum": [
+                                "SOFTWARE",
+                                "HSM",
+                                "EXTERNAL",
+                                "EXTERNAL_VPC"
+                              ]
+                            }
                           }
                         }
                       }

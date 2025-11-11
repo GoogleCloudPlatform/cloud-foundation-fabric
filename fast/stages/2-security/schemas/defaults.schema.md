@@ -8,12 +8,10 @@
 
 - **global**: *object*
   <br>*additional properties: false*
-  - ⁺**billing_account**: *string*
-  - ⁺**organization**: *object*
-    <br>*additional properties: false*
-    - **customer_id**: *string*
-    - **domain**: *string*
-    - ⁺**id**: *integer*
+  - **folder_name**: *string*
+    <br>*default: security*
+  - **stage_name**: *string*
+    <br>*default: 2-security*
 - **projects**: *object*
   <br>*additional properties: false*
   - **defaults**: *object*
@@ -155,13 +153,6 @@
   <br>*additional properties: false*
   - **local_path**: *string*
   - **storage_bucket**: *string*
-  - **providers**: *object*
-    <br>*additional properties: false*
-    - **`^[a-z0-9][a-z0-9_-]+$`**: *object*
-      <br>*additional properties: false*
-      - ⁺**bucket**: *string*
-      - **prefix**: *string*
-      - ⁺**service_account**: *string*
 
 ## Definitions
 
