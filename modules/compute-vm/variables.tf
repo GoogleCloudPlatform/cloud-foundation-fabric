@@ -277,7 +277,7 @@ variable "instance_type" {
 }
 
 variable "kms_autokeys" {
-  description = "KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokey/` prefix."
+  description = "KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix."
   type = map(object({
     location               = optional(string)
     resource_type_selector = optional(string, "compute.googleapis.com/Disk")

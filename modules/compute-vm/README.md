@@ -831,7 +831,7 @@ module "autokey-vm-example" {
   }
   encryption = {
     encrypt_boot      = true
-    kms_key_self_link = "$kms_keys:autokey/default"
+    kms_key_self_link = "$kms_keys:autokeys/default"
   }
 }
 # tftest modules=1 resources=4
@@ -1178,7 +1178,7 @@ module "sole-tenancy" {
 | [iam](variables.tf#L243) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [instance_schedule](variables.tf#L249) | Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null. Set active to null to dtach a policy from vm before destroying. | <code title="object&#40;&#123;&#10;  active          &#61; optional&#40;bool, true&#41;&#10;  description     &#61; optional&#40;string&#41;&#10;  expiration_time &#61; optional&#40;string&#41;&#10;  start_time      &#61; optional&#40;string&#41;&#10;  timezone        &#61; optional&#40;string, &#34;UTC&#34;&#41;&#10;  vm_start        &#61; optional&#40;string&#41;&#10;  vm_stop         &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [instance_type](variables.tf#L273) | Instance type. | <code>string</code> |  | <code>&#34;f1-micro&#34;</code> |
-| [kms_autokeys](variables.tf#L279) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokey/` prefix. | <code title="map&#40;object&#40;&#123;&#10;  location               &#61; optional&#40;string&#41;&#10;  resource_type_selector &#61; optional&#40;string, &#34;compute.googleapis.com&#47;Disk&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [kms_autokeys](variables.tf#L279) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code title="map&#40;object&#40;&#123;&#10;  location               &#61; optional&#40;string&#41;&#10;  resource_type_selector &#61; optional&#40;string, &#34;compute.googleapis.com&#47;Disk&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L297) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [metadata](variables.tf#L303) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [metadata_startup_script](variables.tf#L309) | Instance startup script. Will trigger recreation on change, even after importing. | <code>string</code> |  | <code>null</code> |

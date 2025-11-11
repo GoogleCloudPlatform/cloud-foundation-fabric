@@ -101,7 +101,7 @@ variable "ip_filter" {
 }
 
 variable "kms_autokeys" {
-  description = "KMS Autokey key handles. If location is not specified the bucket location will be used. Key handle names will be added to the kms_keys context with an `autokey/` prefix."
+  description = "KMS Autokey key handles. If location is not specified the bucket location will be used. Key handle names will be added to the kms_keys context with an `autokeys/` prefix."
   type = map(object({
     location               = optional(string)
     resource_type_selector = optional(string, "storage.googleapis.com/Bucket")
