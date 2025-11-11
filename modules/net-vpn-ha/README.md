@@ -114,12 +114,11 @@ module "vpn_ha" {
       bgp_peer = {
         address = "169.254.1.1"
         asn     = 64513
-        # BFD is optional
-        bfd = {
-          min_receive_interval        = 1000
-          min_transmit_interval       = 1000
-          multiplier                  = 5
-          session_initialization_mode = "ACTIVE"
+        # Custom learned routes are optional
+        custom_learned_ip_ranges = {
+          ip_ranges = {
+            "onprem-range" = "10.128.0.0/16"
+          }
         }
         # MD5 Authentication is optional
         md5_authentication_key = {
@@ -136,13 +135,12 @@ module "vpn_ha" {
       bgp_peer = {
         address = "169.254.2.1"
         asn     = 64513
-        # BFD is optional
-        bfd = {
-          min_receive_interval        = 1000
-          min_transmit_interval       = 1000
-          multiplier                  = 5
-          session_initialization_mode = "ACTIVE"
-        }
+        # Custom learned routes are optional        
+        custom_learned_ip_ranges = {
+          ip_ranges = {
+            "onprem-range" = "10.128.0.0/16"
+          }
+        }        
         # MD5 Authentication is optional
         md5_authentication_key = {
           name = "foo"
@@ -230,9 +228,9 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [router_config](variables.tf#L72) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  asn    &#61; optional&#40;number&#41;&#10;  create &#61; optional&#40;bool, true&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  keepalive     &#61; optional&#40;number&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  override_name &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  addresses    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  routers      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpn_gateways &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [peer_gateways](variables.tf#L41) | Configuration of the (external or GCP) peer gateway. | <code title="map&#40;object&#40;&#123;&#10;  external &#61; optional&#40;object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces      &#61; list&#40;string&#41;&#10;    description     &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;    name            &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  gcp &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tunnels](variables.tf#L88) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  bgp_peer &#61; object&#40;&#123;&#10;    address        &#61; string&#10;    asn            &#61; number&#10;    route_priority &#61; optional&#40;number, 1000&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      key  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    ipv6 &#61; optional&#40;object&#40;&#123;&#10;      nexthop_address      &#61; optional&#40;string&#41;&#10;      peer_nexthop_address &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    name &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;  bgp_session_range               &#61; string&#10;  ike_version                     &#61; optional&#40;number, 2&#41;&#10;  name                            &#61; optional&#40;string&#41;&#10;  peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;  peer_router_interface_name      &#61; optional&#40;string&#41;&#10;  peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;  router                          &#61; optional&#40;string&#41;&#10;  shared_secret                   &#61; optional&#40;string&#41;&#10;  vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpn_gateway](variables.tf#L125) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
-| [vpn_gateway_create](variables.tf#L131) | Create HA VPN Gateway. Set to null to avoid creation. | <code title="object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;  ipv6        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L88) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  bgp_peer &#61; object&#40;&#123;&#10;    address        &#61; string&#10;    asn            &#61; number&#10;    route_priority &#61; optional&#40;number, 1000&#41;&#10;    custom_advertise &#61; optional&#40;object&#40;&#123;&#10;      all_subnets &#61; bool&#10;      ip_ranges   &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    custom_learned_ip_ranges &#61; optional&#40;object&#40;&#123;&#10;      route_priority &#61; optional&#40;number, 1000&#41;&#10;      ip_ranges      &#61; map&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;      name &#61; string&#10;      key  &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    ipv6 &#61; optional&#40;object&#40;&#123;&#10;      nexthop_address      &#61; optional&#40;string&#41;&#10;      peer_nexthop_address &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    name &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;  bgp_session_range               &#61; string&#10;  ike_version                     &#61; optional&#40;number, 2&#41;&#10;  name                            &#61; optional&#40;string&#41;&#10;  peer_external_gateway_interface &#61; optional&#40;number&#41;&#10;  peer_router_interface_name      &#61; optional&#40;string&#41;&#10;  peer_gateway                    &#61; optional&#40;string, &#34;default&#34;&#41;&#10;  router                          &#61; optional&#40;string&#41;&#10;  shared_secret                   &#61; optional&#40;string&#41;&#10;  vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpn_gateway](variables.tf#L129) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateway_create](variables.tf#L135) | Create HA VPN Gateway. Set to null to avoid creation. | <code title="object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Terraform managed external VPN gateway&#34;&#41;&#10;  ipv6        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

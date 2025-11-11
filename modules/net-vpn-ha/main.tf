@@ -131,6 +131,20 @@ resource "google_compute_router_peer" "bgp_peer" {
       description = range.value
     }
   }
+
+  dynamic "custom_learned_ip_ranges" {
+    for_each = try(each.value.bgp_peer.custom_learned_ip_ranges.ip_ranges, {})
+    iterator = range
+    content {
+      range = range.value
+    }
+  }
+
+  custom_learned_route_priority = try(
+    each.value.bgp_peer.custom_learned_ip_ranges.route_priority,
+    null
+  )
+
   dynamic "md5_authentication_key" {
     for_each = each.value.bgp_peer.md5_authentication_key != null ? toset([each.value.bgp_peer.md5_authentication_key]) : []
     content {
@@ -138,10 +152,11 @@ resource "google_compute_router_peer" "bgp_peer" {
       key  = coalesce(md5_authentication_key.value.key, local.md5_keys[each.key])
     }
   }
-  enable_ipv6               = try(each.value.bgp_peer.ipv6, null) == null ? false : true
-  interface                 = google_compute_router_interface.router_interface[each.key].name
-  ipv6_nexthop_address      = try(each.value.bgp_peer.ipv6.nexthop_address, null)
-  peer_ipv6_nexthop_address = try(each.value.bgp_peer.ipv6.peer_nexthop_address, null)
+  enable_ipv6                        = try(each.value.bgp_peer.ipv6, null) == null ? false : true
+  interface                          = google_compute_router_interface.router_interface[each.key].name
+  ipv6_nexthop_address               = try(each.value.bgp_peer.ipv6.nexthop_address, null)
+  peer_ipv6_nexthop_address          = try(each.value.bgp_peer.ipv6.peer_nexthop_address, null)
+  zero_custom_learned_route_priority = try(each.value.bgp_peer.custom_learned_ip_ranges.route_priority, 1000) == 0 ? true : false
 }
 
 resource "google_compute_router_interface" "router_interface" {
