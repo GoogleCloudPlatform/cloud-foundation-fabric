@@ -53,9 +53,12 @@ logging_metrics:
   customRoleChanges:
     bucket_name: log-0/audit-logs
     description: Custom Role Changes
-    filter: "resource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
-      \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
-      google.iam.admin.v1.DeleteRole\"\n)"
+    filter: |-
+      resource.type="iam_role" AND (
+        protoPayload.methodName="google.iam.admin.v1.CreateRole" OR
+        protoPayload.methodName="google.iam.admin.v1.UpdateRole" OR
+        protoPayload.methodName="google.iam.admin.v1.DeleteRole"
+      )
     label_extractors:
       method_name: EXTRACT(protoPayload.methodName)
       organization_id: EXTRACT(labels.organization_id)

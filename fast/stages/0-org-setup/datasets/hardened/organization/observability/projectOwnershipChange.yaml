@@ -58,12 +58,19 @@ logging_metrics:
   projectOwnershipChange:
     bucket_name: log-0/audit-logs
     description: Project Ownership Changes
-    filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\
-      \ (ProjectOwnership OR projectOwnerInvitee) OR (\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-      REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-      \n) OR (\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\"\
-      \ AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-      \n)"
+    filter: |-
+      (protoPayload.serviceName="cloudresourcemanager.googleapis.com") AND
+      (ProjectOwnership OR projectOwnerInvitee)
+      OR
+      (
+        protoPayload.serviceData.policyDelta.bindingDeltas.action="REMOVE" AND
+        protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
+      )
+      OR
+      (
+        protoPayload.serviceData.policyDelta.bindingDeltas.action="ADD" AND
+        protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
+      )
     label_extractors:
       folder_id: EXTRACT(labels.folder_id)
       method_name: EXTRACT(protoPayload.methodName)

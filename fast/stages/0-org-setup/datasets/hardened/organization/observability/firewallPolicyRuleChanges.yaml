@@ -50,11 +50,12 @@ logging_metrics:
   firewallPolicyRuleChanges:
     bucket_name: log-0/audit-logs
     description: Network Firewall Policy Rule Changes
-    filter: "resource.labels.method:\"compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"\
-      compute.networkFirewallPolicies.addRule\"
-      OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
-      \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
-      \n)"
+    filter: |-
+      resource.labels.method:"compute.networkFirewallPolicies" AND (
+        protoPayload.methodName:"compute.networkFirewallPolicies.addRule" OR
+        protoPayload.methodName:"compute.networkFirewallPolicies.removeRule" OR
+        protoPayload.methodName:"compute.networkFirewallPolicies.patchRule"
+      )
     label_extractors:
       method_name: EXTRACT(protoPayload.methodName)
       principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
