@@ -8,12 +8,10 @@
 
 - **global**: *object*
   <br>*additional properties: false*
-  - ⁺**billing_account**: *string*
-  - ⁺**organization**: *object*
-    <br>*additional properties: false*
-    - **customer_id**: *string*
-    - **domain**: *string*
-    - ⁺**id**: *integer*
+  - **folder_name**: *string*
+    <br>*default: networking*
+  - **stage_name**: *string*
+    <br>*default: 2-networking*
 - **projects**: *object*
   <br>*additional properties: false*
   - **defaults**: *object*
@@ -123,8 +121,16 @@
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
+- **vpcs**: *object*
+  <br>*additional properties: false*
+  - **auto_create_subnetworks**: *boolean*
+  - **delete_default_route_on_create**: *boolean*
+  - **mtu**: *number*
+    <br>*default: 1500*
 - **context**: *object*
   <br>*additional properties: false*
+  - **cidr_ranges_sets**: *object*
+    <br>*additional properties: array*
   - **custom_roles**: *object*
     <br>*additional properties: string*
   - **email_addresses**: *object*
@@ -137,17 +143,13 @@
     <br>*additional properties: string*
   - **locations**: *object*
     <br>*additional properties: string*
-  - **notification_channels**: *object*
-    <br>*additional properties: string*
   - **project_ids**: *object*
     <br>*additional properties: string*
-  - **service_account_ids**: *object*
+  - **storage_buckets**: *object*
     <br>*additional properties: string*
   - **tag_keys**: *object*
     <br>*additional properties: string*
   - **tag_values**: *object*
-    <br>*additional properties: string*
-  - **vpc_host_projects**: *object*
     <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*
     <br>*additional properties: string*
@@ -155,13 +157,6 @@
   <br>*additional properties: false*
   - **local_path**: *string*
   - **storage_bucket**: *string*
-  - **providers**: *object*
-    <br>*additional properties: false*
-    - **`^[a-z0-9][a-z0-9_-]+$`**: *object*
-      <br>*additional properties: false*
-      - ⁺**bucket**: *string*
-      - **prefix**: *string*
-      - ⁺**service_account**: *string*
 
 ## Definitions
 

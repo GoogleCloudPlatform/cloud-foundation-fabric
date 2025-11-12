@@ -29,6 +29,7 @@ Array = collections.namedtuple('Array', 'name items default', defaults=[None])
 Boolean = collections.namedtuple('Boolean', 'name default')
 Integer = collections.namedtuple('Integer', 'name default enum')
 AnyOf = collections.namedtuple('AnyOf', 'name default pattern types')
+OneOf = collections.namedtuple('OneOf', 'properties')
 Number = collections.namedtuple('Number', 'name default enum')
 Object = collections.namedtuple(
     'Object', 'name required additional pattern properties defs')
@@ -37,6 +38,7 @@ String = collections.namedtuple('String', 'name default enum pattern')
 
 
 def parse_node(node, name=None):
+  'Parses a node recursively.'
   logging.debug(f'parse {name} type {node.get("type")}')
   name = name or node.get('title')
   el_type = node.get('type')
@@ -44,6 +46,7 @@ def parse_node(node, name=None):
   enum = node.get('enum')
   pattern = node.get('pattern')
   if isinstance(el_type, list):
+    logging.debug(f'return any of for {el_type}')
     return AnyOf(name, default, pattern, el_type)
   match el_type:
     case 'array':
@@ -53,9 +56,14 @@ def parse_node(node, name=None):
     case 'boolean':
       el = Boolean(name, default)
     case 'object':
+      logging.debug('  start object parsing')
       additional = node.get('additionalProperties')
       if isinstance(additional, dict):
-        additional = parse_node(additional)
+        if 'type' in additional:
+          logging.debug('    additional as typed dict')
+          additional = parse_node(additional)
+        elif 'oneOf' in additional:
+          additional = OneOf([parse_node(p) for p in additional['oneOf']])
       el = Object(name, node.get('required', []), additional, [], [], [])
       properties = node.get('properties')
       if properties:
@@ -69,6 +77,7 @@ def parse_node(node, name=None):
       if defs:
         for k, v in defs.items():
           el.defs.append(parse_node(v, k))
+      logging.debug('  end object parsing')
     case 'integer':
       el = Integer(name, default, enum)
     case 'number':
@@ -85,7 +94,9 @@ def parse_node(node, name=None):
   return el
 
 
-def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
+def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**',
+                skip_name=False):
+  'Renders a node.'
   buffer = []
   defs_buffer = []
   indent = ''
@@ -93,7 +104,10 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
   r = '⁺' if required else ''
   if level > 0:
     indent = '  ' * (level - 1)
-    buffer.append(f'{indent}- {r}{f_name(el.name)}: *{t}*')
+    if skip_name:
+      buffer.append(f'{indent}- {r}*{t}*')
+    else:
+      buffer.append(f'{indent}- {r}{f_name(el.name)}: *{t}*')
   match t:
     case 'object':
       if el.additional == False:
@@ -103,8 +117,11 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
           buffer.append(f'{indent}  <br>*additional properties: false*')
       elif el.additional:
         buffer.append(
-            f'{indent}  *additional properties: {el.additional.__class__.__name__}*'
+            f'{indent}  <br>*additional properties: {el.additional.__class__.__name__.lower()}*'
         )
+        if isinstance(el.additional, OneOf):
+          for p in el.additional.properties:
+            buffer.append(render_node(p, level + 1, skip_name=True))
       if el.properties:
         for p in el.properties:
           buffer.append(render_node(p, level + 1, p.name in el.required))
@@ -145,6 +162,7 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**'):
 @click.command()
 @click.argument('paths', type=str, nargs=-1)
 def main(paths=None):
+  'Main entry point. Wires together parsing and rendering functions.'
   paths = paths or ['.']
   for p in paths:
     logging.debug(f'path {p}')
