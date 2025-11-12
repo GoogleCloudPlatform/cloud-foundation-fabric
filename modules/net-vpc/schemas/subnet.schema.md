@@ -31,7 +31,7 @@
 - **psc**: *boolean*
 - **proxy_only**: *boolean*
 - **secondary_ip_ranges**: *object*
-  *additional properties: OneOf*
+  <br>*additional properties: oneof*
   - *string*
   - *object*
     <br>*additional properties: false*

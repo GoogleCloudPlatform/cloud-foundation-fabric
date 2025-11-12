@@ -9,7 +9,7 @@
 - **name**: *string*
 - **description**: *string*
 - **labels**: *object*
-  *additional properties: String*
+  <br>*additional properties: string*
 - **ip_cidr_range**: *string*
 - ⁺**usage**: *string*
   <br>*enum: ['FOR_VPC', 'EXTERNAL_TO_VPC', 'FOR_MIGRATION']*

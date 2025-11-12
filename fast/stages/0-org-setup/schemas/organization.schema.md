@@ -73,7 +73,7 @@
           - **title**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **tags**: *object*
-  *additional properties: Object*
+  <br>*additional properties: object*
 
 ## Definitions
 

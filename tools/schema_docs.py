@@ -117,7 +117,7 @@ def render_node(el, level=0, required=False, f_name=lambda f: f'**{f}**',
           buffer.append(f'{indent}  <br>*additional properties: false*')
       elif el.additional:
         buffer.append(
-            f'{indent}  *additional properties: {el.additional.__class__.__name__}*'
+            f'{indent}  <br>*additional properties: {el.additional.__class__.__name__.lower()}*'
         )
         if isinstance(el.additional, OneOf):
           for p in el.additional.properties:

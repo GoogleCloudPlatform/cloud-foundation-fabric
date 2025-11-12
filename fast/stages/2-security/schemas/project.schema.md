@@ -144,11 +144,11 @@
     - ⁺**quota_id**: *string*
     - ⁺**preferred_value**: *number*
     - **dimensions**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **justification**: *string*
     - **contact_email**: *string*
     - **annotations**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **ignore_safety_checks**: *string*
       <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*
 - **parent**: *string*
@@ -205,7 +205,7 @@
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *string*
 - **tags**: *object*
-  *additional properties: Object*
+  <br>*additional properties: object*
 - **universe**: *object*
   <br>*additional properties: false*
   - **prefix**: *string*
@@ -232,7 +232,7 @@
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **force_destroy**: *boolean*
   - **labels**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*

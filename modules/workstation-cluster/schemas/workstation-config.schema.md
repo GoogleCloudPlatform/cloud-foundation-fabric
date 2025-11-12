@@ -16,7 +16,7 @@
   - **command**: *array*
     - items: *string*
   - **env**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **image**: *string*
   - **run_as_user**: *string*
   - **working_dir**: *string*
@@ -50,13 +50,13 @@
       - **type**: *string*
       - **count**: *number*
 - **iam**: *object*
-  *additional properties: Array*
+  <br>*additional properties: array*
 - **iam_bindings**: *object*
-  *additional properties: Object*
+  <br>*additional properties: object*
 - **iam_bindings_additive**: *object*
-  *additional properties: Object*
+  <br>*additional properties: object*
 - **labels**: *object*
-  *additional properties: String*
+  <br>*additional properties: string*
 - **max_workstations**: *number*
 - **persistent_directories**: *array*
   - items: *object*
@@ -76,7 +76,7 @@
   - **idle**: *number*
   - **running**: *number*
 - **workstations**: *object*
-  *additional properties: Object*
+  <br>*additional properties: object*
 
 ## Definitions
 

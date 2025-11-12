@@ -103,7 +103,7 @@
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **force_destroy**: *boolean*
   - **labels**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*

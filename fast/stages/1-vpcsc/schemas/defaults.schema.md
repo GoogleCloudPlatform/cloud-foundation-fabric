@@ -13,15 +13,15 @@
 - **context**: *object*
   <br>*additional properties: false*
   - **iam_principals**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **identity_sets**: *object*
-    *additional properties: Array*
+    <br>*additional properties: array*
   - **project_numbers**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **resource_sets**: *object*
-    *additional properties: Array*
+    <br>*additional properties: array*
   - **service_sets**: *object*
-    *additional properties: Array*
+    <br>*additional properties: array*
 - **output_files**: *object*
   <br>*additional properties: false*
   - **local_path**: *string*

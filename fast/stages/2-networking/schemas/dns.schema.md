@@ -24,7 +24,7 @@
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
 - **recordsets**<a name="refs-recordsets"></a>: *object*
-  *additional properties: Object*
+  <br>*additional properties: object*
 - **private_zone**<a name="refs-private_zone"></a>: *object*
   <br>*additional properties: false*
   - **service_directory_namespace**: *string*

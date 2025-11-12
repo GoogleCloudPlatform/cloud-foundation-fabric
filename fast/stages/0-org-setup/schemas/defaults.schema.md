@@ -63,17 +63,17 @@
       - **network_users**: *array*
         - items: *string*
       - **service_agent_iam**: *object*
-        *additional properties: Array*
+        <br>*additional properties: array*
       - **service_agent_subnet_iam**: *object*
-        *additional properties: Array*
+        <br>*additional properties: array*
       - **service_iam_grants**: *array*
         - items: *string*
       - **network_subnet_users**: *object*
-        *additional properties: Array*
+        <br>*additional properties: array*
     - **tag_bindings**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **service_accounts**: *object*
-      *additional properties: Object*
+      <br>*additional properties: object*
     - **universe**: *object*
       <br>*additional properties: false*
       - ⁺**domain**: *string*
@@ -109,9 +109,9 @@
       - **`^[a-z0-9_-]+$`**: *array*
         - items: *string*
     - **tag_bindings**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **service_accounts**: *object*
-      *additional properties: Object*
+      <br>*additional properties: object*
     - **universe**: *object*
       <br>*additional properties: false*
       - ⁺**domain**: *string*
@@ -126,31 +126,31 @@
 - **context**: *object*
   <br>*additional properties: false*
   - **custom_roles**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **email_addresses**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **folder_ids**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **kms_keys**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **iam_principals**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **locations**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **notification_channels**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **project_ids**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **service_account_ids**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **tag_keys**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **tag_values**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **vpc_host_projects**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
 - **output_files**: *object*
   <br>*additional properties: false*
   - **local_path**: *string*
