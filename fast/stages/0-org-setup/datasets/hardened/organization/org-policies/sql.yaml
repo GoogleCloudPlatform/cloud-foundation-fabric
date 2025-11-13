@@ -38,6 +38,10 @@ custom.cloudsqlRequirePointInTimeRecovery:
   rules:
     - enforce: true
 
+custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags:
+  rules:
+    - enforce: false
+
 custom.cloudsqlRequirePostgreSQLDatabaseFlags:
   rules:
     - enforce: true
