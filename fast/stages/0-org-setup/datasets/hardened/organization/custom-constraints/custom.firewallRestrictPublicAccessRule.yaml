@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
-
-custom.firewallRestrictOpenWorldRule:
+custom.firewallRestrictPublicAccessRule:
   action_type: DENY
   condition: |-
-    (size(resource.allowed) > 0) && (resource.sourceRanges.exists(range, range == '0.0.0.0/0') || resource.destinationRanges.exists(range, range == '0.0.0.0/0'))
-  description: Prevent the creation of VPC firewall rule with source or destination
+    (size(resource.allowed) > 0) &&
+    (
+      resource.sourceRanges.exists(range, range == '0.0.0.0/0') ||
+      resource.destinationRanges.exists(range, range == '0.0.0.0/0')
+    )
+  description: Prevent the creation of VPC firewall rules with source or destination
     any IP address (0.0.0.0/0)
-  display_name: Restrict VPC Firewall rule creation that are open to the world
+  display_name: Restrict VPC Firewall rules allowing public Internet access
   method_types:
   - CREATE
   resource_types:
