@@ -29,9 +29,9 @@ custom.firewallRestrictRdpRule:
       range.matches('^172\\.(?:1[6-9]|2\\d|3[0-1]).*') ||
       range.startsWith('192.168.')
     )
-  description: Ensure that RDP access is restricted from the Internet when using VPC
+  description: Ensure that RDP access is restricted from any source when using VPC
     Firewall Rule
-  display_name: Restrict VPC Firewall rules allowing RDP access from the Internet
+  display_name: Restrict VPC Firewall rules allowing RDP access from any source
   method_types:
   - CREATE
   - UPDATE
