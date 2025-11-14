@@ -109,6 +109,31 @@ variable "cross_region_replication" {
       cpu_count    = number
       machine_type = optional(string)
     }))
+    read_pool = optional(map(object({
+      display_name = optional(string)
+      node_count   = optional(number, 1)
+      flags        = optional(map(string))
+      client_connection_config = optional(object({
+        require_connectors = optional(bool, false)
+        ssl_config = optional(object({
+          ssl_mode = string
+        }))
+      }))
+      machine_config = optional(object({
+        cpu_count    = optional(number, 2)
+        machine_type = optional(string)
+      }), {})
+      network_config = optional(object({
+        authorized_external_networks = optional(list(string), [])
+        enable_public_ip             = optional(bool, false)
+      }), {})
+      query_insights_config = optional(object({
+        query_string_length     = optional(number, 1024)
+        record_application_tags = optional(bool, true)
+        record_client_address   = optional(bool, true)
+        query_plans_per_minute  = optional(number, 5)
+      }))
+    })), {})
   })
   default  = {}
   nullable = false
