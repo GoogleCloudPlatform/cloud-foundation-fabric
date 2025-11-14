@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-custom.firewallRestrictDirectoryServicesPolicyRule:
+custom.firewallRestrictInsecureProtocolsPolicyRule:
   action_type: DENY
   condition: |-
     resource.rules.exists(rule,
@@ -20,13 +20,15 @@ custom.firewallRestrictDirectoryServicesPolicyRule:
       rule.direction == 'INGRESS' &&
       rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0') &&
       rule.match.layer4Configs.exists(l4config,
-        l4config.ipProtocol == 'udp' && l4config.ports.exists(port, port == '445' || port == '389') ||
-        l4config.ipProtocol == 'tcp' && l4config.ports.exists(port, port == '445' || port == '389' || port == '636')
+        l4config.ipProtocol == 'tcp' &&
+        l4config.ports.exists(port,
+          port == '21' || port == '23' || port == '80'
+        )
       )
     )
-  description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
-    are not accessible from the Internet when using Firewall Policy Rule
-  display_name: Restrict Firewall Policy rules allowing directory service access from
+  description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not accessible
+    from any source when using Firewall Policy Rule
+  display_name: Restrict Firewall Policy rules allowing insecure protocol access from
     any source
   method_types:
   - CREATE
