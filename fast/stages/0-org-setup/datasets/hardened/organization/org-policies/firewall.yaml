@@ -46,10 +46,6 @@ custom.firewallRestrictDirectoryServicesRule:
   rules:
     - enforce: true
 
-custom.firewallRestrictInsecureProtocolsPolicyRule:
-  rules:
-    - enforce: true
-
 custom.firewallRestrictInsecureProtocolsRule:
   rules:
     - enforce: true

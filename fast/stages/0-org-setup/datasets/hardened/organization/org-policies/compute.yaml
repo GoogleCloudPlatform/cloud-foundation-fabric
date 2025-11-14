@@ -70,12 +70,12 @@ compute.restrictLoadBalancerCreationForTypes:
         values:
           - "in:INTERNAL"
 
-compute.restrictNonConfidentialComputing:
-  rules:
-    - deny:
-        values:
-          - "compute.googleapis.com"
-          - "container.googleapis.com"
+# compute.restrictNonConfidentialComputing:
+#   rules:
+#     - deny:
+#         values:
+#           - "compute.googleapis.com"
+#           - "container.googleapis.com"
 
 compute.restrictProtocolForwardingCreationForTypes:
   rules:
