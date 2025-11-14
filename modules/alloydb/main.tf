@@ -46,12 +46,20 @@ locals {
     : var.machine_config.machine_type
   )
 
-  read_pool = {
+  read_pool_primary = {
     for name, instance in var.read_pool : name => merge(instance, {
       require_connectors = try(instance.client_connection_config.require_connectors, false) ? true : null
       ssl_mode           = try(instance.client_connection_config.ssl_config.ssl_mode, null)
     })
   }
+
+  read_pool_secondary = {
+    for name, instance in var.cross_region_replication.read_pool : name => merge(instance, {
+      require_connectors = try(instance.client_connection_config.require_connectors, false) ? true : null
+      ssl_mode           = try(instance.client_connection_config.ssl_config.ssl_mode, null)
+    })
+  }
+
 }
 
 resource "google_alloydb_cluster" "primary" {
@@ -434,14 +442,18 @@ resource "google_alloydb_instance" "secondary" {
   }
 }
 
-# Read pool (instance_type = "READ_POOL") cannot be created for secondary cluster
-# and does not support the following attributes:
+moved {
+  from = google_alloydb_instance.read_pool
+  to = google_alloydb_instance.read_pool_primary
+}
+
+# Read pool (instance_type = "READ_POOL") does not support the following attributes:
 # * availability_type: Because 1 node pool (read_pool_config.node_count) is always zonal, two or more is always regional.
 # * gce_zone
 # * network_config.enable_outbound_public_ip
-resource "google_alloydb_instance" "read_pool" {
+resource "google_alloydb_instance" "read_pool_primary" {
   provider       = google-beta
-  for_each       = local.read_pool
+  for_each       = local.read_pool_primary
   annotations    = var.annotations
   cluster        = google_alloydb_cluster.primary.id
   database_flags = each.value.flags
@@ -505,6 +517,73 @@ resource "google_alloydb_instance" "read_pool" {
   }
 
   depends_on = [google_alloydb_instance.primary]
+}
+
+resource "google_alloydb_instance" "read_pool_secondary" {
+  for_each       = local.read_pool_secondary
+  annotations    = var.annotations
+  cluster        = google_alloydb_cluster.secondary[0].id
+  database_flags = each.value.flags
+  display_name   = coalesce(each.value.display_name, "${local.prefix}${each.key}")
+  instance_id    = "${local.prefix}${each.key}"
+  instance_type  = "READ_POOL"
+  labels         = var.labels
+
+  dynamic "client_connection_config" {
+    for_each = each.value.require_connectors != null || each.value.ssl_mode != null ? [""] : []
+    content {
+      require_connectors = each.value.require_connectors
+      dynamic "ssl_config" {
+        for_each = each.value.ssl_mode != null ? [""] : []
+        content {
+          ssl_mode = each.value.ssl_mode
+        }
+      }
+    }
+  }
+
+  machine_config {
+    cpu_count    = each.value.machine_config.cpu_count
+    machine_type = each.value.machine_config.machine_type
+  }
+
+  # network_config block should exist only when (outbound) public IP is enabled to prevent Terraform state drift
+  dynamic "network_config" {
+    for_each = each.value.network_config.enable_public_ip ? [""] : []
+    content {
+      dynamic "authorized_external_networks" {
+        for_each = toset(each.value.network_config.authorized_external_networks)
+        content {
+          cidr_range = authorized_external_networks.value
+        }
+      }
+      enable_public_ip = true
+    }
+  }
+
+  # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
+  dynamic "psc_instance_config" {
+    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    content {
+      allowed_consumer_projects = local.allowed_consumer_projects
+    }
+  }
+
+  read_pool_config {
+    node_count = each.value.node_count
+  }
+
+  dynamic "query_insights_config" {
+    for_each = each.value.query_insights_config != null ? [""] : []
+    content {
+      query_string_length     = each.value.query_insights_config.query_string_length
+      record_application_tags = each.value.query_insights_config.record_application_tags
+      record_client_address   = each.value.query_insights_config.record_client_address
+      query_plans_per_minute  = each.value.query_insights_config.query_plans_per_minute
+    }
+  }
+
+  depends_on = [google_alloydb_instance.secondary]
 }
 
 resource "random_password" "passwords" {
