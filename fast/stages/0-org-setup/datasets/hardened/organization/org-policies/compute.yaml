@@ -42,6 +42,14 @@ compute.managed.blockPreviewFeatures:
   rules:
     - enforce: true
 
+compute.managed.disableSerialPortLogging:
+  rules:
+    - enforce: true
+
+compute.managed.vmCanIpForward:
+  rules:
+    - enforce: true
+
 compute.requireOsLogin:
   rules:
     - enforce: true
@@ -61,6 +69,13 @@ compute.restrictLoadBalancerCreationForTypes:
     - allow:
         values:
           - "in:INTERNAL"
+
+compute.restrictNonConfidentialComputing:
+  rules:
+    - deny:
+        values:
+          - "compute.googleapis.com"
+          - "container.googleapis.com"
 
 compute.restrictProtocolForwardingCreationForTypes:
   rules:

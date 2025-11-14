@@ -18,54 +18,14 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
-custom.cloudsqlDisablePublicAuthorizedNetworks:
+custom.dataprocDisableDefaultServiceAccount:
   rules:
     - enforce: true
 
-custom.cloudsqlEnforcePasswordComplexity:
+custom.dataprocRequireInternalIp:
   rules:
     - enforce: true
 
-custom.cloudsqlRequireAutomatedBackup:
-  rules:
-    - enforce: true
-
-custom.cloudsqlRequireHighAvailibility:
-  rules:
-    - enforce: true
-
-custom.cloudsqlRequireMySQLDatabaseFlags:
-  rules:
-    - enforce: true
-
-custom.cloudsqlRequirePointInTimeRecovery:
-  rules:
-    - enforce: true
-
-custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags:
-  rules:
-    - enforce: false
-
-custom.cloudsqlRequirePostgreSQLDatabaseFlags:
-  rules:
-    - enforce: true
-
-custom.cloudsqlRequireRootPassword:
-  rules:
-    - enforce: true
-
-custom.cloudsqlRequireSQLServerDatabaseFlags:
-  rules:
-    - enforce: true
-
-custom.cloudsqlRequireSSLConnection:
-  rules:
-    - enforce: true
-
-sql.restrictAuthorizedNetworks:
-  rules:
-    - enforce: true
-
-sql.restrictPublicIp:
+custom.dataprocRequireKerberos:
   rules:
     - enforce: true

@@ -38,7 +38,15 @@ container.managed.disallowDefaultComputeServiceAccount:
   rules:
     - enforce: true
 
+container.managed.enableBinaryAuthorization:
+  rules:
+    - enforce: true
+
 container.managed.enableCloudLogging:
+  rules:
+    - enforce: true
+
+container.managed.enableGoogleGroupsRBAC:
   rules:
     - enforce: true
 
@@ -86,6 +94,10 @@ custom.gkeDisableLegacyMetadataEndpoints:
   rules:
     - enforce: true
 
+custom.gkeRequireConfidentialNodes:
+  rules:
+    - enforce: true
+
 custom.gkeRequireCOSImage:
   rules:
     - enforce: true
@@ -119,6 +131,10 @@ custom.gkeRequireNodePoolAutoRepair:
     - enforce: true
 
 custom.gkeRequireNodePoolAutoUpgrade:
+  rules:
+    - enforce: true
+
+custom.gkeRequireNodePoolSandbox:
   rules:
     - enforce: true
 
