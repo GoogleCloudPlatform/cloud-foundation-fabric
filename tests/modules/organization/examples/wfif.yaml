@@ -53,7 +53,6 @@ values:
         response_type: CODE
     provider_id: oidc-full
     saml: []
-    scim_usage: null
     timeouts: null
     workforce_pool_id: test-pool
   module.org.google_iam_workforce_pool_provider.default["saml-basic"]:
@@ -75,7 +74,6 @@ values:
     provider_id: saml-basic
     saml:
     - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
-    scim_usage: null
     timeouts: null
     workforce_pool_id: test-pool
   module.org.google_iam_workforce_pool_provider.default["saml-full"]:
@@ -100,7 +98,6 @@ values:
     provider_id: saml-full
     saml:
     - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
-    scim_usage: null
     timeouts: null
     workforce_pool_id: test-pool
 

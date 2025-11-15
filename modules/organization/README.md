@@ -850,4 +850,5 @@ module "org" {
 | [sink_writer_identities](outputs.tf#L101) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L109) | Tag key resources. |  |
 | [tag_values](outputs.tf#L118) | Tag value resources. |  |
+| [workforce_identity_provider_names](outputs.tf#L126) | Workforce Identity provider names. |  |
 <!-- END TFDOC -->
