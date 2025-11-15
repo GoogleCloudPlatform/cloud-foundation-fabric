@@ -74,6 +74,25 @@
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **tags**: *object*
   <br>*additional properties: object*
+- **workforce_identity_config**: *object*
+  <br>*additional properties: false*
+  - **pool_name**: *string*
+  - **providers**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
+      <br>*additional properties: false*
+      - **description**: *string*
+      - **display_name**: *string*
+      - **attribute_condition**: *string*
+      - **attribute_mapping**: *object*
+      - **attribute_mapping_template**: *string*
+        <br>*enum: ['azuread', 'okta']*
+      - **disabled**: *boolean*
+      - **identity_provider**: *object*
+      - **oauth2_client_config**: *object*
+        <br>*additional properties: false*
+        - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+        - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
 
 ## Definitions
 
@@ -147,3 +166,11 @@
         - items: *string*
       - **requester_email_recipients**: *array*
         - items: *string*
+- **wfif_oauth2_client_attrs**<a name="refs-wfif_oauth2_client_attrs"></a>: *object*
+  <br>*additional properties: false*
+  - ⁺**issuer_uri**: *string*
+  - ⁺**client_id**: *string*
+  - ⁺**client_secret**: *string*
+  - **attributes_type**: *string*
+    <br>*enum: ['AZURE_AD_GROUPS_MAIL', 'AZURE_AD_GROUPS_ID']*
+  - **query_filter**: *string*
