@@ -1,0 +1,108 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.org.google_iam_workforce_pool.default[0]:
+    access_restrictions: []
+    description: null
+    disabled: null
+    display_name: null
+    location: global
+    parent: organizations/organizations/1122334455
+    session_duration: 3600s
+    timeouts: null
+    workforce_pool_id: test-pool
+  module.org.google_iam_workforce_pool_provider.default["oidc-full"]:
+    attribute_condition: null
+    attribute_mapping:
+      google.subject: assertion.sub
+    description: null
+    disabled: false
+    display_name: null
+    extended_attributes_oauth2_client: []
+    extra_attributes_oauth2_client:
+    - attributes_type: AZURE_AD_GROUPS_MAIL
+      client_id: client-id
+      client_secret:
+      - value:
+        - plain_text: client-secret
+      issuer_uri: https://login.microsoftonline.com/abcd01234/v2.0
+      query_parameters: []
+    location: global
+    oidc:
+    - client_id: https://analysis.windows.net/powerbi/connector/GoogleBigQuery
+      client_secret:
+      - value:
+        - plain_text: client-secret
+      issuer_uri: https://sts.windows.net/abcd01234/
+      jwks_json: null
+      web_sso_config:
+      - additional_scopes: null
+        assertion_claims_behavior: MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS
+        response_type: CODE
+    provider_id: oidc-full
+    saml: []
+    timeouts: null
+    workforce_pool_id: test-pool
+  module.org.google_iam_workforce_pool_provider.default["saml-basic"]:
+    attribute_condition: null
+    attribute_mapping:
+      attribute.first_name: assertion.attributes.givenname[0]
+      attribute.last_name: assertion.attributes.surname[0]
+      attribute.user_email: assertion.attributes.mail[0]
+      google.display_name: assertion.attributes.userprincipalname[0]
+      google.groups: assertion.attributes.groups
+      google.subject: assertion.subject
+    description: null
+    disabled: false
+    display_name: null
+    extended_attributes_oauth2_client: []
+    extra_attributes_oauth2_client: []
+    location: global
+    oidc: []
+    provider_id: saml-basic
+    saml:
+    - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
+    timeouts: null
+    workforce_pool_id: test-pool
+  module.org.google_iam_workforce_pool_provider.default["saml-full"]:
+    attribute_condition: null
+    attribute_mapping:
+      google.subject: assertion.sub
+    description: null
+    disabled: false
+    display_name: null
+    extended_attributes_oauth2_client: []
+    extra_attributes_oauth2_client:
+    - attributes_type: AZURE_AD_GROUPS_ID
+      client_id: client-id
+      client_secret:
+      - value:
+        - plain_text: client-secret
+      issuer_uri: https://login.microsoftonline.com/abcdef/v2.0
+      query_parameters:
+      - filter: mail:gcp
+    location: global
+    oidc: []
+    provider_id: saml-full
+    saml:
+    - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
+    timeouts: null
+    workforce_pool_id: test-pool
+
+counts:
+  google_iam_workforce_pool: 1
+  google_iam_workforce_pool_provider: 3
+  modules: 1
+  resources: 4

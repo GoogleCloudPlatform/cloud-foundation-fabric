@@ -262,6 +262,153 @@
           }
         }
       }
+    },
+    "workforce_identity_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pool_name": {
+          "type": "string"
+        },
+        "providers": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9-]+[a-z0-9]$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "display_name": {
+                  "type": "string"
+                },
+                "attribute_condition": {
+                  "type": "string"
+                },
+                "attribute_mapping": {
+                  "type": "object"
+                },
+                "attribute_mapping_template": {
+                  "type": "string",
+                  "enum": [
+                    "azuread",
+                    "okta"
+                  ]
+                },
+                "disabled": {
+                  "type": "boolean"
+                },
+                "identity_provider": {
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "oidc": {
+                          "type": "object",
+                          "description": "OpenID Connect configuration.",
+                          "properties": {
+                            "issuer_uri": {
+                              "type": "string",
+                              "description": "The URI of the OIDC issuer."
+                            },
+                            "client_id": {
+                              "type": "string",
+                              "description": "The client ID."
+                            },
+                            "client_secret": {
+                              "type": "string",
+                              "description": "The client secret (optional)."
+                            },
+                            "jwks_json": {
+                              "type": "string",
+                              "description": "JSON Web Key Set as a JSON string (optional)."
+                            },
+                            "web_sso_config": {
+                              "type": "object",
+                              "description": "Optional Web SSO configuration for OIDC.",
+                              "properties": {
+                                "response_type": {
+                                  "type": "string",
+                                  "default": "CODE",
+                                  "enum": [
+                                    "CODE",
+                                    "ID_TOKEN"
+                                  ]
+                                },
+                                "assertion_claims_behavior": {
+                                  "type": "string",
+                                  "default": "ONLY_ID_TOKEN_CLAIMS",
+                                  "enum": [
+                                    "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS",
+                                    "ONLY_ID_TOKEN_CLAIMS"
+                                  ]
+                                },
+                                "additional_scopes": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "required": [],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "issuer_uri",
+                            "client_id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "oidc"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "properties": {
+                        "saml": {
+                          "type": "object",
+                          "description": "SAML configuration.",
+                          "properties": {
+                            "idp_metadata_xml": {
+                              "type": "string",
+                              "description": "SAML IdP metadata XML."
+                            }
+                          },
+                          "required": [
+                            "idp_metadata_xml"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "saml"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "oauth2_client_config": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "extended_attributes": {
+                      "$ref": "#/$defs/wfif_oauth2_client_attrs"
+                    },
+                    "extra_attributes": {
+                      "$ref": "#/$defs/wfif_oauth2_client_attrs"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -493,6 +640,41 @@
           "additionalProperties": false
         }
       }
+    },
+    "wfif_oauth2_client_attrs": {
+      "type": "object",
+      "properties": {
+        "issuer_uri": {
+          "type": "string",
+          "description": "The URI of the OpenID Connect issuer."
+        },
+        "client_id": {
+          "type": "string",
+          "description": "The client ID for the application."
+        },
+        "client_secret": {
+          "type": "string",
+          "description": "The client secret for the application."
+        },
+        "attributes_type": {
+          "type": "string",
+          "description": "The type of attributes to fetch (optional).",
+          "enum": [
+            "AZURE_AD_GROUPS_MAIL",
+            "AZURE_AD_GROUPS_ID"
+          ]
+        },
+        "query_filter": {
+          "type": "string",
+          "description": "A filter string to query specific data (optional)."
+        }
+      },
+      "required": [
+        "issuer_uri",
+        "client_id",
+        "client_secret"
+      ],
+      "additionalProperties": false
     }
   }
 }

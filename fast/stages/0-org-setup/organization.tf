@@ -92,6 +92,9 @@ module "organization" {
   tags_config = {
     ignore_iam = true
   }
+  workforce_identity_config = try(
+    local.organization.workforce_identity_config, null
+  )
 }
 
 module "organization-iam" {
