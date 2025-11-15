@@ -32,6 +32,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
   - [Custom Security Health Analytics Modules Factory](#custom-security-health-analytics-modules-factory)
 - [Tags](#tags)
   - [Tags Factory](#tags-factory)
+- [Workforce Identity](#workforce-identity)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -556,7 +557,6 @@ cloudkmKeyRotationPeriod:
 
 ## Tags
 
-
 Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
 
 ```hcl
@@ -708,6 +708,77 @@ values:
 
 ```
 
+## Workforce Identity
+
+A Workforce Identity pool and providers can be created via the `workforce_identity_config` variable.
+
+Auto-population of provider attributes is supported via the `attribute_mapping_template` provider attribute. Currently only `azuread` and `okta` are supported.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  workforce_identity_config = {
+    # optional, defaults to 'default'
+    pool_name = "test-pool"
+    providers = {
+      saml-basic = {
+        attribute_mapping_template = "azuread"
+        identity_provider = {
+          saml = {
+            idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
+          }
+        }
+      }
+      saml-full = {
+        attribute_mapping = {
+          "google.subject" = "assertion.sub"
+        }
+        identity_provider = {
+          saml = {
+            idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
+          }
+        }
+        oauth2_client_config = {
+          extra_attributes = {
+            issuer_uri      = "https://login.microsoftonline.com/abcdef/v2.0"
+            client_id       = "client-id"
+            client_secret   = "client-secret"
+            attributes_type = "AZURE_AD_GROUPS_ID"
+            query_filter    = "mail:gcp"
+          }
+        }
+      }
+      oidc-full = {
+        attribute_mapping = {
+          "google.subject" = "assertion.sub"
+        }
+        identity_provider = {
+          oidc = {
+            issuer_uri    = "https://sts.windows.net/abcd01234/"
+            client_id     = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
+            client_secret = "client-secret"
+            web_sso_config = {
+              response_type             = "CODE"
+              assertion_claims_behavior = "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS"
+            }
+          }
+        }
+        oauth2_client_config = {
+          extra_attributes = {
+            issuer_uri      = "https://login.microsoftonline.com/abcd01234/v2.0"
+            client_id       = "client-id"
+            client_secret   = "client-secret"
+            attributes_type = "AZURE_AD_GROUPS_MAIL"
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=wfif.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -715,6 +786,7 @@ values:
 | name | description | resources |
 |---|---|---|
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> |
+| [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> |
 | [logging.tf](./logging.tf) | Log sinks and data access logs. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_settings</code> · <code>google_logging_organization_sink</code> · <code>google_organization_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> |
 | [org-policy-custom-constraints.tf](./org-policy-custom-constraints.tf) | None | <code>google_org_policy_custom_constraint</code> |
@@ -759,6 +831,7 @@ values:
 | [tag_bindings](variables-tags.tf#L82) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L89) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  id &#61; optional&#40;string&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform organization module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    id &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L154) | Fine-grained control on tag resource and IAM creation. | <code title="object&#40;&#123;&#10;  force_context_ids &#61; optional&#40;bool, false&#41;&#10;  ignore_iam        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [workforce_identity_config](variables.tf#L136) | Workforce Identity Federation pools. | <code title="object&#40;&#123;&#10;  pool_name &#61; optional&#40;string, &#34;default&#34;&#41;&#10;  providers &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description                &#61; optional&#40;string&#41;&#10;    display_name               &#61; optional&#40;string&#41;&#10;    attribute_condition        &#61; optional&#40;string&#41;&#10;    attribute_mapping          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    attribute_mapping_template &#61; optional&#40;string&#41;&#10;    disabled                   &#61; optional&#40;bool, false&#41;&#10;    identity_provider &#61; object&#40;&#123;&#10;      oidc &#61; optional&#40;object&#40;&#123;&#10;        issuer_uri    &#61; string&#10;        client_id     &#61; string&#10;        client_secret &#61; optional&#40;string&#41;&#10;        jwks_json     &#61; optional&#40;string&#41;&#10;        web_sso_config &#61; optional&#40;object&#40;&#123;&#10;          response_type             &#61; optional&#40;string, &#34;CODE&#34;&#41;&#10;          assertion_claims_behavior &#61; optional&#40;string, &#34;ONLY_ID_TOKEN_CLAIMS&#34;&#41;&#10;          additional_scopes         &#61; optional&#40;list&#40;string&#41;&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      saml &#61; optional&#40;object&#40;&#123;&#10;        idp_metadata_xml &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;    oauth2_client_config &#61; optional&#40;object&#40;&#123;&#10;      extended_attributes &#61; optional&#40;object&#40;&#123;&#10;        issuer_uri      &#61; string&#10;        client_id       &#61; string&#10;        client_secret   &#61; string&#10;        attributes_type &#61; optional&#40;string&#41;&#10;        query_filter    &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      extra_attributes &#61; optional&#40;object&#40;&#123;&#10;        issuer_uri      &#61; string&#10;        client_id       &#61; string&#10;        client_secret   &#61; string&#10;        attributes_type &#61; optional&#40;string&#41;&#10;        query_filter    &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
