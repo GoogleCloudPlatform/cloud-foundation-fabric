@@ -29,9 +29,11 @@ locals {
         "attribute.ref"              = "assertion.ref"
         "attribute.fast_sub"         = "\"repo:\" + assertion.repository + \":ref:\" + assertion.ref"
       }
-      issuer_uri       = "https://token.actions.githubusercontent.com"
-      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      iam_templates = {
+        branch = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
+        repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      }
+      issuer_uri = "https://token.actions.githubusercontent.com"
     }
     # https://docs.gitlab.com/ee/ci/secrets/id_token_authentication.html#token-payload
     gitlab = {
@@ -51,9 +53,11 @@ locals {
         "attribute.ref_protected"         = "assertion.ref_protected"
         "attribute.ref_type"              = "assertion.ref_type"
       }
-      issuer_uri       = "https://gitlab.com"
-      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      iam_templates = {
+        branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
+        repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      }
+      issuer_uri = "https://gitlab.com"
     }
     # https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/workload-identity-tokens#token-structure
     terraform = {
@@ -70,9 +74,11 @@ locals {
         "attribute.terraform_run_id"            = "assertion.terraform_run_id"
         "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace"
       }
-      issuer_uri       = "https://app.terraform.io"
-      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.terraform_workspace_id/%s"
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.terraform_project_id/%s"
+      iam_templates = {
+        branch = "principalSet://iam.googleapis.com/%s/attribute.terraform_workspace_id/%s"
+        repo   = "principalSet://iam.googleapis.com/%s/attribute.terraform_project_id/%s"
+      }
+      issuer_uri = "https://app.terraform.io"
     }
     # https://developer.okta.com/docs/api/openapi/okta-oauth/guides/overview/
     okta = {
@@ -80,9 +86,13 @@ locals {
         "google.subject" = "assertion.sub"
         "attribute.sub"  = "assertion.sub"
       }
-      principal_branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-      principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-      principal_member = "principalSet://iam.googleapis.com/%s/*"
+      # okta issuer uses custom settings
+      # "https://${each.value.custom_settings.okta.organization_name}/oauth2/${each.value.custom_settings.okta.auth_server_name}", null)
+      iam_templates = {
+        branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
+        member = "principalSet://iam.googleapis.com/%s/*"
+        repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      }
     }
   }
 }
