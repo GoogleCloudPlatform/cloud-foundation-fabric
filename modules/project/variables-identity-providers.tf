@@ -55,7 +55,7 @@ variable "workload_identity_pools" {
         ) == 1
       ]
     ]))
-    error_message = "Only one of identity_provider.aws, identity_provider.oidc, identity_provider.saml can be defined."
+    error_message = "Eaxctly one of identity_provider.aws, identity_provider.oidc, identity_provider.saml can be defined."
   }
   validation {
     condition = alltrue(flatten([

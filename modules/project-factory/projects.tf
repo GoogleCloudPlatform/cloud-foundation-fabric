@@ -122,6 +122,7 @@ module "projects" {
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
+  quotas                = each.value.quotas
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -129,10 +130,10 @@ module "projects" {
   tag_bindings = merge(
     each.value.tag_bindings, var.data_merges.tag_bindings
   )
-  tags     = each.value.tags
-  universe = each.value.universe
-  vpc_sc   = each.value.vpc_sc
-  quotas   = each.value.quotas
+  tags                    = each.value.tags
+  universe                = each.value.universe
+  vpc_sc                  = each.value.vpc_sc
+  workload_identity_pools = each.value.workload_identity_pools
 }
 
 module "projects-iam" {

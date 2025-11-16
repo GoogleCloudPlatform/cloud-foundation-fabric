@@ -313,6 +313,33 @@ variable "projects" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
+    workload_identity_pools = optional(map(object({
+      display_name = optional(string)
+      description  = optional(string)
+      disabled     = optional(bool)
+      providers = optional(map(object({
+        display_name        = optional(string)
+        description         = optional(string)
+        attribute_condition = optional(string)
+        attribute_mapping   = optional(map(string), {})
+        disabled            = optional(bool, false)
+        identity_provider = object({
+          aws = optional(object({
+            account_id = string
+          }))
+          oidc = optional(object({
+            allowed_audiences = optional(list(string), [])
+            issuer_uri        = optional(string)
+            jwks_json         = optional(string)
+            template          = optional(string)
+          }))
+          saml = optional(object({
+            idp_metadata_xml = string
+          }))
+          # x509 = optional(object({}))
+        })
+      })), {})
+    })), {})
   }))
   nullable = false
   default  = {}
