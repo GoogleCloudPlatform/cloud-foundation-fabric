@@ -218,6 +218,24 @@
 - **vpc_sc**: *object*
   - ⁺**perimeter_name**: *string*
   - **is_dry_run**: *boolean*
+- **workload_identity_pools**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
+    <br>*additional properties: false*
+    - **description**: *string*
+    - **display_name**: *string*
+    - **disabled**: *boolean*
+    - **providers**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
+        <br>*additional properties: false*
+        - **description**: *string*
+        - **display_name**: *string*
+        - **disabled**: *boolean*
+        - **attribute_condition**: *string*
+        - **attribute_mapping**: *object*
+          <br>*additional properties: string*
+        - **identity_provider**: *object*
 
 ## Definitions
 

@@ -217,3 +217,21 @@ output "tag_values" {
     k => v if try(local.tag_values[k].tag_network, null) == null
   }
 }
+
+output "workload_identity_provider_ids" {
+  description = "Workload identity provider attributes."
+  value = {
+    for k, v in google_iam_workload_identity_pool_provider.default :
+    k => v.name
+  }
+}
+
+output "workload_identity_providers" {
+  description = "Workload identity provider attributes."
+  value = {
+    for k, v in local.wif_providers : k => {
+      name = google_iam_workload_identity_pool_provider.default[k].name
+      type = try(v.identity_provider.oidc.template, null)
+    }
+  }
+}
