@@ -29,10 +29,6 @@ locals {
         "attribute.ref"              = "assertion.ref"
         "attribute.fast_sub"         = "\"repo:\" + assertion.repository + \":ref:\" + assertion.ref"
       }
-      iam_templates = {
-        branch = "principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s"
-        repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-      }
       issuer_uri = "https://token.actions.githubusercontent.com"
     }
     # https://docs.gitlab.com/ee/ci/secrets/id_token_authentication.html#token-payload
@@ -53,10 +49,6 @@ locals {
         "attribute.ref_protected"         = "assertion.ref_protected"
         "attribute.ref_type"              = "assertion.ref_type"
       }
-      iam_templates = {
-        branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-        repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-      }
       issuer_uri = "https://gitlab.com"
     }
     # https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/workload-identity-tokens#token-structure
@@ -74,10 +66,6 @@ locals {
         "attribute.terraform_run_id"            = "assertion.terraform_run_id"
         "attribute.terraform_full_workspace"    = "assertion.terraform_full_workspace"
       }
-      iam_templates = {
-        branch = "principalSet://iam.googleapis.com/%s/attribute.terraform_workspace_id/%s"
-        repo   = "principalSet://iam.googleapis.com/%s/attribute.terraform_project_id/%s"
-      }
       issuer_uri = "https://app.terraform.io"
     }
     # https://developer.okta.com/docs/api/openapi/okta-oauth/guides/overview/
@@ -86,13 +74,8 @@ locals {
         "google.subject" = "assertion.sub"
         "attribute.sub"  = "assertion.sub"
       }
-      # okta issuer uses custom settings
+      # okta issuer
       # "https://${each.value.custom_settings.okta.organization_name}/oauth2/${each.value.custom_settings.okta.auth_server_name}", null)
-      iam_templates = {
-        branch = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
-        member = "principalSet://iam.googleapis.com/%s/*"
-        repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-      }
     }
   }
 }
