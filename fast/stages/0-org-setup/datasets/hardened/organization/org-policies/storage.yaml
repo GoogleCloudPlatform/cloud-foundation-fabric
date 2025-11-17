@@ -20,7 +20,7 @@
 
 # custom.storageRequireBucketObjectVersionning:
 #   rules:
-#   - enforce: true
+#     - enforce: true
 
 storage.publicAccessPrevention:
   rules:
