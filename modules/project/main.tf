@@ -89,10 +89,15 @@ locals {
   )
   universe_prefix = var.universe == null ? "" : "${var.universe.prefix}:"
   # available services are those declared, minus any unsupported by universe
-  available_services = tolist(setsubtract(
+  _available_services = setsubtract(
     var.services,
     try(var.universe.unavailable_services, [])
+  )
+  available_services = tolist(setsubtract(
+    local._available_services,
+    ["orgpolicy.googleapis.com"]
   ))
+  enable_orgpolicy_service = contains(local._available_services, "orgpolicy.googleapis.com")
 }
 
 data "google_project" "project" {
@@ -130,6 +135,14 @@ resource "google_project_service" "project_services" {
   disable_on_destroy         = var.service_config.disable_on_destroy
   disable_dependent_services = var.service_config.disable_dependent_services
   depends_on                 = [google_org_policy_policy.default]
+}
+
+resource "google_project_service" "org_policy_service" {
+  count                      = local.enable_orgpolicy_service ? 1 : 0
+  project                    = local.project.project_id
+  service                    = "orgpolicy.googleapis.com"
+  disable_on_destroy         = var.service_config.disable_on_destroy
+  disable_dependent_services = var.service_config.disable_dependent_services
 }
 
 resource "google_compute_project_metadata_item" "default" {
