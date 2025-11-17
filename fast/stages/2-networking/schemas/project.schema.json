@@ -267,52 +267,56 @@
                   "additionalProperties": false,
                   "patternProperties": {
                     "^[a-z][a-z0-9-]+[a-z0-9]$": {
-                      "destroy_scheduled_duration": {
-                        "type": "string"
-                      },
-                      "rotation_period": {
-                        "type": "string"
-                      },
-                      "iam": {
-                        "$ref": "#/$defs/iam"
-                      },
-                      "iam_bindings": {
-                        "$ref": "#/$defs/iam_bindings"
-                      },
-                      "iam_bindings_additive": {
-                        "$ref": "#/$defs/iam_bindings_additive"
-                      },
-                      "purpose": {
-                        "type": "string",
-                        "default": "ENCRYPT_DECRYPT",
-                        "enum": [
-                          "CRYPTO_KEY_PURPOSE_UNSPECIFIED",
-                          "ENCRYPT_DECRYPT",
-                          "ASYMMETRIC_SIGN",
-                          "ASYMMETRIC_DECRYPT",
-                          "RAW_ENCRYPT_DECRYPT",
-                          "MAC"
-                        ]
-                      },
-                      "version_template": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "required": [
-                          "algorithm"
-                        ],
-                        "properties": {
-                          "algorithm": {
-                            "type": "string"
-                          },
-                          "protection_level": {
-                            "type": "string",
-                            "default": "SOFTWARE",
-                            "enum": [
-                              "SOFTWARE",
-                              "HSM",
-                              "EXTERNAL",
-                              "EXTERNAL_VPC"
-                            ]
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "destroy_scheduled_duration": {
+                          "type": "string"
+                        },
+                        "rotation_period": {
+                          "type": "string"
+                        },
+                        "iam": {
+                          "$ref": "#/$defs/iam"
+                        },
+                        "iam_bindings": {
+                          "$ref": "#/$defs/iam_bindings"
+                        },
+                        "iam_bindings_additive": {
+                          "$ref": "#/$defs/iam_bindings_additive"
+                        },
+                        "purpose": {
+                          "type": "string",
+                          "default": "ENCRYPT_DECRYPT",
+                          "enum": [
+                            "CRYPTO_KEY_PURPOSE_UNSPECIFIED",
+                            "ENCRYPT_DECRYPT",
+                            "ASYMMETRIC_SIGN",
+                            "ASYMMETRIC_DECRYPT",
+                            "RAW_ENCRYPT_DECRYPT",
+                            "MAC"
+                          ]
+                        },
+                        "version_template": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "algorithm"
+                          ],
+                          "properties": {
+                            "algorithm": {
+                              "type": "string"
+                            },
+                            "protection_level": {
+                              "type": "string",
+                              "default": "SOFTWARE",
+                              "enum": [
+                                "SOFTWARE",
+                                "HSM",
+                                "EXTERNAL",
+                                "EXTERNAL_VPC"
+                              ]
+                            }
                           }
                         }
                       }
@@ -744,6 +748,137 @@
         },
         "is_dry_run": {
           "type": "boolean"
+        }
+      }
+    },
+    "workload_identity_pools": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]+[a-z0-9]$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "display_name": {
+              "type": "string"
+            },
+            "disabled": {
+              "type": "boolean"
+            },
+            "providers": {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9-]+[a-z0-9]$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    },
+                    "display_name": {
+                      "type": "string"
+                    },
+                    "disabled": {
+                      "type": "boolean"
+                    },
+                    "attribute_condition": {
+                      "type": "string"
+                    },
+                    "attribute_mapping": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "identity_provider": {
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "additionalProperties": false,
+                          "required": [
+                            "aws"
+                          ],
+                          "properties": {
+                            "aws": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "account_id"
+                              ],
+                              "properties": {
+                                "account_id": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "additionalProperties": false,
+                          "required": [
+                            "oidc"
+                          ],
+                          "properties": {
+                            "oidc": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "allowed_audiences": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "issuer_uri": {
+                                  "type": "string"
+                                },
+                                "jwks_json": {
+                                  "type": "string"
+                                },
+                                "template": {
+                                  "type": "string",
+                                  "enum": [
+                                    "github",
+                                    "gitlab",
+                                    "okta",
+                                    "terraform"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "additionalProperties": false,
+                          "required": [
+                            "saml"
+                          ],
+                          "properties": {
+                            "saml": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "idp_metadata_xml"
+                              ],
+                              "properties": {
+                                "idp_metadata_xml": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

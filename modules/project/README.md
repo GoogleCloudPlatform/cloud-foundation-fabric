@@ -40,6 +40,7 @@ This module implements the creation and management of one GCP project including 
 - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
 - [Observability](#observability)
 - [Observability factory](#observability-factory)
+- [Workload Identity Federation](#workload-identity-federation)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1975,6 +1976,90 @@ alerts:
       foo: bar
 ```
 
+## Workload Identity Federation
+
+Workload Identity federation pools and providers can be created via the `workload_identity_pools` variable.
+
+Auto-population of provider attributes and issuer are supported for OIDC providers via the `provider_template` attribute. Currently `github`, `gitlab`, `okta` and `terraform` provider types are supported.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  workload_identity_pools = {
+    test-oidc = {
+      display_name = "Test pool (OIDC)."
+      providers = {
+        github-test = {
+          attribute_condition = "attribute.repository_owner=='my_org'"
+          display_name        = "GitHub provider (from template)."
+          identity_provider = {
+            oidc = {
+              template = "github"
+            }
+          }
+        }
+        gitlab-test = {
+          display_name        = "GitLab provider (explicit attributes)."
+          attribute_condition = "attribute.namespace_path=='my_org'"
+          attribute_mapping = {
+            "google.subject"           = "assertion.sub"
+            "attribute.sub"            = "assertion.sub"
+            "attribute.environment"    = "assertion.environment"
+            "attribute.namespace_id"   = "assertion.namespace_id"
+            "attribute.namespace_path" = "assertion.namespace_path"
+            "attribute.project_id"     = "assertion.project_id"
+            "attribute.project_path"   = "assertion.project_path"
+            "attribute.repository"     = "assertion.project_path"
+            "attribute.ref"            = "assertion.ref"
+            "attribute.ref_type"       = "assertion.ref_type"
+          }
+          identity_provider = {
+            oidc = {
+              issuer_uri = "https://gitlab.com"
+            }
+          }
+        }
+      }
+    }
+    test-non-oidc = {
+      display_name = "Test pool (non-OIDC)."
+      providers = {
+        aws-test = {
+          attribute_condition = "attribute.aws_role==\"arn:aws:sts::999999999999:assumed-role/stack-eu-central-1-lambdaRole\""
+          attribute_mapping = {
+            "google.subject"        = "assertion.arn"
+            "attribute.aws_account" = "assertion.account"
+            "attribute.environment" = "assertion.arn.contains(\":instance-profile/Production\") ? \"prod\" : \"test\""
+          }
+          identity_provider = {
+            aws = {
+              account_id = "999999999999"
+            }
+          }
+        }
+        saml-test = {
+          attribute_mapping = {
+            "google.subject"        = "assertion.arn"
+            "attribute.aws_account" = "assertion.account"
+            "attribute.environment" = "assertion.arn.contains(\":instance-profile/Production\") ? \"prod\" : \"test\""
+          }
+          identity_provider = {
+            saml = {
+              idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
+            }
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=7 inventory=wif.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -1985,6 +2070,8 @@ alerts:
 | [bigquery-reservation.tf](./bigquery-reservation.tf) | None | <code>google_bigquery_reservation</code> · <code>google_bigquery_reservation_assignment</code> |
 | [cmek.tf](./cmek.tf) | Service Agent IAM Bindings for CMEK | <code>google_kms_crypto_key_iam_member</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_project_iam_binding</code> · <code>google_project_iam_custom_role</code> · <code>google_project_iam_member</code> |
+| [identity-providers-defs.tf](./identity-providers-defs.tf) | Workload Identity provider definitions. |  |
+| [identity-providers.tf](./identity-providers.tf) | None | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
 | [logging-metrics.tf](./logging-metrics.tf) | None | <code>google_logging_metric</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_log_scope</code> · <code>google_logging_project_exclusion</code> · <code>google_logging_project_sink</code> · <code>google_project_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_project_default_network_tier</code> · <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_kms_key_handle</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
@@ -1998,6 +2085,7 @@ alerts:
 | [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork_iam_member</code> · <code>google_project_iam_member</code> |
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
+| [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
 | [variables-observability.tf](./variables-observability.tf) | None |  |
 | [variables-pam.tf](./variables-pam.tf) | None |  |
 | [variables-quotas.tf](./variables-quotas.tf) | None |  |
@@ -2060,6 +2148,7 @@ alerts:
 | [tags_config](variables-tags.tf#L154) | Fine-grained control on tag resource and IAM creation. | <code title="object&#40;&#123;&#10;  force_context_ids &#61; optional&#40;bool, false&#41;&#10;  ignore_iam        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [universe](variables.tf#L371) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [vpc_sc](variables.tf#L382) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code title="object&#40;&#123;&#10;  perimeter_name &#61; string&#10;  is_dry_run     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [workload_identity_pools](variables-identity-providers.tf#L17) | Workload Identity Federation pools and providers. | <code title="map&#40;object&#40;&#123;&#10;  display_name &#61; optional&#40;string&#41;&#10;  description  &#61; optional&#40;string&#41;&#10;  disabled     &#61; optional&#40;bool&#41;&#10;  providers &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description         &#61; optional&#40;string&#41;&#10;    display_name        &#61; optional&#40;string&#41;&#10;    attribute_condition &#61; optional&#40;string&#41;&#10;    attribute_mapping   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    disabled            &#61; optional&#40;bool, false&#41;&#10;    identity_provider &#61; object&#40;&#123;&#10;      aws &#61; optional&#40;object&#40;&#123;&#10;        account_id &#61; string&#10;      &#125;&#41;&#41;&#10;      oidc &#61; optional&#40;object&#40;&#123;&#10;        allowed_audiences &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;        issuer_uri        &#61; optional&#40;string&#41;&#10;        jwks_json         &#61; optional&#40;string&#41;&#10;        template          &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      saml &#61; optional&#40;object&#40;&#123;&#10;        idp_metadata_xml &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -2088,6 +2177,8 @@ alerts:
 | [sink_writer_identities](outputs.tf#L197) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L204) | Tag key resources. |  |
 | [tag_values](outputs.tf#L213) | Tag value resources. |  |
+| [workload_identity_provider_ids](outputs.tf#L221) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L229) | Workload identity provider attributes. |  |
 
 ## Fixtures
 

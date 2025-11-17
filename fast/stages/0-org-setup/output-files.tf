@@ -93,6 +93,9 @@ locals {
       service_accounts = module.factory.service_account_emails
       storage_buckets  = module.factory.storage_buckets
       tag_values       = local.of_ctx.tag_values
+      workforce_identity_providers = try(
+        module.organization[0].workforce_identity_provider_names, {}
+      )
     }
   }
   of_universe_domain = try(

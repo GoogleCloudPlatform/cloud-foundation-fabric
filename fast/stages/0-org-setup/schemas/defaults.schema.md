@@ -9,16 +9,6 @@
 - **global**: *object*
   <br>*additional properties: false*
   - ⁺**billing_account**: *string*
-  - **locations**: *object*
-    <br>*additional properties: false*
-    - **bigquery**: *string*
-      <br>*default: eu*
-    - **logging**: *string*
-      <br>*default: global*
-    - **pubsub**: *array*
-      - items: *string*
-    - **storage**: *string*
-      <br>*default: eu*
   - ⁺**organization**: *object*
     <br>*additional properties: false*
     - **customer_id**: *string*
@@ -42,6 +32,11 @@
       <br>*additional properties: false*
       - **`^[a-z0-9_-]+$`**: *array*
         - items: *string*
+    - **locations**: *object*
+      <br>*additional properties: false*
+      - **bigquery**: *string*
+      - **logging**: *string*
+      - **storage**: *string*
     - **metric_scopes**: *array*
       - items: *string*
     - **parent**: *string*
@@ -68,24 +63,28 @@
       - **network_users**: *array*
         - items: *string*
       - **service_agent_iam**: *object*
-        *additional properties: Array*
+        <br>*additional properties: array*
       - **service_agent_subnet_iam**: *object*
-        *additional properties: Array*
+        <br>*additional properties: array*
       - **service_iam_grants**: *array*
         - items: *string*
       - **network_subnet_users**: *object*
-        *additional properties: Array*
-    - **storage_location**: *string*
+        <br>*additional properties: array*
     - **tag_bindings**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **service_accounts**: *object*
-      *additional properties: Object*
+      <br>*additional properties: object*
+    - **universe**: *object*
+      <br>*additional properties: false*
+      - ⁺**domain**: *string*
+      - **forced_jit_service_identities**: *array*
+        - items: *string*
+      - ⁺**prefix**: *string*
+      - **unavailable_service_identities**: *array*
+        - items: *string*
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
-    - **logging_data_access**: *object*
-      *additional properties: Object*
-    - **bigquery_location**: *string*
   - **overrides**: *object*
     <br>*additional properties: false*
     - **billing_account**: *string*
@@ -98,27 +97,60 @@
         - items: *string*
     - **deletion_policy**: *string*
       <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
+    - **locations**: *object*
+      <br>*additional properties: false*
+      - **bigquery**: *string*
+      - **logging**: *string*
+      - **storage**: *string*
     - **parent**: *string*
     - **prefix**: *string*
     - **service_encryption_key_ids**: *object*
       <br>*additional properties: false*
       - **`^[a-z0-9_-]+$`**: *array*
         - items: *string*
-    - **storage_location**: *string*
     - **tag_bindings**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **service_accounts**: *object*
-      *additional properties: Object*
+      <br>*additional properties: object*
+    - **universe**: *object*
+      <br>*additional properties: false*
+      - ⁺**domain**: *string*
+      - **forced_jit_service_identities**: *array*
+        - items: *string*
+      - ⁺**prefix**: *string*
+      - **unavailable_service_identities**: *array*
+        - items: *string*
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
-    - **logging_data_access**: *object*
-      *additional properties: Object*
-    - **bigquery_location**: *string*
 - **context**: *object*
   <br>*additional properties: false*
+  - **custom_roles**: *object*
+    <br>*additional properties: string*
+  - **email_addresses**: *object*
+    <br>*additional properties: string*
+  - **folder_ids**: *object*
+    <br>*additional properties: string*
+  - **kms_keys**: *object*
+    <br>*additional properties: string*
   - **iam_principals**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
+  - **locations**: *object*
+    <br>*additional properties: string*
+  - **notification_channels**: *object*
+    <br>*additional properties: string*
+  - **project_ids**: *object*
+    <br>*additional properties: string*
+  - **service_account_ids**: *object*
+    <br>*additional properties: string*
+  - **tag_keys**: *object*
+    <br>*additional properties: string*
+  - **tag_values**: *object*
+    <br>*additional properties: string*
+  - **vpc_host_projects**: *object*
+    <br>*additional properties: string*
+  - **vpc_sc_perimeters**: *object*
+    <br>*additional properties: string*
 - **output_files**: *object*
   <br>*additional properties: false*
   - **local_path**: *string*
