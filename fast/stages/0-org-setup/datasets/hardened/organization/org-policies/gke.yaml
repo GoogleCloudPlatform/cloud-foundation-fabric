@@ -96,7 +96,7 @@ custom.gkeDisableLegacyMetadataEndpoints:
 
 # custom.gkeRequireConfidentialNodes:
 #   rules:
-#     - enforce: true
+#   - enforce: true
 
 custom.gkeRequireCOSImage:
   rules:

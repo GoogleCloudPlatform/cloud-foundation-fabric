@@ -72,10 +72,10 @@ compute.restrictLoadBalancerCreationForTypes:
 
 # compute.restrictNonConfidentialComputing:
 #   rules:
-#     - deny:
+#   - deny:
 #         values:
-#           - "compute.googleapis.com"
-#           - "container.googleapis.com"
+#             - "compute.googleapis.com"
+#             - "container.googleapis.com"
 
 compute.restrictProtocolForwardingCreationForTypes:
   rules:
