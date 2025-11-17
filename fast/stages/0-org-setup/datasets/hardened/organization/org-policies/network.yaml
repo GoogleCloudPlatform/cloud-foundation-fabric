@@ -58,10 +58,10 @@ compute.restrictVpcPeering:
 
 # compute.restrictVpnPeerIPs:
 #   rules:
-#   - allow:
+#     - allow:
 #         values:
-#             - "1.1.1.1"
-#             - "2.2.2.2"
+#           - "1.1.1.1"
+#           - "2.2.2.2"
 
 custom.networkDisableTargetHTTPProxy:
   rules:
