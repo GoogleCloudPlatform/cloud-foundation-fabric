@@ -24,10 +24,6 @@ services:
   - secretmanager.googleapis.com
 labels:
   environment: development
-log_buckets:
-  audit-logs: {}
-  iam: {}
-  vpc-sc: {}
 iam_bindings:
   key_delegated:
     members:
