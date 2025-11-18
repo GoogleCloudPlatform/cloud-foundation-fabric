@@ -28,6 +28,8 @@
     - [Context-based replacement in the folders factory](#context-based-replacement-in-the-folders-factory)
   - [Project factory](#project-factory)
   - [CI/CD configuration](#cicd-configuration)
+    - [Read-write and read-only impersonation](#read-write-and-read-only-impersonation)
+    - [Customized IAM principal sets](#customized-iam-principal-sets)
     - [Okta](#okta)
 - [Leveraging classic FAST Stages](#leveraging-classic-fast-stages)
   - [VPC Service Controls](#vpc-service-controls)
@@ -296,6 +298,7 @@ This is a simple reference table of available interpolation namespaces, refer to
 - `$tag_values:my_value`
 - `$vpc_host_projects:my_project`
 - `$vpc_sc_perimeters:my_perimeter`
+- `$workload_identity_providers:my_project/my_pool/my_provider`
 
 ### Factory data
 
@@ -319,7 +322,7 @@ The default paths point to the dataset in the `data` folder which deploys a FAST
   folder-level factory to define the resource management hierarchy and individual folder attributes (IAM, org policies, tag bindings, etc.); also supports defining folder-level IaC resources
 - **projects** (`datasets/classic/projects`) \
   folder-level factory to define projects and their attributes (projejct factory)
-- **cicd** (`datasets/classic/cicd.yaml`) \
+- **cicd** (`datasets/classic/cicd-workflows.yaml`) \
   file-level factory to define CI/CD configurations for this and subsequent stages
 
 ### Defaults configuration
@@ -502,7 +505,7 @@ values:
   # [...]
 ```
 
-An exception to the namespaced-based context replacements is in IAM conditions, where Terraform limitations force use of native string templating, as in the example below.
+An exception to the namespaced-based context replacements is in IAM conditions and organization policies, where Terraform limitations force use of native string templating, as in the example below.
 
 ```yaml
 iam_bindings:
@@ -575,44 +578,80 @@ The provided project configurations also create several key resources for the st
 
 ### CI/CD configuration
 
-CI/CD support is implemented in a similar way to classic/legacy FAST, except for being driven by a factory that points to a single file.
+CI/CD support is implemented via two different sets of connfigurations:
 
-This allows defining a single Workload Identity provider that will be used to exchange external tokens for the pipelines, and one or more workflows that can interpolate internal (from the project factory) or external (user defined) attributes.
+- [Workload Identity](https://docs.cloud.google.com/iam/docs/workload-identity-federation) providers are defined in project configurations
+- CI/CD service accounts and templated workflow generation are defined in a dedicated configuration (`var.factories_config.cicd_workflows`).
 
-This is the default file which implements a workflow for this stage. To enable it, pass the file path to the `factories_config.cicd` variable.
+The default approach is to define a Workload Identity provider in the `iac-0` project, or in an additional project dedicated to this task. This is achieved by adding a `workload_identity_pools` block to the project configuration, like in the following example.
 
 ```yaml
-workload_identity_federation:
-  pool_name: iac-0
-  project: $project_ids:iac-0
-  providers:
-    github:
-      # the condition is optional but recommended, use your GitHub org name
-      attribute_condition: attribute.repository_owner=="my_org"
-      issuer: github
-      # custom_settings:
-      #   issuer_uri:
-      #   audiences: []
-      #   jwks_json_path:
-workflows:
-  org_setup:
-    template: github
-    workload_identity_provider:
-      id: $wif_providers:github
-      audiences: []
-    repository:
-      name: org-setup
-      branch: main
-    output_files:
-      storage_bucket: $storage_buckets:iac-0/iac-outputs
-      providers:
-        apply: $output_files:providers/0-org-setup
-        plan: $output_files:providers/0-org-setup-ro
-      files:
-        - tfvars/0-boostrap.auto.tfvars.json
-    service_accounts:
-      apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
-      plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+# projects/iac-0.yaml
+
+workload_identity_pools:
+  default:
+    display_name: Default pool for CI/CD.
+    providers:
+      github-default:
+        display_name: GitHub (example org).
+        attribute_condition: attribute.repository_owner=="example"
+        identity_provider:
+          oidc:
+            template: github
+      gitlab-default:
+        display_name: Gitlab (example org).
+        attribute_condition: attribute.namespace_path=="example"
+        identity_provider:
+          oidc:
+            template: gitlab
+```
+
+The above configuration can be easily extended to support multiple pools and providers, and is not limited to OpenId Connect but can also leverage other provider types. Check the project module or project schema for the full interface.
+
+Once one or more providers have been defined they can be referenced in the CI/CD cofniguration file. The following example defines a workflow configuration for this stage.
+
+```yaml
+# cicd-workflows.yaml
+
+org-setup:
+  provider_files:
+    apply: 0-org-setup-providers.tf
+    plan: 0-org-setup-providers-ro.tf
+  repository:
+    name: example/0-org-setup
+    type: github
+    apply_branches:
+      - master
+      - fast-dev
+  service_accounts:
+    apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+    plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+  tfvars_files:
+    - 0-org-setup.auto.tfvars
+  workload_identity:
+    provider: $workload_identity_providers:iac-0/default/github-default
+    iam_principalsets:
+      template: github
+```
+
+The configuration prepares a sample workflow file for the target repository, and configures IAM on the service accounts referenced in the configuration, so that repository tokens can impersonate them via the Workload Identity provider.
+
+#### Read-write and read-only impersonation
+
+The access pattern implemented above allows impersonation from any branch to the read-only (`-ro`) service account, and impersonation from explicitly mentioned branches to the read-write (`rw`) service account. This ensures that PR-related actions run with limited privileges, and higher level privileges are only used for merges after PR checks and approvals. If a more relaxed approach where any branch can access the read-write service account, simply omit the `repository.apply_branches` block.
+
+#### Customized IAM principal sets
+
+The format of the IAM principalsets used to grant impersonation permissions to the exchanged token can either leverage internally defined templates via the `workload_identity.iam_principalsets.template` attribute, or be explicitly defined so that fine-tuning is possible, or different sets of principals are allowed. The following example is the explicit format equivalent to the template used above.
+
+```yaml
+org-setup:
+  # identical lines omitted
+  workload_identity:
+    provider: $workload_identity_providers:iac-0/default/github-default
+    iam_principalsets:
+      apply: principalSet://iam.googleapis.com/%s/attribute.fast_sub/repo:%s:ref:refs/heads/%s
+      plan: principalSet://iam.googleapis.com/%s/attribute.repository/%s
 ```
 
 #### Okta
@@ -654,7 +693,7 @@ workflows:
       plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
 ```
 
-Finally you will need to modify the following org policies and IAM permissions in `datasets/classic/organization/org-policies/iam.yaml` file: 
+Finally you will need to modify the following org policies and IAM permissions in `datasets/classic/organization/org-policies/iam.yaml` file:
 
 - Under `org_polices` add your Okta provider URL :
 
@@ -669,10 +708,10 @@ org_policies:
             - https://app.terraform.io
             - https://<REPLACE_WITH_ORG_NAME>.okta.com/oauth2/default   // Modify this
 ```
+
 This configuration adds Okta to the list of allowed Workload Identity providers in your GCP organization.
 
 - Under `iac-org-cicd-ro` and `iac-org-cicd-rw` service accounts add `roles/iam.workloadIdentityUser` to each of them:
-
 
 ```yaml
   iac-org-cicd-ro:
@@ -695,6 +734,7 @@ This configuration adds Okta to the list of allowed Workload Identity providers 
       roles/iam.workloadIdentityUser: 
         - principalSet://iam.googleapis.com/projects/<REPLACE_WITH_IAC_PROJECT_NUMBER>/locations/global/workloadIdentityPools/iac-0/*    // Modify this
 ```
+
 This allows identities from the Workload Identity Pool to impersonate both IaC service accounts.
 </details>
 

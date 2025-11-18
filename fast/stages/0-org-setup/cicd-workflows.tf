@@ -83,7 +83,7 @@ locals {
     )
   }
 }
-output "foo" { value = local.cicd_ctx_wif }
+
 module "cicd-sa-apply" {
   source   = "../../../modules/iam-service-account"
   for_each = local.cicd_workflows
