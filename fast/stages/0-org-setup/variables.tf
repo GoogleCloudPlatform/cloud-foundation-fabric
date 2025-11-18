@@ -17,19 +17,20 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    custom_roles          = optional(map(string), {})
-    email_addresses       = optional(map(string), {})
-    folder_ids            = optional(map(string), {})
-    iam_principals        = optional(map(string), {})
-    locations             = optional(map(string), {})
-    kms_keys              = optional(map(string), {})
-    notification_channels = optional(map(string), {})
-    project_ids           = optional(map(string), {})
-    service_account_ids   = optional(map(string), {})
-    tag_keys              = optional(map(string), {})
-    tag_values            = optional(map(string), {})
-    vpc_host_projects     = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
+    custom_roles                = optional(map(string), {})
+    email_addresses             = optional(map(string), {})
+    folder_ids                  = optional(map(string), {})
+    iam_principals              = optional(map(string), {})
+    locations                   = optional(map(string), {})
+    kms_keys                    = optional(map(string), {})
+    notification_channels       = optional(map(string), {})
+    project_ids                 = optional(map(string), {})
+    service_account_ids         = optional(map(string), {})
+    tag_keys                    = optional(map(string), {})
+    tag_values                  = optional(map(string), {})
+    vpc_host_projects           = optional(map(string), {})
+    vpc_sc_perimeters           = optional(map(string), {})
+    workload_identity_providers = optional(map(string), {})
   })
   default  = {}
   nullable = false

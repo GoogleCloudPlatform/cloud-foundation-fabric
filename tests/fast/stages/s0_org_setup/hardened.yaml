@@ -14,37 +14,6 @@
 
 # yamllint disable rule:line-length
 values:
-  google_iam_workload_identity_pool.default[0]:
-    description: null
-    disabled: null
-    display_name: null
-    project: ft0-prod-iac-core-0
-    timeouts: null
-    workload_identity_pool_id: iac-0
-  google_iam_workload_identity_pool_provider.default["github"]:
-    attribute_condition: attribute.repository_owner=="my_org"
-    attribute_mapping:
-      attribute.actor: assertion.actor
-      attribute.fast_sub: '"repo:" + assertion.repository + ":ref:" + assertion.ref'
-      attribute.ref: assertion.ref
-      attribute.repository: assertion.repository
-      attribute.repository_owner: assertion.repository_owner
-      attribute.sub: assertion.sub
-      google.subject: assertion.sub
-    aws: []
-    description: null
-    disabled: null
-    display_name: null
-    oidc:
-    - allowed_audiences: []
-      issuer_uri: https://token.actions.githubusercontent.com
-      jwks_json: null
-    project: ft0-prod-iac-core-0
-    saml: []
-    timeouts: null
-    workload_identity_pool_id: iac-0
-    workload_identity_pool_provider_id: github
-    x509: []
   google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
@@ -5791,8 +5760,6 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 8
   google_folder_iam_binding: 44
-  google_iam_workload_identity_pool: 1
-  google_iam_workload_identity_pool_provider: 1
   google_logging_metric: 9
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
@@ -5823,5 +5790,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 48
-  resources: 474
-  terraform_data: 3
+  resources: 473
+  terraform_data: 4

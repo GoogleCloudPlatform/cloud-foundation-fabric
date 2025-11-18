@@ -23,8 +23,9 @@ locals {
     "$iam_principals:${k}" => v
   }
   cicd_ctx_wif = {
-    for k, v in local.workload_identity_providers :
-    "$workload_identity_providers:${k}" => v
+    for k, v in merge(
+      local.ctx.workload_identity_providers, local.workload_identity_providers
+    ) : "$workload_identity_providers:${k}" => v
   }
   # normalize workflow configurations, correctness is checked via preconditions
   cicd_workflows = {
