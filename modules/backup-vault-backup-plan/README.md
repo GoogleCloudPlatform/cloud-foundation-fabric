@@ -49,7 +49,7 @@ module "dr_plan_example_with_existing_vault" {
 ```hcl
 module "dr_example" {
   source          = "../../"
-  project_id      = "yashwant-argolis"
+  project_id      = "your-gcp-project-id"
   location        = "us-central1"
   backup_vault_id = "my-backup-vault"
   backup_plan_id  = "my-backup-plan"
