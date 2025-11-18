@@ -444,7 +444,7 @@ resource "google_alloydb_instance" "secondary" {
 
 moved {
   from = google_alloydb_instance.read_pool
-  to = google_alloydb_instance.read_pool_primary
+  to   = google_alloydb_instance.read_pool_primary
 }
 
 # Read pool (instance_type = "READ_POOL") does not support the following attributes:
