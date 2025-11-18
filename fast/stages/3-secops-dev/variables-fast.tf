@@ -32,17 +32,49 @@ variable "billing_account" {
   default = {}
 }
 
-variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
-  description = "Folder name => id mappings."
+variable "custom_roles" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Custom roles defined at the org level, in key => id format."
   type        = map(string)
   nullable    = false
   default     = {}
 }
 
-variable "secops_project_ids" {
-  # tfdoc:variable:source 2-secops
-  description = "SecOps Project IDs for each environment."
+variable "folder_ids" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Folders created in the bootstrap stage."
   type        = map(string)
-  default     = null
+  nullable    = false
+  default     = {}
+}
+
+variable "iam_principals" {
+  # tfdoc:variable:source 0-org-setup
+  description = "IAM-format principals."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "kms_keys" {
+  # tfdoc:variable:source 2-security
+  description = "KMS key ids."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
+variable "prefix" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Prefix for organization projects."
+  type        = string
+  nullable    = false
+}
+
+variable "project_ids" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Projects created in the bootstrap stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
