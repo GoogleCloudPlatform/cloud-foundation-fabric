@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-module "unified_dr_plan" {
-  source = "../../"
 
+module "dr_plan_example_with_existing_vault" {
+  source              = "../../"
   project_id          = "your-gcp-project-id"
   location            = "us-central1"
   backup_vault_id     = "my-backup-vault"

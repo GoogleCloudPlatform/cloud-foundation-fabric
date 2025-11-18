@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module "unified_dr_plan" {
-  source = "../../"
-
+module "dr_example" {
+  source          = "../../"
   project_id      = "yashwant-argolis"
   location        = "us-central1"
   backup_vault_id = "my-backup-vault"
