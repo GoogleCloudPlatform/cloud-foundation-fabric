@@ -177,7 +177,7 @@ module "alloydb" {
 
   deletion_protection = false
 }
-# tftest modules=1 resources=4 inventory=cross_region_read_pools.yaml e2e
+# tftest inventory=cross_region_read_pools.yaml e2e
 ```
 
 

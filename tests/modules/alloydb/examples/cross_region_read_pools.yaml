@@ -23,7 +23,10 @@ values:
       recovery_window_days: 14
     database_version: POSTGRES_15
     deletion_policy: DEFAULT
+    deletion_protection: false
     display_name: db
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     encryption_config: []
     etag: null
     initial_user:
@@ -42,6 +45,8 @@ values:
     secondary_config: []
     skip_await_major_version_upgrade: true
     subscription_type: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.alloydb.google_alloydb_cluster.secondary[0]:
     annotations: null
@@ -53,7 +58,10 @@ values:
       recovery_window_days: 14
     database_version: POSTGRES_15
     deletion_policy: FORCE
+    deletion_protection: false
     display_name: db-sec
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     encryption_config: []
     etag: null
     initial_user: []
@@ -71,11 +79,15 @@ values:
     - {}
     skip_await_major_version_upgrade: true
     subscription_type: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.alloydb.google_alloydb_instance.primary:
     annotations: null
     availability_type: REGIONAL
     display_name: db
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     gce_zone: null
     instance_id: db
     instance_type: PRIMARY
@@ -88,11 +100,47 @@ values:
       record_application_tags: true
       record_client_address: true
     read_pool_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.alloydb.google_alloydb_instance.read_pool_primary["primary-read-pool"]:
+    annotations: null
+    display_name: primary-read-pool
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gce_zone: null
+    instance_id: primary-read-pool
+    instance_type: READ_POOL
+    labels: null
+    machine_config:
+    - cpu_count: 2
+    read_pool_config:
+    - node_count: 1
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.alloydb.google_alloydb_instance.read_pool_secondary["secondary-read-pool"]:
+    annotations: null
+    display_name: secondary-read-pool
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gce_zone: null
+    instance_id: secondary-read-pool
+    instance_type: READ_POOL
+    labels: null
+    machine_config:
+    - cpu_count: 2
+    read_pool_config:
+    - node_count: 1
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.alloydb.google_alloydb_instance.secondary[0]:
     annotations: null
     availability_type: REGIONAL
     display_name: db-sec
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     gce_zone: null
     instance_id: db-sec
     instance_type: SECONDARY
@@ -105,36 +153,14 @@ values:
       record_application_tags: true
       record_client_address: true
     read_pool_config: []
-    timeouts: null
-  module.alloydb.google_alloydb_instance.read_pool_primary["primary-read-pool"]:
-    annotations: null
-    display_name: regional-read-pool
-    gce_zone: null
-    instance_id: regional-read-pool
-    instance_type: READ_POOL
-    labels: null
-    machine_config:
-    - cpu_count: 2
-    read_pool_config:
-    - node_count: 2
-    timeouts: null
-  module.alloydb.google_alloydb_instance.read_pool_secondary["secondary-read-pool"]:
-    annotations: null
-    display_name: secondary-read-pool
-    gce_zone: null
-    instance_id: secondary-read-pool
-    instance_type: READ_POOL
-    labels: null
-    machine_config:
-    - cpu_count: 2
-    read_pool_config:
-    - node_count: 2
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
 
 counts:
   google_alloydb_cluster: 2
-  google_alloydb_instance: 2
+  google_alloydb_instance: 4
   modules: 1
-  resources: 4
+  resources: 6
 
 outputs: {}
