@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,146 +14,33 @@
 
 values:
   module.db.google_sql_database_instance.primary:
-    backupdr_backup: null
     clone: []
     database_version: POSTGRES_16
-    deletion_protection: false
-    final_backup_description: null
     name: myprefix-db
-    point_in_time_restore_context: []
     project: project-id
     region: europe-west8
-    restore_backup_context: []
-    root_password: null
     settings:
-    - activation_policy: ALWAYS
-      active_directory_config: []
-      advanced_machine_features: []
-      availability_type: ZONAL
-      collation: null
-      database_flags: []
-      deletion_protection_enabled: false
-      deny_maintenance_period: []
-      disk_autoresize: true
-      disk_autoresize_limit: 0
-      disk_type: PD_SSD
-      edition: ENTERPRISE
-      enable_dataplex_integration: null
-      enable_google_ml_integration: null
-      final_backup_config: []
-      ip_configuration:
-      - allocated_ip_range: null
-        authorized_networks: []
-        custom_subject_alternative_names: null
-        enable_private_path_for_google_cloud_services: false
-        ipv4_enabled: false
-        private_network: projects/xxx/global/networks/aaa
-        psc_config: []
-        server_ca_pool: null
-      maintenance_window: []
-      password_validation_policy: []
-      pricing_plan: PER_USE
-      retain_backups_on_delete: null
-      sql_server_audit_config: []
-      tier: db-g1-small
-      time_zone: null
-    timeouts: null
+    - edition: ENTERPRISE
+
   module.db.google_sql_database_instance.replicas["replica1"]:
-    backupdr_backup: null
     clone: []
     database_version: POSTGRES_16
-    deletion_protection: false
-    final_backup_description: null
     master_instance_name: myprefix-db
     name: myprefix-replica1
-    point_in_time_restore_context: []
     project: project-id
     region: europe-west3
-    restore_backup_context: []
-    root_password: null
     settings:
-    - activation_policy: ALWAYS
-      active_directory_config: []
-      advanced_machine_features: []
-      availability_type: ZONAL
-      collation: null
-      database_flags: []
-      deletion_protection_enabled: false
-      deny_maintenance_period: []
-      disk_autoresize: true
-      disk_autoresize_limit: 0
-      disk_type: PD_SSD
-      edition: ENTERPRISE
-      enable_dataplex_integration: null
-      enable_google_ml_integration: null
-      final_backup_config: []
-      ip_configuration:
-      - allocated_ip_range: null
-        authorized_networks: []
-        custom_subject_alternative_names: null
-        enable_private_path_for_google_cloud_services: false
-        ipv4_enabled: false
-        private_network: projects/xxx/global/networks/aaa
-        psc_config: []
-        server_ca_pool: null
-      maintenance_window: []
-      password_validation_policy: []
-      pricing_plan: PER_USE
-      retain_backups_on_delete: null
-      sql_server_audit_config: []
-      tier: db-g1-small
-      time_zone: null
-    timeouts: null
+    - edition: ENTERPRISE
+
   module.db.google_sql_database_instance.replicas["replica2"]:
-    backupdr_backup: null
     clone: []
     database_version: POSTGRES_16
-    deletion_protection: false
-    final_backup_description: null
     master_instance_name: myprefix-db
     name: myprefix-replica2
-    point_in_time_restore_context: []
     project: project-id
     region: us-central1
-    restore_backup_context: []
-    root_password: null
     settings:
-    - activation_policy: ALWAYS
-      active_directory_config: []
-      advanced_machine_features: []
-      availability_type: ZONAL
-      collation: null
-      database_flags: []
-      deletion_protection_enabled: false
-      deny_maintenance_period: []
-      disk_autoresize: true
-      disk_autoresize_limit: 0
-      disk_type: PD_SSD
-      edition: ENTERPRISE
-      enable_dataplex_integration: null
-      enable_google_ml_integration: null
-      final_backup_config: []
-      ip_configuration:
-      - allocated_ip_range: null
-        authorized_networks: []
-        custom_subject_alternative_names: null
-        enable_private_path_for_google_cloud_services: false
-        ipv4_enabled: false
-        private_network: projects/xxx/global/networks/aaa
-        psc_config: []
-        server_ca_pool: null
-      maintenance_window: []
-      password_validation_policy: []
-      pricing_plan: PER_USE
-      retain_backups_on_delete: null
-      sql_server_audit_config: []
-      tier: db-g1-small
-      time_zone: null
-    timeouts: null
+    - edition: ENTERPRISE
 
 counts:
   google_sql_database_instance: 3
-  modules: 1
-  resources: 3
-
-outputs: {}
