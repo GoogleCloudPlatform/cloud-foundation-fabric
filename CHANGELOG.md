@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-11-11 09:17:58+00:00 to: None since: v48.0.0 -->
 
+## [49.0.0] - 2025-11-18
+
+### FAST
+
+- [[#3537](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3537)] Drop the 2-secops stage and minimally refactor 3-secops-dev ([ludoo](https://github.com/ludoo)) <!-- 2025-11-18 13:32:06+00:00 -->
+- [[#3535](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3535)] Leverage project-level workload identity in FAST CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2025-11-18 10:49:44+00:00 -->
+- [[#3525](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3525)] Prettify and standardize YAML controls from hardened datasets ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-11-13 07:21:36+00:00 -->
+
+### MODULES
+
+- [[#3535](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3535)] Leverage project-level workload identity in FAST CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2025-11-18 10:49:44+00:00 -->
+
 ## [48.1.0] - 2025-11-18
 
 ### FAST
@@ -1928,7 +1940,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...HEAD
+[49.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...48.1.0
 [48.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.1.0...48.0.0
 [48.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...47.1.0
 [47.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.1.0...47.0.0
