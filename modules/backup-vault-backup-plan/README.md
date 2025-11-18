@@ -101,8 +101,8 @@ See the `examples/multi-resource-backup` directory for a more complex example.
 | [backup_minimum_enforced_retention_duration](variables.tf#L44) | Minimum retention duration for backup data in the vault, specified in seconds (e.g., '100000s'). | <code>string</code> |  | <code>&#34;100000s&#34;</code> |
 | [backup_plan_resource_type](variables.tf#L59) | The type of resource being backed up (e.g., 'compute.googleapis.com/Disk'). | <code>string</code> |  | <code>&#34;compute.googleapis.com&#47;Instance&#34;</code> |
 | [backup_retention_inheritance](variables.tf#L74) | Controls if the vault inherits retention from the backup plan or uses its own retention policy. E.g., 'INHERIT_VAULT_RETENTION' or 'NO_INHERITANCE'. | <code>string</code> |  | <code>&#34;INHERIT_VAULT_RETENTION&#34;</code> |
+| [backup_vault_create](variables.tf#L110) | If true, creates a new Backup Vault. If false, uses an existing Backup Vault specified by backup_vault_id. | <code>bool</code> |  | <code>true</code> |
 | [backup_vault_id](variables.tf#L100) | The resource ID of the Backup Vault. Must contain only lowercase letters, numbers, and hyphens. | <code>string</code> |  | <code>null</code> |
-| [create_backup_vault](variables.tf#L110) | If true, creates a new Backup Vault. If false, uses an existing Backup Vault specified by backup_vault_id. | <code>bool</code> |  | <code>true</code> |
 | [force_update](variables.tf#L116) | Indicates if the resource should be force-updated. | <code>string</code> |  | <code>&#34;false&#34;</code> |
 | [ignore_backup_plan_references](variables.tf#L122) | If true, allows deletion of the vault even if it's referenced by a backup plan. | <code>string</code> |  | <code>&#34;false&#34;</code> |
 | [ignore_inactive_datasources](variables.tf#L128) | If true, allows deletion of the vault even if it contains inactive datasources. | <code>string</code> |  | <code>&#34;false&#34;</code> |
