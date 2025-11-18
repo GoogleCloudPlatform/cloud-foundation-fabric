@@ -118,7 +118,7 @@ resource "google_privileged_access_manager_entitlement" "default" {
             }
 
             approvals_needed          = step.value.approvals_needed
-            approver_email_recipients = step.value.aprover_email_recipients
+            approver_email_recipients = step.value.approver_email_recipients
           }
         }
       }
