@@ -33,3 +33,7 @@ log_buckets:
     retention: 31
 factories_config:
   observability: datasets/hardened/organization/observability/
+org_policies:
+  custom.storageRequireBucketObjectVersionning:
+    rules:
+      - enforce: true

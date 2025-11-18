@@ -17,9 +17,11 @@
 # yaml-language-server: $schema=../../../schemas/organization.schema.json
 
 id: $defaults:organization/id
-contacts:
-  $email_addresses:gcp-organization-admins:
-    - ALL
+data_access_logs:
+  allServices:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
 # conditional authoritative IAM bindings
 iam_bindings:
   # these don't conflict with IAM / IAM by principal
