@@ -20,7 +20,7 @@ This module allows you to define a backup plan for your Google Cloud resources. 
 ### Minimal example
 ```hcl
 module "dr_plan_example_with_existing_vault" {
-  source              = "../../" # Adjust the path as necessary
+  source              = "./fabric/modules/backup-vault-backup-plan" # Adjust the path as necessary
   project_id          = "your-gcp-project-id"
   location            = "us-central1"
   backup_vault_id     = "my-backup-vault"
@@ -48,7 +48,7 @@ module "dr_plan_example_with_existing_vault" {
 ### Minimal example with new vault
 ```hcl
 module "dr_example" {
-  source          = "../../"
+  source          = "./fabric/modules/backup-vault-backup-plan"
   project_id      = "your-gcp-project-id"
   location        = "us-central1"
   backup_vault_id = "my-backup-vault"
