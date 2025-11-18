@@ -12,11 +12,11 @@
   - ⁺**quota_id**: *string*
   - ⁺**preferred_value**: *number*
   - **dimensions**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **justification**: *string*
   - **contact_email**: *string*
   - **annotations**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **ignore_safety_checks**: *string*
     <br>*enum: ['QUOTA_DECREASE_BELOW_USAGE', 'QUOTA_DECREASE_PERCENTAGE_TOO_HIGH', 'QUOTA_SAFETY_CHECK_UNSPECIFIED']*
 

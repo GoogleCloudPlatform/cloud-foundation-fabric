@@ -35,4 +35,3 @@ ainotebooks.restrictVpcNetworks:
     - allow:
         values:
           - "under:organizations/${organization.id}"
-

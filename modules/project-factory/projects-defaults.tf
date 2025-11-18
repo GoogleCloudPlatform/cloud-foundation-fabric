@@ -55,10 +55,15 @@ locals {
       iam_bindings_additive      = try(v.iam_bindings_additive, {})      # type: map(object({...}))
       iam_by_principals_additive = try(v.iam_by_principals_additive, {}) # type: map(list(string))
       iam_by_principals          = try(v.iam_by_principals, {})          # map(list(string))
-      labels = coalesce(                                                 # type: map(string)
+      kms = {
+        autokeys = try(v.kms.autokeys, {})
+        keyrings = try(v.kms.keyrings, {})
+      }
+      labels = coalesce( # type: map(string)
         try(v.labels, null),
         local.data_defaults.defaults.labels
       )
+      logging_data_access = try(v.data_access_logs, {})
       metric_scopes = coalesce( # type: list(string)
         try(v.metric_scopes, null),
         local.data_defaults.defaults.metric_scopes
@@ -90,6 +95,7 @@ locals {
         )
         : local.data_defaults.defaults.project_reuse
       )
+      quotas = try(v.quotas, {})
       service_encryption_key_ids = coalesce( # type: map(list(string))
         local.data_defaults.overrides.service_encryption_key_ids,
         try(v.service_encryption_key_ids, null),
@@ -175,12 +181,23 @@ locals {
           : local.data_defaults.defaults.vpc_sc
         )
       )
-      logging_data_access = coalesce( # type: map(object({...}))
-        local.data_defaults.overrides.logging_data_access,
-        try(v.logging_data_access, null),
-        local.data_defaults.defaults.logging_data_access
-      )
-      quotas = try(v.quotas, {})
+      workload_identity_pools = {
+        for wk, wv in try(v.workload_identity_pools, {}) : wk => {
+          display_name = lookup(wv, "display_name", null)
+          description  = lookup(wv, "description", null)
+          disabled     = lookup(wv, "disabled", null)
+          providers = {
+            for pk, pv in try(wv.providers, {}) : pk => {
+              display_name        = lookup(pv, "display_name", null)
+              description         = lookup(pv, "description", null)
+              disabled            = lookup(pv, "disabled", null)
+              attribute_condition = lookup(pv, "attribute_condition", null)
+              attribute_mapping   = lookup(pv, "attribute_mapping", {})
+              identity_provider   = lookup(pv, "identity_provider", {})
+            }
+          }
+        }
+      }
     })
   }
   # tflint-ignore: terraform_unused_declarations
@@ -202,10 +219,9 @@ locals {
           logging  = try(local._data_defaults.defaults.locations.logging, null)
           storage  = try(local._data_defaults.defaults.locations.storage, null)
         }
-        logging_data_access = {}
-        metric_scopes       = []
-        parent              = null
-        prefix              = null
+        metric_scopes = []
+        parent        = null
+        prefix        = null
         project_reuse = merge(
           {
             use_data_source = true
@@ -257,7 +273,6 @@ locals {
         logging  = try(local._data_defaults.overrides.locations.logging, null)
         storage  = try(local._data_defaults.overrides.locations.storage, null)
       }
-      logging_data_access        = null
       parent                     = null
       prefix                     = null
       service_encryption_key_ids = null

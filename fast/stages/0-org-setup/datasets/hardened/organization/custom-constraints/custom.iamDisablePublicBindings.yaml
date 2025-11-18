@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
-
 custom.iamDisablePublicBindings:
   action_type: DENY
   condition: |-
-    resource.bindings.exists(binding, binding.members.exists(member, MemberSubjectMatches(member, ['allUsers', 'allAuthenticatedUsers'])))
+    resource.bindings.exists(binding,
+      binding.members.exists(member,
+        MemberSubjectMatches(member, ['allUsers', 'allAuthenticatedUsers'])
+      )
+    )
   description: Ensure no use of public bindings (allUsers, allAuthenticatedUsers)
   display_name: Deny use of public access bindings with allUsers or allAuthenticatedUsers
   method_types:

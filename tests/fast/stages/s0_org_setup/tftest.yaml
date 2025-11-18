@@ -20,3 +20,8 @@ tests:
       - simple.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s0_org_setup/data-simple
+  hardened:
+    inventory:
+      - hardened.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s0_org_setup/data-simple

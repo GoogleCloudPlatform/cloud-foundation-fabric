@@ -37,5 +37,9 @@ resource "terraform_data" "defaults_preconditions" {
       )
       error_message = "No default storage location defined in defaults or overrides variables."
     }
+    # precondition {
+    #   condition     = local.projects_input == null
+    #   error_message = yamlencode(local.projects_input["iac-0"])
+    # }
   }
 }

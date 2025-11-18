@@ -33,6 +33,18 @@ iam_by_principals:
     - roles/iam.workloadIdentityPoolAdmin
     - roles/owner
     - roles/storage.admin
+  $iam_principals:service_accounts/iac-0/iac-networking-rw:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-networking-ro:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-security-rw:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-security-ro:
+    - roles/serviceusage.serviceUsageConsumer
 services:
   - accesscontextmanager.googleapis.com
   - bigquery.googleapis.com
@@ -69,10 +81,18 @@ org_policies:
             - https://token.actions.githubusercontent.com
             - https://gitlab.com
             - https://app.terraform.io
+data_access_logs:
+  storage.googleapis.com:
+    DATA_READ: {}
+    DATA_WRITE: {}
+  sts.googleapis.com:
+    DATA_READ: {}
+    DATA_WRITE: {}
 buckets:
   # Terraform state bucket for this stage
   iac-org-state:
     description: Terraform state for the org-level automation.
+    versioning: true
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
@@ -81,6 +101,7 @@ buckets:
   # Terraform state bucket for additional FAST stages
   iac-stage-state:
     description: Terraform state for stage automation.
+    versioning: true
     managed_folders:
       1-vpcsc:
         iam:
@@ -115,6 +136,7 @@ buckets:
   # Terraform state bucket for FAST outputs
   iac-outputs:
     description: Terraform state for the org-level automation.
+    versioning: true
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw

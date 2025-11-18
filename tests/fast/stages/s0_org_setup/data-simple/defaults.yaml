@@ -61,3 +61,5 @@ context:
     gcp-organization-admins: group:fabric-fast-owners@google.com
   locations:
     primary: europe-west1
+  workload_identity_providers:
+    iac-0/default/github-default: projects/1234567890/locations/global/workloadIdentityPools/default
