@@ -20,7 +20,6 @@
 variable "project_id" {
   description = "The ID of the GCP project in which resources will be created."
   type        = string
-  default     = "yashwant-argolis"
 }
 
 variable "location" {
