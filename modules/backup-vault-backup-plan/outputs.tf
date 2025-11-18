@@ -20,5 +20,25 @@ output "backup_plan_id" {
 
 output "backup_vault_id" {
   description = "The ID of the Backup Vault."
-  value       = var.backup_vault_create == true ? google_backup_dr_backup_vault.backup_vault[0].id : var.backup_vault_id
+  value       = var.backup_vault_create == true ? one(google_backup_dr_backup_vault.backup_vault[*].id) : var.backup_vault_id
+}
+
+output "backup_vault_service_account" {
+  description = "The service account used by the Backup Vault."
+  value       = var.backup_vault_create == true ? one(google_backup_dr_backup_vault.backup_vault[*].service_account) : null
+}
+
+output "google_backup_dr_backup_plan_associations" {
+  description = "The Backup Plan Associations created."
+  value       = google_backup_dr_backup_plan_association.backup_association
+}
+
+output "google_backup_dr_management_server" {
+  description = "The Management Server created."
+  value       = var.management_server_create ? google_backup_dr_management_server.management_server : null
+}
+
+output "google_backup_dr_management_server_id" {
+  description = "The Management Server ID created."
+  value       = var.management_server_create ? one(google_backup_dr_management_server.management_server[*].management_uri) : null
 }

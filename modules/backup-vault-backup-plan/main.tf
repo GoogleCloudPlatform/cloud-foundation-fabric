@@ -62,3 +62,36 @@ resource "google_backup_dr_backup_plan" "backup_plan" {
     }
   }
 }
+
+resource "google_backup_dr_backup_plan_association" "backup_association" {
+  for_each                   = var.backup_associations
+  project                    = coalesce(each.value.project_id, var.project_id)
+  location                   = coalesce(each.value.location, var.location)
+  resource                   = each.value.resource_full_id
+  resource_type              = each.value.resource_type
+  backup_plan                = google_backup_dr_backup_plan.backup_plan.name
+  backup_plan_association_id = "association-${each.key}"
+}
+
+resource "google_backup_dr_management_server" "management_server" {
+  count    = var.management_server_create ? 1 : 0
+  project  = var.project_id
+  location = try(var.management_server_config.location, "")
+  name     = try(var.management_server_config.management_server_name, "")
+  type     = try(var.management_server_config.type, "")
+
+  dynamic "networks" {
+    for_each = try(var.management_server_create && var.management_server_config.network_config != null) ? [var.management_server_config.network_config] : []
+    content {
+      network      = networks.value.network
+      peering_mode = networks.value.peering_mode
+    }
+  }
+}
+
+resource "google_backup_dr_service_config" "default_backup_dr" {
+  for_each      = var.default_backup_dr_create ? var.default_backup_dr_configs : {}
+  project       = coalesce(each.value.project_id, var.project_id)
+  location      = coalesce(each.value.location, var.location)
+  resource_type = try(each.value.resource_type, "")
+}
