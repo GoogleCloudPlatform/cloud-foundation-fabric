@@ -39,7 +39,7 @@ variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
     billing_accounts  = optional(string, "datasets/classic/billing-accounts")
-    cicd              = optional(string)
+    cicd_workflows    = optional(string)
     defaults          = optional(string, "datasets/classic/defaults.yaml")
     folders           = optional(string, "datasets/classic/folders")
     organization      = optional(string, "datasets/classic/organization")

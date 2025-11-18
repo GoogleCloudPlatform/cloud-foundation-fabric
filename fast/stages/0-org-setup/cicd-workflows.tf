@@ -16,62 +16,73 @@
 
 locals {
   # raw configuration (the wif files are also users of this local)
-  cicd = try(yamldecode(file(local.paths.cicd)), {})
+  _cicd_workflows = try(yamldecode(file(local.paths.cicd_workflows)), {})
   # dereferencing maps
   cicd_ctx_sa = {
     for k, v in merge(local.ctx.iam_principals, module.factory.iam_principals) :
     "$iam_principals:${k}" => v
   }
-  cicd_ctx_wif = try({
-    "$wif_pools:${local.wif_pool_name}" = google_iam_workload_identity_pool.default[0].name
-  }, {})
-  # normalize workflow configurations
+  cicd_ctx_wif = {
+    for k, v in local.workload_identity_providers :
+    "$workload_identity_providers:${k}" => v
+  }
+  # normalize workflow configurations, correctness is checked via preconditions
   cicd_workflows = {
-    for k, v in lookup(local.cicd, "workflows", {}) : k => merge(v, {
-      iam_principal_templates = {
-        branch = local.wif_defs[v.repository.type].principal_branch
-        repo   = local.wif_defs[v.repository.type].principal_repo
+    for k, v in local._cicd_workflows : k => {
+      provider_files = {
+        apply = try(v.provider_files.apply, null)
+        plan  = try(v.provider_files.plan, null)
       }
-      repository = merge(v.repository, {
+      repository = {
         apply_branches = try(v.repository.apply_branches, [])
-      })
-      service_accounts = {
-        apply = trimprefix(try(
-          local.cicd_ctx_sa[v.service_accounts.apply], v.service_accounts.apply
-        ), "serviceAccount:")
-        plan = trimprefix(try(
-          local.cicd_ctx_sa[v.service_accounts.plan], v.service_accounts.plan
-        ), "serviceAccount:")
+        name           = try(v.repository.name, null)
+        type           = try(v.repository.type, null)
       }
-      workload_identity = {
-        audiences = try(v.workload_identity.audiences, [])
-        pool_id = try(
-          local.cicd_ctx_wif[v.workload_identity.pool_id],
-          v.workload_identity.pool_id
+      service_accounts = {
+        apply = try(
+          trimprefix(
+            local.cicd_ctx_sa[v.service_accounts.apply], "serviceAccount:"
+          ),
+          v.service_accounts.apply,
+          null
+        )
+        plan = try(
+          trimprefix(
+            local.cicd_ctx_sa[v.service_accounts.plan], "serviceAccount:"
+          ),
+          v.service_accounts.plan,
+          null
         )
       }
-    })
-    if(
-      try(local.wif_defs[v.repository.type], null) != null &&
-      try(v.provider_files.apply, null) != null &&
-      try(v.provider_files.plan, null) != null &&
-      try(v.repository.name, null) != null &&
-      try(v.service_accounts.apply, null) != null &&
-      try(v.service_accounts.plan, null) != null &&
-      try(v.workload_identity.pool_id, null) != null
-    )
+      tfvars_files = try(v.tfvars_files, [])
+      workload_identity = {
+        provider = try(
+          local.cicd_ctx_wif[v.workload_identity.provider],
+          v.workload_identity.provider,
+          null
+        )
+        iam_principalsets = try(
+          local.wif_iam_templates[v.workload_identity.iam_principalsets.template],
+          {
+            apply = try(v.workload_identity.iam_principalsets.apply)
+            plan  = try(v.workload_identity.iam_principalsets.plan)
+          }
+        )
+      }
+    }
   }
   # generate workflow files contents
   cicd_workflows_contents = {
     for k, v in local.cicd_workflows : k => templatefile(
       "assets/workflow-${v.repository.type}.yaml", merge(v, {
-        outputs_bucket = local.of_outputs_bucket
-        stage_name     = k
+        outputs_bucket             = local.of_outputs_bucket
+        stage_name                 = k
+        workload_identity_provider = v.workload_identity.provider
       })
     )
   }
 }
-
+output "foo" { value = local.cicd_ctx_wif }
 module "cicd-sa-apply" {
   source   = "../../../modules/iam-service-account"
   for_each = local.cicd_workflows
@@ -84,15 +95,15 @@ module "cicd-sa-apply" {
       length(each.value.repository.apply_branches) == 0
       ? [
         format(
-          each.value.iam_principal_templates.repo,
-          each.value.workload_identity.pool_id,
+          each.value.workload_identity.iam_principalsets.plan,
+          each.value.workload_identity.provider,
           each.value.repository.name
         )
       ]
       : [
         for v in each.value.repository.apply_branches : format(
-          each.value.iam_principal_templates.branch,
-          each.value.workload_identity.pool_id,
+          each.value.workload_identity.iam_principalsets.apply,
+          each.value.workload_identity.provider,
           each.value.repository.name,
           v
         )
@@ -111,8 +122,8 @@ module "cicd-sa-plan" {
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
-        each.value.iam_principal_templates.repo,
-        each.value.workload_identity.pool_id,
+        each.value.workload_identity.iam_principalsets.plan,
+        each.value.workload_identity.provider,
         each.value.repository.name
       )
     ]
