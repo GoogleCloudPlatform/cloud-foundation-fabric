@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,5 +20,5 @@ output "backup_plan_id" {
 
 output "backup_vault_id" {
   description = "The ID of the Backup Vault."
-  value       = var.create_backup_vault == true ? google_backup_dr_backup_vault.backup_vault[0].id : var.backup_vault_id
+  value       = var.backup_vault_create == true ? google_backup_dr_backup_vault.backup_vault[0].id : var.backup_vault_id
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-
-resource "google_project_service" "api_backup_dr" {
-  project            = var.project_id
-  service            = "backupdr.googleapis.com"
-  disable_on_destroy = false
-}
-
 # -----------------------------------------------------------------------------
 # Resource for google_backup_dr_backup_vault
 # -----------------------------------------------------------------------------
 resource "google_backup_dr_backup_vault" "backup_vault" {
-  count                                      = var.create_backup_vault == true ? 1 : 0
+  count                                      = var.backup_vault_create == true ? 1 : 0
   project                                    = var.project_id
   location                                   = var.location
   backup_vault_id                            = var.backup_vault_id
@@ -39,7 +32,6 @@ resource "google_backup_dr_backup_vault" "backup_vault" {
   ignore_inactive_datasources                = var.ignore_inactive_datasources
   ignore_backup_plan_references              = var.ignore_backup_plan_references
   allow_missing                              = var.allow_missing
-  depends_on                                 = [google_project_service.api_backup_dr]
 }
 
 # -----------------------------------------------------------------------------
@@ -51,7 +43,7 @@ resource "google_backup_dr_backup_plan" "backup_plan" {
   description    = var.plan_description
   location       = var.location
   resource_type  = var.backup_plan_resource_type
-  backup_vault   = var.create_backup_vault == true ? one(google_backup_dr_backup_vault.backup_vault[*].id) : var.backup_vault_id
+  backup_vault   = var.backup_vault_create == true ? one(google_backup_dr_backup_vault.backup_vault[*].id) : var.backup_vault_id
 
   dynamic "backup_rules" {
     for_each = var.backup_rules
@@ -75,5 +67,5 @@ resource "google_backup_dr_backup_plan" "backup_plan" {
       }
     }
   }
-  depends_on = [google_project_service.api_backup_dr, google_backup_dr_backup_vault.backup_vault]
+  depends_on = [google_backup_dr_backup_vault.backup_vault]
 }

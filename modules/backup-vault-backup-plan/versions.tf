@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+ # Fabric release: v48.0.0
 terraform {
+  required_version = ">= 1.12.2"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~>7.11.0"
+      version = ">= 7.6.0, < 8.0.0" # tftest
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 7.6.0, < 8.0.0" # tftest
     }
   }
-}
 
-provider "google" {}
+  provider_meta "google" {
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/backup-vault-backup-plan:v48.0.0-tf"
+  }
+  provider_meta "google-beta" {
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/backup-vault-backup-plan:v48.0.0-tf"
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ variable "backup_vault_id" {
   }
 }
 
-variable "create_backup_vault" {
+variable "backup_vault_create" {
   description = "If true, creates a new Backup Vault. If false, uses an existing Backup Vault specified by backup_vault_id."
   type        = bool
   default     = true
@@ -159,10 +159,3 @@ variable "vault_description" {
   type        = string
   default     = "Backup Vault managed by Terraform."
 }
-
-
-
-
-
-
-
