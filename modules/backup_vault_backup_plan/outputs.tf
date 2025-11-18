@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+output "backup_plan_id" {
+  description = "The ID of the created Backup Plan."
+  value       = google_backup_dr_backup_plan.backup_plan.backup_plan_id
+}
 
 output "backup_vault_id" {
   description = "The ID of the Backup Vault."
   value       = var.create_backup_vault == true ? google_backup_dr_backup_vault.backup_vault[0].id : var.backup_vault_id
-}
-
-output "backup_plan_id" {
-  description = "The ID of the created Backup Plan."
-  value       = google_backup_dr_backup_plan.backup_plan.backup_plan_id
 }

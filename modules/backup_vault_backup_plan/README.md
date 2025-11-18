@@ -57,14 +57,14 @@ See the `examples/multi-resource-backup` directory for a more complex example.
 | [ignore_inactive_datasources](variables.tf#L128) | If true, allows deletion of the vault even if it contains inactive datasources. | <code>string</code> |  | <code>&#34;false&#34;</code> |
 | [labels](variables.tf#L134) | User-defined key/value map of labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [plan_description](variables.tf#L145) | Backup Plan. | <code>string</code> |  | <code>&#34;Backup Vault managed by Terraform.&#34;</code> |
-| [vault_description](variables.tf#L157) | Backup Vault | <code>string</code> |  | <code>&#34;Backup Vault managed by Terraform.&#34;</code> |
+| [vault_description](variables.tf#L157) | Backup Vault. | <code>string</code> |  | <code>&#34;Backup Vault managed by Terraform.&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [backup_plan_id](outputs.tf#L22) | The ID of the created Backup Plan. |  |
-| [backup_vault_id](outputs.tf#L17) | The ID of the Backup Vault. |  |
+| [backup_plan_id](outputs.tf#L16) | The ID of the created Backup Plan. |  |
+| [backup_vault_id](outputs.tf#L21) | The ID of the Backup Vault. |  |
 <!-- END TFDOC -->
 ## Requirements
 

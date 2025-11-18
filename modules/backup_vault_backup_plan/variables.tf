@@ -155,7 +155,7 @@ variable "project_id" {
 }
 
 variable "vault_description" {
-  description = "Backup Vault"
+  description = "Backup Vault."
   type        = string
   default     = "Backup Vault managed by Terraform."
 }
