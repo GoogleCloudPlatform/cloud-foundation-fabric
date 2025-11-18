@@ -231,6 +231,7 @@ output "workload_identity_providers" {
   value = {
     for k, v in local.wif_providers : k => {
       name = google_iam_workload_identity_pool_provider.default[k].name
+      pool = google_iam_workload_identity_pool.default[v.pool].name
       type = try(v.identity_provider.oidc.template, null)
     }
   }

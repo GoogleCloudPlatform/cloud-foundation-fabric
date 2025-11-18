@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    custom_roles   = optional(map(string), {})
+    folder_ids     = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "data_rbac_config" {
   description = "SecOps Data RBAC scope and labels config."
   type = object({
@@ -85,16 +98,24 @@ variable "iam_default" {
   default = {}
 }
 
-variable "project_id" {
-  description = "Project id that references existing SecOps project. Use this variable when running this stage in isolation."
+variable "parent_folder" {
+  description = "Folder to use for created project."
   type        = string
-  default     = null
+  nullable    = false
+  default     = "$folder_ids:secops/dev"
+}
+
+variable "project_id" {
+  description = "Project id for newly created project, or id of existing project if project_create is false."
+  type        = string
+  nullable    = false
+  default     = "dev-secops-core-0"
 }
 
 variable "project_reuse" {
-  description = "Whether to use an existing project, leave default for FAST deployment."
+  description = "Whether to use an existing project."
   type        = map(string)
-  default     = {}
+  default     = null
 }
 
 variable "region" {
