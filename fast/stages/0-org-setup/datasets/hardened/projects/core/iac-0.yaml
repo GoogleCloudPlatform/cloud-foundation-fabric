@@ -33,6 +33,18 @@ iam_by_principals:
     - roles/iam.workloadIdentityPoolAdmin
     - roles/owner
     - roles/storage.admin
+  $iam_principals:service_accounts/iac-0/iac-networking-rw:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-networking-ro:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-security-rw:
+    - roles/serviceusage.serviceUsageConsumer
+  $iam_principals:service_accounts/iac-0/iac-security-ro:
+    - roles/serviceusage.serviceUsageConsumer
 services:
   - accesscontextmanager.googleapis.com
   - bigquery.googleapis.com

@@ -35,4 +35,4 @@ counts:
   restful_resource: 6
 
 outputs:
-  project_id: fast-dev-secops-0
+  project_id: fast-dev-secops-core-0

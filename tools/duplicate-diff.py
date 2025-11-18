@@ -98,11 +98,11 @@ duplicates = [
         "modules/vpc-sc/schemas/perimeter.schema.json",
     ],
     [
+        "modules/project-factory/schemas/project.schema.json",
+        "fast/stages/0-org-setup/schemas/project.schema.json",
         "fast/stages/2-networking/schemas/project.schema.json",
         "fast/stages/2-project-factory/schemas/project.schema.json",
-        "fast/stages/0-org-setup/schemas/project.schema.json",
         "fast/stages/2-security/schemas/project.schema.json",
-        "modules/project-factory/schemas/project.schema.json",
     ],
     [
         "modules/folder/schemas/scc-sha-custom-modules.schema.json",
