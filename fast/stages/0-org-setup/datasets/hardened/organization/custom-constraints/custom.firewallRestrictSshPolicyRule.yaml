@@ -29,9 +29,9 @@ custom.firewallRestrictSshPolicyRule:
             l4config.ports.all(port, port == '22')
         )
     )
-  description: Ensure that SSH access is restricted from the Internet when using Firewall
+  description: Ensure that SSH access is restricted from any source when using Firewall
     Policy Rule
-  display_name: Restrict Firewall Policy rules allowing SSH access from the Internet
+  display_name: Restrict Firewall Policy rules allowing SSH access from any source
   method_types:
   - CREATE
   - UPDATE
