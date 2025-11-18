@@ -16,6 +16,7 @@
 variable "access_restriction" {
   description = "Access restriction policy for the vault. E.g., ACCESS_RESTRICTION_UNSPECIFIED, WITHIN_PROJECT, WITHIN_ORGANIZATION, UNRESTRICTED, or WITHIN_ORG_BUT_UNRESTRICTED_FOR_BA."
   type        = string
+  nullable    = false
   default     = "WITHIN_ORGANIZATION"
   validation {
     condition = contains([
@@ -31,8 +32,8 @@ variable "access_restriction" {
 
 variable "allow_missing" {
   description = "If true, the request succeeds even if the Backup Vault does not exist. (Used for deletion/update operations)."
-  type        = string
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "annotations" {
@@ -50,15 +51,12 @@ variable "backup_minimum_enforced_retention_duration" {
 variable "backup_plan_id" {
   description = "The resource ID of the Backup Plan."
   type        = string
-  validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.backup_plan_id))
-    error_message = "The backup_plan_id must contain only lowercase letters, numbers, and hyphens."
-  }
 }
 
 variable "backup_plan_resource_type" {
   description = "The type of resource being backed up (e.g., 'compute.googleapis.com/Disk')."
   type        = string
+  nullable    = false
   validation {
     condition = contains([
       "compute.googleapis.com/Instance",
@@ -68,13 +66,20 @@ variable "backup_plan_resource_type" {
     ], var.backup_plan_resource_type)
     error_message = "The backup_plan_resource_type value must be of [ compute.googleapis.com/Instance, compute.googleapis.com/Disk, sqladmin.googleapis.com/Instance, storage.googleapis.com/Bucket ]"
   }
-  default = "compute.googleapis.com/Instance"
 }
 
 variable "backup_retention_inheritance" {
   description = "Controls if the vault inherits retention from the backup plan or uses its own retention policy. E.g., 'INHERIT_VAULT_RETENTION' or 'NO_INHERITANCE'."
   type        = string
+  nullable    = false
   default     = "INHERIT_VAULT_RETENTION"
+  validation {
+    condition = contains([
+      "INHERIT_VAULT_RETENTION",
+      "NO_INHERITANCE"
+    ], var.backup_retention_inheritance)
+    error_message = "The backup_retention_inheritance value must be one of: INHERIT_VAULT_RETENTION or NO_INHERITANCE."
+  }
 }
 
 variable "backup_rules" {
@@ -101,10 +106,6 @@ variable "backup_vault_id" {
   description = "The resource ID of the Backup Vault. Must contain only lowercase letters, numbers, and hyphens."
   type        = string
   default     = null
-  validation {
-    condition     = var.backup_vault_id == null || can(regex("^[a-z0-9-]+$", var.backup_vault_id))
-    error_message = "The backup_vault_id must contain only lowercase letters, numbers, and hyphens."
-  }
 }
 
 variable "backup_vault_create" {
@@ -115,24 +116,25 @@ variable "backup_vault_create" {
 
 variable "force_update" {
   description = "Indicates if the resource should be force-updated."
-  type        = string
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "ignore_backup_plan_references" {
   description = "If true, allows deletion of the vault even if it's referenced by a backup plan."
-  type        = string
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "ignore_inactive_datasources" {
   description = "If true, allows deletion of the vault even if it contains inactive datasources."
-  type        = string
-  default     = "false"
+  type        = bool
+  default     = false
 }
 
 variable "labels" {
   description = "User-defined key/value map of labels."
+  nullable    = false
   type        = map(string)
   default     = {}
 }

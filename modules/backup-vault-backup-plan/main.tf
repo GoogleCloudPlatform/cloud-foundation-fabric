@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-# -----------------------------------------------------------------------------
-# Resource for google_backup_dr_backup_vault
-# -----------------------------------------------------------------------------
 resource "google_backup_dr_backup_vault" "backup_vault" {
   count                                      = var.backup_vault_create == true ? 1 : 0
   project                                    = var.project_id
@@ -34,9 +31,6 @@ resource "google_backup_dr_backup_vault" "backup_vault" {
   allow_missing                              = var.allow_missing
 }
 
-# -----------------------------------------------------------------------------
-# Resource for google_backup_dr_backup_plan
-# -----------------------------------------------------------------------------
 resource "google_backup_dr_backup_plan" "backup_plan" {
   project        = var.project_id
   backup_plan_id = var.backup_plan_id
@@ -67,5 +61,4 @@ resource "google_backup_dr_backup_plan" "backup_plan" {
       }
     }
   }
-  depends_on = [google_backup_dr_backup_vault.backup_vault]
 }
