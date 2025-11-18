@@ -3,7 +3,46 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-11-05 08:29:41+00:00 to: None since: v47.0.0 -->
+## [Unreleased] <!-- from: 2025-11-11 09:17:58+00:00 to: None since: v48.0.0 -->
+
+## [49.0.0] - 2025-11-18
+
+### FAST
+
+- [[#3537](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3537)] Drop the 2-secops stage and minimally refactor 3-secops-dev ([ludoo](https://github.com/ludoo)) <!-- 2025-11-18 13:32:06+00:00 -->
+- [[#3535](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3535)] Leverage project-level workload identity in FAST CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2025-11-18 10:49:44+00:00 -->
+- [[#3525](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3525)] Prettify and standardize YAML controls from hardened datasets ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-11-13 07:21:36+00:00 -->
+
+### MODULES
+
+- [[#3535](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3535)] Leverage project-level workload identity in FAST CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2025-11-18 10:49:44+00:00 -->
+
+## [48.1.0] - 2025-11-18
+
+### FAST
+
+- [[#3533](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3533)] Remove pattern from egress-policy schema identities to match with the one in ingress-policy schema ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-11-17 14:56:32+00:00 -->
+- [[#3534](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3534)] Remove log buckets from security stage projects ([ludoo](https://github.com/ludoo)) <!-- 2025-11-17 14:24:59+00:00 -->
+- [[#3532](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3532)] Assign service usage roles on iac project to automation service accounts ([ludoo](https://github.com/ludoo)) <!-- 2025-11-17 13:58:57+00:00 -->
+- [[#3531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3531)] Add support for Workload Identity to project module and project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-11-17 07:31:22+00:00 -->
+- [[#3530](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3530)] Add support for Workforce Identity to organization module and org setup stage ([ludoo](https://github.com/ludoo)) <!-- 2025-11-17 07:00:30+00:00 -->
+- [[#3524](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3524)] Fix schema doc tool, fix schema errors, regenerate schema docs ([ludoo](https://github.com/ludoo)) <!-- 2025-11-12 07:50:52+00:00 -->
+- [[#3522](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3522)] Replace leftover schema links with actual files ([ludoo](https://github.com/ludoo)) <!-- 2025-11-11 10:57:51+00:00 -->
+
+### MODULES
+
+- [[#3533](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3533)] Remove pattern from egress-policy schema identities to match with the one in ingress-policy schema ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-11-17 14:56:32+00:00 -->
+- [[#3531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3531)] Add support for Workload Identity to project module and project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-11-17 07:31:22+00:00 -->
+- [[#3530](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3530)] Add support for Workforce Identity to organization module and org setup stage ([ludoo](https://github.com/ludoo)) <!-- 2025-11-17 07:00:30+00:00 -->
+- [[#3524](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3524)] Fix schema doc tool, fix schema errors, regenerate schema docs ([ludoo](https://github.com/ludoo)) <!-- 2025-11-12 07:50:52+00:00 -->
+- [[#3523](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3523)] Adds support for custom learned routes to net-vpn-ha ([sruffilli](https://github.com/sruffilli)) <!-- 2025-11-11 13:55:24+00:00 -->
+- [[#3522](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3522)] Replace leftover schema links with actual files ([ludoo](https://github.com/ludoo)) <!-- 2025-11-11 10:57:51+00:00 -->
+
+### TOOLS
+
+- [[#3538](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3538)] Do not cancel terraform tests on tofu failure ([wiktorn](https://github.com/wiktorn)) <!-- 2025-11-18 13:10:22+00:00 -->
+- [[#3531](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3531)] Add support for Workload Identity to project module and project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-11-17 07:31:22+00:00 -->
+- [[#3524](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3524)] Fix schema doc tool, fix schema errors, regenerate schema docs ([ludoo](https://github.com/ludoo)) <!-- 2025-11-12 07:50:52+00:00 -->
 
 ## [48.0.0] - 2025-11-11
 
@@ -1901,7 +1940,9 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...HEAD
+[49.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...48.1.0
+[48.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.1.0...48.0.0
 [48.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...47.1.0
 [47.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.1.0...47.0.0
 [47.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.0.0...46.1.0

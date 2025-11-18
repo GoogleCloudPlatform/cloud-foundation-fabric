@@ -17,36 +17,46 @@
 locals {
   secops_api_key_secret_key   = "secops-feeds-api-key"
   secops_workspace_int_sa_key = "secops-workspace-ing-sa-key"
-  secops_project_id           = coalesce(try(var.secops_project_ids[var.stage_config.environment], null), var.project_id)
-  secops_feeds_api_path       = "projects/${module.project.project_id}/locations/${var.tenant_config.region}/instances/${var.tenant_config.customer_id}/feeds"
-  workspace_log_ingestion     = var.workspace_integration_config != null
+  secops_feeds_api_path = (
+    "projects/${module.project.project_id}/locations/${var.tenant_config.region}/instances/${var.tenant_config.customer_id}/feeds"
+  )
+  workspace_log_ingestion = var.workspace_integration_config != null
 }
 
 module "project" {
   source          = "../../../modules/project"
   billing_account = var.project_reuse == null ? var.billing_account.id : null
-  name            = local.secops_project_id
-  parent          = var.folder_ids[var.stage_config.name]
+  name            = var.project_id
+  parent          = var.parent_folder
+  prefix          = var.prefix
   project_reuse   = var.project_reuse
   org_policies = var.workspace_integration_config != null ? {
     "iam.disableServiceAccountKeyCreation" = {
       rules = [{ enforce = false }]
     }
   } : {}
-  services = concat([
-    "apikeys.googleapis.com",
-    "compute.googleapis.com",
-    "iap.googleapis.com",
-    "secretmanager.googleapis.com",
-    "stackdriver.googleapis.com",
-    "pubsub.googleapis.com",
-    "cloudfunctions.googleapis.com",
+  services = concat(
+    [
+      "apikeys.googleapis.com",
+      "compute.googleapis.com",
+      "iap.googleapis.com",
+      "secretmanager.googleapis.com",
+      "stackdriver.googleapis.com",
+      "pubsub.googleapis.com",
+      "cloudfunctions.googleapis.com",
     ],
     var.workspace_integration_config != null ? [
       "admin.googleapis.com",
       "alertcenter.googleapis.com"
     ] : [],
   )
+  context = {
+    custom_roles   = merge(var.custom_roles, var.context.custom_roles)
+    folder_ids     = merge(var.folder_ids, var.context.folder_ids)
+    iam_principals = merge(var.iam_principals, var.context.iam_principals)
+    kms_keys       = merge(var.kms_keys, var.context.kms_keys)
+    project_ids    = merge(var.project_ids, var.context.project_ids)
+  }
   custom_roles = {
     "secopsDashboardViewer" = [
       "chronicle.dashboardCharts.get",
@@ -69,14 +79,26 @@ module "project" {
   }
   iam = {}
   iam_bindings_additive = merge(
-    { for group in var.iam_default.admins :
-    "${group}-admins" => { member = "group:${group}", role = "roles/chronicle.admin" } },
-    { for group in var.iam_default.editors :
-    "${group}-editors" => { member = "group:${group}", role = "roles/chronicle.editor" } },
-    { for group in var.iam_default.editors :
-    "${group}-viewers" => { member = "group:${group}", role = "roles/chronicle.viewer" } },
-    { for k, v in var.iam :
-      k => {
+    {
+      for group in var.iam_default.admins : "${group}-admins" => {
+        member = "group:${group}"
+        role   = "roles/chronicle.admin"
+      }
+    },
+    {
+      for group in var.iam_default.editors : "${group}-editors" => {
+        member = "group:${group}"
+        role   = "roles/chronicle.editor"
+      }
+    },
+    {
+      for group in var.iam_default.editors : "${group}-viewers" => {
+        member = "group:${group}"
+        role   = "roles/chronicle.viewer"
+      }
+    },
+    {
+      for k, v in var.iam : k => {
         member = k
         role   = "roles/chronicle.restrictedDataAccess"
         condition = {
@@ -85,7 +107,8 @@ module "project" {
           description = "datarbac"
         }
       }
-  })
+    }
+  )
   iam_by_principals_additive = { for k, v in var.iam : k => v.roles }
 }
 
@@ -93,7 +116,6 @@ resource "google_apikeys_key" "feed_api_key" {
   project      = module.project.project_id
   name         = "secops-feed-key"
   display_name = "SecOps Feeds API Key"
-
   restrictions {
     api_targets {
       service = "chronicle.googleapis.com"
@@ -103,7 +125,7 @@ resource "google_apikeys_key" "feed_api_key" {
 
 module "secops-rules" {
   source     = "../../../modules/secops-rules"
-  project_id = local.secops_project_id
+  project_id = var.project_id
   tenant_config = {
     region      = var.tenant_config.region
     customer_id = var.tenant_config.customer_id

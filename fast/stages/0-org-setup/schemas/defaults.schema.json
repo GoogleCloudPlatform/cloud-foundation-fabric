@@ -525,6 +525,12 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "workload_identity_providers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

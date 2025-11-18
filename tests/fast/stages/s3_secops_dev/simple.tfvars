@@ -4,16 +4,12 @@ automation = {
 billing_account = {
   id = "012345-67890A-BCDEF0",
 }
-project_reuse = null
 folder_ids = {
-  "secops-dev" = "folders/123456789"
+  "secops/dev" = "folders/123456789"
 }
 tenant_config = {
   customer_id = "xxxxxx-xxxxxx-xxxxxx"
   region      = "europe"
-}
-secops_project_ids = {
-  dev = "fast-dev-secops-0"
 }
 iam_default = {
   viewers = ["gcp-secops-admins@fast.example.com"]
@@ -24,6 +20,7 @@ iam = {
     scopes = ["gscope"]
   }
 }
+prefix = "fast"
 workspace_integration_config = {
   delegated_user        = "secops-feed@fast.example.com"
   workspace_customer_id = "C121212"

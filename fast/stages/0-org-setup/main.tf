@@ -56,6 +56,12 @@ locals {
     defaults  = try(local._defaults.projects.defaults, {})
     overrides = try(local._defaults.projects.overrides, {})
   }
+  workload_identity_providers = merge([
+    for k, v in module.factory.projects : {
+      for wk, wv in v.workload_identity_providers :
+      "${k}/${wk}" => wv.pool
+    }
+  ]...)
 }
 
 # TODO: streamine location replacements

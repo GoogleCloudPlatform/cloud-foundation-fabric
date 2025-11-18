@@ -852,4 +852,5 @@ module "org" {
 | [tag_keys](outputs.tf#L109) | Tag key resources. |  |
 | [tag_values](outputs.tf#L118) | Tag value resources. |  |
 | [workforce_identity_provider_names](outputs.tf#L126) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L133) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->
