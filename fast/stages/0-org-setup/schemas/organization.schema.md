@@ -9,8 +9,25 @@
 - **id**: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
-  - **`^[^@\s]+@[^@\s]+\.[^@\s]+$`**: *array*
+  - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*
     - items: *string*
+      <br>*enum: ['ALL', 'BILLING', 'LEGAL', 'SECURITY', 'PRODUCT_UPDATES', 'SUSPENSION', 'TECHNICAL']*
+- **data_access_logs**: *object*
+  <br>*additional properties: false*
+  - **`^([a-z][a-z-]+\.googleapis\.com|allServices)$`**: *object*
+    <br>*additional properties: false*
+    - **ADMIN_READ**: *object*
+      <br>*additional properties: false*
+      - **exempted_members**: *array*
+        - items: *string*
+    - **DATA_READ**: *object*
+      <br>*additional properties: false*
+      - **exempted_members**: *array*
+        - items: *string*
+    - **DATA_WRITE**: *object*
+      <br>*additional properties: false*
+      - **exempted_members**: *array*
+        - items: *string*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
@@ -54,8 +71,28 @@
           - **expression**: *string*
           - **location**: *string*
           - **title**: *string*
+- **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **tags**: *object*
-  *additional properties: Object*
+  <br>*additional properties: object*
+- **workforce_identity_config**: *object*
+  <br>*additional properties: false*
+  - **pool_name**: *string*
+  - **providers**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
+      <br>*additional properties: false*
+      - **description**: *string*
+      - **display_name**: *string*
+      - **attribute_condition**: *string*
+      - **attribute_mapping**: *object*
+      - **attribute_mapping_template**: *string*
+        <br>*enum: ['azuread', 'okta']*
+      - **disabled**: *boolean*
+      - **identity_provider**: *object*
+      - **oauth2_client_config**: *object*
+        <br>*additional properties: false*
+        - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+        - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
 
 ## Definitions
 
@@ -96,3 +133,44 @@
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:roles/|\$custom_roles:)*
+- **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**max_request_duration**: *string*
+    - ⁺**eligible_users**: *array*
+      - items: *string*
+    - ⁺**privileged_access**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - ⁺**role**: *string*
+        - **condition**: *string*
+    - **requester_justification_config**: *object*
+      <br>*additional properties: false*
+      - **not_mandatory**: *boolean*
+      - **unstructured**: *boolean*
+    - **manual_approvals**: *object*
+      <br>*additional properties: false*
+      - ⁺**require_approver_justification**: *boolean*
+      - ⁺**steps**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - ⁺**approvers**: *array*
+            - items: *string*
+          - **approvals_needed**: *number*
+          - **approver_email_recipients**: *array*
+            - items: *string*
+    - **additional_notification_targets**: *object*
+      <br>*additional properties: false*
+      - **admin_email_recipients**: *array*
+        - items: *string*
+      - **requester_email_recipients**: *array*
+        - items: *string*
+- **wfif_oauth2_client_attrs**<a name="refs-wfif_oauth2_client_attrs"></a>: *object*
+  <br>*additional properties: false*
+  - ⁺**issuer_uri**: *string*
+  - ⁺**client_id**: *string*
+  - ⁺**client_secret**: *string*
+  - **attributes_type**: *string*
+    <br>*enum: ['AZURE_AD_GROUPS_MAIL', 'AZURE_AD_GROUPS_ID']*
+  - **query_filter**: *string*

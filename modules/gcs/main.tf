@@ -24,11 +24,9 @@ locals {
   ctx_kms_keys = merge(local.ctx.kms_keys, {
     for k, v in google_kms_key_handle.default : "$kms_keys:autokeys/${k}" => v.kms_key
   })
-  ctx_p = "$"
-  location = lookup(
-    local.ctx.locations, var.location, var.location
-  )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  ctx_p    = "$"
+  location = try(local.ctx.locations[var.location], var.location)
+  prefix   = var.prefix == null ? "" : "${var.prefix}-"
   project_id = var.project_id == null ? null : lookup(
     local.ctx.project_ids, var.project_id, var.project_id
   )

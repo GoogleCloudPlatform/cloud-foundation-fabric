@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-11-05 08:29:41+00:00 to: None since: v47.0.0 -->
 
+## [48.0.0] - 2025-11-11
+
+### BREAKING CHANGES
+
+- `modules/project-factory`: the `logging_data_access` project default and override have been removed, if you need project-wide configuration of data access logs use a folder-level configuration or a project template. [[#3516](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3516)]
+
+### FAST
+
+- [[#3520](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3520)] Update yaml controls to match max line-length ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-11-11 07:00:49+00:00 -->
+- [[#3518](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3518)] Add support for KMS key creation to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-11-11 06:23:51+00:00 -->
+- [[#3484](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3484)] Add hardened controls for GKE, Networking and monitoring alerts recommended in CIS Benchmarks for GCP ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-11-10 11:06:25+00:00 -->
+- [[#3516](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3516)] Allow configuring data access logs from org/folder/project schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-11-10 10:19:21+00:00 -->
+- [[#3515](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3515)] Add support for KMS autokey ([ludoo](https://github.com/ludoo)) <!-- 2025-11-09 09:46:29+00:00 -->
+- [[#3513](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3513)] Rename project and VPC resources in net stage datasets ([ludoo](https://github.com/ludoo)) <!-- 2025-11-08 12:38:28+00:00 -->
+- [[#3511](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3511)] Sets a default for delete_default_routes_on_create in 2-networking ([sruffilli](https://github.com/sruffilli)) <!-- 2025-11-07 08:31:45+00:00 -->
+- [[#3506](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3506)] Allow defining org-level pam_entitlements in 0-org-setup ([juliocc](https://github.com/juliocc)) <!-- 2025-11-05 18:27:59+00:00 -->
+
+### MODULES
+
+- [[#3521](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3521)] Align modules autokey context to project factory / FAST ([ludoo](https://github.com/ludoo)) <!-- 2025-11-11 08:46:21+00:00 -->
+- [[#3518](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3518)] Add support for KMS key creation to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-11-11 06:23:51+00:00 -->
+- [[#3484](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3484)] Add hardened controls for GKE, Networking and monitoring alerts recommended in CIS Benchmarks for GCP ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-11-10 11:06:25+00:00 -->
+- [[#3516](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3516)] Allow configuring data access logs from org/folder/project schemas ([ludoo](https://github.com/ludoo)) <!-- 2025-11-10 10:19:21+00:00 -->
+- [[#3515](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3515)] [WIP] Add support for KMS autokey ([ludoo](https://github.com/ludoo)) <!-- 2025-11-09 09:46:29+00:00 -->
+- [[#3506](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3506)] Allow defining org-level pam_entitlements in 0-org-setup ([juliocc](https://github.com/juliocc)) <!-- 2025-11-05 18:27:59+00:00 -->
+
 ## [47.1.0] - 2025-11-11
 
 ### DOCUMENTATION
@@ -1875,7 +1901,9 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...HEAD
+[48.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...47.1.0
+[47.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.1.0...47.0.0
 [47.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.0.0...46.1.0
 [46.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.1.0...46.0.0
 [46.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...45.1.0

@@ -74,7 +74,6 @@ locals {
       principal_branch = "principalSet://iam.googleapis.com/%s/attribute.terraform_workspace_id/%s"
       principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.terraform_project_id/%s"
     }
-
     # https://developer.okta.com/docs/api/openapi/okta-oauth/guides/overview/
     okta = {
       attribute_mapping = {
@@ -85,7 +84,5 @@ locals {
       principal_repo   = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
       principal_member = "principalSet://iam.googleapis.com/%s/*"
     }
-
-
   }
 }

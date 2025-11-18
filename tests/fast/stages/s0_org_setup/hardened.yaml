@@ -1337,10 +1337,10 @@ values:
     bucket_options: []
     description: Project Ownership Changes
     disabled: null
-    filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\
-      \ (ProjectOwnership OR projectOwnerInvitee) OR (\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+    filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\n\
+      (ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
       REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-      \n) OR (\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\"\
+      \n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\"\
       \ AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
       \n)"
     label_extractors:
@@ -1447,9 +1447,19 @@ values:
     - content: 'Log-based alerting policy in project ${project} detected audit configuration
         changes.
 
+
         This alert helps track GCP services audit log configuration changes to ensure
-        appropriate audit logs are being collected. ``` protoPayload.methodName="SetIamPolicy"
-        AND protoPayload.serviceData.policyDelta.auditConfigDeltas:* ```'
+        appropriate.
+
+        audit logs are being collected
+
+        ```
+
+        protoPayload.methodName="SetIamPolicy" AND
+
+        protoPayload.serviceData.policyDelta.auditConfigDeltas:*
+
+        ```'
       links: []
       mime_type: text/markdown
       subject: null
@@ -1495,8 +1505,15 @@ values:
     - content: 'Log-based alerting policy in project ${project} detected Cloud SQL
         instance configuration changes.
 
+
         This alert helps ensure security by monitoring configuration changes to SQL
-        instances. ``` protoPayload.methodName="cloudsql.instances.update" ```'
+        instances.
+
+        ```
+
+        protoPayload.methodName="cloudsql.instances.update"
+
+        ```'
       links: []
       mime_type: text/markdown
       subject: null
@@ -1541,11 +1558,11 @@ values:
     display_name: Custom Role Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected custom IAM\
-        \ role creation, deletion or update activities.\nThis alert helps ensure security\
-        \ by monitoring changes to Identity and Access Management (IAM) roles. ```\n\
-        \  resource.type=\"iam_role\" AND \n  (\n    protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
-        \ OR \n    protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR \n\
-        \    protoPayload.methodName=\"google.iam.admin.v1.DeleteRole\"\n  )\n```"
+        \ role creation,\ndeletion or update activities.\n\nThis alert helps ensure\
+        \ security by monitoring changes to Identity and Access Management (IAM) roles.\n\
+        ```\nresource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
+        \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
+        google.iam.admin.v1.DeleteRole\"\n)\n```"
       links: []
       mime_type: text/markdown
       subject: null
@@ -1587,12 +1604,12 @@ values:
     display_name: Network Firewall Policy Rule Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected Firewall\
-        \ Policy rule changes.\nThis alert helps ensure security by monitoring creation,\
-        \ modification, or deletion of firewall rules. ``` resource.labels.method:\"\
-        compute.networkFirewallPolicies\" AND  (\n  protoPayload.methodName:\"compute.networkFirewallPolicies.addRule\"\
-        \ OR \n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
-        \ OR \n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
-        )\n```"
+        \ Policy rule changes.\n\nThis alert helps ensure security by monitoring creation,\
+        \ modification, or deletion of firewall rules.\n```\nresource.labels.method:\"\
+        compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"compute.networkFirewallPolicies.addRule\"\
+        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
+        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
+        \n)\n```"
       links: []
       mime_type: text/markdown
       subject: null
@@ -1635,13 +1652,12 @@ values:
       display_name: 'Log match condition: VPC Network Firewall Rule Changes'
     display_name: VPC Network Firewall Rule Changes
     documentation:
-    - content: 'Log-based alerting policy in project ${project} detected VPC Network
-        Firewall rule changes.
-
-        This alert helps ensure security by monitoring creation, modification, or
-        deletion of firewall rules. ``` resource.type="gce_firewall_rule" AND (protoPayload.methodName:"compute.firewalls.patch"
-        OR protoPayload.methodName:"compute.firewalls.insert" OR protoPayload.methodName:"compute.firewalls.delete")
-        ```'
+    - content: "Log-based alerting policy in project ${project} detected VPC Network\
+        \ Firewall rule changes.\n\nThis alert helps ensure security by monitoring\
+        \ creation, modification, or deletion of firewall rules.\n```\nresource.type=\"\
+        gce_firewall_rule\" AND (\n  protoPayload.methodName:\"compute.firewalls.patch\"\
+        \ OR\n  protoPayload.methodName:\"compute.firewalls.insert\" OR\n  protoPayload.methodName:\"\
+        compute.firewalls.delete\"\n)\n```"
       links: []
       mime_type: text/markdown
       subject: null
@@ -1685,13 +1701,13 @@ values:
     display_name: VPC Network Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ changes.\nThis alert helps ensure security by monitoring creation, modification,\
-        \ deletion, or peering changes to VPC networks. ``` resource.type=\"gce_network\"\
-        \ AND  (\n  protoPayload.methodName:\"compute.networks.insert\" OR \n  protoPayload.methodName:\"\
-        compute.networks.patch\" OR \n  protoPayload.methodName:\"compute.networks.delete\"\
-        \ OR \n  protoPayload.methodName:\"compute.networks.addPeering\" OR \n  protoPayload.methodName:\"\
-        compute.networks.updatePeering\" OR \n  protoPayload.methodName:\"compute.networks.removePeering\"\
-        \n) ```"
+        \ changes.\n\nThis alert helps ensure security by monitoring creation, modification,\
+        \ deletion,\nor peering changes to VPC networks.\n```\nresource.type=\"gce_network\"\
+        \ AND (\n  protoPayload.methodName:\"compute.networks.insert\" OR\n  protoPayload.methodName:\"\
+        compute.networks.patch\" OR\n  protoPayload.methodName:\"compute.networks.delete\"\
+        \ OR\n  protoPayload.methodName:\"compute.networks.addPeering\" OR\n  protoPayload.methodName:\"\
+        compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"compute.networks.removePeering\"\
+        \n)\n```"
       links: []
       mime_type: text/markdown
       subject: null
@@ -1735,10 +1751,10 @@ values:
     display_name: VPC Network Route Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ Route changes.\nThis alert helps ensure security by monitoring creation\
-        \ or deletion of network routes. ``` resource.type=\"gce_route\" AND  (\n\
-        \  protoPayload.methodName:\"compute.routes.insert\" OR \n  protoPayload.methodName:\"\
-        compute.routes.delete\"\n) ```"
+        \ Route changes.\n\nThis alert helps ensure security by monitoring creation\
+        \ or deletion of network routes.\n```\nresource.type=\"gce_route\" AND (\n\
+        \  protoPayload.methodName:\"compute.routes.insert\" OR\n  protoPayload.methodName:\"\
+        compute.routes.delete\"\n)\n```"
       links: []
       mime_type: text/markdown
       subject: null
@@ -1773,11 +1789,7 @@ values:
         denominator_filter: null
         duration: 0s
         evaluation_missing_data: null
-        filter: 'resource.type = "logging_bucket" AND
-
-          metric.type = "logging.googleapis.com/user/projectOwnershipChange"
-
-          '
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
         forecast_options: []
         threshold_value: 0
         trigger:
@@ -1787,12 +1799,12 @@ values:
     display_name: Project Ownership Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected a project\
-        \ ownership assignments or changes. ``` (protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\"\
-        ) AND  (ProjectOwnership OR projectOwnerInvitee)  OR  (\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-        REMOVE\" AND \n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"\
-        roles/owner\"\n)  OR  (\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-        ADD\" AND \n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-        \n) ```"
+        \ ownership assignments or changes.\n```\n(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\"\
+        ) AND\n(ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+        REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"\
+        roles/owner\"\n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+        ADD\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
+        \n)\n```"
       links: []
       mime_type: text/markdown
       subject: null
@@ -1839,8 +1851,14 @@ values:
     - content: 'Log-based alerting policy in project ${project} detected Cloud Storage
         Bucket IAM changes.
 
+
         This alert helps ensure security by monitoring IAM permission changes to Cloud
-        Storage buckets. ``` resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
+        Storage buckets.
+
+        ```
+
+        resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
+
         ```'
       links: []
       mime_type: text/markdown
@@ -3394,9 +3412,9 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictOpenWorldRule"]:
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictPublicAccessRule"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/custom.firewallRestrictOpenWorldRule
+    name: organizations/1234567890/policies/custom.firewallRestrictPublicAccessRule
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -4852,16 +4870,17 @@ values:
     resource_types:
     - compute.googleapis.com/Firewall
     timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictOpenWorldRule"]:
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictPublicAccessRule"]:
     action_type: DENY
-    condition: (size(resource.allowed) > 0) && (resource.sourceRanges.exists(range,
-      range == '0.0.0.0/0') || resource.destinationRanges.exists(range, range == '0.0.0.0/0'))
-    description: Prevent the creation of VPC firewall rule with source or destination
+    condition: "(size(resource.allowed) > 0) &&\n(\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') ||\n  resource.destinationRanges.exists(range, range\
+      \ == '0.0.0.0/0')\n)"
+    description: Prevent the creation of VPC firewall rules with source or destination
       any IP address (0.0.0.0/0)
-    display_name: Restrict VPC Firewall rule creation that are open to the world
+    display_name: Restrict VPC Firewall rules allowing public Internet access
     method_types:
     - CREATE
-    name: custom.firewallRestrictOpenWorldRule
+    name: custom.firewallRestrictPublicAccessRule
     parent: organizations/1234567890
     resource_types:
     - compute.googleapis.com/Firewall
@@ -4875,9 +4894,9 @@ values:
       \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
       \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
       \ == '3389')\n    )\n)"
-    description: Ensure that RDP access is restricted from the Internet when using
-      Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing RDP access from the Internet
+    description: Ensure that RDP access is restricted from any source when using Firewall
+      Policy Rule
+    display_name: Restrict Firewall Policy rules allowing RDP access from any source
     method_types:
     - CREATE
     - UPDATE
@@ -4888,16 +4907,16 @@ values:
     timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictRdpRule"]:
     action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith(\"\
-      gke-\") &&\n!resource.name.startsWith(\"k8s-\") &&\n!resource.name.endsWith(\"\
-      -hc\") &&\n!resource.name.startsWith(\"k8s2-\") &&\n!resource.name.startsWith(\"\
-      gkegw1-l7-\") &&\n!resource.name.startsWith(\"gkemcg1-l7-\") &&\nresource.allowed.containsFirewallPort('tcp',\
+    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
+      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
+      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
+      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
       \ '3389') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
       \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
       d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
-    description: Ensure that RDP access is restricted from the Internet when using
-      VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing RDP access from the Internet
+    description: Ensure that RDP access is restricted from any source when using VPC
+      Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing RDP access from any source
     method_types:
     - CREATE
     - UPDATE
@@ -4915,9 +4934,9 @@ values:
       \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
       \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
       \ == '22')\n    )\n)"
-    description: Ensure that SSH access is restricted from the Internet when using
-      Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing SSH access from the Internet
+    description: Ensure that SSH access is restricted from any source when using Firewall
+      Policy Rule
+    display_name: Restrict Firewall Policy rules allowing SSH access from any source
     method_types:
     - CREATE
     - UPDATE
@@ -4928,16 +4947,16 @@ values:
     timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSshRule"]:
     action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith(\"\
-      gke-\") &&\n!resource.name.startsWith(\"k8s-\") &&\n!resource.name.endsWith(\"\
-      -hc\") &&\n!resource.name.startsWith(\"k8s2-\") &&\n!resource.name.startsWith(\"\
-      gkegw1-l7-\") &&\n!resource.name.startsWith(\"gkemcg1-l7-\") &&\nresource.allowed.containsFirewallPort('tcp',\
+    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
+      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
+      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
+      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
       \ '22') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
       \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
       d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
-    description: Ensure that SSH access is restricted from the Internet when using
-      VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing SSH access from the Internet
+    description: Ensure that SSH access is restricted from any source when using VPC
+      Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing SSH access from any source
     method_types:
     - CREATE
     - UPDATE
@@ -5164,8 +5183,8 @@ values:
     timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolSandbox"]:
     action_type: DENY
-    condition: resource.name.matches("default-pool") == false && has(resource.config.sandboxConfig)
-      == false && resource.config.sandboxConfig.type != 'GVISOR'
+    condition: "resource.name.matches(\"default-pool\") == false &&\n  has(resource.config.sandboxConfig)\
+      \ == false &&\n  resource.config.sandboxConfig.type != 'GVISOR'"
     description: Enforce that the GKE clusters nodes are isolated using GKE sandbox
       (excepting the default node pool)
     display_name: Require GKE Sandbox runtime
@@ -5340,8 +5359,8 @@ values:
     timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.networkRequireSubnetPrivateGoogleAccess"]:
     action_type: DENY
-    condition: "resource.privateIpGoogleAccess == false &&\n  resource.purpose in\
-      \ ['REGIONAL_MANAGED_PROXY', 'GLOBAL_MANAGED_PROXY'] == false"
+    condition: '!resource.privateIpGoogleAccess && resource.purpose in [''REGIONAL_MANAGED_PROXY'',
+      ''GLOBAL_MANAGED_PROXY''] == false'
     description: Enforce that the VPC network subnets are configured with private
       Google access
     display_name: Require Private Google Access
@@ -5784,7 +5803,7 @@ counts:
   google_organization_iam_binding: 37
   google_organization_iam_custom_role: 9
   google_project: 3
-  google_project_iam_binding: 16
+  google_project_iam_binding: 17
   google_project_iam_member: 15
   google_project_service: 34
   google_project_service_identity: 9
@@ -5804,5 +5823,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 48
-  resources: 473
+  resources: 474
   terraform_data: 3

@@ -12,7 +12,7 @@
 - ⁺**subnet_id**: *string*
 - **image**: *string*
 - **metadata**: *object*
-  *additional properties: String*
+  <br>*additional properties: string*
 - **name**: *string*
 - **tags**: *array*
   - items: *string*

@@ -23,7 +23,7 @@
       - items: *string*
     - **severity**: *string*
     - **user_labels**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **alert_strategy**: *object*
       <br>*additional properties: false*
       - **auto_close**: *string*
@@ -57,7 +57,7 @@
     - **description**: *string*
     - **disabled**: *boolean*
     - **label_extractors**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **value_extractor**: *string*
     - **bucket_options**: *object*
       <br>*additional properties: false*
@@ -96,9 +96,9 @@
     - **display_name**: *string*
     - **enabled**: *boolean*
     - **labels**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **user_labels**: *object*
-      *additional properties: String*
+      <br>*additional properties: string*
     - **sensitive_labels**: *object*
       <br>*additional properties: false*
       - **auth_token**: *string*
@@ -122,7 +122,7 @@
   <br>*additional properties: false*
   - ⁺**filter**: *string*
   - **label_extractors**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
 - **monitoring_query_condition**<a name="refs-monitoring_query_condition"></a>: *object*
   <br>*additional properties: false*
   - ⁺**duration**: *string*
@@ -137,7 +137,7 @@
   - **duration**: *string*
   - **evaluation_interval**: *string*
   - **labels**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **rule_group**: *string*
 - **threshold_condition**<a name="refs-threshold_condition"></a>: *object*
   <br>*additional properties: false*
