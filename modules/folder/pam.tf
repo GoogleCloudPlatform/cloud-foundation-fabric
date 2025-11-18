@@ -42,9 +42,9 @@ locals {
         require_approver_justification = v.manual_approvals.require_approver_justification
         steps = [
           for s in v.manual_approvals.steps : {
-            approvers                = s.approvers
-            approvals_needed         = try(s.approvals_needed, 1)
-            aprover_email_recipients = try(s.aprover_email_recipients, null)
+            approvers                 = s.approvers
+            approvals_needed          = try(s.approvals_needed, 1)
+            approver_email_recipients = try(s.approver_email_recipients, null)
           }
         ]
       } : null
