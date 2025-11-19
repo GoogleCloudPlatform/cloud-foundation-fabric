@@ -23,12 +23,12 @@ output "backup_vault_id" {
   value       = var.name != null ? one(google_backup_dr_backup_vault.backup_vault[*].id) : null
 }
 
-output "google_backup_dr_management_server" {
+output "management_server" {
   description = "The Management Server created."
-  value       = var.management_server_config != null ? google_backup_dr_management_server.management_server : null
+  value       = var.management_server_config != null ? one(google_backup_dr_management_server.management_server) : null
 }
 
-output "google_backup_dr_management_server_uri" {
+output "management_server_uri" {
   description = "The Management Server ID created."
   value       = var.management_server_config != null ? one(google_backup_dr_management_server.management_server[*].management_uri) : null
 }

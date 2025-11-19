@@ -40,7 +40,8 @@ variable "backup_plans" {
       })
     }))
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "location" {
@@ -51,9 +52,8 @@ variable "location" {
 variable "management_server_config" {
   description = "Configuration to create a Management Server. If null, no server is created."
   type = object({
-    name     = string
-    type     = optional(string, "BACKUP_RESTORE")
-    location = optional(string)
+    name = string
+    type = optional(string, "BACKUP_RESTORE")
     network_config = optional(object({
       network      = string
       peering_mode = optional(string, "PRIVATE_SERVICE_ACCESS")
@@ -76,12 +76,12 @@ variable "project_id" {
 variable "vault_config" {
   description = "Configuration for the Backup Vault. Only used if `vault_reuse` is null."
   type = object({
-    description                                = optional(string, "Backup Vault managed by Terraform.")
+    description                                = optional(string)
     labels                                     = optional(map(string), {})
     annotations                                = optional(map(string), {})
-    access_restriction                         = optional(string, "WITHIN_ORGANIZATION")
+    access_restriction                         = optional(string)
     backup_minimum_enforced_retention_duration = optional(string, "100000s")
-    backup_retention_inheritance               = optional(string, "INHERIT_VAULT_RETENTION")
+    backup_retention_inheritance               = optional(string)
     force_update                               = optional(bool, false)
     ignore_inactive_datasources                = optional(bool, false)
     ignore_backup_plan_references              = optional(bool, false)

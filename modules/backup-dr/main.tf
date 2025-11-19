@@ -15,7 +15,7 @@
  */
 
 resource "google_backup_dr_backup_vault" "backup_vault" {
-  count                                      = var.name != null ? 1 : 0
+  count                                      = var.name != null && var.vault_reuse == null ? 1 : 0
   project                                    = var.project_id
   location                                   = var.location
   backup_vault_id                            = var.name
@@ -73,7 +73,7 @@ resource "google_backup_dr_backup_plan" "backup_plan" {
 resource "google_backup_dr_management_server" "management_server" {
   count    = var.management_server_config != null ? 1 : 0
   project  = var.project_id
-  location = coalesce(try(var.management_server_config.location), var.location)
+  location = var.location
   name     = var.management_server_config.name
   type     = var.management_server_config.type
 
