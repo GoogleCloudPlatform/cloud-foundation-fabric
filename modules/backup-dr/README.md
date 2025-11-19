@@ -11,8 +11,8 @@ This module allows you to define a backup plan for your Google Cloud resources. 
 <!-- BEGIN TOC -->
 - [Description](#description)
 - [Examples](#examples)
-  - [Create backup vault with minimal example](#create-backup-vault-with-minimal-example)
-  - [Create backup vault with maximum example](#create-backup-vault-with-maximum-example)
+  - [Create backup vault (basic usage)](#create-backup-vault-basic-usage)
+  - [Create backup vault (extended options)](#create-backup-vault-extended-options)
   - [Create vault and plan](#create-vault-and-plan)
   - [Create only backup plan with existing vault](#create-only-backup-plan-with-existing-vault)
   - [Create management_server](#create-management_server)
@@ -20,7 +20,7 @@ This module allows you to define a backup plan for your Google Cloud resources. 
 - [Outputs](#outputs)
 <!-- END TOC -->
 
-### Create backup vault with minimal example
+### Create backup vault (basic usage)
 ```hcl
 module "dr_example" {
   source     = "./fabric/modules/backup-dr"
@@ -31,7 +31,7 @@ module "dr_example" {
 # tftest modules=1 resources=1
 ```
 
-### Create backup vault with maximum example
+### Create backup vault (extended options)
 ```hcl
 module "dr_example" {
   source     = "./fabric/modules/backup-dr"
@@ -55,7 +55,7 @@ module "dr_example" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest inventory=extended.yaml
 ```
 
 ### Create vault and plan
@@ -67,7 +67,7 @@ module "dr_example" {
   name       = "backup-vault"
 
   backup_plans = {
-    "my-backup-plan" = {
+    my-backup-plan = {
       resource_type = "compute.googleapis.com/Instance"
       description   = "Backup Plan for GCE Instances."
       backup_rules = [
@@ -104,7 +104,7 @@ module "dr_example" {
     }
   }
 }
-# tftest modules=1 resources=2
+# tftest inventory=vault-plan.yaml
 ```
 
 ### Create only backup plan with existing vault
@@ -156,7 +156,7 @@ module "dr_example" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest inventory=reuse.yaml
 ```
 
 ### Create management_server
@@ -176,9 +176,9 @@ module "dr_example" {
     }
   }
 }
-# tftest modules=1 resources=1
+# tftest inventory=server.yaml
 ```
-See the `examples/multi-resource-backup` directory for a more complex example.
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
