@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-output "backup_plan_id" {
-  description = "The ID of the created Backup Plan."
-  value       = google_backup_dr_backup_plan.backup_plan.backup_plan_id
+output "backup_plans" {
+  description = "The ID of the created Backup Plans."
+  value       = google_backup_dr_backup_plan.backup_plan
 }
 
 output "backup_vault_id" {
   description = "The ID of the Backup Vault."
-  value       = var.backup_vault_create == true ? one(google_backup_dr_backup_vault.backup_vault[*].id) : var.backup_vault_id
+  value       = var.name != null ? one(google_backup_dr_backup_vault.backup_vault[*].id) : one(data.google_backup_dr_backup_vault.vault_reuse[*].id)
 }
 
 output "backup_vault_service_account" {
   description = "The service account used by the Backup Vault."
-  value       = var.backup_vault_create == true ? one(google_backup_dr_backup_vault.backup_vault[*].service_account) : null
-}
-
-output "google_backup_dr_backup_plan_associations" {
-  description = "The Backup Plan Associations created."
-  value       = google_backup_dr_backup_plan_association.backup_association
+  value       = var.name == true ? one(google_backup_dr_backup_vault.backup_vault[*].service_account) : one(data.google_backup_dr_backup_vault.vault_reuse[*].service_account)
 }
 
 output "google_backup_dr_management_server" {
   description = "The Management Server created."
-  value       = var.management_server_create ? google_backup_dr_management_server.management_server : null
+  value       = var.management_server_config != null ? google_backup_dr_management_server.management_server : null
 }
 
-output "google_backup_dr_management_server_id" {
+output "google_backup_dr_management_server_uri" {
   description = "The Management Server ID created."
-  value       = var.management_server_create ? one(google_backup_dr_management_server.management_server[*].management_uri) : null
+  value       = var.management_server_config != null ? one(google_backup_dr_management_server.management_server[*].management_uri) : null
 }
