@@ -111,7 +111,7 @@ module "dr_example" {
 ```hcl
 module "dr_example" {
   source     = "./fabric/modules/backup-dr"
-  project_id = "yashwant-argolis"
+  project_id = "your-gcp-project-id"
   location   = "us-central1"
 
   vault_reuse = {
