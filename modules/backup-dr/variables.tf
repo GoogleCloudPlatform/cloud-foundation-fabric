@@ -93,7 +93,7 @@ variable "vault_config" {
 variable "vault_reuse" {
   description = "Configuration to reuse an existing Backup Vault."
   type = object({
-    vault_id   = string
+    vault_id = string
   })
   default = null
   validation {
