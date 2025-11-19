@@ -42,6 +42,17 @@ variable "annotations" {
   default     = {}
 }
 
+variable "backup_associations" {
+  description = "A list of backup plan associations. resource id could be anything like instance id, disk id etc based on resource type. If project id or location is not provided, the project_id, location where backup plan is created will be used."
+  type = map(object({
+    resource_full_id = string
+    resource_type    = string
+    project_id       = optional(string)
+    location         = optional(string)
+  }))
+  default = {}
+}
+
 variable "backup_minimum_enforced_retention_duration" {
   description = "Minimum retention duration for backup data in the vault, specified in seconds (e.g., '100000s')."
   type        = string
@@ -102,16 +113,36 @@ variable "backup_rules" {
   }))
 }
 
+variable "backup_vault_create" {
+  description = "If true, creates a new Backup Vault. If false, uses an existing Backup Vault specified by backup_vault_id."
+  type        = bool
+  default     = true
+}
 variable "backup_vault_id" {
   description = "The resource ID of the Backup Vault. Must contain only lowercase letters, numbers, and hyphens."
   type        = string
   default     = null
 }
 
-variable "backup_vault_create" {
-  description = "If true, creates a new Backup Vault. If false, uses an existing Backup Vault specified by backup_vault_id."
+variable "default_backup_dr_configs" {
+  type = map(object({
+    project_id    = optional(string)
+    location      = optional(string)
+    resource_type = string
+  }))
+  description = "Configuration for default Backup DR service config. If project_id or location is not provided, the project_id, location where backup plan is created will be used."
+  default     = null
+  validation {
+    condition     = var.default_backup_dr_create ? var.default_backup_dr_configs != null : true
+    error_message = "when default_backup_dr_create is true, default_backup_dr_configs must be provided."
+  }
+}
+
+variable "default_backup_dr_create" {
   type        = bool
-  default     = true
+  description = "If true, enables default Backup DR service config for the specified resource type in the project and location."
+  default     = false
+  nullable    = false
 }
 
 variable "force_update" {
@@ -144,42 +175,6 @@ variable "location" {
   type        = string
 }
 
-variable "plan_description" {
-  description = "Backup Plan."
-  type        = string
-  default     = "Backup Vault managed by Terraform."
-}
-
-
-variable "project_id" {
-  description = "The ID of the GCP project in which resources will be created."
-  type        = string
-}
-
-variable "vault_description" {
-  description = "Backup Vault."
-  type        = string
-  default     = "Backup Vault managed by Terraform."
-}
-
-variable "backup_associations" {
-  description = "A list of backup plan associations. resource id could be anything like instance id, disk id etc based on resource type. If project id or location is not provided, the project_id, location where backup plan is created will be used."
-  type = map(object({
-    resource_full_id = string
-    resource_type    = string
-    project_id       = optional(string)
-    location         = optional(string)
-  }))
-  default = {}
-}
-
-variable "management_server_create" {
-  description = "If true, creates a new Management Server for Backup DR."
-  nullable    = false
-  type        = bool
-  default     = false
-}
-
 variable "management_server_config" {
   description = "Configuration for the Management Server if created."
   type = object({
@@ -194,23 +189,26 @@ variable "management_server_config" {
   default = null
 }
 
-variable "default_backup_dr_create" {
-  type        = bool
-  description = "If true, enables default Backup DR service config for the specified resource type in the project and location."
-  default     = false
+variable "management_server_create" {
+  description = "If true, creates a new Management Server for Backup DR."
   nullable    = false
+  type        = bool
+  default     = false
 }
 
-variable "default_backup_dr_configs" {
-  type = map(object({
-    project_id    = optional(string)
-    location      = optional(string)
-    resource_type = string
-  }))
-  description = "Configuration for default Backup DR service config. If project_id or location is not provided, the project_id, location where backup plan is created will be used."
-  default     = null
-  validation {
-    condition     = var.default_backup_dr_create ? var.default_backup_dr_configs != null : true
-    error_message = "when default_backup_dr_create is true, default_backup_dr_configs must be provided."
-  }
+variable "plan_description" {
+  description = "Backup Plan."
+  type        = string
+  default     = "Backup Vault managed by Terraform."
+}
+
+variable "project_id" {
+  description = "The ID of the GCP project in which resources will be created."
+  type        = string
+}
+
+variable "vault_description" {
+  description = "Backup Vault."
+  type        = string
+  default     = "Backup Vault managed by Terraform."
 }
