@@ -95,3 +95,5 @@ resource "google_backup_dr_service_config" "default_backup_dr" {
   location      = coalesce(each.value.location, var.location)
   resource_type = try(each.value.resource_type, "")
 }
+
+

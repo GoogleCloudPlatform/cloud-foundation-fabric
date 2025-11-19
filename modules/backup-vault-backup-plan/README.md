@@ -21,12 +21,13 @@ This module allows you to define a backup plan for your Google Cloud resources. 
 ### Minimal example
 ```hcl
 module "dr_plan_example_with_existing_vault" {
-  source              = "./fabric/modules/backup-vault-backup-plan" # Adjust the path as necessary
-  project_id          = "your-gcp-project-id"
-  location            = "us-central1"
-  backup_vault_id     = "my-backup-vault"
-  backup_plan_id      = "my-backup-plan"
-  create_backup_vault = false
+  source                    = "./fabric/modules/backup-vault-backup-plan" # Adjust the path as necessary
+  project_id                = "your-gcp-project-id"
+  location                  = "us-central1"
+  backup_vault_id           = "my-backup-vault"
+  backup_plan_id            = "my-backup-plan"
+  backup_vault_create       = false
+  backup_plan_resource_type = "compute.googleapis.com/Instance"
 
   backup_rules = [
     {
@@ -48,6 +49,7 @@ module "dr_plan_example_with_existing_vault" {
 
 ### Create example with association with diff project resource
 ```hcl
+module "dr_example" {
   source                                     = "./fabric/modules/backup-vault-backup-plan"
   project_id                                 = "project-id-12345"
   location                                   = "us-central1"
@@ -101,13 +103,14 @@ module "dr_plan_example_with_existing_vault" {
       location         = "us-central1"
     }
   }
-# tftest modules=1 resources=3
+}
+# tftest modules=1 resources=4
 ```
 
 ### Maximum example
 ```hcl
 module "dr_example" {
-  source          = "./fabric/modules/backup-vault-backup-plan"
+  source                                     = "./fabric/modules/backup-vault-backup-plan"
   project_id                                 = "project-id-12345"
   location                                   = "us-central1"
   backup_vault_id                            = "backup-vault-02"
@@ -122,12 +125,12 @@ module "dr_example" {
     foo = "bar1"
     bar = "baz1"
   }
-  force_update                  = "true"
+  force_update                  = true
   access_restriction            = "WITHIN_ORGANIZATION"
   backup_retention_inheritance  = "INHERIT_VAULT_RETENTION"
-  ignore_inactive_datasources   = "true"
-  ignore_backup_plan_references = "true"
-  allow_missing                 = "true"
+  ignore_inactive_datasources   = true
+  ignore_backup_plan_references = true
+  allow_missing                 = true
   backup_rules = [
     {
       rule_id               = "rule-1"
@@ -161,7 +164,7 @@ module "dr_example" {
     }
   }
 
-  management_server_create = false
+  management_server_create = true
   management_server_config = {
     location               = "us-central1"
     management_server_name = "test-server"
@@ -181,7 +184,7 @@ module "dr_example" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6
 ```
 
 See the `examples/multi-resource-backup` directory for a more complex example.
