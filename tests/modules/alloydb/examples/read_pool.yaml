@@ -60,7 +60,7 @@ values:
       record_client_address: true
     read_pool_config: []
     timeouts: null
-  module.alloydb.google_alloydb_instance.read_pool["regional-read-pool"]:
+  module.alloydb.google_alloydb_instance.read_pool_primary["regional-read-pool"]:
     annotations: null
     display_name: regional-read-pool
     gce_zone: null
@@ -72,7 +72,7 @@ values:
     read_pool_config:
     - node_count: 2
     timeouts: null
-  module.alloydb.google_alloydb_instance.read_pool["zonal-read-pool"]:
+  module.alloydb.google_alloydb_instance.read_pool_primary["zonal-read-pool"]:
     annotations: null
     display_name: zonal-read-pool
     effective_labels:
