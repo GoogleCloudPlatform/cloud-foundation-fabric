@@ -29,9 +29,9 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/backup-vault-backup-plan:v48.0.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/backup-vault-backup-plan:v49.0.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/backup-vault-backup-plan:v48.0.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/backup-vault-backup-plan:v49.0.0-tofu"
   }
 }
