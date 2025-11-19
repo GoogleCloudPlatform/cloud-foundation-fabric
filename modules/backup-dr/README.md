@@ -23,10 +23,10 @@ This module allows you to define a backup plan for your Google Cloud resources. 
 ### Create backup vault with minimal example
 ```hcl
 module "dr_example" {
-	source     = "./fabric/modules/backup-dr"
-	project_id = "your-gcp-project-id"
-	location   = "us-central1"
-	name       = "backup-vault-01"
+  source     = "./fabric/modules/backup-dr"
+  project_id = "your-gcp-project-id"
+  location   = "us-central1"
+  name       = "backup-vault-01"
 }
 # tftest modules=1 resources=1
 ```
@@ -34,26 +34,26 @@ module "dr_example" {
 ### Create backup vault with maximum example
 ```hcl
 module "dr_example" {
-	source     = "./fabric/modules/backup-dr"
-	project_id = "your-gcp-project-id"
-	location   = "us-central1"
-	name       = "backup-vault"
-	vault_config = {
-	access_restriction = "WITHIN_ORGANIZATION"
-	annotations = {
-		"key" = "value"
-	}
-	backup_minimum_enforced_retention_duration = "100000s"
-	backup_retention_inheritance               = "INHERIT_VAULT_RETENTION"
-	description                                = "Backup Vault managed by Terraform IAC."
-	allow_missing                              = false
-	force_update                               = false
-	ignore_backup_plan_references              = false
-	ignore_inactive_datasources                = false
-	labels = {
-		"key" = "value"
-	}
-	}
+  source     = "./fabric/modules/backup-dr"
+  project_id = "your-gcp-project-id"
+  location   = "us-central1"
+  name       = "backup-vault"
+  vault_config = {
+    access_restriction = "WITHIN_ORGANIZATION"
+    annotations = {
+      "key" = "value"
+    }
+    backup_minimum_enforced_retention_duration = "100000s"
+    backup_retention_inheritance               = "INHERIT_VAULT_RETENTION"
+    description                                = "Backup Vault managed by Terraform IAC."
+    allow_missing                              = false
+    force_update                               = false
+    ignore_backup_plan_references              = false
+    ignore_inactive_datasources                = false
+    labels = {
+      "key" = "value"
+    }
+  }
 }
 # tftest modules=1 resources=1
 ```
@@ -61,48 +61,48 @@ module "dr_example" {
 ### Create vault and plan
 ```hcl
 module "dr_example" {
-	source     = "./fabric/modules/backup-dr"
-	project_id = "your-gcp-project-id"
-	location   = "us-central1"
-	name       = "backup-vault"
+  source     = "./fabric/modules/backup-dr"
+  project_id = "your-gcp-project-id"
+  location   = "us-central1"
+  name       = "backup-vault"
 
-	backup_plans = {
-	"my-backup-plan" = {
-		resource_type = "compute.googleapis.com/Instance"
-		description   = "Backup Plan for GCE Instances."
-		backup_rules = [
-		{
-			rule_id               = "daily-backup-rule"
-			backup_retention_days = 30
-			standard_schedule = {
-			recurrence_type  = "HOURLY"
-			hourly_frequency = 6
-			time_zone        = "America/Los_Angeles"
-			backup_window = {
-				start_hour_of_day = 1
-				end_hour_of_day   = 5
-			}
-			}
-		},
-		{
-			rule_id               = "monthly-backup-rule"
-			backup_retention_days = 30
-			standard_schedule = {
-			recurrence_type = "MONTHLY"
-			time_zone       = "America/Los_Angeles"
-			week_day_of_month = {
-				week_of_month = "FIRST"
-				day_of_week   = "MONDAY"
-			}
-			backup_window = {
-				start_hour_of_day = 1
-				end_hour_of_day   = 5
-			}
-			}
-		}
-		]
-	}
-	}
+  backup_plans = {
+    "my-backup-plan" = {
+      resource_type = "compute.googleapis.com/Instance"
+      description   = "Backup Plan for GCE Instances."
+      backup_rules = [
+        {
+          rule_id               = "daily-backup-rule"
+          backup_retention_days = 30
+          standard_schedule = {
+            recurrence_type  = "HOURLY"
+            hourly_frequency = 6
+            time_zone        = "America/Los_Angeles"
+            backup_window = {
+              start_hour_of_day = 1
+              end_hour_of_day   = 5
+            }
+          }
+        },
+        {
+          rule_id               = "monthly-backup-rule"
+          backup_retention_days = 30
+          standard_schedule = {
+            recurrence_type = "MONTHLY"
+            time_zone       = "America/Los_Angeles"
+            week_day_of_month = {
+              week_of_month = "FIRST"
+              day_of_week   = "MONDAY"
+            }
+            backup_window = {
+              start_hour_of_day = 1
+              end_hour_of_day   = 5
+            }
+          }
+        }
+      ]
+    }
+  }
 }
 # tftest modules=1 resources=2
 ```
@@ -110,51 +110,51 @@ module "dr_example" {
 ### Create only backup plan with existing vault
 ```hcl
 module "dr_example" {
-	source     = "./fabric/modules/backup-dr"
-	project_id = "yashwant-argolis"
-	location   = "us-central1"
+  source     = "./fabric/modules/backup-dr"
+  project_id = "yashwant-argolis"
+  location   = "us-central1"
 
-	vault_reuse = {
-	vault_id = "backup-vault-test"
-	}
+  vault_reuse = {
+    vault_id = "backup-vault-test"
+  }
 
-	backup_plans = {
-	"my-backup-plan" = {
-		resource_type = "compute.googleapis.com/Instance"
-		description   = "Backup Plan for GCE Instances."
-		backup_rules = [
-		{
-			rule_id               = "daily-backup-rule"
-			backup_retention_days = 30
-			standard_schedule = {
-			recurrence_type  = "HOURLY"
-			hourly_frequency = 6
-			time_zone        = "America/Los_Angeles"
-			backup_window = {
-				start_hour_of_day = 1
-				end_hour_of_day   = 5
-			}
-			}
-		},
-		{
-			rule_id               = "monthly-backup-rule"
-			backup_retention_days = 30
-			standard_schedule = {
-			recurrence_type = "MONTHLY"
-			time_zone       = "America/Los_Angeles"
-			week_day_of_month = {
-				week_of_month = "FIRST"
-				day_of_week   = "MONDAY"
-			}
-			backup_window = {
-				start_hour_of_day = 1
-				end_hour_of_day   = 5
-			}
-			}
-		}
-		]
-	}
-	}
+  backup_plans = {
+    "my-backup-plan" = {
+      resource_type = "compute.googleapis.com/Instance"
+      description   = "Backup Plan for GCE Instances."
+      backup_rules = [
+        {
+          rule_id               = "daily-backup-rule"
+          backup_retention_days = 30
+          standard_schedule = {
+            recurrence_type  = "HOURLY"
+            hourly_frequency = 6
+            time_zone        = "America/Los_Angeles"
+            backup_window = {
+              start_hour_of_day = 1
+              end_hour_of_day   = 5
+            }
+          }
+        },
+        {
+          rule_id               = "monthly-backup-rule"
+          backup_retention_days = 30
+          standard_schedule = {
+            recurrence_type = "MONTHLY"
+            time_zone       = "America/Los_Angeles"
+            week_day_of_month = {
+              week_of_month = "FIRST"
+              day_of_week   = "MONDAY"
+            }
+            backup_window = {
+              start_hour_of_day = 1
+              end_hour_of_day   = 5
+            }
+          }
+        }
+      ]
+    }
+  }
 }
 # tftest modules=1 resources=1
 ```
@@ -162,21 +162,21 @@ module "dr_example" {
 ### Create management_server
 ```hcl
 module "dr_example" {
-	source     = "./fabric/modules/backup-dr"
-	project_id = "your-gcp-project-id"
-	location   = "us-central1"
+  source     = "./fabric/modules/backup-dr"
+  project_id = "your-gcp-project-id"
+  location   = "us-central1"
 
-	management_server_config = {
-	name     = "backup-dr-mgmt-server"
-	location = "us-central1"
-	type     = "BACKUP_RESTORE"
-	network_config = {
-		network      = "default"
-		peering_mode = "PRIVATE_SERVICE_ACCESS"
-	}
-	}
-# tftest modules=1 resources=1
+  management_server_config = {
+    name     = "backup-dr-mgmt-server"
+    location = "us-central1"
+    type     = "BACKUP_RESTORE"
+    network_config = {
+      network      = "default"
+      peering_mode = "PRIVATE_SERVICE_ACCESS"
+    }
+  }
 }
+# tftest modules=1 resources=1
 ```
 See the `examples/multi-resource-backup` directory for a more complex example.
 <!-- BEGIN TFDOC -->
