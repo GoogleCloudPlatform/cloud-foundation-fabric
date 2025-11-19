@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- # Fabric release: v48.0.0
+ # Fabric release: v49.0.0
 terraform {
   required_version = ">= 1.10.0"
   required_providers {
