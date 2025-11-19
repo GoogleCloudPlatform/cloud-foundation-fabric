@@ -26,7 +26,7 @@ on:
 env:
   FAST_SERVICE_ACCOUNT: ${service_accounts.apply}
   FAST_SERVICE_ACCOUNT_PLAN: ${service_accounts.plan}
-  FAST_WIF_PROVIDER: ${workload_identity.pool_id}
+  FAST_WIF_PROVIDER: ${workload_identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${provider_files.apply}
   TF_PROVIDERS_FILE_PLAN: ${provider_files.plan}

@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CI/CD Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z-][a-z0-9-]+$": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_files",
+        "repository",
+        "service_accounts",
+        "workload_identity"
+      ],
+      "properties": {
+        "provider_files": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "apply",
+            "plan"
+          ],
+          "properties": {
+            "apply": {
+              "type": "string"
+            },
+            "plan": {
+              "type": "string"
+            }
+          }
+        },
+        "repository": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "type"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "github",
+                "gitlab"
+              ]
+            },
+            "apply_branches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "service_accounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "apply",
+            "plan"
+          ],
+          "properties": {
+            "apply": {
+              "type": "string"
+            },
+            "plan": {
+              "type": "string"
+            }
+          }
+        },
+        "tfvars_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workload_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "provider",
+            "iam_principalsets"
+          ],
+          "properties": {
+            "provider": {
+              "type": "string"
+            },
+            "iam_principalsets": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "required": [
+                    "template"
+                  ],
+                  "properties": {
+                    "template": {
+                      "type": "string",
+                      "enum": [
+                        "github",
+                        "gitlab",
+                        "okta",
+                        "terraform"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "required": [
+                    "apply",
+                    "plan"
+                  ],
+                  "properties": {
+                    "apply": {
+                      "type": "string"
+                    },
+                    "plan": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
