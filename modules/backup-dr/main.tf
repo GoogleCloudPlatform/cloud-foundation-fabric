@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-data "google_backup_dr_backup_vault" "vault_reuse" {
-  count           = var.vault_reuse != null ? 1 : 0
-  location        = coalesce(try(var.vault_reuse.location), var.location)
-  project         = coalesce(try(var.vault_reuse.project_id), var.project_id)
-  backup_vault_id = var.vault_reuse.vault_id
-}
-
 resource "google_backup_dr_backup_vault" "backup_vault" {
   count                                      = var.name != null ? 1 : 0
   project                                    = var.project_id
@@ -45,7 +38,7 @@ resource "google_backup_dr_backup_plan" "backup_plan" {
   description    = each.value.description
   location       = var.location
   resource_type  = each.value.resource_type
-  backup_vault   = var.vault_reuse != null ? one(data.google_backup_dr_backup_vault.vault_reuse[*].id) : one(google_backup_dr_backup_vault.backup_vault[*].id)
+  backup_vault   = var.vault_reuse != null ? var.vault_reuse.vault_id : one(google_backup_dr_backup_vault.backup_vault[*].id)
 
   dynamic "backup_rules" {
     for_each = each.value.backup_rules

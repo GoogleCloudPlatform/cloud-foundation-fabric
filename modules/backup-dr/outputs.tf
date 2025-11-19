@@ -20,12 +20,7 @@ output "backup_plans" {
 
 output "backup_vault_id" {
   description = "The ID of the Backup Vault."
-  value       = var.name != null ? one(google_backup_dr_backup_vault.backup_vault[*].id) : one(data.google_backup_dr_backup_vault.vault_reuse[*].id)
-}
-
-output "backup_vault_service_account" {
-  description = "The service account used by the Backup Vault."
-  value       = var.name == true ? one(google_backup_dr_backup_vault.backup_vault[*].service_account) : one(data.google_backup_dr_backup_vault.vault_reuse[*].service_account)
+  value       = var.name != null ? one(google_backup_dr_backup_vault.backup_vault[*].id) : null
 }
 
 output "google_backup_dr_management_server" {
