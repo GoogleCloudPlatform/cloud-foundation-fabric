@@ -56,10 +56,10 @@ resource "google_backup_dr_backup_plan" "backup_plan" {
       standard_schedule {
         recurrence_type = backup_rules.value.standard_schedule.recurrence_type
 
-        hourly_frequency = try(backup_rules.value.standard_schedule.hourly_frequency, null)
-        days_of_week     = try(backup_rules.value.standard_schedule.days_of_week, null)
-        days_of_month    = try(backup_rules.value.standard_schedule.days_of_month, null)
-        months           = try(backup_rules.value.standard_schedule.months, null)
+        hourly_frequency = backup_rules.value.standard_schedule.hourly_frequency
+        days_of_week     = backup_rules.value.standard_schedule.days_of_week
+        days_of_month    = backup_rules.value.standard_schedule.days_of_month
+        months           = backup_rules.value.standard_schedule.months
         dynamic "week_day_of_month" {
           for_each = try(backup_rules.value.standard_schedule.week_day_of_month != null ? [backup_rules.value.standard_schedule.week_day_of_month] : [])
           content {
