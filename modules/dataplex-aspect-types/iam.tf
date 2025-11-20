@@ -53,26 +53,28 @@ resource "google_dataplex_aspect_type_iam_binding" "authoritative" {
     for binding in local.iam :
     "${binding.aspect_type_id}.${binding.role}" => binding
   }
-  role           = each.value.role
+  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
   members = [
     for v in each.value.members :
-    lookup(var.factories_config.context.iam_principals, v, v)
+    lookup(local.ctx.iam_principals, v, v)
   ]
 }
 
 resource "google_dataplex_aspect_type_iam_binding" "bindings" {
   for_each       = local.iam_bindings
-  role           = each.value.role
+  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
   members = [
     for v in each.value.members :
-    lookup(var.factories_config.context.iam_principals, v, v)
+    lookup(local.ctx.iam_principals, v, v)
   ]
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -82,14 +84,16 @@ resource "google_dataplex_aspect_type_iam_binding" "bindings" {
 resource "google_dataplex_aspect_type_iam_member" "members" {
   for_each       = local.iam_bindings_additive
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
-  role           = each.value.role
+  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member = lookup(
-    var.factories_config.context.iam_principals, each.value.member, each.value.member
+    local.ctx.iam_principals, each.value.member, each.value.member
   )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
