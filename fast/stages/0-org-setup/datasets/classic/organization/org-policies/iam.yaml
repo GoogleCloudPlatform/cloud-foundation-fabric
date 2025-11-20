@@ -18,17 +18,11 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
-iam.allowedPolicyMemberDomains:
+iam.managed.allowedPolicyMembers:
   rules:
-    - allow:
-        values:
-          - is:${organization.customer_id}
-      condition:
-        title: Restrict member domains
-        expression: |
-          !resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
-    - allow:
-        all: true
+    - parameters: '{"allowedMemberSubjects": ["is:${organization.customer_id}"], "allowedPrincipalSets": ["//cloudresourcemanager.googleapis.com/organizations/${organization.id}"]}'
+      enforce: true
+    - enforce: false
       condition:
         title: Allow any member domain
         expression: |
