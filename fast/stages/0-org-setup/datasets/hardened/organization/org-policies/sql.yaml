@@ -30,7 +30,7 @@ custom.cloudsqlRequireAutomatedBackup:
   rules:
     - enforce: true
 
-custom.cloudsqlRequireHighAvailibility:
+custom.cloudsqlRequireHighAvailability:
   rules:
     - enforce: true
 

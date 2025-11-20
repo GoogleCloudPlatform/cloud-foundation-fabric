@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cloudsqlRequireHighAvailibility:
+cloudsqlRequireHighAvailability:
   description: Detect if the high availability (HA) configuration for Cloud SQL instances is not set to regional
   predicate:
     expression: (resource.settings.availabilityType != "REGIONAL")

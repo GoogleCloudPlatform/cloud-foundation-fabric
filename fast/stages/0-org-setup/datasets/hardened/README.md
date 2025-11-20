@@ -145,7 +145,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudsqlDisablePublicAuthorizedNetworks` | Ensure That Cloud SQL Database Instances Do Not Implicitly Whitelist All Public IP Addresses | **CIS for GCP 3.0**: 6.5<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: CA-3, SC-7<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.13.1.3, A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `cloudsqlEnforcePasswordComplexity` | Enforce password complexity for Cloud SQL instance users. |  |
 | `cloudsqlRequireAutomatedBackup` | Ensure That Cloud SQL Database Instances Are Configured With Automated Backups | **CIS for GCP 3.0**: 6.7<br>**CIS Controls 8.0**: 11.2<br>**NIST 800-53 R4**: CP-9<br>**NIST 800-53 R5**: CP-10, CP-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-4<br>**ISO-2700-1 v2013**: A.12.3.1<br>**ISO-2700-1 v2022**: A.8.13<br>**HIPAA**: 164.308(a)(7)(ii) |
-| `cloudsqlRequireHighAvailibility` | Ensure Cloud SQL instances are configured for high availability. |  |
+| `cloudsqlRequireHighAvailability` | Ensure Cloud SQL instances are configured for high availability. |  |
 | `cloudsqlRequireMySQLDatabaseFlags` | Ensure ‘Skip_show_database’ Database Flag for Cloud SQL MySQL Instance Is Set to ‘On’ | **CIS for GCP 3.0**: 6.1.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `cloudsqlRequirePointInTimeRecovery` | Enforce point-in-time recovery for all Cloud SQL backup configurations. |  |
 | `cloudsqlRequirePostgreSQLDatabaseFlags` | Ensure That the ‘Log_connections’ Database Flag for Cloud SQL PostgreSQL Instance Is Set to ‘On’ | **CIS for GCP 3.0**: 6.2.2<br>**CIS Controls 8.0**: 8.5<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.2, 10.2.1.5, 9.4.5<br>**NIST 800-53 R5**: AU-12, AU-3, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, DE-CM-1<br>**ISO-2700-1 v2022**: A.5.28, A.8.15<br>**SOC2 v2017**: CC5.2.3, CC7.2.1, CC7.2.2, CC7.2.3<br>**Cloud Controls Matrix 4**: DSP-17 |
@@ -183,7 +183,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `firewallRestrictSshPolicyRule` | Prevent SSH access from the internet via firewall policies. | **CIS for GCP 3.0**: 3.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictSshRule` | Prevent SSH access from the internet via VPC firewall rules. | **CIS for GCP 3.0**: 3.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `gkeAllowedNodePoolImages` | Enforce that GKE nodes are using authorized node images | **CIS for GKE 1.5**: 5.5.1<br>**PCI-DSS 4.0**: 2.2.6, 5.2, 6.2.1 |
-| `gkeAllowedReleaseChannels` | Enfore that GKE cluster are using authorized release channels | **CIS for GKE 1.5**: 5.5.4 |
+| `gkeAllowedReleaseChannels` | Enforce that GKE cluster are using authorized release channels | **CIS for GKE 1.5**: 5.5.4 |
 | `gkeDisableAlphaCluster` | Prevent the use of alpha features for GKE clusters in production workloads. | **CIS for GKE 1.5**: 5.10.2 |
 | `gkeDisableKubernetesDashboard` | Prevent the enablement of the GKE Web UI dashboard. | **CIS for GKE 1.5**: 5.10.1<br>**PCI-DSS 4.0**: 6.4 |
 | `gkeDisableLegacyAbac` | Enforce that GKE clusters is configured with no legacy ABAC enabled | **CIS for GKE 1.5**: 5.8.3<br>**PCI-DSS 4.0**: 4.1 |
@@ -209,7 +209,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `networkRequireBackendServiceLogging` | Enforce the enablement of logging for all HTTP(S) load balancers. | **CIS for GCP 3.0**: 2.16<br>**CIS Controls 8.0**: 8.2<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2<br>**NIST 800-53 R5**: AU-12, AU-2, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, PR-PT-1<br>**ISO-2700-1 v2022**: A.8.15, A.8.20<br>**HIPAA**: 164.312(b) |
 | `networkRequireCustomModeVpc` | Ensure That the Default Network Does Not Exist in a Project | **CIS for GCP 3.0**: 3.1<br>**CIS Controls 8.0**: 4.2<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: ISV-04 |
 | `networkRequireSubnetPrivateGoogleAccess` | Enforce Private Google Access for all VPC network subnets. |  |
-| `storageRequireBucketObjectVersionning` | Enforce the enablement of versionning to Cloud Storage buckets where sinks are configured. | **NIST 800-53 R4**: AU-11<br>**ISO-2700-1 v2022**: A.12.4.2, A.18.1.3 |
+| `storageRequireBucketObjectVersionning` | Enforce the enablement of versioning to Cloud Storage buckets where sinks are configured. | **NIST 800-53 R4**: AU-11<br>**ISO-2700-1 v2022**: A.12.4.2, A.18.1.3 |
 
 ### Detective Controls
 
@@ -233,7 +233,7 @@ SCC Custom SHA Detectors are available only for organization have subscribed to 
 | `cloudrunRequireBinaryAuthorization` | Restrict Cloud Run services and jobs to an authorized list of Binary Authorization policies. |  |
 | `cloudrunRequireEgressAllTraffic` | Ensure all egress traffic from Cloud Run services and jobs is routed through a VPC network. |  |
 | `cloudrunRequireIngressInternalAndLoadBalancer` | Ensure Cloud Run services only allow internal and load balancer traffic. |  |
-| `cloudsqlRequireHighAvailibility` | Ensure Cloud SQL instances are configured for high availability. |  |
+| `cloudsqlRequireHighAvailability` | Ensure Cloud SQL instances are configured for high availability. |  |
 | `cloudsqlRequirePointInTimeRecovery` | Enforce point-in-time recovery for all Cloud SQL backup configurations. |  |
 | `computeDisableNestedVirtualization` | Prevent the creation of Compute Engine instances with nested virtualization enabled. |  |
 | `gkeDisableClientCertificateAuth` | Prevent the use of legacy authentication methods for GKE API servers. | **CIS for GKE 1.5**: 2.1.1<br>5.8.1<br>**PCI-DSS 4.0**: 4.1 |
