@@ -54,7 +54,7 @@ values:
   module.project.google_project_iam_member.service_agents["looker"]:
     condition: []
     project: test-looker
-    role: roles/looker.serviceAgent
+    role: roles/looker.restrictedServiceAgent
   module.project.google_project_iam_member.service_agents["service-networking"]:
     condition: []
     project: test-looker
@@ -161,4 +161,3 @@ counts:
   resources: 17
 
 outputs: {}
-
