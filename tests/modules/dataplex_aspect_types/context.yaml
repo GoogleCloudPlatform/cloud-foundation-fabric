@@ -15,7 +15,6 @@
 values:
   google_dataplex_aspect_type.default["tf-test-template"]:
     aspect_type_id: tf-test-template
-    data_classification: null
     description: null
     display_name: Test template.
     effective_labels:
