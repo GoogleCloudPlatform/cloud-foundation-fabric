@@ -53,8 +53,8 @@ resource "google_dataplex_aspect_type_iam_binding" "authoritative" {
     for binding in local.iam :
     "${binding.aspect_type_id}.${binding.role}" => binding
   }
-  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
+  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in each.value.members :
     lookup(local.ctx.iam_principals, v, v)
@@ -63,8 +63,8 @@ resource "google_dataplex_aspect_type_iam_binding" "authoritative" {
 
 resource "google_dataplex_aspect_type_iam_binding" "bindings" {
   for_each       = local.iam_bindings
-  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   aspect_type_id = google_dataplex_aspect_type.default[each.value.aspect_type_id].id
+  role           = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in each.value.members :
     lookup(local.ctx.iam_principals, v, v)
