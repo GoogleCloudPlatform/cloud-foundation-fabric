@@ -75,13 +75,13 @@ IAM attributes can leverage substitutions for principals, which need to be defin
 module "aspect-types" {
   source     = "./fabric/modules/dataplex-aspect-types"
   project_id = "test-project"
+  context = {
+    iam_principals = {
+      test-sa = "serviceAccount:sa-0@test-project.iam.gserviceaccount.com"
+    }
+  }
   factories_config = {
     aspect_types = "data/aspect-types"
-    context = {
-      iam_principals = {
-        test-sa = "serviceAccount:sa-0@test-project.iam.gserviceaccount.com"
-      }
-    }
   }
 }
 # tftest modules=1 resources=4 files=aspect-0,aspect-1
@@ -125,7 +125,7 @@ display_name: "Test template 1."
 iam_bindings_additive:
   user:
     role: roles/dataplex.aspectTypeUser
-    member: test-sa
+    member: $iam_principals:test-sa
 metadata_template: |
   {
     "name": "tf-test-template-1",
