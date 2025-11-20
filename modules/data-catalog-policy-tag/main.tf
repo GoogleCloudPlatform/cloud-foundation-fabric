@@ -17,24 +17,30 @@
 # tfdoc:file:description Data Catalog Taxonomy definition
 
 locals {
-  name = (
-    var.name != null ? var.name : "${local.prefix}taxonomy"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p    = "$"
+  location = try(local.ctx.locations[var.location], var.location)
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_data_catalog_taxonomy" "default" {
   provider               = google-beta
-  project                = var.project_id
-  region                 = var.location
-  display_name           = local.name
+  project                = local.project_id
+  region                 = local.location
+  display_name           = var.name
   description            = var.description
   activated_policy_types = var.activated_policy_types
 }
 
 resource "google_data_catalog_policy_tag" "default" {
-  for_each     = var.tags
   provider     = google-beta
+  for_each     = var.tags
   taxonomy     = google_data_catalog_taxonomy.default.id
   display_name = each.key
   description = coalesce(

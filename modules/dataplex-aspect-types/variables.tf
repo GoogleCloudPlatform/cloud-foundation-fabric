@@ -45,13 +45,23 @@ variable "aspect_types" {
   default  = {}
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    condition_vars = optional(map(map(string)), {})
+    custom_roles   = optional(map(string), {})
+    iam_principals = optional(map(string), {})
+    locations      = optional(map(string), {})
+    project_ids    = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "factories_config" {
   description = "Paths to folders for the optional factories."
   type = object({
     aspect_types = optional(string)
-    context = optional(object({
-      iam_principals = optional(map(string), {})
-    }), {})
   })
   nullable = false
   default  = {}
