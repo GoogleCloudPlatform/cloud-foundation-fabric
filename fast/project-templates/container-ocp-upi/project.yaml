@@ -1,0 +1,52 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
+
+# TODO: edit and uncomment the following line to create the project in a folder
+# parent: $folder_ids:shared
+
+# project id can be customized here if file name cannot be changed
+# name: prod-os-apt-0
+
+services:
+  - accesscontextmanager.googleapis.com
+  - artifactregistry.googleapis.com
+
+automation:
+  # TODO: edit the automation project and optionally edit resource names
+  project: $project_ids:iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation service account for apt registries.
+  bucket:
+    # this reuses the existing stage state bucket and creates a folder in it
+    name: iac-stage-state
+    create: false
+    managed_folders:
+      os-apt:
+        iam:
+          roles/storage.objectCreator:
+            # TODO: the project id in the service account ref matches this file name
+            - $iam_principals:service_accounts/os-apt-registries/automation/rw
+          roles/storage.objectViewer:
+            - $iam_principals:service_accounts/os-apt-registries/automation/rw
+iam:
+  roles/viewer:
+    - $iam_principals:service_accounts/os-apt-registries/automation/rw
+  roles/artifactregistry.admin:
+    - $iam_principals:service_accounts/os-apt-registries/automation/rw
+  # TODO: add instance service accounts, or use principalSets for folders/projects
+  # roles/artifactregistry.writer:
+  #   - principalSet://cloudresourcemanager.googleapis.com/folders/210938489642/type/ServiceAccount

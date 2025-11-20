@@ -1,0 +1,116 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../stages/2-project-factory/schemas/project.schema.json
+
+# edit/uncomment one the following lines to create the project in a folder
+# parent: $folder_ids:container/ocp
+# parent: folders/1234567890
+# edit name to match desired project id
+name: dev-ocp-test-0
+services:
+  - cloudapis.googleapis.com
+  - cloudkms.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - compute.googleapis.com
+  - dns.googleapis.com
+  - iam.googleapis.com
+  - iamcredentials.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - servicemanagement.googleapis.com
+  - serviceusage.googleapis.com
+service_accounts:
+  ocp-install:
+    display_name: Service account for installing OCP.
+  ocp-master:
+    display_name: Service account for OCP masters.
+  ocp-worker:
+    display_name: Service account for OCP workers.
+  ocp-storage-reader:
+    display_name: Service account for ignition access via GCS.
+iam:
+  "roles/cloudkms.cryptoKeyEncrypterDecrypter":
+    - $service_agents:compute
+iam_by_principals:
+  $iam_principals:service_accounts/_self_/ocp-install:
+    # roles/owner can also be used to avoid extra roles
+    # being needed in newer releases
+    - roles/compute.admin
+    - roles/iam.roleAdmin
+    - roles/iam.securityAdmin
+    - roles/iam.serviceAccountAdmin
+    - roles/iam.serviceAccountKeyAdmin
+    - roles/storage.admin
+    - roles/dns.admin
+    - roles/compute.loadBalancerAdmin
+    - roles/resourcemanager.tagUser
+    - roles/iam.workloadIdentityPoolAdmin
+    - roles/iam.serviceAccountTokenCreator
+  $iam_principals:service_accounts/_self_/ocp-master:
+    - roles/compute.instanceAdmin
+    - roles/compute.networkAdmin
+    - roles/compute.securityAdmin
+    - roles/logging.logWriter
+    - roles/monitoring.metricWriter
+    - roles/storage.admin
+  $iam_principals:service_accounts/_self_/ocp-worker:
+    - roles/artifactregistry.reader
+    - roles/compute.viewer
+    - roles/logging.logWriter
+    - roles/monitoring.metricWriter
+    - roles/storage.admin
+  $iam_principals:service_accounts/_self_/ocp-storage-reader:
+    - roles/storage.objectViewer
+iam_bindings_additive:
+  ocp-master-sa-user:
+    member: $iam_principals:service_accounts/_self_/ocp-master
+    role: roles/iam.serviceAccountUser
+  ocp-install-sa-user:
+    member: $iam_principals:service_accounts/_self_/ocp-install
+    role: roles/iam.serviceAccountUser
+# if these org policies at the org level are defined
+# relax them here or in the containing folder
+org_policies:
+  compute.trustedImageProjects:
+    rules:
+    - allow:
+        values:
+          - projects/cos-cloud
+          - projects/debian-cloud
+          - projects/rhcos-cloud
+          - projects/rhel-cloud
+  iam.allowedPolicyMemberDomains:
+    rules:
+      - allow:
+          all: true
+  iam.disableServiceAccountKeyCreation:
+    rules:
+      - enforce: false
+  iam.workloadIdentityPoolProviders:
+    rules:
+      - allow:
+          all: true
+  storage.publicAccessPrevention:
+    rules:
+      - enforce: false
+# edit to match your Shared VPC host name
+shared_vpc_service_config:
+  host_project: myorg-dev-net-spoke-0
+  network_users:
+    - $iam_principals:service_accounts/_self_/ocp-install
+    - $iam_principals:service_accounts/_self_/ocp-master
+    # OCP-managed service accounts also need this role, replace project number
+    # and uncomment once project has been created
+    # - principalSet://cloudresourcemanager.googleapis.com/projects/${project_number}/type/ServiceAccount
