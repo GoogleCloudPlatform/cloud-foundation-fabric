@@ -101,8 +101,8 @@ locals {
 }
 
 moved {
- from = google_project_service.project_services["orgpolicy.googleapis.com"]
- to = google_project_service.org_policy_service[0]
+  from = google_project_service.project_services["orgpolicy.googleapis.com"]
+  to   = google_project_service.org_policy_service[0]
 }
 
 data "google_project" "project" {
