@@ -3904,30 +3904,21 @@ values:
           - TLS_VERSION_1
           - TLS_VERSION_1_1
     timeouts: null
-  module.organization-iam[0].google_org_policy_policy.default["iam.allowedPolicyMemberDomains"]:
+  module.organization-iam[0].google_org_policy_policy.default["iam.managed.allowedPolicyMembers"]:
     dry_run_spec: []
-    name: organizations/1234567890/policies/iam.allowedPolicyMemberDomains
+    name: organizations/1234567890/policies/iam.managed.allowedPolicyMembers
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
       reset: null
       rules:
       - allow_all: null
-        condition:
-        - description: null
-          expression: '!resource.matchTag(''1234567890/org-policies'', ''allowed-policy-member-domains-all'')
-
-            '
-          location: null
-          title: Restrict member domains
+        condition: []
         deny_all: null
-        enforce: null
-        parameters: null
-        values:
-        - allowed_values:
-          - is:abcd123456
-          denied_values: null
-      - allow_all: 'TRUE'
+        enforce: 'TRUE'
+        parameters: '{"allowedMemberSubjects":["is:abcd123456"],"allowedPrincipalSets":["//cloudresourcemanager.googleapis.com/organizations/1234567890"]}'
+        values: []
+      - allow_all: null
         condition:
         - description: null
           expression: 'resource.matchTag(''1234567890/org-policies'', ''allowed-policy-member-domains-all'')
@@ -3936,7 +3927,7 @@ values:
           location: null
           title: Allow any member domain
         deny_all: null
-        enforce: null
+        enforce: 'FALSE'
         parameters: null
         values: []
     timeouts: null
