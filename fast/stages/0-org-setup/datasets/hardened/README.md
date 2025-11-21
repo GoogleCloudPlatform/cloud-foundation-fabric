@@ -261,6 +261,8 @@ SCC Custom SHA Detectors are available only for organization have subscribed to 
 
 * For organizations with strict requirements to ensure resources are created and stored within specific geographic regions (e.g., for data sovereignty or regulatory compliance), you can enforce this by enabling the `gcp.resourceLocations` Organization Policy, which is defined in the [gcp.yaml](organization/org-policies/gcp.yaml) file.
 
+* The `compute.restrictNonConfidentialComputing` policy is disabled by default in the hardened datasets. However, for organizations that require strict assurance that only Confidential Computing resources are used, this policy can be enabled. You can enforce this restriction by updating the configuration in the [compute.yaml](organization/org-policies/compute.yaml) file.
+
 * The `compute.requireVpcFlowLogs` policy is enabled by default in the hardened datasets. This requires to update the `2-networking` stage to configure all subnets with **VPC Flow Logs**. Here is an example of a subnet configuration with `flow_logs_config` enabled:
 ```yaml
 name: dev-default
@@ -305,6 +307,8 @@ compute.restrictVpcPeering:
           # Allows peering for Google's Private Service Access
           - "projects/<google-project-id>/global/networks/servicenetworking"
 ```
+
+* The `compute.managed.disableSerialPortLogging` policy is enabled by default in the hardened datasets to prevent sensitive information leakage. However, this policy must be disabled (set to enforce: false) for projects hosting Google Kubernetes Engine (GKE) clusters. Indeed, GKE requires serial port logging to be enabled to successfully create clusters and manage low-level troubleshooting.
 
 ## Troubleshooting
 
