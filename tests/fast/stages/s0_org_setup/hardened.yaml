@@ -2096,12 +2096,6 @@ values:
     project: ft0-prod-iac-core-0
     service: networksecurity.googleapis.com
     timeouts: null
-  module.factory.module.projects["iac-0"].google_project_service.project_services["orgpolicy.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: ft0-prod-iac-core-0
-    service: orgpolicy.googleapis.com
-    timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["pubsub.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -2119,6 +2113,12 @@ values:
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: orgpolicy.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["serviceusage.googleapis.com"]:
     disable_dependent_services: false
