@@ -39,6 +39,9 @@ def test_policy_implementation():
       '-  parent = "projects/${local.project.project_id}"\n',
       '+  name   = "${local.folder_id}/policies/${each.value}"\n',
       '+  parent = local.folder_id\n',
+      '@@ -196,2 +195,0 @@\n',
+      '-\n',
+      '-  depends_on = [google_project_service.org_policy_service]\n',
   ]
 
   diff2 = difflib.unified_diff(lines['folder'], lines['organization'], 'folder',
