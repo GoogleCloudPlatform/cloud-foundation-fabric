@@ -13,45 +13,10 @@ This Terraform can of course be deployed using any pre-existing project. In that
 - enable the APIs listed under `services`
 - grant the permissions listed under `iam` to the principal running Terraform, either machine (service account) or human
 
-## VPC-SC Integration
+## Notes
 
-Access to upstream sources from inside a VPC-SC service perimeter [requires specific activation](https://cloud.google.com/artifact-registry/docs/repositories/remote-repo#vpc), which depends on a high-level IAM role on the VPC-SC policy.
+Create an instance and associate the `ocp-install` service account.
 
-Granting such a role to the identity running this setup (either machine or human) is not realistic, so the choice made here is to output the relevant command, so that a VPC-SC administrator can run it using the appropriate credentials. The [relevant Terraform resource](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/artifact_registry_vpcsc_config) can of course be used to automate this task when needed.
-
-## Instance-level Access to the Repository
-
-Instances that need access to the created registries require the `roles/artifactregistry.writer` role assigned to the instance service accounts. This can be automated via the `apt_remote_registries` variable described below, to create IAm bindings for each registry.
-
-It's also possible (and maybe desirable) to grant the role at the project level, if access to multiple repositories is needed from the same set of principals. This needs of course to happen where the project is managed, for example in the project factory YAML file.
-
-Once proper access has been configured, the `apt_configs` output can be used as a basis to configure the APT sources lists on each instance.
-
-Instance need to have the `apt-transport-artifact-registry` package installed, which is served by the default internal repositories configured on GCE base images.
-
-```bash
-sudo apt install apt-transport-artifact-registry
-```
-
-## Variable Configuration
-
-This is an example of running this stage. Note that the `apt_remote_registries` has a default value that can be used when no IAM is needed at the registry level, and the default set of remotes is fine.
-
-```hcl
-project_id = "my-project"
-location   = "europe-west3"
-apt_remote_registries = [
-  { path = "DEBIAN debian/dists/bookworm" },
-  {
-    path = "DEBIAN debian-security/dists/bookworm-security"
-    # grant specific access permissions to this registry
-    writer_principals = [
-      "serviceAccount:vm-default@prod-proj-0.iam.gserviceaccount.com"
-    ]
-  }
-]
-# tftest skip
-```
 <!-- BEGIN TFDOC -->
 ## Variables
 
