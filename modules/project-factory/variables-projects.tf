@@ -249,9 +249,9 @@ variable "projects" {
       manual_approvals = optional(object({
         require_approver_justification = bool
         steps = list(object({
-          approvers                = list(string)
-          approvals_needed         = optional(number, 1)
-          aprover_email_recipients = optional(list(string))
+          approvers                 = list(string)
+          approvals_needed          = optional(number, 1)
+          approver_email_recipients = optional(list(string))
         }))
       }))
       additional_notification_targets = optional(object({

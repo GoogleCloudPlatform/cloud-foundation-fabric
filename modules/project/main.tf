@@ -100,6 +100,11 @@ locals {
   enable_orgpolicy_service = contains(local._available_services, "orgpolicy.googleapis.com")
 }
 
+moved {
+  from = google_project_service.project_services["orgpolicy.googleapis.com"]
+  to   = google_project_service.org_policy_service[0]
+}
+
 data "google_project" "project" {
   count      = try(var.project_reuse.use_data_source, null) == true ? 1 : 0
   project_id = local.project_id
