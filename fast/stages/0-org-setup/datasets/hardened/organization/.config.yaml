@@ -93,6 +93,9 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-vpcsc-ro:
     - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
+data_access_logs:
+  sts.googleapis.com:
+    ADMIN_READ: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary
