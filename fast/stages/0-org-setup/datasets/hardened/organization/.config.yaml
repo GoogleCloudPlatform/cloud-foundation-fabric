@@ -23,8 +23,8 @@ contacts:
 data_access_logs:
   allServices:
     ADMIN_READ: {}
-    DATA_READ: {}
-    DATA_WRITE: {}
+    # DATA_READ: {}
+    # DATA_WRITE: {}
 # conditional authoritative IAM bindings
 iam_bindings:
   # these don't conflict with IAM / IAM by principal
