@@ -12,8 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/3-gke-dev/
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
 
-tests:
-  simple: {}
-  hardened: {}
+# yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
+
+custom.dataprocDisableDefaultServiceAccount:
+  rules:
+    - enforce: true
+
+custom.dataprocRequireInternalIp:
+  rules:
+    - enforce: true
+
+custom.dataprocRequireKerberos:
+  rules:
+    - enforce: true

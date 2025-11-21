@@ -94,8 +94,10 @@ iam_by_principals:
     - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
 data_access_logs:
-  sts.googleapis.com:
+  allServices:
     ADMIN_READ: {}
+    # DATA_READ: {}
+    # DATA_WRITE: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary

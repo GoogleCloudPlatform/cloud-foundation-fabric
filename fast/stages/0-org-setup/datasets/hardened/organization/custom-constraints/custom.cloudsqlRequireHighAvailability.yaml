@@ -12,8 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/3-gke-dev/
-
-tests:
-  simple: {}
-  hardened: {}
+custom.cloudsqlRequireHighAvailability:
+  action_type: DENY
+  condition: |-
+    resource.settings.availabilityType != "REGIONAL"
+  description: Ensure that Cloud SQL instance is configured with high availability
+  display_name: Require Cloud SQL instances to be configured with high availability
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - sqladmin.googleapis.com/Instance

@@ -49,6 +49,12 @@ module "gke-project-0" {
   labels = {
     environment = lower(var.environments[var.stage_config.environment].name)
   }
+  org_policies = {
+    // GKE cluster require serial port logging for low level troubleshooting
+    "compute.managed.disableSerialPortLogging" = {
+      rules = [{ enforce = false }]
+    }
+  }
   services = [
     "anthos.googleapis.com",
     "anthosconfigmanagement.googleapis.com",
@@ -62,6 +68,7 @@ module "gke-project-0" {
     "monitoring.googleapis.com",
     "multiclusteringress.googleapis.com",
     "multiclusterservicediscovery.googleapis.com",
+    "orgpolicy.googleapis.com",
     "trafficdirector.googleapis.com"
   ]
   shared_vpc_service_config = {

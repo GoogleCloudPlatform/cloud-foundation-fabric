@@ -116,6 +116,8 @@ clusters = {
       private_nodes = true
     }
     enable_features =  {
+      binary_authorization = true
+      groups_for_rbac      = "gke-security-groups@example.com"
       intranode_visibility = true
       rbac_binding_config = {
         enable_insecure_binding_system_unauthenticated: false
@@ -140,6 +142,9 @@ nodepools = {
   test-00 = {
     00 = {
       node_count  = { initial = 1 }
+      node_config = {
+        sandbox_config_gvisor = true
+      }
     }
   }
 }

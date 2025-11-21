@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/3-gke-dev/
-
-tests:
-  simple: {}
-  hardened: {}
+counts:
+  google_bigquery_dataset: 1
+  google_compute_shared_vpc_service_project: 1
+  google_container_cluster: 1
+  google_container_node_pool: 1
+  google_project: 1
+  google_project_iam_binding: 1
+  google_project_iam_member: 17
+  google_project_service: 14
+  google_project_service_identity: 8
+  google_pubsub_topic: 1
+  google_service_account: 1
+  google_storage_bucket_object: 1
+  modules: 5
+  resources: 49

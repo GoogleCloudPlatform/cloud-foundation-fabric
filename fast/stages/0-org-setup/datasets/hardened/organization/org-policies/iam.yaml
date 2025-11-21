@@ -18,6 +18,10 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+custom.iamDisableRedisAdminRoles:
+  rules:
+    - enforce: false
+
 iam.allowedPolicyMemberDomains:
   rules:
     - allow:

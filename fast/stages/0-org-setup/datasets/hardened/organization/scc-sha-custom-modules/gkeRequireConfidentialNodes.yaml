@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/3-gke-dev/
-
-tests:
-  simple: {}
-  hardened: {}
+gkeRequireConfidentialNodes:
+  description: Detect if any GKE clusters are running without Confidential GKE nodes
+  predicate:
+    expression: (resource.confidentialNodes.enabled == false)
+  recommendation: Ensure GKE clusters are running with Confidential GKE nodes enabled
+  resource_selector:
+    resource_types:
+      - container.googleapis.com/Cluster
+  severity: MEDIUM

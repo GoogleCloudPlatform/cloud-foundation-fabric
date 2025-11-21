@@ -5760,13 +5760,13 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 8
   google_folder_iam_binding: 44
-  google_logging_metric: 9
+  google_logging_metric: 10
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_monitoring_alert_policy: 9
-  google_org_policy_custom_constraint: 55
-  google_org_policy_policy: 114
+  google_monitoring_alert_policy: 10
+  google_org_policy_custom_constraint: 80
+  google_org_policy_policy: 149
   google_organization_iam_binding: 37
   google_organization_iam_custom_role: 9
   google_project: 3
@@ -5774,7 +5774,7 @@ counts:
   google_project_iam_member: 15
   google_project_service: 34
   google_project_service_identity: 9
-  google_scc_management_organization_security_health_analytics_custom_module: 9
+  google_scc_management_organization_security_health_analytics_custom_module: 16
   google_service_account: 14
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
@@ -5790,5 +5790,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 48
-  resources: 474
+  resources: 543
   terraform_data: 4

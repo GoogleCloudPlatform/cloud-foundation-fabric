@@ -1,0 +1,33 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+custom.firewallRequireDescription:
+  action_type: DENY
+  condition: |-
+    (
+      resource.description == "" &&
+      !resource.name.startsWith("gke-") &&
+      !resource.name.startsWith("k8s-") &&
+      !resource.name.endsWith("-hc") &&
+      !resource.name.startsWith("k8s2-") &&
+      !resource.name.startsWith("gkegw1-l7-") &&
+      !resource.name.startsWith("gkemcg1-l7-")
+    )
+  description: Prevent the creation of VPC firewall rule that does not have description
+    provided. Description can be used for auditing to refer to security control
+  display_name: Require description on Firewall rule
+  method_types:
+  - CREATE
+  resource_types:
+  - compute.googleapis.com/Firewall
