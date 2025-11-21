@@ -66,6 +66,13 @@ output "id" {
   ]
 }
 
+output "kms_autokeys" {
+  description = "KMS Autokey key ids."
+  value = {
+    for k, v in google_kms_key_handle.default : k => v.kms_key
+  }
+}
+
 output "name" {
   description = "Project name."
   value       = local.project.name
@@ -208,5 +215,24 @@ output "tag_values" {
   value = {
     for k, v in google_tags_tag_value.default :
     k => v if try(local.tag_values[k].tag_network, null) == null
+  }
+}
+
+output "workload_identity_provider_ids" {
+  description = "Workload identity provider attributes."
+  value = {
+    for k, v in google_iam_workload_identity_pool_provider.default :
+    k => v.name
+  }
+}
+
+output "workload_identity_providers" {
+  description = "Workload identity provider attributes."
+  value = {
+    for k, v in local.wif_providers : k => {
+      name = google_iam_workload_identity_pool_provider.default[k].name
+      pool = google_iam_workload_identity_pool.default[v.pool].name
+      type = try(v.identity_provider.oidc.template, null)
+    }
   }
 }

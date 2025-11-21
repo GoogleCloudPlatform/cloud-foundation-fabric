@@ -25,6 +25,31 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+- **autokey_config**: *object*
+  <br>*additional properties: false*
+  - **project**: *string*
+    <br>*pattern: ^(projects/|\$project_ids:|\$project_numbers:)*
+- **contacts**: *object*
+  <br>*additional properties: false*
+  - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*
+    - items: *string*
+      <br>*enum: ['ALL', 'BILLING', 'LEGAL', 'SECURITY', 'PRODUCT_UPDATES', 'SUSPENSION', 'TECHNICAL']*
+- **data_access_logs**: *object*
+  <br>*additional properties: false*
+  - **`^([a-z][a-z-]+\.googleapis\.com|allServices)$`**: *object*
+    <br>*additional properties: false*
+    - **ADMIN_READ**: *object*
+      <br>*additional properties: false*
+      - **exempted_members**: *array*
+        - items: *string*
+    - **DATA_READ**: *object*
+      <br>*additional properties: false*
+      - **exempted_members**: *array*
+        - items: *string*
+    - **DATA_WRITE**: *object*
+      <br>*additional properties: false*
+      - **exempted_members**: *array*
+        - items: *string*
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **org_policies**: *string*
@@ -78,7 +103,7 @@
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **force_destroy**: *boolean*
   - **labels**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*

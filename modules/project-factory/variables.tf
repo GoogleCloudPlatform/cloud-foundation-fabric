@@ -50,11 +50,6 @@ variable "data_defaults" {
       logging  = optional(string)
       storage  = optional(string)
     }), {})
-    logging_data_access = optional(map(object({
-      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
-    })), {})
     metric_scopes = optional(list(string), [])
     parent        = optional(string)
     prefix        = optional(string)
@@ -139,11 +134,6 @@ variable "data_overrides" {
       logging  = optional(string)
       storage  = optional(string)
     }), {})
-    logging_data_access = optional(map(object({
-      ADMIN_READ = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_READ  = optional(object({ exempted_members = optional(list(string)) })),
-      DATA_WRITE = optional(object({ exempted_members = optional(list(string)) }))
-    })))
     parent = optional(string)
     prefix = optional(string)
     service_accounts = optional(map(object({

@@ -47,15 +47,24 @@ locals {
     for f in try(fileset(local._templates_path, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local._templates_path}/${f}"))
   }
-  ctx_project_ids = merge(local.ctx.project_ids, local.project_ids)
+  ctx_project_ids     = merge(local.ctx.project_ids, local.project_ids)
+  ctx_project_numbers = merge(local.ctx.project_ids, local.project_numbers)
   project_ids = {
     for k, v in module.projects : k => v.project_id
+  }
+  project_numbers = {
+    for k, v in module.projects : k => v.number
   }
   ctx_log_buckets = merge(local.ctx.log_buckets, local.log_buckets)
   log_buckets = {
     for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
   projects_input = merge(var.projects, local._projects_output)
+  projects_service_agents = merge([
+    for k, v in module.projects : {
+      for kk, vv in v.service_agents : "service_agents/${k}/${kk}" => vv.iam_email
+    }
+  ]...)
 }
 
 resource "terraform_data" "project-preconditions" {
@@ -99,20 +108,21 @@ module "projects" {
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
     tags                   = try(each.value.factories_config.tags, null)
   }
+  kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
-  lien_reason         = try(each.value.lien_reason, null)
-  log_scopes          = try(each.value.log_scopes, null)
-  logging_data_access = try(each.value.logging_data_access, {})
-  logging_exclusions  = try(each.value.logging_exclusions, {})
-  logging_metrics     = try(each.value.logging_metrics, null)
-  logging_sinks       = try(each.value.logging_sinks, {})
+  lien_reason        = try(each.value.lien_reason, null)
+  log_scopes         = try(each.value.log_scopes, null)
+  logging_exclusions = try(each.value.logging_exclusions, {})
+  logging_metrics    = try(each.value.logging_metrics, null)
+  logging_sinks      = try(each.value.logging_sinks, {})
   metric_scopes = distinct(concat(
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
+  quotas                = each.value.quotas
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -120,10 +130,10 @@ module "projects" {
   tag_bindings = merge(
     each.value.tag_bindings, var.data_merges.tag_bindings
   )
-  tags     = each.value.tags
-  universe = each.value.universe
-  vpc_sc   = each.value.vpc_sc
-  quotas   = each.value.quotas
+  tags                    = each.value.tags
+  universe                = each.value.universe
+  vpc_sc                  = each.value.vpc_sc
+  workload_identity_pools = each.value.workload_identity_pools
 }
 
 module "projects-iam" {
@@ -143,7 +153,8 @@ module "projects-iam" {
     kms_keys   = local.ctx.kms_keys
     iam_principals = merge(
       local.ctx_iam_principals,
-      lookup(local.self_sas_iam_emails, each.key, {})
+      lookup(local.self_sas_iam_emails, each.key, {}),
+      local.projects_service_agents
     )
     log_buckets = local.ctx_log_buckets
   })
@@ -157,6 +168,7 @@ module "projects-iam" {
   iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals          = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive = lookup(each.value, "iam_by_principals_additive", {})
+  logging_data_access        = lookup(each.value, "logging_data_access", {})
   pam_entitlements           = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false

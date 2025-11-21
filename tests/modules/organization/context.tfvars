@@ -76,6 +76,14 @@ iam_bindings_additive = {
     member = "$iam_principals:myuser"
   }
 }
+logging_data_access = {
+  allServices = {
+    ADMIN_READ = {
+      exempted_members = ["$iam_principals:mygroup"]
+    }
+    DATA_READ = {}
+  }
+}
 logging_sinks = {
   test-bq = {
     destination = "$bigquery_datasets:test"

@@ -1,1 +1,18 @@
-../../organization/schemas/custom-role.schema.json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Custom Role",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "includedPermissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z-]+\\.[a-zA-Z-]+\\.[a-zA-Z-]+$"
+      }
+    }
+  }
+}

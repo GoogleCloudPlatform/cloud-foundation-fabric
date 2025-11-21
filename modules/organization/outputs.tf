@@ -123,3 +123,19 @@ output "tag_values" {
   }
 }
 
+output "workforce_identity_provider_names" {
+  description = "Workforce Identity provider names."
+  value = {
+    for k, v in google_iam_workforce_pool_provider.default : k => v.name
+  }
+}
+
+output "workforce_identity_providers" {
+  description = "Workforce Identity provider attributes."
+  value = {
+    for k, v in google_iam_workforce_pool_provider.default : k => {
+      name = v.name
+      pool = try(google_iam_workforce_pool.default[0].name, null)
+    }
+  }
+}

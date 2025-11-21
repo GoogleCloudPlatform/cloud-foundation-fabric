@@ -71,7 +71,7 @@ resource "google_compute_instance_template" "default" {
       for_each = var.encryption != null ? [""] : []
       content {
         kms_key_self_link = lookup(
-          local.ctx.kms_keys,
+          local.ctx_kms_keys,
           var.encryption.kms_key_self_link,
           var.encryption.kms_key_self_link
         )
@@ -128,7 +128,7 @@ resource "google_compute_instance_template" "default" {
         for_each = var.encryption != null ? [""] : []
         content {
           kms_key_self_link = lookup(
-            local.ctx.kms_keys,
+            local.ctx_kms_keys,
             var.encryption.kms_key_self_link,
             var.encryption.kms_key_self_link
           )
@@ -296,7 +296,7 @@ resource "google_compute_region_instance_template" "default" {
       for_each = var.encryption != null ? [""] : []
       content {
         kms_key_self_link = try(
-          local.ctx.kms_keys[var.encryption.kms_key_self_link],
+          local.ctx_kms_keys[var.encryption.kms_key_self_link],
           var.encryption.kms_key_self_link
         )
       }
@@ -352,7 +352,7 @@ resource "google_compute_region_instance_template" "default" {
         for_each = var.encryption != null ? [""] : []
         content {
           kms_key_self_link = try(
-            local.ctx.kms_keys[var.encryption.kms_key_self_link],
+            local.ctx_kms_keys[var.encryption.kms_key_self_link],
             var.encryption.kms_key_self_link
           )
         }

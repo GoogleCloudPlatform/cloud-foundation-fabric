@@ -44,7 +44,9 @@ env:
 jobs:
   setup-tf-providers:
     runs-on: ubuntu-latest
+    continue-on-error: true  # run terraform tests, even if setup for tofu fails
     strategy:
+      fail-fast: false
       matrix:
         include:
           - flavour: terraform
@@ -131,6 +133,7 @@ jobs:
     needs:
       - setup-tf-providers
     strategy:
+      fail-fast: false
       matrix:
         include:
           - flavour: terraform
@@ -174,6 +177,7 @@ jobs:
     needs:
       - setup-tf-providers
     strategy:
+      fail-fast: false
       matrix:
         include:
           - flavour: terraform
@@ -218,6 +222,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup-tf-providers
     strategy:
+      fail-fast: false
       matrix:
         include:
           - flavour: terraform

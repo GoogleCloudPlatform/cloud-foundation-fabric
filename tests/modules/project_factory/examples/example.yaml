@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # yamllint disable rule:line-length
+
 values:
   module.project-factory.module.automation-bucket["dev-tb-app0-0/automation/tf-state"].google_storage_bucket.bucket[0]:
     autoclass: []
@@ -119,6 +120,12 @@ values:
     timeouts: null
     type: email
     user_labels: null
+  module.project-factory.module.folder-1-iam["team-a"].google_folder_iam_audit_config.default["storage.googleapis.com"]:
+    audit_log_config:
+    - exempted_members:
+      - group:gcp-devops@example.org
+      log_type: DATA_READ
+    service: storage.googleapis.com
   module.project-factory.module.folder-1-iam["team-a"].google_folder_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
@@ -284,6 +291,13 @@ values:
   module.project-factory.module.projects-iam["dev-tb-app0-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: test-pf-dev-tb-app0-0
     timeouts: null
+  ? module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_audit_config.default["storage.googleapis.com"]
+  : audit_log_config:
+    - exempted_members:
+      - group:gcp-devops@example.org
+      log_type: DATA_READ
+    project: test-pf-dev-tb-app0-0
+    service: storage.googleapis.com
   module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
@@ -530,6 +544,34 @@ values:
     - ALL
     parent: projects/test-pf-teams-iac-0
     timeouts: null
+  module.project-factory.module.projects["teams-iac-0"].google_iam_workload_identity_pool.default["test-0"]:
+    description: null
+    disabled: null
+    display_name: Test pool.
+    project: test-pf-teams-iac-0
+    timeouts: null
+    workload_identity_pool_id: test-0
+  ? module.project-factory.module.projects["teams-iac-0"].google_iam_workload_identity_pool_provider.default["test-0/github-test"]
+  : attribute_condition: attribute.repository_owner=="my_org"
+    attribute_mapping:
+      attribute.actor: assertion.actor
+      attribute.fast_sub: '"repo:" + assertion.repository + ":ref:" + assertion.ref'
+      attribute.ref: assertion.ref
+      attribute.repository: assertion.repository
+      attribute.repository_owner: assertion.repository_owner
+      attribute.sub: assertion.sub
+      google.subject: assertion.sub
+    description: null
+    disabled: false
+    display_name: GitHub test provider.
+    oidc:
+    - allowed_audiences: []
+      issuer_uri: https://token.actions.githubusercontent.com
+      jwks_json: null
+    project: test-pf-teams-iac-0
+    timeouts: null
+    workload_identity_pool_id: test-0
+    workload_identity_pool_provider_id: github-test
   module.project-factory.module.projects["teams-iac-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
     dry_run_spec: []
     name: projects/test-pf-teams-iac-0/policies/compute.disableSerialPortAccess
@@ -691,6 +733,11 @@ values:
     input: null
     output: null
     triggers_replace: null
+  module.project-factory.terraform_data.project-preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+
 
 counts:
   google_billing_budget: 1
@@ -698,12 +745,16 @@ counts:
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 4
   google_folder: 8
+  google_folder_iam_audit_config: 1
   google_folder_iam_binding: 1
+  google_iam_workload_identity_pool: 1
+  google_iam_workload_identity_pool_provider: 1
   google_kms_crypto_key_iam_member: 2
   google_monitoring_notification_channel: 1
   google_org_policy_policy: 2
   google_privileged_access_manager_entitlement: 2
   google_project: 4
+  google_project_iam_audit_config: 1
   google_project_iam_binding: 6
   google_project_iam_member: 21
   google_project_service: 13
@@ -719,5 +770,5 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 27
-  resources: 95
+  resources: 99
   terraform_data: 2

@@ -14,37 +14,6 @@
 
 # yamllint disable rule:line-length
 values:
-  google_iam_workload_identity_pool.default[0]:
-    description: null
-    disabled: null
-    display_name: null
-    project: ft0-prod-iac-core-0
-    timeouts: null
-    workload_identity_pool_id: iac-0
-  google_iam_workload_identity_pool_provider.default["github"]:
-    attribute_condition: attribute.repository_owner=="my_org"
-    attribute_mapping:
-      attribute.actor: assertion.actor
-      attribute.fast_sub: '"repo:" + assertion.repository + ":ref:" + assertion.ref'
-      attribute.ref: assertion.ref
-      attribute.repository: assertion.repository
-      attribute.repository_owner: assertion.repository_owner
-      attribute.sub: assertion.sub
-      google.subject: assertion.sub
-    aws: []
-    description: null
-    disabled: null
-    display_name: null
-    oidc:
-    - allowed_audiences: []
-      issuer_uri: https://token.actions.githubusercontent.com
-      jwks_json: null
-    project: ft0-prod-iac-core-0
-    saml: []
-    timeouts: null
-    workload_identity_pool_id: iac-0
-    workload_identity_pool_provider_id: github
-    x509: []
   google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
     cache_control: null
@@ -499,7 +468,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: false
+    - enabled: true
   ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-org-state
     condition: []
@@ -540,7 +509,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: false
+    - enabled: true
   ? module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-outputs
     condition: []
@@ -593,7 +562,7 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
     versioning:
-    - enabled: false
+    - enabled: true
   module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["1-vpcsc/"]:
     bucket: ft0-prod-iac-core-0-iac-stage-state
     force_destroy: false
@@ -2809,8 +2778,6 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 8
   google_folder_iam_binding: 44
-  google_iam_workload_identity_pool: 1
-  google_iam_workload_identity_pool_provider: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
@@ -2819,7 +2786,8 @@ counts:
   google_organization_iam_binding: 36
   google_organization_iam_custom_role: 9
   google_project: 3
-  google_project_iam_binding: 16
+  google_project_iam_audit_config: 2
+  google_project_iam_binding: 17
   google_project_iam_member: 15
   google_project_service: 33
   google_project_service_identity: 9
@@ -2838,5 +2806,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 48
-  resources: 313
-  terraform_data: 3
+  resources: 315
+  terraform_data: 4

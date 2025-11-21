@@ -150,6 +150,16 @@ resource "google_resource_manager_lien" "lien" {
   reason       = var.lien_reason
 }
 
+resource "google_kms_key_handle" "default" {
+  for_each = var.kms_autokeys
+  project  = local.project.project_id
+  name     = each.key
+  location = try(
+    local.ctx.locations[each.value.location], each.value.location
+  )
+  resource_type_selector = each.value.resource_type_selector
+}
+
 resource "google_essential_contacts_contact" "contact" {
   provider = google-beta
   for_each = var.contacts

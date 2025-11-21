@@ -82,7 +82,7 @@ check "factory_budgets" {
   assert {
     condition = alltrue([
       for k, v in local.factory_budgets :
-      v.threshold_rules == null || try(v.threshold_rules.percent, null) != null
+      v.threshold_rules == null || try(v.threshold_rules[*].percent, null) != null
     ])
     error_message = "Threshold rules need percent set."
   }

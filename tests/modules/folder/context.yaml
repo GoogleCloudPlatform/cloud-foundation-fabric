@@ -24,6 +24,14 @@ values:
     display_name: Test Context
     parent: organizations/1234567890
     tags: null
+  google_folder_iam_audit_config.default["allServices"]:
+    audit_log_config:
+    - exempted_members:
+      - group:test-group@example.com
+      log_type: ADMIN_READ
+    - exempted_members: []
+      log_type: DATA_READ
+    service: allServices
   google_folder_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     members:
@@ -89,9 +97,10 @@ values:
 counts:
   google_essential_contacts_contact: 1
   google_folder: 1
+  google_folder_iam_audit_config: 1
   google_folder_iam_binding: 4
   google_folder_iam_member: 1
   google_privileged_access_manager_entitlement: 1
   google_tags_tag_binding: 1
   modules: 0
-  resources: 9
+  resources: 10
