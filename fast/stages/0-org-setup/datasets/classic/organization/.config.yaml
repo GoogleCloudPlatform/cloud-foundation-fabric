@@ -108,6 +108,9 @@ iam_by_principals:
   # Uncomment if you want to use PAM.
   # $service_agents:pam:
   #   - roles/privilegedaccessmanager.serviceAgent
+data_access_logs:
+  sts.googleapis.com:
+    ADMIN_READ: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary
