@@ -50,6 +50,7 @@ module "gke-project-0" {
     environment = lower(var.environments[var.stage_config.environment].name)
   }
   org_policies = {
+    // GKE cluster require serial port logging for low level troubleshooting
     "compute.managed.disableSerialPortLogging" = {
       rules = [{ enforce = false }]
     }
