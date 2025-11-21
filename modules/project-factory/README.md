@@ -282,6 +282,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
 - `$iam_principals:service_agents/my_project/my_api`
+- `$iam_principalsets:service_accounts/all`
 - `$kms_keys:my_key`
 - `$log_buckets:my_project/my_bucket`
 - `$locations:my_location`
