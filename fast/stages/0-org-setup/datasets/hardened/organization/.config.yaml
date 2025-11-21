@@ -20,11 +20,6 @@ id: $defaults:organization/id
 contacts:
   $email_addresses:gcp-organization-admins:
     - ALL
-data_access_logs:
-  allServices:
-    ADMIN_READ: {}
-    # DATA_READ: {}
-    # DATA_WRITE: {}
 # conditional authoritative IAM bindings
 iam_bindings:
   # these don't conflict with IAM / IAM by principal
@@ -98,6 +93,9 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-vpcsc-ro:
     - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
+data_access_logs:
+  allServices:
+    ADMIN_READ: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary
