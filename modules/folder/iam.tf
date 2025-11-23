@@ -27,7 +27,7 @@ locals {
   ctx_iam_principals = merge(local.ctx.iam_principals, {
     "$iam_principalsets:service_accounts/all" = format(
       "principalSet://cloudresourcemanager.googleapis.com/folders/%s/type/ServiceAccount",
-      coalesce(try(split("/", local.folder_id), null), "-")
+      coalesce(try(split("/", local.folder_id)[1], null), "-")
     )
   })
   iam = {
@@ -86,7 +86,7 @@ resource "google_folder_iam_member" "bindings" {
   folder   = local.folder_id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member = lookup(
-    local.ctx_iam_principals, each.value.member, each.value.member
+    local.ctx.iam_principals, each.value.member, each.value.member
   )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
