@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# FAST release: v49.0.0
+# FAST release: v49.1.0

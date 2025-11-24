@@ -1655,7 +1655,8 @@ module "project" {
   }
   iam = {
     "roles/editor" = [
-      module.project.service_agents.cloudservices.iam_email
+      module.project.service_agents.cloudservices.iam_email,
+      "$iam_principalsets:service_accounts/all"
     ]
     "roles/apigee.serviceAgent" = [
       module.project.service_agents.apigee.iam_email
