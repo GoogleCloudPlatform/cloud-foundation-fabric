@@ -6,9 +6,14 @@
 
 project_id: $project_ids:net-prod-0
 name: prod-0
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 mtu: 1500
 routers:
   vpn-router:
     region: $locations:primary
     asn: 64515
+routes:
+  default:
+    dest_range: 0.0.0.0/0
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"

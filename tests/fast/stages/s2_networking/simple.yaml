@@ -1594,22 +1594,48 @@ values:
     input: null
     output: null
     triggers_replace: null
-  module.vpc_routes["hub"].google_compute_route.gateway["gateway"]:
+  module.vpc_routes["hub"].google_compute_route.gateway["default"]:
     description: Terraform-managed.
-    dest_range: 8.8.8.8/32
-    name: hub-0-gateway
+    dest_range: 0.0.0.0/0
+    name: hub-0-default
     network: hub-0
     next_hop_gateway: default-internet-gateway
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    priority: 100
+    priority: 1000
     project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc_routes["dev"].google_compute_route.gateway["default"]:
+    description: Terraform-managed.
+    dest_range: 0.0.0.0/0
+    name: dev-0-default
+    network: dev-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: fast-dev-net-spoke-0
+    tags: null
+    timeouts: null
+  module.vpc_routes["prod"].google_compute_route.gateway["default"]:
+    description: Terraform-managed.
+    dest_range: 0.0.0.0/0
+    name: prod-0-default
+    network: prod-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    priority: 1000
+    project: fast-prod-net-spoke-0
     tags: null
     timeouts: null
   module.vpcs["dev"].google_compute_network.network[0]:
     auto_create_subnetworks: false
-    delete_default_routes_on_create: false
+    delete_default_routes_on_create: true
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
@@ -1675,7 +1701,7 @@ values:
     timeouts: null
   module.vpcs["hub"].google_compute_network.network[0]:
     auto_create_subnetworks: false
-    delete_default_routes_on_create: false
+    delete_default_routes_on_create: true
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
@@ -1756,7 +1782,7 @@ values:
     timeouts: null
   module.vpcs["prod"].google_compute_network.network[0]:
     auto_create_subnetworks: false
-    delete_default_routes_on_create: false
+    delete_default_routes_on_create: true
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
@@ -2005,7 +2031,7 @@ counts:
   google_compute_network: 3
   google_compute_network_peering: 4
   google_compute_network_peering_routes_config: 1
-  google_compute_route: 10
+  google_compute_route: 12
   google_compute_router: 4
   google_compute_router_interface: 2
   google_compute_router_nat: 3
@@ -2024,7 +2050,7 @@ counts:
   google_service_networking_connection: 1
   google_service_networking_peered_dns_domain: 1
   google_storage_bucket_object: 2
-  modules: 25
+  modules: 27
   random_id: 3
-  resources: 183
+  resources: 185
   terraform_data: 2
