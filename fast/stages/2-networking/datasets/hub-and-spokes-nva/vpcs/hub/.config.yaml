@@ -6,10 +6,9 @@
 
 project_id: $project_ids:net-core-0
 name: hub-0
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 routes:
-  gateway:
-    dest_range: "8.8.8.8/32"
-    priority: 100
+  default:
+    dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"

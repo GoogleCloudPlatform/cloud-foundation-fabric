@@ -6,7 +6,7 @@
 
 project_id: $project_ids:net-prod-0
 name: prod-0
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 mtu: 1500
 nat_config:
   nat-ew8:
@@ -21,6 +21,11 @@ psa_configs:
     import_routes: true
     peered_domains:
       - "test."
+routes:
+  default:
+    dest_range: 0.0.0.0/0
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"
 subnets_proxy_only:
   - ip_cidr_range: 10.72.240.0/24
     region: $locations:primary
