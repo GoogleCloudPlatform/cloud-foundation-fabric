@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3549](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3549)] Add custom default routes and delete default route in FAST networking -
 - [[#3548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3548)] Context improvements: "all service accounts" principal in folder, org, project modules; custom roles in factory condition vars for FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-11-24 08:28:41+00:00 -->
 
 ### MODULES
