@@ -12,21 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-lb-app-int
-common_tfvars:
-  - common.tfvars
+module: modules/net-lb-app-int-cross-region
 tests:
-  defaults:
-  groups:
-  health-checks-custom:
-  health-checks-external:
   health-checks-grpc:
   health-checks-http:
   health-checks-http2:
   health-checks-https:
   health-checks-ssl:
   health-checks-tcp:
-  https:
-  negs:
-  ssl:
-  urlmaps:
