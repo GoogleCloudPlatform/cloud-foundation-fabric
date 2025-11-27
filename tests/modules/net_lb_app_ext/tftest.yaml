@@ -16,3 +16,9 @@ module: modules/net-lb-app-ext
 tests:
   test-plan:
   test-plan-llp:
+  health-checks-grpc:
+  health-checks-http:
+  health-checks-http2:
+  health-checks-https:
+  health-checks-ssl:
+  health-checks-tcp:
