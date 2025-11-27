@@ -48,6 +48,19 @@ resource "google_monitoring_notification_channel" "default" {
   }
 }
 
+# resource "terraform_data" "defaults_preconditions" {
+#   lifecycle {
+#     precondition {
+#       condition     = local.factory_budgets == null
+#       error_message = yamlencode(local.factory_budgets)
+#     }
+#     precondition {
+#       condition     = local.factory_budgets == null
+#       error_message = yamlencode(local.ctx.project_sets)
+#     }
+#   }
+# }
+
 resource "google_billing_budget" "default" {
   for_each        = merge(local.factory_budgets, var.budgets)
   billing_account = var.id
@@ -83,14 +96,20 @@ resource "google_billing_budget" "default" {
     labels = each.value.filter.label == null ? null : {
       (each.value.filter.label.key) = each.value.filter.label.value
     }
-    projects = each.value.filter.projects == null ? [] : [
-      for v in each.value.filter.projects :
-      lookup(local.ctx.project_ids, v, v)
-    ]
-    resource_ancestors = each.value.filter.resource_ancestors == null ? [] : [
-      for v in each.value.filter.resource_ancestors :
-      lookup(local.ctx.folder_ids, v, v)
-    ]
+    projects = concat(
+      [
+        for v in each.value.filter.projects :
+        lookup(local.ctx.project_ids, v, v)
+      ],
+      lookup(local.ctx.project_sets, "$project_sets:${each.key}", [])
+    )
+    resource_ancestors = concat(
+      [
+        for v in each.value.filter.resource_ancestors :
+        lookup(local.ctx.folder_ids, v, v)
+      ],
+      lookup(local.ctx.folder_sets, "$folder_sets:${each.key}", [])
+    )
     services    = each.value.filter.services
     subaccounts = each.value.filter.subaccounts
     dynamic "custom_period" {
