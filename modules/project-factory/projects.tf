@@ -157,6 +157,10 @@ module "projects-iam" {
       local.projects_service_agents
     )
     log_buckets = local.ctx_log_buckets
+    project_ids = merge(
+      local.ctx.project_ids,
+      { for k, v in module.projects : k => v.project_id }
+    )
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
