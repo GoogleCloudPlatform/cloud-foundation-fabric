@@ -22,7 +22,7 @@ values:
     name: dev-to-hub
     network: dev-0
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     stack_type: IPV4_ONLY
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -36,7 +36,7 @@ values:
     name: hub-to-dev
     network: hub-0
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     stack_type: IPV4_ONLY
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -50,7 +50,7 @@ values:
     name: hub-to-onprem
     network: hub-0
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     stack_type: IPV4_ONLY
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -64,7 +64,7 @@ values:
     name: hub-to-prod
     network: hub-0
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     stack_type: IPV4_ONLY
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -78,7 +78,7 @@ values:
     name: prod-to-hub
     network: prod-0
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     stack_type: IPV4_ONLY
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -95,7 +95,7 @@ values:
     md5_authentication_keys: []
     name: dev-vpn-router
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     timeouts: null
   google_compute_router.default["hub/vpn-router"]:
     bgp:
@@ -115,7 +115,7 @@ values:
     md5_authentication_keys: []
     name: hub-vpn-router
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     timeouts: null
   google_compute_router.default["prod/vpn-router"]:
     bgp:
@@ -129,7 +129,7 @@ values:
     md5_authentication_keys: []
     name: prod-vpn-router
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     timeouts: null
   google_storage_bucket_object.tfvars[0]:
     bucket: test
@@ -1161,7 +1161,7 @@ values:
     md5_authentication_keys: []
     name: hub-nat-ew8-nat
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     timeouts: null
   module.nat["hub/nat-ew8"].google_compute_router_nat.nat:
     enable_dynamic_port_allocation: false
@@ -1176,7 +1176,7 @@ values:
     nat64_subnetwork: []
     nat_ip_allocate_option: AUTO_ONLY
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-nat-ew8-nat
     rules: []
     source_subnetwork_ip_ranges_to_nat: ALL_SUBNETWORKS_ALL_IP_RANGES
@@ -1670,7 +1670,7 @@ values:
     project: fast-dev-net-spoke-0
     tags: null
     timeouts: null
-  module.vpcs["dev"].google_compute_subnetwork.subnetwork["europe-west8/dev-default"]:
+  module.vpcs["dev"].google_compute_subnetwork.subnetwork["europe-west1/dev-default"]:
     description: Default primary-region subnet for dev
     ip_cidr_range: 10.73.0.0/24
     ip_collection: null
@@ -1680,7 +1680,7 @@ values:
     network: dev-0
     private_ip_google_access: true
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     reserved_internal_range: null
     role: null
     send_secondary_ip_range_if_empty: true
@@ -1736,7 +1736,7 @@ values:
     project: fast-prod-net-core-0
     tags: null
     timeouts: null
-  module.vpcs["hub"].google_compute_subnetwork.subnetwork["europe-west8/hub-default"]:
+  module.vpcs["hub"].google_compute_subnetwork.subnetwork["europe-west1/hub-default"]:
     description: Default primary-region subnet for hub
     ip_cidr_range: 10.71.0.0/24
     ip_collection: null
@@ -1746,7 +1746,7 @@ values:
     network: hub-0
     private_ip_google_access: true
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     reserved_internal_range: null
     role: null
     send_secondary_ip_range_if_empty: true
@@ -1802,7 +1802,7 @@ values:
     project: fast-prod-net-spoke-0
     tags: null
     timeouts: null
-  module.vpcs["prod"].google_compute_subnetwork.subnetwork["europe-west8/prod-default"]:
+  module.vpcs["prod"].google_compute_subnetwork.subnetwork["europe-west1/prod-default"]:
     description: Default primary-region subnet for prod
     ip_cidr_range: 10.72.0.0/24
     ip_collection: null
@@ -1812,7 +1812,7 @@ values:
     network: prod-0
     private_ip_google_access: true
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     reserved_internal_range: null
     role: null
     send_secondary_ip_range_if_empty: true
@@ -1823,7 +1823,7 @@ values:
     name: dev-to-hub-remote-0
     private_ip_address: null
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: dev-vpn-router
     subnetwork: null
     timeouts: null
@@ -1834,7 +1834,7 @@ values:
     name: dev-to-hub-remote-1
     private_ip_address: null
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: dev-vpn-router
     subnetwork: null
     timeouts: null
@@ -1856,7 +1856,7 @@ values:
     peer_asn: 64514
     peer_ip_address: 169.254.3.2
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: dev-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -1879,7 +1879,7 @@ values:
     peer_asn: 64514
     peer_ip_address: 169.254.3.6
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: dev-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -1896,7 +1896,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: dev-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
@@ -1917,7 +1917,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-dev-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: dev-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
@@ -1945,7 +1945,7 @@ values:
     name: hub-to-dev-remote-0
     private_ip_address: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     subnetwork: null
     timeouts: null
@@ -1956,7 +1956,7 @@ values:
     name: hub-to-dev-remote-1
     private_ip_address: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     subnetwork: null
     timeouts: null
@@ -1978,7 +1978,7 @@ values:
     peer_asn: 64516
     peer_ip_address: 169.254.3.1
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2001,7 +2001,7 @@ values:
     peer_asn: 64516
     peer_ip_address: 169.254.3.5
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2018,7 +2018,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
@@ -2039,7 +2039,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
@@ -2082,7 +2082,7 @@ values:
     name: hub-to-onprem-remote-0
     private_ip_address: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     subnetwork: null
     timeouts: null
@@ -2093,7 +2093,7 @@ values:
     name: hub-to-onprem-remote-1
     private_ip_address: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     subnetwork: null
     timeouts: null
@@ -2115,7 +2115,7 @@ values:
     peer_asn: 64513
     peer_ip_address: 169.254.128.1
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2138,7 +2138,7 @@ values:
     peer_asn: 64513
     peer_ip_address: 169.254.128.5
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2155,7 +2155,7 @@ values:
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     shared_secret: mySecret
     shared_secret_wo: null
@@ -2176,7 +2176,7 @@ values:
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     shared_secret: mySecret
     shared_secret_wo: null
@@ -2204,7 +2204,7 @@ values:
     name: hub-to-prod-remote-0
     private_ip_address: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     subnetwork: null
     timeouts: null
@@ -2215,7 +2215,7 @@ values:
     name: hub-to-prod-remote-1
     private_ip_address: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     subnetwork: null
     timeouts: null
@@ -2237,7 +2237,7 @@ values:
     peer_asn: 64515
     peer_ip_address: 169.254.2.1
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2260,7 +2260,7 @@ values:
     peer_asn: 64515
     peer_ip_address: 169.254.2.5
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2277,7 +2277,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
@@ -2298,7 +2298,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-prod-net-core-0
-    region: europe-west8
+    region: europe-west1
     router: hub-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
@@ -2326,7 +2326,7 @@ values:
     name: prod-to-hub-remote-0
     private_ip_address: null
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: prod-vpn-router
     subnetwork: null
     timeouts: null
@@ -2337,7 +2337,7 @@ values:
     name: prod-to-hub-remote-1
     private_ip_address: null
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: prod-vpn-router
     subnetwork: null
     timeouts: null
@@ -2359,7 +2359,7 @@ values:
     peer_asn: 64514
     peer_ip_address: 169.254.2.2
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: prod-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2382,7 +2382,7 @@ values:
     peer_asn: 64514
     peer_ip_address: 169.254.2.6
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: prod-vpn-router
     router_appliance_instance: null
     timeouts: null
@@ -2399,7 +2399,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: prod-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
@@ -2420,7 +2420,7 @@ values:
     peer_external_gateway: null
     peer_external_gateway_interface: null
     project: fast-prod-net-spoke-0
-    region: europe-west8
+    region: europe-west1
     router: prod-vpn-router
     shared_secret: foobar
     shared_secret_wo: null
