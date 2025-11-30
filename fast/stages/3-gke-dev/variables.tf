@@ -91,6 +91,9 @@ variable "clusters" {
         services = string
       }), { pods = "pods", services = "services" })
     })
+    node_config = optional(object({
+      boot_disk_kms_key = optional(string)
+    }))
   }))
   default  = {}
   nullable = false

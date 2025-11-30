@@ -88,7 +88,7 @@ module "factory" {
     locations             = local.context.locations
     notification_channels = local.context.notification_channels
     project_ids = merge(
-      var.project_ids, var.host_project_ids, local.context.project_ids
+      var.project_ids, var.host_project_ids, var.security_project_ids, local.context.project_ids
     )
     tag_values        = merge(var.tag_values, local.context.tag_values)
     vpc_sc_perimeters = merge(var.perimeters, local.context.vpc_sc_perimeters)

@@ -80,7 +80,15 @@ for x in $(terraform state list | grep google_storage_bucket.bucket); do
   terraform state rm "$x";
 done
 
+for x in $(terraform state list | grep google_storage_managed_folder.folder); do
+  terraform state rm "$x";
+done
+
 for x in $(terraform state list | grep google_bigquery_dataset); do
+  terraform state rm "$x";
+done
+
+for x in $(terraform state list | grep google_logging_project_bucket_config); do
   terraform state rm "$x";
 done
 

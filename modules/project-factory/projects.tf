@@ -150,17 +150,15 @@ module "projects-iam" {
   }
   context = merge(local.ctx, {
     folder_ids = local.ctx.folder_ids
-    kms_keys   = local.ctx.kms_keys
+    kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
     iam_principals = merge(
       local.ctx_iam_principals,
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
     )
-    log_buckets = local.ctx_log_buckets
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
-    observability    = try(each.value.factories_config.observability, null)
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
   iam                        = lookup(each.value, "iam", {})
@@ -181,4 +179,28 @@ module "projects-iam" {
   shared_vpc_host_config    = each.value.shared_vpc_host_config
   shared_vpc_service_config = each.value.shared_vpc_service_config
   universe                  = each.value.universe
+}
+
+# observability require IAM and service agent configured when using CMEK encryption
+module "projects-observability" {
+  source   = "../project"
+  for_each = local.projects_input
+  name     = module.projects[each.key].project_id
+  project_reuse = {
+    use_data_source = false
+    attributes = {
+      name             = module.projects[each.key].name
+      number           = module.projects[each.key].number
+      services_enabled = module.projects[each.key].services
+    }
+  }
+  context = merge(local.ctx, {
+    folder_ids  = local.ctx.folder_ids
+    kms_keys    = merge(local.ctx.kms_keys, local.kms_keys)
+    log_buckets = local.ctx_log_buckets
+  })
+  factories_config = {
+    observability = try(each.value.factories_config.observability, null)
+  }
+  universe = each.value.universe
 }

@@ -59,4 +59,8 @@ module "log-buckets" {
   })
   retention     = each.value.retention
   log_analytics = each.value.log_analytics
+
+  depends_on = [
+    module.projects-iam
+  ]
 }

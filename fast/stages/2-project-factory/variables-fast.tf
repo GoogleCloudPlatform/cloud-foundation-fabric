@@ -97,6 +97,14 @@ variable "project_ids" {
   default     = {}
 }
 
+variable "security_project_ids" {
+  # tfdoc:variable:source 2-security
+  description = "Projects created in the security stage."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "service_accounts" {
   # tfdoc:variable:source 0-org-setup
   description = "Service accounts created in the bootstrap stage."

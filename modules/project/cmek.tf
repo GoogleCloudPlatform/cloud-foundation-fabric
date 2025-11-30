@@ -31,7 +31,7 @@ locals {
     # https://cloud.google.com/composer/docs/composer-3/configure-cmek-encryption#grant-roles-permissions
     "composer.googleapis.com" : ["composer", "storage"]
     "compute.googleapis.com" : ["compute"]
-    "container.googleapis.com" : ["compute"]
+    "container.googleapis.com" : ["compute", "container-engine-robot"]
     "dataflow.googleapis.com" : ["dataflow", "compute"]
     "dataform.googleapis.com" : ["dataform"]
     "datafusion.googleapis.com" : [
@@ -42,12 +42,13 @@ locals {
     "datastream.googleapis.com" : ["datastream"]
     "dialogflow.googleapis.com" : ["dialogflow-cmek"]
     "file.googleapis.com" : ["cloud-filer"]
+    "logging.googleapis.com" : ["logging"]
     "pubsub.googleapis.com" : ["pubsub"]
+    "run.googleapis.com" : ["cloudrun"]
     "secretmanager.googleapis.com" : ["secretmanager"]
     "spanner.googleapis.com" : ["spanner"]
     "sqladmin.googleapis.com" : ["cloud-sql"]
     "storage.googleapis.com" : ["storage"]
-    "run.googleapis.com" : ["cloudrun"]
   }
   _all_cmek_bindings = flatten([
     for service, keys in var.service_encryption_key_ids : [
