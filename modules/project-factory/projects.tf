@@ -156,7 +156,6 @@ module "projects-iam" {
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
     )
-    log_buckets = local.ctx_log_buckets
     project_ids = merge(
       local.ctx.project_ids,
       { for k, v in module.projects : k => v.project_id }
