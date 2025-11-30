@@ -74,6 +74,12 @@
         }
       }
     },
+    "billing_budgets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "contacts": {
       "type": "object",
       "additionalProperties": false,
