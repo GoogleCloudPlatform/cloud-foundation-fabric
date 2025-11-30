@@ -195,7 +195,6 @@ module "projects-observability" {
     attributes = {
       name             = module.projects[each.key].name
       number           = module.projects[each.key].number
-      services_enabled = module.projects[each.key].services
     }
   }
   context = merge(local.ctx, {
