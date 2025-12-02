@@ -38,10 +38,19 @@ locals {
       k if try(index(v, r), null) != null
     ]
   }
-  ctx_iam_principals = merge(local.ctx.iam_principals, {
-    for k, v in local.aliased_service_agents :
-    "$service_agents:${k}" => v.iam_email
-  })
+  ctx_iam_principals = merge(
+    local.ctx.iam_principals,
+    {
+      for k, v in local.aliased_service_agents :
+      "$service_agents:${k}" => v.iam_email
+    },
+    {
+      "$iam_principalsets:service_accounts/all" = format(
+        "principalSet://cloudresourcemanager.googleapis.com/projects/%s/type/ServiceAccount",
+        coalesce(local.project.number, "-")
+      )
+    }
+  )
   custom_role_ids = {
     for k, v in google_project_iam_custom_role.roles :
     # build the string manually so that role IDs can be used as map
@@ -66,7 +75,12 @@ locals {
     for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
     role => concat(
       try(var.iam[role], []),
-      try(local._iam_principals[role], [])
+      try(local._iam_principals[role], []),
+      (
+        role == "roles/editor" && var.service_agents_config.grant_service_agent_editor
+        ? ["$service_agents:cloudservices"]
+        : []
+      )
     )
   }
   iam_bindings_additive = merge(

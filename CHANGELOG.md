@@ -3,7 +3,25 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-11-11 09:17:58+00:00 to: None since: v48.0.0 -->
+## [Unreleased] <!-- from: 2025-11-18 13:52:06+00:00 to: None since: v49.0.0 -->
+
+## [49.1.0] - 2025-11-24
+
+### FAST
+
+- [[#3549](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3549)] Add custom default routes and delete default route in FAST networking -
+- [[#3548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3548)] Context improvements: "all service accounts" principal in folder, org, project modules; custom roles in factory condition vars for FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-11-24 08:28:41+00:00 -->
+
+### MODULES
+
+- [[#3548](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3548)] Context improvements: "all service accounts" principal in folder, org, project modules; custom roles in factory condition vars for FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-11-24 08:28:41+00:00 -->
+- [[#3543](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3543)] Update service-agents.yaml ([wiktorn](https://github.com/wiktorn)) <!-- 2025-11-24 08:06:24+00:00 -->
+- [[#3547](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3547)] Fix org policy service to be enabled before organization policies applied ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-11-21 07:22:18+00:00 -->
+- [[#3536](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3536)] Add backup vault module ([yashwantmahawar](https://github.com/yashwantmahawar)) <!-- 2025-11-19 18:48:37+00:00 -->
+- [[#3542](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3542)] Fix factory budget check with threshold_rules[*].percent ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-11-19 15:44:55+00:00 -->
+- [[#3540](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3540)] Fix aprover -> approver ([juliocc](https://github.com/juliocc)) <!-- 2025-11-19 07:50:23+00:00 -->
+- [[#3529](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3529)] Add optional secondary read pool support to the alloydb module ([sshcherbakov](https://github.com/sshcherbakov)) <!-- 2025-11-18 23:15:43+00:00 -->
+- [[#3539](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3539)] Allow PSC and PSA connections on Cloud SQL ([vennemp](https://github.com/vennemp)) <!-- 2025-11-18 22:46:48+00:00 -->
 
 ## [49.0.0] - 2025-11-18
 
@@ -1940,7 +1958,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.1.0...HEAD
+[49.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.1.0...49.0.0
 [49.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...48.1.0
 [48.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.1.0...48.0.0
 [48.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...47.1.0
