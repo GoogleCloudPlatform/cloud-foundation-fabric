@@ -95,4 +95,8 @@ module "buckets" {
   versioning                  = each.value.versioning
   retention_policy            = each.value.retention_policy
   enable_object_retention     = each.value.enable_object_retention
+
+  depends_on = [
+    module.projects-iam
+  ]
 }
