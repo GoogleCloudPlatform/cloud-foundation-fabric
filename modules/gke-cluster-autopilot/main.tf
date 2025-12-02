@@ -343,6 +343,19 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.secret_manager_config
     }
   }
+  dynamic "secret_sync_config" {
+    for_each = var.enable_features.secret_sync_config != null ? [""] : []
+    content {
+      enabled = var.enable_features.secret_sync_config.enabled
+      dynamic "rotation_config" {
+        for_each = try(var.enable_features.secret_sync_config.rotation_config, null) != null ? [""] : []
+        content {
+          enabled           = var.enable_features.secret_sync_config.rotation_config.enabled
+          rotation_interval = var.enable_features.secret_sync_config.rotation_config.rotation_interval
+        }
+      }
+    }
+  }
   dynamic "security_posture_config" {
     for_each = var.enable_features.security_posture_config != null ? [""] : []
     content {
