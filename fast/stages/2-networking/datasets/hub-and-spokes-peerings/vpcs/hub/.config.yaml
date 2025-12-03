@@ -6,22 +6,21 @@
 
 project_id: $project_ids:net-core-0
 name: hub-0
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 nat_config:
   nat-ew8:
     region: $locations:primary
-routers:
-  vpn-router:
-    region: $locations:primary
-    asn: 64514
-routes:
-  gateway:
-    dest_range: "8.8.8.8/32"
-    priority: 100
-    next_hop_type: "gateway"
-    next_hop: "default-internet-gateway"
 peering_config:
   to-prod:
     peer_network: $networks:prod
   to-dev:
     peer_network: $networks:dev
+routers:
+  vpn-router:
+    region: $locations:primary
+    asn: 64514
+routes:
+  default:
+    dest_range: 0.0.0.0/0
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"

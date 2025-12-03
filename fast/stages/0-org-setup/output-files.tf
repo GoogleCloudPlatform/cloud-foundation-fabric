@@ -90,9 +90,11 @@ locals {
       project_ids     = local.of_ctx.project_ids,
       project_numbers = module.factory.project_numbers
       # project_numbers = module.factory.project_numbers
-      service_accounts = module.factory.service_account_emails
-      storage_buckets  = module.factory.storage_buckets
-      tag_values       = local.of_ctx.tag_values
+      service_accounts             = module.factory.service_account_emails
+      storage_buckets              = module.factory.storage_buckets
+      tag_values                   = local.of_ctx.tag_values
+      workload_identity_providers  = local.workload_identity_providers
+      workforce_identity_providers = module.organization[0].workforce_identity_providers
     }
   }
   of_universe_domain = try(

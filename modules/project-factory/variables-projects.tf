@@ -249,9 +249,9 @@ variable "projects" {
       manual_approvals = optional(object({
         require_approver_justification = bool
         steps = list(object({
-          approvers                = list(string)
-          approvals_needed         = optional(number, 1)
-          aprover_email_recipients = optional(list(string))
+          approvers                 = list(string)
+          approvals_needed          = optional(number, 1)
+          approver_email_recipients = optional(list(string))
         }))
       }))
       additional_notification_targets = optional(object({
@@ -313,6 +313,33 @@ variable "projects" {
       perimeter_name = string
       is_dry_run     = optional(bool, false)
     }))
+    workload_identity_pools = optional(map(object({
+      display_name = optional(string)
+      description  = optional(string)
+      disabled     = optional(bool)
+      providers = optional(map(object({
+        display_name        = optional(string)
+        description         = optional(string)
+        attribute_condition = optional(string)
+        attribute_mapping   = optional(map(string), {})
+        disabled            = optional(bool, false)
+        identity_provider = object({
+          aws = optional(object({
+            account_id = string
+          }))
+          oidc = optional(object({
+            allowed_audiences = optional(list(string), [])
+            issuer_uri        = optional(string)
+            jwks_json         = optional(string)
+            template          = optional(string)
+          }))
+          saml = optional(object({
+            idp_metadata_xml = string
+          }))
+          # x509 = optional(object({}))
+        })
+      })), {})
+    })), {})
   }))
   nullable = false
   default  = {}

@@ -6,7 +6,7 @@
 
 project_id: $project_ids:net-dev-0
 name: dev-0
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 mtu: 1500
 nat_config:
   nat-ew8:
@@ -14,3 +14,8 @@ nat_config:
 peering_config:
   to-hub:
     peer_network: $networks:hub
+routes:
+  default:
+    dest_range: 0.0.0.0/0
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"

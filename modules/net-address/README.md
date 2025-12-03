@@ -250,7 +250,7 @@ module "addresses" {
 | [network_attachment_ids](outputs.tf#L49) | IDs of network attachments. |  |
 | [psa_addresses](outputs.tf#L57) | Allocated internal addresses for PSA endpoints. |  |
 | [psc](outputs.tf#L65) | Allocated resources for PSC endpoints. |  |
-| [psc_addresses](outputs.tf#L99) | Allocated internal addresses for PSC endpoints. |  |
+| [psc_addresses](outputs.tf#L101) | Allocated internal addresses for PSC endpoints. |  |
 
 ## Fixtures
 

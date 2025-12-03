@@ -68,25 +68,36 @@ resource "restful_resource" "workspace_feeds" {
     "display_name" : each.key,
     "details" : {
       "feed_source_type" : "API",
-      "log_type" : "projects/${module.project.project_id}/locations/${var.tenant_config.region}/instances/${var.tenant_config.customer_id}/logTypes/${each.value.log_type}",
+      "log_type" : (
+        "projects/${module.project.project_id}/locations/${var.tenant_config.region}/instances/${var.tenant_config.customer_id}/logTypes/${each.value.log_type}"
+      ),
       "asset_namespace" : "",
       "labels" : {},
-      (each.value.feed_type) : merge({
-        "authentication" : {
-          "token_endpoint" : "https://oauth2.googleapis.com/token",
-          "claims" : {
-            "issuer" : module.workspace-integration-sa[0].email,
-            "subject" : var.workspace_integration_config.delegated_user,
-            "audience" : "https://oauth2.googleapis.com/token"
+      (each.value.feed_type) : merge(
+        {
+          "authentication" : {
+            "token_endpoint" : "https://oauth2.googleapis.com/token",
+            "claims" : {
+              "issuer" : module.workspace-integration-sa[0].email,
+              "subject" : var.workspace_integration_config.delegated_user,
+              "audience" : "https://oauth2.googleapis.com/token"
+            },
+            rs_credentials : {
+              private_key : jsondecode(base64decode(
+                google_service_account_key.workspace_integration_key[0].private_key
+              )).private_key
+            }
           },
-          rs_credentials : {
-            private_key : jsondecode(base64decode(google_service_account_key.workspace_integration_key[0].private_key)).private_key
-          }
+          workspace_customer_id : (
+            each.key == "ws-alerts"
+            ? trimprefix(var.workspace_integration_config.workspace_customer_id, "C")
+            : var.workspace_integration_config.workspace_customer_id
+          )
         },
-        workspace_customer_id : each.key == "ws-alerts" ? trimprefix(var.workspace_integration_config.workspace_customer_id, "C") : var.workspace_integration_config.workspace_customer_id
-        }, each.key == "ws-activity" ? {
-        applications : var.workspace_integration_config.applications
-      } : {})
+        each.key != "ws-activity" ? {} : {
+          applications : var.workspace_integration_config.applications
+        }
+      )
     }
   }
   write_only_attrs = ["details"]

@@ -49,7 +49,8 @@ iam = {
     "$iam_principals:myuser"
   ]
   "roles/viewer" = [
-    "$iam_principals:mysa"
+    "$iam_principals:mysa",
+    "$iam_principalsets:service_accounts/all"
   ]
 }
 iam_by_principals = {

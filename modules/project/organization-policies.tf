@@ -193,4 +193,6 @@ resource "google_org_policy_policy" "default" {
       }
     }
   }
+
+  depends_on = [google_project_service.org_policy_service]
 }
