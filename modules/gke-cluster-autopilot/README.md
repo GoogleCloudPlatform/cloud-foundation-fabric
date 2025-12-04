@@ -10,6 +10,7 @@ This module offers a way to create and manage Google Kubernetes Engine (GKE) [Au
 - [Backup for GKE](#backup-for-gke)
   - [Allowing access from Google Cloud services](#allowing-access-from-google-cloud-services)
   - [Disable PSC endpoint creation](#disable-psc-endpoint-creation)
+- [Upgrade notifications](#upgrade-notifications)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -263,6 +264,32 @@ module "cluster-1" {
 }
 # tftest modules=1 resources=1 inventory=no-ip-access.yaml
 ```
+
+## Upgrade notifications
+
+Upgrade notifications are configured via the `enable_features.upgrade_notifications`. An existing PubSub topic can be defined via its `topic` attribute, or a new one can be created if the attribute is not set. The `event_types` attribute can be used to control which event types are sent. The `kms_key_name` attribute can be used to control which KMS key is used to encrypt the notification messages.
+
+```hcl
+module "cluster-1" {
+  source     = "./fabric/modules/gke-cluster-autopilot"
+  project_id = var.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network               = var.vpc.self_link
+    subnetwork            = var.subnet.self_link
+    secondary_range_names = {}
+  }
+  enable_features = {
+    upgrade_notifications = {
+      event_types  = ["SECURITY_BULLETIN_EVENT", "UPGRADE_EVENT"]
+      kms_key_name = "projects/myproject/locations/global/keyRings/mykeyring/cryptoKeys/mykey"
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=notifications.yaml
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
