@@ -7,6 +7,7 @@
   - [Configure defaults](#configure-defaults)
   - [Initial user permissions](#initial-user-permissions)
   - [First apply cycle](#first-apply-cycle)
+    - [Default project](#default-project)
     - [Importing org policies](#importing-org-policies)
     - [Local output files storage](#local-output-files-storage)
     - [Init and apply the stage](#init-and-apply-the-stage)
