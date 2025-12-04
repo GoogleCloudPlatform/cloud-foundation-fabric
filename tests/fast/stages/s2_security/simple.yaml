@@ -128,60 +128,6 @@ values:
   module.factory.module.folder-1["prod"].google_tags_tag_binding.binding["environment"]:
     tag_value: tagValues/12346
     timeouts: null
-  module.factory.module.log-buckets["dev-sec-core-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: audit-logs
-    cmek_settings: []
-    enable_analytics: false
-    index_configs: []
-    location: global
-    locked: null
-    project: fast-dev-sec-core-0
-    retention_days: 30
-  module.factory.module.log-buckets["dev-sec-core-0/iam"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: iam
-    cmek_settings: []
-    enable_analytics: false
-    index_configs: []
-    location: global
-    locked: null
-    project: fast-dev-sec-core-0
-    retention_days: 30
-  module.factory.module.log-buckets["dev-sec-core-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: vpc-sc
-    cmek_settings: []
-    enable_analytics: false
-    index_configs: []
-    location: global
-    locked: null
-    project: fast-dev-sec-core-0
-    retention_days: 30
-  module.factory.module.log-buckets["prod-sec-core-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: audit-logs
-    cmek_settings: []
-    enable_analytics: false
-    index_configs: []
-    location: global
-    locked: null
-    project: fast-prod-sec-core-0
-    retention_days: 30
-  module.factory.module.log-buckets["prod-sec-core-0/iam"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: iam
-    cmek_settings: []
-    enable_analytics: false
-    index_configs: []
-    location: global
-    locked: null
-    project: fast-prod-sec-core-0
-    retention_days: 30
-  module.factory.module.log-buckets["prod-sec-core-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
-    bucket_id: vpc-sc
-    cmek_settings: []
-    enable_analytics: false
-    index_configs: []
-    location: global
-    locked: null
-    project: fast-prod-sec-core-0
-    retention_days: 30
   module.factory.module.projects-iam["dev-sec-core-0"].google_project_iam_binding.bindings["key_delegated"]:
     condition:
     - description: null
@@ -408,7 +354,6 @@ counts:
   google_folder: 2
   google_kms_crypto_key: 2
   google_kms_key_ring: 1
-  google_logging_project_bucket_config: 6
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 1
   google_project: 2
@@ -418,6 +363,6 @@ counts:
   google_project_service_identity: 10
   google_storage_bucket_object: 2
   google_tags_tag_binding: 2
-  modules: 15
-  resources: 51
+  modules: 9
+  resources: 45
   terraform_data: 2

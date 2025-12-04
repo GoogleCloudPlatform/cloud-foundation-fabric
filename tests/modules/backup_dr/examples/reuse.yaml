@@ -1,0 +1,60 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.dr_example.google_backup_dr_backup_plan.backup_plan["my-backup-plan"]:
+    backup_plan_id: my-backup-plan
+    backup_rules:
+    - backup_retention_days: 30
+      rule_id: daily-backup-rule
+      standard_schedule:
+      - backup_window:
+        - end_hour_of_day: 5
+          start_hour_of_day: 1
+        days_of_month: null
+        days_of_week: null
+        hourly_frequency: 6
+        months: null
+        recurrence_type: HOURLY
+        time_zone: America/Los_Angeles
+        week_day_of_month: []
+    - backup_retention_days: 30
+      rule_id: monthly-backup-rule
+      standard_schedule:
+      - backup_window:
+        - end_hour_of_day: 5
+          start_hour_of_day: 1
+        days_of_month: null
+        days_of_week: null
+        hourly_frequency: null
+        months: null
+        recurrence_type: MONTHLY
+        time_zone: America/Los_Angeles
+        week_day_of_month:
+        - day_of_week: MONDAY
+          week_of_month: FIRST
+    backup_vault: backup-vault-test
+    description: Backup Plan for GCE Instances.
+    location: us-central1
+    log_retention_days: null
+    project: your-gcp-project-id
+    resource_type: compute.googleapis.com/Instance
+    timeouts: null
+
+counts:
+  google_backup_dr_backup_plan: 1
+  modules: 1
+  resources: 1
+
+outputs: {}

@@ -60,6 +60,9 @@ locals {
           module.buckets["${k}/${sk}"].name
         )
       }
+      workload_identity_providers = (
+        module.projects[k].workload_identity_providers
+      )
     }
   }
   outputs_service_accounts = merge(

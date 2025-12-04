@@ -165,7 +165,7 @@ resource "google_project_iam_member" "shared_vpc_host_iam" {
     var.shared_vpc_service_config.host_project
   )
   role   = "roles/compute.networkUser"
-  member = lookup(local.ctx.iam_principals, each.value, each.value)
+  member = lookup(local.ctx_iam_principals, each.value, each.value)
 }
 
 resource "google_project_iam_member" "shared_vpc_host_iam_additive" {
@@ -179,7 +179,7 @@ resource "google_project_iam_member" "shared_vpc_host_iam_additive" {
     local.ctx.custom_roles, each.value.role, each.value.role
   )
   member = lookup(
-    local.ctx.iam_principals, each.value.member, each.value.member
+    local.ctx_iam_principals, each.value.member, each.value.member
   )
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
@@ -225,6 +225,6 @@ resource "google_compute_subnetwork_iam_member" "shared_vpc_host_subnets_iam" {
   subnetwork = each.value.subnet
   role       = "roles/compute.networkUser"
   member = lookup(
-    local.ctx.iam_principals, each.value.member, each.value.member
+    local.ctx_iam_principals, each.value.member, each.value.member
   )
 }

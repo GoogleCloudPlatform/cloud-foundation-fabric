@@ -1,0 +1,140 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.project.google_iam_workload_identity_pool.default["test-non-oidc"]:
+    description: null
+    disabled: null
+    display_name: Test pool (non-OIDC).
+    project: test-project
+    timeouts: null
+    workload_identity_pool_id: test-non-oidc
+  module.project.google_iam_workload_identity_pool.default["test-oidc"]:
+    description: null
+    disabled: null
+    display_name: Test pool (OIDC).
+    project: test-project
+    timeouts: null
+    workload_identity_pool_id: test-oidc
+  module.project.google_iam_workload_identity_pool_provider.default["test-non-oidc/aws-test"]:
+    attribute_condition: attribute.aws_role=="arn:aws:sts::999999999999:assumed-role/stack-eu-central-1-lambdaRole"
+    attribute_mapping:
+      attribute.aws_account: assertion.account
+      attribute.environment: 'assertion.arn.contains(":instance-profile/Production")
+        ? "prod" : "test"'
+      google.subject: assertion.arn
+    aws:
+    - account_id: '999999999999'
+    description: null
+    disabled: false
+    display_name: null
+    oidc: []
+    project: test-project
+    saml: []
+    timeouts: null
+    workload_identity_pool_id: test-non-oidc
+    workload_identity_pool_provider_id: aws-test
+    x509: []
+  module.project.google_iam_workload_identity_pool_provider.default["test-non-oidc/saml-test"]:
+    attribute_condition: null
+    attribute_mapping:
+      attribute.aws_account: assertion.account
+      attribute.environment: 'assertion.arn.contains(":instance-profile/Production")
+        ? "prod" : "test"'
+      google.subject: assertion.arn
+    aws: []
+    description: null
+    disabled: false
+    display_name: null
+    oidc: []
+    project: test-project
+    saml:
+    - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
+    timeouts: null
+    workload_identity_pool_id: test-non-oidc
+    workload_identity_pool_provider_id: saml-test
+    x509: []
+  module.project.google_iam_workload_identity_pool_provider.default["test-oidc/github-test"]:
+    attribute_condition: attribute.repository_owner=='my_org'
+    attribute_mapping:
+      attribute.actor: assertion.actor
+      attribute.fast_sub: '"repo:" + assertion.repository + ":ref:" + assertion.ref'
+      attribute.ref: assertion.ref
+      attribute.repository: assertion.repository
+      attribute.repository_owner: assertion.repository_owner
+      attribute.sub: assertion.sub
+      google.subject: assertion.sub
+    aws: []
+    description: null
+    disabled: false
+    display_name: GitHub provider (from template).
+    oidc:
+    - allowed_audiences: []
+      issuer_uri: https://token.actions.githubusercontent.com
+      jwks_json: null
+    project: test-project
+    saml: []
+    timeouts: null
+    workload_identity_pool_id: test-oidc
+    workload_identity_pool_provider_id: github-test
+    x509: []
+  module.project.google_iam_workload_identity_pool_provider.default["test-oidc/gitlab-test"]:
+    attribute_condition: attribute.namespace_path=='my_org'
+    attribute_mapping:
+      attribute.environment: assertion.environment
+      attribute.namespace_id: assertion.namespace_id
+      attribute.namespace_path: assertion.namespace_path
+      attribute.project_id: assertion.project_id
+      attribute.project_path: assertion.project_path
+      attribute.ref: assertion.ref
+      attribute.ref_type: assertion.ref_type
+      attribute.repository: assertion.project_path
+      attribute.sub: assertion.sub
+      google.subject: assertion.sub
+    aws: []
+    description: null
+    disabled: false
+    display_name: GitLab provider (explicit attributes).
+    oidc:
+    - allowed_audiences: []
+      issuer_uri: https://gitlab.com
+      jwks_json: null
+    project: test-project
+    saml: []
+    timeouts: null
+    workload_identity_pool_id: test-oidc
+    workload_identity_pool_provider_id: gitlab-test
+    x509: []
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '1122334455'
+    labels: null
+    name: test-project
+    org_id: null
+    project_id: test-project
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_iam_workload_identity_pool: 2
+  google_iam_workload_identity_pool_provider: 4
+  google_project: 1
+  modules: 1
+  resources: 7

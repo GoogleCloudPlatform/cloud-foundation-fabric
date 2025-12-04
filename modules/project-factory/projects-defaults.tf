@@ -95,6 +95,7 @@ locals {
         )
         : local.data_defaults.defaults.project_reuse
       )
+      quotas = try(v.quotas, {})
       service_encryption_key_ids = coalesce( # type: map(list(string))
         local.data_defaults.overrides.service_encryption_key_ids,
         try(v.service_encryption_key_ids, null),
@@ -180,7 +181,23 @@ locals {
           : local.data_defaults.defaults.vpc_sc
         )
       )
-      quotas = try(v.quotas, {})
+      workload_identity_pools = {
+        for wk, wv in try(v.workload_identity_pools, {}) : wk => {
+          display_name = lookup(wv, "display_name", null)
+          description  = lookup(wv, "description", null)
+          disabled     = lookup(wv, "disabled", null)
+          providers = {
+            for pk, pv in try(wv.providers, {}) : pk => {
+              display_name        = lookup(pv, "display_name", null)
+              description         = lookup(pv, "description", null)
+              disabled            = lookup(pv, "disabled", null)
+              attribute_condition = lookup(pv, "attribute_condition", null)
+              attribute_mapping   = lookup(pv, "attribute_mapping", {})
+              identity_provider   = lookup(pv, "identity_provider", {})
+            }
+          }
+        }
+      }
     })
   }
   # tflint-ignore: terraform_unused_declarations

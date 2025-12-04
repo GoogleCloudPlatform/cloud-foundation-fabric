@@ -11,6 +11,7 @@ This module implements the creation and management of one GCP project including 
   - [Authoritative IAM](#authoritative-iam)
   - [Additive IAM](#additive-iam)
   - [Service Agents](#service-agents)
+    - [Cloudservices Editor Role](#cloudservices-editor-role)
     - [Service Agent Aliases](#service-agent-aliases)
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
@@ -40,6 +41,7 @@ This module implements the creation and management of one GCP project including 
 - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
 - [Observability](#observability)
 - [Observability factory](#observability-factory)
+- [Workload Identity Federation](#workload-identity-federation)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -231,6 +233,10 @@ The `service_agents` output provides a convenient way to access information abou
 > You can only access a service agent's details through the `service_agents` output if its corresponding API is enabled through the `services` variable.
 
 The complete list of Google Cloud service agents, including their names, default roles, and associated APIs, is maintained in the  [service-agents.yaml](./service-agents.yaml) file.  This file is regularly updated to reflect the [official list of Google Cloud service agents](https://cloud.google.com/iam/docs/service-agents) using the [`build_service_agents`](../../tools/build_service_agents.py) script.
+
+#### Cloudservices Editor Role
+
+The `cloudservices` service agent is granted `roles/editor` by default, making it easy to accidentally remove this binding when managing the editor role authoritatively. In those cases, the module auto-injects the `cloudservices` service agent to preserve the binding. This behaviour is disabled when the `service_agents_config.grant_service_agent_editor` variable is set to `false`.
 
 #### Service Agent Aliases
 
@@ -1654,7 +1660,8 @@ module "project" {
   }
   iam = {
     "roles/editor" = [
-      module.project.service_agents.cloudservices.iam_email
+      module.project.service_agents.cloudservices.iam_email,
+      "$iam_principalsets:service_accounts/all"
     ]
     "roles/apigee.serviceAgent" = [
       module.project.service_agents.apigee.iam_email
@@ -1975,6 +1982,90 @@ alerts:
       foo: bar
 ```
 
+## Workload Identity Federation
+
+Workload Identity federation pools and providers can be created via the `workload_identity_pools` variable.
+
+Auto-population of provider attributes and issuer are supported for OIDC providers via the `provider_template` attribute. Currently `github`, `gitlab`, `okta` and `terraform` provider types are supported.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  prefix          = var.prefix
+  workload_identity_pools = {
+    test-oidc = {
+      display_name = "Test pool (OIDC)."
+      providers = {
+        github-test = {
+          attribute_condition = "attribute.repository_owner=='my_org'"
+          display_name        = "GitHub provider (from template)."
+          identity_provider = {
+            oidc = {
+              template = "github"
+            }
+          }
+        }
+        gitlab-test = {
+          display_name        = "GitLab provider (explicit attributes)."
+          attribute_condition = "attribute.namespace_path=='my_org'"
+          attribute_mapping = {
+            "google.subject"           = "assertion.sub"
+            "attribute.sub"            = "assertion.sub"
+            "attribute.environment"    = "assertion.environment"
+            "attribute.namespace_id"   = "assertion.namespace_id"
+            "attribute.namespace_path" = "assertion.namespace_path"
+            "attribute.project_id"     = "assertion.project_id"
+            "attribute.project_path"   = "assertion.project_path"
+            "attribute.repository"     = "assertion.project_path"
+            "attribute.ref"            = "assertion.ref"
+            "attribute.ref_type"       = "assertion.ref_type"
+          }
+          identity_provider = {
+            oidc = {
+              issuer_uri = "https://gitlab.com"
+            }
+          }
+        }
+      }
+    }
+    test-non-oidc = {
+      display_name = "Test pool (non-OIDC)."
+      providers = {
+        aws-test = {
+          attribute_condition = "attribute.aws_role==\"arn:aws:sts::999999999999:assumed-role/stack-eu-central-1-lambdaRole\""
+          attribute_mapping = {
+            "google.subject"        = "assertion.arn"
+            "attribute.aws_account" = "assertion.account"
+            "attribute.environment" = "assertion.arn.contains(\":instance-profile/Production\") ? \"prod\" : \"test\""
+          }
+          identity_provider = {
+            aws = {
+              account_id = "999999999999"
+            }
+          }
+        }
+        saml-test = {
+          attribute_mapping = {
+            "google.subject"        = "assertion.arn"
+            "attribute.aws_account" = "assertion.account"
+            "attribute.environment" = "assertion.arn.contains(\":instance-profile/Production\") ? \"prod\" : \"test\""
+          }
+          identity_provider = {
+            saml = {
+              idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
+            }
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=7 inventory=wif.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -1985,6 +2076,8 @@ alerts:
 | [bigquery-reservation.tf](./bigquery-reservation.tf) | None | <code>google_bigquery_reservation</code> · <code>google_bigquery_reservation_assignment</code> |
 | [cmek.tf](./cmek.tf) | Service Agent IAM Bindings for CMEK | <code>google_kms_crypto_key_iam_member</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_project_iam_binding</code> · <code>google_project_iam_custom_role</code> · <code>google_project_iam_member</code> |
+| [identity-providers-defs.tf](./identity-providers-defs.tf) | Workload Identity provider definitions. |  |
+| [identity-providers.tf](./identity-providers.tf) | None | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
 | [logging-metrics.tf](./logging-metrics.tf) | None | <code>google_logging_metric</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_log_scope</code> · <code>google_logging_project_exclusion</code> · <code>google_logging_project_sink</code> · <code>google_project_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_project_default_network_tier</code> · <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_kms_key_handle</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
@@ -1998,6 +2091,7 @@ alerts:
 | [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork_iam_member</code> · <code>google_project_iam_member</code> |
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
+| [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
 | [variables-observability.tf](./variables-observability.tf) | None |  |
 | [variables-pam.tf](./variables-pam.tf) | None |  |
 | [variables-quotas.tf](./variables-quotas.tf) | None |  |
@@ -2042,24 +2136,25 @@ alerts:
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  id          &#61; optional&#40;string&#41;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;  network     &#61; string &#35; project_id&#47;vpc_name&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;    id          &#61; optional&#40;string&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-observability.tf#L223) | Monitoring notification channels. | <code title="map&#40;object&#40;&#123;&#10;  type         &#61; string&#10;  description  &#61; optional&#40;string&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  enabled      &#61; optional&#40;bool&#41;&#10;  labels       &#61; optional&#40;map&#40;string&#41;&#41;&#10;  user_labels  &#61; optional&#40;map&#40;string&#41;&#41;&#10;  sensitive_labels &#61; optional&#40;object&#40;&#123;&#10;    auth_token  &#61; optional&#40;string&#41;&#10;    password    &#61; optional&#40;string&#41;&#10;    service_key &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L205) | Organization policies applied to this project keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    parameters &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code title="map&#40;object&#40;&#123;&#10;  max_request_duration &#61; string&#10;  eligible_users       &#61; list&#40;string&#41;&#10;  privileged_access &#61; list&#40;object&#40;&#123;&#10;    role      &#61; string&#10;    condition &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  requester_justification_config &#61; optional&#40;object&#40;&#123;&#10;    not_mandatory &#61; optional&#40;bool, true&#41;&#10;    unstructured  &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123; not_mandatory &#61; false, unstructured &#61; true &#125;&#41;&#10;  manual_approvals &#61; optional&#40;object&#40;&#123;&#10;    require_approver_justification &#61; bool&#10;    steps &#61; list&#40;object&#40;&#123;&#10;      approvers                &#61; list&#40;string&#41;&#10;      approvals_needed         &#61; optional&#40;number, 1&#41;&#10;      aprover_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  additional_notification_targets &#61; optional&#40;object&#40;&#123;&#10;    admin_email_recipients     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    requester_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code title="map&#40;object&#40;&#123;&#10;  max_request_duration &#61; string&#10;  eligible_users       &#61; list&#40;string&#41;&#10;  privileged_access &#61; list&#40;object&#40;&#123;&#10;    role      &#61; string&#10;    condition &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  requester_justification_config &#61; optional&#40;object&#40;&#123;&#10;    not_mandatory &#61; optional&#40;bool, true&#41;&#10;    unstructured  &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123; not_mandatory &#61; false, unstructured &#61; true &#125;&#41;&#10;  manual_approvals &#61; optional&#40;object&#40;&#123;&#10;    require_approver_justification &#61; bool&#10;    steps &#61; list&#40;object&#40;&#123;&#10;      approvers                 &#61; list&#40;string&#41;&#10;      approvals_needed          &#61; optional&#40;number, 1&#41;&#10;      approver_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  additional_notification_targets &#61; optional&#40;object&#40;&#123;&#10;    admin_email_recipients     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    requester_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [parent](variables.tf#L233) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
 | [prefix](variables.tf#L247) | Optional prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
 | [project_reuse](variables.tf#L257) | Reuse existing project if not null. If name and number are not passed in, a data source is used. | <code title="object&#40;&#123;&#10;  use_data_source &#61; optional&#40;bool, true&#41;&#10;  attributes &#61; optional&#40;object&#40;&#123;&#10;    name             &#61; string&#10;    number           &#61; number&#10;    services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [quotas](variables-quotas.tf#L17) | Service quota configuration. | <code title="map&#40;object&#40;&#123;&#10;  service              &#61; string&#10;  quota_id             &#61; string&#10;  preferred_value      &#61; number&#10;  dimensions           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  justification        &#61; optional&#40;string&#41;&#10;  contact_email        &#61; optional&#40;string&#41;&#10;  annotations          &#61; optional&#40;map&#40;string&#41;&#41;&#10;  ignore_safety_checks &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L17) | SCC custom modules keyed by module name. | <code title="map&#40;object&#40;&#123;&#10;  description    &#61; optional&#40;string&#41;&#10;  severity       &#61; string&#10;  recommendation &#61; string&#10;  predicate &#61; object&#40;&#123;&#10;    expression &#61; string&#10;  &#125;&#41;&#10;  resource_selector &#61; object&#40;&#123;&#10;    resource_types &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  enablement_state &#61; optional&#40;string, &#34;ENABLED&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L277) | Automatic service agent configuration options. | <code title="object&#40;&#123;&#10;  create_primary_agents &#61; optional&#40;bool, true&#41;&#10;  grant_default_roles   &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_config](variables.tf#L287) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; false&#10;  disable_dependent_services &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [service_encryption_key_ids](variables.tf#L299) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L306) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [shared_vpc_host_config](variables.tf#L312) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L322) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [skip_delete](variables.tf#L359) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
+| [service_agents_config](variables.tf#L277) | Automatic service agent configuration options. | <code title="object&#40;&#123;&#10;  create_primary_agents      &#61; optional&#40;bool, true&#41;&#10;  grant_default_roles        &#61; optional&#40;bool, true&#41;&#10;  grant_service_agent_editor &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_config](variables.tf#L288) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; false&#10;  disable_dependent_services &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_encryption_key_ids](variables.tf#L300) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L307) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [shared_vpc_host_config](variables.tf#L313) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L323) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  host_project &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L360) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
 | [tag_bindings](variables-tags.tf#L82) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables-tags.tf#L89) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  id          &#61; optional&#40;string&#41;&#10;  description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;  iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  values &#61; optional&#40;map&#40;object&#40;&#123;&#10;    id          &#61; optional&#40;string&#41;&#10;    description &#61; optional&#40;string, &#34;Managed by the Terraform project module.&#34;&#41;&#10;    iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L154) | Fine-grained control on tag resource and IAM creation. | <code title="object&#40;&#123;&#10;  force_context_ids &#61; optional&#40;bool, false&#41;&#10;  ignore_iam        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables.tf#L371) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_sc](variables.tf#L382) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code title="object&#40;&#123;&#10;  perimeter_name &#61; string&#10;  is_dry_run     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [universe](variables.tf#L372) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_sc](variables.tf#L383) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code title="object&#40;&#123;&#10;  perimeter_name &#61; string&#10;  is_dry_run     &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [workload_identity_pools](variables-identity-providers.tf#L17) | Workload Identity Federation pools and providers. | <code title="map&#40;object&#40;&#123;&#10;  display_name &#61; optional&#40;string&#41;&#10;  description  &#61; optional&#40;string&#41;&#10;  disabled     &#61; optional&#40;bool&#41;&#10;  providers &#61; optional&#40;map&#40;object&#40;&#123;&#10;    description         &#61; optional&#40;string&#41;&#10;    display_name        &#61; optional&#40;string&#41;&#10;    attribute_condition &#61; optional&#40;string&#41;&#10;    attribute_mapping   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    disabled            &#61; optional&#40;bool, false&#41;&#10;    identity_provider &#61; object&#40;&#123;&#10;      aws &#61; optional&#40;object&#40;&#123;&#10;        account_id &#61; string&#10;      &#125;&#41;&#41;&#10;      oidc &#61; optional&#40;object&#40;&#123;&#10;        allowed_audiences &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;        issuer_uri        &#61; optional&#40;string&#41;&#10;        jwks_json         &#61; optional&#40;string&#41;&#10;        template          &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      saml &#61; optional&#40;object&#40;&#123;&#10;        idp_metadata_xml &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -2088,6 +2183,8 @@ alerts:
 | [sink_writer_identities](outputs.tf#L197) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L204) | Tag key resources. |  |
 | [tag_values](outputs.tf#L213) | Tag value resources. |  |
+| [workload_identity_provider_ids](outputs.tf#L221) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L229) | Workload identity provider attributes. |  |
 
 ## Fixtures
 

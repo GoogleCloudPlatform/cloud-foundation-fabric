@@ -104,6 +104,7 @@ values:
   google_organization_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
+    - principalSet://cloudresourcemanager.googleapis.com/organizations/1234567890/type/ServiceAccount
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/viewer

@@ -62,7 +62,7 @@ module "buckets" {
   for_each = {
     for k in local.projects_buckets : "${k.project_key}/${k.name}" => k
   }
-  project_id     = module.projects[each.value.project_key].project_id
+  project_id     = module.projects-iam[each.value.project_key].project_id
   prefix         = each.value.prefix
   name           = "${each.value.project_name}-${each.value.name}"
   bucket_create  = each.value.create

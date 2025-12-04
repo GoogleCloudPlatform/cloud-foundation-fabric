@@ -208,10 +208,6 @@ variable "network_config" {
       enable_private_path_for_services = optional(bool, false)
     })
   })
-  validation {
-    condition     = (var.network_config.connectivity.psa_config != null ? 1 : 0) + (var.network_config.connectivity.psc_allowed_consumer_projects != null ? 1 : 0) < 2
-    error_message = "Only one between private network and psc can be specified."
-  }
 }
 
 variable "password_validation_policy" {

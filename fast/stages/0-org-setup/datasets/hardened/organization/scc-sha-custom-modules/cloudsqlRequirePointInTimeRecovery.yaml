@@ -23,5 +23,5 @@ cloudsqlRequirePointInTimeRecovery:
   recommendation: Ensure the CloudSQL instances have point in time recovery enabled
   resource_selector:
     resource_types:
-    - sqladmin.googleapis.com/Instance
+      - sqladmin.googleapis.com/Instance
   severity: HIGH

@@ -21,12 +21,18 @@ locals {
     } if k != "condition_vars"
   }
   # add service agents into the iam_principals context namespace
-  ctx = merge(
-    local._ctx,
-    {
-      iam_principals = merge(local._ctx.iam_principals, local.service_agents_ctx)
-    }
-  )
+  ctx = merge(local._ctx, {
+    iam_principals = merge(
+      local._ctx.iam_principals,
+      local.service_agents_ctx,
+      {
+        "$iam_principalsets:service_accounts/all" = format(
+          "principalSet://cloudresourcemanager.googleapis.com/organizations/%s/type/ServiceAccount",
+          local.organization_id_numeric
+        )
+      }
+    )
+  })
   ctx_p                   = "$"
   organization_id_numeric = split("/", var.organization_id)[1]
 }

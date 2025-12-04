@@ -122,6 +122,7 @@ module "projects" {
   ))
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
+  quotas                = each.value.quotas
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -129,10 +130,10 @@ module "projects" {
   tag_bindings = merge(
     each.value.tag_bindings, var.data_merges.tag_bindings
   )
-  tags     = each.value.tags
-  universe = each.value.universe
-  vpc_sc   = each.value.vpc_sc
-  quotas   = each.value.quotas
+  tags                    = each.value.tags
+  universe                = each.value.universe
+  vpc_sc                  = each.value.vpc_sc
+  workload_identity_pools = each.value.workload_identity_pools
 }
 
 module "projects-iam" {
@@ -156,6 +157,10 @@ module "projects-iam" {
       local.projects_service_agents
     )
     log_buckets = local.ctx_log_buckets
+    project_ids = merge(
+      local.ctx.project_ids,
+      { for k, v in module.projects : k => v.project_id }
+    )
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
