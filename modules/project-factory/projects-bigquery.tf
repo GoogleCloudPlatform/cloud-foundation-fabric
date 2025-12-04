@@ -34,7 +34,7 @@ module "bigquery-datasets" {
   for_each = {
     for k in local.projects_bigquery_datasets : "${k.project_key}/${k.id}" => k
   }
-  project_id = module.projects[each.value.project_key].project_id
+  project_id = module.projects-iam[each.value.project_key].project_id
   id         = each.value.id
   context = merge(local.ctx, {
     iam_principals = merge(
@@ -54,8 +54,4 @@ module "bigquery-datasets" {
     lookup(each.value, "location", null),
     local.data_defaults.defaults.locations.bigquery
   )
-
-  depends_on = [
-    module.projects-iam
-  ]
 }
