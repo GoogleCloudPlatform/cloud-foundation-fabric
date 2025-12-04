@@ -225,7 +225,7 @@ module "cluster-1" {
 
 ## Upgrade notifications
 
-Upgrade notifications are configured via the `enable_features.upgrade_notifications`. An existing PubSub topic can be defined via its `topic` attribute, or a new one can be created if the attribute is not set. The `event_types` attribute can be used to control which event types are sent.
+Upgrade notifications are configured via the `enable_features.upgrade_notifications`. An existing PubSub topic can be defined via its `topic` attribute, or a new one can be created if the attribute is not set. The `event_types` attribute can be used to control which event types are sent. The `kms_key_name` attribute can be used to control which KMS key is used to encrypt the notification messages.
 
 ```hcl
 module "cluster-1" {
@@ -240,7 +240,8 @@ module "cluster-1" {
   }
   enable_features = {
     upgrade_notifications = {
-      event_types = ["SECURITY_BULLETIN_EVENT", "UPGRADE_EVENT"]
+      event_types  = ["SECURITY_BULLETIN_EVENT", "UPGRADE_EVENT"]
+      kms_key_name = "projects/myproject/locations/global/keyRings/mykeyring/cryptoKeys/mykey"
     }
   }
 }

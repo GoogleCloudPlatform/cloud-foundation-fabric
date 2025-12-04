@@ -160,7 +160,7 @@ values:
       content: gke-notifications
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
-    kms_key_name: null
+    kms_key_name: projects/myproject/locations/global/keyRings/mykeyring/cryptoKeys/mykey
     labels:
       content: gke-notifications
     message_retention_duration: null
