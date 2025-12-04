@@ -18,11 +18,12 @@ locals {
   projects_bigquery_datasets = flatten([
     for k, v in local.projects_input : [
       for name, opts in lookup(v, "datasets", {}) : {
-        project_key   = k
-        project_name  = v.name
-        id            = name
-        friendly_name = lookup(opts, "friendly_name", null)
-        location      = lookup(opts, "location", null)
+        project_key    = k
+        project_name   = v.name
+        id             = name
+        encryption_key = lookup(opts, "encryption_key", null)
+        friendly_name  = lookup(opts, "friendly_name", null)
+        location       = lookup(opts, "location", null)
       }
     ]
   ])
@@ -33,7 +34,7 @@ module "bigquery-datasets" {
   for_each = {
     for k in local.projects_bigquery_datasets : "${k.project_key}/${k.id}" => k
   }
-  project_id = module.projects[each.value.project_key].project_id
+  project_id = module.projects-iam[each.value.project_key].project_id
   id         = each.value.id
   context = merge(local.ctx, {
     iam_principals = merge(
@@ -46,7 +47,8 @@ module "bigquery-datasets" {
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids
   })
-  friendly_name = each.value.friendly_name
+  encryption_key = each.value.encryption_key
+  friendly_name  = each.value.friendly_name
   location = coalesce(
     local.data_defaults.overrides.locations.bigquery,
     lookup(each.value, "location", null),
