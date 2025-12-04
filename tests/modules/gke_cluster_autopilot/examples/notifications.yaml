@@ -42,13 +42,6 @@ values:
       autoscaling_profile: null
       default_compute_class_enabled: null
       resource_limits: []
-    control_plane_endpoints_config:
-    - dns_endpoint_config:
-      - allow_external_traffic: true
-        enable_k8s_certs_via_dns: null
-        enable_k8s_tokens_via_dns: null
-      ip_endpoints_config:
-      - enabled: false
     cost_management_config:
     - enabled: true
     deletion_protection: true
