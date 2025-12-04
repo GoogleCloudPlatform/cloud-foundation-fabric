@@ -158,6 +158,20 @@ If you are using an externally managed billing account, make sure user has Billi
 
 ### First apply cycle
 
+#### Default project
+
+If the user applying this stage is starting new on GCP without any pre-existing project configured as default in `gcloud`, org policy creation will fail as the platform will be unable to track API usage quota. In those cases, manually create a temporary project, then enable the services need to bootstrap, and configure the project as default in `gcloud`. Once the first apply has run successfully, the `gcloud` default should be reset to the `iac-0` project, and the temporary one can be deleted.
+
+Create the project via the cloud console, which ensures a unique id is chosen and allows associating a billing account. Once the project has been created, copy its project id (not the name) and use it in the commands below.
+
+```bash
+gcloud config set project [project id]
+gcloud services enable \
+  orgpolicy.googleapis.com iam.googleapis.com cloudresourcemanager.googleapis.com \
+  cloudbilling.googleapis.com serviceusage.googleapis.com logging.googleapis.com \
+  bigquery.googleapis.com essentialcontacts.googleapis.com orgpolicy.googleapis.com
+```
+
 #### Importing org policies
 
 If your dataset includes org policies which are already set in the organization, you must either comment them out in the relevant YAML files or configure this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
@@ -172,8 +186,13 @@ compute.disableSerialPortAccess                  -            SET
 ```tfvars
 # create or edit the 0-org-setup.auto.tfvars.file
 org_policies_imports = [
-  'iam.allowedPolicyMemberDomains',
-  'compute.disableSerialPortAccess'
+  "constraints/compute.managed.restrictProtocolForwardingCreationForTypes",
+  "constraints/essentialcontacts.managed.allowedContactDomains",
+  "constraints/iam.allowedPolicyMemberDomains",
+  "constraints/iam.automaticIamGrantsForDefaultServiceAccounts",
+  "constraints/iam.managed.disableServiceAccountKeyCreation",
+  "constraints/iam.managed.disableServiceAccountKeyUpload",
+  "constraints/storage.uniformBucketLevelAccess"
 ]
 ```
 
@@ -234,6 +253,12 @@ gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/providers/0-org-setup-p
 
 # conventional location for this stage terraform.tfvars (manually managed)
 gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/0-org-setup.auto.tfvars ./
+```
+
+If you had previously configured a temporary project in `gcloud`, you should now set the `iac-0` project as default.
+
+```bash
+gcloud config set project [iac-0 project id]
 ```
 
 Once the provider file has been setup, migrate local state to the GCS backend and re-run apply.
