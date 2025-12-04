@@ -42,11 +42,6 @@ locals {
   }
 }
 
-# generates the service agent for logging.googleapis.com when doesn't exist already
-data "google_logging_project_cmek_settings" "settings" {
-  count   = var.parent_type == "project" && var.kms_key_name != null ? 1 : 0
-  project = local.parent_id
-}
 
 resource "google_logging_project_bucket_config" "bucket" {
   count            = var.parent_type == "project" ? 1 : 0
@@ -62,7 +57,6 @@ resource "google_logging_project_bucket_config" "bucket" {
       kms_key_name = lookup(local.ctx.kms_keys, var.kms_key_name, var.kms_key_name)
     }
   }
-  depends_on = [data.google_logging_project_cmek_settings.settings]
 }
 
 resource "google_logging_folder_bucket_config" "bucket" {
