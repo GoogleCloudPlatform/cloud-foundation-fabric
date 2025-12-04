@@ -168,9 +168,9 @@ Create the project via the cloud console, which ensures a unique id is chosen an
 ```bash
 gcloud config set project [project id]
 gcloud services enable \
-  orgpolicy.googleapis.com iam.googleapis.com cloudresourcemanager.googleapis.com \
-  cloudbilling.googleapis.com serviceusage.googleapis.com logging.googleapis.com \
-  bigquery.googleapis.com essentialcontacts.googleapis.com orgpolicy.googleapis.com
+  bigquery.googleapis.com cloudbilling.googleapis.com cloudresourcemanager.googleapis.com \
+  essentialcontacts.googleapis.com iam.googleapis.com logging.googleapis.com \
+  orgpolicy.googleapis.com serviceusage.googleapis.com 
 ```
 
 #### Importing org policies
