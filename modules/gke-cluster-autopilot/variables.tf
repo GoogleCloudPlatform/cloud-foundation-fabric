@@ -131,9 +131,10 @@ variable "enable_features" {
     service_external_ips = optional(bool, true)
     tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
-      enabled     = optional(bool, true)
-      event_types = optional(list(string), [])
-      topic_id    = optional(string)
+      enabled      = optional(bool, true)
+      event_types  = optional(list(string), [])
+      topic_id     = optional(string)
+      kms_key_name = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
     enterprise_cluster       = optional(bool)

@@ -689,4 +689,5 @@ resource "google_pubsub_topic" "notifications" {
   labels = {
     content = "gke-notifications"
   }
+  kms_key_name = try(var.enable_features.upgrade_notifications.kms_key_name, null)
 }
