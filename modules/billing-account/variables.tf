@@ -130,6 +130,7 @@ variable "context" {
     project_ids           = optional(map(string), {})
     project_sets          = optional(map(list(string)), {})
     storage_buckets       = optional(map(string), {})
+    project_numbers       = optional(map(string), {})
   })
   default  = {}
   nullable = false

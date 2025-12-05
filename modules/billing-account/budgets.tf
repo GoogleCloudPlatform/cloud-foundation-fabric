@@ -22,6 +22,10 @@ locals {
       "$notification_channels:${k}" => v.id
     }
   )
+  project_numbers = {
+    for k, v in local.ctx.project_numbers :
+    k => "projects/${v}"
+  }
 }
 
 resource "google_monitoring_notification_channel" "default" {
@@ -99,7 +103,7 @@ resource "google_billing_budget" "default" {
     projects = concat(
       [
         for v in each.value.filter.projects :
-        lookup(local.ctx.project_ids, v, v)
+        lookup(local.project_numbers, v, v)
       ],
       lookup(local.ctx.project_sets, "$project_sets:${each.key}", [])
     )
