@@ -67,7 +67,7 @@ resource "google_secret_manager_regional_secret_version" "default" {
   deletion_policy = each.value.deletion_policy
   enabled         = each.value.enabled
   is_secret_data_base64 = try(
-    each.value.data_config.is_base64, null
+    each.value.data_config.is_base64, false
   )
   secret_data = (
     try(each.value.data_config.is_file, null) == true
@@ -88,4 +88,3 @@ resource "google_tags_location_tag_binding" "binding" {
   location  = lookup(local.ctx.locations, each.value.location, each.value.location)
   tag_value = lookup(local.ctx.tag_values, each.value.tag, each.value.tag)
 }
-

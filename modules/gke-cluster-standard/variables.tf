@@ -230,6 +230,13 @@ variable "enable_features" {
       enable_insecure_binding_system_authenticated   = optional(bool)
     }))
     secret_manager_config = optional(bool)
+    secret_sync_config = optional(object({
+      enabled = bool
+      rotation_config = optional(object({
+        enabled           = optional(bool)
+        rotation_interval = optional(string)
+      }))
+    }))
     security_posture_config = optional(object({
       mode               = string
       vulnerability_mode = string
