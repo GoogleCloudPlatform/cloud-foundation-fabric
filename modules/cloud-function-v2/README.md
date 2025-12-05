@@ -15,6 +15,7 @@ Cloud Function management, with support for IAM roles, optional bucket creation 
   - [Multiple Cloud Functions within project](#multiple-cloud-functions-within-project)
   - [Mounting secrets from Secret Manager](#mounting-secrets-from-secret-manager)
 - [VPC Access Connector](#vpc-access-connector)
+  - [Direct VPC Egress](#direct-vpc-egress)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -405,6 +406,30 @@ module "cf_http" {
 }
 # tftest fixtures=fixtures/shared-vpc.tf inventory=service-vpc-access-connector-create-sharedvpc.yaml
 ```
+
+### Direct VPC Egress
+
+You can also configure Direct VPC Egress instead of using a VPC Access Connector.
+
+```hcl
+module "cf_http" {
+  source      = "./fabric/modules/cloud-function-v2"
+  project_id  = var.project_id
+  region      = var.region
+  name        = "direct-vpc-egress"
+  bucket_name = var.bucket
+  bundle_config = {
+    path = "assets/sample-function/"
+  }
+  direct_vpc_egress = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    tags       = ["tag1", "tag2"]
+    mode       = "VPC_EGRESS_ALL_TRAFFIC"
+  }
+}
+# tftest inventory=direct-vpc-egress.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -412,27 +437,28 @@ module "cf_http" {
 |---|---|:---:|:---:|:---:|
 | [bucket_name](variables.tf#L27) | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
 | [bundle_config](variables.tf#L51) | Cloud function source. Path can point to a GCS object URI, or a local path. A local path to a zip archive will generate a GCS object using its basename, a folder will be zipped and the GCS object name inferred when not specified. | <code title="object&#40;&#123;&#10;  path &#61; string&#10;  folder_options &#61; optional&#40;object&#40;&#123;&#10;    archive_path &#61; optional&#40;string&#41;&#10;    excludes     &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L167) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L182) | Project id used for all resources. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L187) | Region used for all resources. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L185) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L200) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L205) | Region used for all resources. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  force_destroy             &#61; optional&#40;bool&#41;&#10;  lifecycle_delete_age_days &#61; optional&#40;number&#41;&#10;  location                  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [build_environment_variables](variables.tf#L33) | A set of key/value environment variable pairs available during build time. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [build_service_account](variables.tf#L39) | Build service account email. | <code>string</code> |  | <code>null</code> |
 | [build_worker_pool](variables.tf#L45) | Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format. | <code>string</code> |  | <code>null</code> |
 | [context](variables.tf#L84) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41; &#35; not needed here&#63;&#10;  cidr_ranges    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  subnets        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41; &#35; not needed here&#63;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L102) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [docker_repository_id](variables.tf#L108) | User managed repository created in Artifact Registry. | <code>string</code> |  | <code>null</code> |
-| [environment_variables](variables.tf#L114) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  LOG_EXECUTION_ID &#61; &#34;true&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [function_config](variables.tf#L122) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout. | <code title="object&#40;&#123;&#10;  binary_authorization_policy &#61; optional&#40;string&#41;&#10;  entry_point                 &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instance_count              &#61; optional&#40;number, 1&#41;&#10;  memory_mb                   &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  cpu                         &#61; optional&#40;string, &#34;0.166&#34;&#41;&#10;  runtime                     &#61; optional&#40;string, &#34;python310&#34;&#41;&#10;  timeout_seconds             &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point     &#61; &#34;main&#34;&#10;  instance_count  &#61; 1&#10;  memory_mb       &#61; 256&#10;  cpu             &#61; &#34;0.166&#34;&#10;  runtime         &#61; &#34;python310&#34;&#10;  timeout_seconds &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [iam](variables.tf#L143) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_settings](variables.tf#L149) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
-| [kms_key](variables.tf#L155) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L161) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L172) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [secrets](variables.tf#L192) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; string&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [direct_vpc_egress](variables.tf#L108) | Direct VPC egress configuration. | <code title="object&#40;&#123;&#10;  mode       &#61; string&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  tags       &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [docker_repository_id](variables.tf#L126) | User managed repository created in Artifact Registry. | <code>string</code> |  | <code>null</code> |
+| [environment_variables](variables.tf#L132) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  LOG_EXECUTION_ID &#61; &#34;true&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [function_config](variables.tf#L140) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout. | <code title="object&#40;&#123;&#10;  binary_authorization_policy &#61; optional&#40;string&#41;&#10;  entry_point                 &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instance_count              &#61; optional&#40;number, 1&#41;&#10;  memory_mb                   &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  cpu                         &#61; optional&#40;string, &#34;0.166&#34;&#41;&#10;  runtime                     &#61; optional&#40;string, &#34;python310&#34;&#41;&#10;  timeout_seconds             &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point     &#61; &#34;main&#34;&#10;  instance_count  &#61; 1&#10;  memory_mb       &#61; 256&#10;  cpu             &#61; &#34;0.166&#34;&#10;  runtime         &#61; &#34;python310&#34;&#10;  timeout_seconds &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [iam](variables.tf#L161) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_settings](variables.tf#L167) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
+| [kms_key](variables.tf#L173) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L179) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L190) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| [secrets](variables.tf#L210) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; string&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account_config](variables-serviceaccount.tf#L17) | Service account configurations. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, true&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  email        &#61; optional&#40;string&#41;&#10;  name         &#61; optional&#40;string&#41;&#10;  roles &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;roles&#47;logging.logWriter&#34;,&#10;    &#34;roles&#47;monitoring.metricWriter&#34;&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [trigger_config](variables.tf#L204) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event_type   &#61; string&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;  retry_policy           &#61; optional&#40;string, &#34;RETRY_POLICY_DO_NOT_RETRY&#34;&#41; &#35; default to avoid permadiff&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L222) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  name            &#61; optional&#40;string&#41;&#10;  egress_settings &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [trigger_config](variables.tf#L222) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event_type   &#61; string&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email  &#61; optional&#40;string&#41;&#10;  service_account_create &#61; optional&#40;bool, false&#41;&#10;  retry_policy           &#61; optional&#40;string, &#34;RETRY_POLICY_DO_NOT_RETRY&#34;&#41; &#35; default to avoid permadiff&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L240) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  name            &#61; optional&#40;string&#41;&#10;  egress_settings &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_connector_create](variables-vpcconnector.tf#L17) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; optional&#40;string&#41;&#10;  machine_type  &#61; optional&#40;string&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  network       &#61; optional&#40;string&#41;&#10;  instances &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;    &#125;&#41;, &#123;&#125;&#10;  &#41;&#10;  throughput &#61; optional&#40;object&#40;&#123;&#10;    max &#61; optional&#40;number&#41;&#10;    min &#61; optional&#40;number&#41;&#10;    &#125;&#41;, &#123;&#125;&#10;  &#41;&#10;  subnet &#61; optional&#40;object&#40;&#123;&#10;    name       &#61; optional&#40;string&#41;&#10;    project_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
