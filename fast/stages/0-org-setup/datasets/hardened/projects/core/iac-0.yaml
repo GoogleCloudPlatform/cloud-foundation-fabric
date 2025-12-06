@@ -79,7 +79,8 @@ kms:
     ew1:
       location: europe-west1
       keys:
-        storage: {}
+        storage:
+          rotation_period: 7776000s
 service_encryption_key_ids:
   storage.googleapis.com:
     - $kms_keys:iac-0/ew1/storage

@@ -17,8 +17,14 @@
 location: $locations:primary
 project_id: $project_ids:dev-sec-core-0
 keys:
-  bigquery: {}
-  composer: {}
-  compute: {}
-  storage: {}
-  gke: {}
+  bigquery:
+    rotation_period: 7776000s
+  composer:
+    rotation_period: 7776000s
+  compute:
+    rotation_period: 7776000s
+  storage:
+    rotation_period: 7776000s
+  gke:
+    rotation_period: 7776000s
+

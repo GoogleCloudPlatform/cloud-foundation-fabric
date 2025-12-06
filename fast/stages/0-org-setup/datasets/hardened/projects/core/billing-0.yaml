@@ -30,7 +30,8 @@ kms:
     ew1:
       location: europe-west1
       keys:
-        bigquery: {}
+        bigquery:
+          rotation_period: 7776000s
 service_encryption_key_ids:
   bigquery.googleapis.com:
     - $kms_keys:billing-0/ew1/bigquery
