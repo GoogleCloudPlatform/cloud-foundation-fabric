@@ -24,6 +24,8 @@ locals {
     ]
   ])
   tfvars = {
+    security_project_ids     = module.factory.project_ids
+    security_project_numbers = module.factory.project_numbers
     ca_pools = {
       for k, v in module.cas : k => {
         ca_ids   = v.ca_ids
@@ -69,6 +71,16 @@ output "ca_pools" {
 output "kms_keys_ids" {
   description = "KMS keys IDs."
   value       = local.tfvars.kms_keys
+}
+
+output "security_project_ids" {
+  description = "Security project IDs."
+  value       = local.tfvars.security_project_ids
+}
+
+output "security_project_numbers" {
+  description = "Security project numbers."
+  value       = local.tfvars.security_project_numbers
 }
 
 output "tfvars" {

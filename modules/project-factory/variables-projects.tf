@@ -154,8 +154,9 @@ variable "projects" {
     })), {})
     contacts = optional(map(list(string)), {})
     datasets = optional(map(object({
-      friendly_name = optional(string)
-      location      = optional(string)
+      encryption_key = optional(string)
+      friendly_name  = optional(string)
+      location       = optional(string)
     })), {})
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({

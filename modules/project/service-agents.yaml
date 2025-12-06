@@ -661,7 +661,7 @@
   api: logging.googleapis.com
   identity: service-${project_number}@gcp-sa-logging.${universe_domain}iam.gserviceaccount.com
   role: roles/logging.serviceAgent
-  is_primary: false
+  is_primary: true
   aliases: []
   skip_iam: true
 - name: mi

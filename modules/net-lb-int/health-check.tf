@@ -65,13 +65,13 @@ resource "google_compute_health_check" "default" {
   dynamic "http2_health_check" {
     for_each = local.hc_http2 ? [""] : []
     content {
-      host               = local.hc.http.host
-      port               = local.hc.http.port
-      port_name          = local.hc.http.port_name
-      port_specification = local.hc.http.port_specification
-      proxy_header       = local.hc.http.proxy_header
-      request_path       = local.hc.http.request_path
-      response           = local.hc.http.response
+      host               = local.hc.http2.host
+      port               = local.hc.http2.port
+      port_name          = local.hc.http2.port_name
+      port_specification = local.hc.http2.port_specification
+      proxy_header       = local.hc.http2.proxy_header
+      request_path       = local.hc.http2.request_path
+      response           = local.hc.http2.response
     }
   }
 
@@ -91,12 +91,12 @@ resource "google_compute_health_check" "default" {
   dynamic "ssl_health_check" {
     for_each = local.hc_ssl ? [""] : []
     content {
-      port               = local.hc.tcp.port
-      port_name          = local.hc.tcp.port_name
-      port_specification = local.hc.tcp.port_specification
-      proxy_header       = local.hc.tcp.proxy_header
-      request            = local.hc.tcp.request
-      response           = local.hc.tcp.response
+      port               = local.hc.ssl.port
+      port_name          = local.hc.ssl.port_name
+      port_specification = local.hc.ssl.port_specification
+      proxy_header       = local.hc.ssl.proxy_header
+      request            = local.hc.ssl.request
+      response           = local.hc.ssl.response
     }
   }
 

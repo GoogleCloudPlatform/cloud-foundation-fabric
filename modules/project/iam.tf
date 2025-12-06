@@ -75,7 +75,12 @@ locals {
     for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
     role => concat(
       try(var.iam[role], []),
-      try(local._iam_principals[role], [])
+      try(local._iam_principals[role], []),
+      (
+        role == "roles/editor" && var.service_agents_config.grant_service_agent_editor
+        ? ["$service_agents:cloudservices"]
+        : []
+      )
     )
   }
   iam_bindings_additive = merge(

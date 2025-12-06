@@ -96,7 +96,6 @@ variable "project_ids" {
   nullable    = false
   default     = {}
 }
-
 variable "service_accounts" {
   # tfdoc:variable:source 0-org-setup
   description = "Service accounts created in the bootstrap stage."

@@ -18,3 +18,9 @@ tests:
   defaults:
   dual-stack:
   forwarding-rule:
+  health-checks-grpc:
+  health-checks-http:
+  health-checks-http2:
+  health-checks-https:
+  health-checks-ssl:
+  health-checks-tcp:

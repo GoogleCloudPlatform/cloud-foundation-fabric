@@ -1,0 +1,41 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_health_check.default["https"]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check:
+    - host: https_host
+      port: 4123
+      port_name: https_port_name
+      port_specification: USE_FIXED_PORT
+      proxy_header: PROXY_V1
+      request_path: https_request_path
+      response: https_response
+    name: hc-test-0-https
+    project: my-project
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check: []
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+counts:
+  google_compute_health_check: 1
