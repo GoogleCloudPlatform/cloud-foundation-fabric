@@ -38,6 +38,20 @@ iam.allowedPolicyMemberDomains:
         expression: |
           resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
 
+# For Workforce identity use-cases:
+# Switch from the above iam.allowedPolicyMemberDomains to the below iam.managed.allowedPolicyMembers configuration
+# To allow principalSet://iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID IAM assignments
+
+#iam.managed.allowedPolicyMembers:
+#  rules:
+#    - enforce: false
+#      condition:
+#        title: Allow any member domain
+#        expression: |
+#          resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
+#    - parameters: '{"allowedMemberSubjects": ["is:${organization.customer_id}"], "allowedPrincipalSets": ["//cloudresourcemanager.googleapis.com/organizations/${organization.id}"]}'
+#      enforce: true
+
 iam.disableAuditLoggingExemption:
   rules:
     - enforce: true
