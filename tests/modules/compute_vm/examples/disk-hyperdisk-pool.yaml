@@ -28,7 +28,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    zone: europe-west8-b
+    zone: europe-west8-c
   module.vm-disk-options-example.google_compute_disk.boot[0]:
     architecture: null
     async_primary_disk: []
@@ -62,7 +62,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     type: hyperdisk-balanced
-    zone: europe-west8-b
+    zone: europe-west8-c
   module.vm-disk-options-example.google_compute_disk.disks["data1"]:
     architecture: null
     async_primary_disk: []
@@ -94,7 +94,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     type: hyperdisk-balanced
-    zone: europe-west8-b
+    zone: europe-west8-c
   module.vm-disk-options-example.google_compute_disk.disks["data2"]:
     architecture: null
     async_primary_disk: []
@@ -129,7 +129,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     type: hyperdisk-balanced
-    zone: europe-west8-b
+    zone: europe-west8-c
   module.vm-disk-options-example.google_compute_instance.default[0]:
     advanced_machine_features: []
     allow_stopping_for_update: true
@@ -216,7 +216,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    zone: europe-west8-b
+    zone: europe-west8-c
   module.vm-disk-options-example.google_service_account.service_account[0]:
     account_id: tf-vm-test
     create_ignore_already_exists: null
