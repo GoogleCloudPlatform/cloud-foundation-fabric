@@ -164,9 +164,9 @@ resource "google_compute_region_backend_service" "default" {
     for_each = each.value.iap_config == null ? [] : [each.value.iap_config]
     content {
       enabled                     = true
-      oauth2_client_id            = iap.value.oauth2_client_id
-      oauth2_client_secret        = iap.value.oauth2_client_secret
-      oauth2_client_secret_sha256 = iap.value.oauth2_client_secret_sha256
+      oauth2_client_id            = try(iap.value.oauth2_client_id, null)
+      oauth2_client_secret        = try(iap.value.oauth2_client_secret, null)
+      oauth2_client_secret_sha256 = try(iap.value.oauth2_client_secret_sha256, null)
     }
   }
 

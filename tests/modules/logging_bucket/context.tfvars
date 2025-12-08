@@ -11,6 +11,9 @@ context = {
     myuser  = "user:test-user@example.com"
     myuser2 = "user:test-user2@example.com"
   }
+  kms_keys = {
+    mykey = "projects/366118655033/locations/europe-west8/keyRings/mykeyring/cryptoKeys/mykey"
+  }
   locations = {
     ew8 = "europe-west8"
   }
@@ -21,9 +24,10 @@ context = {
     "test/one" = "tagValues/1234567890"
   }
 }
-name     = "mybucket"
-location = "$locations:ew8"
-parent   = "$project_ids:myproject"
+kms_key_name = "$kms_keys:mykey"
+name         = "mybucket"
+location     = "$locations:ew8"
+parent       = "$project_ids:myproject"
 tag_bindings = {
   foo = "$tag_values:test/one"
 }

@@ -3,7 +3,34 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-11-18 13:52:06+00:00 to: None since: v49.0.0 -->
+## [Unreleased] <!-- from: 2025-11-24 09:55:05+00:00 to: None since: v49.1.0 -->
+
+## [49.2.0] - 2025-12-08
+
+### FAST
+
+- [[#3568](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3568)] Cursed knowledge for `ignore_changes`  ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-07 09:43:26+00:00 -->
+- [[#3562](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3562)] Updates to GKE modules to support Secret Sync ([woodham1](https://github.com/woodham1)) <!-- 2025-12-05 15:30:49+00:00 -->
+- [[#3565](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3565)] Update stage 0 README ([ludoo](https://github.com/ludoo)) <!-- 2025-12-04 09:28:58+00:00 -->
+- [[#3554](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3554)] Re-enable billing budget association in project factory for projects and extend to folders ([ludoo](https://github.com/ludoo)) <!-- 2025-11-27 20:51:21+00:00 -->
+
+### MODULES
+
+- [[#3572](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3572)] add labels support to dns module ([borijani](https://github.com/borijani)) <!-- 2025-12-08 06:23:50+00:00 -->
+- [[#3569](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3569)] fix e2e tests - move c4* tests to c zone ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-07 14:15:44+00:00 -->
+- [[#3567](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3567)] Add Direct VPC Egress support to `modules/cloud-function-v2` ([juliocc](https://github.com/juliocc)) <!-- 2025-12-05 17:36:53+00:00 -->
+- [[#3562](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3562)] Updates to GKE modules to support Secret Sync ([woodham1](https://github.com/woodham1)) <!-- 2025-12-05 15:30:49+00:00 -->
+- [[#3564](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3564)] feat(net-lb-app): support Google-Managed IAP and add tests ([drebes](https://github.com/drebes)) <!-- 2025-12-04 16:49:01+00:00 -->
+- [[#3558](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3558)] Add support for CMEK in logging bucket, big query dataset and gke notifications ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-12-04 10:01:32+00:00 -->
+- [[#3560](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3560)] Added PSC connection id to outputs, which is required, for instance f… ([apichick](https://github.com/apichick)) <!-- 2025-12-02 08:51:52+00:00 -->
+- [[#3554](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3554)] Re-enable billing budget association in project factory for projects and extend to folders ([ludoo](https://github.com/ludoo)) <!-- 2025-11-27 20:51:21+00:00 -->
+- [[#3552](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3552)] Auto-grant editor role for cloudservices in project module, expand project ids context in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2025-11-27 12:45:52+00:00 -->
+- [[#3551](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3551)] fix http2 and ssl health-checks for load balancers ([wiktorn](https://github.com/wiktorn)) <!-- 2025-11-26 14:20:08+00:00 -->
+
+### TOOLS
+
+- [[#3562](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3562)] Updates to GKE modules to support Secret Sync ([woodham1](https://github.com/woodham1)) <!-- 2025-12-05 15:30:49+00:00 -->
+- [[#3563](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3563)] Add GEMINI.md file ([drebes](https://github.com/drebes)) <!-- 2025-12-04 14:15:36+00:00 -->
 
 ## [49.1.0] - 2025-11-24
 
@@ -1958,7 +1985,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.2.0...HEAD
+[49.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.2.0...49.1.0
 [49.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.1.0...49.0.0
 [49.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...48.1.0
 [48.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.1.0...48.0.0

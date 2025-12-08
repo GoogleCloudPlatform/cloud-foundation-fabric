@@ -35,7 +35,8 @@ values:
     role: roles/viewer
   google_logging_project_bucket_config.bucket[0]:
     bucket_id: mybucket
-    cmek_settings: []
+    cmek_settings:
+    - kms_key_name: projects/366118655033/locations/europe-west8/keyRings/mykeyring/cryptoKeys/mykey
     enable_analytics: false
     index_configs: []
     location: europe-west8
