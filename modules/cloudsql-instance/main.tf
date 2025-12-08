@@ -61,6 +61,7 @@ resource "google_sql_database_instance" "primary" {
     collation                   = var.collation
     connector_enforcement       = var.connector_enforcement
     time_zone                   = var.time_zone
+    retain_backups_on_delete    = var.backup_configuration.retain_backups_on_delete
 
     ip_configuration {
       ipv4_enabled = var.network_config.connectivity.public_ipv4
@@ -124,6 +125,14 @@ resource "google_sql_database_instance" "primary" {
           retained_backups = var.backup_configuration.retention_count
           retention_unit   = "COUNT"
         }
+      }
+    }
+
+    dynamic "final_backup_config" {
+      for_each = var.backup_configuration.final_backup != null ? [var.backup_configuration.final_backup] : []
+      content {
+        enabled        = final_backup_config.value.enabled
+        retention_days = final_backup_config.value.retention_days
       }
     }
 
