@@ -42,6 +42,7 @@ iam_by_principals:
   $iam_principals:gcp-organization-admins:
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
+    - roles/cloudsupport.techSupportEditor
     - roles/compute.osAdminLogin
     - roles/compute.osLoginExternalUser
     - roles/compute.xpnAdmin

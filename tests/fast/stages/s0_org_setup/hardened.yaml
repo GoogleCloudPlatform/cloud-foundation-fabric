@@ -5767,7 +5767,7 @@ counts:
   google_monitoring_alert_policy: 9
   google_org_policy_custom_constraint: 55
   google_org_policy_policy: 114
-  google_organization_iam_binding: 37
+  google_organization_iam_binding: 38
   google_organization_iam_custom_role: 9
   google_project: 3
   google_project_iam_binding: 17
@@ -5790,5 +5790,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 48
-  resources: 473
+  resources: 474
   terraform_data: 4
