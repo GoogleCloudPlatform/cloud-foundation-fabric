@@ -19,8 +19,8 @@ locals {
   _observability_project = (
     try(local.project_defaults.defaults.observability, null) != null ||
     try(local.project_defaults.overrides.observability, null) != null
-  ) ? {
-    project_id = local.defaults.observability.project_id
+    ) ? {
+    project_id     = local.defaults.observability.project_id
     project_number = local.defaults.observability.project_number
   } : {}
 
@@ -44,7 +44,7 @@ module "projects-observability" {
   project_reuse = {
     use_data_source = false
     attributes = {
-      name = local.observability_project_id
+      name   = local.observability_project_id
       number = local.observability_project_number
     }
   }
