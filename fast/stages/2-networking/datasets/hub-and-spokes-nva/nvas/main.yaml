@@ -6,7 +6,7 @@
 
 project_id: $project_ids:net-core-0
 name: main
-region: europe-west8
+region: europe-west1
 
 auto_instance_config:
   image: projects/cos-cloud/global/images/family/cos-stable
@@ -16,7 +16,7 @@ auto_instance_config:
     - test
   nics:
     - network: $networks:dmz
-      subnet: $subnets:dmz/europe-west8/dmz-default
+      subnet: $subnets:dmz/europe-west1/dmz-default
       routes:
         - 10.74.0.0/16
       masquerade:
@@ -24,15 +24,15 @@ auto_instance_config:
         # default route via this NIC.
         true
     - network: $networks:hub
-      subnet: $subnets:hub/europe-west8/hub-default
+      subnet: $subnets:hub/europe-west1/hub-default
       routes:
         - 10.71.0.0/16
     - network: $networks:prod
-      subnet: $subnets:prod/europe-west8/prod-default
+      subnet: $subnets:prod/europe-west1/prod-default
       routes:
         - 10.72.0.0/16
     - network: $networks:dev
-      subnet: $subnets:dev/europe-west8/dev-default
+      subnet: $subnets:dev/europe-west1/dev-default
       routes:
         - 10.73.0.0/16
 
@@ -51,10 +51,10 @@ ilb_config:
       auto_create_instances: 2
   forwarding_rules:
     - network: $networks:dmz
-      subnet: $subnets:dmz/europe-west8/dmz-default
+      subnet: $subnets:dmz/europe-west1/dmz-default
     - network: $networks:hub
-      subnet: $subnets:hub/europe-west8/hub-default
+      subnet: $subnets:hub/europe-west1/hub-default
     - network: $networks:prod
-      subnet: $subnets:prod/europe-west8/prod-default
+      subnet: $subnets:prod/europe-west1/prod-default
     - network: $networks:dev
-      subnet: $subnets:dev/europe-west8/dev-default
+      subnet: $subnets:dev/europe-west1/dev-default

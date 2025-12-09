@@ -41,7 +41,7 @@ module "log-buckets" {
   for_each = {
     for k in local.projects_log_buckets : "${k.project_key}/${k.name}" => k
   }
-  parent       = module.projects[each.value.project_key].project_id
+  parent       = module.projects-iam[each.value.project_key].project_id
   name         = each.value.name
   location     = each.value.location
   kms_key_name = each.value.kms_key_name

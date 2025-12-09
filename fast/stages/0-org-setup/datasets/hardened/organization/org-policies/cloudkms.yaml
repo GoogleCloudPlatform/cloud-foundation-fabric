@@ -1,0 +1,86 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
+
+custom.cloudkmsAllowedProtectionLevel:
+  rules:
+    - enforce: true
+
+gcp.restrictCmekCryptoKeyProjects:
+  rules:
+    - allow:
+        values:
+          - 'under:${folder_ids["security/dev"]}'
+      condition:
+        title: Restrict CMEK Projects for development projects
+        expression: |
+          resource.matchTag('${organization.id}/environment', 'development')
+    - allow:
+        values:
+          - 'under:${folder_ids["security/prod"]}'
+      condition:
+        title: Restrict CMEK Projects for non-development projects
+        expression: |
+          !resource.matchTag('${organization.id}/environment', 'development')
+
+gcp.restrictNonCmekServices:
+  rules:
+    - deny:
+        values:
+          - "aiplatform.googleapis.com"
+          - "alloydb.googleapis.com"
+          - "apigee.googleapis.com"
+          - "artifactregistry.googleapis.com"
+          - "bigquery.googleapis.com"
+          - "bigquerydatatransfer.googleapis.com"
+          - "bigtable.googleapis.com"
+          - "cloudfunctions.googleapis.com"
+          - "cloudtasks.googleapis.com"
+          - "composer.googleapis.com"
+          - "compute.googleapis.com"
+          - "contactcenterinsights.googleapis.com"
+          - "container.googleapis.com"
+          - "dataflow.googleapis.com"
+          - "dataform.googleapis.com"
+          - "datafusion.googleapis.com"
+          # Enable when Terraform provider is ready: https://docs.cloud.google.com/dataplex/docs/cme
+          # - "dataplex.googleapis.com"
+          - "dataproc.googleapis.com"
+          - "dialogflow.googleapis.com"
+          - "discoveryengine.googleapis.com"
+          - "documentai.googleapis.com"
+          - "file.googleapis.com"
+          - "firestore.googleapis.com"
+          - "gkebackup.googleapis.com"
+          - "integrations.googleapis.com"
+          - "logging.googleapis.com"
+          - "looker.googleapis.com"
+          - "notebooks.googleapis.com"
+          - "pubsub.googleapis.com"
+          - "redis.googleapis.com"
+          - "run.googleapis.com"
+          - "secretmanager.googleapis.com"
+          - "securesourcemanager.googleapis.com"
+          - "securitycenter.googleapis.com"
+          - "spanner.googleapis.com"
+          - "speech.googleapis.com"
+          - "sqladmin.googleapis.com"
+          - "storage.googleapis.com"
+          - "storagetransfer.googleapis.com"
+          - "workstations.googleapis.com"

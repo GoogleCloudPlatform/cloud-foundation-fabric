@@ -15,4 +15,5 @@
 module: fast/stages/3-gke-dev/
 
 tests:
-  simple:
+  simple: {}
+  hardened: {}

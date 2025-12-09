@@ -19,7 +19,7 @@ routers:
         "192.168.0.0/16": "rfc1918-192"
 nat_config:
   nat-ew8:
-    region: europe-west8
+    region: europe-west1
 routes:
   rfc1918-10:
     dest_range: "10.0.0.0/8"
