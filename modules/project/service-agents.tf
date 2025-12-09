@@ -139,11 +139,8 @@ data "google_bigquery_default_service_account" "bq_sa" {
   depends_on = [google_project_service.project_services]
 }
 
-data "google_logging_project_cmek_settings" "logging_sa" {
-  count = (
-    contains(var.services, "logging.googleapis.com") &&
-    contains(keys(var.service_encryption_key_ids), "logging.googleapis.com")
-  ) ? 1 : 0
+data "google_logging_project_settings" "logging_sa" {
+  count      = contains(var.services, "logging.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }

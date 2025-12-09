@@ -19,24 +19,34 @@ locals {
   _observability_project = (
     try(local.project_defaults.defaults.observability, null) != null ||
     try(local.project_defaults.overrides.observability, null) != null
-    ) ? {
+  ) ? {
     project_id = local.defaults.observability.project_id
-  } : null
+    project_number = local.defaults.observability.project_number
+  } : {}
 
-  observability_project_id = local._observability_project == null ? null : lookup(
+  observability_project_id = lookup(
     module.factory.project_ids,
     replace(local._observability_project.project_id, "$project_ids:", ""),
     local._observability_project.project_id
+  )
+
+  observability_project_number = lookup(
+    module.factory.project_numbers,
+    replace(local._observability_project.project_number, "$project_numbers:", ""),
+    local._observability_project.project_number
   )
 }
 
 module "projects-observability" {
   source = "../../../modules/project"
-  count  = local.observability_project_id != null ? 1 : 0
 
   name = local.observability_project_id
   project_reuse = {
-    use_data_source = true
+    use_data_source = false
+    attributes = {
+      name = local.observability_project_id
+      number = local.observability_project_number
+    }
   }
 
   context = merge(local.ctx, {

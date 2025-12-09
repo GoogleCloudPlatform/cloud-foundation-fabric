@@ -91,6 +91,6 @@ resource "google_kms_crypto_key_iam_member" "service_agent_cmek" {
     data.google_project.project,
     data.google_bigquery_default_service_account.bq_sa,
     data.google_storage_project_service_account.gcs_sa,
-    data.google_logging_project_cmek_settings.logging_sa
+    data.google_logging_project_settings.logging_sa
   ]
 }

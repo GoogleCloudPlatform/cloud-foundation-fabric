@@ -32,6 +32,7 @@ projects:
       storage: $locations:primary
     observability:
       project_id: $project_ids:log-0
+      project_number: $project_numbers:log-0
   overrides: {}
 context:
   # you can populate context variables here for use in YAML replacements
