@@ -112,8 +112,8 @@ iam_by_principals:
 data_access_logs:
   allServices:
     ADMIN_READ: {}
-    DATA_READ: {}
-    DATA_WRITE: {}
+    # DATA_READ: {}
+    # DATA_WRITE: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary

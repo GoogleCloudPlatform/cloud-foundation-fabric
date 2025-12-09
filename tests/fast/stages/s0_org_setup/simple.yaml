@@ -2908,6 +2908,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 53
-  resources: 334
+  modules: 48
+  resources: 316
   terraform_data: 4
