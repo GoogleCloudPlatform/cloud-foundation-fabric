@@ -24,21 +24,22 @@ locals {
     project_number = local.defaults.observability.project_number
   } : {}
 
-  observability_project_id = lookup(
+  observability_project_id = try(lookup(
     module.factory.project_ids,
     replace(local._observability_project.project_id, "$project_ids:", ""),
     local._observability_project.project_id
-  )
+  ), null)
 
-  observability_project_number = lookup(
+  observability_project_number = try(lookup(
     module.factory.project_numbers,
     replace(local._observability_project.project_number, "$project_numbers:", ""),
     local._observability_project.project_number
-  )
+  ), null)
 }
 
 module "projects-observability" {
   source = "../../../modules/project"
+  count  = local.observability_project_id != null && local.observability_project_number != null ? 1 : 0
 
   name = local.observability_project_id
   project_reuse = {
