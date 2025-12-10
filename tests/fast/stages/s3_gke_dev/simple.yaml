@@ -21,7 +21,6 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
-    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
