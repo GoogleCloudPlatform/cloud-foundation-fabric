@@ -100,7 +100,7 @@ resource "google_billing_budget" "default" {
       [
         for v in each.value.filter.projects :
         try(
-          "projects/${local.ctx.project_numbers[v]}",
+          try("projects/${local.ctx.project_numbers[v]}", v),
           lookup(local.ctx.project_numbers, v, v)
         )
       ],
