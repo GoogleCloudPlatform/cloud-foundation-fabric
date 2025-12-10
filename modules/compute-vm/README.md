@@ -323,7 +323,7 @@ resource "google_compute_storage_pool" "default" {
   pool_provisioned_iops        = "10000"
   pool_provisioned_throughput  = 1024
   storage_pool_type            = "hyperdisk-balanced"
-  zone                         = "${var.region}-b"
+  zone                         = "${var.region}-c"
 
   deletion_protection = false
 }
@@ -331,7 +331,7 @@ resource "google_compute_storage_pool" "default" {
 module "vm-disk-options-example" {
   source        = "./fabric/modules/compute-vm"
   project_id    = var.project_id
-  zone          = "${var.region}-b"
+  zone          = "${var.region}-c"
   name          = "test"
   instance_type = "c4d-standard-2"
   network_interfaces = [
@@ -392,7 +392,7 @@ For hyperdisks there are additional options available to configure performance.
 module "vm-arm" {
   source        = "./fabric/modules/compute-vm"
   project_id    = var.project_id
-  zone          = "${var.region}-b"
+  zone          = "${var.region}-c"
   name          = "test"
   instance_type = "c4a-standard-1"
   network_interfaces = [{

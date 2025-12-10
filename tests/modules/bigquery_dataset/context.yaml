@@ -15,7 +15,8 @@
 values:
   google_bigquery_dataset.default:
     dataset_id: dataset_0
-    default_encryption_configuration: []
+    default_encryption_configuration:
+    - kms_key_name: projects/366118655033/locations/europe-west8/keyRings/mykeyring/cryptoKeys/mykey
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
