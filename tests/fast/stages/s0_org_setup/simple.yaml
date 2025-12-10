@@ -67,6 +67,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -168,6 +169,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -240,6 +242,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -2390,6 +2393,12 @@ values:
     - group:fabric-fast-owners@google.com
     org_id: '1234567890'
     role: roles/cloudsupport.admin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/cloudsupport.techSupportEditor
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgFirewallPolicyAdmin"]:
     condition: []
     members:
@@ -2865,7 +2874,7 @@ counts:
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
-  google_organization_iam_binding: 36
+  google_organization_iam_binding: 37
   google_organization_iam_custom_role: 9
   google_project: 3
   google_project_iam_audit_config: 2
@@ -2888,5 +2897,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 50
-  resources: 322
+  resources: 323
   terraform_data: 4
