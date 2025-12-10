@@ -188,6 +188,27 @@ variable "instance_flexibility_policy_selections" {
   }
 }
 
+variable "instance_lifecycle_policy" {
+  description = "The instance lifecycle policy for the MIG."
+  type = object({
+    default_action_on_failure = optional(string)
+    on_failed_health_check    = optional(string)
+    on_repair = optional(object({
+      allow_changing_zone = optional(string)
+      force_update        = optional(string)
+    }))
+  })
+  default  = null
+  nullable = true
+  validation {
+    condition = (
+      try(var.instance_lifecycle_policy.on_repair.allow_changing_zone, null) == null
+      || length(split("-", var.location)) == 2
+    )
+    error_message = "Allow changing zone on repair is only supported for regional MIGs."
+  }
+}
+
 variable "instance_template" {
   description = "Instance template for the default version."
   type        = string
