@@ -88,7 +88,7 @@ variable "projects" {
             with_state                 = optional(string)
           })
         })), {})
-        retention_policy      = optional(object({
+        retention_policy = optional(object({
           retention_period = string
           is_locked        = optional(bool)
         }))
@@ -194,7 +194,7 @@ variable "projects" {
           with_state                 = optional(string)
         })
       })), {})
-      retention_policy      = optional(object({
+      retention_policy = optional(object({
         retention_period = string
         is_locked        = optional(bool)
       }))

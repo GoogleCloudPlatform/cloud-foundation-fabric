@@ -39,13 +39,13 @@ locals {
   )
   _automation_buckets = {
     for k, v in local._automation : k => merge(v.bucket, {
-      automation_project = v.project
-      parent_name        = v.parent_name
-      name               = lookup(v.bucket, "name", "tf-state")
-      create             = lookup(v.bucket, "create", true)
-      lifecycle_rules         = lookup(v.bucket, "lifecycle_rules", {})
-      retention_policy        = lookup(v.bucket, "retention_policy", null)
-      soft_delete_retention   = lookup(v.bucket, "soft_delete_retention", null)
+      automation_project    = v.project
+      parent_name           = v.parent_name
+      name                  = lookup(v.bucket, "name", "tf-state")
+      create                = lookup(v.bucket, "create", true)
+      lifecycle_rules       = lookup(v.bucket, "lifecycle_rules", {})
+      retention_policy      = lookup(v.bucket, "retention_policy", null)
+      soft_delete_retention = lookup(v.bucket, "soft_delete_retention", null)
       prefix = try(coalesce(
         local.data_defaults.overrides.prefix,
         v.prefix,

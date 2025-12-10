@@ -81,12 +81,12 @@ module "buckets" {
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids
   })
-  iam                         = each.value.iam
-  iam_bindings                = each.value.iam_bindings
-  iam_bindings_additive       = each.value.iam_bindings_additive
-  iam_by_principals           = each.value.iam_by_principals
-  labels                      = each.value.labels
-  lifecycle_rules             = each.value.lifecycle_rules
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_by_principals     = each.value.iam_by_principals
+  labels                = each.value.labels
+  lifecycle_rules       = each.value.lifecycle_rules
   location = coalesce(
     local.data_defaults.overrides.locations.storage,
     lookup(each.value, "location", null),
