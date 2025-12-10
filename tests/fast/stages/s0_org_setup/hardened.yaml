@@ -34,6 +34,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -66,6 +67,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -99,6 +101,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -165,6 +168,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -198,6 +202,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -217,6 +222,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -235,6 +241,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -422,6 +429,19 @@ values:
     condition: []
     member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.viewer
+  module.cicd-sa-apply["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/fast-dev
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/master
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+  module.cicd-sa-plan["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/default/attribute.repository/gh-org/gh-repo
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.module.bigquery-datasets["billing-0/billing_export"].google_bigquery_dataset.default:
     dataset_id: billing_export
     default_encryption_configuration:
@@ -747,7 +767,7 @@ values:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
         \  'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',\n  'roles/container.hostServiceAgentUser',\
-        \ 'roles/vpcaccess.user'\n])"
+        \ 'roles/vpcaccess.user'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -811,7 +831,7 @@ values:
     condition:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
-        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])"
+        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -979,7 +999,7 @@ values:
     labels: null
     name: bigquery
     purpose: ENCRYPT_DECRYPT
-    rotation_period: null
+    rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -995,7 +1015,7 @@ values:
     labels: null
     name: storage
     purpose: ENCRYPT_DECRYPT
-    rotation_period: null
+    rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -1011,7 +1031,7 @@ values:
     labels: null
     name: logging
     purpose: ENCRYPT_DECRYPT
-    rotation_period: null
+    rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -1021,9 +1041,6 @@ values:
     name: ew1
     project: ft0-prod-audit-logs-0
     timeouts: null
-  module.factory.module.log-buckets["log-0/audit-logs"].data.google_logging_project_cmek_settings.settings[0]:
-    kms_key_name: null
-    project: ft0-prod-audit-logs-0
   module.factory.module.log-buckets["log-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-logs
     cmek_settings:
@@ -1034,9 +1051,6 @@ values:
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 30
-  module.factory.module.log-buckets["log-0/iam"].data.google_logging_project_cmek_settings.settings[0]:
-    kms_key_name: null
-    project: ft0-prod-audit-logs-0
   module.factory.module.log-buckets["log-0/iam"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: iam
     cmek_settings:
@@ -1047,9 +1061,6 @@ values:
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 30
-  module.factory.module.log-buckets["log-0/vpc-sc"].data.google_logging_project_cmek_settings.settings[0]:
-    kms_key_name: null
-    project: ft0-prod-audit-logs-0
   module.factory.module.log-buckets["log-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: vpc-sc
     cmek_settings:
@@ -1177,924 +1188,6 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
     role: roles/viewer
-  module.factory.module.projects-observability["billing-0"].google_project_iam_member.service_agents["bigquerydatatransfer"]:
-    condition: []
-    project: ft0-prod-billing-exp-0
-    role: roles/bigquerydatatransfer.serviceAgent
-  module.factory.module.projects-observability["billing-0"].google_project_iam_member.service_agents["cloudkms"]:
-    condition: []
-    project: ft0-prod-billing-exp-0
-    role: roles/cloudkms.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudasset"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudasset.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudbuild"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudbuild.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudbuild-sa"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudbuild.builds.builder
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudkms"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudkms.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["compute-system"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/compute.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["container-engine-robot"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/container.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["gkenode"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/container.defaultNodeServiceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["monitoring-notification"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/monitoring.notificationServiceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["pubsub"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/pubsub.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["service-networking"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/servicenetworking.serviceAgent
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["auditConfigChanges"]:
-    bucket_options: []
-    description: Audit Configuration Changes
-    disabled: null
-    filter: protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*
-    label_extractors:
-      folder_id: EXTRACT(labels.folder_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      organization_id: EXTRACT(labels.organization_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: folder_id
-        key: folder_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: organization_id
-        key: organization_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: auditConfigChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["binaryAuthorizationPolicyChanges"]:
-    bucket_options: []
-    description: Binary Authorization Policy Changes
-    disabled: null
-    filter: protoPayload.methodName="google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy"
-      AND protoPayload.serviceName="binaryauthorization.googleapis.com" AND ("ALWAYS_ALLOW"
-      OR "DRYRUN_AUDIT_LOG_ONLY")
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: binaryAuthorizationPolicyChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["cloudsqlInstanceChanges"]:
-    bucket_options: []
-    description: Cloud SQL Instance Configuration Changes
-    disabled: null
-    filter: protoPayload.methodName="cloudsql.instances.update"
-    label_extractors:
-      database_id: EXTRACT(labels.database_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: database_id
-        key: database_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: cloudsqlInstanceChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["customRoleChanges"]:
-    bucket_options: []
-    description: Custom Role Changes
-    disabled: null
-    filter: "resource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
-      \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
-      google.iam.admin.v1.DeleteRole\"\n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      organization_id: EXTRACT(labels.organization_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-      role_name: EXTRACT(labels.role_name)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: organization_id
-        key: organization_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      - description: role_name
-        key: role_name
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: customRoleChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["firewallPolicyRuleChanges"]:
-    bucket_options: []
-    description: Network Firewall Policy Rule Changes
-    disabled: null
-    filter: "resource.labels.method:\"compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"\
-      compute.networkFirewallPolicies.addRule\" OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
-      \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
-      \n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: firewallPolicyRuleChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["firewallRuleChanges"]:
-    bucket_options: []
-    description: VPC Network Firewall Rule Changes
-    disabled: null
-    filter: resource.type="gce_firewall_rule" AND (protoPayload.methodName:"compute.firewalls.patch"
-      OR protoPayload.methodName:"compute.firewalls.insert" OR protoPayload.methodName:"compute.firewalls.delete")
-    label_extractors:
-      firewall_rule_id: EXTRACT(labels.firewall_rule_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: firewall_rule_id
-        key: firewall_rule_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: firewallRuleChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["networkChanges"]:
-    bucket_options: []
-    description: VPC Network Changes
-    disabled: null
-    filter: "resource.type=\"gce_network\" AND (\n  protoPayload.methodName:\"compute.networks.insert\"\
-      \ OR\n  protoPayload.methodName:\"compute.networks.patch\" OR\n  protoPayload.methodName:\"\
-      compute.networks.delete\" OR\n  protoPayload.methodName:\"compute.networks.addPeering\"\
-      \ OR\n  protoPayload.methodName:\"compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"\
-      compute.networks.removePeering\"\n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      network_id: EXTRACT(labels.network_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: network_id
-        key: network_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: networkChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["networkRouteChanges"]:
-    bucket_options: []
-    description: VPC Network Route Changes
-    disabled: null
-    filter: "resource.type=\"gce_route\" AND (\n  protoPayload.methodName:\"compute.routes.insert\"\
-      \ OR\n  protoPayload.methodName:\"compute.routes.delete\"\n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-      route_id: EXTRACT(labels.route_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      - description: route_id
-        key: route_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: networkRouteChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["projectOwnershipChange"]:
-    bucket_options: []
-    description: Project Ownership Changes
-    disabled: null
-    filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\n\
-      (ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-      REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-      \n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\"\
-      \ AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-      \n)"
-    label_extractors:
-      folder_id: EXTRACT(labels.folder_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      organization_id: EXTRACT(labels.organization_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: folder_id
-        key: folder_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: organization_id
-        key: organization_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: projectOwnershipChange
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_logging_metric.metrics["storageIamChanges"]:
-    bucket_options: []
-    description: Cloud Storage IAM Permission Changes
-    disabled: null
-    filter: resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
-    label_extractors:
-      bucket_name: EXTRACT(labels.bucket_name)
-      location: EXTRACT(labels.location)
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: bucket_name
-        key: bucket_name
-        value_type: STRING
-      - description: location
-        key: location
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: storageIamChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["auditConfigChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.folder_id
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/auditConfigChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: Audit Configuration Changes'
-    display_name: Audit Configuration Changes
-    documentation:
-    - content: 'Log-based alerting policy in project ${project} detected audit configuration
-        changes.
-
-
-        This alert helps track GCP services audit log configuration changes to ensure
-        appropriate.
-
-        audit logs are being collected
-
-        ```
-
-        protoPayload.methodName="SetIamPolicy" AND
-
-        protoPayload.serviceData.policyDelta.auditConfigDeltas:*
-
-        ```'
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  ? module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["binaryAuthorizationPolicyChanges"]
-  : alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/binaryAuthorizationPolicyChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: Binary Authorization policy configuration
-        changes'
-    display_name: Binary Authorization Policy Changes
-    documentation:
-    - content: 'Log-based alerting policy in project ${project} detected for a change
-        to Binary Authorization
-
-        project-singleton policy, weakening the enforcement or evaluation modes.
-
-
-        This alert helps ensure security by monitoring configuration changes to Binary
-        Authorization policies.
-
-        ```
-
-        protoPayload.methodName="google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy"
-        AND
-
-        protoPayload.serviceName="binaryauthorization.googleapis.com" AND
-
-        ("ALWAYS_ALLOW" OR "DRYRUN_AUDIT_LOG_ONLY")
-
-        ```'
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["cloudsqlInstanceChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.database_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/cloudsqlInstanceChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: Cloud SQL instance configuration changes'
-    display_name: Cloud SQL Instance Configuration Changes
-    documentation:
-    - content: 'Log-based alerting policy in project ${project} detected Cloud SQL
-        instance configuration changes.
-
-
-        This alert helps ensure security by monitoring configuration changes to SQL
-        instances.
-
-        ```
-
-        protoPayload.methodName="cloudsql.instances.update"
-
-        ```'
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["customRoleChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.project_id
-          - metric.label.role_name
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/customRoleChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: custom role changes'
-    display_name: Custom Role Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected custom IAM\
-        \ role creation,\ndeletion or update activities.\n\nThis alert helps ensure\
-        \ security by monitoring changes to Identity and Access Management (IAM) roles.\n\
-        ```\nresource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
-        \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
-        google.iam.admin.v1.DeleteRole\"\n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["firewallPolicyRuleChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallPolicyRuleChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: Network Firewall Policy Rule Changes'
-    display_name: Network Firewall Policy Rule Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected Firewall\
-        \ Policy rule changes.\n\nThis alert helps ensure security by monitoring creation,\
-        \ modification, or deletion of firewall rules.\n```\nresource.labels.method:\"\
-        compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"compute.networkFirewallPolicies.addRule\"\
-        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
-        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
-        \n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["firewallRuleChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.firewall_rule_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallRuleChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: VPC Network Firewall Rule Changes'
-    display_name: VPC Network Firewall Rule Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ Firewall rule changes.\n\nThis alert helps ensure security by monitoring\
-        \ creation, modification, or deletion of firewall rules.\n```\nresource.type=\"\
-        gce_firewall_rule\" AND (\n  protoPayload.methodName:\"compute.firewalls.patch\"\
-        \ OR\n  protoPayload.methodName:\"compute.firewalls.insert\" OR\n  protoPayload.methodName:\"\
-        compute.firewalls.delete\"\n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["networkChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.network_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: VPC Network Changes'
-    display_name: VPC Network Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ changes.\n\nThis alert helps ensure security by monitoring creation, modification,\
-        \ deletion,\nor peering changes to VPC networks.\n```\nresource.type=\"gce_network\"\
-        \ AND (\n  protoPayload.methodName:\"compute.networks.insert\" OR\n  protoPayload.methodName:\"\
-        compute.networks.patch\" OR\n  protoPayload.methodName:\"compute.networks.delete\"\
-        \ OR\n  protoPayload.methodName:\"compute.networks.addPeering\" OR\n  protoPayload.methodName:\"\
-        compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"compute.networks.removePeering\"\
-        \n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["networkRouteChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.route_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkRouteChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: VPC Network Route Changes'
-    display_name: VPC Network Route Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ Route changes.\n\nThis alert helps ensure security by monitoring creation\
-        \ or deletion of network routes.\n```\nresource.type=\"gce_route\" AND (\n\
-        \  protoPayload.methodName:\"compute.routes.insert\" OR\n  protoPayload.methodName:\"\
-        compute.routes.delete\"\n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["projectOwnershipChange"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.folder_id
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: Project Ownership Changes
-    display_name: Project Ownership Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected a project\
-        \ ownership assignments or changes.\n```\n(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\"\
-        ) AND\n(ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-        REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"\
-        roles/owner\"\n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-        ADD\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-        \n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_monitoring_alert_policy.alerts["storageIamChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.location
-          - metric.label.bucket_name
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/storageIamChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: Cloud Storage IAM Permission Changes
-    display_name: Cloud Storage IAM Permission Changes
-    documentation:
-    - content: 'Log-based alerting policy in project ${project} detected Cloud Storage
-        Bucket IAM changes.
-
-
-        This alert helps ensure security by monitoring IAM permission changes to Cloud
-        Storage buckets.
-
-        ```
-
-        resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
-
-        ```'
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-observability["log-0"].google_project_iam_member.service_agents["cloudkms"]:
-    condition: []
-    project: ft0-prod-audit-logs-0
-    role: roles/cloudkms.serviceAgent
-  module.factory.module.projects-observability["log-0"].google_project_iam_member.service_agents["pubsub"]:
-    condition: []
-    project: ft0-prod-audit-logs-0
-    role: roles/pubsub.serviceAgent
   module.factory.module.projects["billing-0"].data.google_bigquery_default_service_account.bq_sa[0]:
     project: ft0-prod-billing-exp-0
   module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
@@ -2171,6 +1264,8 @@ values:
     service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-iac-core-0
+  module.factory.module.projects["iac-0"].data.google_logging_project_settings.logging_sa[0]:
     project: ft0-prod-iac-core-0
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
@@ -2461,6 +1556,8 @@ values:
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
+  module.factory.module.projects["log-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-prod-audit-logs-0
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
@@ -2544,10 +1641,6 @@ values:
   module.factory.module.projects["log-0"].google_project_service_identity.default["cloudkms.googleapis.com"]:
     project: ft0-prod-audit-logs-0
     service: cloudkms.googleapis.com
-    timeouts: null
-  module.factory.module.projects["log-0"].google_project_service_identity.default["logging.googleapis.com"]:
-    project: ft0-prod-audit-logs-0
-    service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["log-0"].google_project_service_identity.default["pubsub.googleapis.com"]:
     project: ft0-prod-audit-logs-0
@@ -2710,6 +1803,10 @@ values:
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.factory.terraform_data.project-preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -5209,6 +4306,7 @@ values:
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -7300,6 +6398,868 @@ values:
     description: Allow all domains in DRS org policy.
     short_name: allowed-policy-member-domains-all
     timeouts: null
+  module.projects-observability[0].google_logging_metric.metrics["auditConfigChanges"]:
+    bucket_options: []
+    description: Audit Configuration Changes
+    disabled: null
+    filter: protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*
+    label_extractors:
+      folder_id: EXTRACT(labels.folder_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      organization_id: EXTRACT(labels.organization_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: folder_id
+        key: folder_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: organization_id
+        key: organization_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: auditConfigChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["binaryAuthorizationPolicyChanges"]:
+    bucket_options: []
+    description: Binary Authorization Policy Changes
+    disabled: null
+    filter: protoPayload.methodName="google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy"
+      AND protoPayload.serviceName="binaryauthorization.googleapis.com" AND ("ALWAYS_ALLOW"
+      OR "DRYRUN_AUDIT_LOG_ONLY")
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: binaryAuthorizationPolicyChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["cloudsqlInstanceChanges"]:
+    bucket_options: []
+    description: Cloud SQL Instance Configuration Changes
+    disabled: null
+    filter: protoPayload.methodName="cloudsql.instances.update"
+    label_extractors:
+      database_id: EXTRACT(labels.database_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: database_id
+        key: database_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: cloudsqlInstanceChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["customRoleChanges"]:
+    bucket_options: []
+    description: Custom Role Changes
+    disabled: null
+    filter: "resource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
+      \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
+      google.iam.admin.v1.DeleteRole\"\n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      organization_id: EXTRACT(labels.organization_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+      role_name: EXTRACT(labels.role_name)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: organization_id
+        key: organization_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      - description: role_name
+        key: role_name
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: customRoleChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["firewallPolicyRuleChanges"]:
+    bucket_options: []
+    description: Network Firewall Policy Rule Changes
+    disabled: null
+    filter: "resource.labels.method:\"compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"\
+      compute.networkFirewallPolicies.addRule\" OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
+      \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
+      \n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: firewallPolicyRuleChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["firewallRuleChanges"]:
+    bucket_options: []
+    description: VPC Network Firewall Rule Changes
+    disabled: null
+    filter: resource.type="gce_firewall_rule" AND (protoPayload.methodName:"compute.firewalls.patch"
+      OR protoPayload.methodName:"compute.firewalls.insert" OR protoPayload.methodName:"compute.firewalls.delete")
+    label_extractors:
+      firewall_rule_id: EXTRACT(labels.firewall_rule_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: firewall_rule_id
+        key: firewall_rule_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: firewallRuleChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["networkChanges"]:
+    bucket_options: []
+    description: VPC Network Changes
+    disabled: null
+    filter: "resource.type=\"gce_network\" AND (\n  protoPayload.methodName:\"compute.networks.insert\"\
+      \ OR\n  protoPayload.methodName:\"compute.networks.patch\" OR\n  protoPayload.methodName:\"\
+      compute.networks.delete\" OR\n  protoPayload.methodName:\"compute.networks.addPeering\"\
+      \ OR\n  protoPayload.methodName:\"compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"\
+      compute.networks.removePeering\"\n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      network_id: EXTRACT(labels.network_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: network_id
+        key: network_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: networkChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["networkRouteChanges"]:
+    bucket_options: []
+    description: VPC Network Route Changes
+    disabled: null
+    filter: "resource.type=\"gce_route\" AND (\n  protoPayload.methodName:\"compute.routes.insert\"\
+      \ OR\n  protoPayload.methodName:\"compute.routes.delete\"\n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+      route_id: EXTRACT(labels.route_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      - description: route_id
+        key: route_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: networkRouteChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["projectOwnershipChange"]:
+    bucket_options: []
+    description: Project Ownership Changes
+    disabled: null
+    filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\n\
+      (ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+      REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
+      \n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\"\
+      \ AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
+      \n)"
+    label_extractors:
+      folder_id: EXTRACT(labels.folder_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      organization_id: EXTRACT(labels.organization_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: folder_id
+        key: folder_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: organization_id
+        key: organization_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: projectOwnershipChange
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["storageIamChanges"]:
+    bucket_options: []
+    description: Cloud Storage IAM Permission Changes
+    disabled: null
+    filter: resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
+    label_extractors:
+      bucket_name: EXTRACT(labels.bucket_name)
+      location: EXTRACT(labels.location)
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: bucket_name
+        key: bucket_name
+        value_type: STRING
+      - description: location
+        key: location
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: storageIamChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["auditConfigChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.organization_id
+          - metric.label.folder_id
+          - metric.label.project_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/auditConfigChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Audit Configuration Changes'
+    display_name: Audit Configuration Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected audit configuration
+        changes.
+
+
+        This alert helps track GCP services audit log configuration changes to ensure
+        appropriate.
+
+        audit logs are being collected
+
+        ```
+
+        protoPayload.methodName="SetIamPolicy" AND
+
+        protoPayload.serviceData.policyDelta.auditConfigDeltas:*
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["binaryAuthorizationPolicyChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/binaryAuthorizationPolicyChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Binary Authorization policy configuration
+        changes'
+    display_name: Binary Authorization Policy Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected for a change
+        to Binary Authorization
+
+        project-singleton policy, weakening the enforcement or evaluation modes.
+
+
+        This alert helps ensure security by monitoring configuration changes to Binary
+        Authorization policies.
+
+        ```
+
+        protoPayload.methodName="google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy"
+        AND
+
+        protoPayload.serviceName="binaryauthorization.googleapis.com" AND
+
+        ("ALWAYS_ALLOW" OR "DRYRUN_AUDIT_LOG_ONLY")
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["cloudsqlInstanceChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.database_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/cloudsqlInstanceChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Cloud SQL instance configuration changes'
+    display_name: Cloud SQL Instance Configuration Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected Cloud SQL
+        instance configuration changes.
+
+
+        This alert helps ensure security by monitoring configuration changes to SQL
+        instances.
+
+        ```
+
+        protoPayload.methodName="cloudsql.instances.update"
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["customRoleChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.organization_id
+          - metric.label.project_id
+          - metric.label.role_name
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/customRoleChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: custom role changes'
+    display_name: Custom Role Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected custom IAM\
+        \ role creation,\ndeletion or update activities.\n\nThis alert helps ensure\
+        \ security by monitoring changes to Identity and Access Management (IAM) roles.\n\
+        ```\nresource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
+        \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
+        google.iam.admin.v1.DeleteRole\"\n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["firewallPolicyRuleChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallPolicyRuleChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Network Firewall Policy Rule Changes'
+    display_name: Network Firewall Policy Rule Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected Firewall\
+        \ Policy rule changes.\n\nThis alert helps ensure security by monitoring creation,\
+        \ modification, or deletion of firewall rules.\n```\nresource.labels.method:\"\
+        compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"compute.networkFirewallPolicies.addRule\"\
+        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
+        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
+        \n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["firewallRuleChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.firewall_rule_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallRuleChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: VPC Network Firewall Rule Changes'
+    display_name: VPC Network Firewall Rule Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected VPC Network\
+        \ Firewall rule changes.\n\nThis alert helps ensure security by monitoring\
+        \ creation, modification, or deletion of firewall rules.\n```\nresource.type=\"\
+        gce_firewall_rule\" AND (\n  protoPayload.methodName:\"compute.firewalls.patch\"\
+        \ OR\n  protoPayload.methodName:\"compute.firewalls.insert\" OR\n  protoPayload.methodName:\"\
+        compute.firewalls.delete\"\n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["networkChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.network_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: VPC Network Changes'
+    display_name: VPC Network Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected VPC Network\
+        \ changes.\n\nThis alert helps ensure security by monitoring creation, modification,\
+        \ deletion,\nor peering changes to VPC networks.\n```\nresource.type=\"gce_network\"\
+        \ AND (\n  protoPayload.methodName:\"compute.networks.insert\" OR\n  protoPayload.methodName:\"\
+        compute.networks.patch\" OR\n  protoPayload.methodName:\"compute.networks.delete\"\
+        \ OR\n  protoPayload.methodName:\"compute.networks.addPeering\" OR\n  protoPayload.methodName:\"\
+        compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"compute.networks.removePeering\"\
+        \n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["networkRouteChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.route_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkRouteChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: VPC Network Route Changes'
+    display_name: VPC Network Route Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected VPC Network\
+        \ Route changes.\n\nThis alert helps ensure security by monitoring creation\
+        \ or deletion of network routes.\n```\nresource.type=\"gce_route\" AND (\n\
+        \  protoPayload.methodName:\"compute.routes.insert\" OR\n  protoPayload.methodName:\"\
+        compute.routes.delete\"\n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["projectOwnershipChange"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.organization_id
+          - metric.label.folder_id
+          - metric.label.project_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: Project Ownership Changes
+    display_name: Project Ownership Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected a project\
+        \ ownership assignments or changes.\n```\n(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\"\
+        ) AND\n(ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+        REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"\
+        roles/owner\"\n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+        ADD\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
+        \n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["storageIamChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.location
+          - metric.label.bucket_name
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/storageIamChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: Cloud Storage IAM Permission Changes
+    display_name: Cloud Storage IAM Permission Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected Cloud Storage
+        Bucket IAM changes.
+
+
+        This alert helps ensure security by monitoring IAM permission changes to Cloud
+        Storage buckets.
+
+        ```
+
+        resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
   terraform_data.precondition:
     input: null
     output: null
@@ -7312,19 +7272,25 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 10
   google_folder_iam_binding: 44
+  google_kms_crypto_key: 3
+  google_kms_crypto_key_iam_member: 3
+  google_kms_key_ring: 3
   google_logging_metric: 10
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
-  google_logging_project_cmek_settings: 3
+  google_logging_project_settings: 2
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 80
   google_org_policy_policy: 154
   google_organization_iam_audit_config: 1
+  google_organization_iam_binding: 37
+  google_organization_iam_custom_role: 9
   google_project: 3
   google_project_iam_binding: 17
-  google_project_iam_member: 15
-  google_project_service_identity: 9
+  google_project_iam_member: 17
+  google_project_service: 36
+  google_project_service_identity: 11
   google_scc_management_organization_security_health_analytics_custom_module: 16
   google_service_account: 14
   google_service_account_iam_binding: 2
@@ -7340,6 +7306,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 48
-  resources: 543
+  modules: 54
+  resources: 569
   terraform_data: 4

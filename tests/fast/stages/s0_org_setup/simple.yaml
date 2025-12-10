@@ -34,6 +34,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -99,6 +100,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -132,6 +134,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -198,6 +201,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -217,6 +221,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: different hash
@@ -756,7 +761,7 @@ values:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
         \  'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',\n  'roles/container.hostServiceAgentUser',\
-        \ 'roles/vpcaccess.user'\n])"
+        \ 'roles/vpcaccess.user'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -820,7 +825,7 @@ values:
     condition:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
-        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])"
+        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -1133,54 +1138,6 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
     role: roles/viewer
-  module.factory.module.projects-observability["billing-0"].google_project_iam_member.service_agents["bigquerydatatransfer"]:
-    condition: []
-    project: ft0-prod-billing-exp-0
-    role: roles/bigquerydatatransfer.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudasset"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudasset.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudbuild"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudbuild.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudbuild-sa"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudbuild.builds.builder
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["cloudkms"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/cloudkms.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["compute-system"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/compute.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["container-engine-robot"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/container.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["gkenode"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/container.defaultNodeServiceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["monitoring-notification"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/monitoring.notificationServiceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["pubsub"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/pubsub.serviceAgent
-  module.factory.module.projects-observability["iac-0"].google_project_iam_member.service_agents["service-networking"]:
-    condition: []
-    project: ft0-prod-iac-core-0
-    role: roles/servicenetworking.serviceAgent
-  module.factory.module.projects-observability["log-0"].google_project_iam_member.service_agents["pubsub"]:
-    condition: []
-    project: ft0-prod-audit-logs-0
-    role: roles/pubsub.serviceAgent
   module.factory.module.projects["billing-0"].data.google_bigquery_default_service_account.bq_sa[0]:
     project: ft0-prod-billing-exp-0
   module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
@@ -1228,6 +1185,8 @@ values:
     service: bigquerydatatransfer.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-iac-core-0
+  module.factory.module.projects["iac-0"].data.google_logging_project_settings.logging_sa[0]:
     project: ft0-prod-iac-core-0
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
@@ -1497,6 +1456,8 @@ values:
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
+  module.factory.module.projects["log-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-prod-audit-logs-0
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
@@ -1698,6 +1659,10 @@ values:
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.factory.terraform_data.project-preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -2366,6 +2331,12 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_organization_iam_audit_config.default["sts.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: ADMIN_READ
+    org_id: '1234567890'
+    service: sts.googleapis.com
   module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:organization_admin_viewer"]:
     condition: []
     members:
@@ -2640,6 +2611,13 @@ values:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
+  module.organization[0].google_essential_contacts_contact.contact["$email_addresses:gcp-organization-admins"]:
+    email: $email_addresses:gcp-organization-admins
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: organizations/1234567890
+    timeouts: null
   module.organization[0].google_logging_organization_settings.default[0]:
     organization: '1234567890'
     storage_location: europe-west1
@@ -2883,6 +2861,7 @@ counts:
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
+  google_logging_project_settings: 2
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
@@ -2891,9 +2870,9 @@ counts:
   google_project: 3
   google_project_iam_audit_config: 2
   google_project_iam_binding: 17
-  google_project_iam_member: 27
+  google_project_iam_member: 15
   google_project_service: 33
-  google_project_service_identity: 11
+  google_project_service_identity: 9
   google_service_account: 14
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
@@ -2908,6 +2887,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 48
-  resources: 316
+  modules: 50
+  resources: 322
   terraform_data: 4

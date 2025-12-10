@@ -39,7 +39,7 @@ locals {
 
 module "projects-observability" {
   source = "../../../modules/project"
-  count  = local.observability_project_id != null && local.observability_project_number != null ? 1 : 0
+  count  = length(local._observability_project) > 0 ? 1 : 0
 
   name = local.observability_project_id
   project_reuse = {
