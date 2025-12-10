@@ -26,6 +26,23 @@ locals {
     "stackdriver.resourceMetadata.writer"
   ]
   project_name = "${var.stage_config.environment}-gke-core-0"
+  _cmek_keys_container = toset(compact(flatten([
+    [for k, v in var.clusters : try(v.node_config.boot_disk_kms_key, null)],
+    [
+      for k, v in var.nodepools : [
+        for nk, nv in v : try(nv.node_config.boot_disk_kms_key, null)
+      ]
+    ]
+  ])))
+  _cmek_keys_pubsub = toset(compact(flatten([
+    [for k, v in var.clusters : try(v.enable_features.upgrade_notifications.kms_key_name, null)],
+  ])))
+  service_encryption_key_ids = {
+    for k, v in {
+      "container.googleapis.com" = local._cmek_keys_container
+      "pubsub.googleapis.com"    = local._cmek_keys_pubsub
+    } : k => v if length(v) > 0
+  }
 }
 
 module "gke-project-0" {
@@ -73,19 +90,7 @@ module "gke-project-0" {
     "orgpolicy.googleapis.com",
     "trafficdirector.googleapis.com"
   ]
-  service_encryption_key_ids = {
-    "container.googleapis.com" = toset(flatten([
-      [for k, v in var.clusters : try(v.node_config.boot_disk_kms_key, null)],
-      [
-        for k, v in var.nodepools : [
-          for nk, nv in v : try(nv.node_config.boot_disk_kms_key, null)
-        ]
-      ]
-    ]))
-    "pubsub.googleapis.com" = toset(flatten([
-      [for k, v in var.clusters : try(v.enable_features.upgrade_notifications.kms_key_name, null)],
-    ]))
-  }
+  service_encryption_key_ids = local.service_encryption_key_ids
   shared_vpc_service_config = {
     attach = true
     host_project = lookup(
