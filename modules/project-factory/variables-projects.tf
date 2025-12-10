@@ -69,6 +69,30 @@ variable "projects" {
             }))
           })), {})
         })), {})
+        lifecycle_rules = optional(map(object({
+          action = object({
+            type          = string
+            storage_class = optional(string)
+          })
+          condition = object({
+            age                        = optional(number)
+            created_before             = optional(string)
+            custom_time_before         = optional(string)
+            days_since_custom_time     = optional(number)
+            days_since_noncurrent_time = optional(number)
+            matches_prefix             = optional(list(string))
+            matches_storage_class      = optional(list(string))
+            matches_suffix             = optional(list(string))
+            noncurrent_time_before     = optional(string)
+            num_newer_versions         = optional(number)
+            with_state                 = optional(string)
+          })
+        })), {})
+        retention_policy      = optional(object({
+          retention_period = string
+          is_locked        = optional(bool)
+        }))
+        soft_delete_retention = optional(number)
       }))
       service_accounts = optional(map(object({
         description = optional(string)
@@ -151,6 +175,30 @@ variable "projects" {
           }))
         })), {})
       })), {})
+      lifecycle_rules = optional(map(object({
+        action = object({
+          type          = string
+          storage_class = optional(string)
+        })
+        condition = object({
+          age                        = optional(number)
+          created_before             = optional(string)
+          custom_time_before         = optional(string)
+          days_since_custom_time     = optional(number)
+          days_since_noncurrent_time = optional(number)
+          matches_prefix             = optional(list(string))
+          matches_storage_class      = optional(list(string))
+          matches_suffix             = optional(list(string))
+          noncurrent_time_before     = optional(string)
+          num_newer_versions         = optional(number)
+          with_state                 = optional(string)
+        })
+      })), {})
+      retention_policy      = optional(object({
+        retention_period = string
+        is_locked        = optional(bool)
+      }))
+      soft_delete_retention = optional(number)
     })), {})
     contacts = optional(map(list(string)), {})
     datasets = optional(map(object({

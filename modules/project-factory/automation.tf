@@ -43,6 +43,9 @@ locals {
       parent_name        = v.parent_name
       name               = lookup(v.bucket, "name", "tf-state")
       create             = lookup(v.bucket, "create", true)
+      lifecycle_rules         = lookup(v.bucket, "lifecycle_rules", {})
+      retention_policy        = lookup(v.bucket, "retention_policy", null)
+      soft_delete_retention   = lookup(v.bucket, "soft_delete_retention", null)
       prefix = try(coalesce(
         local.data_defaults.overrides.prefix,
         v.prefix,
@@ -99,6 +102,7 @@ module "automation-bucket" {
   iam_bindings          = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
   labels                = lookup(each.value, "labels", {})
+  lifecycle_rules       = each.value.lifecycle_rules
   managed_folders       = lookup(each.value, "managed_folders", {})
   location = each.value.create == false ? null : coalesce(
     local.data_defaults.overrides.locations.storage,
@@ -114,6 +118,8 @@ module "automation-bucket" {
   versioning = lookup(
     each.value, "versioning", false
   )
+  retention_policy      = each.value.retention_policy
+  soft_delete_retention = each.value.soft_delete_retention
 }
 
 module "automation-service-accounts" {
