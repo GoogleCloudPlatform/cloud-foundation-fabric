@@ -21,10 +21,6 @@ import os
 
 # List of folders and files that are expected to have same content
 duplicates = [
-    [
-        "fast/stages/0-org-setup/datasets/classic/projects/core/billing-0.yaml",
-        "fast/stages/0-org-setup/datasets/hardened/projects/core/billing-0.yaml",
-    ],
     # deep recursive folder comparison
     [
         "fast/stages/0-org-setup/datasets/classic/organization/custom-roles",
