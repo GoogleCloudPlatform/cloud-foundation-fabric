@@ -919,6 +919,104 @@
             "type": "string"
           }
         },
+        "lifecycle_rules": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "action",
+                "condition"
+              ],
+              "properties": {
+                "action": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Delete",
+                        "SetStorageClass",
+                        "AbortIncompleteMultipartUpload"
+                      ]
+                    },
+                    "storage_class": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "age": {
+                      "type": "number"
+                    },
+                    "created_before": {
+                      "type": "string"
+                    },
+                    "custom_time_before": {
+                      "type": "string"
+                    },
+                    "days_since_custom_time": {
+                      "type": "number"
+                    },
+                    "days_since_noncurrent_time": {
+                      "type": "number"
+                    },
+                    "matches_prefix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "matches_storage_class": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "STANDARD",
+                          "MULTI_REGIONAL",
+                          "REGIONAL",
+                          "NEARLINE",
+                          "COLDLINE",
+                          "ARCHIVE",
+                          "DURABLE_REDUCED_AVAILABILITY"
+                        ]
+                      }
+                    },
+                    "matches_suffix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "noncurrent_time_before": {
+                      "type": "string"
+                    },
+                    "num_newer_versions": {
+                      "type": "number"
+                    },
+                    "with_state": {
+                      "type": "string",
+                      "enum": [
+                        "LIVE",
+                        "ARCHIVED",
+                        "ANY"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "location": {
           "type": "string"
         },
@@ -963,12 +1061,15 @@
           "additionalProperties": false,
           "properties": {
             "retention_period": {
-              "type": "number"
+              "type": "string"
             },
             "is_locked": {
               "type": "boolean"
             }
           }
+        },
+        "soft_delete_retention": {
+          "type": "number"
         },
         "enable_object_retention": {
           "type": "boolean"
