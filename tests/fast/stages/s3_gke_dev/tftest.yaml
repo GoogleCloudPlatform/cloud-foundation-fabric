@@ -19,5 +19,5 @@ tests:
     inventory:
       - simple.yaml
   hardened:
-      inventory:
+    inventory:
       - hardened.yaml
