@@ -36,11 +36,11 @@ locals {
         labels                = lookup(opts, "labels", {})
         location              = lookup(opts, "location", null)
         managed_folders       = lookup(opts, "managed_folders", {})
-        prefix = coalesce(
+        prefix = try(coalesce(
           local.data_defaults.overrides.prefix,
           try(v.prefix, null),
           local.data_defaults.defaults.prefix
-        )
+        ), null)
         storage_class = lookup(
           opts, "storage_class", "STANDARD"
         )

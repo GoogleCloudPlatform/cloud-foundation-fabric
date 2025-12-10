@@ -144,7 +144,7 @@ resource "google_compute_region_instance_group_manager" "default" {
       dynamic "on_repair" {
         for_each = try(var.instance_lifecycle_policy.on_repair, null) == null ? [] : [""]
         content {
-          allow_changing_zone = try(var.instance_lifecycle_policy.on_repair, null)
+          allow_changing_zone = try(var.instance_lifecycle_policy.on_repair.allow_changing_zone, null)
         }
       }
     }
