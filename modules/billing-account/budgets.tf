@@ -98,8 +98,9 @@ resource "google_billing_budget" "default" {
     }
     projects = concat(
       [
-        for v in each.value.filter.projects :
-        lookup(local.ctx.project_ids, v, v)
+        for v in each.value.filter.projects : try(
+          try("projects/${local.ctx.project_numbers[v]}", v), v
+        )
       ],
       lookup(local.ctx.project_sets, "$project_sets:${each.key}", [])
     )
