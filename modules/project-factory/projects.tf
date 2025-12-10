@@ -48,7 +48,7 @@ locals {
     trimsuffix(f, ".yaml") => yamldecode(file("${local._templates_path}/${f}"))
   }
   ctx_project_ids     = merge(local.ctx.project_ids, local.project_ids)
-  ctx_project_numbers = merge(local.ctx.project_ids, local.project_numbers)
+  ctx_project_numbers = merge(local.ctx.project_numbers, local.project_numbers)
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }

@@ -50,6 +50,7 @@ module "billing-budgets" {
       for v in local.budget_project_sets :
       v.budget => "projects/${local.outputs_projects[v.project].number}"...
     }
+    project_numbers = local.ctx_project_numbers
   })
   factories_config = {
     budgets_data_path = var.factories_config.budgets.data

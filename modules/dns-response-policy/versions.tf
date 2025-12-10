@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v49.2.0
+# Fabric release: v49.3.0
 
 terraform {
   required_version = ">= 1.12.2"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dns-response-policy:v49.2.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dns-response-policy:v49.3.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dns-response-policy:v49.2.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dns-response-policy:v49.3.0-tf"
   }
 }

@@ -52,7 +52,7 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 ## Importing existing setup into FAST
 For brownfield implementations you may need to import existing setting in the organization, folders, etc. These snippets can help you add existing settings into the YAML file
 
-Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4.
+Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4. It was tested using yq `v4.47.2`.
 
 ### IAM bindings
 To create `iam:` part of the factory YAML file, you can use following snippet:
