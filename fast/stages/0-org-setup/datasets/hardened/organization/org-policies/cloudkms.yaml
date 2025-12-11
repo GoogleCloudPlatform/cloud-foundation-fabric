@@ -59,7 +59,7 @@ gcp.restrictNonCmekServices:
           - "dataflow.googleapis.com"
           - "dataform.googleapis.com"
           - "datafusion.googleapis.com"
-          # Enable when Terraform provider is ready: https://docs.cloud.google.com/dataplex/docs/cme
+          # To enable when Terraform provider is ready: https://docs.cloud.google.com/dataplex/docs/cmek
           # - "dataplex.googleapis.com"
           - "dataproc.googleapis.com"
           - "dialogflow.googleapis.com"
