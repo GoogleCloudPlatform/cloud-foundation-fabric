@@ -219,7 +219,7 @@ output "tag_values" {
 }
 
 output "workload_identity_pool_ids" {
-  description = "Workload identity provider ids"
+  description = "Workload identity provider ids."
   value = {
     for k, v in google_iam_workload_identity_pool.default : k => v.name
   }
