@@ -17,6 +17,9 @@
   - ["Hardened" dataset](#hardened-dataset)
   - ["Minimal" dataset (TBD)](#minimal-dataset-tbd)
   - ["Tenants" dataset (TBD)](#tenants-dataset-tbd)
+  - [Enabling Optional Features](#enabling-optional-features)
+    - [SCC Custom SHA Modules](#scc-custom-sha-modules)
+    - [Observability](#observability)
 - [Detailed configuration](#detailed-configuration)
   - [Context interpolation](#context-interpolation)
   - [Factory data](#factory-data)
@@ -296,6 +299,52 @@ This dataset is meant as a minimalistic starting point for organizations where a
 ### "Tenants" dataset (TBD)
 
 This dataset implements a design where internal tenants are given control over parts of the organization, while still retaining a degree of central control over core policies and resources.
+
+### Enabling Optional Features
+
+The "Classic FAST" dataset is designed to be more lightweight than the "Hardened FAST" dataset regarding controls and policies. 
+But, it fully supports more advanced features like SCC Custom SHA modules and Observability factories if needed.
+Note that the configuration described below is already implemented when using the "Hardened FAST" dataset.
+
+#### SCC Custom SHA Modules
+
+To configure and provision Security Command Center Custom SHA module detectors:
+
+1. Create a folder `datasets/classic/organization/scc-sha-custom-modules`.
+2. Place your custom SHA policies in this folder. Sample of existing custom SHA policies can be found in the [hardened dataset](./datasets/hardened/organization/scc-sha-custom-modules).
+3. Add the `roles/securitycentermanagement.customModulesEditor` role to the `.config.yaml` file to ensure the service account has enough permissions to provision custom modules.
+
+```yaml
+# datasets/classic/organization/.config.yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-org-rw:
+    - roles/securitycentermanagement.customModulesEditor
+```
+
+#### Observability
+
+To configure and provision observability resources such as log-based metrics and monitoring alerts:
+
+1. Create a folder `datasets/classic/observability`.
+2. Set the terraform variable `factories_config` to configure the `observability` factory path to use the new folder.
+
+```hcl
+factories_config = {
+  ...
+  observability = "datasets/classic/observability"
+  ...
+}
+```
+3. Update the `defaults.yaml` file to refer to the log project.
+
+```yaml
+# datasets/classic/defaults.yaml
+projects:
+  defaults:
+    observability:
+      project_id: $project_ids:log-0
+      project_number: $project_numbers:log-0
+```
 
 ## Detailed configuration
 
