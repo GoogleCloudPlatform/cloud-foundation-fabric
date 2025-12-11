@@ -335,7 +335,7 @@ factories_config = {
   ...
 }
 ```
-3. Update the `defaults.yaml` file to refer to the log project.
+3. Update the `defaults.yaml` file to refer to the logging project.
 
 ```yaml
 # datasets/classic/defaults.yaml
