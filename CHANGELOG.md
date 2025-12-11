@@ -3,7 +3,43 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-11-24 09:55:05+00:00 to: None since: v49.1.0 -->
+## [Unreleased] <!-- from: 2025-11-18 13:52:06+00:00 to: None since: v49.0.0 -->
+
+## [50.0.0] - 2025-12-11
+
+### FAST
+
+- [[#3583](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3583)] Implement additional GCS attributes in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-12-10 15:12:58+00:00 -->
+- [[#3546](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3546)] Workforce identity: migrate to iam.managed.allowedPolicyMembers Organizational Policy ([ysolt](https://github.com/ysolt)) <!-- 2025-12-05 16:26:04+00:00 -->
+- [[#3559](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3559)] Align locations in networking stage with other stages ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-12-04 07:28:06+00:00 -->
+- [[#3541](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3541)] Add additional hardened controls for gke, firewall, cloudrun and more ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-11-21 08:38:53+00:00 -->
+- [[#3545](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3545)] Configure ADMIN_READ for sts.googleapis.com to enable Workforce Identity logging ([ysolt](https://github.com/ysolt)) <!-- 2025-11-21 06:40:45+00:00 -->
+
+### MODULES
+
+- [[#3583](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3583)] Implement additional GCS attributes in project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-12-10 15:12:58+00:00 -->
+- [[#3544](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3544)] Add support for context to dataplex aspect types and data catalog policy tags modules ([ludoo](https://github.com/ludoo)) <!-- 2025-11-20 15:12:17+00:00 -->
+
+### TOOLS
+
+- [[#3584](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3584)] Add script to programmatically replace the path in schema declarations ([ludoo](https://github.com/ludoo)) <!-- 2025-12-10 16:31:03+00:00 -->
+
+## [49.3.0] - 2025-12-11
+
+### FAST
+
+- [[#3581](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3581)] Add more detailed version of yq ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-10 17:07:54+00:00 -->
+- [[#3580](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3580)] Add yq snippets for IAM imports into factory files ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-09 16:31:14+00:00 -->
+- [[#3578](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3578)] added role required for support ticket creation ([aumohr](https://github.com/aumohr)) <!-- 2025-12-09 10:09:06+00:00 -->
+
+### MODULES
+
+- [[#3555](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3555)] Use project numbers in billing budget filter ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-12-10 17:35:06+00:00 -->
+- [[#3585](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3585)] fix(compute-mig): correctly map allow_changing_zone ([frits-v](https://github.com/frits-v)) <!-- 2025-12-10 17:06:48+00:00 -->
+- [[#3575](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3575)] feat: Allow empty prefix for project_factory buckets ([joshmyers](https://github.com/joshmyers)) <!-- 2025-12-10 16:41:08+00:00 -->
+- [[#3577](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3577)] feat(compute-mig): add instance_lifecycle_policy support ([frits-v](https://github.com/frits-v)) <!-- 2025-12-09 16:59:09+00:00 -->
+- [[#3579](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3579)] fixed project-factory module to pass service account description ([fenyvesi-levi](https://github.com/fenyvesi-levi)) <!-- 2025-12-09 11:26:44+00:00 -->
+- [[#3574](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3574)] Add `retain_backups_on_delete` and `final_backup_configuration` to `cloudsql-instance` ([justkmark](https://github.com/justkmark)) <!-- 2025-12-08 14:22:33+00:00 -->
 
 ## [49.2.0] - 2025-12-08
 
@@ -1985,7 +2021,9 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.2.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...HEAD
+[50.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...49.3.0
+[49.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.3.0...49.2.0
 [49.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.2.0...49.1.0
 [49.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.1.0...49.0.0
 [49.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...48.1.0
