@@ -24,7 +24,8 @@ locals {
   }
   cicd_ctx_wif = {
     for k, v in merge(
-      local.ctx.workload_identity_providers, local.workload_identity_providers
+      local.ctx.workload_identity_providers,
+      local.workload_identity_providers
     ) : "$workload_identity_providers:${k}" => v
   }
   # normalize workflow configurations, correctness is checked via preconditions

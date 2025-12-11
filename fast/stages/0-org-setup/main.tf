@@ -59,7 +59,7 @@ locals {
   workload_identity_providers = merge([
     for k, v in module.factory.projects : {
       for wk, wv in v.workload_identity_providers :
-      "${k}/${wk}" => wv.pool
+      "${k}/${wk}" => wv.name
     }
   ]...)
 }

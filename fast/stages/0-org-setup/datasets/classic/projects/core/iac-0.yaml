@@ -198,3 +198,13 @@ service_accounts:
     display_name: IaC service account for data platform dev (read-only).
   iac-dp-dev-rw:
     display_name: IaC service account for data platform dev (read-write).
+# workload_identity_pools:
+#   default:
+#     display_name: Default pool for CI/CD.
+#     providers:
+#       github-default:
+#         display_name: GitHub (my org).
+#         attribute_condition: attribute.repository_owner=="myorg"
+#         identity_provider:
+#           oidc:
+#             template: github

@@ -12,36 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/cicd.schema.json
+# yaml-language-server: $schema=../../schemas/cicd-workflows.schema.json
 
-workload_identity_federation:
-  pool_name: iac-0
-  project: $project_ids:iac-0
-  providers:
-    github:
-      # the condition is optional but recommended, use your GitHub org name
-      attribute_condition: attribute.repository_owner=="my_org"
-      issuer: github
-      # custom_settings:
-      #   issuer_uri:
-      #   audiences: []
-      #   jwks_json_path:
-workflows:
-  org-setup:
-    provider_files:
-      apply: 0-org-setup-providers.tf
-      plan: 0-org-setup-providers-ro.tf
-    repository:
-      name: gh-org/gh-repo
-      type: github
-      apply_branches:
-        - master
-        - fast-dev
-    service_accounts:
-      apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
-      plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
-    tfvars_files:
-      - 0-org-setup.auto.tfvars
-    workload_identity:
-      pool_id: $wif_pools:iac-0
-      audiences: []
+org-setup:
+  provider_files:
+    apply: 0-org-setup-providers.tf
+    plan: 0-org-setup-providers-ro.tf
+  repository:
+    name: ludomagno/0-org-setup
+    type: github
+    apply_branches:
+      - master
+      - fast-dev
+  service_accounts:
+    apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+    plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+  tfvars_files:
+    - 0-org-setup.auto.tfvars
+  workload_identity:
+    provider: $workload_identity_providers:iac-0/default/github-default
+    iam_principalsets:
+      template: github
