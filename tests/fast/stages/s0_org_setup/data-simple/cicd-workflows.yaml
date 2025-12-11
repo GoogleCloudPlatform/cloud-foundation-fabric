@@ -30,6 +30,7 @@ org-setup:
   tfvars_files:
     - 0-org-setup.auto.tfvars
   workload_identity:
+    pool: $workload_identity_pools:iac-0/default
     provider: $workload_identity_providers:iac-0/default/github-default
     iam_principalsets:
       template: github

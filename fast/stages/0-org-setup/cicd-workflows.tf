@@ -28,6 +28,12 @@ locals {
       local.workload_identity_providers
     ) : "$workload_identity_providers:${k}" => v
   }
+  cicd_ctx_wif_pools = {
+    for k, v in merge(
+      local.ctx.workload_identity_pools,
+      local.workload_identity_pools
+    ) : "$workload_identity_pools:${k}" => v
+  }
   # normalize workflow configurations, correctness is checked via preconditions
   cicd_workflows = {
     for k, v in local._cicd_workflows : k => {
@@ -58,6 +64,11 @@ locals {
       }
       tfvars_files = try(v.tfvars_files, [])
       workload_identity = {
+        pool = try(
+          local.cicd_ctx_wif_pools[v.workload_identity.pool],
+          v.workload_identity.pool,
+          null
+        )
         provider = try(
           local.cicd_ctx_wif[v.workload_identity.provider],
           v.workload_identity.provider,
@@ -98,14 +109,14 @@ module "cicd-sa-apply" {
       ? [
         format(
           each.value.workload_identity.iam_principalsets.plan,
-          each.value.workload_identity.provider,
+          each.value.workload_identity.pool,
           each.value.repository.name
         )
       ]
       : [
         for v in each.value.repository.apply_branches : format(
           each.value.workload_identity.iam_principalsets.apply,
-          each.value.workload_identity.provider,
+          each.value.workload_identity.pool,
           each.value.repository.name,
           v
         )
@@ -125,7 +136,7 @@ module "cicd-sa-plan" {
     "roles/iam.workloadIdentityUser" = [
       format(
         each.value.workload_identity.iam_principalsets.plan,
-        each.value.workload_identity.provider,
+        each.value.workload_identity.pool,
         each.value.repository.name
       )
     ]

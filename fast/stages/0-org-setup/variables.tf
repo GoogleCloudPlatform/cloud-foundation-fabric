@@ -30,6 +30,7 @@ variable "context" {
     tag_values                  = optional(map(string), {})
     vpc_host_projects           = optional(map(string), {})
     vpc_sc_perimeters           = optional(map(string), {})
+    workload_identity_pools     = optional(map(string), {})
     workload_identity_providers = optional(map(string), {})
   })
   default  = {}
