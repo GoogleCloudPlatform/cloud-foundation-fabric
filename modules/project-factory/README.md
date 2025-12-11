@@ -815,18 +815,18 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L82) | Folder ids. |  |
-| [iam_principals](outputs.tf#L87) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L92) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L97) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L104) | Project ids. |  |
-| [project_numbers](outputs.tf#L109) | Project numbers. |  |
-| [projects](outputs.tf#L116) | Project attributes. |  |
-| [service_account_emails](outputs.tf#L121) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L128) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L135) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L142) | Service account emails. |  |
-| [storage_buckets](outputs.tf#L147) | Bucket names. |  |
+| [folder_ids](outputs.tf#L85) | Folder ids. |  |
+| [iam_principals](outputs.tf#L90) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L95) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L100) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L107) | Project ids. |  |
+| [project_numbers](outputs.tf#L112) | Project numbers. |  |
+| [projects](outputs.tf#L119) | Project attributes. |  |
+| [service_account_emails](outputs.tf#L124) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L131) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L138) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L145) | Service account emails. |  |
+| [storage_buckets](outputs.tf#L150) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 

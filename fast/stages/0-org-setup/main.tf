@@ -56,10 +56,16 @@ locals {
     defaults  = try(local._defaults.projects.defaults, {})
     overrides = try(local._defaults.projects.overrides, {})
   }
+  workload_identity_pools = merge([
+    for k, v in module.factory.projects : {
+      for wk, wv in v.workload_identity_pools :
+      "${k}/${wk}" => wv
+    }
+  ]...)
   workload_identity_providers = merge([
     for k, v in module.factory.projects : {
       for wk, wv in v.workload_identity_providers :
-      "${k}/${wk}" => wv.pool
+      "${k}/${wk}" => wv.name
     }
   ]...)
 }
