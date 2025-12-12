@@ -46,3 +46,27 @@ workload_identity_pools:
               # - api://AzureADTokenExchange
               - fb60f99c-7a34-4190-8149-302f77469936
 ```
+
+### IAM principals
+
+IAM principals for Azure Devops tokens mapped via the Workload Identity configuration above, will only be able to use the assertion subject identifier. Azure Devops does not populate organization, project, repository, or pipeline information in the token so the Service Connection (which defines the subject) can be mapped to a single principal on the GCP side.
+
+Moreover, since the subject is a long string there's a high chance that it will exceed the number of characters supported by Workload Identity Federation. This is the reason why the WIF provider mapping is defined as `assertion.sub.split("/sc/")[1]`: the subject is split into two parts, and only the second part (which contains the service connection id) is kept.
+
+So for a Service Connection that defines this subject:
+
+```
+/eid1/c/pub/t/QuxZppa4OUeCSx113vjOOg/a/rISbSSETf0KqFyZ8ppdXmA/sc/5d2face9-4998-4294-8d24-763e98b6af3e/9e92fe65-c282-47ee-9534-3a1a784c3417
+```
+
+The `google.subject` used to construct the IAM principal will be composed of your Azure Devops [organization id](https://stackoverflow.com/a/67871296) and the id of the Service Connection:
+
+```
+5d2face9-4998-4294-8d24-763e98b6af3e/9e92fe65-c282-47ee-9534-3a1a784c3417
+```
+
+So we finally get to the IAM principal, which for the service connection above has this form:
+
+```
+principal://iam.googleapis.com/projects/[project number]/locations/global/workloadIdentityPools/[pool name]/subject/5d2face9-4998-4294-8d24-763e98b6af3e/9e92fe65-c282-47ee-9534-3a1a784c3417
+```
