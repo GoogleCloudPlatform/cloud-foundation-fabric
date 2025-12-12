@@ -846,7 +846,6 @@ Define values for the `var.environments` variable in a tfvars file.
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [0-org-setup-initial-providers.tf](./0-org-setup-initial-providers.tf) | None |  |  |
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
 | [cicd-workflows-preconditions.tf](./cicd-workflows-preconditions.tf) | None |  | <code>terraform_data</code> |
 | [cicd-workflows.tf](./cicd-workflows.tf) | None | <code>iam-service-account</code> | <code>google_storage_bucket_object</code> · <code>local_file</code> |
