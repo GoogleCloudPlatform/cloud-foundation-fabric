@@ -25,6 +25,7 @@ module "factory" {
   )
   context = local.ctx
   factories_config = {
+    folders  = var.factories_config.folders
     projects = var.factories_config.projects
   }
 }
