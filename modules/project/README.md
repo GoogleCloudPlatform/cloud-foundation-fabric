@@ -2183,8 +2183,9 @@ module "project" {
 | [sink_writer_identities](outputs.tf#L197) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L204) | Tag key resources. |  |
 | [tag_values](outputs.tf#L213) | Tag value resources. |  |
-| [workload_identity_provider_ids](outputs.tf#L221) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L229) | Workload identity provider attributes. |  |
+| [workload_identity_pool_ids](outputs.tf#L221) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L228) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L236) | Workload identity provider attributes. |  |
 
 ## Fixtures
 

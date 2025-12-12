@@ -60,6 +60,9 @@ locals {
           module.buckets["${k}/${sk}"].name
         )
       }
+      workload_identity_pools = (
+        module.projects[k].workload_identity_pool_ids
+      )
       workload_identity_providers = (
         module.projects[k].workload_identity_providers
       )
