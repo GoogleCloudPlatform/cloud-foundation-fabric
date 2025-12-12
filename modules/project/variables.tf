@@ -146,7 +146,7 @@ variable "deletion_policy" {
 }
 
 variable "descriptive_name" {
-  description = "Name of the project name. Used for project name instead of `name` variable."
+  description = "Descriptive project name. Set when name differs from project id."
   type        = string
   default     = null
 }

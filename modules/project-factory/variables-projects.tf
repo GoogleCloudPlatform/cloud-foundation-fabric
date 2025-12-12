@@ -309,6 +309,7 @@ variable "projects" {
       }))
     })), {})
     name = optional(string)
+    descriptive_name = optional(string)
     org_policies = optional(map(object({
       inherit_from_parent = optional(bool) # for list policies only.
       reset               = optional(bool)

@@ -111,6 +111,7 @@
 - **metric_scopes**: *array*
   - items: *string*
 - **name**: *string*
+- **descriptive_name**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*

@@ -68,9 +68,10 @@ locals {
         try(v.metric_scopes, null),
         local.data_defaults.defaults.metric_scopes
       )
-      name         = lookup(v, "name", basename(k)) # type: string
-      org_policies = try(v.org_policies, {})        # type: map(object({...}))
-      parent = try(                                 # type: string, nullable
+      descriptive_name = lookup(v, "descriptive_name", null)
+      name             = lookup(v, "name", basename(k)) # type: string
+      org_policies     = try(v.org_policies, {})        # type: map(object({...}))
+      parent = try(                                     # type: string, nullable
         coalesce(
           local.data_defaults.overrides.parent,
           try(v.parent, null),

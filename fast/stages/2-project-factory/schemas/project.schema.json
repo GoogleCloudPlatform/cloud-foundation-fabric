@@ -353,6 +353,9 @@
     "name": {
       "type": "string"
     },
+    "descriptive_name": {
+      "type": "string"
+    },
     "org_policies": {
       "type": "object",
       "additionalProperties": false,
