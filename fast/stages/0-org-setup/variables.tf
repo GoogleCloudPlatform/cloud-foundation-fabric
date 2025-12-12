@@ -44,7 +44,7 @@ variable "factories_config" {
     cicd_workflows    = optional(string)
     defaults          = optional(string, "datasets/classic/defaults.yaml")
     folders           = optional(string, "datasets/classic/folders")
-    observability     = optional(string)
+    observability     = optional(string, "datasets/classic/observability")
     organization      = optional(string, "datasets/classic/organization")
     project_templates = optional(string, "datasets/classic/templates")
     projects          = optional(string, "datasets/classic/projects")
