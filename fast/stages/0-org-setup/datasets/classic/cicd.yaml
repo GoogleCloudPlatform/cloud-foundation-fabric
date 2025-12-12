@@ -19,7 +19,7 @@ org-setup:
     apply: 0-org-setup-providers.tf
     plan: 0-org-setup-providers-ro.tf
   repository:
-    name: ludomagno/0-org-setup
+    name: myorg/0-org-setup
     type: github
     apply_branches:
       - master
