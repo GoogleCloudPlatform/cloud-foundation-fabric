@@ -425,14 +425,14 @@ values:
   module.cicd-sa-apply["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
     condition: []
     members:
-    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/fast-dev
-    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/master
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/fast-dev
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/master
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.cicd-sa-plan["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
     condition: []
     members:
-    - principalSet://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/default/attribute.repository/gh-org/gh-repo
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.repository/gh-org/gh-repo
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.module.bigquery-datasets["billing-0/billing_export"].google_bigquery_dataset.default:
