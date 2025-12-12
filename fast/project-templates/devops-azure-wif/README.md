@@ -1,5 +1,12 @@
 # Azure Devops Pipelines via Workload Identity Federation
 
+<!-- BEGIN TOC -->
+- [Workload Identity Federation](#workload-identity-federation)
+  - [Azure Devops Service Connection](#azure-devops-service-connection)
+  - [GCP Workload Identity Federation Pool and Provider](#gcp-workload-identity-federation-pool-and-provider)
+  - [IAM principals](#iam-principals)
+<!-- END TOC -->
+
 ## Workload Identity Federation
 
 ### Azure Devops Service Connection
