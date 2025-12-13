@@ -774,7 +774,7 @@ module "project-host" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=6 resources=21 inventory=logging.yaml e2e
+# tftest inventory=logging.yaml e2e
 ```
 
 ## Data Access Logs
@@ -842,7 +842,7 @@ module "project" {
     }
   }
 }
-# tftest modules=2 resources=7 inventory=log-scopes.yaml
+# tftest inventory=log-scopes.yaml
 ```
 
 ## Cloud KMS Encryption Keys

@@ -417,7 +417,7 @@ module "org" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=6 resources=20 inventory=logging.yaml
+# tftest inventory=logging.yaml
 ```
 
 ## Data Access Logs
