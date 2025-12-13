@@ -103,7 +103,6 @@ workload_identity_pools:
         # the Azure tenant id (assertion.tid) can also be used
         attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-eef076afa596"
         attribute_mapping:
-          # google.subject: assertion.sub
           google.subject: assertion.sub.split("/sc/")[1]
         identity_provider:
           oidc:
@@ -138,3 +137,10 @@ So we finally get to the IAM principal, which for the service connection above h
 ```
 principal://iam.googleapis.com/projects/[project number]/locations/global/workloadIdentityPools/[pool name]/subject/5d2face9-4998-4294-8d24-763e98b6af3e/9e92fe65-c282-47ee-9534-3a1a784c3417
 ```
+
+## Pipeline Configuration
+
+- [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines>)
+- [Azure Pipelines Terraform (GitHub)](https://github.com/microsoft/azure-pipelines-terraform)
+- [Article](https://spacelift.io/blog/terraform-azure-devops)
+- [Article](https://medium.com/@guilherme.pompgetting-started-with-terraform-azure-devops-pipelines-with-terraform-924279e5c033>)
