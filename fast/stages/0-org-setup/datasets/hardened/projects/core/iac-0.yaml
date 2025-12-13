@@ -74,7 +74,21 @@ services:
   - storage-component.googleapis.com
   - storage.googleapis.com
   - sts.googleapis.com
+kms:
+  keyrings:
+    ew1:
+      location: europe-west1
+      keys:
+        storage:
+          rotation_period: 7776000s
+service_encryption_key_ids:
+  storage.googleapis.com:
+    - $kms_keys:iac-0/ew1/storage
 org_policies:
+  gcp.restrictCmekCryptoKeyProjects:
+    rules:
+      - allow:
+          all: true
   iam.workloadIdentityPoolProviders:
     rules:
       - allow:
@@ -87,6 +101,7 @@ buckets:
   iac-org-state:
     description: Terraform state for the org-level automation.
     versioning: true
+    encryption_key: $kms_keys:iac-0/ew1/storage
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
@@ -96,6 +111,7 @@ buckets:
   iac-stage-state:
     description: Terraform state for stage automation.
     versioning: true
+    encryption_key: $kms_keys:iac-0/ew1/storage
     managed_folders:
       1-vpcsc:
         iam:
@@ -131,6 +147,7 @@ buckets:
   iac-outputs:
     description: Terraform state for the org-level automation.
     versioning: true
+    encryption_key: $kms_keys:iac-0/ew1/storage
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
@@ -192,3 +209,13 @@ service_accounts:
     display_name: IaC service account for data platform dev (read-only).
   iac-dp-dev-rw:
     display_name: IaC service account for data platform dev (read-write).
+# workload_identity_pools:
+#   default:
+#     display_name: Default pool for CI/CD.
+#     providers:
+#       github-default:
+#         display_name: GitHub (my org).
+#         attribute_condition: attribute.repository_owner=="myorg"
+#         identity_provider:
+#           oidc:
+#             template: github

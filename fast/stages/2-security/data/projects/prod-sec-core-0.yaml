@@ -14,7 +14,7 @@
 
 # yaml-language-server: $schema=../../../0-org-setup/schemas/project.schema.json
 
-parent: $folder_ids:prod
+parent: $folder_ids:security/prod
 services:
   - certificatemanager.googleapis.com
   - cloudkms.googleapis.com

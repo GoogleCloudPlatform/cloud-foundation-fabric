@@ -398,7 +398,7 @@ module "folder-sink" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=6 resources=18 inventory=logging.yaml e2e
+# tftest inventory=logging.yaml e2e
 ```
 
 ## Data Access Logs

@@ -21,3 +21,66 @@
 custom.cloudkmsAllowedProtectionLevel:
   rules:
     - enforce: true
+
+gcp.restrictCmekCryptoKeyProjects:
+  rules:
+    - allow:
+        values:
+          - 'under:${folder_ids["security/dev"]}'
+      condition:
+        title: Restrict CMEK Projects for development projects
+        expression: |
+          resource.matchTag('${organization.id}/environment', 'development')
+    - allow:
+        values:
+          - 'under:${folder_ids["security/prod"]}'
+      condition:
+        title: Restrict CMEK Projects for non-development projects
+        expression: |
+          !resource.matchTag('${organization.id}/environment', 'development')
+
+gcp.restrictNonCmekServices:
+  rules:
+    - deny:
+        values:
+          - "aiplatform.googleapis.com"
+          - "alloydb.googleapis.com"
+          - "apigee.googleapis.com"
+          - "artifactregistry.googleapis.com"
+          - "bigquery.googleapis.com"
+          - "bigquerydatatransfer.googleapis.com"
+          - "bigtable.googleapis.com"
+          - "cloudfunctions.googleapis.com"
+          - "cloudtasks.googleapis.com"
+          - "composer.googleapis.com"
+          - "compute.googleapis.com"
+          - "contactcenterinsights.googleapis.com"
+          - "container.googleapis.com"
+          - "dataflow.googleapis.com"
+          - "dataform.googleapis.com"
+          - "datafusion.googleapis.com"
+          # To enable when Terraform provider is ready: https://docs.cloud.google.com/dataplex/docs/cmek
+          # - "dataplex.googleapis.com"
+          - "dataproc.googleapis.com"
+          - "dialogflow.googleapis.com"
+          - "discoveryengine.googleapis.com"
+          - "documentai.googleapis.com"
+          - "file.googleapis.com"
+          - "firestore.googleapis.com"
+          - "gkebackup.googleapis.com"
+          - "integrations.googleapis.com"
+          - "logging.googleapis.com"
+          - "looker.googleapis.com"
+          - "notebooks.googleapis.com"
+          - "pubsub.googleapis.com"
+          - "redis.googleapis.com"
+          - "run.googleapis.com"
+          - "secretmanager.googleapis.com"
+          - "securesourcemanager.googleapis.com"
+          - "securitycenter.googleapis.com"
+          - "spanner.googleapis.com"
+          - "speech.googleapis.com"
+          - "sqladmin.googleapis.com"
+          - "storage.googleapis.com"
+          - "storagetransfer.googleapis.com"
+          - "workstations.googleapis.com"

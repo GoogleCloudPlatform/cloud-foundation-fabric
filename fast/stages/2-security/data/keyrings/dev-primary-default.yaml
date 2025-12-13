@@ -12,17 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values: {}
-counts:
-  google_compute_shared_vpc_service_project: 2
-  google_folder: 3
-  google_logging_project_settings: 2
-  google_project: 2
-  google_project_iam_member: 4
-  google_project_service: 6
-  google_project_service_identity: 2
-  google_storage_bucket_object: 1
-  google_tags_tag_binding: 2
-  modules: 8
-  resources: 26
-  terraform_data: 2
+# yaml-language-server: $schema=../../schemas/keyring.schema.json
+
+location: $locations:primary
+project_id: $project_ids:dev-sec-core-0
+keys:
+  bigquery:
+    rotation_period: 7776000s
+  composer:
+    rotation_period: 7776000s
+  compute:
+    rotation_period: 7776000s
+  storage:
+    rotation_period: 7776000s
+  gke:
+    rotation_period: 7776000s
+

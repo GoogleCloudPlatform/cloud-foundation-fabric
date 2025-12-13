@@ -34,6 +34,8 @@ values:
     location: EU
     max_time_travel_hours: '168'
     project: project-id
+  module.destination-project.data.google_logging_project_settings.logging_sa[0]:
+    project: test-dest-prj
   module.destination-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
@@ -66,6 +68,8 @@ values:
     retention_policy: []
     storage_class: STANDARD
     uniform_bucket_level_access: true
+  module.project-host.data.google_logging_project_settings.logging_sa[0]:
+    project: test-project
   module.project-host.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     condition: []
     role: roles/bigquery.dataEditor
@@ -172,6 +176,7 @@ counts:
   google_bigquery_dataset_iam_member: 1
   google_logging_project_bucket_config: 1
   google_logging_project_exclusion: 1
+  google_logging_project_settings: 2
   google_logging_project_sink: 5
   google_project: 2
   google_project_iam_member: 2
@@ -181,4 +186,4 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_iam_member: 1
   modules: 6
-  resources: 19
+  resources: 21

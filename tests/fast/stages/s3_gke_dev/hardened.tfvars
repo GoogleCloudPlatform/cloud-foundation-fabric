@@ -24,6 +24,10 @@ clusters = {
     }
     enable_features = {
       binary_authorization = true
+      database_encryption = {
+        state    = "ENCRYPTED"
+        key_name = "projects/prj-host/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/gke"
+      }
       groups_for_rbac      = "gke-security-groups@google.com"
       intranode_visibility = true
       rbac_binding_config = {
@@ -32,9 +36,13 @@ clusters = {
       }
       shielded_nodes = true
       upgrade_notifications = {
-        event_types = ["SECURITY_BULLETIN_EVENT", "UPGRADE_AVAILABLE_EVENT", "UPGRADE_INFO_EVENT", "UPGRADE_EVENT"]
+        event_types  = ["SECURITY_BULLETIN_EVENT", "UPGRADE_AVAILABLE_EVENT", "UPGRADE_INFO_EVENT", "UPGRADE_EVENT"]
+        kms_key_name = "projects/prj-host/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/gke"
       }
       workload_identity = true
+    }
+    node_config = {
+      boot_disk_kms_key = "projects/prj-host/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/gke"
     }
     vpc_config = {
       subnetwork             = "projects/prj-host/regions/europe-west1/subnetworks/gke-0"
@@ -57,6 +65,11 @@ nodepools = {
       node_count = { initial = 1 }
       node_config = {
         sandbox_config_gvisor = true
+        boot_disk_kms_key     = "projects/prj-host/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/gke"
+        shielded_instance_config = {
+          enable_integrity_monitoring = true
+          enable_secure_boot          = true
+        }
       }
     }
   }
