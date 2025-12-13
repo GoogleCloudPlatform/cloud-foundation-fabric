@@ -1,11 +1,72 @@
 # Azure Devops Pipelines via Workload Identity Federation
 
 <!-- BEGIN TOC -->
+- [Project Configuration](#project-configuration)
+  - [Organization Policies](#organization-policies)
+  - [Data Access Logs](#data-access-logs)
+  - [Hosted vs Managed Agents](#hosted-vs-managed-agents)
 - [Workload Identity Federation](#workload-identity-federation)
   - [Azure Devops Service Connection](#azure-devops-service-connection)
   - [GCP Workload Identity Federation Pool and Provider](#gcp-workload-identity-federation-pool-and-provider)
   - [IAM principals](#iam-principals)
 <!-- END TOC -->
+
+## Project Configuration
+
+The provided `project.yaml` file makes a few assumptions and provides some default configurations, that are explained in this section. This will only cover the configurations that are directly relevant for Azure Devops integration, and assume that localizing for the intended environment (project id, parent folder reference, specific IAM settings, etc.) are already in place.
+
+### Organization Policies
+
+A big part of the configuration outlined here involves setting up a Workload Identity Federation pool and provider. Depending on the organizational setup, this might require relaxing organization policies like in this example.
+
+Comment this out of this is already in place in the parent hierarchy.
+
+```yaml
+org_policies:
+  iam.workloadIdentityPoolProviders:
+    rules:
+      - allow:
+          all: true
+```
+
+### Data Access Logs
+
+Workload Identity Federation often requires some amount of troubleshooting to make sure the IAM principals match the assertions in the tokens provided by the external IdP (Azure Devops in this case). This is made easier by turning on data access logs for specific services, like in this example, and also allows logging token exchanges.
+
+Comment this out if you don't need to troubleshoot, or don't want to track token exchanges.
+
+```yaml
+data_access_logs:
+  iam.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
+  sts.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
+```
+
+### Hosted vs Managed Agents
+
+The services enabled at the project level include those required for hosted agents running on Compute instances, and pulling their container image from Artifact Registry. These can be commented out if only managed agents are used. Keep the rest of the services in the block, which are not shown here.
+
+```yaml
+services:
+  # - artifactregistry.googleapis.com
+  # - compute.googleapis.com
+```
+
+The same applies to the `vm-default` service account, which is only needed for hosted agents. The following can be commented out if only managed agents are used. Keep the rest of the definitions in both `iam_principals` and `service_accounts`, which are not shown here.
+
+```yaml
+iam_by_principals:
+  # serviceAccount:vm-default@ldj-prod-net-landing-0.iam.gserviceaccount.com:
+  #   - roles/artifactregistry.writer
+service_accounts:
+  # vm-default:
+  #   display_name: VM default service account.
+```
 
 ## Workload Identity Federation
 
