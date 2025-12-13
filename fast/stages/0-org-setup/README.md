@@ -326,25 +326,8 @@ iam_by_principals:
 To configure and provision observability resources such as log-based metrics and monitoring alerts:
 
 1. Create a folder `datasets/classic/observability`.
-2. Set the terraform variable `factories_config` to configure the `observability` factory path to use the new folder.
+2. Place your monitoring alerts and log-based metrics in this folder. Sample of existing alerts and log-based metrics can be found in the [hardened dataset](./datasets/hardened/observability).
 
-```hcl
-factories_config = {
-  ...
-  observability = "datasets/classic/observability"
-  ...
-}
-```
-3. Update the `defaults.yaml` file to refer to the logging project.
-
-```yaml
-# datasets/classic/defaults.yaml
-projects:
-  defaults:
-    observability:
-      project_id: $project_ids:log-0
-      project_number: $project_numbers:log-0
-```
 
 ## Detailed configuration
 
