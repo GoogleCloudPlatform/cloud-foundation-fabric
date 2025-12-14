@@ -17,6 +17,9 @@
   - ["Hardened" dataset](#hardened-dataset)
   - ["Minimal" dataset (TBD)](#minimal-dataset-tbd)
   - ["Tenants" dataset (TBD)](#tenants-dataset-tbd)
+  - [Enabling Optional Features](#enabling-optional-features)
+    - [SCC Custom SHA Modules](#scc-custom-sha-modules)
+    - [Observability](#observability)
 - [Detailed configuration](#detailed-configuration)
   - [Context interpolation](#context-interpolation)
   - [Factory data](#factory-data)
@@ -296,6 +299,35 @@ This dataset is meant as a minimalistic starting point for organizations where a
 ### "Tenants" dataset (TBD)
 
 This dataset implements a design where internal tenants are given control over parts of the organization, while still retaining a degree of central control over core policies and resources.
+
+### Enabling Optional Features
+
+The "Classic FAST" dataset is designed to be more lightweight than the "Hardened FAST" dataset regarding controls and policies. 
+But, it fully supports more advanced features like SCC Custom SHA modules and Observability factories if needed.
+Note that the configuration described below is already implemented when using the "Hardened FAST" dataset.
+
+#### SCC Custom SHA Modules
+
+To configure and provision Security Command Center Custom SHA module detectors:
+
+1. Create a folder `datasets/classic/organization/scc-sha-custom-modules`.
+2. Place your custom SHA policies in this folder. Sample of existing custom SHA policies can be found in the [hardened dataset](./datasets/hardened/organization/scc-sha-custom-modules).
+3. Add the `roles/securitycentermanagement.customModulesEditor` role to the `.config.yaml` file to ensure the service account has enough permissions to provision custom modules.
+
+```yaml
+# datasets/classic/organization/.config.yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-org-rw:
+    - roles/securitycentermanagement.customModulesEditor
+```
+
+#### Observability
+
+To configure and provision observability resources such as log-based metrics and monitoring alerts:
+
+1. Create a folder `datasets/classic/observability`.
+2. Place your monitoring alerts and log-based metrics in this folder. Sample of existing alerts and log-based metrics can be found in the [hardened dataset](./datasets/hardened/observability).
+
 
 ## Detailed configuration
 
@@ -804,6 +836,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | [identity-providers-defs.tf](./identity-providers-defs.tf) | None |  |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
+| [observability.tf](./observability.tf) | None | <code>project</code> |  |
 | [organization.tf](./organization.tf) | None | <code>organization</code> |  |
 | [output-files.tf](./output-files.tf) | None |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
@@ -814,8 +847,8 @@ Define values for the `var.environments` variable in a tfvars file.
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles                &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids                  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations                   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids                 &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values                  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  workload_identity_pools     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  workload_identity_providers &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L40) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;datasets&#47;classic&#47;billing-accounts&#34;&#41;&#10;  cicd_workflows    &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;datasets&#47;classic&#47;folders&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;datasets&#47;classic&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;datasets&#47;classic&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L55) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [factories_config](variables.tf#L40) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;datasets&#47;classic&#47;billing-accounts&#34;&#41;&#10;  cicd_workflows    &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;datasets&#47;classic&#47;folders&#34;&#41;&#10;  observability     &#61; optional&#40;string, &#34;datasets&#47;classic&#47;observability&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;datasets&#47;classic&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;datasets&#47;classic&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L56) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

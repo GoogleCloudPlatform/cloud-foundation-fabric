@@ -422,9 +422,23 @@ values:
     condition: []
     member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.viewer
+  module.cicd-sa-apply["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/fast-dev
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/master
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+  module.cicd-sa-plan["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.repository/gh-org/gh-repo
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.module.bigquery-datasets["billing-0/billing_export"].google_bigquery_dataset.default:
     dataset_id: billing_export
-    default_encryption_configuration: []
+    default_encryption_configuration:
+    - {}
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
@@ -450,7 +464,8 @@ values:
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
-    encryption: []
+    encryption:
+    - {}
     force_destroy: false
     hierarchical_namespace: []
     ip_filter: []
@@ -491,7 +506,8 @@ values:
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
-    encryption: []
+    encryption:
+    - {}
     force_destroy: false
     hierarchical_namespace: []
     ip_filter: []
@@ -544,7 +560,8 @@ values:
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
-    encryption: []
+    encryption:
+    - {}
     force_destroy: false
     hierarchical_namespace: []
     ip_filter: []
@@ -743,7 +760,7 @@ values:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
         \  'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',\n  'roles/container.hostServiceAgentUser',\
-        \ 'roles/vpcaccess.user'\n])"
+        \ 'roles/vpcaccess.user'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -807,7 +824,7 @@ values:
     condition:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
-        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])"
+        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -955,9 +972,72 @@ values:
     timeouts: null
   module.factory.module.folder-2["networking/prod"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
+  module.factory.module.folder-2["security/dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.factory.module.folder-2["security/dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-2["security/prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    tags: null
+    timeouts: null
+  module.factory.module.folder-2["security/prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.kms["billing-0/ew1"].google_kms_crypto_key.default["bigquery"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: bigquery
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.kms["billing-0/ew1"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: ew1
+    project: ft0-prod-billing-exp-0
+    timeouts: null
+  module.factory.module.kms["iac-0/ew1"].google_kms_crypto_key.default["storage"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: storage
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.kms["iac-0/ew1"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: ew1
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.module.kms["log-0/ew1"].google_kms_crypto_key.default["logging"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: logging
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.kms["log-0/ew1"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: ew1
+    project: ft0-prod-audit-logs-0
+    timeouts: null
   module.factory.module.log-buckets["log-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-logs
-    cmek_settings: []
+    cmek_settings:
+    - {}
     enable_analytics: false
     index_configs: []
     location: europe-west1
@@ -966,7 +1046,8 @@ values:
     retention_days: 30
   module.factory.module.log-buckets["log-0/iam"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: iam
-    cmek_settings: []
+    cmek_settings:
+    - {}
     enable_analytics: false
     index_configs: []
     location: europe-west1
@@ -975,13 +1056,17 @@ values:
     retention_days: 30
   module.factory.module.log-buckets["log-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: vpc-sc
-    cmek_settings: []
+    cmek_settings:
+    - {}
     enable_analytics: true
     index_configs: []
     location: europe-west1
     locked: null
     project: ft0-prod-audit-logs-0
     retention_days: 31
+  ? module.factory.module.projects-iam["billing-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.bigquery-encryption"]
+  : condition: []
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
@@ -994,6 +1079,9 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-billing-exp-0
     role: roles/viewer
+  ? module.factory.module.projects-iam["iac-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]
+  : condition: []
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:storage_viewer"]:
     condition: []
     members:
@@ -1055,6 +1143,17 @@ values:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/owner
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/serviceusage.serviceUsageConsumer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/storage.admin"]:
     condition: []
     members:
@@ -1067,777 +1166,9 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/viewer
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["auditConfigChanges"]:
-    bucket_options: []
-    description: Audit Configuration Changes
-    disabled: null
-    filter: protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*
-    label_extractors:
-      folder_id: EXTRACT(labels.folder_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      organization_id: EXTRACT(labels.organization_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: folder_id
-        key: folder_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: organization_id
-        key: organization_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: auditConfigChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["cloudsqlInstanceChanges"]:
-    bucket_options: []
-    description: Cloud SQL Instance Configuration Changes
-    disabled: null
-    filter: protoPayload.methodName="cloudsql.instances.update"
-    label_extractors:
-      database_id: EXTRACT(labels.database_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: database_id
-        key: database_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: cloudsqlInstanceChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["customRoleChanges"]:
-    bucket_options: []
-    description: Custom Role Changes
-    disabled: null
-    filter: "resource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
-      \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
-      google.iam.admin.v1.DeleteRole\"\n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      organization_id: EXTRACT(labels.organization_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-      role_name: EXTRACT(labels.role_name)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: organization_id
-        key: organization_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      - description: role_name
-        key: role_name
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: customRoleChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["firewallPolicyRuleChanges"]:
-    bucket_options: []
-    description: Network Firewall Policy Rule Changes
-    disabled: null
-    filter: "resource.labels.method:\"compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"\
-      compute.networkFirewallPolicies.addRule\" OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
-      \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
-      \n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: firewallPolicyRuleChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["firewallRuleChanges"]:
-    bucket_options: []
-    description: VPC Network Firewall Rule Changes
-    disabled: null
-    filter: resource.type="gce_firewall_rule" AND (protoPayload.methodName:"compute.firewalls.patch"
-      OR protoPayload.methodName:"compute.firewalls.insert" OR protoPayload.methodName:"compute.firewalls.delete")
-    label_extractors:
-      firewall_rule_id: EXTRACT(labels.firewall_rule_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: firewall_rule_id
-        key: firewall_rule_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: firewallRuleChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["networkChanges"]:
-    bucket_options: []
-    description: VPC Network Changes
-    disabled: null
-    filter: "resource.type=\"gce_network\" AND (\n  protoPayload.methodName:\"compute.networks.insert\"\
-      \ OR\n  protoPayload.methodName:\"compute.networks.patch\" OR\n  protoPayload.methodName:\"\
-      compute.networks.delete\" OR\n  protoPayload.methodName:\"compute.networks.addPeering\"\
-      \ OR\n  protoPayload.methodName:\"compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"\
-      compute.networks.removePeering\"\n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      network_id: EXTRACT(labels.network_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: network_id
-        key: network_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: networkChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["networkRouteChanges"]:
-    bucket_options: []
-    description: VPC Network Route Changes
-    disabled: null
-    filter: "resource.type=\"gce_route\" AND (\n  protoPayload.methodName:\"compute.routes.insert\"\
-      \ OR\n  protoPayload.methodName:\"compute.routes.delete\"\n)"
-    label_extractors:
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-      route_id: EXTRACT(labels.route_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      - description: route_id
-        key: route_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: networkRouteChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["projectOwnershipChange"]:
-    bucket_options: []
-    description: Project Ownership Changes
-    disabled: null
-    filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\n\
-      (ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-      REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-      \n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\"\
-      \ AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-      \n)"
-    label_extractors:
-      folder_id: EXTRACT(labels.folder_id)
-      method_name: EXTRACT(protoPayload.methodName)
-      organization_id: EXTRACT(labels.organization_id)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: folder_id
-        key: folder_id
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: organization_id
-        key: organization_id
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: projectOwnershipChange
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_logging_metric.metrics["storageIamChanges"]:
-    bucket_options: []
-    description: Cloud Storage IAM Permission Changes
-    disabled: null
-    filter: resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
-    label_extractors:
-      bucket_name: EXTRACT(labels.bucket_name)
-      location: EXTRACT(labels.location)
-      method_name: EXTRACT(protoPayload.methodName)
-      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
-      project_id: EXTRACT(labels.project_id)
-    metric_descriptor:
-    - display_name: null
-      labels:
-      - description: bucket_name
-        key: bucket_name
-        value_type: STRING
-      - description: location
-        key: location
-        value_type: STRING
-      - description: method_name
-        key: method_name
-        value_type: STRING
-      - description: principal
-        key: principal
-        value_type: STRING
-      - description: project_id
-        key: project_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: storageIamChanges
-    project: ft0-prod-audit-logs-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["auditConfigChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.folder_id
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/auditConfigChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: Audit Configuration Changes'
-    display_name: Audit Configuration Changes
-    documentation:
-    - content: 'Log-based alerting policy in project ${project} detected audit configuration
-        changes.
-
-
-        This alert helps track GCP services audit log configuration changes to ensure
-        appropriate.
-
-        audit logs are being collected
-
-        ```
-
-        protoPayload.methodName="SetIamPolicy" AND
-
-        protoPayload.serviceData.policyDelta.auditConfigDeltas:*
-
-        ```'
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["cloudsqlInstanceChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.database_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/cloudsqlInstanceChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: Cloud SQL instance configuration changes'
-    display_name: Cloud SQL Instance Configuration Changes
-    documentation:
-    - content: 'Log-based alerting policy in project ${project} detected Cloud SQL
-        instance configuration changes.
-
-
-        This alert helps ensure security by monitoring configuration changes to SQL
-        instances.
-
-        ```
-
-        protoPayload.methodName="cloudsql.instances.update"
-
-        ```'
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["customRoleChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.project_id
-          - metric.label.role_name
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/customRoleChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: custom role changes'
-    display_name: Custom Role Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected custom IAM\
-        \ role creation,\ndeletion or update activities.\n\nThis alert helps ensure\
-        \ security by monitoring changes to Identity and Access Management (IAM) roles.\n\
-        ```\nresource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
-        \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
-        google.iam.admin.v1.DeleteRole\"\n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["firewallPolicyRuleChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallPolicyRuleChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: Network Firewall Policy Rule Changes'
-    display_name: Network Firewall Policy Rule Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected Firewall\
-        \ Policy rule changes.\n\nThis alert helps ensure security by monitoring creation,\
-        \ modification, or deletion of firewall rules.\n```\nresource.labels.method:\"\
-        compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"compute.networkFirewallPolicies.addRule\"\
-        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
-        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
-        \n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["firewallRuleChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.firewall_rule_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallRuleChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: VPC Network Firewall Rule Changes'
-    display_name: VPC Network Firewall Rule Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ Firewall rule changes.\n\nThis alert helps ensure security by monitoring\
-        \ creation, modification, or deletion of firewall rules.\n```\nresource.type=\"\
-        gce_firewall_rule\" AND (\n  protoPayload.methodName:\"compute.firewalls.patch\"\
-        \ OR\n  protoPayload.methodName:\"compute.firewalls.insert\" OR\n  protoPayload.methodName:\"\
-        compute.firewalls.delete\"\n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["networkChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.network_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: VPC Network Changes'
-    display_name: VPC Network Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ changes.\n\nThis alert helps ensure security by monitoring creation, modification,\
-        \ deletion,\nor peering changes to VPC networks.\n```\nresource.type=\"gce_network\"\
-        \ AND (\n  protoPayload.methodName:\"compute.networks.insert\" OR\n  protoPayload.methodName:\"\
-        compute.networks.patch\" OR\n  protoPayload.methodName:\"compute.networks.delete\"\
-        \ OR\n  protoPayload.methodName:\"compute.networks.addPeering\" OR\n  protoPayload.methodName:\"\
-        compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"compute.networks.removePeering\"\
-        \n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["networkRouteChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.route_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkRouteChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: 'Log match condition: VPC Network Route Changes'
-    display_name: VPC Network Route Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected VPC Network\
-        \ Route changes.\n\nThis alert helps ensure security by monitoring creation\
-        \ or deletion of network routes.\n```\nresource.type=\"gce_route\" AND (\n\
-        \  protoPayload.methodName:\"compute.routes.insert\" OR\n  protoPayload.methodName:\"\
-        compute.routes.delete\"\n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["projectOwnershipChange"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.folder_id
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: Project Ownership Changes
-    display_name: Project Ownership Changes
-    documentation:
-    - content: "Log-based alerting policy in project ${project} detected a project\
-        \ ownership assignments or changes.\n```\n(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\"\
-        ) AND\n(ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-        REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"\
-        roles/owner\"\n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
-        ADD\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
-        \n)\n```"
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects-iam["log-0"].google_monitoring_alert_policy.alerts["storageIamChanges"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.location
-          - metric.label.bucket_name
-          per_series_aligner: ALIGN_SUM
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 0s
-        evaluation_missing_data: null
-        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/storageIamChanges"
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: Cloud Storage IAM Permission Changes
-    display_name: Cloud Storage IAM Permission Changes
-    documentation:
-    - content: 'Log-based alerting policy in project ${project} detected Cloud Storage
-        Bucket IAM changes.
-
-
-        This alert helps ensure security by monitoring IAM permission changes to Cloud
-        Storage buckets.
-
-        ```
-
-        resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
-
-        ```'
-      links: []
-      mime_type: text/markdown
-      subject: null
-    enabled: true
-    notification_channels: []
-    project: ft0-prod-audit-logs-0
-    severity: null
-    timeouts: null
-    user_labels: null
+  module.factory.module.projects-iam["log-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.logging"]:
+    condition: []
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
@@ -1855,6 +1186,21 @@ values:
   module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-billing-exp-0
     user_project: null
+  module.factory.module.projects["billing-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-billing-exp-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/ft0-prod-billing-exp-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
   module.factory.module.projects["billing-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-012345-012345
@@ -1874,6 +1220,10 @@ values:
     condition: []
     project: ft0-prod-billing-exp-0
     role: roles/bigquerydatatransfer.serviceAgent
+  module.factory.module.projects["billing-0"].google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: ft0-prod-billing-exp-0
+    role: roles/cloudkms.serviceAgent
   module.factory.module.projects["billing-0"].google_project_service.project_services["bigquery.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -1886,6 +1236,12 @@ values:
     project: ft0-prod-billing-exp-0
     service: bigquerydatatransfer.googleapis.com
     timeouts: null
+  module.factory.module.projects["billing-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: cloudkms.googleapis.com
+    timeouts: null
   module.factory.module.projects["billing-0"].google_project_service.project_services["storage.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -1896,11 +1252,32 @@ values:
     project: ft0-prod-billing-exp-0
     service: bigquerydatatransfer.googleapis.com
     timeouts: null
+  module.factory.module.projects["billing-0"].google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: ft0-prod-billing-exp-0
+    service: cloudkms.googleapis.com
+    timeouts: null
   module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-iac-core-0
+  module.factory.module.projects["iac-0"].data.google_logging_project_settings.logging_sa[0]:
     project: ft0-prod-iac-core-0
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
     user_project: null
+  module.factory.module.projects["iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-iac-core-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/ft0-prod-iac-core-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
   module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
     dry_run_spec: []
     name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
@@ -1976,6 +1353,12 @@ values:
     condition: []
     project: ft0-prod-iac-core-0
     role: roles/servicenetworking.serviceAgent
+  module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: orgpolicy.googleapis.com
+    timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["accesscontextmanager.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -2114,12 +1497,6 @@ values:
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
-  module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: ft0-prod-iac-core-0
-    service: orgpolicy.googleapis.com
-    timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["serviceusage.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -2172,9 +1549,41 @@ values:
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
+  module.factory.module.projects["log-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-prod-audit-logs-0
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
+  module.factory.module.projects["log-0"].google_org_policy_policy.default["custom.storageRequireBucketObjectVersionning"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-audit-logs-0/policies/custom.storageRequireBucketObjectVersionning
+    parent: projects/ft0-prod-audit-logs-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.factory.module.projects["log-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-audit-logs-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/ft0-prod-audit-logs-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
   module.factory.module.projects["log-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-012345-012345
@@ -2190,10 +1599,20 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.factory.module.projects["log-0"].google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: ft0-prod-audit-logs-0
+    role: roles/cloudkms.serviceAgent
   module.factory.module.projects["log-0"].google_project_iam_member.service_agents["pubsub"]:
     condition: []
     project: ft0-prod-audit-logs-0
     role: roles/pubsub.serviceAgent
+  module.factory.module.projects["log-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-audit-logs-0
+    service: cloudkms.googleapis.com
+    timeouts: null
   module.factory.module.projects["log-0"].google_project_service.project_services["logging.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -2211,6 +1630,10 @@ values:
     disable_on_destroy: false
     project: ft0-prod-audit-logs-0
     service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["log-0"].google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: ft0-prod-audit-logs-0
+    service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["log-0"].google_project_service_identity.default["pubsub.googleapis.com"]:
     project: ft0-prod-audit-logs-0
@@ -2373,6 +1796,10 @@ values:
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.factory.terraform_data.project-preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -2575,6 +2002,24 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["cloudfunctions.allowedIngressSettings"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/cloudfunctions.allowedIngressSettings
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - ALLOW_INTERNAL_AND_GCLB
+          denied_values: null
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["cloudfunctions.allowedVpcConnectorEgressSettings"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/cloudfunctions.allowedVpcConnectorEgressSettings
@@ -2686,6 +2131,36 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["compute.managed.blockPreviewFeatures"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.managed.blockPreviewFeatures
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.disableSerialPortLogging"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.disableSerialPortLogging
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.managed.vmCanIpForward"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.managed.vmCanIpForward
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -3036,9 +2511,39 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["container.managed.enableBinaryAuthorization"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/container.managed.enableBinaryAuthorization
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["container.managed.enableCloudLogging"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/container.managed.enableCloudLogging
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["container.managed.enableGoogleGroupsRBAC"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/container.managed.enableGoogleGroupsRBAC
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -3156,9 +2661,84 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedProtectionLevel"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudkmsAllowedProtectionLevel
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunDisableEnvironmentVariablePattern"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudrunDisableEnvironmentVariablePattern
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunJobDisableDefaultServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudrunJobDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunJobRequireBinaryAuthorization"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudrunJobRequireBinaryAuthorization
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunServiceDisableDefaultServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudrunServiceDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudrunServiceRequireBinaryAuthorization"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudrunServiceRequireBinaryAuthorization
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -3216,6 +2796,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequireHighAvailability"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudsqlRequireHighAvailability
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequireMySQLDatabaseFlags"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudsqlRequireMySQLDatabaseFlags
@@ -3243,6 +2838,21 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
         parameters: null
         values: []
     timeouts: null
@@ -3294,6 +2904,51 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudsqlRequireSSLConnection"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudsqlRequireSSLConnection
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.dataprocDisableDefaultServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.dataprocDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.dataprocRequireInternalIp"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.dataprocRequireInternalIp
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.dataprocRequireKerberos"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.dataprocRequireKerberos
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -3381,6 +3036,231 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRequireDescription"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRequireDescription
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictCacheSearchDatabasesPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictCacheSearchDatabasesPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictCacheSearchDatabasesRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictCacheSearchDatabasesRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictDirectoryServicesPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictDirectoryServicesPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictDirectoryServicesRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictDirectoryServicesRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictInsecureProtocolsPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictInsecureProtocolsPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictInsecureProtocolsRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictInsecureProtocolsRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictMailProtocolsPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictMailProtocolsPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictMailProtocolsRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictMailProtocolsRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictManagementPortsPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictManagementPortsPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictManagementPortsRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictManagementPortsRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNetworkServicesPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictNetworkServicesPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNetworkServicesRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictNetworkServicesRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNoSQLDatabasesPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictNoSQLDatabasesPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNoSQLDatabasesRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictNoSQLDatabasesRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictPublicAccessRule"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.firewallRestrictPublicAccessRule
@@ -3414,6 +3294,36 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictRdpRule"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.firewallRestrictRdpRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictSQLDatabasesPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictSQLDatabasesPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictSQLDatabasesRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictSQLDatabasesRule
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -3681,6 +3591,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireNodePoolSandbox"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.gkeRequireNodePoolSandbox
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequirePrivateEndpoint"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeRequirePrivateEndpoint
@@ -3753,6 +3678,21 @@ values:
         condition: []
         deny_all: null
         enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.iamDisableRedisAdminRoles"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.iamDisableRedisAdminRoles
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
         parameters: null
         values: []
     timeouts: null
@@ -3866,6 +3806,93 @@ values:
         enforce: null
         parameters: null
         values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: 'resource.matchTag(''1234567890/environment'', ''development'')
+
+            '
+          location: null
+          title: Restrict CMEK Projects for development projects
+        deny_all: null
+        enforce: null
+        parameters: null
+      - allow_all: null
+        condition:
+        - description: null
+          expression: '!resource.matchTag(''1234567890/environment'', ''development'')
+
+            '
+          location: null
+          title: Restrict CMEK Projects for non-development projects
+        deny_all: null
+        enforce: null
+        parameters: null
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["gcp.restrictNonCmekServices"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/gcp.restrictNonCmekServices
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values: null
+          denied_values:
+          - aiplatform.googleapis.com
+          - alloydb.googleapis.com
+          - apigee.googleapis.com
+          - artifactregistry.googleapis.com
+          - bigquery.googleapis.com
+          - bigquerydatatransfer.googleapis.com
+          - bigtable.googleapis.com
+          - cloudfunctions.googleapis.com
+          - cloudtasks.googleapis.com
+          - composer.googleapis.com
+          - compute.googleapis.com
+          - contactcenterinsights.googleapis.com
+          - container.googleapis.com
+          - dataflow.googleapis.com
+          - dataform.googleapis.com
+          - datafusion.googleapis.com
+          - dataproc.googleapis.com
+          - dialogflow.googleapis.com
+          - discoveryengine.googleapis.com
+          - documentai.googleapis.com
+          - file.googleapis.com
+          - firestore.googleapis.com
+          - gkebackup.googleapis.com
+          - integrations.googleapis.com
+          - logging.googleapis.com
+          - looker.googleapis.com
+          - notebooks.googleapis.com
+          - pubsub.googleapis.com
+          - redis.googleapis.com
+          - run.googleapis.com
+          - secretmanager.googleapis.com
+          - securesourcemanager.googleapis.com
+          - securitycenter.googleapis.com
+          - spanner.googleapis.com
+          - speech.googleapis.com
+          - sqladmin.googleapis.com
+          - storage.googleapis.com
+          - storagetransfer.googleapis.com
+          - workstations.googleapis.com
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["gcp.restrictTLSCipherSuites"]:
     dry_run_spec: []
@@ -4225,6 +4252,12 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_organization_iam_audit_config.default["allServices"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: ADMIN_READ
+    org_id: '1234567890'
+    service: allServices
   module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:organization_admin_viewer"]:
     condition: []
     members:
@@ -4266,6 +4299,7 @@ values:
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -4277,6 +4311,12 @@ values:
     - group:fabric-fast-owners@google.com
     org_id: '1234567890'
     role: roles/cloudsupport.admin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/cloudsupport.techSupportEditor
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgFirewallPolicyAdmin"]:
     condition: []
     members:
@@ -4542,6 +4582,20 @@ values:
     resource_types:
     - cloudbuild.googleapis.com/WorkerPool
     timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedProtectionLevel"]:
+    action_type: DENY
+    condition: has(resource.versionTemplate.protectionLevel) && resource.versionTemplate.protectionLevel
+      in ["SOFTWARE"] == false
+    description: Ensure the protection level for Cloud KMS keys is configured correctly
+    display_name: Require Cloud KMS keys protection level to be configured correctly
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudkmsAllowedProtectionLevel
+    parent: organizations/1234567890
+    resource_types:
+    - cloudkms.googleapis.com/CryptoKey
+    timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunDisableEnvironmentVariablePattern"]:
     action_type: DENY
     condition: "resource.spec.template.spec.containers.exists(container,\n  container.env.exists(env,\n\
@@ -4560,6 +4614,20 @@ values:
     resource_types:
     - run.googleapis.com/Service
     timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobDisableDefaultServiceAccount"]:
+    action_type: DENY
+    condition: resource.spec.template.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
+    description: Enforce that service account associated with Cloud Run Job use a
+      non-default service account
+    display_name: Disable creation of Cloud Run Job using default service account
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudrunJobDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - run.googleapis.com/Job
+    timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobRequireBinaryAuthorization"]:
     action_type: DENY
     condition: '!(''run.googleapis.com/binary-authorization'' in resource.metadata.annotations)'
@@ -4572,6 +4640,20 @@ values:
     parent: organizations/1234567890
     resource_types:
     - run.googleapis.com/Job
+    timeouts: null
+  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceDisableDefaultServiceAccount"]
+  : action_type: DENY
+    condition: resource.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
+    description: Enforce that service account associated with Cloud Run Service use
+      a non-default service account
+    display_name: Disable creation of Cloud Run Service using default service account
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudrunServiceDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - run.googleapis.com/Service
     timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceRequireBinaryAuthorization"]:
     action_type: DENY
@@ -4629,6 +4711,19 @@ values:
     - CREATE
     - UPDATE
     name: custom.cloudsqlRequireAutomatedBackup
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireHighAvailability"]:
+    action_type: DENY
+    condition: resource.settings.availabilityType != "REGIONAL"
+    description: Ensure that Cloud SQL instance is configured with high availability
+    display_name: Require Cloud SQL instances to be configured with high availability
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireHighAvailability
     parent: organizations/1234567890
     resource_types:
     - sqladmin.googleapis.com/Instance
@@ -4762,6 +4857,48 @@ values:
     resource_types:
     - sqladmin.googleapis.com/Instance
     timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dataprocDisableDefaultServiceAccount"]:
+    action_type: DENY
+    condition: "has(resource.config.gceClusterConfig.serviceAccount) == false ||\n\
+      \  resource.config.gceClusterConfig.serviceAccount.contains('-compute@developer.gserviceaccount.com')"
+    description: Enforce that the Dataproc VMs is not using default user-managed service
+      accounts
+    display_name: Disable Dataproc cluster with default service accounts
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireInternalIp"]:
+    action_type: DENY
+    condition: resource.config.gceClusterConfig.internalIpOnly == false
+    description: Enforce that the Dataproc cluster is created with Internal IPs only
+    display_name: Require Dataproc with internal IPs
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocRequireInternalIp
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireKerberos"]:
+    action_type: DENY
+    condition: resource.config.securityConfig.kerberosConfig.enableKerberos == false
+    description: Enforce that Dataproc cluster is configured using secure mode via
+      Kerberos for authentication
+    display_name: Require Dataproc with Kerberos authentication
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocRequireKerberos
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+    timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.dnsAllowedSigningAlgorithms"]:
     action_type: DENY
     condition: "resource.visibility == 'PUBLIC' &&\nresource.dnssecConfig.state ==\
@@ -4839,6 +4976,313 @@ values:
     resource_types:
     - compute.googleapis.com/Firewall
     timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRequireDescription"]:
+    action_type: DENY
+    condition: "(\n  resource.description == \"\" &&\n  !resource.name.startsWith(\"\
+      gke-\") &&\n  !resource.name.startsWith(\"k8s-\") &&\n  !resource.name.endsWith(\"\
+      -hc\") &&\n  !resource.name.startsWith(\"k8s2-\") &&\n  !resource.name.startsWith(\"\
+      gkegw1-l7-\") &&\n  !resource.name.startsWith(\"gkemcg1-l7-\")\n)"
+    description: Prevent the creation of VPC firewall rule that does not have description
+      provided. Description can be used for auditing to refer to security control
+    display_name: Require description on Firewall rule
+    method_types:
+    - CREATE
+    name: custom.firewallRequireDescription
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(r, r.priority < 2147483644 && r.direction ==\
+      \ 'INGRESS' &&\n  r.match.srcIpRanges.exists(r, r == '0.0.0.0/0') &&\n  (\n\
+      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '6379') ||\n   \
+      \ r.match.layer4Configs.containsIpProtocolAndPort('udp', '6379') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp',\
+      \ '9200') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9200')\
+      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '9300') ||\n\
+      \    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9300') ||\n   \
+      \ r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp',\
+      \ '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11214')\
+      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '11214') ||\n\
+      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11215') ||\n  \
+      \  r.match.layer4Configs.containsIpProtocolAndPort('udp', '11215')\n  )\n)"
+    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
+      Redis) are not accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing cache/search database port
+      access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictCacheSearchDatabasesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '9200') ||\n    resource.allowed.containsFirewallPort('tcp', '9300') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '11211') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '11214') ||\n    resource.allowed.containsFirewallPort('tcp', '11215') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '6379') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '11211') ||\n    resource.allowed.containsFirewallPort('udp', '11214') ||\n\
+      \    resource.allowed.containsFirewallPort('udp', '11215')\n  )"
+    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
+      Redis) are not accessible from any source when using VPC Firewall Rule.
+    display_name: Restrict VPC Firewall rules allowing cache/search database port
+      access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictCacheSearchDatabasesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '445')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '389') ||\n\
+      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '445') ||\n \
+      \   rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '389') ||\n  \
+      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '636')\n  )\n)"
+    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
+      are not accessible from the Internet when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing directory service access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictDirectoryServicesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '445') ||\n    resource.allowed.containsFirewallPort('tcp', '389') ||\n  \
+      \  resource.allowed.containsFirewallPort('tcp', '636') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '445') ||\n    resource.allowed.containsFirewallPort('udp', '389')\n  )"
+    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
+      are not accessible from the Internet when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing directory service access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictDirectoryServicesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '21')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '23') ||\n\
+      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '80')\n  )\n)"
+    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
+      accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing insecure protocol access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictInsecureProtocolsPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '21') ||\n    resource.allowed.containsFirewallPort('tcp', '23') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '80')\n  )"
+    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
+      accessible from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing insecure protocol access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictInsecureProtocolsRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '25')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '110')\n\
+      \  )\n)"
+    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
+      source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing mail protocol access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictMailProtocolsPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '25') ||\n    resource.allowed.containsFirewallPort('tcp', '110')\n  )"
+    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
+      source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing mail protocol access from any
+      source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictMailProtocolsRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9090')\n)"
+    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
+      from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing management port access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictManagementPortsPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  resource.allowed.containsFirewallPort('tcp', '9090')"
+    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
+      from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing management port access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictManagementPortsRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '53')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '53') ||\n\
+      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '137') ||\n \
+      \   rule.match.layer4Configs.containsIpProtocolAndPort('udp', '137') ||\n  \
+      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '138') ||\n   \
+      \ rule.match.layer4Configs.containsIpProtocolAndPort('udp', '138') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp',\
+      \ '139') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '139')\n\
+      \  )\n)"
+    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
+      accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing network service access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNetworkServicesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '53') ||\n    resource.allowed.containsFirewallPort('udp', '53') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '137') ||\n    resource.allowed.containsFirewallPort('udp', '137') ||\n  \
+      \  resource.allowed.containsFirewallPort('tcp', '138') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '138') ||\n    resource.allowed.containsFirewallPort('tcp', '139') ||\n  \
+      \  resource.allowed.containsFirewallPort('udp', '139')\n  )"
+    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
+      accessible from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing network service access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNetworkServicesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7000')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7001')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7199')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '8888')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9042')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9160')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61620')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61621')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27017')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27018')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27019')\n\
+      \  )\n)"
+    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
+      from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing NoSQL database port access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNoSQLDatabasesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '7000') ||\n    resource.allowed.containsFirewallPort('tcp', '7001') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '7199') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '8888') ||\n    resource.allowed.containsFirewallPort('tcp', '9042') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '9160') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '61620') ||\n    resource.allowed.containsFirewallPort('tcp', '61621') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '27017') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '27018') ||\n    resource.allowed.containsFirewallPort('tcp', '27019')\n \
+      \ )"
+    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
+      from any source when using Firewall Policy Rule
+    display_name: Restrict VPC Firewall rules allowing NoSQL database port access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNoSQLDatabasesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictPublicAccessRule"]:
     action_type: DENY
     condition: "(size(resource.allowed) > 0) &&\n(\n  resource.sourceRanges.exists(range,\
@@ -4890,6 +5334,52 @@ values:
     - CREATE
     - UPDATE
     name: custom.firewallRestrictRdpRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '3306')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '1521')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2483')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2484')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '5432')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2483')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2484')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '5432')\n\
+      \  )\n)"
+    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
+      accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing SQL database port access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictSQLDatabasesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '3306') ||\n    resource.allowed.containsFirewallPort('tcp', '1521') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '2483') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '2484') ||\n    resource.allowed.containsFirewallPort('tcp', '5432') ||\n\
+      \    resource.allowed.containsFirewallPort('udp', '2483') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '2484') ||\n    resource.allowed.containsFirewallPort('udp', '5432')\n  )"
+    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
+      accessible from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing SQL database port access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictSQLDatabasesRule
     parent: organizations/1234567890
     resource_types:
     - compute.googleapis.com/Firewall
@@ -5029,6 +5519,19 @@ values:
     parent: organizations/1234567890
     resource_types:
     - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireConfidentialNodes"]:
+    action_type: DENY
+    condition: resource.confidentialNodes.enabled == false
+    description: Enforce that the GKE clusters is using confidential nodes
+    display_name: Require confidential nodes
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireConfidentialNodes
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
     timeouts: null
   module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireDataplaneV2"]:
     action_type: DENY
@@ -5562,6 +6065,67 @@ values:
     location: global
     organization: '1234567890'
     timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudkmsAllowedProtectionLevel"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if the protection level for Cloud KMS keys is not configured
+        correctly
+      predicate:
+      - description: null
+        expression: resource.primary.protectionLevel in ["SOFTWARE"] == false
+        location: null
+        title: null
+      recommendation: Ensure the protection level for Cloud KMS keys is configured
+        correctly
+      resource_selector:
+      - resource_types:
+        - cloudkms.googleapis.com/CryptoKey
+      severity: MEDIUM
+    display_name: cloudkmsAllowedProtectionLevel
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunDisableJobDefaultServiceAccount"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if default service accounts are used by Cloud Run jobs
+      predicate:
+      - description: null
+        expression: resource.spec.template.spec.template.spec.serviceAccountName.endsWith("@developer.gserviceaccount.com")
+        location: null
+        title: null
+      recommendation: Ensure only authorized non-default service accounts are used
+        by Cloud Run jobs
+      resource_selector:
+      - resource_types:
+        - run.googleapis.com/Job
+      severity: HIGH
+    display_name: cloudrunDisableJobDefaultServiceAccount
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunDisableServiceDefaultServiceAccount"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if default service accounts are used by Cloud Run services
+      predicate:
+      - description: null
+        expression: resource.spec.template.spec.serviceAccountName.endsWith("@developer.gserviceaccount.com")
+        location: null
+        title: null
+      recommendation: Ensure only authorized non-default service accounts are used
+        by Cloud Run services
+      resource_selector:
+      - resource_types:
+        - run.googleapis.com/Service
+      severity: HIGH
+    display_name: cloudrunDisableServiceDefaultServiceAccount
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunRequireBinaryAuthorization"]
   : custom_config:
     - custom_output: []
@@ -5585,6 +6149,29 @@ values:
     location: global
     organization: '1234567890'
     timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunRequireEgressAllTraffic"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if Cloud Run services and jobs are not configured to route
+        all egress traffic through the VPC network
+      predicate:
+      - description: null
+        expression: "(\n  !resource.spec.template.metadata.annotations['run.googleapis.com/vpc-access-egress'].matches('all-traffic')\n\
+          )"
+        location: null
+        title: null
+      recommendation: Ensure Cloud Run services and jobs are configured to route all
+        egress traffic through the VPC network
+      resource_selector:
+      - resource_types:
+        - run.googleapis.com/Service
+        - run.googleapis.com/Job
+      severity: HIGH
+    display_name: cloudrunRequireEgressAllTraffic
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudrunRequireIngressInternalAndLoadBalancer"]
   : custom_config:
     - custom_output: []
@@ -5603,6 +6190,27 @@ values:
         - run.googleapis.com/Service
       severity: HIGH
     display_name: cloudrunRequireIngressInternalAndLoadBalancer
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudsqlRequireHighAvailability"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if the high availability (HA) configuration for Cloud SQL
+        instances is not set to regional
+      predicate:
+      - description: null
+        expression: (resource.settings.availabilityType != "REGIONAL")
+        location: null
+        title: null
+      recommendation: Ensure if the HA configuration for all Cloud SQL instances is
+        set regional
+      resource_selector:
+      - resource_types:
+        - sqladmin.googleapis.com/Instance
+      severity: MEDIUM
+    display_name: cloudsqlRequireHighAvailability
     enablement_state: ENABLED
     location: global
     organization: '1234567890'
@@ -5668,6 +6276,27 @@ values:
     location: global
     organization: '1234567890'
     timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["gkeRequireConfidentialNodes"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if any GKE clusters are running without Confidential GKE
+        nodes
+      predicate:
+      - description: null
+        expression: (resource.confidentialNodes.enabled == false)
+        location: null
+        title: null
+      recommendation: Ensure GKE clusters are running with Confidential GKE nodes
+        enabled
+      resource_selector:
+      - resource_types:
+        - container.googleapis.com/Cluster
+      severity: MEDIUM
+    display_name: gkeRequireConfidentialNodes
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["gkeRequireDataplaneV2"]
   : custom_config:
     - custom_output: []
@@ -5703,6 +6332,26 @@ values:
         - container.googleapis.com/Cluster
       severity: MEDIUM
     display_name: gkeRequireRegionalCluster
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["secretmanagerAllowedRotationPeriod"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if the rotation period for secrets are not configured correctly
+      predicate:
+      - description: null
+        expression: (!has(resource.rotation.rotationPeriod)) || (resource.rotation.rotationPeriod
+          > duration("31536000s"))
+        location: null
+        title: null
+      recommendation: Ensure the rotation period for secrets are configured correctly
+      resource_selector:
+      - resource_types:
+        - secretmanager.googleapis.com/Secret
+      severity: MEDIUM
+    display_name: secretmanagerAllowedRotationPeriod
     enablement_state: ENABLED
     location: global
     organization: '1234567890'
@@ -5748,7 +6397,873 @@ values:
     description: Allow all domains in DRS org policy.
     short_name: allowed-policy-member-domains-all
     timeouts: null
+  module.projects-observability[0].google_logging_metric.metrics["auditConfigChanges"]:
+    bucket_options: []
+    description: Audit Configuration Changes
+    disabled: null
+    filter: protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*
+    label_extractors:
+      folder_id: EXTRACT(labels.folder_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      organization_id: EXTRACT(labels.organization_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: folder_id
+        key: folder_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: organization_id
+        key: organization_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: auditConfigChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["binaryAuthorizationPolicyChanges"]:
+    bucket_options: []
+    description: Binary Authorization Policy Changes
+    disabled: null
+    filter: protoPayload.methodName="google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy"
+      AND protoPayload.serviceName="binaryauthorization.googleapis.com" AND ("ALWAYS_ALLOW"
+      OR "DRYRUN_AUDIT_LOG_ONLY")
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: binaryAuthorizationPolicyChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["cloudsqlInstanceChanges"]:
+    bucket_options: []
+    description: Cloud SQL Instance Configuration Changes
+    disabled: null
+    filter: protoPayload.methodName="cloudsql.instances.update"
+    label_extractors:
+      database_id: EXTRACT(labels.database_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: database_id
+        key: database_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: cloudsqlInstanceChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["customRoleChanges"]:
+    bucket_options: []
+    description: Custom Role Changes
+    disabled: null
+    filter: "resource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
+      \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
+      google.iam.admin.v1.DeleteRole\"\n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      organization_id: EXTRACT(labels.organization_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+      role_name: EXTRACT(labels.role_name)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: organization_id
+        key: organization_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      - description: role_name
+        key: role_name
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: customRoleChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["firewallPolicyRuleChanges"]:
+    bucket_options: []
+    description: Network Firewall Policy Rule Changes
+    disabled: null
+    filter: "resource.labels.method:\"compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"\
+      compute.networkFirewallPolicies.addRule\" OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
+      \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
+      \n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: firewallPolicyRuleChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["firewallRuleChanges"]:
+    bucket_options: []
+    description: VPC Network Firewall Rule Changes
+    disabled: null
+    filter: resource.type="gce_firewall_rule" AND (protoPayload.methodName:"compute.firewalls.patch"
+      OR protoPayload.methodName:"compute.firewalls.insert" OR protoPayload.methodName:"compute.firewalls.delete")
+    label_extractors:
+      firewall_rule_id: EXTRACT(labels.firewall_rule_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: firewall_rule_id
+        key: firewall_rule_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: firewallRuleChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["networkChanges"]:
+    bucket_options: []
+    description: VPC Network Changes
+    disabled: null
+    filter: "resource.type=\"gce_network\" AND (\n  protoPayload.methodName:\"compute.networks.insert\"\
+      \ OR\n  protoPayload.methodName:\"compute.networks.patch\" OR\n  protoPayload.methodName:\"\
+      compute.networks.delete\" OR\n  protoPayload.methodName:\"compute.networks.addPeering\"\
+      \ OR\n  protoPayload.methodName:\"compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"\
+      compute.networks.removePeering\"\n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      network_id: EXTRACT(labels.network_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: network_id
+        key: network_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: networkChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["networkRouteChanges"]:
+    bucket_options: []
+    description: VPC Network Route Changes
+    disabled: null
+    filter: "resource.type=\"gce_route\" AND (\n  protoPayload.methodName:\"compute.routes.insert\"\
+      \ OR\n  protoPayload.methodName:\"compute.routes.delete\"\n)"
+    label_extractors:
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+      route_id: EXTRACT(labels.route_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      - description: route_id
+        key: route_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: networkRouteChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["projectOwnershipChange"]:
+    bucket_options: []
+    description: Project Ownership Changes
+    disabled: null
+    filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\n\
+      (ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+      REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
+      \n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"ADD\"\
+      \ AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
+      \n)"
+    label_extractors:
+      folder_id: EXTRACT(labels.folder_id)
+      method_name: EXTRACT(protoPayload.methodName)
+      organization_id: EXTRACT(labels.organization_id)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: folder_id
+        key: folder_id
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: organization_id
+        key: organization_id
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: projectOwnershipChange
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_logging_metric.metrics["storageIamChanges"]:
+    bucket_options: []
+    description: Cloud Storage IAM Permission Changes
+    disabled: null
+    filter: resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
+    label_extractors:
+      bucket_name: EXTRACT(labels.bucket_name)
+      location: EXTRACT(labels.location)
+      method_name: EXTRACT(protoPayload.methodName)
+      principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
+    metric_descriptor:
+    - display_name: null
+      labels:
+      - description: bucket_name
+        key: bucket_name
+        value_type: STRING
+      - description: location
+        key: location
+        value_type: STRING
+      - description: method_name
+        key: method_name
+        value_type: STRING
+      - description: principal
+        key: principal
+        value_type: STRING
+      - description: project_id
+        key: project_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: storageIamChanges
+    project: ft0-prod-audit-logs-0
+    timeouts: null
+    value_extractor: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["auditConfigChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.organization_id
+          - metric.label.folder_id
+          - metric.label.project_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/auditConfigChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Audit Configuration Changes'
+    display_name: Audit Configuration Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected audit configuration
+        changes.
+
+
+        This alert helps track GCP services audit log configuration changes to ensure
+        appropriate.
+
+        audit logs are being collected
+
+        ```
+
+        protoPayload.methodName="SetIamPolicy" AND
+
+        protoPayload.serviceData.policyDelta.auditConfigDeltas:*
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["binaryAuthorizationPolicyChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/binaryAuthorizationPolicyChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Binary Authorization policy configuration
+        changes'
+    display_name: Binary Authorization Policy Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected for a change
+        to Binary Authorization
+
+        project-singleton policy, weakening the enforcement or evaluation modes.
+
+
+        This alert helps ensure security by monitoring configuration changes to Binary
+        Authorization policies.
+
+        ```
+
+        protoPayload.methodName="google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy"
+        AND
+
+        protoPayload.serviceName="binaryauthorization.googleapis.com" AND
+
+        ("ALWAYS_ALLOW" OR "DRYRUN_AUDIT_LOG_ONLY")
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["cloudsqlInstanceChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.database_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/cloudsqlInstanceChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Cloud SQL instance configuration changes'
+    display_name: Cloud SQL Instance Configuration Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected Cloud SQL
+        instance configuration changes.
+
+
+        This alert helps ensure security by monitoring configuration changes to SQL
+        instances.
+
+        ```
+
+        protoPayload.methodName="cloudsql.instances.update"
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["customRoleChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.organization_id
+          - metric.label.project_id
+          - metric.label.role_name
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/customRoleChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: custom role changes'
+    display_name: Custom Role Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected custom IAM\
+        \ role creation,\ndeletion or update activities.\n\nThis alert helps ensure\
+        \ security by monitoring changes to Identity and Access Management (IAM) roles.\n\
+        ```\nresource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
+        \ OR\n  protoPayload.methodName=\"google.iam.admin.v1.UpdateRole\" OR\n  protoPayload.methodName=\"\
+        google.iam.admin.v1.DeleteRole\"\n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["firewallPolicyRuleChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallPolicyRuleChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: Network Firewall Policy Rule Changes'
+    display_name: Network Firewall Policy Rule Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected Firewall\
+        \ Policy rule changes.\n\nThis alert helps ensure security by monitoring creation,\
+        \ modification, or deletion of firewall rules.\n```\nresource.labels.method:\"\
+        compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"compute.networkFirewallPolicies.addRule\"\
+        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.removeRule\"\
+        \ OR\n  protoPayload.methodName:\"compute.networkFirewallPolicies.patchRule\"\
+        \n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["firewallRuleChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.firewall_rule_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallRuleChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: VPC Network Firewall Rule Changes'
+    display_name: VPC Network Firewall Rule Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected VPC Network\
+        \ Firewall rule changes.\n\nThis alert helps ensure security by monitoring\
+        \ creation, modification, or deletion of firewall rules.\n```\nresource.type=\"\
+        gce_firewall_rule\" AND (\n  protoPayload.methodName:\"compute.firewalls.patch\"\
+        \ OR\n  protoPayload.methodName:\"compute.firewalls.insert\" OR\n  protoPayload.methodName:\"\
+        compute.firewalls.delete\"\n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["networkChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.network_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: VPC Network Changes'
+    display_name: VPC Network Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected VPC Network\
+        \ changes.\n\nThis alert helps ensure security by monitoring creation, modification,\
+        \ deletion,\nor peering changes to VPC networks.\n```\nresource.type=\"gce_network\"\
+        \ AND (\n  protoPayload.methodName:\"compute.networks.insert\" OR\n  protoPayload.methodName:\"\
+        compute.networks.patch\" OR\n  protoPayload.methodName:\"compute.networks.delete\"\
+        \ OR\n  protoPayload.methodName:\"compute.networks.addPeering\" OR\n  protoPayload.methodName:\"\
+        compute.networks.updatePeering\" OR\n  protoPayload.methodName:\"compute.networks.removePeering\"\
+        \n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["networkRouteChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.route_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/networkRouteChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: 'Log match condition: VPC Network Route Changes'
+    display_name: VPC Network Route Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected VPC Network\
+        \ Route changes.\n\nThis alert helps ensure security by monitoring creation\
+        \ or deletion of network routes.\n```\nresource.type=\"gce_route\" AND (\n\
+        \  protoPayload.methodName:\"compute.routes.insert\" OR\n  protoPayload.methodName:\"\
+        compute.routes.delete\"\n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["projectOwnershipChange"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.organization_id
+          - metric.label.folder_id
+          - metric.label.project_id
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: Project Ownership Changes
+    display_name: Project Ownership Changes
+    documentation:
+    - content: "Log-based alerting policy in project ${project} detected a project\
+        \ ownership assignments or changes.\n```\n(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\"\
+        ) AND\n(ProjectOwnership OR projectOwnerInvitee)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+        REMOVE\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"\
+        roles/owner\"\n)\nOR\n(\n  protoPayload.serviceData.policyDelta.bindingDeltas.action=\"\
+        ADD\" AND\n  protoPayload.serviceData.policyDelta.bindingDeltas.role=\"roles/owner\"\
+        \n)\n```"
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.projects-observability[0].google_monitoring_alert_policy.alerts["storageIamChanges"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.principal
+          - metric.label.method_name
+          - metric.label.project_id
+          - metric.label.location
+          - metric.label.bucket_name
+          per_series_aligner: ALIGN_SUM
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 0s
+        evaluation_missing_data: null
+        filter: resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/storageIamChanges"
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: Cloud Storage IAM Permission Changes
+    display_name: Cloud Storage IAM Permission Changes
+    documentation:
+    - content: 'Log-based alerting policy in project ${project} detected Cloud Storage
+        Bucket IAM changes.
+
+
+        This alert helps ensure security by monitoring IAM permission changes to Cloud
+        Storage buckets.
+
+        ```
+
+        resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
+
+        ```'
+      links: []
+      mime_type: text/markdown
+      subject: null
+    enabled: true
+    notification_channels: []
+    project: ft0-prod-audit-logs-0
+    severity: null
+    timeouts: null
+    user_labels: null
   terraform_data.precondition:
+    input: null
+    output: null
+    triggers_replace: null
+  terraform_data.precondition-cicd:
     input: null
     output: null
     triggers_replace: null
@@ -5758,23 +7273,27 @@ counts:
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
   google_essential_contacts_contact: 1
-  google_folder: 8
+  google_folder: 10
   google_folder_iam_binding: 44
+  google_kms_crypto_key: 3
+  google_kms_crypto_key_iam_member: 3
+  google_kms_key_ring: 3
   google_logging_metric: 10
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
+  google_logging_project_settings: 2
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 80
-  google_org_policy_policy: 149
+  google_org_policy_policy: 154
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 38
   google_organization_iam_custom_role: 9
   google_project: 3
   google_project_iam_binding: 17
-  google_project_iam_member: 15
-  google_project_service: 34
-  google_project_service_identity: 9
+  google_project_iam_member: 17
+  google_project_service: 36
+  google_project_service_identity: 11
   google_scc_management_organization_security_health_analytics_custom_module: 16
   google_service_account: 14
   google_service_account_iam_binding: 2
@@ -5785,11 +7304,11 @@ counts:
   google_storage_managed_folder: 5
   google_storage_managed_folder_iam_binding: 10
   google_storage_project_service_account: 3
-  google_tags_tag_binding: 5
+  google_tags_tag_binding: 7
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 48
-  resources: 544
+  modules: 54
+  resources: 570
   terraform_data: 4
