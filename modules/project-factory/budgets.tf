@@ -16,13 +16,41 @@
 
 # tfdoc:file:description Billing budget factory locals.
 
+locals {
+  budget_folder_sets = flatten([
+    for k, v in local.folders_input : [
+      for vv in try(v.billing_budgets, []) : {
+        folder = k
+        budget = replace(vv, "$billing_budgets:", "")
+      } if trimspace(vv) != ""
+    ]
+  ])
+  budget_project_sets = flatten([
+    for k, v in local.projects_input : [
+      for vv in try(v.billing_budgets, []) : {
+        project = k
+        budget  = replace(vv, "$billing_budgets:", "")
+      } if trimspace(vv) != ""
+    ]
+  ])
+}
+
 module "billing-budgets" {
   source = "../billing-account"
   count  = var.factories_config.budgets != null ? 1 : 0
   id     = var.factories_config.budgets.billing_account_id
   context = merge(local.ctx, {
-    folder_ids  = local.ctx.folder_ids
+    folder_ids = local.ctx.folder_ids
+    folder_sets = {
+      for v in local.budget_folder_sets :
+      v.budget => local.folder_ids[v.folder]...
+    }
     project_ids = local.ctx_project_ids
+    project_sets = {
+      for v in local.budget_project_sets :
+      v.budget => "projects/${local.outputs_projects[v.project].number}"...
+    }
+    project_numbers = local.ctx_project_numbers
   })
   factories_config = {
     budgets_data_path = var.factories_config.budgets.data

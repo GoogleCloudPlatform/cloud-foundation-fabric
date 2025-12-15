@@ -83,13 +83,32 @@ This only supports sinks defined in the bootstrap stage, but it can easily be us
 
 The set of resources protected by each perimeter can be defined in two main ways:
 
-- authoritatively, where protected resources are only defined in this stage
-- cooperatively, where some resources are defined in this stage, and additional resources can be added separately (e.g. by a project factory)
+- central and authoritative, where protected resources are only defined in this stage
+- delegated and additive, where perimeter is defined in this stage and resources are added separately (e.g. by a project factory)
 
 The first approach is more secure as it does not require granting editing permission to other actors, but it's also operationally heavier as it requires adding projects to the perimeter right after creation, before many operations can be run. For example, Shared VPC attachment for a service project cannot happen until the project is in the same perimeter as its host project. The main advantage of this approach is being able to leverage the resource discovery features provided by this stage.
 
 The second approach is more flexible, but requires delegating a measure of control over perimeters to other actors, and losing control over perimeter membership which stops being enforced by Terraform.
 
+When using the second approach, after applying this stage, provide perimeter information in your `defaults.yaml` file, for example:
+
+```yaml
+projects:
+  overrides:
+    vpc_sc:
+      perimeter_name: accessPolicies/12345/servicePerimeters/default
+```
+
+And then apply `0-org-setup` stage again. For later stages (such as networking, project factory), add the perimeter in a similar way, but there you can use context to provide perimeter:
+```yaml
+projects:
+  overrides:
+    vpc_sc:
+      perimeter_name: default
+```
+
+> [!CAUTION]
+> Do not add any resources to the perimeter in this stage when using the second approach. Any resources added in this stage will not be properly removed from perimeter, if the `terraform apply` is also changing the perimeter definition.
 #### Resource discovery
 
 If the first approach is desired in combination with resource discovery, you can simply tweak exclusions via the `resource_discovery` variable as the feature is enabled by default.

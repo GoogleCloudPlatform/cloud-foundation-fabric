@@ -79,8 +79,8 @@ variable "budgets" {
           }))
         }))
       }))
-      projects           = optional(list(string))
-      resource_ancestors = optional(list(string))
+      projects           = optional(list(string), [])
+      resource_ancestors = optional(list(string), [])
       services           = optional(list(string))
       subaccounts        = optional(list(string))
     }))
@@ -124,10 +124,13 @@ variable "context" {
   type = object({
     custom_roles          = optional(map(string), {})
     folder_ids            = optional(map(string), {})
+    folder_sets           = optional(map(list(string)), {})
     iam_principals        = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
+    project_sets          = optional(map(list(string)), {})
     storage_buckets       = optional(map(string), {})
+    project_numbers       = optional(map(string), {})
   })
   default  = {}
   nullable = false

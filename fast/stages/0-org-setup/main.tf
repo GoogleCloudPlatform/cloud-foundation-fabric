@@ -41,6 +41,11 @@ locals {
       local.project_defaults.overrides.prefix,
       null
     )
+    observability = try(
+      local.project_defaults.defaults.observability,
+      local.project_defaults.overrides.observability,
+      null
+    )
   }
   iam_principals = merge(
     local.org_iam_principals,
@@ -56,10 +61,16 @@ locals {
     defaults  = try(local._defaults.projects.defaults, {})
     overrides = try(local._defaults.projects.overrides, {})
   }
+  workload_identity_pools = merge([
+    for k, v in module.factory.projects : {
+      for wk, wv in v.workload_identity_pools :
+      "${k}/${wk}" => wv
+    }
+  ]...)
   workload_identity_providers = merge([
     for k, v in module.factory.projects : {
       for wk, wv in v.workload_identity_providers :
-      "${k}/${wk}" => wv.pool
+      "${k}/${wk}" => wv.name
     }
   ]...)
 }

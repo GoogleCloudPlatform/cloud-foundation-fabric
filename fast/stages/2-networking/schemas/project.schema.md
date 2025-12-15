@@ -111,6 +111,7 @@
 - **metric_scopes**: *array*
   - items: *string*
 - **name**: *string*
+- **descriptive_name**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*
@@ -251,6 +252,33 @@
   - **force_destroy**: *boolean*
   - **labels**: *object*
     <br>*additional properties: string*
+  - **lifecycle_rules**: *object*
+    <br>*additional properties: false*
+    - **`^[a-zA-Z0-9_-]+$`**: *object*
+      <br>*additional properties: false*
+      - ⁺**action**: *object*
+        <br>*additional properties: false*
+        - ⁺**type**: *string*
+          <br>*enum: ['Delete', 'SetStorageClass', 'AbortIncompleteMultipartUpload']*
+        - **storage_class**: *string*
+      - ⁺**condition**: *object*
+        <br>*additional properties: false*
+        - **age**: *number*
+        - **created_before**: *string*
+        - **custom_time_before**: *string*
+        - **days_since_custom_time**: *number*
+        - **days_since_noncurrent_time**: *number*
+        - **matches_prefix**: *array*
+          - items: *string*
+        - **matches_storage_class**: *array*
+          - items: *string*
+            <br>*enum: ['STANDARD', 'MULTI_REGIONAL', 'REGIONAL', 'NEARLINE', 'COLDLINE', 'ARCHIVE', 'DURABLE_REDUCED_AVAILABILITY']*
+        - **matches_suffix**: *array*
+          - items: *string*
+        - **noncurrent_time_before**: *string*
+        - **num_newer_versions**: *number*
+        - **with_state**: *string*
+          <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*
@@ -266,8 +294,9 @@
   - **versioning**: *boolean*
   - **retention_policy**: *object*
     <br>*additional properties: false*
-    - **retention_period**: *number*
+    - **retention_period**: *string*
     - **is_locked**: *boolean*
+  - **soft_delete_retention**: *number*
   - **enable_object_retention**: *boolean*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*

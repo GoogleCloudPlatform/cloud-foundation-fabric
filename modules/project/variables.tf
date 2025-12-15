@@ -146,7 +146,7 @@ variable "deletion_policy" {
 }
 
 variable "descriptive_name" {
-  description = "Name of the project name. Used for project name instead of `name` variable."
+  description = "Descriptive project name. Set when name differs from project id."
   type        = string
   default     = null
 }
@@ -277,8 +277,9 @@ variable "project_reuse" {
 variable "service_agents_config" {
   description = "Automatic service agent configuration options."
   type = object({
-    create_primary_agents = optional(bool, true)
-    grant_default_roles   = optional(bool, true)
+    create_primary_agents      = optional(bool, true)
+    grant_default_roles        = optional(bool, true)
+    grant_service_agent_editor = optional(bool, true)
   })
   default  = {}
   nullable = false

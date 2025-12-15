@@ -69,6 +69,7 @@ resource "google_dns_managed_zone" "dns_managed_zone" {
   dns_name       = var.zone_config.domain
   description    = var.description
   force_destroy  = var.force_destroy
+  labels         = var.labels
   visibility     = local.visibility
   reverse_lookup = var.zone_config.private == null ? false : var.zone_config.private.reverse_managed
 

@@ -45,8 +45,8 @@ locals {
           )
         )
         label              = try(v.filter.label, null)
-        projects           = try(v.filter.projects, null)
-        resource_ancestors = try(v.filter.resource_ancestors, null)
+        projects           = try(v.filter.projects, [])
+        resource_ancestors = try(v.filter.resource_ancestors, [])
         services           = try(v.filter.services, null)
         subaccounts        = try(v.filter.subaccounts, null)
       }

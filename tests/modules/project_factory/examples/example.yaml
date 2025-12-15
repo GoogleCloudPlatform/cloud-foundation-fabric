@@ -96,7 +96,6 @@ values:
       credit_types: null
       credit_types_treatment: INCLUDE_ALL_CREDITS
       custom_period: []
-      projects: null
       resource_ancestors:
       - folders/1234567890
       subaccounts: null

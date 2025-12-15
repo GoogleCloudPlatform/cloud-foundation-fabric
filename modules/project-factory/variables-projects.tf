@@ -69,6 +69,30 @@ variable "projects" {
             }))
           })), {})
         })), {})
+        lifecycle_rules = optional(map(object({
+          action = object({
+            type          = string
+            storage_class = optional(string)
+          })
+          condition = object({
+            age                        = optional(number)
+            created_before             = optional(string)
+            custom_time_before         = optional(string)
+            days_since_custom_time     = optional(number)
+            days_since_noncurrent_time = optional(number)
+            matches_prefix             = optional(list(string))
+            matches_storage_class      = optional(list(string))
+            matches_suffix             = optional(list(string))
+            noncurrent_time_before     = optional(string)
+            num_newer_versions         = optional(number)
+            with_state                 = optional(string)
+          })
+        })), {})
+        retention_policy = optional(object({
+          retention_period = string
+          is_locked        = optional(bool)
+        }))
+        soft_delete_retention = optional(number)
       }))
       service_accounts = optional(map(object({
         description = optional(string)
@@ -151,11 +175,36 @@ variable "projects" {
           }))
         })), {})
       })), {})
+      lifecycle_rules = optional(map(object({
+        action = object({
+          type          = string
+          storage_class = optional(string)
+        })
+        condition = object({
+          age                        = optional(number)
+          created_before             = optional(string)
+          custom_time_before         = optional(string)
+          days_since_custom_time     = optional(number)
+          days_since_noncurrent_time = optional(number)
+          matches_prefix             = optional(list(string))
+          matches_storage_class      = optional(list(string))
+          matches_suffix             = optional(list(string))
+          noncurrent_time_before     = optional(string)
+          num_newer_versions         = optional(number)
+          with_state                 = optional(string)
+        })
+      })), {})
+      retention_policy = optional(object({
+        retention_period = string
+        is_locked        = optional(bool)
+      }))
+      soft_delete_retention = optional(number)
     })), {})
     contacts = optional(map(list(string)), {})
     datasets = optional(map(object({
-      friendly_name = optional(string)
-      location      = optional(string)
+      encryption_key = optional(string)
+      friendly_name  = optional(string)
+      location       = optional(string)
     })), {})
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
@@ -259,7 +308,8 @@ variable "projects" {
         requester_email_recipients = optional(list(string))
       }))
     })), {})
-    name = optional(string)
+    name             = optional(string)
+    descriptive_name = optional(string)
     org_policies = optional(map(object({
       inherit_from_parent = optional(bool) # for list policies only.
       reset               = optional(bool)

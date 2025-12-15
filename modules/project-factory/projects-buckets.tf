@@ -36,11 +36,11 @@ locals {
         labels                = lookup(opts, "labels", {})
         location              = lookup(opts, "location", null)
         managed_folders       = lookup(opts, "managed_folders", {})
-        prefix = coalesce(
+        prefix = try(coalesce(
           local.data_defaults.overrides.prefix,
           try(v.prefix, null),
           local.data_defaults.defaults.prefix
-        )
+        ), null)
         storage_class = lookup(
           opts, "storage_class", "STANDARD"
         )
@@ -51,6 +51,8 @@ locals {
           opts, "versioning", false
         )
         retention_policy        = lookup(opts, "retention_policy", null)
+        soft_delete_retention   = lookup(opts, "soft_delete_retention", null)
+        lifecycle_rules         = lookup(opts, "lifecycle_rules", {})
         enable_object_retention = lookup(opts, "enable_object_retention", null)
       }
     ]
@@ -62,7 +64,7 @@ module "buckets" {
   for_each = {
     for k in local.projects_buckets : "${k.project_key}/${k.name}" => k
   }
-  project_id     = module.projects[each.value.project_key].project_id
+  project_id     = module.projects-iam[each.value.project_key].project_id
   prefix         = each.value.prefix
   name           = "${each.value.project_name}-${each.value.name}"
   bucket_create  = each.value.create
@@ -84,6 +86,7 @@ module "buckets" {
   iam_bindings_additive = each.value.iam_bindings_additive
   iam_by_principals     = each.value.iam_by_principals
   labels                = each.value.labels
+  lifecycle_rules       = each.value.lifecycle_rules
   location = coalesce(
     local.data_defaults.overrides.locations.storage,
     lookup(each.value, "location", null),
@@ -94,5 +97,6 @@ module "buckets" {
   uniform_bucket_level_access = each.value.uniform_bucket_level_access
   versioning                  = each.value.versioning
   retention_policy            = each.value.retention_policy
+  soft_delete_retention       = each.value.soft_delete_retention
   enable_object_retention     = each.value.enable_object_retention
 }

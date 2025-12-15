@@ -151,6 +151,10 @@
     <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*
     <br>*additional properties: string*
+  - **workload_identity_pools**: *object*
+    <br>*additional properties: string*
+  - **workload_identity_providers**: *object*
+    <br>*additional properties: string*
 - **output_files**: *object*
   <br>*additional properties: false*
   - **local_path**: *string*
