@@ -17,9 +17,10 @@
 variable "folders" {
   description = "Folders data merged with factory data."
   type = map(object({
-    name   = optional(string)
-    parent = optional(string)
-    iam    = optional(map(list(string)), {})
+    name                = optional(string)
+    parent              = optional(string)
+    deletion_protection = optional(bool)
+    iam                 = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
       role    = string
