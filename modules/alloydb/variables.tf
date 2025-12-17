@@ -200,8 +200,9 @@ variable "initial_user" {
   description = "AlloyDB cluster initial user credentials."
   type = object({
     user     = optional(string, "postgres")
-    password = string
+    password = optional(string)
   })
+  default = null
 }
 
 variable "instance_name" {
