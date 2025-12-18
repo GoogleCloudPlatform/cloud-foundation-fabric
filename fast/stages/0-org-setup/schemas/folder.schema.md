@@ -52,6 +52,7 @@
       <br>*additional properties: false*
       - **exempted_members**: *array*
         - items: *string*
+- **deletion_protection**: *boolean*
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **org_policies**: *string*
