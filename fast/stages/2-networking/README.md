@@ -228,7 +228,7 @@ routers:
   vpn-router:
     region: $locations:primary
     asn: 64514
-# [...]    
+# [...]
 ```
 
 ### VPC Connectivity
@@ -333,10 +333,10 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [host_project_ids](outputs.tf#L68) | Project IDs. |  |
-| [host_project_numbers](outputs.tf#L73) | Project numbers. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L78) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L83) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L88) | Subnet self-links. |  |
-| [vpc_self_links](outputs.tf#L93) | VPC self-links. |  |
+| [host_project_ids](outputs.tf#L70) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L75) | Project numbers. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L80) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L85) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L90) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L95) | VPC self-links. |  |
 <!-- END TFDOC -->
