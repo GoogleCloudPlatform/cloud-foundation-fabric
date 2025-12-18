@@ -82,6 +82,7 @@ variable "subnet" {
     region    = "subnet_region"
     cidr      = "subnet_cidr"
     self_link = "subnet_self_link"
+    id        = "projects/my-project/regions/subnet_region/subnetworks/subnet_name"
   }
 }
 
