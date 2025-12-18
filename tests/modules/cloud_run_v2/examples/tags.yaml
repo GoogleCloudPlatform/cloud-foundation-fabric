@@ -69,7 +69,6 @@ values:
     location: europe-west8
     name: hello-service
     project: project-id
-    scaling: []
     template:
     - annotations: null
       containers:
