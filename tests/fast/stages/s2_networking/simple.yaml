@@ -85,14 +85,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: tfvars/2-networking.auto.tfvars.json
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.version[0]:
@@ -103,14 +102,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: versions/2-networking-version.txt
     retention: []
     source: fast_version.txt
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   module.dns-response-policies["net-core-0"].google_dns_response_policy.default[0]:
