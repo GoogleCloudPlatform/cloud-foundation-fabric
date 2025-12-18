@@ -81,6 +81,7 @@ locals {
             plan  = try(v.workload_identity.iam_principalsets.plan)
           }
         )
+        audiences = try(v.workload_identity.audiences, [])
       }
     }
   }
