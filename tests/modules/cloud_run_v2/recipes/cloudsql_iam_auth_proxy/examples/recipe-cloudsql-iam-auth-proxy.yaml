@@ -31,7 +31,6 @@ values:
     location: europe-west8
     name: db-test
     project: project-id
-    scaling: []
     template:
     - annotations: null
       containers:
