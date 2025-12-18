@@ -22,14 +22,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: versions/2-security-version.txt
     retention: []
     source: fast_version.txt
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   module.cas["prod-ca-0"].google_privateca_ca_pool.default[0]:
