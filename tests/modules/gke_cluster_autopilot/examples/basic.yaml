@@ -97,7 +97,7 @@ values:
       managed_prometheus:
       - enabled: true
     name: cluster-1
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_policy: []
     networking_mode: VPC_NATIVE
     node_pool_auto_config:

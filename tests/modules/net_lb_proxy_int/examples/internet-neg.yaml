@@ -19,7 +19,7 @@ values:
     ip_protocol: TCP
     load_balancing_scheme: INTERNAL_MANAGED
     name: ilb-test
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     port_range: '80'
     project: project-id
     region: europe-west8
@@ -45,7 +45,7 @@ values:
     region_network_endpoint_group: ilb-test-neg-0
   module.ilb-l7.google_compute_region_network_endpoint_group.internet["neg-0"]:
     name: ilb-test-neg-0
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_endpoint_type: INTERNET_FQDN_PORT
     project: project-id
     region: europe-west8
