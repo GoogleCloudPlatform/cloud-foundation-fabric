@@ -144,7 +144,7 @@ variable "subnet2" {
 variable "vpc" {
   default = {
     name      = "vpc-name"
-    self_link = "projects/xxx/global/networks/aaa"
+    self_link = "https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa"
     id        = "projects/xxx/global/networks/aaa"
   }
 }

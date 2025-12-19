@@ -17,7 +17,7 @@ values:
   module.instance-group.google_compute_instance_group.unmanaged[0]:
     name: ilb-test
     named_port: []
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     timeouts: null
     zone: europe-west8-b

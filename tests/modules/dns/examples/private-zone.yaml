@@ -23,7 +23,7 @@ values:
     private_visibility_config:
     - gke_clusters: []
       networks:
-      - network_url: projects/xxx/global/networks/aaa
+      - network_url: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     visibility: private
   module.private-dns.google_dns_record_set.dns_record_set["A localhost"]:
