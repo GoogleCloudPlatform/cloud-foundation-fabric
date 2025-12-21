@@ -107,22 +107,27 @@ class FabricTestItem(pytest.Item):
                                self.extra_files, self.extra_dirs)
     except AssertionError:
 
-      def full_paths(paths):
-        return [str(self.parent.path.parent / x) for x in paths]
+      def full_paths(root_path, paths):
+        return [str(root_path / x) for x in paths]
 
-      extra_dirs = [f"--extra-dirs={x}" for x in full_paths(self.extra_dirs)]
-      extra_files = [
-          f"--extra-files={x}" for x in full_paths(
-              f"../{f}" for f in self.
-              extra_files  # FIXME: for some reason, extra files needs one extra ../
-          )
+      files_root = self.parent.path.parent
+      # extra_dirs and extra_files need additional .parent
+      extra_dirs = [
+          f"--extra-dirs={x}"
+          for x in full_paths(files_root.parent, self.extra_dirs)
       ]
-      print(f'Error in inventory file: {" ".join(full_paths(self.inventory))}')
+      extra_files = [
+          f"--extra-files={x}"
+          for x in full_paths(files_root.parent, self.extra_files)
+      ]
+      print(
+          f'Error in inventory file: {" ".join(full_paths(files_root, self.inventory))}'
+      )
       print(f'To regenerate inventory run: python tools/plan_summary.py '
             f'{" ".join(extra_dirs)} '
             f'{" ".join(extra_files)} '
             f'{self.module} '
-            f'{" ".join(full_paths(self.tf_var_files))}')
+            f'{" ".join(full_paths(files_root, self.tf_var_files))}')
       raise
 
   def reportinfo(self):
