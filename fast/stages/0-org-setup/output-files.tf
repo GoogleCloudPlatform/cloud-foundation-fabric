@@ -151,7 +151,7 @@ resource "google_storage_bucket_object" "version" {
     local.output_files.storage_bucket != null &&
     fileexists("fast_version.txt") ? 1 : 0
   )
-  bucket         = local.output_files.storage_bucket
+  bucket         = local.of_outputs_bucket
   name           = "versions/0-org-setup-version.txt"
   source         = "fast_version.txt"
   source_md5hash = filemd5("fast_version.txt")
