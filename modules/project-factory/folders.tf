@@ -57,8 +57,9 @@ module "folder-1" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  parent = coalesce(each.value.parent, "$folder_ids:default")
-  name   = each.value.name
+  deletion_protection = lookup(each.value, "deletion_protection", false)
+  parent              = coalesce(each.value.parent, "$folder_ids:default")
+  name                = each.value.name
   factories_config = {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
@@ -99,6 +100,7 @@ module "folder-2" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
+  deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
@@ -151,6 +153,7 @@ module "folder-3" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
+  deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
@@ -203,6 +206,7 @@ module "folder-4" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
+  deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )

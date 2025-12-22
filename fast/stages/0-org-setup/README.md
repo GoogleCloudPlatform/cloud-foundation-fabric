@@ -9,6 +9,7 @@
   - [First apply cycle](#first-apply-cycle)
     - [Default project](#default-project)
     - [Importing org policies](#importing-org-policies)
+    - [Importing existing organization level IAM bindings](#importing-existing-organization-level-iam-bindings)
     - [Local output files storage](#local-output-files-storage)
     - [Init and apply the stage](#init-and-apply-the-stage)
   - [Provider setup and final apply cycle](#provider-setup-and-final-apply-cycle)
@@ -173,7 +174,7 @@ gcloud config set project [project id]
 gcloud services enable \
   bigquery.googleapis.com cloudbilling.googleapis.com cloudresourcemanager.googleapis.com \
   essentialcontacts.googleapis.com iam.googleapis.com logging.googleapis.com \
-  orgpolicy.googleapis.com serviceusage.googleapis.com 
+  orgpolicy.googleapis.com serviceusage.googleapis.com
 ```
 
 #### Importing org policies
@@ -201,6 +202,24 @@ org_policies_imports = [
 ```
 
 Once org policies have been imported, the variable definition can be removed from the tfvars file.
+
+#### Importing existing organization level IAM bindings
+For brownfield implementations you may need to import existing organization IAM policies. These snippets can help you add existing settings into the YAML file.
+
+Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4. It was tested using yq `v4.47.2`.
+
+To create `iam:` part of the `/organization/.config.yaml` file, you can use following snippet:
+```shell
+gcloud <resource> get-iam-policy <resource name> | yq '.bindings | map({"key": .role, "value": .members}) | from_entries'
+```
+
+To create `iam_by_principals:` part of the factory YAML file, you can use following snippet:
+```shell
+gcloud <resource> get-iam-policy <resource name> |  yq '
+[.bindings | .[] | .members[] as $member | { "member": $member, "role": .role}] |
+group_by(.member) | sort_by(.[0].member) | .[] | { .[0].member: map(.role)}
+'
+```
 
 #### Local output files storage
 
@@ -778,8 +797,8 @@ This configuration adds Okta to the list of allowed Workload Identity providers 
       $service_account_ids:iac-0/iac-org-ro:
         - roles/iam.workloadIdentityUser
         - roles/iam.serviceAccountTokenCreator
-    iam: 
-      roles/iam.workloadIdentityUser: 
+    iam:
+      roles/iam.workloadIdentityUser:
         - principalSet://iam.googleapis.com/projects/<REPLACE_WITH_IAC_PROJECT_NUMBER>/locations/global/workloadIdentityPools/iac-0/*    // Modify this
 
   iac-org-cicd-rw:
@@ -788,8 +807,8 @@ This configuration adds Okta to the list of allowed Workload Identity providers 
       $service_account_ids:iac-0/iac-org-rw:
         - roles/iam.workloadIdentityUser
         - roles/iam.serviceAccountTokenCreator
-    iam: 
-      roles/iam.workloadIdentityUser: 
+    iam:
+      roles/iam.workloadIdentityUser:
         - principalSet://iam.googleapis.com/projects/<REPLACE_WITH_IAC_PROJECT_NUMBER>/locations/global/workloadIdentityPools/iac-0/*    // Modify this
 ```
 

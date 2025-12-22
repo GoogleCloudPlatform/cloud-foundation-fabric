@@ -16,7 +16,7 @@ values:
   module.dns-policy.google_dns_response_policy.default[0]:
     gke_clusters: []
     networks:
-    - network_url: projects/xxx/global/networks/aaa
+    - network_url: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     response_policy_name: googleapis
   module.dns-policy.google_dns_response_policy_rule.default["pubsub"]:

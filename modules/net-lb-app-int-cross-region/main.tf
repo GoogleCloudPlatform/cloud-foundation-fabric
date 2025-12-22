@@ -61,7 +61,7 @@ resource "google_compute_global_forwarding_rule" "forwarding_rules" {
   project               = var.project_id
   name                  = "${var.name}-${each.key}"
   description           = var.description
-  ip_address            = try(var.addresses[each.value], null)
+  ip_address            = try(var.addresses[each.key], null)
   ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = var.vpc_config.network

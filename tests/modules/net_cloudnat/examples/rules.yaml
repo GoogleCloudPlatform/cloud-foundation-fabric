@@ -30,7 +30,7 @@ values:
     region: europe-west8
   module.nat.google_compute_router.router[0]:
     name: nat-nat
-    network: "projects/xxx/global/networks/aaa"
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     region: europe-west8
   module.nat.google_compute_router_nat.nat:

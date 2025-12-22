@@ -32,7 +32,6 @@ values:
     multi_region_settings: []
     name: example-hello
     project: test-cloudrun
-    scaling: []
     template:
     - annotations: null
       containers:
