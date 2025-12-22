@@ -41,7 +41,7 @@ values:
     labels: null
     load_balancing_scheme: INTERNAL_MANAGED
     name: int-tcp-proxy
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     no_automate_dns_zone: null
     port_range: '80'
     ports: null
@@ -64,7 +64,7 @@ values:
     default_port: null
     description: Terraform managed.
     name: int-tcp-proxy-my-neg
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_endpoint_type: GCE_VM_IP_PORT
     project: project-id
     subnetwork: subnet_self_link

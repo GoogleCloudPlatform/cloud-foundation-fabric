@@ -24,4 +24,4 @@ tests:
     inventory:
       - hardened.yaml
     extra_dirs:
-      - ../../../tests/fast/stages/s0_org_setup/data-simple
+      - ../../../tests/fast/stages/s0_org_setup/data-hardened

@@ -422,8 +422,8 @@ module "cf_http" {
     path = "assets/sample-function/"
   }
   direct_vpc_egress = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network    = var.vpc.id
+    subnetwork = var.subnet.id
     tags       = ["tag1", "tag2"]
     mode       = "VPC_EGRESS_ALL_TRAFFIC"
   }

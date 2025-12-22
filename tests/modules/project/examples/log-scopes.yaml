@@ -66,3 +66,5 @@ counts:
   google_logging_project_bucket_config: 1
   google_project: 1
   google_project_service: 1
+  modules: 2
+  resources: 7

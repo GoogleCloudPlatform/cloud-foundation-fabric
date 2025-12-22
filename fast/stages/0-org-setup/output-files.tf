@@ -57,6 +57,18 @@ locals {
     ? null
     : pathexpand(local.output_files.local_path)
   )
+  of_providers_content = {
+    for k, v in local.output_files.providers : k => templatestring(local.of_template, {
+      bucket = lookup(
+        local.of_buckets, v.bucket, v.bucket
+      )
+      prefix = lookup(v, "prefix", null)
+      service_account = lookup(
+        local.of_service_accounts, v.service_account, v.service_account
+      )
+      universe_domain = local.of_universe_domain
+    })
+  }
   of_template = file("assets/providers.tf.tpl")
   of_tfvars = {
     globals = {
@@ -108,32 +120,15 @@ resource "local_file" "providers" {
   for_each        = local.of_path == null ? {} : local.output_files.providers
   file_permission = "0644"
   filename        = "${local.of_path}/providers/${each.key}-providers.tf"
-  content = templatestring(local.of_template, {
-    bucket = lookup(
-      local.of_buckets, each.value.bucket, each.value.bucket
-    )
-    prefix = lookup(each.value, "prefix", null)
-    service_account = lookup(
-      local.of_service_accounts, each.value.service_account, each.value.service_account
-    )
-    universe_domain = local.of_universe_domain
-  })
+  content         = local.of_providers_content[each.key]
 }
 
 resource "google_storage_bucket_object" "providers" {
-  for_each = local.output_files.storage_bucket == null ? {} : local.output_files.providers
-  bucket   = local.of_outputs_bucket
-  name     = "providers/${each.key}-providers.tf"
-  content = templatestring(local.of_template, {
-    bucket = lookup(
-      local.of_buckets, each.value.bucket, each.value.bucket
-    )
-    prefix = lookup(each.value, "prefix", null)
-    service_account = lookup(
-      local.of_service_accounts, each.value.service_account, each.value.service_account
-    )
-    universe_domain = local.of_universe_domain
-  })
+  for_each       = local.output_files.storage_bucket == null ? {} : local.output_files.providers
+  bucket         = local.of_outputs_bucket
+  name           = "providers/${each.key}-providers.tf"
+  content        = local.of_providers_content[each.key]
+  source_md5hash = md5(local.of_providers_content[each.key])
 }
 
 resource "local_file" "tfvars" {
@@ -144,8 +139,20 @@ resource "local_file" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "tfvars" {
-  for_each = toset(local.output_files.storage_bucket == null ? [] : keys(local.of_tfvars))
-  bucket   = local.of_outputs_bucket
-  name     = "tfvars/0-${each.key}.auto.tfvars.json"
-  content  = jsonencode(local.of_tfvars[each.key])
+  for_each       = toset(local.output_files.storage_bucket == null ? [] : keys(local.of_tfvars))
+  bucket         = local.of_outputs_bucket
+  name           = "tfvars/0-${each.key}.auto.tfvars.json"
+  content        = jsonencode(local.of_tfvars[each.key])
+  source_md5hash = md5(jsonencode(local.of_tfvars[each.key]))
+}
+
+resource "google_storage_bucket_object" "version" {
+  count = (
+    local.output_files.storage_bucket != null &&
+    fileexists("fast_version.txt") ? 1 : 0
+  )
+  bucket         = local.output_files.storage_bucket
+  name           = "versions/0-org-setup-version.txt"
+  source         = "fast_version.txt"
+  source_md5hash = filemd5("fast_version.txt")
 }

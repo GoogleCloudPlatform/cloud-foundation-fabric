@@ -69,13 +69,13 @@ module "gke-cluster" {
     )
   })
   deletion_protection = var.deletion_protection
-  node_config = {
+  node_config = merge(coalesce(each.value.node_config, {}), {
     service_account = (
       each.value.service_account == null
       ? module.gke-nodes-service-account.email
       : each.value.service_account
     )
-  }
+  })
 }
 
 module "gke-nodepool" {
