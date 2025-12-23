@@ -279,7 +279,7 @@ The module allows you to dynamically reference context values for resources crea
 | [description](variables.tf#L101) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
 | [encryption_key](variables.tf#L108) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
 | [managed](variables.tf#L114) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
-| [service_account_config](variables-service-account.tf#L18) | Service account configurations. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, true&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  email        &#61; optional&#40;string&#41;&#10;  name         &#61; optional&#40;string&#41;&#10;  roles &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;roles&#47;aiplatform.user&#34;,&#10;    &#34;roles&#47;storage.objectViewer&#34;,&#10;    &#34;roles&#47;viewer&#34;&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account_config](variables-serviceaccount.tf#L18) | Service account configurations. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, true&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  email        &#61; optional&#40;string&#41;&#10;  name         &#61; optional&#40;string&#41;&#10;  roles &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;roles&#47;aiplatform.user&#34;,&#10;    &#34;roles&#47;storage.objectViewer&#34;,&#10;    &#34;roles&#47;viewer&#34;&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
