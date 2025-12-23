@@ -16,8 +16,13 @@
 
 locals {
   _ctx_p = "$"
+  _resource = (
+    var.managed
+    ? try(google_vertex_ai_reasoning_engine.managed[0], null)
+    : try(google_vertex_ai_reasoning_engine.unmanaged[0], null)
+  )
   bucket_name = (
-    var.bucket_config.create
+    var.deployment_files.package_config != null && var.bucket_config.create
     ? google_storage_bucket.default[0].name
     : coalesce(var.bucket_config.name, var.name)
   )
@@ -32,79 +37,9 @@ locals {
   project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
   )
-}
-
-resource "google_vertex_ai_reasoning_engine" "default" {
-  display_name = var.name
-  project      = local.project_id
-  description  = var.description
-  region       = local.location
-
-  dynamic "encryption_spec" {
-    for_each = var.encryption_key == null ? {} : { 1 = 1 }
-
-    content {
-      kms_key_name = lookup(
-        local.ctx.kms_keys,
-        var.encryption_key,
-        var.encryption_key
-      )
-    }
-  }
-
-  spec {
-    agent_framework = var.agent_engine_config.agent_framework
-    class_methods = (
-      length(var.agent_engine_config.class_methods) > 0
-      ? jsonencode(var.agent_engine_config.class_methods)
-      : null
-    )
-    service_account = local.service_account_email
-
-    dynamic "deployment_spec" {
-      for_each = (
-        # length(var.container_spec) > 0 ||
-        length(var.agent_engine_config.environment_variables) > 0 ||
-        length(var.agent_engine_config.secret_environment_variables) > 0
-        ? { 1 = 1 }
-        : {}
-      )
-
-      content {
-        dynamic "env" {
-          for_each = var.agent_engine_config.environment_variables
-
-          content {
-            name  = env.key
-            value = env.value
-          }
-        }
-
-        dynamic "secret_env" {
-          for_each = var.agent_engine_config.secret_environment_variables
-
-          content {
-            name = secret_env.key
-
-            secret_ref {
-              secret  = secret_env.value.secret_id
-              version = secret_env.value.version
-            }
-          }
-        }
-      }
-    }
-
-    package_spec {
-      python_version           = var.agent_engine_config.python_version
-      dependency_files_gcs_uri = "gs://${local.bucket_name}/${google_storage_bucket_object.dependencies.name}"
-      requirements_gcs_uri     = "gs://${local.bucket_name}/${google_storage_bucket_object.requirements.name}"
-      pickle_object_gcs_uri = (
-        var.generate_pickle
-        ? "gs://${local.bucket_name}/${google_storage_bucket_object.pickle_from_src[0].name}"
-        : "gs://${local.bucket_name}/${google_storage_bucket_object.pickle[0].name}"
-      )
-    }
+  resource = {
+    id     = local._resource.id
+    object = local._resource
   }
 }
 
@@ -119,7 +54,11 @@ resource "time_sleep" "wait_5_minutes" {
 }
 
 resource "google_storage_bucket" "default" {
-  count                       = var.bucket_config.create ? 1 : 0
+  count = (
+    var.bucket_config.create
+    && var.deployment_files.package_config != null
+    ? 1 : 0
+  )
   name                        = coalesce(var.bucket_config.name, var.name)
   project                     = local.project_id
   location                    = local.location
@@ -127,50 +66,32 @@ resource "google_storage_bucket" "default" {
   force_destroy               = !var.bucket_config.deletion_protection
 }
 
-resource "null_resource" "default" {
-  count = var.generate_pickle ? 1 : 0
-
-  provisioner "local-exec" {
-    command = join(" ", [
-      "python",
-      "./tools/serialize_agent.py",
-      "${var.source_files.path}/${var.source_files.pickle_src}",
-      "--output-file ${var.source_files.path}/${var.source_files.pickle_out}",
-      "--variable-name ${var.source_files.pickle_src_var_name}"
-    ])
-  }
-}
-
 resource "google_storage_bucket_object" "dependencies" {
-  name           = "dependencies.tar.gz"
-  bucket         = local.bucket_name
-  source         = "${var.source_files.path}/${var.source_files.dependencies}"
-  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.dependencies}")
-}
-
-resource "google_storage_bucket_object" "pickle_from_src" {
-  count          = var.generate_pickle ? 1 : 0
-  name           = "pickle.pkl"
-  bucket         = local.bucket_name
-  source         = "${var.source_files.path}/${var.source_files.pickle_out}"
-  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.pickle_out}")
-
-  depends_on = [
-    null_resource.default
-  ]
+  count  = var.deployment_files.package_config != null ? 1 : 0
+  name   = "dependencies.tar.gz"
+  bucket = local.bucket_name
+  source = try(var.deployment_files.package_config.dependencies_path, null)
+  source_md5hash = filemd5(
+    try(var.deployment_files.package_config.dependencies_path, null)
+  )
 }
 
 resource "google_storage_bucket_object" "pickle" {
-  count          = var.generate_pickle ? 0 : 1
-  name           = "pickle.pkl"
-  bucket         = local.bucket_name
-  source         = "${var.source_files.path}/${var.source_files.pickle_out}"
-  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.pickle_out}")
+  count  = var.deployment_files.package_config != null ? 1 : 0
+  name   = "pickle.pkl"
+  bucket = local.bucket_name
+  source = try(var.deployment_files.package_config.pickle_path, null)
+  source_md5hash = filemd5(
+    try(var.deployment_files.package_config.pickle_path)
+  )
 }
 
 resource "google_storage_bucket_object" "requirements" {
-  name           = "requirements.txt"
-  bucket         = local.bucket_name
-  source         = "${var.source_files.path}/${var.source_files.requirements}"
-  source_md5hash = filemd5("${var.source_files.path}/${var.source_files.requirements}")
+  count  = var.deployment_files.package_config != null ? 1 : 0
+  name   = "requirements.txt"
+  bucket = local.bucket_name
+  source = try(var.deployment_files.package_config.requirements_path, null)
+  source_md5hash = filemd5(
+    try(var.deployment_files.package_config.requirements_path)
+  )
 }
