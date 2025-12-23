@@ -93,10 +93,10 @@ You can also manually serialize your agent by using the [cloudpickle library](ht
 
 ```hcl
 module "agent_engine" {
-  source          = "./fabric/modules/agent-engine"
-  name            = "my-agent"
-  project_id      = var.project_id
-  region          = var.region
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
 
   agent_engine_config = {
     agent_framework = "google-adk"
