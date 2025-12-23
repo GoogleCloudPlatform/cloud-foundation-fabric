@@ -13,7 +13,7 @@
 
 ## Project Configuration
 
-The provided `project.yaml` file makes a few assumptions and provides some default configurations, that are explained in this section. This will only cover the configurations that are directly relevant for Azure Devops integration, and assume that localizing for the intended environment (project id, parent folder reference, specific IAM settings, etc.) are already in place.
+The provided `project.yaml` file provides an initial configuration, and makes a few assumptions that are explained in this section. This setup will only cover direct requirements for the Azure Devops integration, and assume that environment-specific customizations (project id, parent folder reference, specific IAM settings, region, etc.) will be implemented by the user.
 
 ### Organization Policies
 
@@ -136,6 +136,31 @@ So we finally get to the IAM principal, which for the service connection above h
 
 ```
 principal://iam.googleapis.com/projects/[project number]/locations/global/workloadIdentityPools/[pool name]/subject/5d2face9-4998-4294-8d24-763e98b6af3e/9e92fe65-c282-47ee-9534-3a1a784c3417
+```
+
+## Agent Configuration
+
+### Microsoft-Hosted Agents
+
+The easy path for agent selection is to use [Microsoft-hosted agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=windows-images%2Cyaml), which only require permissions to be granted to the relevant pipelines.
+
+### Self-Hosted Agents
+
+If [self-hosted agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops&tabs=IP-V4) are required, a sample Container Optimized OS based agent is provided as part of this example.
+
+Several steps are needed to bootstrap the provided example for a hosted agent:
+
+- build the Docker image according to the [Microsoft-provided documentation](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux)
+- enable the Artifact Registry provided as part of this example via the `hosted_agent_config.create_registry` variable
+- create an agent token on Azure Devops and save it to a local `token.txt` file
+- apply Terraform so that the Artifact Registry and token secrets are created
+- copy the registry URL from the Terraform outputs, then tag and push the built image
+- configure the rest of the `hosted_agent_config` variable and apply Terraform to deploy the hosted agent
+
+This is a sample configuration for the `hosted_agent_config` variable:
+
+```hcl
+# TODO: provide example
 ```
 
 ## Pipeline Configuration
