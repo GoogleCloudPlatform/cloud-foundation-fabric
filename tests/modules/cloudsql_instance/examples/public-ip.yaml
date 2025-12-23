@@ -28,7 +28,7 @@ values:
       - allocated_ip_range: null
         authorized_networks: []
         ipv4_enabled: true
-        private_network: projects/xxx/global/networks/aaa
+        private_network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
       tier: db-g1-small
 
 counts:

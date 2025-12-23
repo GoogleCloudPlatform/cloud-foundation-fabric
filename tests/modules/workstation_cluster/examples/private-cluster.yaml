@@ -35,7 +35,7 @@ values:
     domain_config: []
     labels: null
     location: europe-west8
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     private_cluster_config:
     - enable_private_endpoint: true
     project: project-id

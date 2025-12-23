@@ -27,9 +27,7 @@ values:
     display_name: db
     encryption_config: []
     etag: null
-    initial_user:
-    - password: changeit
-      user: postgres
+    initial_user: []
     labels: null
     location: europe-west8
     maintenance_update_policy: []
