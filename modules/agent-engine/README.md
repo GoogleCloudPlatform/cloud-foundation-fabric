@@ -2,13 +2,16 @@
 
 The module creates Agent Engine and related dependencies.
 
-- It can automatically generate and update the Pickle file for you, given a source file.
-- It optionally creates a GCS storage bucket or can use an existing one and loads on it all your dependencies (`pickle`, `dependencies.tar.gz`, `requirements.txt`)
-- Manages the service accounts lifecycle
+- It supports both source based deployments (aka in-line deployment) and serialized object deployment (aka pickle deployment).
+- For serialized object deployment, it optionally creates a GCS storage bucket or can use an existing one and loads on it all your dependencies (`pickle`, `dependencies.tar.gz`, `requirements.txt`).
+- Manages custom service accounts lifecycle.
 
 <!-- BEGIN TOC -->
-- [Packaging dependencies](#packaging-dependencies)
-- [Minimal deployment](#minimal-deployment)
+- [Source based deployment](#source-based-deployment)
+  - [Create the tar.gz package](#create-the-targz-package)
+  - [Minimal deployment](#minimal-deployment)
+- [Serialized Object Deployment](#serialized-object-deployment)
+  - [Unmanaged deployments](#unmanaged-deployments)
 - [Service accounts](#service-accounts)
 - [Specify an encryption key](#specify-an-encryption-key)
 - [Define environment variables and use secrets](#define-environment-variables-and-use-secrets)
@@ -17,20 +20,20 @@ The module creates Agent Engine and related dependencies.
 - [Outputs](#outputs)
 <!-- END TOC -->
 
-## Packaging dependencies
+## Source based deployment
 
-To deploy an agent, you first need package your dependencies. This consists of a folder with
+The source based deployment is the newest, most efficient and easiest way to deploy your agents.
 
-- The source Python file defining your agent to be pickled (or the equivalent pickle file).
-- The `dependencies.tar.gz`.
+### Create the tar.gz package
+
+First, create a *tar.gz* file with these files:
+
+- The source Python file defining your agent, called `agent.py`.
 - The `requirements.txt` file.
 
-By default, the module expects these files to be in an `src` subfolder.
+By default, the module expects the `tar.gz` file to be in the `src` subfolder and to be called `source.tar.gz`.
 
-You can decide to **let the module create the pickle file for you**, starting from a source agent file.
-In this case, the module expects you to have in `src` a source file called `agent.py` with a variable referencing your agent function definition called `local_agent`.
-
-This is an example of `agent.py` file for ADK:
+This is an example of an `agent.py` file for ADK:
 
 ```python
 from google.adk.agents import LlmAgent
@@ -55,19 +58,12 @@ root_agent = LlmAgent(
     tools=[get_exchange_rate],
 )
 
-local_agent = AdkApp(agent=root_agent)
+agent = AdkApp(agent=root_agent)
 ```
 
-The [tools/serialize_agent.py](tools/serialize_agent.py) is used to generate the `pickle.pkl` file.
-You module needs [these packages](tools/requirements.txt) to work.
+### Minimal deployment
 
-If you **already have a pickle file**, the module expects you to have in the `src` subfolder a `pickle.pkl` file.
-
-You can customize these values by using the `source_files` variable.
-
-## Minimal deployment
-
-This example assumes you are providing the [source packages](#packaging-dependencies) (`agent.py`, `dependencies.tar.gz` and `requirements.txt`) in the `src` subfolder. Every time you will change the agent definition, the module will generate the new pickle file for you, will update it on the GCS bucket and will update your agent.
+You can now deploy the agent.
 
 ```hcl
 module "agent_engine" {
@@ -80,14 +76,20 @@ module "agent_engine" {
     agent_framework = "google-adk"
   }
 
-  source_files = {
-    path = "assets/src/"
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
   }
 }
 # tftest inventory=minimal.yaml
 ```
 
-Alternatively, you can pass a pre-generated `pickle.pkl` file.
+You can change the name of the tar.gz package, of the requirement file, the name of the Python file and the name of the agent function by using the `deployment_files.source_config` variable.
+
+## Serialized Object Deployment
+
+You can also manually serialize your agent by using the [cloudpickle library](https://github.com/cloudpipe/cloudpickle) and pass the `pickle.pkl`, `dependencies.tar.gz` and `requirements.txt` files to the module.
 
 ```hcl
 module "agent_engine" {
@@ -101,11 +103,43 @@ module "agent_engine" {
     agent_framework = "google-adk"
   }
 
-  source_files = {
-    path = "assets/src/"
+  deployment_files = {
+    package_config = {
+      dependencies_path = "assets/src/dependencies.tar.gz"
+      pickle_path       = "assets/src/pickle.pkl"
+      requirements_path = "assets/src/requirements.txt"
+    }
+    source_config = null
   }
 }
 # tftest inventory=minimal-pickle.yaml
+```
+
+### Unmanaged deployments
+
+By default, this module tracks and controls code updates. This means you can only the agent code via Terraform.
+Anyway, you may want to delegate this operation to third-party tools, outside Terraform.
+To do so, deploy the first revision of your code by using the module (this can even be a hello world) and set `var.managed` to `false`.
+
+```hcl
+module "agent_engine" {
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+  managed    = false
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
+
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
+  }
+}
+# tftest inventory=unmanaged.yaml
 ```
 
 ## Service accounts
@@ -131,8 +165,10 @@ module "agent_engine" {
     create = false
   }
 
-  source_files = {
-    path = "assets/src/"
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
   }
 }
 # tftest inventory=sa-default.yaml
@@ -156,8 +192,10 @@ module "agent_engine" {
     email  = "my-sa@${var.project_id}.iam.gserviceaccount.com"
   }
 
-  source_files = {
-    path = "assets/src/"
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
   }
 }
 # tftest inventory=sa-custom.yaml
@@ -181,8 +219,10 @@ module "agent_engine" {
     agent_framework = "google-adk"
   }
 
-  source_files = {
-    path = "assets/src/"
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
   }
 }
 # tftest inventory=encryption.yaml
@@ -212,8 +252,10 @@ module "agent_engine" {
     }
   }
 
-  source_files = {
-    path = "assets/src/"
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
   }
 }
 # tftest inventory=environment.yaml
@@ -227,22 +269,24 @@ The module allows you to dynamically reference context values for resources crea
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [agent_engine_config](variables.tf#L17) | The agent configuration. | <code title="object&#40;&#123;&#10;  agent_framework       &#61; string&#10;  class_methods         &#61; optional&#40;list&#40;any&#41;, &#91;&#93;&#41;&#10;  environment_variables &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  python_version        &#61; optional&#40;string, &#34;3.12&#34;&#41;&#10;  secret_environment_variables &#61; optional&#40;map&#40;object&#40;&#123;&#10;    secret_id &#61; string&#10;    version   &#61; optional&#40;string, &#34;latest&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L77) | The name of the agent. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L83) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L89) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
-| [bucket_config](variables.tf#L32) | The GCS bucket configuration. | <code title="object&#40;&#123;&#10;  create                      &#61; optional&#40;bool, true&#41;&#10;  deletion_protection         &#61; optional&#40;bool, true&#41;&#10;  name                        &#61; optional&#40;string&#41;&#10;  uniform_bucket_level_access &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L44) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L57) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [encryption_key](variables.tf#L64) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
-| [generate_pickle](variables.tf#L70) | Generate the pickle file from a source file. | <code>bool</code> |  | <code>true</code> |
-| [service_account_config](variables-serviceaccount.tf#L18) | Service account configurations. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, true&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  email        &#61; optional&#40;string&#41;&#10;  name         &#61; optional&#40;string&#41;&#10;  roles &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;roles&#47;aiplatform.user&#34;,&#10;    &#34;roles&#47;storage.objectViewer&#34;,&#10;    &#34;roles&#47;viewer&#34;&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [source_files](variables.tf#L95) | The to source files path and names. | <code title="object&#40;&#123;&#10;  dependencies        &#61; optional&#40;string, &#34;dependencies.tar.gz&#34;&#41;&#10;  path                &#61; optional&#40;string, &#34;.&#47;src&#34;&#41;&#10;  pickle_out          &#61; optional&#40;string, &#34;pickle.pkl&#34;&#41;&#10;  pickle_src          &#61; optional&#40;string, &#34;agent.py&#34;&#41;&#10;  pickle_src_var_name &#61; optional&#40;string, &#34;local_agent&#34;&#41;&#10;  requirements        &#61; optional&#40;string, &#34;requirements.txt&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [agent_engine_config](variables.tf#L17) | The agent configuration. | <code title="object&#40;&#123;&#10;  agent_framework       &#61; string&#10;  class_methods         &#61; optional&#40;list&#40;any&#41;, &#91;&#93;&#41;&#10;  container_concurrency &#61; optional&#40;number&#41;&#10;  environment_variables &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  max_instances         &#61; optional&#40;number&#41;&#10;  min_instances         &#61; optional&#40;number&#41;&#10;  python_version        &#61; optional&#40;string, &#34;3.12&#34;&#41;&#10;  resource_limits &#61; optional&#40;object&#40;&#123;&#10;    cpu    &#61; string&#10;    memory &#61; string&#10;  &#125;&#41;&#41;&#10;  secret_environment_variables &#61; optional&#40;map&#40;object&#40;&#123;&#10;    secret_id &#61; string&#10;    version   &#61; optional&#40;string, &#34;latest&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L128) | The name of the agent. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L134) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L140) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
+| [bucket_config](variables.tf#L40) | The GCS bucket configuration. | <code title="object&#40;&#123;&#10;  create                      &#61; optional&#40;bool, true&#41;&#10;  deletion_protection         &#61; optional&#40;bool, true&#41;&#10;  name                        &#61; optional&#40;string&#41;&#10;  uniform_bucket_level_access &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L52) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [deployment_files](variables.tf#L65) | The to source files path and names. | <code title="object&#40;&#123;&#10;  package_config &#61; optional&#40;object&#40;&#123;&#10;    dependencies_path &#61; optional&#40;string, &#34;.&#47;src&#47;dependencies.tar.gz&#34;&#41;&#10;    pickle_path       &#61; optional&#40;string, &#34;.&#47;src&#47;pickle.pkl&#34;&#41;&#10;    requirements_path &#61; optional&#40;string, &#34;.&#47;src&#47;requirements.txt&#34;&#41;&#10;  &#125;&#41;, null&#41;&#10;  source_config &#61; optional&#40;object&#40;&#123;&#10;    entrypoint_module &#61; optional&#40;string, &#34;agent&#34;&#41;&#10;    entrypoint_object &#61; optional&#40;string, &#34;agent&#34;&#41;&#10;    requirements_path &#61; optional&#40;string, &#34;requirements.txt&#34;&#41;&#10;    source_path       &#61; optional&#40;string, &#34;.&#47;src&#47;source.tar.gz&#34;&#41;&#10;  &#125;&#41;, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  package_config &#61; null&#10;  source_config  &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [description](variables.tf#L101) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [encryption_key](variables.tf#L108) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
+| [generate_pickle](variables.tf#L114) | Generate the pickle file from a source file. | <code>bool</code> |  | <code>true</code> |
+| [managed](variables.tf#L121) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
+| [service_account_config](variables-service-account.tf#L18) | Service account configurations. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, true&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  email        &#61; optional&#40;string&#41;&#10;  name         &#61; optional&#40;string&#41;&#10;  roles &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;roles&#47;aiplatform.user&#34;,&#10;    &#34;roles&#47;storage.objectViewer&#34;,&#10;    &#34;roles&#47;viewer&#34;&#10;  &#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | Fully qualified Agent Engine id. |  |
-| [service_account](outputs.tf#L22) | Service account resource. |  |
+| [agent](outputs.tf#L17) | The Agent Engine object. |  |
+| [id](outputs.tf#L22) | Fully qualified Agent Engine id. |  |
+| [service_account](outputs.tf#L27) | Service account resource. |  |
 <!-- END TFDOC -->
