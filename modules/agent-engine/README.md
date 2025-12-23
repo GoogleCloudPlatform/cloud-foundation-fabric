@@ -97,7 +97,6 @@ module "agent_engine" {
   name            = "my-agent"
   project_id      = var.project_id
   region          = var.region
-  generate_pickle = false
 
   agent_engine_config = {
     agent_framework = "google-adk"
