@@ -111,13 +111,6 @@ variable "encryption_key" {
   default     = null
 }
 
-variable "generate_pickle" {
-  description = "Generate the pickle file from a source file."
-  type        = bool
-  nullable    = false
-  default     = true
-}
-
 variable "managed" {
   description = "Whether the Terraform module should control the code updates."
   type        = bool
