@@ -64,11 +64,10 @@ module "folder-1" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
-  context             = local.ctx
+  org_policies     = lookup(each.value, "org_policies", {})
+  pam_entitlements = lookup(each.value, "pam_entitlements", {})
+  tag_bindings     = lookup(each.value, "tag_bindings", {})
+  context          = local.ctx
 }
 
 module "folder-1-iam" {
@@ -109,10 +108,9 @@ module "folder-2" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
+  org_policies     = lookup(each.value, "org_policies", {})
+  pam_entitlements = lookup(each.value, "pam_entitlements", {})
+  tag_bindings     = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
@@ -162,10 +160,9 @@ module "folder-3" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
+  org_policies     = lookup(each.value, "org_policies", {})
+  pam_entitlements = lookup(each.value, "pam_entitlements", {})
+  tag_bindings     = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
@@ -215,10 +212,9 @@ module "folder-4" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
+  org_policies     = lookup(each.value, "org_policies", {})
+  pam_entitlements = lookup(each.value, "pam_entitlements", {})
+  tag_bindings     = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
