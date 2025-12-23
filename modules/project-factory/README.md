@@ -834,8 +834,8 @@ compute.disableSerialPortAccess:
 | [log_buckets](outputs.tf#L106) | Log bucket ids. |  |
 | [project_ids](outputs.tf#L113) | Project ids. |  |
 | [project_numbers](outputs.tf#L118) | Project numbers. |  |
-| [projects](outputs.tf#L132) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L125) | PubSub topic ids. |  |
+| [projects](outputs.tf#L125) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L130) | PubSub topic ids. |  |
 | [service_account_emails](outputs.tf#L137) | Service account emails. |  |
 | [service_account_iam_emails](outputs.tf#L144) | Service account IAM-format emails. |  |
 | [service_account_ids](outputs.tf#L151) | Service account IDs. |  |

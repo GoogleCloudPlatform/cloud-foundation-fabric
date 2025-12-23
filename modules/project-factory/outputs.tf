@@ -122,16 +122,16 @@ output "project_numbers" {
   }
 }
 
+output "projects" {
+  description = "Project attributes."
+  value       = local.outputs_projects
+}
+
 output "pubsub_topics" {
   description = "PubSub topic ids."
   value = merge([
     for k, v in local.outputs_projects : v.pubsub_topics
   ]...)
-}
-
-output "projects" {
-  description = "Project attributes."
-  value       = local.outputs_projects
 }
 
 output "service_account_emails" {
