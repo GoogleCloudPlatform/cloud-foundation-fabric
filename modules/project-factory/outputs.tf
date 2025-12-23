@@ -46,6 +46,12 @@ locals {
           module.log-buckets["${k}/${sk}"].id
         )
       }
+      pubsub_topics = {
+        for sk, sv in lookup(v, "pubsub_topics", {}) :
+        "${k}/${sk}" => (
+          module.pubsub["${k}/${sk}"].id
+        )
+      }
       service_accounts = {
         for sk, sv in lookup(v, "service_accounts", {}) :
         "${k}/${sk}" => {
@@ -114,6 +120,13 @@ output "project_numbers" {
   value = {
     for k, v in local.outputs_projects : k => v.number
   }
+}
+
+output "pubsub_topics" {
+  description = "PubSub topic ids."
+  value = merge([
+    for k, v in local.outputs_projects : v.pubsub_topics
+  ]...)
 }
 
 output "projects" {
