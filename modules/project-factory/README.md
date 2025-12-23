@@ -654,30 +654,31 @@ pam_entitlements:
     privileged_access:
       - role: roles/compute.admin
       - role: roles/bigquery.admin
+services:
+  - compute.googleapis.com
+  - container.googleapis.com
+  - pubsub.googleapis.com
+  - storage.googleapis.com
+pubsub_topics:
+  app-0-topic-a:
+    iam:
+      roles/pubsub.subscriber:
+        - group:team-a-admins@example.org
+  app-0-topic-b:
+    subscriptions:
+      app-0-topic-b-sub: {}
 tags:
   my-tag-key-1:
     values:
       my-value-1:
         description: My value 1
-                my-value-2:
-                  description: My value 3
-                  iam:
-                    roles/resourcemanager.tagUser:
-                      - user:user@example.com
-      services:
-        - compute.googleapis.com
-        - container.googleapis.com
-        - pubsub.googleapis.com
-        - storage.googleapis.com
-      pubsub_topics:
-        app-0-topic-a:
-          iam:
-            roles/pubsub.subscriber:
-              - group:team-a-admins@example.org
-        app-0-topic-b:
-          subscriptions:
-            app-0-topic-b-sub: {}
-      # tftest-file id=6 path=data/projects/dev-ta-app0-be.yaml schema=project.schema.json```
+      my-value-2:
+        description: My value 3
+        iam:
+          roles/resourcemanager.tagUser:
+            - user:user@example.com
+# tftest-file id=6 path=data/projects/dev-ta-app0-be.yaml schema=project.schema.json
+```
 
 This project defines a controlling project via the `automation` attributes:
 
