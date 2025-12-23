@@ -650,10 +650,6 @@ values:
     topic: app-0-topic-a
   module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_topic.default:
     kms_key_name: null
-    labels:
-      app: app-0
-      environment: test
-      team: team-a
     message_retention_duration: null
     name: app-0-topic-b
     project: test-pf-dev-ta-app0-be
