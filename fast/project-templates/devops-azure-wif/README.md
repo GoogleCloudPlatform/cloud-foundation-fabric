@@ -165,6 +165,25 @@ This is a sample configuration for the `hosted_agent_config` variable:
 
 ## Pipeline Configuration
 
+### Branch Policies & Permissions
+
+To enable the Pull Request pipeline to function correctly, specifically to trigger on PR creation and post comments/status checks back to the PR, two key configurations are required in Azure DevOps:
+
+1. **Branch Policies (Build Validation):**
+    - Navigate to **Project Settings** -> **Repositories**.
+    - Select your repository and go to the **Policies** tab.
+    - Select the target branch (e.g., `main`).
+    - Under **Build Validation**, add a new policy.
+    - Select your pipeline and ensure the "Trigger" is set to "Automatic".
+    - *Note:* The `pr:` trigger in the YAML file is effectively ignored unless this policy is in place.
+
+2. **Build Service Permissions:**
+    - Navigate to **Project Settings** -> **Repositories**.
+    - Select your repository and go to the **Security** tab.
+    - Locate the **Build Service** accounts (e.g., "Project Collection Build Service" and "[Project Name] Build Service").
+    - Set the **"Contribute to pull requests"** permission to **Allow**.
+    - *Reason:* This permission is required for the pipeline to post the Terraform Plan output as a comment and to update the PR status check using the System Access Token.
+
 - [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines>)
 - [Azure Pipelines Terraform (GitHub)](https://github.com/microsoft/azure-pipelines-terraform)
 - [Article](https://spacelift.io/blog/terraform-azure-devops)

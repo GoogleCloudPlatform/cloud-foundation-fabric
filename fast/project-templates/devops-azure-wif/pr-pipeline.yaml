@@ -1,0 +1,177 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+- name: Azure.WorkloadIdentity.Connection
+  value: ms-hosted-0
+- name: AZURE_TOKEN
+  value: $(Pipeline.Workspace)/token.txt
+- name: FAST_SERVICE_ACCOUNT
+  value: azd-ms-hosted@tf-playground-svpc-azd-0.iam.gserviceaccount.com
+- name: FAST_WIF_PROVIDER
+  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/ms-hosted-0
+- name: GOOGLE_CREDENTIALS
+  value: cicd-sa-credentials.json
+pool:
+  name: Azure Pipelines
+  vmImage: 'ubuntu-latest'
+jobs:
+  - job: gcp
+    displayName: Interact with GCP resources.
+    steps:
+      - task: TerraformInstaller@1
+        displayName: Install Terraform 1.14.3
+        inputs:
+          terraformVersion: 1.14.3
+      - task: AzureCLI@2
+        displayName: 'Run Terraform and Post to PR'
+        env:
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        inputs:
+          connectedServiceNameARM: $(Azure.WorkloadIdentity.Connection)
+          addSpnToEnvironment: true
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            set -u
+
+            LOG_FILE="terraform_execution.log"
+            touch "$LOG_FILE"
+
+            post_to_pr() {
+                local exit_code=$1
+                local content_file=$2
+                
+                if [[ "$BUILD_REASON" == "PullRequest" ]]; then
+                    echo "Posting results to Pull Request..."
+                    
+                    # Read the log output
+                    RAW_PLAN_OUTPUT=$(cat "$content_file")
+                    
+                    # Construct API URLs
+                    BASE_URL="${SYSTEM_COLLECTIONURI}${SYSTEM_TEAMPROJECT}/_apis/git/repositories/${BUILD_REPOSITORY_NAME}/pullRequests/${SYSTEM_PULLREQUEST_PULLREQUESTID}"
+                    THREADS_URL="${BASE_URL}/threads?api-version=7.1-preview.1"
+                    STATUS_URL="${BASE_URL}/statuses?api-version=7.1-preview.1"
+                    
+                    # Determine status and header
+                    if [ $exit_code -eq 0 ]; then
+                        HEADER="## Terraform Success 🚀"
+                        STATUS_STATE="succeeded"
+                        STATUS_DESC="Terraform plan completed successfully."
+                    else
+                        HEADER="## Terraform Failed ❌"
+                        STATUS_STATE="failed"
+                        STATUS_DESC="Terraform plan failed."
+                    fi
+
+                    # --- 1. Post Comment ---
+                    # Create comment payload with collapsible section, passing RAW_PLAN_OUTPUT directly
+                    COMMENT_PAYLOAD=$(jq -n \
+                        --arg header "$HEADER" \
+                        --arg raw_plan "$RAW_PLAN_OUTPUT" \
+                        '{
+                            "comments": [
+                                {
+                                    "parentCommentId": 0,
+                                    "content": "\($header)\n\n<details>\n<summary>Click to view full output</summary>\n\n```text\n\($raw_plan)\n```\n</details>",
+                                    "commentType": 1
+                                }
+                            ],
+                            "status": 1
+                        }')
+                    
+                    echo "Posting comment..."
+                    curl -s -X POST \
+                        -H "Content-Type: application/json" \
+                        -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" \
+                        -d "$COMMENT_PAYLOAD" \
+                        "$THREADS_URL"
+
+                    # --- 2. Post Status Check ---
+                    BUILD_URL="${SYSTEM_COLLECTIONURI}${SYSTEM_TEAMPROJECT}/_build/results?buildId=${BUILD_BUILDID}"
+                    
+                    STATUS_PAYLOAD=$(jq -n \
+                        --arg state "$STATUS_STATE" \
+                        --arg desc "$STATUS_DESC" \
+                        --arg url "$BUILD_URL" \
+                        '{
+                            "state": $state,
+                            "description": $desc,
+                            "context": {
+                                "name": "Terraform Plan",
+                                "genre": "terraform"
+                            },
+                            "targetUrl": $url
+                        }')
+
+                    echo "Posting status check..."
+                    curl -s -X POST \
+                        -H "Content-Type: application/json" \
+                        -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" \
+                        -d "$STATUS_PAYLOAD" \
+                        "$STATUS_URL"
+                        
+                else
+                    echo "Not a Pull Request, skipping comment and status posting."
+                fi
+            }
+
+            run_tf_command() {
+                local cmd="$1"
+                echo "Running: $cmd"
+                echo "--------------------------------------------------" >> "$LOG_FILE"
+                echo "Running: $cmd" >> "$LOG_FILE"
+                echo "--------------------------------------------------" >> "$LOG_FILE"
+                
+                # Run command, capture stdout and stderr to temp file, then append to log
+                # We use a pipe to tee to stdout so we can see progress in the pipeline logs too
+                if eval "$cmd" 2>&1 | tee -a "$LOG_FILE"; then
+                    echo "" >> "$LOG_FILE"
+                    return 0
+                else
+                    echo "" >> "$LOG_FILE"
+                    echo "Command failed." >> "$LOG_FILE"
+                    return 1
+                fi
+            }
+
+            # Setup GCP Auth
+            sudo snap install google-cloud-sdk --classic
+            echo $idToken > $AZURE_TOKEN
+            gcloud iam workload-identity-pools create-cred-config \
+              $FAST_WIF_PROVIDER \
+              --service-account=$FAST_SERVICE_ACCOUNT \
+              --service-account-token-lifetime-seconds=900 \
+              --output-file=$GOOGLE_CREDENTIALS \
+              --credential-source-file=$AZURE_TOKEN
+            gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
+
+            # Terraform Execution
+            EXIT_CODE=0
+
+            run_tf_command "terraform init -no-color" || EXIT_CODE=$?
+            
+            if [ $EXIT_CODE -eq 0 ]; then
+                run_tf_command "terraform validate -no-color" || EXIT_CODE=$?
+            fi
+
+            if [ $EXIT_CODE -eq 0 ]; then
+                                run_tf_command "terraform plan -out=tfplan -no-color -lock=false" || EXIT_CODE=$?
+                # If plan succeeded, append the readable plan to the log
+                if [ $EXIT_CODE -eq 0 ]; then
+                     echo "--------------------------------------------------" >> "$LOG_FILE"
+                     echo "Plan Details:" >> "$LOG_FILE"
+                     echo "--------------------------------------------------" >> "$LOG_FILE"
+                     terraform show -no-color tfplan >> "$LOG_FILE" 2>&1
+                fi
+            fi
+
+            # Post results
+            post_to_pr $EXIT_CODE "$LOG_FILE"
+
+            # Exit with the captured code
+            exit $EXIT_CODE

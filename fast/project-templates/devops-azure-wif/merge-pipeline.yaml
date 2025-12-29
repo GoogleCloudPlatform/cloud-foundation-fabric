@@ -1,0 +1,61 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+variables:
+- name: Azure.WorkloadIdentity.Connection
+  value: ms-hosted-0
+- name: AZURE_TOKEN
+  value: $(Pipeline.Workspace)/token.txt
+- name: FAST_SERVICE_ACCOUNT
+  value: azd-ms-hosted@tf-playground-svpc-azd-0.iam.gserviceaccount.com
+- name: FAST_WIF_PROVIDER
+  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/ms-hosted-0
+- name: GOOGLE_CREDENTIALS
+  value: cicd-sa-credentials.json
+pool:
+  name: Azure Pipelines
+  vmImage: 'ubuntu-latest'
+jobs:
+  - job: gcp
+    displayName: Interact with GCP resources.
+    steps:
+      - task: TerraformInstaller@1
+        displayName: Install Terraform 1.14.3
+        inputs:
+          terraformVersion: 1.14.3
+      - task: AzureCLI@2
+        displayName: 'Run Terraform Apply'
+        env:
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        inputs:
+          connectedServiceNameARM: $(Azure.WorkloadIdentity.Connection)
+          addSpnToEnvironment: true
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            set -u
+
+            # Setup GCP Auth
+            sudo snap install google-cloud-sdk --classic
+            echo $idToken > $AZURE_TOKEN
+            gcloud iam workload-identity-pools create-cred-config \
+              $FAST_WIF_PROVIDER \
+              --service-account=$FAST_SERVICE_ACCOUNT \
+              --service-account-token-lifetime-seconds=900 \
+              --output-file=$GOOGLE_CREDENTIALS \
+              --credential-source-file=$AZURE_TOKEN
+            gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
+
+            # Terraform Execution
+            echo "Initializing Terraform..."
+            terraform init -no-color
+
+            echo "Validating Terraform configuration..."
+            terraform validate -no-color
+
+            echo "Applying Terraform configuration..."
+            terraform apply -auto-approve -no-color
