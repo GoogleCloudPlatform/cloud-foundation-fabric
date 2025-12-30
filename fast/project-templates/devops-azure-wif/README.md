@@ -6,14 +6,14 @@
   - [Data Access Logs](#data-access-logs)
   - [Hosted vs Managed Agents](#hosted-vs-managed-agents)
 - [Workload Identity Federation](#workload-identity-federation)
-  - [Azure Devops Service Connection](#azure-devops-service-connection)
-  - [GCP Workload Identity Federation Pool and Provider](#gcp-workload-identity-federation-pool-and-provider)
+  - [Azure Devops Service Connections](#azure-devops-service-connections)
+  - [GCP Workload Identity Federation Pool and Providers](#gcp-workload-identity-federation-pool-and-providers)
   - [IAM principals](#iam-principals)
 - [Agent Configuration](#agent-configuration)
   - [Microsoft-Hosted Agents](#microsoft-hosted-agents)
   - [Self-Hosted Agents](#self-hosted-agents)
 - [Pipeline Configuration](#pipeline-configuration)
-  - [Branch Policies & Permissions](#branch-policies-permissions)
+  - [Branch Policies and Permissions](#branch-policies-and-permissions)
 <!-- END TOC -->
 
 ## Project Configuration
@@ -191,19 +191,19 @@ This example uses Microsoft-hosted agents, but also provides some basic starting
 
 ### Microsoft-Hosted Agents
 
-The easy path for agent selection is to use , which only require permissions to be granted to the relevant pipelines.
+The easy path for agent selection is to use Microsoft hosted agents, which only require permissions to be granted to the relevant pipelines.
 
 ### Self-Hosted Agents
 
-If [self-hosted agents](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops&tabs=IP-V4) are required, a sample Container Optimized OS based agent is provided as part of this example.
+If self-hosted agents are required, a sample Container Optimized OS based agent is provided as part of this example.
 
 Several steps are needed to bootstrap the provided example for a hosted agent:
 
 - build the Docker image according to the [Microsoft-provided documentation](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux)
 - enable the Artifact Registry provided as part of this example via the `hosted_agent_config.create_registry` variable
 - create an agent token on Azure Devops and save it to a local `token.txt` file
-- apply Terraform so that the Artifact Registry and token secrets are created
-- copy the registry URL from the Terraform outputs, then tag and push the built image
+- apply the Terraform provided in the `self-hosted-agents` folder so that the Artifact Registry and token secrets are created
+- copy the registry URL from the Terraform outputs, then tag and push the built Docker image
 - configure the rest of the `hosted_agent_config` variable and apply Terraform to deploy the hosted agent
 
 This is a sample configuration for the `hosted_agent_config` variable:
@@ -212,16 +212,21 @@ This is a sample configuration for the `hosted_agent_config` variable:
 # TODO: provide example
 ```
 
-## Pipeline Configuration
+## Pipelines
 
-- [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines>)
-- [Azure Pipelines Terraform (GitHub)](https://github.com/microsoft/azure-pipelines-terraform)
-- [Article](https://spacelift.io/blog/terraform-azure-devops)
-- [Article](https://medium.com/@guilherme.pompgetting-started-with-terraform-azure-devops-pipelines-with-terraform-924279e5c033>)
+### Included Examples
 
-### Branch Policies & Permissions
+Three sample pipelines are provided as examples:
 
-To enable the Pull Request pipeline to function correctly, specifically to trigger on PR creation and post comments/status checks back to the PR, two key configurations are required in Azure DevOps:
+- a very simple pipeline that can be used to verify the credentials exchange flow
+- a "PR pipeline" that runs Terraform validate and plan on pull requests
+- a "merge pipeline" that runs Terraform apply on merges to the main branch
+
+Each of the above pipelines needs to be edited to match your project id and resource names. Once that has been done, the code can be copy/pasted on a new pipeline in Azure Devops. On first run, you might be asked to grant permissions to the pipeline on the service connection. Refer to the Azure Devops [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines>) can be used for further customizations.
+
+### Branch Policies and Permissions
+
+To enable the PR pipeline to function correctly, specifically to trigger on PR creation and post comments/status checks back to the PR, two key configurations are required in Azure DevOps:
 
 1. **Branch Policies (Build Validation):**
     - Navigate to **Project Settings** -> **Repositories**.
@@ -230,7 +235,6 @@ To enable the Pull Request pipeline to function correctly, specifically to trigg
     - Under **Build Validation**, add a new policy.
     - Select your pipeline and ensure the "Trigger" is set to "Automatic".
     - *Note:* The `pr:` trigger in the YAML file is effectively ignored unless this policy is in place.
-
 2. **Build Service Permissions:**
     - Navigate to **Project Settings** -> **Repositories**.
     - Select your repository and go to the **Security** tab.

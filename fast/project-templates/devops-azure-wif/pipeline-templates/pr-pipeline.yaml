@@ -7,13 +7,16 @@ pr:
 
 variables:
 - name: Azure.WorkloadIdentity.Connection
-  value: ms-hosted-0
+  # TODO: edit to match the name of the ro service connection
+  value: az-test-0-ro
 - name: AZURE_TOKEN
   value: $(Pipeline.Workspace)/token.txt
 - name: FAST_SERVICE_ACCOUNT
-  value: azd-ms-hosted@tf-playground-svpc-azd-0.iam.gserviceaccount.com
+  # TODO: edit to match the rw service account email
+  value: az-test-0-ro@myprj.iam.gserviceaccount.com
 - name: FAST_WIF_PROVIDER
-  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/ms-hosted-0
+  # TODO: edit to match your WIF provider name
+  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/az-test-0-ro
 - name: GOOGLE_CREDENTIALS
   value: cicd-sa-credentials.json
 pool:
@@ -45,18 +48,18 @@ jobs:
             post_to_pr() {
                 local exit_code=$1
                 local content_file=$2
-                
+
                 if [[ "$BUILD_REASON" == "PullRequest" ]]; then
                     echo "Posting results to Pull Request..."
-                    
+
                     # Read the log output
                     RAW_PLAN_OUTPUT=$(cat "$content_file")
-                    
+
                     # Construct API URLs
                     BASE_URL="${SYSTEM_COLLECTIONURI}${SYSTEM_TEAMPROJECT}/_apis/git/repositories/${BUILD_REPOSITORY_NAME}/pullRequests/${SYSTEM_PULLREQUEST_PULLREQUESTID}"
                     THREADS_URL="${BASE_URL}/threads?api-version=7.1-preview.1"
                     STATUS_URL="${BASE_URL}/statuses?api-version=7.1-preview.1"
-                    
+
                     # Determine status and header
                     if [ $exit_code -eq 0 ]; then
                         HEADER="## Terraform Success 🚀"
@@ -83,7 +86,7 @@ jobs:
                             ],
                             "status": 1
                         }')
-                    
+
                     echo "Posting comment..."
                     curl -s -X POST \
                         -H "Content-Type: application/json" \
@@ -93,7 +96,7 @@ jobs:
 
                     # --- 2. Post Status Check ---
                     BUILD_URL="${SYSTEM_COLLECTIONURI}${SYSTEM_TEAMPROJECT}/_build/results?buildId=${BUILD_BUILDID}"
-                    
+
                     STATUS_PAYLOAD=$(jq -n \
                         --arg state "$STATUS_STATE" \
                         --arg desc "$STATUS_DESC" \
@@ -114,7 +117,7 @@ jobs:
                         -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" \
                         -d "$STATUS_PAYLOAD" \
                         "$STATUS_URL"
-                        
+
                 else
                     echo "Not a Pull Request, skipping comment and status posting."
                 fi
@@ -126,7 +129,7 @@ jobs:
                 echo "--------------------------------------------------" >> "$LOG_FILE"
                 echo "Running: $cmd" >> "$LOG_FILE"
                 echo "--------------------------------------------------" >> "$LOG_FILE"
-                
+
                 # Run command, capture stdout and stderr to temp file, then append to log
                 # We use a pipe to tee to stdout so we can see progress in the pipeline logs too
                 if eval "$cmd" 2>&1 | tee -a "$LOG_FILE"; then
@@ -154,7 +157,7 @@ jobs:
             EXIT_CODE=0
 
             run_tf_command "terraform init -no-color" || EXIT_CODE=$?
-            
+
             if [ $EXIT_CODE -eq 0 ]; then
                 run_tf_command "terraform validate -no-color" || EXIT_CODE=$?
             fi

@@ -17,9 +17,9 @@
 # TODO: set a parent folder if needed
 # parent: $folder_ids:shared
 iam_by_principals:
-  $iam_principals:service_accounts/_self_/azd-ro:
+  $iam_principals:service_accounts/_self_/az-test-0-ro:
     - roles/viewer
-  $iam_principals:service_accounts/_self_/azd-rw:
+  $iam_principals:service_accounts/_self_/az-test-0-rw:
     - roles/editor
   # TODO: uncomment for self hosted agent on GCP
   # $iam_principals:service_accounts/_self_/vm-default:
@@ -49,16 +49,18 @@ org_policies:
       - allow:
           all: true
 service_accounts:
-  azd-ms-ro:
+  az-test-0-ro:
     display_name: Azure Devops test pipeline (read-only).
-    iam:
-      roles/iam.workloadIdentityUser:
-        - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/azd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
-  azd-ms-rw:
+    # TODO: change the project number to match yours and uncomment
+    # iam:
+    #   roles/iam.workloadIdentityUser:
+    #     - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/cicd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+  az-test-0-rw:
     display_name: Azure Devops test pipeline (read-write).
-    iam:
-      roles/iam.workloadIdentityUser:
-        - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/azd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+    # TODO: change the project number to match yours and uncomment
+    # iam:
+    #   roles/iam.workloadIdentityUser:
+    #     - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/cicd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/20cef207-7699-4013-b4bf-704cebeb0037
 # TODO: uncomment for self hosted agent on GCP
   # vm-default:
   #   display_name: VM default service account.

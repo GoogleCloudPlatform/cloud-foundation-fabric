@@ -2,18 +2,18 @@ trigger:
   branches:
     include:
       - main
-
-pr: none
-
 variables:
 - name: Azure.WorkloadIdentity.Connection
-  value: ms-hosted-0
+  # TODO: edit to match the name of the ro service connection
+  value: az-test-0-ro
 - name: AZURE_TOKEN
   value: $(Pipeline.Workspace)/token.txt
 - name: FAST_SERVICE_ACCOUNT
-  value: azd-ms-hosted@tf-playground-svpc-azd-0.iam.gserviceaccount.com
+  # TODO: edit to match the rw service account email
+  value: az-test-0-ro@myprj.iam.gserviceaccount.com
 - name: FAST_WIF_PROVIDER
-  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/ms-hosted-0
+  # TODO: edit to match your WIF provider name
+  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/az-test-0-ro
 - name: GOOGLE_CREDENTIALS
   value: cicd-sa-credentials.json
 pool:
@@ -28,18 +28,13 @@ jobs:
         inputs:
           terraformVersion: 1.14.3
       - task: AzureCLI@2
-        displayName: 'Run Terraform Apply'
-        env:
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
         inputs:
           connectedServiceNameARM: $(Azure.WorkloadIdentity.Connection)
           addSpnToEnvironment: true
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
+#       # failOnStandardError: true
           inlineScript: |
-            set -u
-
-            # Setup GCP Auth
             sudo snap install google-cloud-sdk --classic
             echo $idToken > $AZURE_TOKEN
             gcloud iam workload-identity-pools create-cred-config \
@@ -49,13 +44,6 @@ jobs:
               --output-file=$GOOGLE_CREDENTIALS \
               --credential-source-file=$AZURE_TOKEN
             gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
-
-            # Terraform Execution
-            echo "Initializing Terraform..."
-            terraform init -no-color
-
-            echo "Validating Terraform configuration..."
-            terraform validate -no-color
-
-            echo "Applying Terraform configuration..."
+            # gcloud projects list
+            terraform init
             terraform apply -auto-approve -no-color
