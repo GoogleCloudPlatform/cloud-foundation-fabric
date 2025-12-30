@@ -1,0 +1,107 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=https://cdn.jsdelivr.net/gh/GoogleCloudPlatform/cloud-foundation-fabric@fast-dev/modules/project-factory/schemas/project.schema.json
+
+# TODO: set a parent folder if needed
+# parent: $folder_ids:shared
+iam_by_principals:
+  $iam_principals:service_accounts/_self_/azd-ro:
+    - roles/viewer
+  $iam_principals:service_accounts/_self_/azd-rw:
+    - roles/editor
+  # TODO: uncomment for self hosted agent on GCP
+  # $iam_principals:service_accounts/_self_/vm-default:
+  #   - roles/artifactregistry.reader
+  #   - roles/logging.logWriter
+  #   - roles/monitoring.metricWriter
+data_access_logs:
+  iam.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
+  sts.googleapis.com:
+    ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
+services:
+  # TODO: uncomment for self hosted agent on GCP
+  # - artifactregistry.googleapis.com
+  # - compute.googleapis.com
+  - iam.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - sts.googleapis.com
+org_policies:
+  iam.workloadIdentityPoolProviders:
+    rules:
+      - allow:
+          all: true
+service_accounts:
+  azd-ms-ro:
+    display_name: Azure Devops test pipeline (read-only).
+    iam:
+      roles/iam.workloadIdentityUser:
+        - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/azd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+  azd-ms-rw:
+    display_name: Azure Devops test pipeline (read-write).
+    iam:
+      roles/iam.workloadIdentityUser:
+        - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/azd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+# TODO: uncomment for self hosted agent on GCP
+  # vm-default:
+  #   display_name: VM default service account.
+# TODO: uncomment for self hosted agent on GCP
+# shared_vpc_service_config:
+#   host_project: $project_ids:dev-spoke-0
+workload_identity_pools:
+  # pool name on GCP
+  cicd-0:
+    display_name: CI/CD pool.
+    providers:
+      # provider name on GCP, multiple providers are supported here
+      az-test-0-ro:
+        # TODO: copy everything after `/sc` in the service connection sub
+        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+        display_name: Azure Devops test (read-only).
+        # TODO: use the AZD enterprise application object id in your Entra
+        # the Azure tenant id (assertion.tid) can also be used
+        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-eef076afa596"
+        attribute_mapping:
+          google.subject: assertion.sub.split("/sc/")[1]
+        identity_provider:
+          oidc:
+            # TODO: use the issuer displayed in the service connection details
+            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-1d75def8ce3a/v2.0
+            # you do not need to change this
+            allowed_audiences:
+              - fb60f99c-7a34-4190-8149-302f77469936
+      # provider name on GCP, multiple providers are supported here
+      az-test-0-rw:
+        # TODO: copy everything after `/sc` in the service connection sub
+        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/20cef207-7699-4013-b4bf-704cebeb0037
+        display_name: Azure Devops test (read-write).
+        # TODO: use the same condition defined for the ro provider above
+        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-eef076afa596"
+        # TODO: use the same mapping defined for the ro provider above
+        attribute_mapping:
+          google.subject: assertion.sub.split("/sc/")[1]
+        identity_provider:
+          oidc:
+            # TODO: use the issuer displayed in the service connection details
+            # it should be identical to the one defined for the ro provider
+            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-1d75def8ce3a/v2.0
+            # you do not need to change this
+            allowed_audiences:
+              - fb60f99c-7a34-4190-8149-302f77469936
