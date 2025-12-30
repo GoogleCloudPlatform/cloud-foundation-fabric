@@ -426,7 +426,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         group = "neg-ew1"
-      }, {
+        }, {
         group = "neg-ew4"
       }]
       health_checks = []
@@ -571,7 +571,7 @@ module "ilb-l7" {
     default = {
       backends = [{
         group = "neg-ew1"
-      }, {
+        }, {
         group = "neg-ew4"
       }]
       health_checks = []
@@ -606,8 +606,8 @@ module "ilb-l7" {
 
   service_attachment = {
     nat_subnets = {
-      europe-west1 = [var.subnet_psc_ew1.self_link]
-      europe-west4 = [var.subnet_psc_ew4.self_link]
+      europe-west1 = [var.subnet_psc_1.self_link]
+      europe-west4 = [var.subnet_psc_2.self_link]
     }
     reconcile_connections = false
     consumer_accept_lists = {
@@ -615,8 +615,8 @@ module "ilb-l7" {
       (var.project_id) = 10
     }
     domain_name = {
-      europe-west1 = var.psc_domain_name_ew1
-      europe-west4 = var.psc_domain_name_ew4
+      europe-west1 = "ew1.p.example.com."
+      europe-west4 = "ew4.p.example.com."
     }
   }
 }
