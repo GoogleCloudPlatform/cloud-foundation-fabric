@@ -65,7 +65,7 @@ services:
   # - compute.googleapis.com
 ```
 
-The same applies to the `vm-default` service account, which is only needed for hosted agents. The following can be commented out if only managed agents are used. Keep the rest of the definitions in both `iam_principals` and `service_accounts`, which are not shown here.
+The same applies to the `vm-default` service account, which is only needed for self hosted agents and needs to be uncommented. Keep the rest of the definitions in both `iam_principals` and `service_accounts`, which are not shown here.
 
 ```yaml
 iam_by_principals:
@@ -80,7 +80,7 @@ service_accounts:
   #   display_name: VM default service account.
 ```
 
-And for hosted agents instances a network is required, if using Shared VPC also edit and uncomment the following.
+And for self hosted agents instances a network is required, if using Shared VPC also edit and uncomment the following.
 
 ```yaml
 # TODO: uncomment for self hosted agent on GCP
@@ -92,9 +92,9 @@ And for hosted agents instances a network is required, if using Shared VPC also 
 
 The pattern implemented here is the one we typically follow for infrastructure-level CI/CD, where two separate principals are used for each Terraform root module / state: a read-only one for PR checks, and a read-write one for merges.
 
-This allows running potentially unsafe code in PR which have not yet been reviewed in a sort of sandbox, where a read-only principal is used to run checks and Terraform plan.
+This allows running potentially unsafe code in PRs which have not yet been reviewed in a sort of sandbox, where a read-only principal is used to run checks and Terraform plan, thus preventing any change to resources.
 
-On the Azure Devops side, this requires setting up one Service Connection per principal, and then mapping each one to a dedicated Workload Identity pool. This is needed since the claims in the Azure Devops JWT token do not contain any information about the branch or job used for the pipeline context, and only provide the Service Connection id as a usable attribute.
+On the Azure Devops side, this requires setting up one Service Connection per principal (read-only and read-write), and then mapping  to a dedicated Workload Identity provider. This is required, since the claims in the Azure Devops JWT token do not contain any information about the branch or job used for the pipeline context, and only provide the Service Connection id as a usable attribute.
 
 This also forces using two separate pipelines for each of the principals, as the Service Connection access grants are done at the pipeline level.
 
@@ -102,21 +102,23 @@ This also forces using two separate pipelines for each of the principals, as the
 
 On the Azure Devops side, configure two Service Connections as explained in the ["Prepare your external IdP"](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines#prepare) section of the Workload Identity documentation.
 
-Once the service connections are configured, copy their "Issuer" and "Subject identifier" attributes displayed in the Service Connection's "Workload Identity federation details", which will be used to configure the WIF providers and associated IAM roles.
+Once the service connections are configured, copy the "Issuer" and "Subject identifier" attributes displayed in the Service Connection's "Workload Identity federation details", which will be used to configure the WIF providers and associated IAM principals.
 
-Your pipelines will need to be authorized to use these service connections, but this is a simple step and you can do it when you run the pipelines for the first time. Remember to allow each pipeline usage of their respective Service Connection, so as to prevent using the read-write principal from the PR pipeline.
+Your pipelines will need to be authorized to use these service connections, but this is a simple step that is shown in the UI when the pipelines is run for the first time. Remember to allow each pipeline usage of their respective Service Connection, so as to prevent use of the read-write principal from the PR pipeline.
 
 ### GCP Workload Identity Federation Pool and Providers
 
 Other than the issuers coming from the Service Connections, one additional source of information is also needed before we can complete the WIF providers configurations.
 
-The providers allows defining an attribute condition, which is used to restrict the set of supported tokens. This is entirely optional, but it's good practice to define it as a preventive control, to avoid the risk of accepting tokens originating from other customers' Azure Devops organizations.
+The providers allow defining an attribute condition, which is used to restrict the set of supported tokens. This is entirely optional, but it's good practice to define it as a preventive control, to avoid the risk of accepting tokens originating from other customers' Azure Devops organizations.
 
-The attribute condition is a CEL expression that checks assertions in the JWT token, and the only information we can use in the tokens generated by Azure Devops are the object id of the Azure Devops enterprise application (`assertion.oid`), and the Azure tenant id (`assertion.tid`). The condition in the example below only uses `oid`, but you can mix and match depending on specific needs.
+The attribute condition is a CEL expression that checks assertions in the JWT token. The only usable information presented in tokens generated by Azure Devops are the object ID of the Azure Devops enterprise application (`assertion.oid`) and the Azure tenant ID (`assertion.tid`). These IDs can be found in your Azure AD tenant, typically under 'Enterprise applications' for your Azure DevOps organization's application (for `oid`), and 'Properties' for the Tenant ID (`tid`). The condition in the example below only uses `oid`, but you can mix and match depending on specific needs.
 
 The last bit of information needed for the WIF providers configurations is the set of allowed audiences, which in this case is entirely static and contains a single object id for the AAD Token Exchange Endpoint.
 
-Find the following definitions in the `project.yaml` file and edit them to reflect your desired values. As explained above, when multiple pipelines need to be mapped to different IAM principals on the GCP side, one Service Connection and one WIF provider are needed for each of them. The WIF pool though can stay the same. For convenience, we copy/paste the second part of subject identifier (everything after `/sc/`) in a comment, as we'll need it later when we configure IAM.
+Find the following definitions in the `project.yaml` file and edit them to reflect your desired values. As explained above, when multiple pipelines need to be mapped to different IAM principals on the GCP side, one Service Connection and one WIF provider are needed for each of them. The WIF pool though can stay the same.
+
+For convenience, we also copy/paste the second part of the subject identifiers shown in the Service Connections details (everything after `/sc/`) in a comment, as we'll need them later to configure IAM.
 
 ```yaml
 workload_identity_pools:
@@ -163,9 +165,9 @@ workload_identity_pools:
 
 ### IAM principals
 
-As explained above, IAM principals for Azure Devops tokens will only be able to use the assertion subject identifier as the only defining claim. Azure Devops does not populate organization, project, repository, or pipeline information in the token so each Service Connection (which defines the subject) can only be mapped to a single principal on the GCP side.
+As explained above, IAM principals for Azure Devops tokens will only be able to use the assertion subject identifier as the only defining claim. Azure Devops does not populate project, repository, or pipeline information in the token so each Service Connection is only defined by its subject identifier, and can then only be mapped to a single principal on the GCP side.
 
-Using the subject identifier also poses a different problem, as its length is often exceeds the number of characters supported by Workload Identity Federation. This is the reason why the WIF provider mapping is defined as `assertion.sub.split("/sc/")[1]`: the subject identifier is split into two parts, and only the second part (which contains the service connection id) is kept.
+Using the subject identifier also poses a different problem, as its length often exceeds the number of characters supported in Workload Identity Federation mappings. To work around this problem, the mapping is defined as `assertion.sub.split("/sc/")[1]`: the subject identifier is split into two parts, and only the second part (which contains the service connection id) is kept.
 
 So for a Service Connection that defines this subject (the read-only one in the example above):
 
@@ -173,7 +175,7 @@ So for a Service Connection that defines this subject (the read-only one in the 
 /eid1/c/pub/t/QuxZppa4OUeCSx113vjOOg/a/rISbSSETf0KqFyZ8ppdXmA/sc/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
 ```
 
-The `google.subject` used to construct the IAM principal will only use the part after `/sc/` which is composed from your Azure Devops [organization id](https://stackoverflow.com/a/67871296) and the id of the Service Connection:
+The `google.subject` mapping that identifies a IAM principal will only use the part after `/sc/`, which is composed of your Azure Devops [organization id](https://stackoverflow.com/a/67871296) and the id of the Service Connection:
 
 ```txt
 5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
@@ -185,7 +187,7 @@ So we finally get to the IAM principal, which for the read-only service connecti
 principal://iam.googleapis.com/projects/[project number]/locations/global/workloadIdentityPools/[pool name]/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
 ```
 
-The principals are of course different for the read-only and read-write pipelines, which allow us to grant them impersonation to the respective service accounts on the GCP side.
+The principals are of course different for the read-only and read-write pipelines, allowing us to grant them impersonation to the respective service accounts on the GCP side.
 
 ## Agent Configuration
 
