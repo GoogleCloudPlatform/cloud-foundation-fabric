@@ -191,36 +191,13 @@ The principals are of course different for the read-only and read-write pipeline
 
 ## Agent Configuration
 
-To run pipelines one or more agent pools are needed, which can use either [Microsoft-hosted](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=windows-images%2Cyaml) or [self-hosted](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops&tabs=IP-V4) agents (the actual instances where jobs are dispatched).
+To run pipelines one or more agent pools are needed, using either [Microsoft-hosted](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=windows-images%2Cyaml) or [self-hosted](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/linux-agent?view=azure-devops&tabs=IP-V4) agents.
 
-Using Microsoft-hosted agents is simpler, as there's no need to manage actual instances, but comes with the small drawbacks of having less control over the environment and tools used by the pipelines.
+Using Microsoft-hosted agents is simpler as there's no need to manage actual instances, but allows less control over the environment and tools used by the pipelines (`gcloud`, `terraform`, etc.). If a tool is needed, it needs to be fetched at runtime by the pipeline either via a preconfigured [Task](https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/reference/?view=azure-pipelines) or a dedicated step.
 
-Self-hosted agents require a lot more configuration, but allow for customizations at the instance level, or even better to package all needed customizations (`gcloud`, `terraform`, etc.) in a Docker image.
+Self-hosted agents require a lot more configuration to be set up, but allow for more customizations at the instance level. They can also be run via Docker images, which allow even simpler packaging of third-party tools.
 
-This example uses Microsoft-hosted agents, but also provides some basic starting points for hosted agents running Docker images on GCP via Container Optimized OS.
-
-### Microsoft-Hosted Agents
-
-The easy path for agent selection is to use Microsoft hosted agents, which only require permissions to be granted to the relevant pipelines.
-
-### Self-Hosted Agents
-
-If self-hosted agents are required, a sample Container Optimized OS based agent is provided as part of this example.
-
-Several steps are needed to bootstrap the provided example for a hosted agent:
-
-- build the Docker image according to the [Microsoft-provided documentation](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux)
-- enable the Artifact Registry provided as part of this example via the `hosted_agent_config.create_registry` variable
-- create an agent token on Azure Devops and save it to a local `token.txt` file
-- apply the Terraform provided in the `self-hosted-agents` folder so that the Artifact Registry and token secrets are created
-- copy the registry URL from the Terraform outputs, then tag and push the built Docker image
-- configure the rest of the `hosted_agent_config` variable and apply Terraform to deploy the hosted agent
-
-This is a sample configuration for the `hosted_agent_config` variable:
-
-```hcl
-# TODO: provide example
-```
+This example uses Microsoft-hosted agents, but also provides some basic starting points for hosted agents running Docker images on GCP via Container Optimized OS. Refer to the [self-hosted-agents](./self-hosted-agents) folder documentation for more information on those.
 
 ## Pipeline Configuration
 
@@ -228,9 +205,9 @@ This is a sample configuration for the `hosted_agent_config` variable:
 
 Three sample pipelines are provided as examples:
 
-- a very simple pipeline that can be used to verify the credentials exchange flow
-- `pr-pipeline.yaml`: A "PR pipeline" that runs Terraform init, validate, and plan on pull requests. It posts the plan output as a comment to the PR and updates the PR status.
-- `merge-pipeline.yaml`: A "merge pipeline" that runs Terraform init, validate, and apply on merges to the main branch.
+- `sample-pipeline.yaml`: a very simple pipeline that can be used to verify the credentials exchange flow
+- `pr-pipeline.yaml`: a "PR pipeline" that runs Terraform init, validate, and plan on pull requests. It posts the plan output as a comment to the PR and updates the PR status.
+- `merge-pipeline.yaml`: a "merge pipeline" that runs Terraform init, validate, and apply on merges to the main branch.
 
 Each of the above pipelines needs to be edited to match your project id and resource names. Once that has been done, the code can be copy/pasted on a new pipeline in Azure Devops. On first run, you might be asked to grant permissions to the pipeline on the service connection. Refer to the Azure Devops [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines) can be used for further customizations.
 
