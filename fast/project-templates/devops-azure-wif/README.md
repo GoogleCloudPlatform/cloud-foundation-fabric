@@ -24,9 +24,9 @@ The provided `project.yaml` file provides an initial configuration, and makes a 
 
 ### Organization Policies
 
-A big part of the configuration outlined here involves setting up a Workload Identity Federation pool and provider. Depending on the organizational setup, this might require relaxing organization policies like in this example.
+A big part of the configuration outlined here involves setting up a Workload Identity Federation pool and provider. Depending on the organizational setup, this might require relaxing organization policies like shown in the `project.yaml` file contained in this example.
 
-Comment this out of this is already in place in the parent hierarchy.
+Comment this out if this constraint is enforced in the parent hierarchy.
 
 ```yaml
 org_policies:
@@ -56,10 +56,11 @@ data_access_logs:
 
 ### Hosted vs Managed Agents
 
-The services enabled at the project level include those required for hosted agents running on Compute instances, and pulling their container image from Artifact Registry. These can be commented out if only managed agents are used. Keep the rest of the services in the block, which are not shown here.
+The services enabled at the project level only include those required for Microsoft hosted agents. If you plan on running self hosted agents on Compute instances, additional configuration needs to be uncommented.
 
 ```yaml
 services:
+  # TODO: uncomment for self hosted agent on GCP
   # - artifactregistry.googleapis.com
   # - compute.googleapis.com
 ```
@@ -68,9 +69,13 @@ The same applies to the `vm-default` service account, which is only needed for h
 
 ```yaml
 iam_by_principals:
-  # serviceAccount:vm-default@ldj-prod-net-landing-0.iam.gserviceaccount.com:
-  #   - roles/artifactregistry.writer
+  # TODO: uncomment for self hosted agent on GCP
+  # $iam_principals:service_accounts/_self_/vm-default:
+  #   - roles/artifactregistry.reader
+  #   - roles/logging.logWriter
+  #   - roles/monitoring.metricWriter
 service_accounts:
+# TODO: uncomment for self hosted agent on GCP
   # vm-default:
   #   display_name: VM default service account.
 ```
@@ -78,6 +83,7 @@ service_accounts:
 And for hosted agents instances a network is required, if using Shared VPC also edit and uncomment the following.
 
 ```yaml
+# TODO: uncomment for self hosted agent on GCP
 # shared_vpc_service_config:
 #   host_project: $project_ids:dev-spoke-0
 ```
@@ -241,14 +247,14 @@ To enable the PR pipeline to function correctly, specifically to trigger on PR c
     - Navigate to **Project Settings** -> **Repositories**.
     - Select your repository and go to the **Security** tab.
     - Locate the **Build Service** accounts (e.g., "Project Collection Build Service" and "[Project Name] Build Service").
-    *   Set the **"Contribute to pull requests"** permission to **Allow**.
-    *   *Reason:* This permission is required for the pipeline to post the Terraform Plan output as a comment and to update the PR status check using the System Access Token.
+    - Set the **"Contribute to pull requests"** permission to **Allow**.
+    - *Reason:* This permission is required for the pipeline to post the Terraform Plan output as a comment and to update the PR status check using the System Access Token.
 
-3.  **Status Check Policy (Optional but Recommended):**
-    *   Under **Branch Policies** -> **Status Checks**, add a new check.
-    *   Status to check: `Terraform Plan` (this name must match what the pipeline posts).
-    *   Policy requirement: "Required".
-    *   *Reason:* This ensures the PR cannot be merged unless the Terraform Plan step in the pipeline explicitly reports "succeeded".
+3. **Status Check Policy (Optional but Recommended):**
+    - Under **Branch Policies** -> **Status Checks**, add a new check.
+    - Status to check: `Terraform Plan` (this name must match what the pipeline posts).
+    - Policy requirement: "Required".
+    - *Reason:* This ensures the PR cannot be merged unless the Terraform Plan step in the pipeline explicitly reports "succeeded".
 
 ### Module Authentication (Optional)
 
@@ -262,8 +268,9 @@ This is only required if your Terraform configuration refers to modules hosted i
 
 **Permissions:**
 To allow the pipeline to fetch these modules, you must ensure the **Build Service** account has **Read** access to the target repository:
-1.  Go to **Project Settings** -> **Repositories**.
-2.  Select the repository hosting the modules.
-3.  Go to **Security**.
-4.  Add/Select "Project Collection Build Service" (and/or "[Project Name] Build Service").
-5.  Set **Read** to **Allow**.
+
+1. Go to **Project Settings** -> **Repositories**.
+2. Select the repository hosting the modules.
+3. Go to **Security**.
+4. Add/Select "Project Collection Build Service" (and/or "[Project Name] Build Service").
+5. Set **Read** to **Allow**.
