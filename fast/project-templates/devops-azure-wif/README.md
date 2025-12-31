@@ -13,7 +13,9 @@
   - [Microsoft-Hosted Agents](#microsoft-hosted-agents)
   - [Self-Hosted Agents](#self-hosted-agents)
 - [Pipeline Configuration](#pipeline-configuration)
+  - [Included Examples](#included-examples)
   - [Branch Policies and Permissions](#branch-policies-and-permissions)
+  - [Module Authentication (Optional)](#module-authentication-optional)
 <!-- END TOC -->
 
 ## Project Configuration
@@ -84,7 +86,7 @@ And for hosted agents instances a network is required, if using Shared VPC also 
 
 The pattern implemented here is the one we typically follow for infrastructure-level CI/CD, where two separate principals are used for each Terraform root module / state: a read-only one for PR checks, and a read-write one for merges.
 
-This allows running potentially unsafe code in PR which have not yet been reviewd in a sort of sandbox, where a read-only principal is used to run checks and Terraform plan.
+This allows running potentially unsafe code in PR which have not yet been reviewed in a sort of sandbox, where a read-only principal is used to run checks and Terraform plan.
 
 On the Azure Devops side, this requires setting up one Service Connection per principal, and then mapping each one to a dedicated Workload Identity pool. This is needed since the claims in the Azure Devops JWT token do not contain any information about the branch or job used for the pipeline context, and only provide the Service Connection id as a usable attribute.
 
@@ -212,17 +214,17 @@ This is a sample configuration for the `hosted_agent_config` variable:
 # TODO: provide example
 ```
 
-## Pipelines
+## Pipeline Configuration
 
 ### Included Examples
 
 Three sample pipelines are provided as examples:
 
 - a very simple pipeline that can be used to verify the credentials exchange flow
-- a "PR pipeline" that runs Terraform validate and plan on pull requests
-- a "merge pipeline" that runs Terraform apply on merges to the main branch
+- `pr-pipeline.yaml`: A "PR pipeline" that runs Terraform init, validate, and plan on pull requests. It posts the plan output as a comment to the PR and updates the PR status.
+- `merge-pipeline.yaml`: A "merge pipeline" that runs Terraform init, validate, and apply on merges to the main branch.
 
-Each of the above pipelines needs to be edited to match your project id and resource names. Once that has been done, the code can be copy/pasted on a new pipeline in Azure Devops. On first run, you might be asked to grant permissions to the pipeline on the service connection. Refer to the Azure Devops [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines>) can be used for further customizations.
+Each of the above pipelines needs to be edited to match your project id and resource names. Once that has been done, the code can be copy/pasted on a new pipeline in Azure Devops. On first run, you might be asked to grant permissions to the pipeline on the service connection. Refer to the Azure Devops [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines) can be used for further customizations.
 
 ### Branch Policies and Permissions
 
@@ -239,5 +241,29 @@ To enable the PR pipeline to function correctly, specifically to trigger on PR c
     - Navigate to **Project Settings** -> **Repositories**.
     - Select your repository and go to the **Security** tab.
     - Locate the **Build Service** accounts (e.g., "Project Collection Build Service" and "[Project Name] Build Service").
-    - Set the **"Contribute to pull requests"** permission to **Allow**.
-    - *Reason:* This permission is required for the pipeline to post the Terraform Plan output as a comment and to update the PR status check using the System Access Token.
+    *   Set the **"Contribute to pull requests"** permission to **Allow**.
+    *   *Reason:* This permission is required for the pipeline to post the Terraform Plan output as a comment and to update the PR status check using the System Access Token.
+
+3.  **Status Check Policy (Optional but Recommended):**
+    *   Under **Branch Policies** -> **Status Checks**, add a new check.
+    *   Status to check: `Terraform Plan` (this name must match what the pipeline posts).
+    *   Policy requirement: "Required".
+    *   *Reason:* This ensures the PR cannot be merged unless the Terraform Plan step in the pipeline explicitly reports "succeeded".
+
+### Module Authentication (Optional)
+
+The example pipelines include a step to configure Git to use the `System.AccessToken`.
+
+```bash
+git config --global url."https://$SYSTEM_ACCESSTOKEN@dev.azure.com".insteadOf "https://dev.azure.com"
+```
+
+This is only required if your Terraform configuration refers to modules hosted in *other* private repositories within the same Azure DevOps organization.
+
+**Permissions:**
+To allow the pipeline to fetch these modules, you must ensure the **Build Service** account has **Read** access to the target repository:
+1.  Go to **Project Settings** -> **Repositories**.
+2.  Select the repository hosting the modules.
+3.  Go to **Security**.
+4.  Add/Select "Project Collection Build Service" (and/or "[Project Name] Build Service").
+5.  Set **Read** to **Allow**.

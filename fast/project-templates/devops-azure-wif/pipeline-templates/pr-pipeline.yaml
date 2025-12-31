@@ -45,6 +45,9 @@ jobs:
             LOG_FILE="terraform_execution.log"
             touch "$LOG_FILE"
 
+            # Configure Git to use the System Access Token for Azure DevOps repos
+            git config --global url."https://$SYSTEM_ACCESSTOKEN@dev.azure.com".insteadOf "https://dev.azure.com"
+
             post_to_pr() {
                 local exit_code=$1
                 local content_file=$2

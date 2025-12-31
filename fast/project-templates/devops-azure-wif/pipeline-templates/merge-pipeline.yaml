@@ -42,6 +42,9 @@ jobs:
           inlineScript: |
             set -u
 
+            # Configure Git to use the System Access Token for Azure DevOps repos
+            git config --global url."https://$SYSTEM_ACCESSTOKEN@dev.azure.com".insteadOf "https://dev.azure.com"
+
             # Setup GCP Auth
             sudo snap install google-cloud-sdk --classic
             echo $idToken > $AZURE_TOKEN
