@@ -168,6 +168,21 @@ variable "protocol" {
   }
 }
 
+variable "service_attachment" {
+  description = "PSC service attachments."
+  type = object({
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {})
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(map(string))
+    enable_proxy_protocol = optional(bool, false)
+    nat_subnets           = map(list(string))
+    reconcile_connections = optional(bool)
+  })
+  default = null
+}
+
 variable "service_directory_registration" {
   description = "Service directory namespace and service used to register this load balancer."
   type = object({
