@@ -103,7 +103,7 @@ resource "google_alloydb_cluster" "primary" {
       weekly_schedule {
         days_of_week = var.automated_backup_configuration.weekly_schedule.days_of_week
         dynamic "start_times" {
-          for_each = toset(var.automated_backup_configuration.weekly_schedule.start_times)
+          for_each = var.automated_backup_configuration.weekly_schedule.start_times
           content {
             hours   = start_times.value.hours
             minutes = 0
