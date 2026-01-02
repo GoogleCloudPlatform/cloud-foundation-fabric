@@ -25,7 +25,7 @@ values:
     ip_protocol: TCP
     load_balancing_scheme: INTERNAL_MANAGED
     name: ilb-test
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_tier: PREMIUM
     port_range: '80'
     project: project-id
@@ -62,7 +62,7 @@ values:
     default_port: null
     description: Terraform managed.
     name: ilb-test-my-neg
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_endpoint_type: GCE_VM_IP_PORT
     project: project-id
     subnetwork: subnet_self_link

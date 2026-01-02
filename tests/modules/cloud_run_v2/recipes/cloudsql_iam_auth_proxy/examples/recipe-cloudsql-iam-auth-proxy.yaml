@@ -130,7 +130,7 @@ values:
         custom_subject_alternative_names: null
         enable_private_path_for_google_cloud_services: false
         ipv4_enabled: false
-        private_network: projects/xxx/global/networks/aaa
+        private_network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
         psc_config: []
         server_ca_pool: null
       maintenance_window: []
