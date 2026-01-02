@@ -204,16 +204,19 @@ org_policies_imports = [
 Once org policies have been imported, the variable definition can be removed from the tfvars file.
 
 #### Importing existing organization level IAM bindings
+
 For brownfield implementations you may need to import existing organization IAM policies. These snippets can help you add existing settings into the YAML file.
 
 Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4. It was tested using yq `v4.47.2`.
 
 To create `iam:` part of the `/organization/.config.yaml` file, you can use following snippet:
+
 ```shell
 gcloud <resource> get-iam-policy <resource name> | yq '.bindings | map({"key": .role, "value": .members}) | from_entries'
 ```
 
 To create `iam_by_principals:` part of the factory YAML file, you can use following snippet:
+
 ```shell
 gcloud <resource> get-iam-policy <resource name> |  yq '
 [.bindings | .[] | .members[] as $member | { "member": $member, "role": .role}] |
@@ -321,7 +324,7 @@ This dataset implements a design where internal tenants are given control over p
 
 ### Enabling Optional Features
 
-The "Classic FAST" dataset is designed to be more lightweight than the "Hardened FAST" dataset regarding controls and policies. 
+The "Classic FAST" dataset is designed to be more lightweight than the "Hardened FAST" dataset regarding controls and policies.
 But, it fully supports more advanced features like SCC Custom SHA modules and Observability factories if needed.
 Note that the configuration described below is already implemented when using the "Hardened FAST" dataset.
 
@@ -346,7 +349,6 @@ To configure and provision observability resources such as log-based metrics and
 
 1. Create a folder `datasets/classic/observability`.
 2. Place your monitoring alerts and log-based metrics in this folder. Sample of existing alerts and log-based metrics can be found in the [hardened dataset](./datasets/hardened/observability).
-
 
 ## Detailed configuration
 
@@ -655,7 +657,7 @@ The provided project configurations also create several key resources for the st
 
 ### CI/CD configuration
 
-CI/CD support is implemented via two different sets of connfigurations:
+CI/CD support is implemented via two different sets of configurations:
 
 - [Workload Identity](https://docs.cloud.google.com/iam/docs/workload-identity-federation) providers are defined in project configurations
 - CI/CD service accounts and templated workflow generation are defined in a dedicated configuration (`var.factories_config.cicd_workflows`).
@@ -685,7 +687,7 @@ workload_identity_pools:
 
 The above configuration can be easily extended to support multiple pools and providers, and is not limited to OpenId Connect but can also leverage other provider types. Check the project module or project schema for the full interface.
 
-Once one or more providers have been defined they can be referenced in the CI/CD cofniguration file. The following example defines a workflow configuration for this stage.
+Once one or more providers have been defined they can be referenced in the CI/CD configuration file. The following example defines a workflow configuration for this stage.
 
 ```yaml
 # cicd-workflows.yaml
@@ -712,6 +714,8 @@ org-setup:
 ```
 
 The configuration prepares a sample workflow file for the target repository, and configures IAM on the service accounts referenced in the configuration, so that repository tokens can impersonate them via the Workload Identity provider.
+
+The above setup supports GitHub and Gitlab providers out of the box. Azure Devops is also supported via a separate, more complex configuration [defined in a dedicated project template](../../project-templates/devops-azure-wif/).
 
 #### Read-write and read-only impersonation
 
