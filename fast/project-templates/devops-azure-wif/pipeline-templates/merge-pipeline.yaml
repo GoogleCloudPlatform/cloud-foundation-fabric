@@ -3,6 +3,12 @@ trigger:
     include:
       - main
 
+resources:
+  repositories:
+    - repository: modules
+      type: git
+      name: fast-test-ms-hosted/modules
+
 pr: none
 
 variables:
@@ -13,10 +19,10 @@ variables:
   value: $(Pipeline.Workspace)/token.txt
 - name: FAST_SERVICE_ACCOUNT
   # TODO: edit to match the rw service account email
-  value: az-test-0-rw@myprj.iam.gserviceaccount.com
+  value: az-test-0-rw@tf-playground-svpc-azd-0.iam.gserviceaccount.com
 - name: FAST_WIF_PROVIDER
   # TODO: edit to match your WIF provider name
-  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/az-test-0-rw
+  value: projects/592545000114/locations/global/workloadIdentityPools/cicd-0/providers/az-test-0-rw
 - name: GOOGLE_CREDENTIALS
   value: cicd-sa-credentials.json
 pool:
@@ -26,6 +32,7 @@ jobs:
   - job: gcp
     displayName: Interact with GCP resources.
     steps:
+      - checkout: self
       - task: TerraformInstaller@1
         displayName: Install Terraform 1.14.3
         inputs:
@@ -41,9 +48,11 @@ jobs:
           scriptLocation: 'inlineScript'
           inlineScript: |
             set -u
+            set -e
+            set -o pipefail
 
-            # Configure Git to use the System Access Token for Azure DevOps repos
-            git config --global url."https://$SYSTEM_ACCESSTOKEN@dev.azure.com".insteadOf "https://dev.azure.com"
+            # Configure Git to use the System Access Token via Authorization header
+            git config --global http.https://dev.azure.com.extraHeader "AUTHORIZATION: bearer $SYSTEM_ACCESSTOKEN"
 
             # Setup GCP Auth
             sudo snap install google-cloud-sdk --classic

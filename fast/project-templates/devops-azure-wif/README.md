@@ -10,8 +10,6 @@
   - [GCP Workload Identity Federation Pool and Providers](#gcp-workload-identity-federation-pool-and-providers)
   - [IAM principals](#iam-principals)
 - [Agent Configuration](#agent-configuration)
-  - [Microsoft-Hosted Agents](#microsoft-hosted-agents)
-  - [Self-Hosted Agents](#self-hosted-agents)
 - [Pipeline Configuration](#pipeline-configuration)
   - [Included Examples](#included-examples)
   - [Branch Policies and Permissions](#branch-policies-and-permissions)
@@ -237,19 +235,26 @@ To enable the PR pipeline to function correctly, specifically to trigger on PR c
 
 ### Module Authentication (Optional)
 
+If the Terraform code references modules from a private Azure repository (instead of local files, or a public repository), some further configuration is needed. The following assumes that the modules repository is in the same Azure Devops project, if the repository is in a different project some additional configuration steps are needed, they are not outlined here as this is beyond the scope of this example.
+
 The example pipelines include a step to configure Git to use the `System.AccessToken`.
 
 ```bash
 git config --global url."https://$SYSTEM_ACCESSTOKEN@dev.azure.com".insteadOf "https://dev.azure.com"
 ```
 
-This is only required if your Terraform configuration refers to modules hosted in *other* private repositories within the same Azure DevOps organization.
-
 **Permissions:**
-To allow the pipeline to fetch these modules, you must ensure the **Build Service** account has **Read** access to the target repository:
 
-1. Go to **Project Settings** -> **Repositories**.
-2. Select the repository hosting the modules.
-3. Go to **Security**.
-4. Add/Select "Project Collection Build Service" (and/or "[Project Name] Build Service").
-5. Set **Read** to **Allow**.
+To allow the pipeline to fetch these modules, you must ensure the **Build Service** account has **Read** access to the target repository, and the pipeline itself is explicitly granted access:
+
+- Go to **Project Settings** -> **Repositories**.
+- Select the repository hosting the modules.
+- Go to **Security**.
+- Add/Select "Project Collection Build Service" (and/or "[Project Name] Build Service").
+- Set **Read** to **Allow**.
+- In the same **Security** dialog, locate the "Pipelines" section. Explicitly add your pipeline(s) (e.g., `pr-pipeline`, `merge-pipeline`) and grant them **Read** access to this repository. This provides an additional layer of authorization for specific pipeline runs.
+
+**Important:** You must also disable a restrictive default setting that limits token scope:
+
+- Go to **Project Settings** -> **Pipelines** -> **Settings**.
+- Ensure **"Protect access to repositories in YAML pipelines"** (or "Limit job authorization scope to referenced Azure DevOps repositories") is **Disabled (Unchecked)**. If enabled, this setting prevents the System Access Token from accessing repositories even if permissions are granted.
