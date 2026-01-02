@@ -83,9 +83,9 @@ variable "attached_disks" {
   }
   validation {
     condition = alltrue([for d in var.attached_disks :
-      (d.options.architecture == null || contains(["ARM64", "x86_64"], d.options.architecture))
+      (d.options.architecture == null || contains(["ARM64", "X86_64"], d.options.architecture))
     ])
-    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
+    error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
   }
 }
 
@@ -125,9 +125,9 @@ variable "boot_disk" {
   validation {
     condition = (
       var.boot_disk.initialize_params.architecture == null ||
-      contains(["ARM64", "x86_64"], var.boot_disk.initialize_params.architecture)
+      contains(["ARM64", "X86_64"], var.boot_disk.initialize_params.architecture)
     )
-    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
+    error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
   }
 }
 
