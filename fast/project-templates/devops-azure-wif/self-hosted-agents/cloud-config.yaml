@@ -1,0 +1,72 @@
+#cloud-config
+
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+write_files:
+  # generate root docker auth configuration
+  - path: /run/azp-agent/.docker/config.json
+    permissions: "0644"
+    owner: root
+    content: |
+      {
+        "auths": {},
+        "credHelpers": {
+          "asia.gcr.io": "gcr",
+          "eu.gcr.io": "gcr",
+          "${location}-docker.pkg.dev": "gcr",
+          "gcr.io": "gcr",
+          "marketplace.gcr.io": "gcr",
+          "us.gcr.io": "gcr"
+        }
+      }
+  # limit docker log size
+  - path: /var/lib/docker/daemon.json
+    permissions: "0644"
+    owner: root
+    content: |
+      {
+        "live-restore": true,
+        "storage-driver": "overlay2",
+        "log-opts": {
+          "max-size": "1024m"
+        }
+      }
+  # agent container service
+  - path: /etc/systemd/system/azp-agent.service
+    permissions: "0644"
+    owner: root
+    content: |
+      [Unit]
+      Description=Start Azure Pipelines Agent container
+      After=gcr-online.target docker.socket
+      Wants=gcr-online.target docker.socket docker-events-collector.service
+      [Service]
+      Environment="HOME=/run/azp-agent"
+      ExecStart=/usr/bin/docker run --rm --name=azp-agent  \
+        -e GCP_PROJECT=${project_id} \
+        -e GCP_SECRET=${name} \
+        -e AZP_URL="https://dev.azure.com/${instance}" \
+        -e AZP_POOL="${pool_name}" \
+        -e AZP_AGENT_NAME="${agent_name}" \
+        ${image}
+      ExecStop=/usr/bin/docker stop azp-agent
+bootcmd:
+  - systemctl start node-problem-detector
+runcmd:
+  # - iptables -I INPUT 1 -p tcp -m tcp --dport 8080 -m state --state NEW,ESTABLISHED -j ACCEPT
+  - systemctl daemon-reload
+  - systemctl restart systemd-resolved.service
+  - systemctl start azp-secret
+  - systemctl start azp-agent
