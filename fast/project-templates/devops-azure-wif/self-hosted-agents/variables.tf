@@ -20,10 +20,10 @@ variable "agent_config" {
     agent_name = optional(string, "Test Agent on GCP")
     instance   = string
     pool_name  = string
-    token = optional(object({
+    token = object({
       file    = string
       version = optional(number, 1)
-    }), {})
+    })
   })
 }
 

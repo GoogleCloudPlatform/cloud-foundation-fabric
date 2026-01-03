@@ -43,6 +43,28 @@ write_files:
           "max-size": "1024m"
         }
       }
+  # agent token service
+  - path: /etc/systemd/system/azp-token.service
+    permissions: "0644"
+    owner: root
+    content: |
+      [Unit]
+      Description=Azure Devops Agent Token
+      After=gcr-online.target docker.socket
+      Before=azp-agent.service
+      Wants=gcr-online.target docker.socket docker-events-collector.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=true
+      Environment="HOME=/run/azp-agent"
+      ExecStart=/usr/bin/docker run --rm \
+        -v /run/azp-agent:/azp-agent \
+        gcr.io/google.com/cloudsdktool/google-cloud-cli:alpine \
+        gcloud secrets versions access latest \
+        --secret ${name} --project ${project_id} --out-file=/azp-agent/token.txt
+      ExecStart=chgrp 1000 /run/azp-agent/token.txt
+      ExecStart=chmod 640 /run/azp-agent/token.txt
+      ExecStop=rm -f /run/azp-agent/token.txt
   # agent container service
   - path: /etc/systemd/system/azp-agent.service
     permissions: "0644"
@@ -50,13 +72,13 @@ write_files:
     content: |
       [Unit]
       Description=Start Azure Pipelines Agent container
-      After=gcr-online.target docker.socket
-      Wants=gcr-online.target docker.socket docker-events-collector.service
+      After=gcr-online.target docker.socket azp-token.service
+      Wants=gcr-online.target docker.socket docker-events-collector.service azp-token.service
       [Service]
       Environment="HOME=/run/azp-agent"
       ExecStart=/usr/bin/docker run --rm --name=azp-agent  \
-        -e GCP_PROJECT=${project_id} \
-        -e GCP_SECRET=${name} \
+        -v /run/azp-agent/token.txt:/token.txt:ro \
+        -e AZP_TOKEN_FILE=/token.txt \
         -e AZP_URL="https://dev.azure.com/${instance}" \
         -e AZP_POOL="${pool_name}" \
         -e AZP_AGENT_NAME="${agent_name}" \
@@ -67,6 +89,5 @@ bootcmd:
 runcmd:
   # - iptables -I INPUT 1 -p tcp -m tcp --dport 8080 -m state --state NEW,ESTABLISHED -j ACCEPT
   - systemctl daemon-reload
-  - systemctl restart systemd-resolved.service
-  - systemctl start azp-secret
+  - systemctl start azp-token
   - systemctl start azp-agent

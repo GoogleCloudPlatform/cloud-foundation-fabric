@@ -29,7 +29,7 @@ locals {
 }
 
 module "registry" {
-  source     = "../../../modules/artifact-registry"
+  source     = "../../../../modules/artifact-registry"
   project_id = var.project_id
   location   = var.location
   name       = "${var.name}-docker"
@@ -46,7 +46,7 @@ module "registry" {
 }
 
 module "secret" {
-  source     = "../../../modules/secret-manager"
+  source     = "../../../../modules/secret-manager"
   project_id = var.project_id
   secrets = {
     (var.name) = {
@@ -68,7 +68,7 @@ module "secret" {
 }
 
 module "instance" {
-  source        = "../../../modules/compute-vm"
+  source        = "../../../../modules/compute-vm"
   count         = local.create_instance ? 1 : 0
   project_id    = var.project_id
   zone          = "${var.location}-${var.instance_config.zone}"
