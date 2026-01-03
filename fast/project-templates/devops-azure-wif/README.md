@@ -127,17 +127,17 @@ workload_identity_pools:
       # provider name on GCP, multiple providers are supported here
       az-test-0-ro:
         # TODO: copy everything after `/sc` in the service connection sub
-        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-abcdefghi
         display_name: Azure Devops test (read-only).
         # TODO: use the AZD enterprise application object id in your Entra
         # the Azure tenant id (assertion.tid) can also be used
-        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-eef076afa596"
+        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-abcdefghi"
         attribute_mapping:
           google.subject: assertion.sub.split("/sc/")[1]
         identity_provider:
           oidc:
             # TODO: use the issuer displayed in the service connection details
-            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-1d75def8ce3a/v2.0
+            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-abcdefghi/v2.0
             # you do not need to change this
             allowed_audiences:
               - fb60f99c-7a34-4190-8149-302f77469936
@@ -147,7 +147,7 @@ workload_identity_pools:
         # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/20cef207-7699-4013-b4bf-704cebeb0037
         display_name: Azure Devops test (read-write).
         # TODO: use the same condition defined for the ro provider above
-        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-eef076afa596"
+        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-abcdefghi"
         # TODO: use the same mapping defined for the ro provider above
         attribute_mapping:
           google.subject: assertion.sub.split("/sc/")[1]
@@ -155,7 +155,7 @@ workload_identity_pools:
           oidc:
             # TODO: use the issuer displayed in the service connection details
             # it should be identical to the one defined for the ro provider
-            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-1d75def8ce3a/v2.0
+            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-abcdefghi/v2.0
             # you do not need to change this
             allowed_audiences:
               - fb60f99c-7a34-4190-8149-302f77469936
@@ -170,19 +170,19 @@ Using the subject identifier also poses a different problem, as its length often
 So for a Service Connection that defines this subject (the read-only one in the example above):
 
 ```txt
-/eid1/c/pub/t/QuxZppa4OUeCSx113vjOOg/a/rISbSSETf0KqFyZ8ppdXmA/sc/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+/eid1/c/pub/t/QuxZppa4OUeCSx113vjOOg/a/rISbSSETf0KqFyZ8ppdXmA/sc/5d2face9-4998-4294-8d24-abcdefghi/ddf48e36-d2cc-4aed-b863-abcdefghi
 ```
 
 The `google.subject` mapping that identifies a IAM principal will only use the part after `/sc/`, which is composed of your Azure Devops [organization id](https://stackoverflow.com/a/67871296) and the id of the Service Connection:
 
 ```txt
-5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+5d2face9-4998-4294-8d24-abcdefghi/ddf48e36-d2cc-4aed-b863-abcdefghi
 ```
 
 So we finally get to the IAM principal, which for the read-only service connection above has this form:
 
 ```txt
-principal://iam.googleapis.com/projects/[project number]/locations/global/workloadIdentityPools/[pool name]/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+principal://iam.googleapis.com/projects/[project number]/locations/global/workloadIdentityPools/[pool name]/subject/5d2face9-4998-4294-8d24-abcdefghi/ddf48e36-d2cc-4aed-b863-abcdefghi
 ```
 
 The principals are of course different for the read-only and read-write pipelines, allowing us to grant them impersonation to the respective service accounts on the GCP side.

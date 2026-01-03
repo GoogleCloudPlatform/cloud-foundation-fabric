@@ -81,13 +81,13 @@ Once the image has been pushed, edit your `terraform.tfvars` and add the instanc
 ```hcl
 instance_config = {
   # TODO: full path of the Docker image
-  docker_image = "europe-west8-docker.pkg.dev/tf-playground-svpc-azd-0/azd-docker/azp-agent:latest"
+  docker_image = "europe-west8-docker.pkg.dev/my-prj/azd-docker/azp-agent:latest"
   # TODO: service account for the instance
-  service_account = "vm-default@tf-playground-svpc-azd-0.iam.gserviceaccount.com"
+  service_account = "vm-default@my-prj.iam.gserviceaccount.com"
   # TODO: network configuration
   vpc_config = {
-    network    = "projects/ldj-dev-net-spoke-0/global/networks/dev-spoke-0"
-    subnetwork = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gce"
+    network    = "projects/my-net-prj/global/networks/dev-spoke-0"
+    subnetwork = "projects/my-net-prj/regions/europe-west8/subnetworks/gce"
   }
 }
 ```
@@ -151,7 +151,7 @@ USER agent
 ENTRYPOINT [ "./start.sh" ]
 ```
 
-Another possible change is fetching the secret from within the container. This has minimal security benefits (the token would still be available via container `exec`), but removes the need of an additional systemd unit. The following snippet in the container's `start.sh` script can be used with the above Dockerfile to fetch the secret at runtime, and avoid the need to pass `AZP_TOKEN_FILE` to the container.
+Another possible change is fetching the secret from within the container. This has minimal security benefits (the token would still be available via container `exec`), but removes the need of an additional systemd unit. The following snippet in the container's `start.sh` script can be used with the above Dockerfile to fetch the secret at runtime.
 
 ```bash
 # Azure token from GCP secret

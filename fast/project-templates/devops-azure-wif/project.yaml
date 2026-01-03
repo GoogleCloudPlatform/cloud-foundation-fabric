@@ -54,13 +54,13 @@ service_accounts:
     # TODO: change the project number to match yours and uncomment
     # iam:
     #   roles/iam.workloadIdentityUser:
-    #     - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/cicd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+    #     - principal://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/cicd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-1234567890
   az-test-0-rw:
     display_name: Azure Devops test pipeline (read-write).
     # TODO: change the project number to match yours and uncomment
     # iam:
     #   roles/iam.workloadIdentityUser:
-    #     - principal://iam.googleapis.com/projects/592545000114/locations/global/workloadIdentityPools/cicd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/20cef207-7699-4013-b4bf-704cebeb0037
+    #     - principal://iam.googleapis.com/projects/1234567890/locations/global/workloadIdentityPools/cicd-0/subject/5d2face9-4998-4294-8d24-763e98b6af3e/20cef207-7699-4013-b4bf-1234567890
 # TODO: uncomment for self hosted agent on GCP
   # vm-default:
   #   display_name: VM default service account.
@@ -75,27 +75,27 @@ workload_identity_pools:
       # provider name on GCP, multiple providers are supported here
       az-test-0-ro:
         # TODO: copy everything after `/sc` in the service connection sub
-        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-a1c01a9c39d0
+        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/ddf48e36-d2cc-4aed-b863-1234567890
         display_name: Azure Devops test (read-only).
         # TODO: use the AZD enterprise application object id in your Entra
         # the Azure tenant id (assertion.tid) can also be used
-        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-eef076afa596"
+        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-abcdefghi"
         attribute_mapping:
           google.subject: assertion.sub.split("/sc/")[1]
         identity_provider:
           oidc:
             # TODO: use the issuer displayed in the service connection details
-            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-1d75def8ce3a/v2.0
+            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-abcdefghi/v2.0
             # you do not need to change this
             allowed_audiences:
               - fb60f99c-7a34-4190-8149-302f77469936
       # provider name on GCP, multiple providers are supported here
       az-test-0-rw:
         # TODO: copy everything after `/sc` in the service connection sub
-        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/20cef207-7699-4013-b4bf-704cebeb0037
+        # sub: 5d2face9-4998-4294-8d24-763e98b6af3e/20cef207-7699-4013-b4bf-1234567890
         display_name: Azure Devops test (read-write).
         # TODO: use the same condition defined for the ro provider above
-        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-eef076afa596"
+        attribute_condition: assertion.oid=="6f90190a-864b-4915-a9b2-abcdefghi"
         # TODO: use the same mapping defined for the ro provider above
         attribute_mapping:
           google.subject: assertion.sub.split("/sc/")[1]
@@ -103,7 +103,7 @@ workload_identity_pools:
           oidc:
             # TODO: use the issuer displayed in the service connection details
             # it should be identical to the one defined for the ro provider
-            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-1d75def8ce3a/v2.0
+            issuer_uri: https://login.microsoftonline.com/a659ec42-b896-4739-824b-abcdefghi/v2.0
             # you do not need to change this
             allowed_audiences:
               - fb60f99c-7a34-4190-8149-302f77469936
