@@ -17,19 +17,19 @@ trigger:
     include:
       - main
 variables:
-- name: Azure.WorkloadIdentity.Connection
-  # TODO: edit to match the name of the ro service connection
-  value: az-test-0-ro
-- name: AZURE_TOKEN
-  value: $(Pipeline.Workspace)/token.txt
-- name: FAST_SERVICE_ACCOUNT
-  # TODO: edit to match the rw service account email
-  value: az-test-0-ro@myprj.iam.gserviceaccount.com
-- name: FAST_WIF_PROVIDER
-  # TODO: edit to match your WIF provider name
-  value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/az-test-0-ro
-- name: GOOGLE_CREDENTIALS
-  value: cicd-sa-credentials.json
+  - name: Azure.WorkloadIdentity.Connection
+    # TODO: edit to match the name of the ro service connection
+    value: az-test-0-ro
+  - name: AZURE_TOKEN
+    value: $(Pipeline.Workspace)/token.txt
+  - name: FAST_SERVICE_ACCOUNT
+    # TODO: edit to match the rw service account email
+    value: az-test-0-ro@myprj.iam.gserviceaccount.com
+  - name: FAST_WIF_PROVIDER
+    # TODO: edit to match your WIF provider name
+    value: projects/592545000114/locations/global/workloadIdentityPools/azd-0/providers/az-test-0-ro
+  - name: GOOGLE_CREDENTIALS
+    value: cicd-sa-credentials.json
 pool:
   name: Azure Pipelines
   vmImage: 'ubuntu-latest'
