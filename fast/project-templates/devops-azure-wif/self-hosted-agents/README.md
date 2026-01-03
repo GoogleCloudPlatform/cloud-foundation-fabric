@@ -13,6 +13,7 @@ If self-hosted agents are required, a sample Container Optimized OS based agent 
   - [GCP Infrastructure Scale-up](#gcp-infrastructure-scale-up)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Test](#test)
 <!-- END TOC -->
 
 ## Project-level Requirements
@@ -189,3 +190,28 @@ Another customization area is on the GCP infrastructure side, where the simple i
 | [ssh_command](outputs.tf#L27) | Command to SSH to the agent instance. |  |
 | [vpcsc_command](outputs.tf#L35) | Command to allow egress to remotes from inside a perimeter. |  |
 <!-- END TFDOC -->
+
+## Test
+
+```hcl
+module "test-agent" {
+  source = "./fabric/fast/project-templates/devops-azure-wif/self-hosted-agents"
+  agent_config = {
+    instance  = "myorg"
+    pool_name = "Self Hosted"
+    token = {
+      file = "token.txt"
+    }
+  }
+  instance_config = {
+    docker_image    = "europe-west8-docker.pkg.dev/my-prj/azd-docker/azd-agent:orig"
+    service_account = "vm-default@my-prj.iam.gserviceaccount.com"
+    vpc_config = {
+      network    = "projects/my-net-prj/global/networks/dev-spoke-0"
+      subnetwork = "projects/my-net-prj/regions/europe-west8/subnetworks/gce"
+    }
+  }
+  project_id = "my-prj"
+}
+# tftest modules=4 resources=6
+```

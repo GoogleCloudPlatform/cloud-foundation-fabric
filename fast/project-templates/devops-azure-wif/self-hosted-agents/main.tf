@@ -16,7 +16,7 @@
 
 locals {
   cloud_config = !local.create_instance ? null : templatefile(
-    "cloud-config.yaml", merge(var.agent_config, {
+    "${path.module}/cloud-config.yaml", merge(var.agent_config, {
       image      = var.instance_config.docker_image
       location   = var.location
       name       = var.name
