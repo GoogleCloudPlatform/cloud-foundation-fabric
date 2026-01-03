@@ -89,6 +89,11 @@ variable "iam_bindings_additive" {
 variable "instance" {
   description = "Instance attributes."
   type = object({
+    instance_settings = optional(object({
+      default_backup_schedule_type = optional(string)
+      edition                      = optional(string)
+      instance_type                = optional(string)
+    }))
     autoscaling = optional(object({
       limits = optional(object({
         max_nodes            = optional(number)
