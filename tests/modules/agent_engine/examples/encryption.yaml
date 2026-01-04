@@ -38,86 +38,7 @@ values:
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     timeouts: null
-  module.agent_engine.google_storage_bucket.default[0]:
-    autoclass: []
-    cors: []
-    custom_placement_config: []
-    default_event_based_hold: null
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    enable_object_retention: null
-    encryption: []
-    force_destroy: false
-    hierarchical_namespace: []
-    ip_filter: []
-    labels: null
-    lifecycle_rule: []
-    location: EUROPE-WEST8
-    logging: []
-    name: my-agent
-    project: project-id
-    requester_pays: null
-    retention_policy: []
-    storage_class: STANDARD
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
-    uniform_bucket_level_access: true
-  module.agent_engine.google_storage_bucket_object.dependencies:
-    bucket: my-agent
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: null
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: dependencies.tar.gz
-    retention: []
-    source: assets/src//dependencies.tar.gz
-    source_md5hash: 49a4c43e6bef605c2fa6ddabac48ba6a
-    temporary_hold: null
-    timeouts: null
-  module.agent_engine.google_storage_bucket_object.pickle_from_src[0]:
-    bucket: my-agent
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: null
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: pickle.pkl
-    retention: []
-    source: assets/src//pickle.pkl
-    source_md5hash: 493cf9bf3e59e39913e61916549f95a5
-    temporary_hold: null
-    timeouts: null
-  module.agent_engine.google_storage_bucket_object.requirements:
-    bucket: my-agent
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: null
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: requirements.txt
-    retention: []
-    source: assets/src//requirements.txt
-    source_md5hash: 0acf2b14e855722af60e03e8fa8b04ff
-    temporary_hold: null
-    timeouts: null
-  module.agent_engine.google_vertex_ai_reasoning_engine.default:
+  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
     description: Terraform managed.
     display_name: my-agent
     encryption_spec:
@@ -128,15 +49,17 @@ values:
     - agent_framework: google-adk
       class_methods: null
       deployment_spec: []
-      package_spec:
-      - dependency_files_gcs_uri: gs://my-agent/dependencies.tar.gz
-        pickle_object_gcs_uri: gs://my-agent/pickle.pkl
-        python_version: '3.12'
-        requirements_gcs_uri: gs://my-agent/requirements.txt
+      package_spec: []
       service_account: my-agent@project-id.iam.gserviceaccount.com
+      source_code_spec:
+      - inline_source:
+        - source_archive: H4sIAMCUSmkAA+1Y727bNhB3CwzbtM/b55v7oQmQyPprJyk8QE2y1ahrZ7HTriiKgJFom4skqhRV2yj6Hvu8PdL2AgP2CHuAHWXZiZP+C5C4WKsfQNjiHY+/I3l3og7I5AElARU1/VjQFxkTNKKxTHU5kZVrgmEYdceBSiMHVCy34Vo2qP4ZXAdM17Qs1eomGJZp160KTK6LwLuQpZIIpBJmPkkElfQteolgERHToeBZ8ib5zBNY/P5PYDqQsaC5ZWw5DUuzDYgki2jTbNTrzrbrGNt6fatuGbhljvaxuZa4ftxc1J9hHv+24dqGbVyKf8uxl+PfbNgNtwLG9VO5jM88/itffPdl5Xal8oj40O3BL1BA9VW+xmZhe4FNPf/xYSa9fv+w+KtG/Ibtmwsqt876v/V5pJMkCameCP6SxiT2aeXW7cpf//z+1b9/b/15DU6WeBsOFvX/5vLA++o/Bv3F+m869bL+rwJXqf9uA9qt+97h7oPW4319QqQU+puCt+n93PLMbo/tHvRH3c4jzdmGHg5qP33XoHMRX75prAw3X/3fX//Ni/FvNsy6Udb/VWDI+TCkm37Is2CTsCQkcsBF9IwM8UQc03jIYpo+/6Fp6qZl6IZW6JPgNO9zdVPLxybMPw1ps2nrSutje1XiQ3Fw7v6f77meTK97jivc/03LdVX8u65R1v9V4J3139natnXbMvA2ZrlbZVR/gri5qD/DFe7/Rfy7bt0u6/9KUN7/P2uc1f+bywNXuP/P679tO2X9XwWuUv/L+/+nh5uv/u+t/5btXIx/13adsv6vAne+r2WpqJ2wuEbjl5BM5YjHtqbdgV2eTAUbjiSoz3/wU37xh3Z7V7uD0jbzaZzSALIYiwfIEQUvIT7+FJINeExFyngMlm7AmlKoFqLq+j20MOUZRGQKMZeQpRRNsBQGDOegE58mElgMmCiSkKn0AGMmR/k0hREdTTwtTPATSVCboH6CT4PzekBkTlhhJGWS7tRq4/EY849iq3MxrIUzzbTWbu3ud3r7m8g4H3MUhzRNofhGFsDJFFTaYj45QZohGQMXQIaCokxyRXgsmGTxcANSPpBjIihaCVgqBTvJ5NJqzemh0+cVcL1IDFWvB61eFe57vVZvA208afUfdI/68MQ7PPQ6/dZ+D7qHsNvt7LX6rW4Hn34Er/MUHrY6extAca1wGjrBA438kSRT60gDtWg9SpcIDPiMUJpQnw2Yj37FwwzzAgwxN4sY3YGEioilajdTpBeglZBFTBKZ91xySte0geARzD4W6SQ41fM8kyoeXEhoh5GnOmZqOIukE8L0pY9Oc10vOPWSRNO0gA5gSFE+8UdIkR4LIumapjbWz4SgsT89VvZ2AJcTmlA96u1VN5blki+k+0eHF6UBGlzIQ3xIJaqs76BWQUYdBexNsQeXNuFqAZuLXh3pzQgBDKrz00YSpg8EiU8HGfopVOWrvVqa83VBBCAhgkRp85UGC1SVT9WdZR83zitIfl4seSF7rZTWc6YyE/GCsP5ryuO1dS0PckFxfvD2HkK++EWYcR6mmuBczm6H6OJ8x2buRTygYbM6pBGLGYaLuzkISToq3GAxLmHmq8PRrKoYxTjA4BzRMBlkIRA8SJh0Y1moxwRfOO4u+C+2N5/67kwnZ9R8dmn7n+P2aNqc5OyorOWPzTP66+X7RIkSJUpcwn+2Vos4ACgAAA==
+        python_spec:
+        - entrypoint_module: agent
+          entrypoint_object: agent
+          requirements_file: requirements.txt
+          version: '3.12'
     timeouts: null
-  module.agent_engine.null_resource.default[0]:
-    triggers: null
   module.agent_engine.time_sleep.wait_5_minutes:
     create_duration: 5m
     destroy_duration: null
@@ -145,12 +68,9 @@ values:
 counts:
   google_project_iam_member: 3
   google_service_account: 1
-  google_storage_bucket: 1
-  google_storage_bucket_object: 3
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  null_resource: 1
-  resources: 11
+  resources: 6
   time_sleep: 1
 
 outputs: {}
