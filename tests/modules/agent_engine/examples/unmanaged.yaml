@@ -38,7 +38,7 @@ values:
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     timeouts: null
-  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+  module.agent_engine.google_vertex_ai_reasoning_engine.unmanaged[0]:
     description: Terraform managed.
     display_name: my-agent
     encryption_spec: []
