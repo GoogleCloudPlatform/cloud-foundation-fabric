@@ -20,20 +20,21 @@ locals {
 }
 
 resource "google_compute_instance_template" "default" {
-  provider                = google-beta
-  count                   = local.template_create && !local.template_regional ? 1 : 0
-  project                 = local.project_id
-  region                  = local.region
-  name_prefix             = "${var.name}-"
-  description             = var.description
-  tags                    = var.tags
-  machine_type            = var.instance_type
-  min_cpu_platform        = var.min_cpu_platform
-  can_ip_forward          = var.can_ip_forward
-  metadata                = var.metadata
-  metadata_startup_script = var.metadata_startup_script
-  labels                  = var.labels
-  resource_manager_tags   = var.tag_bindings_immutable
+  provider                   = google-beta
+  count                      = local.template_create && !local.template_regional ? 1 : 0
+  project                    = local.project_id
+  region                     = local.region
+  name_prefix                = "${var.name}-"
+  description                = var.description
+  tags                       = var.tags
+  machine_type               = var.instance_type
+  min_cpu_platform           = var.min_cpu_platform
+  can_ip_forward             = var.can_ip_forward
+  metadata                   = var.metadata
+  metadata_startup_script    = var.metadata_startup_script
+  labels                     = var.labels
+  resource_manager_tags      = var.tag_bindings_immutable
+  key_revocation_action_type = var.options.key_revocation_action_type
   resource_policies = (
     var.resource_policies == null && var.instance_schedule == null
     ? null
@@ -245,20 +246,21 @@ resource "google_compute_instance_template" "default" {
 }
 
 resource "google_compute_region_instance_template" "default" {
-  provider                = google-beta
-  count                   = local.template_create && local.template_regional ? 1 : 0
-  project                 = local.project_id
-  region                  = local.region
-  name_prefix             = "${var.name}-"
-  description             = var.description
-  tags                    = var.tags
-  machine_type            = var.instance_type
-  min_cpu_platform        = var.min_cpu_platform
-  can_ip_forward          = var.can_ip_forward
-  metadata                = var.metadata
-  metadata_startup_script = var.metadata_startup_script
-  labels                  = var.labels
-  resource_manager_tags   = var.tag_bindings_immutable
+  provider                   = google-beta
+  count                      = local.template_create && local.template_regional ? 1 : 0
+  project                    = local.project_id
+  region                     = local.region
+  name_prefix                = "${var.name}-"
+  description                = var.description
+  tags                       = var.tags
+  machine_type               = var.instance_type
+  min_cpu_platform           = var.min_cpu_platform
+  can_ip_forward             = var.can_ip_forward
+  metadata                   = var.metadata
+  metadata_startup_script    = var.metadata_startup_script
+  labels                     = var.labels
+  resource_manager_tags      = var.tag_bindings_immutable
+  key_revocation_action_type = var.options.key_revocation_action_type
   resource_policies = (
     var.resource_policies == null && var.instance_schedule == null
     ? null
