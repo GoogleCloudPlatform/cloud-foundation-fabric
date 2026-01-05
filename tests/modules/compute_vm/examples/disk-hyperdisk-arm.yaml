@@ -130,7 +130,7 @@ values:
     enable_display: false
     hostname: null
     instance_encryption_key: []
-    key_revocation_action_type: null
+    key_revocation_action_type: NONE
     labels: null
     machine_type: c4a-standard-1
     metadata: null
