@@ -260,6 +260,7 @@ resource "google_compute_region_instance_template" "default" {
   metadata_startup_script = var.metadata_startup_script
   labels                  = var.labels
   resource_manager_tags   = var.tag_bindings_immutable
+  key_revocation_action_type = var.options.key_revocation_action_type
   resource_policies = (
     var.resource_policies == null && var.instance_schedule == null
     ? null
