@@ -76,6 +76,7 @@ locals {
         name             = replace("${vpn_key}/${vpn_config.ncc_spoke_config.hub}", "$ncc_hubs:", "") # TODO: eww
         project_id       = vpn_config.project_id
         hub              = vpn_config.ncc_spoke_config.hub
+        group            = try(vpn_config.ncc_spoke_config.group, null)
         location         = vpn_config.region
         description      = lookup(vpn_config.ncc_spoke_config, "description", "Terraform-managed.")
         labels           = lookup(vpn_config.ncc_spoke_config, "labels", {})
@@ -178,6 +179,11 @@ resource "google_network_connectivity_spoke" "tunnels" {
     local.ctx_ncc_hubs,
     replace(each.value.hub, "$ncc_hubs:", ""),
     each.value.hub
+  )
+  group = each.value.group == null ? null : lookup(
+    local.ctx_ncc_groups,
+    replace(each.value.group, "$ncc_groups:", ""),
+    each.value.group
   )
   linked_vpn_tunnels {
     uris                       = each.value.tunnel_self_link
