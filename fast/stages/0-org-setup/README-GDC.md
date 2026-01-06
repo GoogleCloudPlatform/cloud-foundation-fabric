@@ -100,18 +100,18 @@ Update your `defaults.yaml` file to include a `universe` block within the `overr
 ```yaml
 projects:
   defaults:
+    # customize prefix as per usual FAST instructions
     prefix: ftpc00
     locations:
       logging: global
-      storage: U-GERMANY-NORTHEAST1
+      storage: u-france-east1
   overrides:
     universe:
-      domain: apis-berlin-build0.goog # Update with your specific API domain
-      prefix: eu0
+      domain: s3nsapis.fr
+      prefix: s3ns
       forced_jit_service_identities:
         - compute.googleapis.com
       unavailable_service_identities:
-        # - compute.googleapis.com
         - dns.googleapis.com
         - monitoring.googleapis.com
         - networksecurity.googleapis.com
@@ -142,10 +142,10 @@ compute.trustedImageProjects:
   rules:
   - allow:
       values:
-        - "is:projects/eu0-system:cos-cloud"
-        - "is:projects/eu0-system:debian-cloud"
-        - "is:projects/eu0-system:rocky-linux-cloud"
-        - "is:projects/eu0-system:ubuntu-os-cloud"
+        - "is:projects/s3ns-system:cos-cloud"
+        - "is:projects/s3ns-system:debian-cloud"
+        - "is:projects/s3ns-system:rocky-linux-cloud"
+        - "is:projects/s3ns-system:ubuntu-os-cloud"
 ```
 
 To import pre-existing default policies without modifying them, define the constraint in your `terraform.tfvars` using the `org_policies_imports` variable:
