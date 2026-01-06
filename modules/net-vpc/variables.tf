@@ -268,6 +268,7 @@ variable "psa_configs" {
   type = list(object({
     deletion_policy  = optional(string, null)
     ranges           = map(string)
+    labels           = optional(map(string), {})
     export_routes    = optional(bool, false)
     import_routes    = optional(bool, false)
     peered_domains   = optional(list(string), [])

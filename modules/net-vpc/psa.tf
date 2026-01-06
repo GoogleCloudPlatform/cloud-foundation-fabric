@@ -20,8 +20,9 @@ locals {
   _psa_configs_ranges = flatten([
     for config in local.psa_configs : [
       for k, v in config.ranges : {
-        key   = "${config.key}${k}"
-        value = v
+        key    = "${config.key}${k}"
+        value  = v
+        labels = config.labels
       }
     ]
   ])
@@ -47,6 +48,12 @@ locals {
     for v in local._psa_configs_ranges :
     v.key => lookup(local.ctx.cidr_ranges, v.value, v.value)
   }
+
+  psa_configs_labels = {
+    for v in local._psa_configs_ranges :
+    v.key => v.labels
+  }
+
   psa_peered_domains = {
     for v in local._psa_peered_domains : v.key => v
   }
@@ -56,6 +63,7 @@ resource "google_compute_global_address" "psa_ranges" {
   for_each      = local.psa_configs_ranges
   project       = local.project_id
   network       = local.network.id
+  labels        = local.psa_configs_labels[each.key]
   name          = each.key
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
