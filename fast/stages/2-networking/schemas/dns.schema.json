@@ -33,6 +33,9 @@
     "peering": {
       "$ref": "#/$defs/peering_zone"
     },
+    "forwarding": {
+      "$ref": "#/$defs/forwarding_zone"
+    },
     "public": {
       "$ref": "#/$defs/public_zone"
     }
