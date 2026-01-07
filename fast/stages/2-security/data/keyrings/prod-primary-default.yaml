@@ -17,5 +17,7 @@
 location: $locations:primary
 project_id: $project_ids:prod-sec-core-0
 keys:
-  compute: {}
-  storage: {}
+  compute:
+    rotation_period: 7776000s
+  storage:
+    rotation_period: 7776000s
