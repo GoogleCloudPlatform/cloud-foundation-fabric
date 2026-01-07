@@ -41,21 +41,28 @@ First, create a WIF configuration file for `gcloud` via the following commands
 AUDIENCE=locations/global/workforcePools/mypool/providers/myprovider
 UNIVERSE_WEB_DOMAIN="cloud.s3nscloud.fr"
 UNIVERSE_API_DOMAIN="s3nsapis.fr"
+UNIVERSE_NAME="s3nsapis"
+WF_POOL_FILE_PATH="/tmp"
 
-# gcloud config configurations create tpc-fast-org
-gcloud config configurations activate tpc-fast-org
+gcloud config configurations create $UNIVERSE_NAME
+gcloud config configurations activate $UNIVERSE_NAME
 gcloud config set universe_domain $UNIVERSE_API_DOMAIN
+
 gcloud iam workforce-pools create-login-config $AUDIENCE \
   --universe-cloud-web-domain="$UNIVERSE_WEB_DOMAIN" \
   --universe-domain="$UNIVERSE_API_DOMAIN" \
-  --output-file="wif-login-config.json" --activate
+  --output-file="$WF_POOL_FILE_PATH/wif-login-config-$UNIVERSE_NAME.json" \
+  --activate
 ```
 
 Once the above file has been created and the gcloud profile configured, run the following command to login to the organization with `gcloud`. This will prompt a web browser that will allow login to the organization with the configured IdP.
 
 ```bash
-gcloud auth login --login-config=wif-login-config.json --no-launch-browser
-gcloud auth application-default login --login-config=wif-login-config.json --no-launch-browser
+gcloud auth login \
+  --login-config=$WF_POOL_FILE_PATH/wif-login-config-$UNIVERSE_NAME.json \
+   --no-launch-browser
+gcloud auth application-default login \
+  --login-config=$WF_POOL_FILE_PATH/wif-login-config-$UNIVERSE_NAME.json
 ```
 
 ## 3. Bootstrap: Manual Temporary Project
