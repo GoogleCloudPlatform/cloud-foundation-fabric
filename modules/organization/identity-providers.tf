@@ -44,6 +44,7 @@ resource "google_iam_workforce_pool" "default" {
   workforce_pool_id = var.workforce_identity_config.pool_name
 }
 
+
 resource "google_iam_workforce_pool_provider" "default" {
   for_each            = try(var.workforce_identity_config.providers, {})
   provider_id         = each.key
