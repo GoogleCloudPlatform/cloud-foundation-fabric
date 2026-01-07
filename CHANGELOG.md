@@ -3,7 +3,47 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-11-18 13:52:06+00:00 to: None since: v49.0.0 -->
+## [Unreleased] <!-- from: 2025-12-10 18:40:02+00:00 to: None since: v50.0.0 -->
+
+## [50.1.0] - 2026-01-07
+
+### BREAKING CHANGES
+
+- `modules/agent-engine`: refactored module variables to support source based deployments and added support for new features (resource limits, min/max instances, concurrent instances). [[#3609](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3609)]
+- [[#3405](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3405)] ADR on context passing ([wiktorn](https://github.com/wiktorn)) <!-- 2026-01-05 21:24:58+00:00 -->
+- [[#3610](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3610)] Fix pytest -s in CONTRIBUTING.md ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-12-29 07:02:00+00:00 -->
+
+### FAST
+
+- [[#3617](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3617)] feat: Add `group` attribute to NCC spoke configurations. ([ericyz](https://github.com/ericyz)) <!-- 2026-01-05 14:19:54+00:00 -->
+- [[#3606](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3606)] Fix project-factory stage version output file name ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-12-22 06:54:34+00:00 -->
+- [[#3602](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3602)] Add audiences for cicd_workflows local in 0-org-setup ([kovagoadam](https://github.com/kovagoadam)) <!-- 2025-12-18 17:36:16+00:00 -->
+- [[#3595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3595)] feat: project-factory folders support deletion_protection ([joshmyers](https://github.com/joshmyers)) <!-- 2025-12-18 14:25:05+00:00 -->
+- [[#3600](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3600)] Upgrade Terraform provider to 7.13 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-12-18 10:29:48+00:00 -->
+- [[#3592](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3592)] Add import snippet for IAM to 0-org-setup ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-12 14:05:43+00:00 -->
+- [[#3591](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3591)] Add support for descriptive name to projects ([ludoo](https://github.com/ludoo)) <!-- 2025-12-12 08:06:48+00:00 -->
+- [[#3590](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3590)] Fix typo in sample CI/CD YAML file ([ludoo](https://github.com/ludoo)) <!-- 2025-12-12 07:03:52+00:00 -->
+- [[#3587](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3587)] Fix CI/CD dataset files and provider workflow variable in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-12-11 14:05:39+00:00 -->
+
+### MODULES
+
+- [[#3620](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3620)] Prevent recreation for key_revocation_action in compute-vm module ([singhal0306](https://github.com/singhal0306)) <!-- 2026-01-05 10:53:48+00:00 -->
+- [[#3609](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3609)] Refactor Agent Engine module to support new source based deployments ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-01-04 08:11:46+00:00 -->
+- [[#3604](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3604)] AlloyDB - Enable multiple automated backup per day ([RamBSn](https://github.com/RamBSn)) <!-- 2026-01-02 17:05:25+00:00 -->
+- [[#3615](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3615)] Fix disk architecture validation in compute-vm module ([singhal0306](https://github.com/singhal0306)) <!-- 2026-01-02 11:47:55+00:00 -->
+- [[#3614](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3614)] Bump qs and @google-cloud/functions-framework in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-01-02 08:31:28+00:00 -->
+- [[#3612](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3612)] Add service attachments for cross regional load balancer ([sepehrjavid](https://github.com/sepehrjavid)) <!-- 2026-01-02 08:14:53+00:00 -->
+- [[#3603](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3603)] Correct documentation for Direct VPC Egress for Cloud Functions 2 ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-19 10:05:25+00:00 -->
+- [[#3595](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3595)] feat: project-factory folders support deletion_protection ([joshmyers](https://github.com/joshmyers)) <!-- 2025-12-18 14:25:05+00:00 -->
+- [[#3596](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3596)] Password for initial_user for AlloyDB is no longer required ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-12-18 10:57:32+00:00 -->
+- [[#3600](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3600)] Upgrade Terraform provider to 7.13 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-12-18 10:29:48+00:00 -->
+- [[#3593](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3593)] Fixed issue with cross region load balancer IP address assigment ([apichick](https://github.com/apichick)) <!-- 2025-12-13 11:42:53+00:00 -->
+- [[#3591](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3591)] Add support for descriptive name to projects ([ludoo](https://github.com/ludoo)) <!-- 2025-12-12 08:06:48+00:00 -->
+- [[#3587](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3587)] Fix CI/CD dataset files and provider workflow variable in FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2025-12-11 14:05:39+00:00 -->
+
+### TOOLS
+
+- [[#3600](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3600)] Upgrade Terraform provider to 7.13 ([LucaPrete](https://github.com/LucaPrete)) <!-- 2025-12-18 10:29:48+00:00 -->
 
 ## [50.0.0] - 2025-12-11
 
@@ -2021,7 +2061,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...HEAD
+[50.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...50.0.0
 [50.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...49.3.0
 [49.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.3.0...49.2.0
 [49.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.2.0...49.1.0
