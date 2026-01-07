@@ -100,7 +100,7 @@ module "dd-projects" {
     data_domain = each.key
   }
   services = local.dd_services[each.key]
-  service_encryption_key_ids = (
+  service_encryption_key_ids = merge(
     lookup(local.dd_composer, each.key, null) == null ? {} : {
       "composer.googleapis.com" = compact([
         try(local.dd_composer_keys[each.key], null) == null
@@ -111,7 +111,18 @@ module "dd-projects" {
           local.dd_composer_keys[each.key]
         )
       ])
-    }
+    },
+    lookup(local.dd_automation_keys, each.key, null) == null ? {} : {
+      "storage.googleapis.com" = compact([
+        try(local.dd_automation_keys[each.key], null) == null
+        ? null
+        : lookup(
+          local.kms_keys,
+          local.dd_automation_keys[each.key],
+          local.dd_automation_keys[each.key]
+        )
+      ])
+    },
   )
 }
 

@@ -97,8 +97,8 @@ class FabricTestItem(pytest.Item):
     self.module = module
     self.inventory = inventory
     self.tf_var_files = tf_var_files
-    self.extra_dirs = extra_dirs
-    self.extra_files = extra_files
+    self.extra_dirs = extra_dirs if extra_dirs else []
+    self.extra_files = extra_files if extra_files else []
 
   def runtest(self):
     try:
@@ -107,13 +107,27 @@ class FabricTestItem(pytest.Item):
                                self.extra_files, self.extra_dirs)
     except AssertionError:
 
-      def full_paths(x):
-        return [str(self.parent.path.parent / x) for x in x]
+      def full_paths(root_path, paths):
+        return [str(root_path / x) for x in paths]
 
-      print(f'Error in inventory file: {" ".join(full_paths(self.inventory))}')
+      files_root = self.parent.path.parent
+      # extra_dirs and extra_files need additional .parent
+      extra_dirs = [
+          f"--extra-dirs={x}"
+          for x in full_paths(files_root.parent, self.extra_dirs)
+      ]
+      extra_files = [
+          f"--extra-files={x}"
+          for x in full_paths(files_root.parent, self.extra_files)
+      ]
       print(
-          f'To regenerate inventory run: python tools/plan_summary.py {self.module} {" ".join(full_paths(self.tf_var_files))}'
+          f'Error in inventory file: {" ".join(full_paths(files_root, self.inventory))}'
       )
+      print(f'To regenerate inventory run: python tools/plan_summary.py '
+            f'{" ".join(extra_dirs)} '
+            f'{" ".join(extra_files)} '
+            f'{self.module} '
+            f'{" ".join(full_paths(files_root, self.tf_var_files))}')
       raise
 
   def reportinfo(self):

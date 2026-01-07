@@ -22,6 +22,7 @@ counts:
   google_dataplex_aspect_type: 1
   google_folder: 2
   google_folder_iam_binding: 3
+  google_logging_project_settings: 1
   google_project: 3
   google_project_iam_binding: 23
   google_project_iam_member: 12
@@ -37,4 +38,4 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   modules: 19
-  resources: 109
+  resources: 110

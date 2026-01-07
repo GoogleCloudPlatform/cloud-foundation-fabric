@@ -20,7 +20,7 @@ values:
     content_encoding: null
     content_language: null
     customer_encryption: []
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     metadata: null
     name: tfvars/1-vpcsc.auto.tfvars.json

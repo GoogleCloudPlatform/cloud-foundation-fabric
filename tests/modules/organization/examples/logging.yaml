@@ -42,6 +42,8 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
+  module.destination-project.data.google_logging_project_settings.logging_sa[0]:
+    project: test-dest-prj
   module.destination-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
@@ -203,6 +205,7 @@ counts:
   google_logging_organization_exclusion: 1
   google_logging_organization_sink: 6
   google_logging_project_bucket_config: 1
+  google_logging_project_settings: 1
   google_project: 1
   google_project_iam_member: 2
   google_project_service: 1
@@ -211,4 +214,4 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_iam_member: 2
   modules: 6
-  resources: 19
+  resources: 20

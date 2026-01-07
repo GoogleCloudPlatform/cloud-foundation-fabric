@@ -16,12 +16,26 @@
 
 # tfdoc:file:description Data product automation resources.
 
-module "dd-automation-bucket" {
-  source = "../../../modules/gcs"
-  for_each = {
+locals {
+  dd_automation = {
     for k, v in local.data_domains :
     k => v if v.automation != null
   }
+  dd_automation_keys = {
+    for k, v in local.dd_automation : k => try(
+      v.automation.encryption_key,
+      var.encryption_keys.storage[try(
+        v.automation.location,
+        var.location
+      )],
+      null
+    )
+  }
+}
+
+module "dd-automation-bucket" {
+  source     = "../../../modules/gcs"
+  for_each   = local.dd_automation
   project_id = module.dd-projects[each.key].project_id
   prefix     = local.prefix
   name       = "${each.value.short_name}-state"
@@ -29,6 +43,7 @@ module "dd-automation-bucket" {
     each.value.automation.location,
     var.location
   )
+  encryption_key = local.dd_automation_keys[each.key]
   iam = {
     "roles/storage.admin" = [
       module.dd-automation-sa["${each.key}/rw"].iam_email
