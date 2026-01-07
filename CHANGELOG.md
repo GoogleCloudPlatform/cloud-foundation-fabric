@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2025-12-10 18:40:02+00:00 to: None since: v50.0.0 -->
 
+## [51.0.0] - 2026-01-07
+
+### FAST
+
+- [[#3623](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3623)] Preliminary doc for stage 0 setup in GCD ([ludoo](https://github.com/ludoo)) <!-- 2026-01-07 11:20:48+00:00 -->
+- [[#3616](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3616)] FAST CI/CD Azure Devops support via project template ([ludoo](https://github.com/ludoo)) <!-- 2026-01-03 11:59:24+00:00 -->
+- [[#3608](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3608)] Add support for pubsub to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-12-23 10:24:33+00:00 -->
+- [[#3605](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3605)] Fix bucket name for versions.txt in 0-org-setup stage ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-23 06:32:56+00:00 -->
+- [[#3601](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3601)] Fix inconsistent provider plan for FAST outputs ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-18 10:20:31+00:00 -->
+- [[#3556](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3556)] Add controls related to CMEK encryption and support to FAST ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-12-14 05:14:08+00:00 -->
+
+### MODULES
+
+- [[#3608](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3608)] Add support for pubsub to project factory ([ludoo](https://github.com/ludoo)) <!-- 2025-12-23 10:24:33+00:00 -->
+- [[#3556](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3556)] Add controls related to CMEK encryption and support to FAST ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-12-14 05:14:08+00:00 -->
+
+### TOOLS
+
+- [[#3601](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3601)] Fix inconsistent provider plan for FAST outputs ([wiktorn](https://github.com/wiktorn)) <!-- 2025-12-18 10:20:31+00:00 -->
+- [[#3556](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3556)] Add controls related to CMEK encryption and support to FAST ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2025-12-14 05:14:08+00:00 -->
+
 ## [50.1.0] - 2026-01-07
 
 ### BREAKING CHANGES
@@ -2061,7 +2082,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.0.0...HEAD
+[51.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.0.0...50.1.0
 [50.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...50.0.0
 [50.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...49.3.0
 [49.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.3.0...49.2.0
