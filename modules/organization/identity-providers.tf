@@ -39,7 +39,7 @@ locals {
 
 resource "google_iam_workforce_pool" "default" {
   count             = var.workforce_identity_config == null ? 0 : 1
-  parent            = "organizations/${var.organization_id}"
+  parent            = "${var.organization_id}"
   location          = "global"
   workforce_pool_id = var.workforce_identity_config.pool_name
 }
