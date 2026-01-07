@@ -21,6 +21,7 @@ While our solution is conceptually guided by [Data Mesh principles on Google Clo
   - [FAST prerequisites](#fast-prerequisites)
   - [Provider and Terraform variables](#provider-and-terraform-variables)
   - [Variable Configuration](#variable-configuration)
+  - [CMEK Configuration](#cmek-configuration)
   - [Data Domain and Product Data Files](#data-domain-and-product-data-files)
   - [Context replacements](#context-replacements)
 - [Files](#files)
@@ -239,6 +240,24 @@ The default data files provided as an example makes a few assumptions that needs
 - the domain `deploy_config.composer.node_config.subnetwork` attribute needs to match the location defined above; Composer network and subnetwork use interpolation from FAST networking outputs, explicit IDs can be used instead if needed
 - IAM roles for the domain and product refer to generic `dp-product-a-0` and `data-consumer-bi` groups, these need to be defined via the `factories_config.context.iam_principals` variable, or changed to explicit IAM principals (e.g. `group:foo@example.com`)
 
+### CMEK Configuration
+
+The stage can be provisioned with CMEK keys configured for composer, bigquery datasets and storage bucket by using this configuration for the `encryption_keys` variable:
+
+```hcl
+encryption_keys = {
+  bigquery = {
+    "europe-west1" = "projects/myproject/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/bigquery"
+  }
+  composer = {
+    "europe-west1" = "projects/myproject/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/composer"
+  }
+  storage = {
+    "europe-west1" = "projects/myproject/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/storage"
+  }
+}
+```
+
 ### Data Domain and Product Data Files
 
 The formats for both types of data files are controlled via [schemas](./schemas/), which can generally be used directly in development environments to provide error checking and autocompletion.
@@ -351,9 +370,9 @@ The following table lists the available substitutions.
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [aspect_types](outputs.tf#L198) | Aspect types defined in central project. |  |  |
-| [central_project](outputs.tf#L203) | Central project attributes. |  |  |
-| [data_domains](outputs.tf#L208) | Data domain attributes. |  |  |
-| [policy_tags](outputs.tf#L213) | Policy tags defined in central project. |  |  |
-| [secure_tags](outputs.tf#L218) | Secure tags defined in central project. |  |  |
+| [aspect_types](outputs.tf#L201) | Aspect types defined in central project. |  |  |
+| [central_project](outputs.tf#L206) | Central project attributes. |  |  |
+| [data_domains](outputs.tf#L211) | Data domain attributes. |  |  |
+| [policy_tags](outputs.tf#L216) | Policy tags defined in central project. |  |  |
+| [secure_tags](outputs.tf#L221) | Secure tags defined in central project. |  |  |
 <!-- END TFDOC -->

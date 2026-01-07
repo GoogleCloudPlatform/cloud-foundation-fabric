@@ -99,6 +99,17 @@ locals {
     for k, v in local._of_providers : k => v
     if v.storage_bucket != null && v.service_account != null
   }
+  of_providers_content = {
+    for k, v in local.of_providers : k => templatestring(local.of_template, {
+      bucket = lookup(
+        local.of_storage_buckets,
+        v.storage_bucket,
+        v.storage_bucket
+      )
+      prefix          = v.prefix
+      service_account = v.service_account
+    })
+  }
   # list of service accounts for dereferencing single providers
   of_service_accounts = {
     for k, v in module.factory.service_account_emails :
@@ -126,15 +137,7 @@ resource "local_file" "providers" {
   filename = (
     "${local.of_paths.local}/providers/${each.value.filename}-providers.tf"
   )
-  content = templatestring(local.of_template, {
-    bucket = lookup(
-      local.of_storage_buckets,
-      each.value.storage_bucket,
-      each.value.storage_bucket
-    )
-    prefix          = each.value.prefix
-    service_account = each.value.service_account
-  })
+  content = local.of_providers_content[each.key]
 }
 
 resource "local_file" "tfvars" {
@@ -149,25 +152,19 @@ resource "local_file" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "providers" {
-  for_each = local.of_storage_bucket == null ? {} : local.of_providers
-  bucket   = local.of_storage_bucket
-  name     = "providers/${each.value.filename}-providers.tf"
-  content = templatestring(local.of_template, {
-    bucket = lookup(
-      local.of_storage_buckets,
-      each.value.storage_bucket,
-      each.value.storage_bucket
-    )
-    prefix          = each.value.prefix
-    service_account = each.value.service_account
-  })
+  for_each       = local.of_storage_bucket == null ? {} : local.of_providers
+  bucket         = local.of_storage_bucket
+  name           = "providers/${each.value.filename}-providers.tf"
+  content        = local.of_providers_content[each.key]
+  source_md5hash = md5(local.of_providers_content[each.key])
 }
 
 resource "google_storage_bucket_object" "tfvars" {
   for_each = toset(
     local.of_storage_bucket == null ? [] : local.of_tfvars_projects
   )
-  bucket  = local.of_storage_bucket
-  name    = "tfvars/${each.value}.auto.tfvars.json"
-  content = jsonencode(module.factory.projects[each.value])
+  bucket         = local.of_storage_bucket
+  name           = "tfvars/${each.value}.auto.tfvars.json"
+  content        = jsonencode(module.factory.projects[each.value])
+  source_md5hash = md5(jsonencode(module.factory.projects[each.value]))
 }
