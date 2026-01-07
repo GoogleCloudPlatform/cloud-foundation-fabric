@@ -189,7 +189,7 @@ VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory 
 
 ### DNS
 
-The DNS factory manages Cloud DNS zones and Response Policy Rules. DNS zones are by default defined within the `dns/zones` directory of your chosen dataset. The factory supports private, peering, and forwarding zones.
+The DNS factory manages Cloud DNS zones and Response Policy Rules. DNS zones are by default defined within the `dns/zones` directory of your chosen dataset. The factory supports public, private, peering, and forwarding zones.
 
 In the default dataset, DNS is centralized in the `net-core-0` (hub) project. It hosts:
 
