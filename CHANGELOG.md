@@ -3,7 +3,23 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2025-12-10 18:40:02+00:00 to: None since: v50.0.0 -->
+## [Unreleased] <!-- from: 2026-01-07 11:27:43+00:00 to: None since: v51.0.0 -->
+
+## [51.1.0] - 2026-01-08
+
+### BREAKING CHANGES
+
+- `modules/vpc-sc`: perimeters defined with `ignore_resource_changes` will recreate resource membership via additional resources. [[#3628](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3628)]
+
+### FAST
+
+- [[#3618](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3618)] Support public DNS attributes in FAST network stage ([ericyz](https://github.com/ericyz)) <!-- 2026-01-07 12:14:29+00:00 -->
+
+### MODULES
+
+- [[#3628](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3628)] Use additive resource for perimeter resources in vpc-sc module when ignore changes is set ([ludoo](https://github.com/ludoo)) <!-- 2026-01-08 12:09:10+00:00 -->
+- [[#3622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3622)] Add support for labels to global addresses in net-vpc module ([LaoZhuBaba](https://github.com/LaoZhuBaba)) <!-- 2026-01-07 13:19:49+00:00 -->
+- [[#3626](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3626)] Fix workforce identity federation provider configuration ([ooshrioo](https://github.com/ooshrioo)) <!-- 2026-01-07 13:02:13+00:00 -->
 
 ## [51.0.0] - 2026-01-07
 
