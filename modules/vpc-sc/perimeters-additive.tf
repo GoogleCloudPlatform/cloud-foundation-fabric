@@ -17,28 +17,56 @@
 # tfdoc:file:description Regular service perimeter resources which ignore resource changes.
 
 locals {
-  perimeters_additive = {
-    for k, v in google_access_context_manager_service_perimeter.additive :
-    k => v.id
-  }
-  spec_additive_resources = flatten([
+  _spec_resource_sets = flatten([
+    for k, v in local.perimeters : [
+      for vv in try(v.spec.resources, []) : [
+        for vvv in lookup(local.ctx.resource_sets, vv, []) : {
+          key       = "${k}/${vvv}"
+          perimeter = k
+          resource  = vvv
+        }
+      ] if startswith(vv, "$resource_sets:")
+    ] if v.ignore_resource_changes
+  ])
+  _spec_resources = flatten([
     for k, v in local.perimeters : [
       for vv in try(v.spec.resources, []) : {
         key       = "${k}/${vv}"
         perimeter = k
         resource  = vv
-      }
+      } if !startswith(vv, "$resource_sets:")
     ] if v.ignore_resource_changes
   ])
-  status_additive_resources = flatten([
+  _status_resource_sets = flatten([
+    for k, v in local.perimeters : [
+      for vv in try(v.status.resources, []) : [
+        for vvv in lookup(local.ctx.resource_sets, vv, []) : {
+          key       = "${k}/${vvv}"
+          perimeter = k
+          resource  = vvv
+        }
+      ] if startswith(vv, "$resource_sets:")
+    ] if v.ignore_resource_changes
+  ])
+  _status_resources = flatten([
     for k, v in local.perimeters : [
       for vv in try(v.status.resources, []) : {
         key       = "${k}/${vv}"
         perimeter = k
         resource  = vv
-      }
+      } if !startswith(vv, "$resource_sets:")
     ] if v.ignore_resource_changes
   ])
+  perimeters_additive = {
+    for k, v in google_access_context_manager_service_perimeter.additive :
+    k => v.id
+  }
+  spec_additive_resources = concat(
+    local._spec_resource_sets, local._spec_resources
+  )
+  status_additive_resources = concat(
+    local._status_resource_sets, local._status_resources
+  )
 }
 
 resource "google_access_context_manager_service_perimeter" "additive" {
