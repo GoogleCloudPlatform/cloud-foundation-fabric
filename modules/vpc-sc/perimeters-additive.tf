@@ -61,15 +61,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
           try(google_access_context_manager_access_level.basic[k].id, k)
         ]
       )
-      # use additive resources to avoid overriding externally defined ones
-      # resources = flatten([
-      #   for r in spec.value.resources : try(
-      #     local.ctx.resource_sets[r],
-      #     [local.ctx.project_numbers[r]],
-      #     [local.project_numbers[r]],
-      #     [r]
-      #   )
-      # ])
+      # use additive resources below to avoid overriding externally defined ones
       restricted_services = flatten([
         for r in coalesce(spec.value.restricted_services, []) :
         lookup(local.ctx.service_sets, r, [r])
@@ -260,14 +252,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
           try(google_access_context_manager_access_level.basic[k].id, k)
         ]
       )
-      # use additive resources to avoid overriding externally defined ones
-      # resources = flatten([
-      #   for r in status.value.resources : try(
-      #     local.ctx.resource_sets[r],
-      #     [local.ctx.project_numbers[r]],
-      #     [local.project_numbers[r]], [r]
-      #   )
-      # ])
+      # use additive resources below to avoid overriding externally defined ones
       restricted_services = flatten([
         for r in coalesce(status.value.restricted_services, []) :
         lookup(local.ctx.service_sets, r, [r])
