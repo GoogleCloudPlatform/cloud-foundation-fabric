@@ -105,16 +105,13 @@ values:
   google_access_context_manager_service_perimeter_resource.default["default/$project_numbers:test-1"]:
     resource: projects/222222
     timeouts: null
-  google_access_context_manager_service_perimeter_resource.default["default/projects/321"]:
-    resource: projects/321
-    timeouts: null
-  google_access_context_manager_service_perimeter_resource.default["default/projects/654"]:
-    resource: projects/654
+  google_access_context_manager_service_perimeter_resource.default["default/$resource_sets:test"]:
+    resource: $resource_sets:test
     timeouts: null
 
 counts:
   google_access_context_manager_access_level: 1
   google_access_context_manager_service_perimeter: 1
-  google_access_context_manager_service_perimeter_resource: 4
+  google_access_context_manager_service_perimeter_resource: 3
   modules: 0
-  resources: 6
+  resources: 5
