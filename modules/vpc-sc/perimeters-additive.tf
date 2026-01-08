@@ -28,7 +28,7 @@ locals {
         perimeter = k
         resource  = vv
       }
-    ]
+    ] if v.ignore_resource_changes
   ])
   status_additive_resources = flatten([
     for k, v in local.perimeters : [
@@ -37,7 +37,7 @@ locals {
         perimeter = k
         resource  = vv
       }
-    ]
+    ] if v.ignore_resource_changes
   ])
 }
 
