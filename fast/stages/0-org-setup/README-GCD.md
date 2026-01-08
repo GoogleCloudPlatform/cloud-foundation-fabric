@@ -28,7 +28,7 @@ An IdP is configured for your organization, and you can sign in with your admini
 Clone the latest version of the repository (currently v50.0.0) or download it from the Releases page:
 
 ```bash
-git clone --branch v50.0.0 git@github.com:GoogleCloudPlatform/cloud-foundation-fabric.git
+git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
 ```
 
 ### Google Cloud CLI
@@ -60,7 +60,8 @@ Once the above file has been created and the gcloud profile configured, run the 
 ```bash
 gcloud auth login \
   --login-config=$WF_POOL_FILE_PATH/wif-login-config-$UNIVERSE_NAME.json \
-   --no-launch-browser
+  --no-launch-browser
+
 gcloud auth application-default login \
   --login-config=$WF_POOL_FILE_PATH/wif-login-config-$UNIVERSE_NAME.json
 ```
