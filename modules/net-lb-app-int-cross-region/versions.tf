@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v51.1.1
+# Fabric release: v51.0.0
 
 terraform {
   required_version = ">= 1.12.2"
@@ -27,9 +27,9 @@ terraform {
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-lb-app-int-cross-region:v51.1.1-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-lb-app-int-cross-region:v51.0.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-lb-app-int-cross-region:v51.1.1-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-lb-app-int-cross-region:v51.0.0-tf"
   }
 }
