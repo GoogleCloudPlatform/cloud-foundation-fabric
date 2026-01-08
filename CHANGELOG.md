@@ -3,7 +3,13 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-01-07 11:27:43+00:00 to: None since: v51.0.0 -->
+## [Unreleased] <!-- from: 2026-01-08 12:16:36+00:00 to: None since: v51.1.0 -->
+
+## [51.1.1] - 2026-01-08
+
+### MODULES
+
+- [[#3629](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3629)] Reintroduce support for resource sets in VPC SC module additive perimeters ([ludoo](https://github.com/ludoo)) <!-- 2026-01-08 12:53:05+00:00 -->
 
 ## [51.1.0] - 2026-01-08
 
@@ -2098,32 +2104,33 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.0.0...HEAD
-[51.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.0.0...50.1.0
-[50.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...50.0.0
-[50.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...49.3.0
-[49.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.3.0...49.2.0
-[49.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.2.0...49.1.0
-[49.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.1.0...49.0.0
-[49.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...48.1.0
-[48.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.1.0...48.0.0
-[48.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...47.1.0
-[47.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.1.0...47.0.0
-[47.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.0.0...46.1.0
-[46.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.1.0...46.0.0
-[46.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...45.1.0
-[45.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...45.0.0
-[45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...44.2.0
-[44.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...44.1.0
-[44.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...44.0.0
-[44.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.0.0...43.0.0
-[43.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v43.0.0...42.1.0
-[42.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v42.1.0...42.0.0
-[42.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.1.0...41.0.0
-[41.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.0.0...41.1.0
-[41.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.2.0...41.0.0
-[40.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.1.0...40.2.0
-[40.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.0.0...40.1.0
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.1...HEAD
+[51.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.0...v51.0.0
+[51.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.0.0...v50.1.0
+[50.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...v50.0.0
+[50.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...v49.3.0
+[49.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.3.0...v49.2.0
+[49.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.2.0...v49.1.0
+[49.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.1.0...v49.0.0
+[49.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v49.0.0...v48.1.0
+[48.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.1.0...v48.0.0
+[48.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v48.0.0...v47.1.0
+[47.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.1.0...v47.0.0
+[47.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v47.0.0...v46.1.0
+[46.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.1.0...v46.0.0
+[46.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v46.0.0...v45.1.0
+[45.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.1.0...v45.0.0
+[45.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v45.0.0...v44.2.0
+[44.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.2.0...v44.1.0
+[44.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.1.0...v44.0.0
+[44.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v44.0.0...v43.0.0
+[43.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v43.0.0...v42.1.0
+[42.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v42.1.0...v42.0.0
+[42.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.1.0...v41.0.0
+[41.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v41.0.0...v41.1.0
+[41.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.2.0...v41.0.0
+[40.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.1.0...v40.2.0
+[40.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v40.0.0...v40.1.0
 [40.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.2.0...v40.0.0
 [39.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.1.0...v39.2.0
 [39.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v39.0.0...v39.1.0
