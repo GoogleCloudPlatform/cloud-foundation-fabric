@@ -16,31 +16,6 @@
 
 # tfdoc:file:description Regular service perimeter resources which ignore resource changes.
 
-locals {
-  perimeters_additive = {
-    for k, v in google_access_context_manager_service_perimeter.additive :
-    k => v.id
-  }
-  spec_additive_resources = flatten([
-    for k, v in local.perimeters : [
-      for vv in try(v.spec.resources, []) : {
-        key       = "${k}/${vv}"
-        perimeter = k
-        resource  = vv
-      }
-    ] if v.ignore_resource_changes
-  ])
-  status_additive_resources = flatten([
-    for k, v in local.perimeters : [
-      for vv in try(v.status.resources, []) : {
-        key       = "${k}/${vv}"
-        perimeter = k
-        resource  = vv
-      }
-    ] if v.ignore_resource_changes
-  ])
-}
-
 resource "google_access_context_manager_service_perimeter" "additive" {
   for_each = {
     for k, v in local.perimeters : k => v if v.ignore_resource_changes
@@ -61,7 +36,14 @@ resource "google_access_context_manager_service_perimeter" "additive" {
           try(google_access_context_manager_access_level.basic[k].id, k)
         ]
       )
-      # use additive resources below to avoid overriding externally defined ones
+      resources = flatten([
+        for r in spec.value.resources : try(
+          local.ctx.resource_sets[r],
+          [local.ctx.project_numbers[r]],
+          [local.project_numbers[r]],
+          [r]
+        )
+      ])
       restricted_services = flatten([
         for r in coalesce(spec.value.restricted_services, []) :
         lookup(local.ctx.service_sets, r, [r])
@@ -252,7 +234,13 @@ resource "google_access_context_manager_service_perimeter" "additive" {
           try(google_access_context_manager_access_level.basic[k].id, k)
         ]
       )
-      # use additive resources below to avoid overriding externally defined ones
+      resources = flatten([
+        for r in status.value.resources : try(
+          local.ctx.resource_sets[r],
+          [local.ctx.project_numbers[r]],
+          [local.project_numbers[r]], [r]
+        )
+      ])
       restricted_services = flatten([
         for r in coalesce(status.value.restricted_services, []) :
         lookup(local.ctx.service_sets, r, [r])
@@ -449,24 +437,4 @@ resource "google_access_context_manager_service_perimeter" "additive" {
     google_access_context_manager_access_policy.default,
     google_access_context_manager_access_level.basic
   ]
-}
-
-resource "google_access_context_manager_service_perimeter_resource" "default" {
-  for_each       = { for v in local.status_additive_resources : v.key => v }
-  perimeter_name = local.perimeters_additive[each.value.perimeter]
-  resource = try(
-    local.ctx.project_numbers[each.value.resource],
-    local.project_numbers[each.value.resource],
-    each.value.resource
-  )
-}
-
-resource "google_access_context_manager_service_perimeter_dry_run_resource" "default" {
-  for_each       = { for v in local.spec_additive_resources : v.key => v }
-  perimeter_name = local.perimeters_additive[each.value.perimeter]
-  resource = try(
-    local.ctx.project_numbers[each.value.resource],
-    local.project_numbers[each.value.resource],
-    each.value.resource
-  )
 }

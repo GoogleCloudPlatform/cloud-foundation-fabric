@@ -20,8 +20,6 @@ If you are using [Application Default Credentials](https://cloud.google.com/sdk/
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Tests](#tests)
-  - [Authoritative resources](#authoritative-resources)
-  - [Additive resources](#additive-resources)
 <!-- END TOC -->
 
 ## Examples
@@ -392,7 +390,7 @@ to:
 | [iam.tf](./iam.tf) | IAM bindings | <code>google_access_context_manager_access_policy_iam_binding</code> · <code>google_access_context_manager_access_policy_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_access_context_manager_access_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [perimeters-additive.tf](./perimeters-additive.tf) | Regular service perimeter resources which ignore resource changes. | <code>google_access_context_manager_service_perimeter</code> · <code>google_access_context_manager_service_perimeter_dry_run_resource</code> · <code>google_access_context_manager_service_perimeter_resource</code> |
+| [perimeters-additive.tf](./perimeters-additive.tf) | Regular service perimeter resources which ignore resource changes. | <code>google_access_context_manager_service_perimeter</code> |
 | [perimeters.tf](./perimeters.tf) | Regular service perimeter resources. | <code>google_access_context_manager_service_perimeter</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
@@ -426,8 +424,6 @@ to:
 | [perimeters](outputs.tf#L47) | Regular service perimeter resources. |  |
 <!-- END TFDOC -->
 ## Tests
-
-### Authoritative resources
 
 ```hcl
 module "test" {
@@ -464,84 +460,6 @@ module "test" {
   }
 }
 # tftest modules=1 resources=2 files=t1a1,t1i1,t1e1
-```
-
-```yaml
-conditions:
-  - regions:
-      - IT
-# tftest-file id=t1a1 path=data/access-levels/geo-it.yaml schema=access-level.schema.json
-```
-
-```yaml
-from:
-  access_levels:
-    - geo-it
-  identity_type: ANY_IDENTITY
-to:
-  operations:
-    - service_name: "*"
-  resources:
-    - projects/1234567890
-# tftest-file id=t1i1 path=data/ingress-policies/factory-ingress-policy.yaml schema=ingress-policy.schema.json
-```
-
-```yaml
-from:
-  identity_type: ANY_IDENTITY
-to:
-  operations:
-    - service_name: "*"
-  resources:
-    - "*"
-# tftest-file id=t1e1 path=data/egress-policies/factory-egress-policy.yaml schema=egress-policy.schema.json
-```
-
-### Additive resources
-
-```hcl
-module "test" {
-  source        = "./fabric/modules/vpc-sc"
-  access_policy = "12345678"
-  factories_config = {
-    access_levels    = "data/access-levels"
-    egress_policies  = "data/egress-policies"
-    ingress_policies = "data/ingress-policies"
-    perimeters       = "data/perimeters"
-  }
-  ingress_policies = {
-    variable-policy = {
-      from = {
-        identities = [
-          "serviceAccount:sa-0@myproject.iam.gserviceaccount.com"
-        ]
-        access_levels = ["*"]
-      }
-      to = {
-        operations = [{ service_name = "*" }]
-        resources  = ["*"]
-      }
-    }
-  }
-}
-# tftest modules=1 resources=3 files=p0,t1a1,t1i1,t1e1 inventory=additive.yaml
-```
-
-```yaml
-description: Main perimeter
-ignore_resource_changes: true
-use_explicit_dry_run_spec: true
-spec:
-  access_levels:
-    - geo-it
-  resources:
-    - projects/1111
-  egress_policies:
-    - factory-egress-policy
-  ingress_policies:
-    - variable-policy
-    - factory-ingress-policy
-# tftest-file id=p0 path=data/perimeters/default.yaml schema=perimeter.schema.json
 ```
 
 ```yaml

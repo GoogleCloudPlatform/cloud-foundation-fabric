@@ -91,7 +91,11 @@ values:
           - projects/654
           roles: []
         title: test-context
-      resources: null
+      resources:
+      - projects/111111
+      - projects/222222
+      - projects/321
+      - projects/654
       restricted_services:
       - compute.googleapis.com
       - container.googleapis.com
@@ -99,19 +103,9 @@ values:
     timeouts: null
     title: default
     use_explicit_dry_run_spec: true
-  google_access_context_manager_service_perimeter_resource.default["default/$project_numbers:test-0"]:
-    resource: projects/111111
-    timeouts: null
-  google_access_context_manager_service_perimeter_resource.default["default/$project_numbers:test-1"]:
-    resource: projects/222222
-    timeouts: null
-  google_access_context_manager_service_perimeter_resource.default["default/$resource_sets:test"]:
-    resource: $resource_sets:test
-    timeouts: null
 
 counts:
   google_access_context_manager_access_level: 1
   google_access_context_manager_service_perimeter: 1
-  google_access_context_manager_service_perimeter_resource: 3
   modules: 0
-  resources: 5
+  resources: 2
