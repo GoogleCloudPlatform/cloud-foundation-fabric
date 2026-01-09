@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,6 +138,74 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
       local.rules[each.key].target_tags == null
       ? []
       : local.rules[each.key].target_tags
+    )
+    content {
+      name = lookup(
+        local.ctx.tag_values, target_secure_tags.value, target_secure_tags.value
+      )
+    }
+  }
+}
+
+resource "google_compute_network_firewall_policy_packet_mirroring_rule" "net-global" {
+  provider = google-beta
+  for_each = toset(
+    !local.use_hierarchical && !local.use_regional
+    ? keys(local.mirroring_rules)
+    : []
+  )
+  project         = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
+  firewall_policy = google_compute_network_firewall_policy.net-global[0].name
+  rule_name       = each.key
+  action          = local.mirroring_rules[each.key].action
+  description     = local.mirroring_rules[each.key].description
+  direction       = local.mirroring_rules[each.key].direction
+  disabled        = local.mirroring_rules[each.key].disabled
+  priority        = local.mirroring_rules[each.key].priority
+  tls_inspect     = local.mirroring_rules[each.key].tls_inspect
+
+  security_profile_group = try(
+    var.security_profile_group_ids[local.mirroring_rules[each.key].security_profile_group],
+    local.mirroring_rules[each.key].security_profile_group
+  )
+
+  match {
+    dest_ip_ranges = (
+      local.mirroring_rules[each.key].match.destination_ranges == null
+      ? null
+      : distinct(flatten([
+        for r in local.mirroring_rules[each.key].match.destination_ranges : try(
+          local.ctx.cidr_ranges_sets[r],
+          local.ctx.cidr_ranges[r],
+          r
+        )
+      ]))
+    )
+    src_ip_ranges = (
+      local.mirroring_rules[each.key].match.source_ranges == null
+      ? null
+      : distinct(flatten([
+        for r in local.mirroring_rules[each.key].match.source_ranges : try(
+          local.ctx.cidr_ranges_sets[r],
+          local.ctx.cidr_ranges[r],
+          r
+        )
+      ]))
+    )
+    dynamic "layer4_configs" {
+      for_each = local.mirroring_rules[each.key].match.layer4_configs
+      content {
+        ip_protocol = layer4_configs.value.protocol
+        ports       = layer4_configs.value.ports
+      }
+    }
+
+  }
+  dynamic "target_secure_tags" {
+    for_each = toset(
+      local.mirroring_rules[each.key].target_tags == null
+      ? []
+      : local.mirroring_rules[each.key].target_tags
     )
     content {
       name = lookup(

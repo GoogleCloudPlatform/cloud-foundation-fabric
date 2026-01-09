@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,9 @@ locals {
   rules = merge(
     local.factory_egress_rules, local.factory_ingress_rules,
     local._rules_egress, local._rules_ingress
+  )
+  mirroring_rules = merge(
+    local.factory_mirroring_rules, var.mirroring_rules
   )
   # do not depend on the parent id as that might be dynamic and prevent count
   use_hierarchical = var.region == null
