@@ -8236,6 +8236,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 54
-  resources: 570
+  modules: 58
+  resources: 691
   terraform_data: 4
