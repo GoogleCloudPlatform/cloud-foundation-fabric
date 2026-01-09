@@ -23,10 +23,6 @@ import os
 duplicates = [
     # deep recursive folder comparison
     [
-        "fast/stages/0-org-setup/datasets/classic/organization/custom-roles",
-        "fast/stages/0-org-setup/datasets/hardened/organization/custom-roles",
-    ],
-    [
         "fast/stages/0-org-setup/datasets/classic/organization/tags",
         "fast/stages/0-org-setup/datasets/hardened/organization/tags",
     ],

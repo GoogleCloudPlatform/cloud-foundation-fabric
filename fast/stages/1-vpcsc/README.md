@@ -474,6 +474,6 @@ Some references that might be useful in setting up this stage:
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [tfvars](outputs.tf#L50) | Terraform variable files for the following stages. | ✓ |  |
-| [vpc_sc_perimeter_default](outputs.tf#L56) | Raw default perimeter resource. | ✓ |  |
+| [tfvars](outputs.tf#L52) | Terraform variable files for the following stages. | ✓ |  |
+| [vpc_sc_perimeter_default](outputs.tf#L58) | Raw default perimeter resource. | ✓ |  |
 <!-- END TFDOC -->

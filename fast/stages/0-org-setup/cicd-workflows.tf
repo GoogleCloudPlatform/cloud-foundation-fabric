@@ -81,6 +81,7 @@ locals {
             plan  = try(v.workload_identity.iam_principalsets.plan)
           }
         )
+        audiences = try(v.workload_identity.audiences, [])
       }
     }
   }
@@ -151,8 +152,9 @@ resource "local_file" "workflows" {
 }
 
 resource "google_storage_bucket_object" "workflows" {
-  for_each = local.output_files.storage_bucket == null ? {} : local.cicd_workflows_contents
-  bucket   = local.of_outputs_bucket
-  name     = "workflows/${each.key}.yaml"
-  content  = each.value
+  for_each       = local.output_files.storage_bucket == null ? {} : local.cicd_workflows_contents
+  bucket         = local.of_outputs_bucket
+  name           = "workflows/${each.key}.yaml"
+  content        = each.value
+  source_md5hash = md5(each.value)
 }

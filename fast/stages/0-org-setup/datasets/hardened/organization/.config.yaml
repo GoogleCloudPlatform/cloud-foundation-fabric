@@ -64,6 +64,7 @@ iam_by_principals:
     - roles/resourcemanager.folderAdmin
     - roles/resourcemanager.organizationAdmin
     - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.projectDeleter
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
     - roles/resourcemanager.tagUser
@@ -80,6 +81,7 @@ iam_by_principals:
     - roles/serviceusage.serviceUsageViewer
     - $custom_roles:organization_admin_viewer
     - $custom_roles:tag_viewer
+    - roles/securitycentermanagement.customModulesViewer
   $iam_principals:service_accounts/iac-0/iac-networking-rw:
     # uncomment for cooperative VPC-SC configurations
     # - roles/accesscontextmanager.policyEditor

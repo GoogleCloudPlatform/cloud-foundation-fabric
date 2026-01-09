@@ -36,14 +36,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/0-org-setup-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["0-org-setup-ro"]:
@@ -68,14 +67,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/0-org-setup-ro-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["1-vpcsc"]:
@@ -101,14 +99,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/1-vpcsc-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-networking"]:
@@ -134,14 +131,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/2-networking-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-project-factory"]:
@@ -167,14 +163,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/2-project-factory-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-security"]:
@@ -200,14 +195,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/2-security-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["globals"]:
@@ -219,14 +213,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: tfvars/0-globals.auto.tfvars.json
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["org-setup"]:
@@ -237,14 +230,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: tfvars/0-org-setup.auto.tfvars.json
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   local_file.providers["0-org-setup"]:
@@ -470,7 +462,64 @@ values:
     hierarchical_namespace: []
     ip_filter: []
     labels: null
-    lifecycle_rule: []
+    lifecycle_rule:
+    - action:
+      - storage_class: ARCHIVE
+        type: SetStorageClass
+      condition:
+      - age: 365
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - COLDLINE
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
+    - action:
+      - storage_class: COLDLINE
+        type: SetStorageClass
+      condition:
+      - age: 90
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - NEARLINE
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
+    - action:
+      - storage_class: NEARLINE
+        type: SetStorageClass
+      condition:
+      - age: 30
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - STANDARD
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
     location: EUROPE-WEST1
     logging: []
     name: ft0-prod-iac-core-0-iac-org-state
@@ -512,7 +561,64 @@ values:
     hierarchical_namespace: []
     ip_filter: []
     labels: null
-    lifecycle_rule: []
+    lifecycle_rule:
+    - action:
+      - storage_class: ARCHIVE
+        type: SetStorageClass
+      condition:
+      - age: 365
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - COLDLINE
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
+    - action:
+      - storage_class: COLDLINE
+        type: SetStorageClass
+      condition:
+      - age: 90
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - NEARLINE
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
+    - action:
+      - storage_class: NEARLINE
+        type: SetStorageClass
+      condition:
+      - age: 30
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - STANDARD
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
     location: EUROPE-WEST1
     logging: []
     name: ft0-prod-iac-core-0-iac-outputs
@@ -566,7 +672,64 @@ values:
     hierarchical_namespace: []
     ip_filter: []
     labels: null
-    lifecycle_rule: []
+    lifecycle_rule:
+    - action:
+      - storage_class: ARCHIVE
+        type: SetStorageClass
+      condition:
+      - age: 365
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - COLDLINE
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
+    - action:
+      - storage_class: COLDLINE
+        type: SetStorageClass
+      condition:
+      - age: 90
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - NEARLINE
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
+    - action:
+      - storage_class: NEARLINE
+        type: SetStorageClass
+      condition:
+      - age: 30
+        created_before: ''
+        custom_time_before: ''
+        days_since_custom_time: null
+        days_since_noncurrent_time: null
+        matches_prefix: []
+        matches_storage_class:
+        - STANDARD
+        matches_suffix: []
+        noncurrent_time_before: ''
+        num_newer_versions: null
+        send_age_if_zero: null
+        send_days_since_custom_time_if_zero: null
+        send_days_since_noncurrent_time_if_zero: null
+        send_num_newer_versions_if_zero: null
     location: EUROPE-WEST1
     logging: []
     name: ft0-prod-iac-core-0-iac-stage-state
@@ -680,11 +843,36 @@ values:
     members:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/projectIamViewer
+  ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:service_networking_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/serviceNetworkingViewer
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"]
   : condition: []
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/serviceProjectNetworkAdmin
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/browser
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/compute.networkAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/compute.networkAdmin
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/compute.networkViewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/compute.networkViewer
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/compute.securityAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/compute.securityAdmin
   module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/compute.viewer"]:
     condition: []
     members:
@@ -695,16 +883,31 @@ values:
     members:
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/compute.xpnAdmin
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/dns.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/dns.admin
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/dns.reader"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/dns.reader
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/iam.networkAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/iam.networkAdmin
   module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/logging.admin
-  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/owner"]:
+  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/logging.viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/owner
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/logging.viewer
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
   : condition: []
     members:
@@ -720,6 +923,16 @@ values:
     members:
     - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.projectCreator
+  ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectDeleter"]
+  : condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectDeleter
+  ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
   module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
     condition: []
     members:
@@ -730,11 +943,16 @@ values:
     members:
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
-  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/viewer"]:
-    condition: []
+  ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/serviceusage.serviceUsageAdmin
+  ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
+  : condition: []
     members:
     - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/viewer
+    role: roles/serviceusage.serviceUsageViewer
   module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_ro"]:
     condition:
     - description: null
@@ -765,11 +983,26 @@ values:
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.projectIamAdmin
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["$custom_roles:logging_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/loggingViewer
   module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]:
     condition: []
     members:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/projectIamViewer
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/browser
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/cloudkms.admin
   ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
   : condition: []
     members:
@@ -779,17 +1012,18 @@ values:
     condition: []
     members:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/cloudkms.viewer
   module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/logging.admin
-  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/owner"]:
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/logging.viewer"]:
     condition: []
     members:
-    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/owner
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/logging.viewer
   ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
   : condition: []
     members:
@@ -805,6 +1039,16 @@ values:
     members:
     - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.projectCreator
+  ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectDeleter"]
+  : condition: []
+    members:
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectDeleter
+  ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
   module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
     condition: []
     members:
@@ -815,11 +1059,26 @@ values:
     members:
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
-  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/viewer"]:
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/securitycenter.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/securitycenter.admin
+  module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/securitycenter.viewer"]:
     condition: []
     members:
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/viewer
+    role: roles/securitycenter.viewer
+  ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/serviceusage.serviceUsageAdmin
+  ? module.factory.module.folder-1-iam["security"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/serviceusage.serviceUsageViewer
   module.factory.module.folder-1-iam["security"].google_folder_iam_binding.bindings["project_factory"]:
     condition:
     - description: null
@@ -829,16 +1088,81 @@ values:
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.projectIamAdmin
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["$custom_roles:logging_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/loggingViewer
+  ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["$custom_roles:service_account_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/serviceAccountViewer
   ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["$custom_roles:service_project_network_admin"]
   : condition: []
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: organizations/1234567890/roles/serviceProjectNetworkAdmin
-  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/owner"]:
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/bigquery.admin"]:
     condition: []
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/owner
+    role: roles/bigquery.admin
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/bigquery.dataViewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/bigquery.dataViewer
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/bigquery.jobUser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/bigquery.jobUser
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/browser
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/compute.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/compute.viewer
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/container.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/container.admin
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/container.clusterViewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/container.clusterViewer
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountAdmin
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/logging.admin
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/logging.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/logging.viewer
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/pubsub.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/pubsub.admin
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/pubsub.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/pubsub.viewer
   module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
     condition: []
     members:
@@ -854,6 +1178,16 @@ values:
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.projectCreator
+  ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectDeleter"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectDeleter
+  ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
   module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
     condition: []
     members:
@@ -864,11 +1198,21 @@ values:
     members:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
-  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/viewer"]:
-    condition: []
+  ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/serviceusage.serviceUsageAdmin
+  ? module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
+  : condition: []
     members:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/viewer
+    role: roles/serviceusage.serviceUsageViewer
+  module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/storage.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.admin
   module.factory.module.folder-1["data-platform"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Data Platform
@@ -895,21 +1239,101 @@ values:
     timeouts: null
   module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"]:
     timeouts: null
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:folder_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/folderViewer
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:logging_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/loggingViewer
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:service_account_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/serviceAccountViewer
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:storage_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/storageViewer
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/bigquery.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/bigquery.admin
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/bigquery.dataViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/bigquery.dataViewer
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/bigquery.jobUser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/bigquery.jobUser
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/browser
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/composer.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/composer.admin
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/composer.user"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/composer.user
   module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
     condition: []
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/compute.xpnAdmin
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/datacatalog.viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/datacatalog.viewer
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/dataflow.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/dataflow.admin
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/dataflow.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/dataflow.viewer
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountAdmin
   module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/logging.admin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/owner"]:
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/logging.viewer
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/pubsub.admin"]:
     condition: []
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/owner
+    role: roles/pubsub.admin
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/pubsub.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/pubsub.viewer
   ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
   : condition: []
     members:
@@ -925,11 +1349,46 @@ values:
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.projectCreator
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
-    condition: []
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectDeleter"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectDeleter
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.projectIamAdmin
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]
+  : condition: []
     members:
     - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/viewer
+    role: roles/resourcemanager.tagViewer
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/serviceusage.serviceUsageAdmin
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/serviceusage.serviceUsageViewer
+  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/storage.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.admin
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/storage.bucketViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.bucketViewer
+  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/storage.objectViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
   ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
     members:
@@ -944,6 +1403,12 @@ values:
     members:
     - serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.projectIamAdmin
+  ? module.factory.module.folder-2-iam["security/dev"].google_folder_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    role: organizations/1234567890/roles/cloudKmsViewer
   module.factory.module.folder-2["data-platform/dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
@@ -1034,6 +1499,33 @@ values:
     name: ew1
     project: ft0-prod-audit-logs-0
     timeouts: null
+  module.factory.module.log-buckets["billing-0/_Default"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: _Default
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: europe-west1
+    locked: null
+    project: ft0-prod-billing-exp-0
+    retention_days: 90
+  module.factory.module.log-buckets["iac-0/_Default"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: _Default
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: europe-west1
+    locked: null
+    project: ft0-prod-iac-core-0
+    retention_days: 90
+  module.factory.module.log-buckets["log-0/_Default"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: _Default
+    cmek_settings: []
+    enable_analytics: false
+    index_configs: []
+    location: europe-west1
+    locked: null
+    project: ft0-prod-audit-logs-0
+    retention_days: 90
   module.factory.module.log-buckets["log-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-logs
     cmek_settings:
@@ -1043,7 +1535,7 @@ values:
     location: europe-west1
     locked: null
     project: ft0-prod-audit-logs-0
-    retention_days: 30
+    retention_days: 90
   module.factory.module.log-buckets["log-0/iam"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: iam
     cmek_settings:
@@ -1053,7 +1545,7 @@ values:
     location: europe-west1
     locked: null
     project: ft0-prod-audit-logs-0
-    retention_days: 30
+    retention_days: 90
   module.factory.module.log-buckets["log-0/vpc-sc"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: vpc-sc
     cmek_settings:
@@ -1063,37 +1555,138 @@ values:
     location: europe-west1
     locked: null
     project: ft0-prod-audit-logs-0
-    retention_days: 31
+    retention_days: 90
   ? module.factory.module.projects-iam["billing-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.bigquery-encryption"]
   : condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/owner"]:
-    condition: []
-    members:
-    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-billing-exp-0
-    role: roles/owner
-  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]:
     condition: []
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-billing-exp-0
-    role: roles/viewer
+    role: organizations/1234567890/roles/cloudKmsViewer
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/bigquery.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/bigquery.admin
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/bigquery.dataViewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/bigquery.dataViewer
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/bigquery.jobUser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/bigquery.jobUser
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/browser
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/cloudkms.admin
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members: null
+    project: ft0-prod-billing-exp-0
+    role: roles/owner
+  ? module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/resourcemanager.projectIamAdmin
+  ? module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/serviceusage.serviceUsageAdmin
+  ? module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/serviceusage.serviceUsageViewer
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/storage.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/storage.admin
+  module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["roles/storage.objectViewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-billing-exp-0
+    role: roles/storage.objectViewer
   ? module.factory.module.projects-iam["iac-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]
   : condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: organizations/1234567890/roles/cloudKmsViewer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:storage_viewer"]:
     condition: []
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: organizations/1234567890/roles/storageViewer
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/accesscontextmanager.policyAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/accesscontextmanager.policyAdmin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/bigquery.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/bigquery.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/bigquery.dataViewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/bigquery.dataViewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/bigquery.jobUser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/bigquery.jobUser
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/billing.projectManager"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/billing.projectManager
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/browser"]:
     condition: []
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/browser
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudasset.owner"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/cloudasset.owner
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"]:
     condition: []
     members:
@@ -1106,6 +1699,48 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/cloudbuild.builds.viewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/cloudkms.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/compute.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/compute.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/compute.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/compute.viewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/container.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/container.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/container.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/container.viewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/datacatalog.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/datacatalog.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.roleAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/iam.roleAdmin
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]:
     condition: []
     members:
@@ -1137,12 +1772,77 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/iam.workloadIdentityPoolViewer
-  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/owner"]:
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/logging.admin"]:
     condition: []
     members:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
+    role: roles/logging.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/logging.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/logging.viewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/monitoring.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/monitoring.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/monitoring.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/monitoring.viewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members: null
+    project: ft0-prod-iac-core-0
     role: roles/owner
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/pubsub.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/pubsub.admin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/pubsub.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/pubsub.viewer
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/resourcemanager.projectIamAdmin
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/securitycentermanagement.admin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/securitycentermanagement.admin
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/securitycentermanagement.viewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/securitycentermanagement.viewer
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/servicenetworking.networksAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/servicenetworking.networksAdmin
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/serviceusage.serviceUsageAdmin
   ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/serviceusage.serviceUsageConsumer"]
   : condition: []
     members:
@@ -1160,28 +1860,101 @@ values:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/storage.admin
-  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/storage.objectViewer"]:
     condition: []
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
-    role: roles/viewer
+    role: roles/storage.objectViewer
   module.factory.module.projects-iam["log-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.logging"]:
     condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/owner"]:
-    condition: []
-    members:
-    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-audit-logs-0
-    role: roles/owner
-  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]:
     condition: []
     members:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-audit-logs-0
-    role: roles/viewer
+    role: organizations/1234567890/roles/cloudKmsViewer
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/browser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/browser
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/cloudkms.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/cloudkms.admin
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/logging.admin
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/logging.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/logging.viewer
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/monitoring.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/monitoring.admin
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/monitoring.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/monitoring.viewer
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members: null
+    project: ft0-prod-audit-logs-0
+    role: roles/owner
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/pubsub.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/pubsub.admin
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/pubsub.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/pubsub.viewer
+  ? module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/resourcemanager.projectIamAdmin
+  ? module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/serviceusage.serviceUsageAdmin
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/storage.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/storage.admin
+  module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["roles/storage.objectViewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-audit-logs-0
+    role: roles/storage.objectViewer
   module.factory.module.projects["billing-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-billing-exp-0
+  module.factory.module.projects["billing-0"].data.google_logging_project_settings.logging_sa[0]:
     project: ft0-prod-billing-exp-0
   module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-billing-exp-0
@@ -1241,6 +2014,12 @@ values:
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: cloudkms.googleapis.com
+    timeouts: null
+  module.factory.module.projects["billing-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-billing-exp-0
+    service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["billing-0"].google_project_service.project_services["storage.googleapis.com"]:
     disable_dependent_services: false
@@ -2116,6 +2895,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["compute.disableVpcExternalIpv6"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/compute.disableVpcExternalIpv6
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["compute.disableVpcInternalIpv6"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/compute.disableVpcInternalIpv6
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -4449,6 +5243,12 @@ values:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.projectCreator
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectDeleter"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/resourcemanager.projectDeleter
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectMover"]:
     condition: []
     members:
@@ -4480,6 +5280,12 @@ values:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/securitycentermanagement.customModulesEditor
+  ? module.organization-iam[0].google_organization_iam_binding.authoritative["roles/securitycentermanagement.customModulesViewer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/securitycentermanagement.customModulesViewer
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]:
     condition: []
     members:
@@ -5856,6 +6662,104 @@ values:
     resource_types:
     - storage.googleapis.com/Bucket
     timeouts: null
+  module.organization[0].google_organization_iam_custom_role.roles["cloudkms_viewer"]:
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - cloudkms.autokeyConfigs.get
+    - cloudkms.cryptoKeyVersions.get
+    - cloudkms.cryptoKeyVersions.list
+    - cloudkms.cryptoKeys.get
+    - cloudkms.cryptoKeys.getIamPolicy
+    - cloudkms.cryptoKeys.list
+    - cloudkms.ekmConfigs.get
+    - cloudkms.ekmConfigs.getIamPolicy
+    - cloudkms.ekmConnections.get
+    - cloudkms.ekmConnections.getIamPolicy
+    - cloudkms.ekmConnections.list
+    - cloudkms.importJobs.get
+    - cloudkms.importJobs.getIamPolicy
+    - cloudkms.importJobs.list
+    - cloudkms.kajPolicyConfigs.get
+    - cloudkms.keyHandles.get
+    - cloudkms.keyHandles.list
+    - cloudkms.keyRings.get
+    - cloudkms.keyRings.getIamPolicy
+    - cloudkms.keyRings.list
+    - cloudkms.locations.get
+    - cloudkms.locations.list
+    - cloudkms.operations.get
+    - cloudkms.singleTenantHsmInstanceProposals.get
+    - cloudkms.singleTenantHsmInstanceProposals.list
+    - cloudkms.singleTenantHsmInstances.get
+    - cloudkms.singleTenantHsmInstances.list
+    role_id: cloudKmsViewer
+    stage: GA
+    title: Custom role cloudKmsViewer
+  module.organization[0].google_organization_iam_custom_role.roles["folder_viewer"]:
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - resourcemanager.folders.get
+    - resourcemanager.folders.getIamPolicy
+    - resourcemanager.folders.list
+    - resourcemanager.folders.searchPolicyBindings
+    role_id: folderViewer
+    stage: GA
+    title: Custom role folderViewer
+  module.organization[0].google_organization_iam_custom_role.roles["logging_viewer"]:
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - logging.buckets.get
+    - logging.buckets.list
+    - logging.buckets.listEffectiveTags
+    - logging.buckets.listTagBindings
+    - logging.exclusions.get
+    - logging.exclusions.list
+    - logging.fields.access
+    - logging.links.get
+    - logging.links.list
+    - logging.locations.get
+    - logging.locations.list
+    - logging.logEntries.list
+    - logging.logMetrics.get
+    - logging.logMetrics.list
+    - logging.logScopes.get
+    - logging.logScopes.list
+    - logging.logServiceIndexes.list
+    - logging.logServices.list
+    - logging.logs.list
+    - logging.notificationRules.get
+    - logging.notificationRules.list
+    - logging.operations.get
+    - logging.operations.list
+    - logging.privateLogEntries.list
+    - logging.queries.getShared
+    - logging.queries.listShared
+    - logging.settings.get
+    - logging.sinks.get
+    - logging.sinks.list
+    - logging.usage.get
+    - logging.views.get
+    - logging.views.getIamPolicy
+    - logging.views.list
+    - logging.views.listLogs
+    - logging.views.listResourceKeys
+    - logging.views.listResourceValues
+    - observability.scopes.get
+    - resourcemanager.projects.get
+    - resourcemanager.projects.list
+    - resourcemanager.tagHolds.list
+    - resourcemanager.tagKeys.get
+    - resourcemanager.tagKeys.getIamPolicy
+    - resourcemanager.tagKeys.list
+    - resourcemanager.tagValues.get
+    - resourcemanager.tagValues.getIamPolicy
+    - resourcemanager.tagValues.list
+    role_id: loggingViewer
+    stage: GA
+    title: Custom role loggingViewer
   module.organization[0].google_organization_iam_custom_role.roles["network_firewall_policies_admin"]:
     description: Terraform-managed.
     org_id: '1234567890'
@@ -5973,6 +6877,29 @@ values:
     role_id: projectIamViewer
     stage: GA
     title: Custom role projectIamViewer
+  module.organization[0].google_organization_iam_custom_role.roles["service_account_viewer"]:
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - iam.serviceAccounts.get
+    - iam.serviceAccounts.getIamPolicy
+    - iam.serviceAccounts.list
+    role_id: serviceAccountViewer
+    stage: GA
+    title: Custom role serviceAccountViewer
+  module.organization[0].google_organization_iam_custom_role.roles["service_networking_viewer"]:
+    description: Terraform-managed.
+    org_id: '1234567890'
+    permissions:
+    - servicenetworking.operations.get
+    - servicenetworking.operations.list
+    - servicenetworking.services.get
+    - servicenetworking.services.getConsumerConfig
+    - servicenetworking.services.getVpcServiceControls
+    - servicenetworking.services.listPeeredDnsDomains
+    role_id: serviceNetworkingViewer
+    stage: GA
+    title: Custom role serviceNetworkingViewer
   module.organization[0].google_organization_iam_custom_role.roles["service_project_network_admin"]:
     description: Terraform-managed.
     org_id: '1234567890'
@@ -7274,25 +8201,25 @@ counts:
   google_billing_account_iam_member: 6
   google_essential_contacts_contact: 1
   google_folder: 10
-  google_folder_iam_binding: 44
+  google_folder_iam_binding: 104
   google_kms_crypto_key: 3
   google_kms_crypto_key_iam_member: 3
   google_kms_key_ring: 3
   google_logging_metric: 10
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
-  google_logging_project_bucket_config: 3
-  google_logging_project_settings: 2
+  google_logging_project_bucket_config: 6
+  google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 80
-  google_org_policy_policy: 154
+  google_org_policy_policy: 155
   google_organization_iam_audit_config: 1
-  google_organization_iam_binding: 38
-  google_organization_iam_custom_role: 9
+  google_organization_iam_binding: 40
+  google_organization_iam_custom_role: 14
   google_project: 3
-  google_project_iam_binding: 17
+  google_project_iam_binding: 64
   google_project_iam_member: 17
-  google_project_service: 36
+  google_project_service: 37
   google_project_service_identity: 11
   google_scc_management_organization_security_health_analytics_custom_module: 16
   google_service_account: 14
@@ -7300,7 +8227,7 @@ counts:
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
-  google_storage_bucket_object: 9
+  google_storage_bucket_object: 10
   google_storage_managed_folder: 5
   google_storage_managed_folder_iam_binding: 10
   google_storage_project_service_account: 3
@@ -7309,6 +8236,6 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 54
-  resources: 570
+  modules: 58
+  resources: 691
   terraform_data: 4

@@ -63,7 +63,15 @@ locals {
               client_networks = zone_config.forwarding.client_networks
             }
           }
-          : {}
+          : {},
+          contains(keys(try(zone_config, {})), "public")
+          ? {
+            public = {
+              enable_logging = try(zone_config.public.enable_logging, false),
+              dnssec_config  = try(zone_config.public.dnssec_config, {})
+            }
+          }
+          : {},
         )
       }
     )
