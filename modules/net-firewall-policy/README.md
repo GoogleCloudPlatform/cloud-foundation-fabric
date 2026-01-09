@@ -329,7 +329,7 @@ rule-name:
   enable_logging:
   security_profile_group: # Not for Regional policies
   target_service_accounts: []
-  target_tags: [] # Not for Hierarchical policies
+  target_tags: []
   target_resources: [] # For Hierarchical policies only
   tls_inspect: # Not for Regional policies
   match:
