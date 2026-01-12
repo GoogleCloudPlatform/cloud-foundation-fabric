@@ -84,10 +84,11 @@ variable "egress_rules" {
 variable "factories_config" {
   description = "Paths to folders for the optional factories."
   type = object({
-    cidr_file_path            = optional(string)
-    egress_rules_file_path    = optional(string)
-    ingress_rules_file_path   = optional(string)
-    mirroring_rules_file_path = optional(string)
+    cidr_file_path                    = optional(string)
+    egress_rules_file_path            = optional(string)
+    ingress_rules_file_path           = optional(string)
+    ingress_mirroring_rules_file_path = optional(string)
+    egress_mirroring_rules_file_path  = optional(string)
   })
   nullable = false
   default  = {}
@@ -131,11 +132,10 @@ variable "ingress_rules" {
   }
 }
 
-variable "mirroring_rules" {
-  description = "List of packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'."
+variable "ingress_mirroring_rules" {
+  description = "List of ingress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'."
   type = map(object({
     priority               = number
-    direction              = string
     action                 = optional(string, "mirror")
     description            = optional(string)
     disabled               = optional(bool, false)
@@ -156,7 +156,38 @@ variable "mirroring_rules" {
   nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.mirroring_rules :
+      for k, v in var.ingress_mirroring_rules :
+      contains(["mirror", "do_not_mirror", "goto_next"], v.action)
+    ])
+    error_message = "Action can only be one of 'mirror', 'do_not_mirror' or 'goto_next'."
+  }
+}
+
+variable "egress_mirroring_rules" {
+  description = "List of egress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'."
+  type = map(object({
+    priority               = number
+    action                 = optional(string, "mirror")
+    description            = optional(string)
+    disabled               = optional(bool, false)
+    security_profile_group = optional(string)
+    target_tags            = optional(list(string))
+    tls_inspect            = optional(bool, null)
+    match = object({
+      destination_ranges = optional(list(string))
+      source_ranges      = optional(list(string))
+      source_tags        = optional(list(string))
+      layer4_configs = optional(list(object({
+        protocol = optional(string, "all")
+        ports    = optional(list(string))
+      })), [{}])
+    })
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.egress_mirroring_rules :
       contains(["mirror", "do_not_mirror", "goto_next"], v.action)
     ])
     error_message = "Action can only be one of 'mirror', 'do_not_mirror' or 'goto_next'."

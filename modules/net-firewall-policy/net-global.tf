@@ -156,7 +156,7 @@ resource "google_compute_network_firewall_policy_packet_mirroring_rule" "net-glo
   )
   project         = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
   firewall_policy = google_compute_network_firewall_policy.net-global[0].name
-  rule_name       = each.key
+  rule_name       = local.mirroring_rules[each.key].name
   action          = local.mirroring_rules[each.key].action
   description     = local.mirroring_rules[each.key].description
   direction       = local.mirroring_rules[each.key].direction

@@ -56,7 +56,7 @@ values:
     name: test-mirroring-my-vpc
     project: my-project
     timeouts: null
-  module.firewall-policy.google_compute_network_firewall_policy_packet_mirroring_rule.net-global["rule-1"]:
+  module.firewall-policy.google_compute_network_firewall_policy_packet_mirroring_rule.net-global["mirror/ingress/rule-1"]:
     action: mirror
     description: Mirror all traffic
     direction: INGRESS

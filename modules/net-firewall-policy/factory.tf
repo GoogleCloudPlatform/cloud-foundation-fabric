@@ -25,9 +25,14 @@ locals {
       yamldecode(file(pathexpand(var.factories_config.ingress_rules_file_path))),
     {}), tomap({})
   )
-  _factory_mirroring_rules = coalesce(
+  _factory_mirroring_rules_egress = coalesce(
     try(
-      yamldecode(file(pathexpand(var.factories_config.mirroring_rules_file_path))),
+      yamldecode(file(pathexpand(var.factories_config.egress_mirroring_rules_file_path))),
+    {}), tomap({})
+  )
+  _factory_mirroring_rules_ingress = coalesce(
+    try(
+      yamldecode(file(pathexpand(var.factories_config.ingress_mirroring_rules_file_path))),
     {}), tomap({})
   )
   factory_cidrs = coalesce(
@@ -129,9 +134,49 @@ locals {
       }
     }
   }
-  factory_mirroring_rules = {
-    for k, v in local._factory_mirroring_rules : "mirroring/${k}" => {
-      direction              = v.direction
+  factory_mirroring_ingress_rules = {
+    for k, v in local._factory_mirroring_rules_ingress : "mirror/ingress/${k}" => {
+      direction              = "INGRESS"
+      name                   = k
+      priority               = v.priority
+      action                 = lookup(v, "action", "mirror")
+      description            = lookup(v, "description", null)
+      disabled               = lookup(v, "disabled", false)
+      security_profile_group = lookup(v, "security_profile_group", null)
+      target_tags            = lookup(v, "target_tags", null)
+      tls_inspect            = lookup(v, "tls_inspect", null)
+      match = {
+        destination_ranges = (
+          lookup(v.match, "destination_ranges", null) == null
+          ? null
+          : flatten([
+            for r in v.match.destination_ranges :
+            try(local.factory_cidrs[r], r)
+          ])
+        )
+        source_ranges = (
+          lookup(v.match, "source_ranges", null) == null
+          ? null
+          : flatten([
+            for r in v.match.source_ranges :
+            try(local.factory_cidrs[r], r)
+          ])
+        )
+        source_tags = lookup(v.match, "source_tags", null)
+        layer4_configs = (
+          lookup(v.match, "layer4_configs", null) == null
+          ? [{ protocol = "all", ports = null }]
+          : [
+            for c in v.match.layer4_configs :
+            merge({ protocol = "all", ports = [] }, c)
+          ]
+        )
+      }
+    }
+  }
+  factory_mirroring_egress_rules = {
+    for k, v in local._factory_mirroring_rules_egress : "mirror/egress/${k}" => {
+      direction              = "EGRESS"
       name                   = k
       priority               = v.priority
       action                 = lookup(v, "action", "mirror")
