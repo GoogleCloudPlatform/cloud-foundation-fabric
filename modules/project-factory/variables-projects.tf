@@ -69,6 +69,30 @@ variable "projects" {
             }))
           })), {})
         })), {})
+        lifecycle_rules = optional(map(object({
+          action = object({
+            type          = string
+            storage_class = optional(string)
+          })
+          condition = object({
+            age                        = optional(number)
+            created_before             = optional(string)
+            custom_time_before         = optional(string)
+            days_since_custom_time     = optional(number)
+            days_since_noncurrent_time = optional(number)
+            matches_prefix             = optional(list(string))
+            matches_storage_class      = optional(list(string))
+            matches_suffix             = optional(list(string))
+            noncurrent_time_before     = optional(string)
+            num_newer_versions         = optional(number)
+            with_state                 = optional(string)
+          })
+        })), {})
+        retention_policy = optional(object({
+          retention_period = string
+          is_locked        = optional(bool)
+        }))
+        soft_delete_retention = optional(number)
       }))
       service_accounts = optional(map(object({
         description = optional(string)
@@ -151,11 +175,36 @@ variable "projects" {
           }))
         })), {})
       })), {})
+      lifecycle_rules = optional(map(object({
+        action = object({
+          type          = string
+          storage_class = optional(string)
+        })
+        condition = object({
+          age                        = optional(number)
+          created_before             = optional(string)
+          custom_time_before         = optional(string)
+          days_since_custom_time     = optional(number)
+          days_since_noncurrent_time = optional(number)
+          matches_prefix             = optional(list(string))
+          matches_storage_class      = optional(list(string))
+          matches_suffix             = optional(list(string))
+          noncurrent_time_before     = optional(string)
+          num_newer_versions         = optional(number)
+          with_state                 = optional(string)
+        })
+      })), {})
+      retention_policy = optional(object({
+        retention_period = string
+        is_locked        = optional(bool)
+      }))
+      soft_delete_retention = optional(number)
     })), {})
     contacts = optional(map(list(string)), {})
     datasets = optional(map(object({
-      friendly_name = optional(string)
-      location      = optional(string)
+      encryption_key = optional(string)
+      friendly_name  = optional(string)
+      location       = optional(string)
     })), {})
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
@@ -259,7 +308,8 @@ variable "projects" {
         requester_email_recipients = optional(list(string))
       }))
     })), {})
-    name = optional(string)
+    name             = optional(string)
+    descriptive_name = optional(string)
     org_policies = optional(map(object({
       inherit_from_parent = optional(bool) # for list policies only.
       reset               = optional(bool)
@@ -284,6 +334,103 @@ variable "projects" {
     })), {})
     parent = optional(string)
     prefix = optional(string)
+    pubsub_topics = optional(map(object({
+      iam = optional(map(list(string)), {})
+      iam_bindings = optional(map(object({
+        members = list(string)
+        role    = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_bindings_additive = optional(map(object({
+        member = string
+        role   = string
+        condition = optional(object({
+          expression  = string
+          title       = string
+          description = optional(string)
+        }))
+      })), {})
+      iam_by_principals          = optional(map(list(string)), {})
+      kms_key                    = optional(string)
+      labels                     = optional(map(string), {})
+      message_retention_duration = optional(string)
+      regions                    = optional(list(string), [])
+      schema = optional(object({
+        definition   = string
+        msg_encoding = optional(string, "ENCODING_UNSPECIFIED")
+        schema_type  = string
+      }))
+      subscriptions = optional(map(object({
+        ack_deadline_seconds         = optional(number)
+        enable_exactly_once_delivery = optional(bool, false)
+        enable_message_ordering      = optional(bool, false)
+        expiration_policy_ttl        = optional(string)
+        filter                       = optional(string)
+        iam                          = optional(map(list(string)), {})
+        iam_bindings = optional(map(object({
+          members = list(string)
+          role    = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        iam_bindings_additive = optional(map(object({
+          member = string
+          role   = string
+          condition = optional(object({
+            expression  = string
+            title       = string
+            description = optional(string)
+          }))
+        })), {})
+        labels                     = optional(map(string))
+        message_retention_duration = optional(string)
+        retain_acked_messages      = optional(bool, false)
+        bigquery = optional(object({
+          table                 = string
+          drop_unknown_fields   = optional(bool, false)
+          service_account_email = optional(string)
+          use_table_schema      = optional(bool, false)
+          use_topic_schema      = optional(bool, false)
+          write_metadata        = optional(bool, false)
+        }))
+        cloud_storage = optional(object({
+          bucket          = string
+          filename_prefix = optional(string)
+          filename_suffix = optional(string)
+          max_duration    = optional(string)
+          max_bytes       = optional(number)
+          avro_config = optional(object({
+            write_metadata = optional(bool, false)
+          }))
+        }))
+        dead_letter_policy = optional(object({
+          topic                 = string
+          max_delivery_attempts = optional(number)
+        }))
+        push = optional(object({
+          endpoint   = string
+          attributes = optional(map(string))
+          no_wrapper = optional(object({
+            write_metadata = optional(bool, false)
+          }))
+          oidc_token = optional(object({
+            audience              = optional(string)
+            service_account_email = string
+          }))
+        }))
+        retry_policy = optional(object({
+          minimum_backoff = optional(number)
+          maximum_backoff = optional(number)
+        }))
+      })), {})
+    })), {})
     service_accounts = optional(map(object({
       display_name      = optional(string)
       iam_self_roles    = optional(list(string), [])

@@ -26,8 +26,8 @@ context:
       - 172.16.0.0/12
       - 192.168.0.0/16
   locations:
-    primary: europe-west8
-    secondary: europe-west12
+    primary: europe-west1
+    secondary: europe-west3
   iam_principals: {}
 projects:
   defaults:

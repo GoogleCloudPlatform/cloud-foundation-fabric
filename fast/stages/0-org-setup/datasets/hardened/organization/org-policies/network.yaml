@@ -56,6 +56,13 @@ compute.restrictVpcPeering:
         values:
           - "under:organizations/${organization.id}"
 
+# compute.restrictVpnPeerIPs:
+#   rules:
+#     - allow:
+#         values:
+#           - "1.1.1.1"
+#           - "2.2.2.2"
+
 custom.networkDisableTargetHTTPProxy:
   rules:
     - enforce: true

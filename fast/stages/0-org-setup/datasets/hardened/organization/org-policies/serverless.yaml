@@ -18,6 +18,12 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+cloudfunctions.allowedIngressSettings:
+  rules:
+    - allow:
+        values:
+          - "ALLOW_INTERNAL_AND_GCLB"
+
 cloudfunctions.allowedVpcConnectorEgressSettings:
   rules:
     - allow:
@@ -29,6 +35,22 @@ cloudfunctions.requireVPCConnector:
     - enforce: true
 
 custom.cloudrunDisableEnvironmentVariablePattern:
+  rules:
+    - enforce: true
+
+custom.cloudrunJobDisableDefaultServiceAccount:
+  rules:
+    - enforce: true
+
+custom.cloudrunJobRequireBinaryAuthorization:
+  rules:
+    - enforce: true
+
+custom.cloudrunServiceDisableDefaultServiceAccount:
+  rules:
+    - enforce: true
+
+custom.cloudrunServiceRequireBinaryAuthorization:
   rules:
     - enforce: true
 

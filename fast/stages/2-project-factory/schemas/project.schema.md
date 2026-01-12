@@ -111,6 +111,7 @@
 - **metric_scopes**: *array*
   - items: *string*
 - **name**: *string*
+- **descriptive_name**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*
@@ -162,6 +163,9 @@
     - **services_enabled**: *array*
       - items: *string*
 - **project_template**: *string*
+- **pubsub_topics**: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_-]+$`**: *reference([pubsub_topic](#refs-pubsub_topic))*
 - **service_accounts**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
@@ -251,6 +255,33 @@
   - **force_destroy**: *boolean*
   - **labels**: *object*
     <br>*additional properties: string*
+  - **lifecycle_rules**: *object*
+    <br>*additional properties: false*
+    - **`^[a-zA-Z0-9_-]+$`**: *object*
+      <br>*additional properties: false*
+      - ⁺**action**: *object*
+        <br>*additional properties: false*
+        - ⁺**type**: *string*
+          <br>*enum: ['Delete', 'SetStorageClass', 'AbortIncompleteMultipartUpload']*
+        - **storage_class**: *string*
+      - ⁺**condition**: *object*
+        <br>*additional properties: false*
+        - **age**: *number*
+        - **created_before**: *string*
+        - **custom_time_before**: *string*
+        - **days_since_custom_time**: *number*
+        - **days_since_noncurrent_time**: *number*
+        - **matches_prefix**: *array*
+          - items: *string*
+        - **matches_storage_class**: *array*
+          - items: *string*
+            <br>*enum: ['STANDARD', 'MULTI_REGIONAL', 'REGIONAL', 'NEARLINE', 'COLDLINE', 'ARCHIVE', 'DURABLE_REDUCED_AVAILABILITY']*
+        - **matches_suffix**: *array*
+          - items: *string*
+        - **noncurrent_time_before**: *string*
+        - **num_newer_versions**: *number*
+        - **with_state**: *string*
+          <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*
@@ -266,8 +297,9 @@
   - **versioning**: *boolean*
   - **retention_policy**: *object*
     <br>*additional properties: false*
-    - **retention_period**: *number*
+    - **retention_period**: *string*
     - **is_locked**: *boolean*
+  - **soft_delete_retention**: *number*
   - **enable_object_retention**: *boolean*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*
@@ -377,3 +409,74 @@
         - items: *string*
       - **requester_email_recipients**: *array*
         - items: *string*
+- **pubsub_topic**<a name="refs-pubsub_topic"></a>: *object*
+  <br>*additional properties: false*
+  - **iam**: *reference([iam](#refs-iam))*
+  - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+  - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+  - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
+  - **kms_key**: *string*
+  - **labels**: *object*
+    <br>*additional properties: string*
+  - **message_retention_duration**: *string*
+  - **regions**: *array*
+    - items: *string*
+  - **schema**: *object*
+    <br>*additional properties: false*
+    - ⁺**definition**: *string*
+    - **msg_encoding**: *string*
+    - ⁺**schema_type**: *string*
+  - **subscriptions**: *object*
+    <br>*additional properties: false*
+    - **`^[a-zA-Z0-9_-]+$`**: *object*
+      <br>*additional properties: false*
+      - **ack_deadline_seconds**: *number*
+      - **enable_exactly_once_delivery**: *boolean*
+      - **enable_message_ordering**: *boolean*
+      - **expiration_policy_ttl**: *string*
+      - **filter**: *string*
+      - **iam**: *reference([iam](#refs-iam))*
+      - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+      - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+      - **labels**: *object*
+        <br>*additional properties: string*
+      - **message_retention_duration**: *string*
+      - **retain_acked_messages**: *boolean*
+      - **bigquery**: *object*
+        <br>*additional properties: false*
+        - ⁺**table**: *string*
+        - **drop_unknown_fields**: *boolean*
+        - **service_account_email**: *string*
+        - **use_table_schema**: *boolean*
+        - **use_topic_schema**: *boolean*
+        - **write_metadata**: *boolean*
+      - **cloud_storage**: *object*
+        <br>*additional properties: false*
+        - ⁺**bucket**: *string*
+        - **filename_prefix**: *string*
+        - **filename_suffix**: *string*
+        - **max_duration**: *string*
+        - **max_bytes**: *number*
+        - **avro_config**: *object*
+          <br>*additional properties: false*
+          - **write_metadata**: *boolean*
+      - **dead_letter_policy**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+        - **max_delivery_attempts**: *number*
+      - **push**: *object*
+        <br>*additional properties: false*
+        - ⁺**endpoint**: *string*
+        - **attributes**: *object*
+          <br>*additional properties: string*
+        - **no_wrapper**: *object*
+          <br>*additional properties: false*
+          - **write_metadata**: *boolean*
+        - **oidc_token**: *object*
+          <br>*additional properties: false*
+          - **audience**: *string*
+          - ⁺**service_account_email**: *string*
+      - **retry_policy**: *object*
+        <br>*additional properties: false*
+        - **minimum_backoff**: *number*
+        - **maximum_backoff**: *number*

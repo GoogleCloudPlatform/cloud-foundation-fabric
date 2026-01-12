@@ -40,6 +40,7 @@ resource "terraform_data" "precondition-cicd" {
     precondition {
       condition = alltrue([
         for k, v in local.cicd_workflows : (
+          v.workload_identity.pool != null &&
           v.workload_identity.provider != null &&
           v.workload_identity.iam_principalsets.plan != null
         )

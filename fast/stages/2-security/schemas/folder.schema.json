@@ -149,6 +149,9 @@
         }
       }
     },
+    "deletion_protection": {
+      "type": "boolean"
+    },
     "factories_config": {
       "type": "object",
       "additionalProperties": false,

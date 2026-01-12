@@ -46,6 +46,12 @@ locals {
           module.log-buckets["${k}/${sk}"].id
         )
       }
+      pubsub_topics = {
+        for sk, sv in lookup(v, "pubsub_topics", {}) :
+        "${k}/${sk}" => (
+          module.pubsub["${k}/${sk}"].id
+        )
+      }
       service_accounts = {
         for sk, sv in lookup(v, "service_accounts", {}) :
         "${k}/${sk}" => {
@@ -60,6 +66,9 @@ locals {
           module.buckets["${k}/${sk}"].name
         )
       }
+      workload_identity_pools = (
+        module.projects[k].workload_identity_pool_ids
+      )
       workload_identity_providers = (
         module.projects[k].workload_identity_providers
       )
@@ -116,6 +125,13 @@ output "project_numbers" {
 output "projects" {
   description = "Project attributes."
   value       = local.outputs_projects
+}
+
+output "pubsub_topics" {
+  description = "PubSub topic ids."
+  value = merge([
+    for k, v in local.outputs_projects : v.pubsub_topics
+  ]...)
 }
 
 output "service_account_emails" {

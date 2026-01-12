@@ -43,7 +43,8 @@ locals {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if k != "condition_vars"
   }
-  ctx_p = "$"
+  ctx_p        = "$"
+  ctx_kms_keys = try(local.ctx.kms_keys, {})
   identities_view = {
     for k, v in local.access_view : k => try(
       zipmap(
@@ -144,7 +145,11 @@ resource "google_bigquery_dataset" "default" {
   dynamic "default_encryption_configuration" {
     for_each = var.encryption_key == null ? [] : [""]
     content {
-      kms_key_name = var.encryption_key
+      kms_key_name = lookup(
+        local.ctx_kms_keys,
+        var.encryption_key,
+        var.encryption_key
+      )
     }
   }
 }
@@ -255,7 +260,11 @@ resource "google_bigquery_table" "default" {
   dynamic "encryption_configuration" {
     for_each = each.value.options.encryption_key != null ? [""] : []
     content {
-      kms_key_name = each.value.options.encryption_key
+      kms_key_name = lookup(
+        local.ctx_kms_keys,
+        each.value.options.encryption_key,
+        each.value.options.encryption_key
+      )
     }
   }
 

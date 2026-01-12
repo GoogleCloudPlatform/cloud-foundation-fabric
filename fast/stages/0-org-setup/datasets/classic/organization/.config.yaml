@@ -42,6 +42,7 @@ iam_by_principals:
   $iam_principals:gcp-organization-admins:
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
+    - roles/cloudsupport.techSupportEditor
     - roles/compute.osAdminLogin
     - roles/compute.osLoginExternalUser
     - roles/compute.xpnAdmin
@@ -108,6 +109,9 @@ iam_by_principals:
   # Uncomment if you want to use PAM.
   # $service_agents:pam:
   #   - roles/privilegedaccessmanager.serviceAgent
+data_access_logs:
+  sts.googleapis.com:
+    ADMIN_READ: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary

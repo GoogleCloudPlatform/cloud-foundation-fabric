@@ -774,7 +774,7 @@ module "project-host" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=6 resources=19 inventory=logging.yaml e2e
+# tftest inventory=logging.yaml e2e
 ```
 
 ## Data Access Logs
@@ -842,7 +842,7 @@ module "project" {
     }
   }
 }
-# tftest modules=2 resources=6 inventory=log-scopes.yaml
+# tftest inventory=log-scopes.yaml
 ```
 
 ## Cloud KMS Encryption Keys
@@ -2117,7 +2117,7 @@ module "project" {
 | [default_network_tier](variables.tf#L118) | Default compute network tier for the project. | <code>string</code> |  | <code>null</code> |
 | [default_service_account](variables.tf#L124) | Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`. | <code>string</code> |  | <code>&#34;keep&#34;</code> |
 | [deletion_policy](variables.tf#L137) | Deletion policy setting for this project. | <code>string</code> |  | <code>&#34;DELETE&#34;</code> |
-| [descriptive_name](variables.tf#L148) | Name of the project name. Used for project name instead of `name` variable. | <code>string</code> |  | <code>null</code> |
+| [descriptive_name](variables.tf#L148) | Descriptive project name. Set when name differs from project id. | <code>string</code> |  | <code>null</code> |
 | [factories_config](variables.tf#L154) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  custom_roles           &#61; optional&#40;string&#41;&#10;  observability          &#61; optional&#40;string&#41;&#10;  org_policies           &#61; optional&#40;string&#41;&#10;  pam_entitlements       &#61; optional&#40;string&#41;&#10;  quotas                 &#61; optional&#40;string&#41;&#10;  scc_sha_custom_modules &#61; optional&#40;string&#41;&#10;  tags                   &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  members &#61; list&#40;string&#41;&#10;  role    &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -2183,8 +2183,9 @@ module "project" {
 | [sink_writer_identities](outputs.tf#L197) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L204) | Tag key resources. |  |
 | [tag_values](outputs.tf#L213) | Tag value resources. |  |
-| [workload_identity_provider_ids](outputs.tf#L221) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L229) | Workload identity provider attributes. |  |
+| [workload_identity_pool_ids](outputs.tf#L221) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L228) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L236) | Workload identity provider attributes. |  |
 
 ## Fixtures
 

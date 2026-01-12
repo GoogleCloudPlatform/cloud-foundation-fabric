@@ -48,16 +48,12 @@ locals {
     trimsuffix(f, ".yaml") => yamldecode(file("${local._templates_path}/${f}"))
   }
   ctx_project_ids     = merge(local.ctx.project_ids, local.project_ids)
-  ctx_project_numbers = merge(local.ctx.project_ids, local.project_numbers)
+  ctx_project_numbers = merge(local.ctx.project_numbers, local.project_numbers)
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
   project_numbers = {
     for k, v in module.projects : k => v.number
-  }
-  ctx_log_buckets = merge(local.ctx.log_buckets, local.log_buckets)
-  log_buckets = {
-    for key, log_bucket in module.log-buckets : key => log_bucket.id
   }
   projects_input = merge(var.projects, local._projects_output)
   projects_service_agents = merge([
@@ -86,6 +82,7 @@ module "projects" {
   billing_account     = each.value.billing_account
   deletion_policy     = each.value.deletion_policy
   name                = each.value.name
+  descriptive_name    = each.value.descriptive_name
   parent              = each.value.parent
   prefix              = each.value.prefix
   project_reuse       = each.value.project_reuse
@@ -100,7 +97,6 @@ module "projects" {
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
-  descriptive_name        = try(each.value.descriptive_name, null)
   factories_config = {
     custom_roles           = try(each.value.factories_config.custom_roles, null)
     org_policies           = try(each.value.factories_config.org_policies, null)
@@ -150,13 +146,12 @@ module "projects-iam" {
   }
   context = merge(local.ctx, {
     folder_ids = local.ctx.folder_ids
-    kms_keys   = local.ctx.kms_keys
+    kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
     iam_principals = merge(
       local.ctx_iam_principals,
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
     )
-    log_buckets = local.ctx_log_buckets
     project_ids = merge(
       local.ctx.project_ids,
       { for k, v in module.projects : k => v.project_id }
@@ -164,7 +159,6 @@ module "projects-iam" {
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
-    observability    = try(each.value.factories_config.observability, null)
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
   iam                        = lookup(each.value, "iam", {})

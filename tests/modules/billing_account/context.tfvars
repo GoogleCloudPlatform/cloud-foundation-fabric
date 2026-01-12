@@ -9,7 +9,7 @@ budgets = {
       period = {
         calendar = "MONTH"
       }
-      projects           = ["$project_ids:foo"]
+      projects           = ["$project_numbers:foo"]
       resource_ancestors = ["$folder_ids:bar"]
     }
     threshold_rules = [
@@ -47,6 +47,9 @@ context = {
   }
   project_ids = {
     foo = "test-prj-foo"
+  }
+  project_numbers = {
+    foo = 1234567890
   }
 }
 iam = {

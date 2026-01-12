@@ -54,7 +54,7 @@ values:
     load_balancing_scheme: INTERNAL_MANAGED
     metadata_filters: []
     name: ilb-test-europe-west1
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     port_range: '80'
     project: project-id
     subnetwork: subnet_self_link
@@ -64,7 +64,7 @@ values:
     load_balancing_scheme: INTERNAL_MANAGED
     metadata_filters: []
     name: ilb-test-europe-west4
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     port_range: '80'
     project: project-id
     subnetwork: subnet_self_link
@@ -106,7 +106,7 @@ values:
   module.ilb-l7.google_compute_network_endpoint_group.default["my-neg-ew1"]:
     description: Terraform managed.
     name: ilb-test-my-neg-ew1
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_endpoint_type: GCE_VM_IP_PORT
     project: project-id
     subnetwork: subnet_self_link
@@ -114,7 +114,7 @@ values:
   module.ilb-l7.google_compute_network_endpoint_group.default["my-neg-ew4"]:
     description: Terraform managed.
     name: ilb-test-my-neg-ew4
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_endpoint_type: GCE_VM_IP_PORT
     project: project-id
     subnetwork: subnet_self_link

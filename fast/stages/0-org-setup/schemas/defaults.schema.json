@@ -526,6 +526,12 @@
             "type": "string"
           }
         },
+        "workload_identity_pools": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "workload_identity_providers": {
           "type": "object",
           "additionalProperties": {

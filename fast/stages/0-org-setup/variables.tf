@@ -30,6 +30,7 @@ variable "context" {
     tag_values                  = optional(map(string), {})
     vpc_host_projects           = optional(map(string), {})
     vpc_sc_perimeters           = optional(map(string), {})
+    workload_identity_pools     = optional(map(string), {})
     workload_identity_providers = optional(map(string), {})
   })
   default  = {}
@@ -43,6 +44,7 @@ variable "factories_config" {
     cicd_workflows    = optional(string)
     defaults          = optional(string, "datasets/classic/defaults.yaml")
     folders           = optional(string, "datasets/classic/folders")
+    observability     = optional(string, "datasets/classic/observability")
     organization      = optional(string, "datasets/classic/organization")
     project_templates = optional(string, "datasets/classic/templates")
     projects          = optional(string, "datasets/classic/projects")

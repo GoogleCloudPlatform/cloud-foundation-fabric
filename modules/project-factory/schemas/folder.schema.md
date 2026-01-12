@@ -29,6 +29,8 @@
   <br>*additional properties: false*
   - **project**: *string*
     <br>*pattern: ^(projects/|\$project_ids:|\$project_numbers:)*
+- **billing_budgets**: *array*
+  - items: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
   - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*
@@ -50,6 +52,7 @@
       <br>*additional properties: false*
       - **exempted_members**: *array*
         - items: *string*
+- **deletion_protection**: *boolean*
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **org_policies**: *string*

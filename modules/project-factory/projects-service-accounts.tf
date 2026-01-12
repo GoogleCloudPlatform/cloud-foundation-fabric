@@ -20,6 +20,7 @@ locals {
       for name, opts in lookup(project, "service_accounts", {}) : {
         project_key = k
         name        = name
+        description = try(opts.description, null)
         display_name = coalesce(
           try(local.data_defaults.overrides.service_accounts.display_name, null),
           try(opts.display_name, null),
@@ -78,6 +79,7 @@ module "service-accounts" {
   }
   project_id   = module.projects[each.value.project_key].project_id
   name         = each.value.name
+  description  = each.value.description
   display_name = each.value.display_name
   context = merge(local.ctx, {
     project_ids = local.ctx_project_ids
