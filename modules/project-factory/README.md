@@ -291,6 +291,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$service_account_ids:my_project/my_sa`
 - `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
+- `$service_agents:my_project/compute`
 - `$tag_values:my_value`
 - `$vpc_host_projects:my_project`
 - `$vpc_sc_perimeters:my_perimeter`
