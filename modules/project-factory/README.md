@@ -572,6 +572,12 @@ factories_config:
 services:
   - container.googleapis.com
   - storage.googleapis.com
+org_policies:
+  gcp.restrictCmekCryptoKeyProjects:
+    rules:
+      - allow:
+          values:
+            - under:${folder_ids.team-a}
 workload_identity_pools:
   test-0:
     display_name: Test pool.
