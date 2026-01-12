@@ -297,6 +297,20 @@ resource "google_compute_subnetwork" "psc" {
     : each.value.description
   )
   purpose = "PRIVATE_SERVICE_CONNECT"
+  dynamic "log_config" {
+    for_each = each.value.flow_logs_config != null ? [""] : []
+    content {
+      aggregation_interval = each.value.flow_logs_config.aggregation_interval
+      filter_expr          = each.value.flow_logs_config.filter_expression
+      flow_sampling        = each.value.flow_logs_config.flow_sampling
+      metadata             = each.value.flow_logs_config.metadata
+      metadata_fields = (
+        each.value.flow_logs_config.metadata == "CUSTOM_METADATA"
+        ? each.value.flow_logs_config.metadata_fields
+        : null
+      )
+    }
+  }
 }
 
 
