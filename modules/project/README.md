@@ -1107,6 +1107,40 @@ module "project" {
 # tftest modules=1 resources=8 inventory=tags-network.yaml
 ```
 
+If you want to create a Tag Key with `GCE_FIREWALL` purpose that is valid for the whole organization (allowing the binding on any network within it), use `"ALL"` as the network value:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "compute.googleapis.com"
+  ]
+  network_tags = {
+    net-environment = {
+      description = "This is a network tag."
+      network     = "ALL"
+      iam = {
+        "roles/resourcemanager.tagAdmin" = ["group:${var.group_email}"]
+      }
+      values = {
+        dev = {}
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagUser" = ["group:${var.group_email}"]
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=8 inventory=tags-network-all.yaml
+```
+
 ### Tags Factory
 
 Tags can also be specified via a factory in a similar way to organization policies and policy constraints. Each file is mapped to tag key, where
