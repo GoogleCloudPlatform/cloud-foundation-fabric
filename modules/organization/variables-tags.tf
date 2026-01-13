@@ -19,7 +19,7 @@ variable "network_tags" {
   type = map(object({
     description = optional(string, "Managed by the Terraform organization module.")
     id          = optional(string)
-    network     = string # project_id/vpc_name
+    network     = string # project_id/vpc_name or "ALL" to toggle GCE_FIREWALL purpose
     iam         = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
@@ -76,6 +76,13 @@ variable "network_tags" {
       ]))
     )
     error_message = "Use an empty map instead of null as value."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.network_tags :
+      v.network == "ALL" || can(regex("^[a-z][a-z0-9-]{4,28}[a-z0-9]/[a-z](?:[-a-z0-9]*[a-z0-9])?$", v.network))
+    ])
+    error_message = "The network attribute must be 'ALL' or a valid VPC network URI (project_id/vpc_name)."
   }
 }
 
