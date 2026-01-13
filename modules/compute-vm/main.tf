@@ -168,6 +168,9 @@ resource "google_compute_region_disk" "disks" {
   name          = "${var.name}-${each.key}"
   type          = each.value.options.type
   size          = each.value.size
+  access_mode            = each.value.options.access_mode
+  provisioned_iops       = each.value.options.provisioned_iops
+  provisioned_throughput = each.value.options.provisioned_throughput
   # image         = each.value.source_type == "image" ? each.value.source : null
   snapshot = each.value.source_type == "snapshot" ? each.value.source : null
   labels = merge(var.labels, {

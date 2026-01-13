@@ -17,12 +17,14 @@
 variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
   type = object({
+    access_mode  = optional(string)
     auto_delete  = optional(bool, false)
     mode         = string
     replica_zone = string
     type         = string
   })
   default = {
+    access_mode  = null
     auto_delete  = true
     mode         = "READ_WRITE"
     replica_zone = null
@@ -46,6 +48,7 @@ variable "attached_disks" {
     source_type       = optional(string)
     options = optional(
       object({
+        access_mode            = optional(string)
         architecture           = optional(string)
         auto_delete            = optional(bool, false) # applies only to vm templates
         mode                   = optional(string, "READ_WRITE")
@@ -56,6 +59,7 @@ variable "attached_disks" {
         type                   = optional(string, "pd-balanced")
       }),
       {
+        access_mode  = null
         auto_delete  = true
         mode         = "READ_WRITE"
         replica_zone = null
@@ -86,6 +90,16 @@ variable "attached_disks" {
       (d.options.architecture == null || contains(["ARM64", "X86_64"], d.options.architecture))
     ])
     error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
+  }
+  validation {
+    condition = alltrue([
+      for d in var.attached_disks :
+      d.options == null || d.options.access_mode == null || contains(
+        ["READ_WRITE_SINGLE", "READ_ONLY_MANY", "READ_WRITE_MANY"],
+        d.options.access_mode
+      )
+    ])
+    error_message = "access_mode must be null, 'READ_WRITE_SINGLE', 'READ_ONLY_MANY', or 'READ_WRITE_MANY'."
   }
 }
 
