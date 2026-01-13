@@ -158,6 +158,9 @@
             },
             "location": {
               "type": "string"
+            },
+            "encryption_key": {
+              "type": "string"
             }
           }
         }
@@ -179,9 +182,6 @@
           "type": "string"
         },
         "observability": {
-          "type": "string"
-        },
-        "org_policies": {
           "type": "string"
         },
         "org_policies": {
