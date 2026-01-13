@@ -56,6 +56,7 @@
     <br>*additional properties: false*
     - **friendly_name**: *string*
     - **location**: *string*
+    - **encryption_key**: *string*
 - **deletion_policy**: *string*
   <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
 - **factories_config**: *object*
