@@ -9,6 +9,7 @@ This module implements the creation and management of one GCP project including 
 - [Basic Project Creation](#basic-project-creation)
 - [IAM](#iam)
   - [Authoritative IAM](#authoritative-iam)
+  - [Conditional IAM by Principals](#conditional-iam-by-principals)
   - [Additive IAM](#additive-iam)
   - [Service Agents](#service-agents)
     - [Cloudservices Editor Role](#cloudservices-editor-role)
@@ -139,6 +140,32 @@ module "project" {
 ```
 
 The `iam_bindings` variable behaves like a more verbose version of `iam`, and allows setting binding-level IAM conditions.
+
+### Conditional IAM by Principals
+
+The `iam_by_principals_conditional` variable allows defining IAM bindings keyed by principal, where each principal shares a common condition for multiple roles. This is useful for granting access with specific conditions (e.g., time-based or resource-based) to users or groups across different roles.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services        = ["storage.googleapis.com"]
+  iam_by_principals_conditional = {
+    "user:one@example.com" = {
+      roles = ["roles/owner", "roles/viewer"]
+      condition = {
+        title       = "expires_after_2024_12_31"
+        description = "Expiring at midnight of 2024-12-31"
+        expression  = "request.time < timestamp(\"2025-01-01T00:00:00Z\")"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=5 inventory=iam-bpc.yaml
+```
 
 ```hcl
 module "project" {
@@ -2158,6 +2185,7 @@ module "project" {
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code title="map&#40;object&#40;&#123;&#10;  roles &#61; list&#40;string&#41;&#10;  condition &#61; object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_autokeys](variables.tf#L169) | KMS Autokey key handles. | <code title="map&#40;object&#40;&#123;&#10;  location               &#61; string&#10;  resource_type_selector &#61; optional&#40;string, &#34;compute.googleapis.com&#47;Disk&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L187) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [lien_reason](variables.tf#L194) | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>null</code> |
