@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ values:
         protocol_version: IPV4
         src_range: 0.0.0.0/0
     interconnect_attachment: []
-    labels: null
+    labels:
+      environment: prod
     name: my-vpc-skip-pbr-for-nva
     next_hop_ilb_ip: null
     next_hop_other_routes: DEFAULT_ROUTING

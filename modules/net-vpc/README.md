@@ -640,6 +640,9 @@ module "vpc" {
       target = {
         tags = ["nva"]
       }
+      labels = {
+        environment = "prod"
+      }
     }
     send-all-to-nva = {
       next_hop_ilb_ip = "10.0.0.253"
@@ -651,9 +654,9 @@ module "vpc" {
       target = {
         interconnect_attachment = "europe-west8"
       }
-    }
-    labels = {
-      environment = "prod"
+      labels = {
+        environment = "prod"
+      }
     }
   }
   create_googleapis_routes = null
