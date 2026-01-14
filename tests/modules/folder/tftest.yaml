@@ -17,3 +17,4 @@ module: modules/folder
 tests:
   context:
   iam_by_principals_additive:
+  iam_by_principals_conditional:

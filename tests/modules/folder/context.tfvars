@@ -42,6 +42,20 @@ iam_by_principals = {
     "$custom_roles:myrole_one"
   ]
 }
+iam_by_principals_conditional = {
+  "$iam_principals:myuser" = {
+    roles = [
+      "roles/storage.admin",
+      "$custom_roles:myrole_one",
+      "$custom_roles:myrole_two",
+    ]
+    condition = {
+      title       = "expires_after_2020_12_31"
+      description = "Expiring at midnight of 2020-12-31"
+      expression  = "request.time < timestamp(\"2021-01-01T00:00:00Z\")"
+    }
+  }
+}
 iam_bindings = {
   myrole_two = {
     role = "$custom_roles:myrole_two"
