@@ -140,6 +140,9 @@ module "organization-iam" {
   iam_by_principals = lookup(
     local.organization, "iam_by_principals", {}
   )
+  iam_by_principals_conditional = lookup(
+    local.organization, "iam_by_principals_conditional", {}
+  )
   iam_bindings = lookup(
     local.organization, "iam_bindings", {}
   )
