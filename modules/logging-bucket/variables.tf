@@ -91,6 +91,13 @@ variable "tag_bindings" {
   nullable    = false
 }
 
+variable "locked" {
+  description = "Whether the bucket is locked. Locked buckets may only be deleted if they are empty"
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "views" {
   description = "Log views for this bucket."
   type = map(object({
