@@ -630,6 +630,9 @@ module "vpc" {
         interconnect_attachment = "europe-west8"
       }
     }
+    labels = {
+      environment = "prod"
+    }
   }
   create_googleapis_routes = null
 }
