@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ values:
     language_tag: en
     notification_category_subscriptions:
     - ALL
-    timeouts: null
+    parent: projects/my-project
   google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]:
     condition: []
     crypto_key_id: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
@@ -104,6 +104,33 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     project: my-project
     role: roles/viewer
+  google_project_iam_binding.bindings["iam-bpc:$custom_roles:myrole_one-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    project: my-project
+    role: organizations/366118655033/roles/myRoleOne
+  google_project_iam_binding.bindings["iam-bpc:$custom_roles:myrole_two-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    project: my-project
+    role: organizations/366118655033/roles/myRoleTwo
+  google_project_iam_binding.bindings["iam-bpc:roles/storage.admin-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    project: my-project
+    role: roles/storage.admin
   google_project_iam_binding.bindings["myrole_two"]:
     condition:
     - description: null
@@ -194,7 +221,7 @@ counts:
   google_privileged_access_manager_entitlement: 1
   google_project: 1
   google_project_iam_audit_config: 1
-  google_project_iam_binding: 4
+  google_project_iam_binding: 7
   google_project_iam_member: 7
   google_project_service: 1
   google_tags_tag_binding: 1
@@ -203,4 +230,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 26
+  resources: 29
