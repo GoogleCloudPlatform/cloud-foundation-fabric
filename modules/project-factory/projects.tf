@@ -166,13 +166,14 @@ module "projects-iam" {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
-  iam                        = lookup(each.value, "iam", {})
-  iam_bindings               = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals          = lookup(each.value, "iam_by_principals", {})
-  iam_by_principals_additive = lookup(each.value, "iam_by_principals_additive", {})
-  logging_data_access        = lookup(each.value, "logging_data_access", {})
-  pam_entitlements           = try(each.value.pam_entitlements, {})
+  iam                           = lookup(each.value, "iam", {})
+  iam_bindings                  = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
+  logging_data_access           = lookup(each.value, "logging_data_access", {})
+  pam_entitlements              = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false
     grant_default_roles   = false

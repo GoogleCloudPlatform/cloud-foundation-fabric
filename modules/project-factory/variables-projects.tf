@@ -226,6 +226,14 @@ variable "projects" {
       }))
     })), {})
     iam_by_principals = optional(map(list(string)), {})
+    iam_by_principals_conditional = optional(map(object({
+      roles = list(string)
+      condition = object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      })
+    })), {})
     kms = optional(object({
       autokeys = optional(map(object({
         location               = string
