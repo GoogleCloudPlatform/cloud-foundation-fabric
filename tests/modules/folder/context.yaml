@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ values:
     language_tag: en
     notification_category_subscriptions:
     - ALL
-    timeouts: null
   google_folder.folder[0]:
     deletion_protection: false
     display_name: Test Context
@@ -48,6 +47,30 @@ values:
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: roles/viewer
+  google_folder_iam_binding.bindings["iam-bpc:$custom_roles:myrole_one-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_folder_iam_binding.bindings["iam-bpc:$custom_roles:myrole_two-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_folder_iam_binding.bindings["iam-bpc:roles/storage.admin-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    role: roles/storage.admin
   google_folder_iam_binding.bindings["myrole_two"]:
     condition:
     - description: null
@@ -98,9 +121,9 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 1
   google_folder_iam_audit_config: 1
-  google_folder_iam_binding: 4
+  google_folder_iam_binding: 7
   google_folder_iam_member: 1
   google_privileged_access_manager_entitlement: 1
   google_tags_tag_binding: 1
   modules: 0
-  resources: 10
+  resources: 13

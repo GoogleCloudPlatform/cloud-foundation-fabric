@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,6 +96,30 @@ locals {
       }
     ]...
   )
+  _iam_bindings_conditional = flatten([
+    for principal, config in var.iam_by_principals_conditional : [
+      for role in config.roles : {
+        principal = principal
+        role      = role
+        condition = config.condition
+      }
+    ]
+  ])
+  _iam_bindings_conditional_grouped = {
+    for binding in local._iam_bindings_conditional :
+    "iam-bpc:${binding.role}-${binding.condition.title}" => binding...
+  }
+  iam_bindings = merge(
+    var.iam_bindings,
+    {
+      for k, v in local._iam_bindings_conditional_grouped :
+      k => {
+        role      = v[0].role
+        condition = v[0].condition
+        members   = [for b in v : b.principal]
+      }
+    }
+  )
 }
 
 # we use a different key for custom roles to allow referring to the role alias
@@ -136,7 +160,7 @@ resource "google_project_iam_binding" "authoritative" {
 }
 
 resource "google_project_iam_binding" "bindings" {
-  for_each = var.iam_bindings
+  for_each = local.iam_bindings
   project  = local.project.project_id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [

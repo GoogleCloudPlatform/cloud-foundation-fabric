@@ -36,14 +36,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/0-org-setup-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["0-org-setup-ro"]:
@@ -68,14 +67,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/0-org-setup-ro-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["1-vpcsc"]:
@@ -101,14 +99,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/1-vpcsc-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-networking"]:
@@ -134,14 +131,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/2-networking-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-project-factory"]:
@@ -167,14 +163,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/2-project-factory-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-security"]:
@@ -200,14 +195,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: providers/2-security-providers.tf
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["globals"]:
@@ -219,14 +213,13 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: tfvars/0-globals.auto.tfvars.json
     retention: []
     source: null
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["org-setup"]:
@@ -237,14 +230,142 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: tfvars/0-org-setup.auto.tfvars.json
     retention: []
     source: null
-    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.version[0]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: versions/0-org-setup-version.txt
+    retention: []
+    source: fast_version.txt
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.workflows["org-setup"]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content: "# Copyright 2025 Google LLC\n#\n# Licensed under the Apache License,\
+      \ Version 2.0 (the \"License\");\n# you may not use this file except in compliance\
+      \ with the License.\n# You may obtain a copy of the License at\n#\n#      http://www.apache.org/licenses/LICENSE-2.0\n\
+      #\n# Unless required by applicable law or agreed to in writing, software\n#\
+      \ distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT\
+      \ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the\
+      \ License for the specific language governing permissions and\n# limitations\
+      \ under the License.\n\nname: \"FAST org-setup stage\"\n\non:\n  pull_request:\n\
+      \    branches:\n      - main\n    types:\n      - closed\n      - opened\n \
+      \     - synchronize\n\nenv:\n  FAST_SERVICE_ACCOUNT: iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\n\
+      \  FAST_SERVICE_ACCOUNT_PLAN: iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com\n\
+      \  FAST_WIF_PROVIDER: projects/1234567890/locations/global/workloadIdentityPools/default\n\
+      \  SSH_AUTH_SOCK: /tmp/ssh_agent.sock\n  TF_PROVIDERS_FILE: 0-org-setup-providers.tf\n\
+      \  TF_PROVIDERS_FILE_PLAN: 0-org-setup-providers-ro.tf\n  TF_VERSION: 1.12.2\n\
+      \njobs:\n  fast-pr:\n    # Skip PRs which are closed without being merged.\n\
+      \    if: >-\n      github.event.action == 'closed' &&\n      github.event.pull_request.merged\
+      \ == true ||\n      github.event.action == 'opened' ||\n      github.event.action\
+      \ == 'synchronize'\n    permissions:\n      contents: read\n      id-token:\
+      \ write\n      issues: write\n      pull-requests: write\n    runs-on: ubuntu-latest\n\
+      \    steps:\n      - id: checkout\n        name: Checkout repository\n     \
+      \   uses: actions/checkout@v4\n\n      # set up SSH key authentication to the\
+      \ modules repository\n\n      - id: ssh-config\n        name: Configure SSH\
+      \ authentication\n        run: |\n          ssh-agent -a \"$SSH_AUTH_SOCK\"\
+      \ > /dev/null\n          ssh-add - <<< \"${{ secrets.CICD_MODULES_KEY }}\"\n\
+      \n      # set up step variables for plan / apply\n\n      - id: vars-plan\n\
+      \        if: github.event.pull_request.merged != true && success()\n       \
+      \ name: Set up plan variables\n        run: |\n          echo \"plan_opts=-lock=false\"\
+      \ >> \"$GITHUB_ENV\"\n          echo \"provider_file=${{env.TF_PROVIDERS_FILE_PLAN}}\"\
+      \ >> \"$GITHUB_ENV\"\n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT_PLAN}}\"\
+      \ >> \"$GITHUB_ENV\"\n\n      - id: vars-apply\n        if: github.event.pull_request.merged\
+      \ == true && success()\n        name: Set up apply variables\n        run: |\n\
+      \          echo \"provider_file=${{env.TF_PROVIDERS_FILE}}\" >> \"$GITHUB_ENV\"\
+      \n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT}}\" >> \"$GITHUB_ENV\"\
+      \n\n      # set up authentication via Workload identity Federation and gcloud\n\
+      \n      - id: gcp-auth\n        name: Authenticate to Google Cloud\n       \
+      \ uses: google-github-actions/auth@v2\n        with:\n          workload_identity_provider:\
+      \ ${{env.FAST_WIF_PROVIDER}}\n          service_account: ${{env.service_account}}\n\
+      \          access_token_lifetime: 900s\n\n      - id: gcp-sdk\n        name:\
+      \ Set up Cloud SDK\n        uses: google-github-actions/setup-gcloud@v2\n  \
+      \      with:\n          install_components: alpha\n\n      # copy provider file\n\
+      \n      - id: tf-config-provider\n        name: Copy Terraform provider file\n\
+      \        run: |\n          gcloud storage cp -r \\\n            \"gs://ft0-prod-iac-core-0-iac-outputs/providers/${{env.provider_file}}\"\
+      \ ./\n          gcloud storage cp -r \\\n            \"gs://ft0-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars\"\
+      \ ./\n\n      - id: tf-setup\n        name: Set up Terraform\n        uses:\
+      \ hashicorp/setup-terraform@v3\n        with:\n          terraform_version:\
+      \ ${{env.TF_VERSION}}\n\n      # run Terraform init/validate/plan\n\n      -\
+      \ id: tf-init\n        name: Terraform init\n        continue-on-error: true\n\
+      \        run: |\n          terraform init -no-color\n\n      - id: tf-validate\n\
+      \        continue-on-error: true\n        name: Terraform validate\n       \
+      \ run: terraform validate -no-color\n\n      - id: tf-plan\n        name: Terraform\
+      \ plan\n        continue-on-error: true\n        run: |\n          terraform\
+      \ plan -input=false -out ../plan.out -no-color ${{env.plan_opts}}\n\n      -\
+      \ id: tf-apply\n        if: github.event.pull_request.merged == true && success()\n\
+      \        name: Terraform apply\n        continue-on-error: true\n        run:\
+      \ |\n          terraform apply -input=false -auto-approve -no-color ../plan.out\n\
+      \n      # PR comment with Terraform result from previous steps\n      # length\
+      \ is checked and trimmed for length so as to stay within the limit\n\n     \
+      \ - id: pr-comment\n        name: Post comment to Pull Request\n        continue-on-error:\
+      \ true\n        uses: actions/github-script@v7\n        if: github.event_name\
+      \ == 'pull_request'\n        env:\n          PLAN: ${{steps.tf-plan.outputs.stdout}}\\\
+      n${{steps.tf-plan.outputs.stderr}}\n        with:\n          script: |\n   \
+      \         const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
+      `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
+      `\n\n            <details><summary>Validation Output</summary>\n\n         \
+      \   \\`\\`\\`\\n\n            ${{steps.tf-validate.outputs.stdout}}\n      \
+      \      \\`\\`\\`\n\n            </details>\n\n            ### Terraform Plan\
+      \ \\`${{steps.tf-plan.outcome}}\\`\n\n            <details><summary>Show Plan</summary>\n\
+      \n            \\`\\`\\`\\n\n            ${process.env.PLAN.split('\\n').filter(l\
+      \ => l.match(/^([A-Z\\s].*|)$$/)).join('\\n')}\n            \\`\\`\\`\n\n  \
+      \          </details>\n\n            ### Terraform Apply \\`${{steps.tf-apply.outcome}}\\\
+      `\n\n            *Pusher: @${{github.actor}}, Action: \\`${{github.event_name}}\\\
+      `, Working Directory: \\`${{env.tf_actions_working_dir}}\\`, Workflow: \\`${{github.workflow}}\\\
+      `*`;\n\n            github.rest.issues.createComment({\n              issue_number:\
+      \ context.issue.number,\n              owner: context.repo.owner,\n        \
+      \      repo: context.repo.repo,\n              body: output\n            })\n\
+      \n      - id: pr-short-comment\n        name: Post comment to Pull Request (abbreviated)\n\
+      \        uses: actions/github-script@v7\n        if: github.event_name == 'pull_request'\
+      \ && steps.pr-comment.outcome != 'success'\n        with:\n          script:\
+      \ |\n            const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
+      `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
+      `\n\n            ### Terraform Plan \\`${{steps.tf-plan.outcome}}\\`\n\n   \
+      \         Plan output is in the action log.\n\n            ### Terraform Apply\
+      \ \\`${{steps.tf-apply.outcome}}\\`\n\n            *Pusher: @${{github.actor}},\
+      \ Action: \\`${{github.event_name}}\\`, Working Directory: \\`${{env.tf_actions_working_dir}}\\\
+      `, Workflow: \\`${{github.workflow}}\\`*`;\n\n            github.rest.issues.createComment({\n\
+      \              issue_number: context.issue.number,\n              owner: context.repo.owner,\n\
+      \              repo: context.repo.repo,\n              body: output\n      \
+      \      })\n\n      # exit on error from previous steps\n\n      - id: check-init\n\
+      \        name: Check init failure\n        if: steps.tf-init.outcome != 'success'\n\
+      \        run: exit 1\n\n      - id: check-validate\n        name: Check validate\
+      \ failure\n        if: steps.tf-validate.outcome != 'success'\n        run:\
+      \ exit 1\n\n      - id: check-plan\n        name: Check plan failure\n     \
+      \   if: steps.tf-plan.outcome != 'success'\n        run: exit 1\n\n      - id:\
+      \ check-apply\n        name: Check apply failure\n        if: github.event.pull_request.merged\
+      \ == true && steps.tf-apply.outcome != 'success'\n        run: exit 1\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: workflows/org-setup.yaml
+    retention: []
+    source: null
     temporary_hold: null
     timeouts: null
   local_file.providers["0-org-setup"]:
@@ -422,6 +543,19 @@ values:
     condition: []
     member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/billing.viewer
+  module.cicd-sa-apply["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/fast-dev
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.fast_sub/repo:gh-org/gh-repo:ref:refs/heads/master
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+  module.cicd-sa-plan["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
+    condition: []
+    members:
+    - principalSet://iam.googleapis.com/$workload_identity_pools:iac-0/default/attribute.repository/gh-org/gh-repo
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-cicd-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.module.bigquery-datasets["billing-0/billing_export"].google_bigquery_dataset.default:
     dataset_id: billing_export
     default_encryption_configuration: []
@@ -743,7 +877,7 @@ values:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
         \  'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',\n  'roles/container.hostServiceAgentUser',\
-        \ 'roles/vpcaccess.user'\n])"
+        \ 'roles/vpcaccess.user'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -807,7 +941,7 @@ values:
     condition:
     - description: null
       expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
-        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])"
+        \  'roles/cloudkms.cryptoKeyEncrypterDecrypter'\n])\n"
       title: Project factory delegated IAM grant.
     members:
     - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -955,6 +1089,20 @@ values:
     timeouts: null
   module.factory.module.folder-2["networking/prod"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
+  module.factory.module.folder-2["security/dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    tags: null
+    timeouts: null
+  module.factory.module.folder-2["security/dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-2["security/prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    tags: null
+    timeouts: null
+  module.factory.module.folder-2["security/prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
   module.factory.module.log-buckets["log-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-logs
     cmek_settings: []
@@ -994,6 +1142,22 @@ values:
     - serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-billing-exp-0
     role: roles/viewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_audit_config.default["storage.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: DATA_READ
+    - exempted_members: []
+      log_type: DATA_WRITE
+    project: ft0-prod-iac-core-0
+    service: storage.googleapis.com
+  module.factory.module.projects-iam["iac-0"].google_project_iam_audit_config.default["sts.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: DATA_READ
+    - exempted_members: []
+      log_type: DATA_WRITE
+    project: ft0-prod-iac-core-0
+    service: sts.googleapis.com
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:storage_viewer"]:
     condition: []
     members:
@@ -1055,6 +1219,17 @@ values:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     role: roles/owner
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/serviceusage.serviceUsageConsumer"]
+  : condition: []
+    members:
+    - serviceAccount:iac-networking-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    - serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    role: roles/serviceusage.serviceUsageConsumer
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/storage.admin"]:
     condition: []
     members:
@@ -1126,6 +1301,8 @@ values:
     service: bigquerydatatransfer.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-iac-core-0
+  module.factory.module.projects["iac-0"].data.google_logging_project_settings.logging_sa[0]:
     project: ft0-prod-iac-core-0
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
@@ -1205,6 +1382,12 @@ values:
     condition: []
     project: ft0-prod-iac-core-0
     role: roles/servicenetworking.serviceAgent
+  module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: orgpolicy.googleapis.com
+    timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["accesscontextmanager.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -1337,12 +1520,6 @@ values:
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
-  module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: ft0-prod-iac-core-0
-    service: orgpolicy.googleapis.com
-    timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["serviceusage.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -1395,6 +1572,8 @@ values:
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
+  module.factory.module.projects["log-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-prod-audit-logs-0
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
@@ -1596,6 +1775,10 @@ values:
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.factory.terraform_data.project-preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -2264,6 +2447,12 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_organization_iam_audit_config.default["sts.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: ADMIN_READ
+    org_id: '1234567890'
+    service: sts.googleapis.com
   module.organization-iam[0].google_organization_iam_binding.authoritative["$custom_roles:organization_admin_viewer"]:
     condition: []
     members:
@@ -2317,6 +2506,12 @@ values:
     - group:fabric-fast-owners@google.com
     org_id: '1234567890'
     role: roles/cloudsupport.admin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/cloudsupport.techSupportEditor
   module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.orgFirewallPolicyAdmin"]:
     condition: []
     members:
@@ -2538,6 +2733,13 @@ values:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     - serviceAccount:iac-security-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/resourcemanager.tagViewer
+  module.organization[0].google_essential_contacts_contact.contact["$email_addresses:gcp-organization-admins"]:
+    email: $email_addresses:gcp-organization-admins
+    language_tag: en
+    notification_category_subscriptions:
+    - ALL
+    parent: organizations/1234567890
+    timeouts: null
   module.organization[0].google_logging_organization_settings.default[0]:
     organization: '1234567890'
     storage_location: europe-west1
@@ -2776,11 +2978,12 @@ counts:
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
   google_essential_contacts_contact: 1
-  google_folder: 8
+  google_folder: 10
   google_folder_iam_binding: 44
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
+  google_logging_project_settings: 2
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
@@ -2797,15 +3000,15 @@ counts:
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
-  google_storage_bucket_object: 9
+  google_storage_bucket_object: 10
   google_storage_managed_folder: 5
   google_storage_managed_folder_iam_binding: 10
   google_storage_project_service_account: 3
-  google_tags_tag_binding: 5
+  google_tags_tag_binding: 7
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 48
-  resources: 317
+  modules: 50
+  resources: 324
   terraform_data: 4

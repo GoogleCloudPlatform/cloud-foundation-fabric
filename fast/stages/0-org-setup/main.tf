@@ -41,6 +41,11 @@ locals {
       local.project_defaults.overrides.prefix,
       null
     )
+    observability = try(
+      local.project_defaults.defaults.observability,
+      local.project_defaults.overrides.observability,
+      null
+    )
   }
   iam_principals = merge(
     local.org_iam_principals,

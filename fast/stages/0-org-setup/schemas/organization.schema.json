@@ -88,6 +88,9 @@
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
     },
+    "iam_by_principals_conditional": {
+      "$ref": "#/$defs/iam_by_principals_conditional"
+    },
     "iam_by_principals_additive": {
       "$ref": "#/$defs/iam_by_principals"
     },
@@ -523,6 +526,48 @@
           "items": {
             "type": "string",
             "pattern": "^(?:roles/|\\$custom_roles:)"
+          }
+        }
+      }
+    },
+    "iam_by_principals_conditional": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:\\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "condition",
+            "roles"
+          ],
+          "properties": {
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:roles/|\\$custom_roles:)"
+              }
+            }
           }
         }
       }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,8 @@ module "organization-iam" {
   context = merge(local.ctx, {
     condition_vars = merge(
       local.ctx_condition_vars,
-      { folder_ids = module.factory.folder_ids }
+      { folder_ids = module.factory.folder_ids },
+      { project_ids = module.factory.project_ids }
     )
     custom_roles = merge(
       local.ctx.custom_roles,
@@ -118,6 +119,7 @@ module "organization-iam" {
     project_ids = merge(
       local.ctx.project_ids, module.factory.project_ids
     )
+    pubsub_topics   = module.factory.pubsub_topics
     storage_buckets = module.factory.storage_buckets
     tag_keys = merge(
       local.ctx.tag_keys,
@@ -137,6 +139,9 @@ module "organization-iam" {
   )
   iam_by_principals = lookup(
     local.organization, "iam_by_principals", {}
+  )
+  iam_by_principals_conditional = lookup(
+    local.organization, "iam_by_principals_conditional", {}
   )
   iam_bindings = lookup(
     local.organization, "iam_bindings", {}

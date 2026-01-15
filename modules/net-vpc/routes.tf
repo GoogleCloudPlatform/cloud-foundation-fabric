@@ -131,6 +131,7 @@ resource "google_network_connectivity_policy_based_route" "default" {
   network               = local.network.id
   name                  = "${var.name}-${each.key}"
   description           = each.value.description
+  labels                = each.value.labels
   priority              = each.value.priority
   next_hop_other_routes = each.value.use_default_routing ? "DEFAULT_ROUTING" : null
   next_hop_ilb_ip       = each.value.use_default_routing ? null : each.value.next_hop_ilb_ip
