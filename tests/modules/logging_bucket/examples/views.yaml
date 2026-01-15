@@ -32,7 +32,7 @@ values:
     enable_analytics: false
     index_configs: []
     location: global
-    locked: false
+    locked: null
     project: project-id
     retention_days: 30
 
