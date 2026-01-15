@@ -131,7 +131,7 @@ module "agent_engine" {
   bucket_config = {
     create = false
   }
-  
+
   deployment_files = {
     package_config = {
       are_paths_local   = false
@@ -142,7 +142,7 @@ module "agent_engine" {
     source_config = null
   }
 }
-# tftest inventory=minimal-pickle.yaml
+# tftest inventory=pickle-gcs.yaml
 ```
 
 ### Unmanaged deployments
