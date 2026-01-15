@@ -49,5 +49,6 @@ module "firewall_policies" {
   context = {
     folder_ids       = local.ctx_folders
     cidr_ranges_sets = local.ctx.cidr_ranges_sets
+    tag_values       = local.ctx.tag_values
   }
 }

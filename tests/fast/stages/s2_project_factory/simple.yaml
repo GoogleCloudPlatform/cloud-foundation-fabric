@@ -16,12 +16,13 @@ values: {}
 counts:
   google_compute_shared_vpc_service_project: 2
   google_folder: 3
+  google_logging_project_settings: 2
   google_project: 2
-  google_project_iam_member: 2
-  google_project_service: 4
+  google_project_iam_member: 4
+  google_project_service: 6
   google_project_service_identity: 2
   google_storage_bucket_object: 1
   google_tags_tag_binding: 2
   modules: 8
-  resources: 20
+  resources: 26
   terraform_data: 2

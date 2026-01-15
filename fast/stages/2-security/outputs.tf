@@ -42,9 +42,10 @@ resource "google_storage_bucket_object" "version" {
     local.output_files.storage_bucket != null &&
     fileexists("fast_version.txt") ? 1 : 0
   )
-  bucket = local.output_files.storage_bucket
-  name   = "versions/${local.defaults.stage_name}-version.txt"
-  source = "fast_version.txt"
+  bucket         = local.output_files.storage_bucket
+  name           = "versions/${local.defaults.stage_name}-version.txt"
+  source         = "fast_version.txt"
+  source_md5hash = filemd5("fast_version.txt")
 }
 
 resource "local_file" "tfvars" {
@@ -55,10 +56,11 @@ resource "local_file" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "tfvars" {
-  count   = local.output_files.storage_bucket != null ? 1 : 0
-  bucket  = local.output_files.storage_bucket
-  name    = "tfvars/${local.defaults.stage_name}.auto.tfvars.json"
-  content = jsonencode(local.tfvars)
+  count          = local.output_files.storage_bucket != null ? 1 : 0
+  bucket         = local.output_files.storage_bucket
+  name           = "tfvars/${local.defaults.stage_name}.auto.tfvars.json"
+  content        = jsonencode(local.tfvars)
+  source_md5hash = md5(jsonencode(local.tfvars))
 }
 
 output "ca_pools" {

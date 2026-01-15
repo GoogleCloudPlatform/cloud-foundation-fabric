@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,13 @@ locals {
         try(v.contacts, null),
         local.data_defaults.defaults.contacts
       )
-      factories_config           = try(v.factories_config, {})
-      iam                        = try(v.iam, {})                        # type: map(list(string))
-      iam_bindings               = try(v.iam_bindings, {})               # type: map(object({...}))
-      iam_bindings_additive      = try(v.iam_bindings_additive, {})      # type: map(object({...}))
-      iam_by_principals_additive = try(v.iam_by_principals_additive, {}) # type: map(list(string))
-      iam_by_principals          = try(v.iam_by_principals, {})          # map(list(string))
+      factories_config              = try(v.factories_config, {})
+      iam                           = try(v.iam, {})                           # type: map(list(string))
+      iam_bindings                  = try(v.iam_bindings, {})                  # type: map(object({...}))
+      iam_bindings_additive         = try(v.iam_bindings_additive, {})         # type: map(object({...}))
+      iam_by_principals_additive    = try(v.iam_by_principals_additive, {})    # type: map(list(string))
+      iam_by_principals             = try(v.iam_by_principals, {})             # map(list(string))
+      iam_by_principals_conditional = try(v.iam_by_principals_conditional, {}) # map(object({...}))
       kms = {
         autokeys = try(v.kms.autokeys, {})
         keyrings = try(v.kms.keyrings, {})
