@@ -60,12 +60,14 @@ locals {
     gcp-security-admins     = "group:gcp-security-admins@${local.organization.domain}"
     gcp-support             = "group:gcp-support@${local.organization.domain}"
   }
-  org_tag_keys = {
-    for k, v in module.organization[0].tag_keys : k => v.id
-  }
-  org_tag_values = {
-    for k, v in module.organization[0].tag_values : k => v.id
-  }
+  org_tag_keys = merge(
+    { for k, v in module.organization[0].tag_keys : k => v.id },
+    { for k, v in module.organization[0].network_tag_keys : k => v.id }
+  )
+  org_tag_values = merge(
+    { for k, v in module.organization[0].tag_values : k => v.id },
+    { for k, v in module.organization[0].network_tag_values : k => v.id }
+  )
 }
 
 module "organization" {
