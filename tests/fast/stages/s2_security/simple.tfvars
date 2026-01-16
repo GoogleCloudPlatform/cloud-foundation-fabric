@@ -18,8 +18,9 @@ organization = {
 }
 prefix = "fast"
 service_accounts = {
-  "iac-0/iac-pf-rw" = "iac-pf-rw@test.iam.gserviceaccount.com"
-  "iac-0/iac-pf-ro" = "iac-pf-ro@test.iam.gserviceaccount.com"
+  "iac-0/iac-pf-rw"     = "iac-pf-rw@test.iam.gserviceaccount.com"
+  "iac-0/iac-pf-ro"     = "iac-pf-ro@test.iam.gserviceaccount.com"
+  "iac-0/iac-dp-dev-rw" = "iac-dp-dev-rw@test.iam.gserviceaccount.com"
 }
 storage_buckets = {
   "iac-0/iac-outputs" = "test"

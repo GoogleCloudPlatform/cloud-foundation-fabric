@@ -17,14 +17,27 @@
 name: prod-billing-exp-0
 iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-org-ro:
-    - roles/viewer
+    - roles/bigquery.jobUser
+    - roles/bigquery.dataViewer
+    - roles/browser
+    - roles/serviceusage.serviceUsageViewer
+    - roles/storage.objectViewer
+    - $custom_roles:cloudkms_viewer
   $iam_principals:service_accounts/iac-0/iac-org-rw:
-    - roles/owner
+    - roles/bigquery.admin
+    - roles/cloudkms.admin
+    - roles/resourcemanager.projectIamAdmin
+    - roles/serviceusage.serviceUsageAdmin
+    - roles/storage.admin
 services:
   - bigquery.googleapis.com
   - bigquerydatatransfer.googleapis.com
   - cloudkms.googleapis.com
+  - logging.googleapis.com
   - storage.googleapis.com
+iam:
+  # reset default role on new project
+  roles/owner: []
 kms:
   keyrings:
     ew1:
@@ -32,6 +45,10 @@ kms:
       keys:
         bigquery:
           rotation_period: 7776000s
+log_buckets:
+  _Default:
+    retention: 90
+    location: europe-west1
 service_encryption_key_ids:
   bigquery.googleapis.com:
     - $kms_keys:billing-0/ew1/bigquery

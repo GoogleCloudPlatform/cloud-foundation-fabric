@@ -1,0 +1,73 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/folder.schema.json
+
+name: Networking
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-networking-rw:
+    - roles/compute.networkAdmin
+    - roles/compute.securityAdmin
+    - roles/compute.xpnAdmin
+    - roles/dns.admin
+    - roles/iam.networkAdmin
+    - roles/logging.admin
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.projectDeleter
+    - roles/resourcemanager.projectIamAdmin
+    - roles/resourcemanager.tagUser
+    - roles/serviceusage.serviceUsageAdmin
+  $iam_principals:service_accounts/iac-0/iac-networking-ro:
+    - roles/browser
+    - roles/compute.networkViewer
+    - roles/dns.reader
+    - roles/logging.viewer
+    - roles/resourcemanager.folderViewer
+    - roles/resourcemanager.tagViewer
+    - roles/serviceusage.serviceUsageViewer
+    - $custom_roles:service_networking_viewer
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - $custom_roles:service_project_network_admin
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - roles/compute.viewer
+    - $custom_roles:project_iam_viewer
+iam_bindings:
+  dp_dev_rw:
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
+    role: $custom_roles:service_project_network_admin
+    condition:
+      expression: |
+        resource.matchTag('${organization.id}/environment', 'development')
+      title: Data platform dev service project admin.
+  dp_dev_ro:
+    role: roles/compute.networkViewer
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
+    condition:
+      title: Data platform dev network viewer.
+      expression: |
+        resource.matchTag('${organization.id}/environment', 'development')
+  project_factory:
+    role: roles/resourcemanager.projectIamAdmin
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-pf-rw
+    condition:
+      title: Project factory delegated IAM grant.
+      expression: |
+        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
+          'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
+          'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user'
+        ])
