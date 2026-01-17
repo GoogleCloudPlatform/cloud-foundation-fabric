@@ -1,0 +1,20 @@
+org-setup:
+  provider_files:
+    apply: 0-org-setup-providers.tf
+    plan: 0-org-setup-providers-ro.tf
+  repository:
+    name: myorg/0-org-setup
+    type: github
+    apply_branches:
+      - master
+      - fast-dev
+  service_accounts:
+    apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
+    plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
+  tfvars_files:
+    - 0-org-setup.auto.tfvars
+  workload_identity:
+    pool: $workload_identity_pools:iac-0/default
+    provider: $workload_identity_providers:iac-0/default/github-default
+    iam_principalsets:
+      template: github
