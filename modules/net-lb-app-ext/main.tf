@@ -121,7 +121,7 @@ resource "google_compute_target_http_proxy" "new" {
     var.protocol == "HTTP" && !var.use_classic_version ? 1 : 0
   )
   project     = var.project_id
-  name        = coalesce(var.https_proxy_config.name, var.name)
+  name        = coalesce(var.http_proxy_config.name, var.name)
   description = var.http_proxy_config.description
   url_map     = google_compute_url_map.default.id
 }
