@@ -66,6 +66,7 @@ variable "deployment_files" {
   description = "The to source files path and names."
   type = object({
     package_config = optional(object({
+      are_paths_local   = optional(bool, true)
       dependencies_path = optional(string, "./src/dependencies.tar.gz")
       pickle_path       = optional(string, "./src/pickle.pkl")
       requirements_path = optional(string, "./src/requirements.txt")

@@ -22,19 +22,19 @@ values:
     content_language: null
     customer_encryption: []
     deletion_policy: null
-    detect_md5hash: different hash
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
     name: versions/2-security-version.txt
     retention: []
     source: fast_version.txt
-    source_md5hash: null
     temporary_hold: null
     timeouts: null
   module.cas["prod-ca-0"].google_privateca_ca_pool.default[0]:
     effective_labels:
       goog-terraform-provisioned: 'true'
+    encryption_spec: []
     issuance_policy: []
     labels: null
     location: europe-west1
@@ -110,24 +110,6 @@ values:
     timeouts: null
     type: SELF_SIGNED
     user_defined_access_urls: []
-  module.factory.module.folder-1["dev"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Development
-    parent: folders/12345678
-    tags: null
-    timeouts: null
-  module.factory.module.folder-1["dev"].google_tags_tag_binding.binding["environment"]:
-    tag_value: tagValues/12345
-    timeouts: null
-  module.factory.module.folder-1["prod"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Production
-    parent: folders/12345678
-    tags: null
-    timeouts: null
-  module.factory.module.folder-1["prod"].google_tags_tag_binding.binding["environment"]:
-    tag_value: tagValues/12346
-    timeouts: null
   module.factory.module.projects-iam["dev-sec-core-0"].google_project_iam_binding.bindings["key_delegated"]:
     condition:
     - description: null
@@ -148,6 +130,8 @@ values:
     - serviceAccount:iac-pf-rw@test.iam.gserviceaccount.com
     project: fast-prod-sec-core-0
     role: roles/cloudkms.admin
+  module.factory.module.projects["dev-sec-core-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: fast-dev-sec-core-0
   module.factory.module.projects["dev-sec-core-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 000000-111111-222222
@@ -155,6 +139,7 @@ values:
     effective_labels:
       environment: development
       goog-terraform-provisioned: 'true'
+    folder_id: $folder_ids:security/dev
     labels:
       environment: development
     name: fast-dev-sec-core-0
@@ -233,6 +218,8 @@ values:
     project: fast-dev-sec-core-0
     service: secretmanager.googleapis.com
     timeouts: null
+  module.factory.module.projects["prod-sec-core-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: fast-prod-sec-core-0
   module.factory.module.projects["prod-sec-core-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 000000-111111-222222
@@ -240,6 +227,7 @@ values:
     effective_labels:
       environment: development
       goog-terraform-provisioned: 'true'
+    folder_id: $folder_ids:security/prod
     labels:
       environment: development
     name: fast-prod-sec-core-0
@@ -322,13 +310,77 @@ values:
     input: null
     output: null
     triggers_replace: null
+  module.factory.terraform_data.project-preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.kms["dev-primary-default"].google_kms_crypto_key.default["bigquery"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: bigquery
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms["dev-primary-default"].google_kms_crypto_key.default["composer"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: composer
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms["dev-primary-default"].google_kms_crypto_key.default["compute"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: compute
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms["dev-primary-default"].google_kms_crypto_key.default["gke"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: gke
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms["dev-primary-default"].google_kms_crypto_key.default["storage"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: storage
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: 7776000s
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.kms["dev-primary-default"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: dev-primary-default
+    project: fast-dev-sec-core-0
+    timeouts: null
   module.kms["prod-primary-default"].google_kms_crypto_key.default["compute"]:
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
     name: compute
     purpose: ENCRYPT_DECRYPT
-    rotation_period: null
+    rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -339,7 +391,7 @@ values:
     labels: null
     name: storage
     purpose: ENCRYPT_DECRYPT
-    rotation_period: null
+    rotation_period: 7776000s
     skip_initial_version_creation: false
     terraform_labels:
       goog-terraform-provisioned: 'true'
@@ -351,9 +403,9 @@ values:
     timeouts: null
 
 counts:
-  google_folder: 2
-  google_kms_crypto_key: 2
-  google_kms_key_ring: 1
+  google_kms_crypto_key: 7
+  google_kms_key_ring: 2
+  google_logging_project_settings: 2
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 1
   google_project: 2
@@ -362,7 +414,6 @@ counts:
   google_project_service: 12
   google_project_service_identity: 10
   google_storage_bucket_object: 2
-  google_tags_tag_binding: 2
-  modules: 9
-  resources: 45
+  modules: 8
+  resources: 49
   terraform_data: 2

@@ -5,6 +5,7 @@ This module allows the creation and management of folders, including support for
 <!-- BEGIN TOC -->
 - [Basic example with IAM bindings](#basic-example-with-iam-bindings)
 - [IAM](#iam)
+  - [Conditional IAM by Principals](#conditional-iam-by-principals)
 - [Assured Workload Folder](#assured-workload-folder)
 - [Privileged Access Manager (PAM) Entitlements](#privileged-access-manager-pam-entitlements)
   - [Privileged Access Manager (PAM) Entitlements Factory](#privileged-access-manager-pam-entitlements-factory)
@@ -56,10 +57,42 @@ IAM is managed via several variables that implement different features and level
 - `iam` and `iam_by_principals` configure authoritative bindings that manage individual roles exclusively, and are internally merged
 - `iam_bindings` configure authoritative bindings with optional support for conditions, and are not internally merged with the previous two variables
 - `iam_bindings_additive` configure additive bindings via individual role/member pairs with optional support  conditions
+- `iam_by_principals_conditional` configure authoritative bindings with required conditions, allowing to specify roles and condition for each principal
 
 The authoritative and additive approaches can be used together, provided different roles are managed by each. Some care must also be taken with the `iam_by_principals` variable to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
 IAM also supports variable interpolation for both roles and principals, via the respective attributes in the `var.context` variable. Refer to the [project module](../project/README.md#iam) for examples of the IAM interface.
+
+### Conditional IAM by Principals
+
+The `iam_by_principals_conditional` variable allows defining IAM bindings keyed by principal, where each principal shares a common condition for multiple roles. This is useful for granting access with specific conditions (e.g., time-based or resource-based) to users or groups across different roles.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  iam_by_principals_conditional = {
+    "user:one@example.com" = {
+      roles = ["roles/owner", "roles/viewer"]
+      condition = {
+        title       = "expires_after_2024_12_31"
+        description = "Expiring at midnight of 2024-12-31"
+        expression  = "request.time < timestamp(\"2025-01-01T00:00:00Z\")"
+      }
+    }
+    "user:two@example.com" = {
+      roles = ["roles/owner", "roles/viewer"]
+      condition = {
+        title       = "expires_after_2024_12_31"
+        description = "Expiring at midnight of 2024-12-31"
+        expression  = "request.time < timestamp(\"2025-01-01T00:00:00Z\")"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=iam-bpc.yaml
+```
 
 ## Assured Workload Folder
 
@@ -398,7 +431,7 @@ module "folder-sink" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest modules=6 resources=18 inventory=logging.yaml e2e
+# tftest inventory=logging.yaml e2e
 ```
 
 ## Data Access Logs
@@ -604,6 +637,7 @@ module "folder" {
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code title="map&#40;object&#40;&#123;&#10;  member &#61; string&#10;  role   &#61; string&#10;  condition &#61; optional&#40;object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code title="map&#40;object&#40;&#123;&#10;  roles &#61; list&#40;string&#41;&#10;  condition &#61; object&#40;&#123;&#10;    expression  &#61; string&#10;    title       &#61; string&#10;    description &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [id](variables.tf#L150) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
 | [logging_data_access](variables-logging.tf#L17) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code title="map&#40;object&#40;&#123;&#10;  ADMIN_READ &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41; &#125;&#41;&#41;,&#10;  DATA_READ  &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41; &#125;&#41;&#41;,&#10;  DATA_WRITE &#61; optional&#40;object&#40;&#123; exempted_members &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41; &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |

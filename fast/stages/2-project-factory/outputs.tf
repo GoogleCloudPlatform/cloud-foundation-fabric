@@ -20,8 +20,9 @@ output "projects" {
 }
 
 resource "google_storage_bucket_object" "version" {
-  count  = fileexists("fast_version.txt") ? 1 : 0
-  bucket = var.automation.outputs_bucket
-  name   = "versions/${var.stage_name}-version.txt"
-  source = "fast_version.txt"
+  count          = fileexists("fast_version.txt") ? 1 : 0
+  bucket         = var.automation.outputs_bucket
+  name           = "versions/${var.stage_name}-version.txt"
+  source         = "fast_version.txt"
+  source_md5hash = filemd5("fast_version.txt")
 }

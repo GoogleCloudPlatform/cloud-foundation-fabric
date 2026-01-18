@@ -15,6 +15,8 @@
 # yaml-language-server: $schema=../../schemas/project.schema.json
 
 parent: $folder_ids:team-a/dev
+services:
+  - compute.googleapis.com
 shared_vpc_service_config:
   host_project: $project_ids:net-dev-0
   # network_users:

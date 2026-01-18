@@ -56,6 +56,7 @@
     <br>*additional properties: false*
     - **friendly_name**: *string*
     - **location**: *string*
+    - **encryption_key**: *string*
 - **deletion_policy**: *string*
   <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
 - **factories_config**: *object*
@@ -163,6 +164,9 @@
     - **services_enabled**: *array*
       - items: *string*
 - **project_template**: *string*
+- **pubsub_topics**: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_-]+$`**: *reference([pubsub_topic](#refs-pubsub_topic))*
 - **service_accounts**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
@@ -406,3 +410,74 @@
         - items: *string*
       - **requester_email_recipients**: *array*
         - items: *string*
+- **pubsub_topic**<a name="refs-pubsub_topic"></a>: *object*
+  <br>*additional properties: false*
+  - **iam**: *reference([iam](#refs-iam))*
+  - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+  - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+  - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
+  - **kms_key**: *string*
+  - **labels**: *object*
+    <br>*additional properties: string*
+  - **message_retention_duration**: *string*
+  - **regions**: *array*
+    - items: *string*
+  - **schema**: *object*
+    <br>*additional properties: false*
+    - ⁺**definition**: *string*
+    - **msg_encoding**: *string*
+    - ⁺**schema_type**: *string*
+  - **subscriptions**: *object*
+    <br>*additional properties: false*
+    - **`^[a-zA-Z0-9_-]+$`**: *object*
+      <br>*additional properties: false*
+      - **ack_deadline_seconds**: *number*
+      - **enable_exactly_once_delivery**: *boolean*
+      - **enable_message_ordering**: *boolean*
+      - **expiration_policy_ttl**: *string*
+      - **filter**: *string*
+      - **iam**: *reference([iam](#refs-iam))*
+      - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+      - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+      - **labels**: *object*
+        <br>*additional properties: string*
+      - **message_retention_duration**: *string*
+      - **retain_acked_messages**: *boolean*
+      - **bigquery**: *object*
+        <br>*additional properties: false*
+        - ⁺**table**: *string*
+        - **drop_unknown_fields**: *boolean*
+        - **service_account_email**: *string*
+        - **use_table_schema**: *boolean*
+        - **use_topic_schema**: *boolean*
+        - **write_metadata**: *boolean*
+      - **cloud_storage**: *object*
+        <br>*additional properties: false*
+        - ⁺**bucket**: *string*
+        - **filename_prefix**: *string*
+        - **filename_suffix**: *string*
+        - **max_duration**: *string*
+        - **max_bytes**: *number*
+        - **avro_config**: *object*
+          <br>*additional properties: false*
+          - **write_metadata**: *boolean*
+      - **dead_letter_policy**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+        - **max_delivery_attempts**: *number*
+      - **push**: *object*
+        <br>*additional properties: false*
+        - ⁺**endpoint**: *string*
+        - **attributes**: *object*
+          <br>*additional properties: string*
+        - **no_wrapper**: *object*
+          <br>*additional properties: false*
+          - **write_metadata**: *boolean*
+        - **oidc_token**: *object*
+          <br>*additional properties: false*
+          - **audience**: *string*
+          - ⁺**service_account_email**: *string*
+      - **retry_policy**: *object*
+        <br>*additional properties: false*
+        - **minimum_backoff**: *number*
+        - **maximum_backoff**: *number*
