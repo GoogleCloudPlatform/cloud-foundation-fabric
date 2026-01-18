@@ -19,7 +19,7 @@
 locals {
   group_ids = merge(
     {
-      for k, v in google_compute_instance_group.default : k => v.id
+      for k, v in google_compute_instance_group.default : k => v.self_link
     },
     {
       for k, v in google_compute_global_network_endpoint_group.default : k => v.id
