@@ -60,6 +60,14 @@ locals {
     gcp-security-admins     = "group:gcp-security-admins@${local.organization.domain}"
     gcp-support             = "group:gcp-support@${local.organization.domain}"
   }
+  org_logging_identities = merge(
+    module.organization[0].logging_identities.kms == null ? {} : {
+      "organization/logging/kms" = module.organization[0].logging_identities.kms
+    },
+    module.organization[0].logging_identities.logging == null ? {} : {
+      "organization/logging/sinks" = module.organization[0].logging_identities.logging
+    }
+  )
   org_tag_keys = {
     for k, v in module.organization[0].tag_keys : k => v.id
   }

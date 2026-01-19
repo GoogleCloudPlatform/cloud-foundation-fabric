@@ -47,6 +47,18 @@ output "id" {
   ]
 }
 
+output "logging_identities" {
+  description = "Principals used for logging sinks."
+  value = {
+    kms = try(
+      google_logging_organization_settings.default[0].kms_service_account_id, null
+    )
+    logging = try(
+      google_logging_organization_settings.default[0].logging_service_account_id, null
+    )
+  }
+}
+
 output "network_tag_keys" {
   description = "Tag key resources."
   value = {
