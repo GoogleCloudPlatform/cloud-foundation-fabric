@@ -34,7 +34,11 @@ To use this `hardened` dataset, create a `0-org-setup.auto.tfvars` file in the `
 
 ```tfvars
 factories_config = {
+  defaults         = "datasets/hardened/defaults.yaml"
+  folders          = "datasets/hardened/folders"
+  observability    = "datasets/hardened/observability"
   organization     = "datasets/hardened/organization"
+  projects         = "datasets/hardened/projects"
 }
 ```
 

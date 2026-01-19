@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/project.schema.json
+# yaml-language-server: $schema=../../../../../schemas/folder.schema.json
 
-parent: $folder_ids:team-a/dev
-services:
-  - compute.googleapis.com
-shared_vpc_service_config:
-  host_project: $project_ids:net-dev-0
-  # network_users:
-  #   - group:team-a-admins@example.com
-# iam:
-#   # reset default role on new project
-#   roles/owner: []
-# log_buckets:
-#   _Default:
-#     retention: 90
-#     location: europe-west1
+name: Production
+tag_bindings:
+  environment: $tag_values:environment/production
