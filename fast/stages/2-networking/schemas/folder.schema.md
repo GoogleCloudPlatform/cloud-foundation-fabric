@@ -62,6 +62,7 @@
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **name**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
@@ -157,6 +158,18 @@
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:roles/|\$custom_roles:)*
+- **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
+  <br>*additional properties: false*
+  - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *object*
+    <br>*additional properties: false*
+    - ⁺**condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+    - ⁺**roles**: *array*
+      - items: *string*
+        <br>*pattern: ^(?:roles/|\$custom_roles:)*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*
