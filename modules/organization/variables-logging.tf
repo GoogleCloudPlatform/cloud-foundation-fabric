@@ -37,6 +37,7 @@ variable "logging_settings" {
   type = object({
     # TODO: add support for CMEK
     disable_default_sink = optional(bool)
+    kms_key_name         = optional(string)
     storage_location     = optional(string)
   })
   default = null
