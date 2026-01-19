@@ -16,47 +16,47 @@
 
 
 locals {
-  _observability_project = (
-    try(local.project_defaults.defaults.observability, null) != null ||
-    try(local.project_defaults.overrides.observability, null) != null
-    ) ? {
-    project_id     = local.defaults.observability.project_id
-    project_number = local.defaults.observability.project_number
-  } : {}
-
-  observability_project_id = try(lookup(
-    module.factory.project_ids,
-    replace(local._observability_project.project_id, "$project_ids:", ""),
-    local._observability_project.project_id
-  ), null)
-
-  observability_project_number = try(lookup(
-    module.factory.project_numbers,
-    replace(local._observability_project.project_number, "$project_numbers:", ""),
-    local._observability_project.project_number
-  ), null)
+  ob_project = {
+    project_id = try(
+      replace(local.defaults.observability.project_id, "$project_ids:", ""), null
+    )
+    number = try(
+      replace(local.defaults.observability.number, "$project_numbers:", ""), null
+    )
+  }
 }
 
 module "projects-observability" {
   source = "../../../modules/project"
-  count  = length(local._observability_project) > 0 ? 1 : 0
-
-  name = local.observability_project_id
+  count = (
+    local.ob_project.project_id != null && local.ob_project.number != null ? 1 : 0
+  )
+  name = lookup(
+    module.factory.project_ids,
+    local.ob_project.project_id,
+    local.ob_project.project_id
+  )
   project_reuse = {
     use_data_source = false
     attributes = {
-      name   = local.observability_project_id
-      number = local.observability_project_number
+      name = lookup(
+        module.factory.project_ids,
+        local.ob_project.project_id,
+        local.ob_project.project_id
+      )
+      number = lookup(
+        module.factory.project_numbers,
+        local.ob_project.number,
+        local.ob_project.number
+      )
     }
   }
-
   context = merge(local.ctx, {
     folder_ids  = module.factory.folder_ids
     kms_keys    = module.factory.kms_keys
     log_buckets = module.factory.log_buckets
     project_ids = module.factory.project_ids
   })
-
   factories_config = {
     observability = var.factories_config.observability
   }

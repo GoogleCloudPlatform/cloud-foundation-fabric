@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,6 +94,11 @@ module "projects" {
     each.value.contacts, var.data_merges.contacts
   )
   context = merge(local.ctx, {
+    condition_vars = {
+      folder_ids = {
+        for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
+      }
+    }
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
@@ -161,13 +166,14 @@ module "projects-iam" {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
-  iam                        = lookup(each.value, "iam", {})
-  iam_bindings               = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive      = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals          = lookup(each.value, "iam_by_principals", {})
-  iam_by_principals_additive = lookup(each.value, "iam_by_principals_additive", {})
-  logging_data_access        = lookup(each.value, "logging_data_access", {})
-  pam_entitlements           = try(each.value.pam_entitlements, {})
+  iam                           = lookup(each.value, "iam", {})
+  iam_bindings                  = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
+  logging_data_access           = lookup(each.value, "logging_data_access", {})
+  pam_entitlements              = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false
     grant_default_roles   = false

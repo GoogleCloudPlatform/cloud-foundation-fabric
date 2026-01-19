@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ values:
     language_tag: en
     notification_category_subscriptions:
     - ALL
-    timeouts: null
+    parent: organizations/1234567890
   google_logging_organization_settings.default[0]:
     organization: '1234567890'
     storage_location: europe-west8
@@ -108,6 +108,33 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/viewer
+  google_organization_iam_binding.bindings["iam-bpc:$custom_roles:myrole_one-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    org_id: '1234567890'
+    role: organizations/366118655033/roles/myRoleOne
+  google_organization_iam_binding.bindings["iam-bpc:$custom_roles:myrole_two-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    org_id: '1234567890'
+    role: organizations/366118655033/roles/myRoleTwo
+  google_organization_iam_binding.bindings["iam-bpc:roles/storage.admin-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    org_id: '1234567890'
+    role: roles/storage.admin
   google_organization_iam_binding.bindings["myrole_two"]:
     condition:
     - description: null
@@ -218,7 +245,7 @@ counts:
   google_logging_organization_settings: 1
   google_logging_organization_sink: 5
   google_organization_iam_audit_config: 1
-  google_organization_iam_binding: 4
+  google_organization_iam_binding: 7
   google_organization_iam_member: 1
   google_privileged_access_manager_entitlement: 1
   google_project_iam_member: 2
@@ -230,4 +257,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 26
+  resources: 29
