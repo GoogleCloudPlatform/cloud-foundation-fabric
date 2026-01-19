@@ -14,6 +14,40 @@
  * limitations under the License.
  */
 
+
+variable "asset_feeds" {
+  description = "Cloud Asset Inventory feeds."
+  type = map(object({
+    billing_project = optional(string)
+    content_type    = optional(string)
+    asset_types     = optional(list(string))
+    asset_names     = optional(list(string))
+    feed_output_config = object({
+      pubsub_destination = object({
+        topic = string
+      })
+    })
+    condition = optional(object({
+      expression  = string
+      title       = optional(string)
+      description = optional(string)
+      location    = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.asset_feeds :
+      v.content_type == null || contains(
+        ["RESOURCE", "IAM_POLICY", "ORG_POLICY", "ACCESS_POLICY", "OS_INVENTORY", "RELATIONSHIP"],
+        v.content_type
+      )
+    ])
+    error_message = "Content type must be one of RESOURCE, IAM_POLICY, ORG_POLICY, ACCESS_POLICY, OS_INVENTORY, RELATIONSHIP."
+  }
+}
+
 variable "auto_create_network" {
   description = "Whether to create the default network for the project."
   type        = bool
