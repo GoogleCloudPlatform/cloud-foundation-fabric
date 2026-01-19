@@ -35,6 +35,9 @@
     },
     "forwarding": {
       "$ref": "#/$defs/forwarding_zone"
+    },
+    "public": {
+      "$ref": "#/$defs/public_zone"
     }
   },
   "required": [
@@ -52,6 +55,9 @@
         },
         "forwarding": {
           "not": {}
+        },
+        "public": {
+          "not": {}
         }
       }
     },
@@ -66,6 +72,9 @@
         },
         "forwarding": {
           "not": {}
+        },
+        "public": {
+          "not": {}
         }
       }
     },
@@ -79,6 +88,26 @@
           "not": {}
         },
         "peering": {
+          "not": {}
+        },
+        "public": {
+          "not": {}
+        }
+      }
+    },
+    {
+      "title": "Public Zone",
+      "required": [
+        "public"
+      ],
+      "properties": {
+        "private": {
+          "not": {}
+        },
+        "peering": {
+          "not": {}
+        },
+        "forwarding": {
           "not": {}
         }
       }
@@ -178,6 +207,56 @@
       "required": [
         "client_networks"
       ]
+    },
+    "public_zone": {
+      "description": "Public zone specific configuration.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enable_logging": {
+          "type": "boolean"
+        },
+        "dnssec_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "type": "string"
+            },
+            "non_existence": {
+              "type": "string",
+              "enum": [
+                "nsec",
+                "nsec3"
+              ]
+            },
+            "key_signing_key": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "algorithm": {
+                  "type": "string"
+                },
+                "key_length": {
+                  "type": "number"
+                }
+              }
+            },
+            "zone_signing_key": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "algorithm": {
+                  "type": "string"
+                },
+                "key_length": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

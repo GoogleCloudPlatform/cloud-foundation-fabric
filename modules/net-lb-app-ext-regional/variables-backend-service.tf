@@ -31,6 +31,7 @@ variable "backend_service_configs" {
     protocol                        = optional(string)
     security_policy                 = optional(string)
     session_affinity                = optional(string)
+    locality_lb_policy              = optional(string)
     timeout_sec                     = optional(number)
     backends = list(object({
       # group renamed to backend
@@ -127,12 +128,24 @@ variable "backend_service_configs" {
       for backend_service in values(var.backend_service_configs) : contains(
         [
           "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
-          "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
+          "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO", "HTTP_COOKIE"
         ],
         coalesce(backend_service.session_affinity, "NONE")
       )
     ])
     error_message = "Invalid session affinity value."
+  }
+  validation {
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : contains(
+        [
+          "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH",
+          "RANDOM", "ORIGINAL_DESTINATION", "MAGLEV"
+        ],
+        coalesce(backend_service.locality_lb_policy, "ROUND_ROBIN")
+      )
+    ])
+    error_message = "Invalid locality lb policy value."
   }
   validation {
     condition = alltrue(flatten([

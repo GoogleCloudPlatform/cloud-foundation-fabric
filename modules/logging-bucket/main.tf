@@ -51,6 +51,7 @@ resource "google_logging_project_bucket_config" "bucket" {
   bucket_id        = var.name
   description      = var.description
   enable_analytics = var.log_analytics.enable
+  locked           = var.locked
   dynamic "cmek_settings" {
     for_each = var.kms_key_name == null ? [] : [""]
     content {

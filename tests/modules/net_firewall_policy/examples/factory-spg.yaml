@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,26 +13,74 @@
 # limitations under the License.
 
 values:
-  google_network_security_security_profile.security_profile:
+  google_network_security_security_profile.mirror_profile:
+    custom_intercept_profile: []
+    custom_mirroring_profile:
+    - mirroring_deployment_groups: null
+      mirroring_endpoint_group: xxx
     description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    name: sec-profile
+    parent: organizations/1122334455
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    threat_prevention_profile: []
+    timeouts: null
+    type: CUSTOM_MIRRORING
+    url_filtering_profile: []
+  google_network_security_security_profile.security_profile:
+    custom_intercept_profile: []
+    custom_mirroring_profile: []
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     location: global
     name: security-profile
-    parent: organizations/0123456789
+    parent: organizations/1122334455
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     threat_prevention_profile: []
+    timeouts: null
     type: THREAT_PREVENTION
+  google_network_security_security_profile_group.mirror_profile_group:
+    custom_intercept_profile: null
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    name: sec-profile-group
+    parent: organizations/1122334455
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    threat_prevention_profile: null
+    timeouts: null
+    url_filtering_profile: null
   google_network_security_security_profile_group.security_profile_group:
+    custom_intercept_profile: null
+    custom_mirroring_profile: null
     description: Sample security profile group.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     location: global
     name: security-profile-group
-    parent: organizations/0123456789
+    parent: organizations/1122334455
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.firewall-policy.google_compute_firewall_policy.hierarchical[0]:
     description: null
     parent: my-project
     short_name: fw-policy
+    timeouts: null
   module.firewall-policy.google_compute_firewall_policy_association.hierarchical["my-vpc"]:
     name: fw-policy-my-vpc
+    timeouts: null
   module.firewall-policy.google_compute_firewall_policy_rule.hierarchical["ingress/http"]:
     action: apply_security_profile_group
     description: null
@@ -54,20 +102,27 @@ values:
       src_ip_ranges:
       - 10.0.0.0/8
       src_region_codes: null
+      src_secure_tags: []
       src_threat_intelligences: null
     priority: 1000
     target_resources: null
+    target_secure_tags: []
     target_service_accounts: null
+    timeouts: null
     tls_inspect: null
   module.vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
     delete_default_routes_on_create: false
     description: Terraform-managed.
     enable_ula_internal_ipv6: null
     name: my-network
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
     project: my-project
     routing_mode: GLOBAL
+    timeouts: null
   module.vpc.google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
@@ -77,9 +132,11 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: my-project
     tags: null
+    timeouts: null
   module.vpc.google_compute_route.gateway["restricted-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
@@ -89,9 +146,11 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: my-project
     tags: null
+    timeouts: null
 
 counts:
   google_compute_firewall_policy: 1
@@ -99,7 +158,7 @@ counts:
   google_compute_firewall_policy_rule: 1
   google_compute_network: 1
   google_compute_route: 3
-  google_network_security_security_profile: 1
-  google_network_security_security_profile_group: 1
+  google_network_security_security_profile: 2
+  google_network_security_security_profile_group: 2
   modules: 2
-  resources: 9
+  resources: 11

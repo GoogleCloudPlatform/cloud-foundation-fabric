@@ -124,4 +124,16 @@ resource "google_compute_firewall_policy_rule" "hierarchical" {
       }
     }
   }
+  dynamic "target_secure_tags" {
+    for_each = toset(
+      local.rules[each.key].target_tags == null
+      ? []
+      : local.rules[each.key].target_tags
+    )
+    content {
+      name = lookup(
+        local.ctx.tag_values, target_secure_tags.value, target_secure_tags.value
+      )
+    }
+  }
 }

@@ -268,6 +268,7 @@ variable "psa_configs" {
   type = list(object({
     deletion_policy  = optional(string, null)
     ranges           = map(string)
+    labels           = optional(map(string), {})
     export_routes    = optional(bool, false)
     import_routes    = optional(bool, false)
     peered_domains   = optional(list(string), [])
@@ -470,6 +471,14 @@ variable "subnets_psc" {
     ip_cidr_range = string
     region        = string
     description   = optional(string)
+    flow_logs_config = optional(object({
+      aggregation_interval = optional(string)
+      filter_expression    = optional(string)
+      flow_sampling        = optional(number)
+      metadata             = optional(string)
+      # only if metadata == "CUSTOM_METADATA"
+      metadata_fields = optional(list(string))
+    }))
 
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({

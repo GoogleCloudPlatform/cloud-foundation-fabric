@@ -1,6 +1,6 @@
 network_tags = {
   net_environment = {
-    network = "foobar"
+    network = "test-project/test-vpc"
   }
 }
 tags = {
