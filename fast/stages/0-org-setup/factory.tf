@@ -51,7 +51,10 @@ module "factory" {
       }
     )
     iam_principals = merge(
-      local.org_logging_identities,
+      {
+        for k, v in local.org_logging_identities :
+        k => "serviceAccount:${v}" if v != null
+      },
       local.iam_principals
     )
     tag_values = merge(
