@@ -17,6 +17,23 @@
 variable "folders" {
   description = "Folders data merged with factory data."
   type = map(object({
+    asset_feeds = optional(map(object({
+      billing_project = string
+      content_type    = optional(string)
+      asset_types     = optional(list(string))
+      asset_names     = optional(list(string))
+      feed_output_config = object({
+        pubsub_destination = object({
+          topic = string
+        })
+      })
+      condition = optional(object({
+        expression  = string
+        title       = optional(string)
+        description = optional(string)
+        location    = optional(string)
+      }))
+    })), {})
     name                = optional(string)
     parent              = optional(string)
     deletion_protection = optional(bool)

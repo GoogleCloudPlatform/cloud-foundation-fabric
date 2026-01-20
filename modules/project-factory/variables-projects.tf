@@ -17,6 +17,23 @@
 variable "projects" {
   description = "Projects data merged with factory data."
   type = map(object({
+    asset_feeds = optional(map(object({
+      billing_project = optional(string)
+      content_type    = optional(string)
+      asset_types     = optional(list(string))
+      asset_names     = optional(list(string))
+      feed_output_config = object({
+        pubsub_destination = object({
+          topic = string
+        })
+      })
+      condition = optional(object({
+        expression  = string
+        title       = optional(string)
+        description = optional(string)
+        location    = optional(string)
+      }))
+    })), {})
     automation = optional(object({
       project = string
       bucket = optional(object({
