@@ -17,6 +17,7 @@ This module allows the creation and management of folders, including support for
 - [KMS Autokey](#kms-autokey)
 - [Custom Security Health Analytics Modules](#custom-security-health-analytics-modules)
   - [Custom Security Health Analytics Modules Factory](#custom-security-health-analytics-modules-factory)
+- [Cloud Asset Inventory Feeds](#cloud-asset-inventory-feeds)
 - [Tags](#tags)
 - [Files](#files)
 - [Variables](#variables)
@@ -566,6 +567,39 @@ cloudkmKeyRotationPeriod:
   resource_selector:
     resource_types:
     - "cloudkms.googleapis.com/CryptoKey"
+```
+
+## Cloud Asset Inventory Feeds
+
+Cloud Asset Inventory feeds allow you to monitor asset changes in real-time by publishing notifications to a Pub/Sub topic. Feeds configured at the folder level will monitor all resources within the folder and its subfolders.
+
+```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "folder-asset-feed"
+}
+
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Monitored Folder"
+  asset_feeds = {
+    compute-instances = {
+      billing_project = var.project_id
+      feed_output_config = {
+        pubsub_destination = {
+          topic = module.pubsub.id
+        }
+      }
+      content_type = "RESOURCE"
+      asset_types = [
+        "compute.googleapis.com/Instance"
+      ]
+    }
+  }
+}
+# tftest modules=2 resources=3 inventory=feeds.yaml
 ```
 
 ## Tags

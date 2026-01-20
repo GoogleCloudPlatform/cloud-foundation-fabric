@@ -31,6 +31,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
   - [Custom Roles Factory](#custom-roles-factory)
 - [Custom Security Health Analytics Modules](#custom-security-health-analytics-modules)
   - [Custom Security Health Analytics Modules Factory](#custom-security-health-analytics-modules-factory)
+- [Cloud Asset Inventory Feeds](#cloud-asset-inventory-feeds)
 - [Tags](#tags)
   - [Tags Factory](#tags-factory)
 - [Workforce Identity](#workforce-identity)
@@ -576,6 +577,35 @@ cloudkmKeyRotationPeriod:
   resource_selector:
     resource_types:
     - "cloudkms.googleapis.com/CryptoKey"
+```
+
+## Cloud Asset Inventory Feeds
+
+Cloud Asset Inventory feeds allow you to monitor asset changes in real-time by publishing notifications to a Pub/Sub topic. Feeds configured at the organization level will monitor all resources within the organization.
+
+```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "org-asset-feed"
+}
+
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  asset_feeds = {
+    security-monitoring = {
+      billing_project = var.project_id
+      feed_output_config = {
+        pubsub_destination = {
+          topic = module.pubsub.id
+        }
+      }
+      content_type = "IAM_POLICY"
+    }
+  }
+}
+# tftest modules=2 resources=3 inventory=feeds.yaml
 ```
 
 ## Tags

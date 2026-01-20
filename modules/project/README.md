@@ -37,6 +37,7 @@ This module implements the creation and management of one GCP project including 
   - [Privileged Access Manager (PAM) Entitlements Factory](#privileged-access-manager-pam-entitlements-factory)
 - [VPC Service Controls](#vpc-service-controls)
 - [Default compute network tier](#default-compute-network-tier)
+- [Cloud Asset Inventory Feeds](#cloud-asset-inventory-feeds)
 - [BigQuery Reservations](#bigquery-reservations)
 - [Project Related Outputs](#project-related-outputs)
 - [Managing project related configuration without creating it](#managing-project-related-configuration-without-creating-it)
@@ -1586,6 +1587,43 @@ module "project" {
   default_network_tier = "STANDARD"
 }
 # tftest modules=1 resources=4
+```
+
+## Cloud Asset Inventory Feeds
+
+Cloud Asset Inventory feeds allow you to monitor asset changes in real-time by publishing notifications to a Pub/Sub topic. Feeds can be configured to monitor specific asset types, filter by conditions, and export different content types.
+
+```hcl
+module "pubsub" {
+  source     = "./fabric/modules/pubsub"
+  project_id = var.project_id
+  name       = "asset-feed"
+}
+
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "cloudasset.googleapis.com"
+  ]
+  asset_feeds = {
+    compute-instances = {
+      feed_output_config = {
+        pubsub_destination = {
+          topic = module.pubsub.id
+        }
+      }
+      content_type = "RESOURCE"
+      asset_types = [
+        "compute.googleapis.com/Instance"
+      ]
+    }
+  }
+}
+# tftest modules=2 resources=6 inventory=feeds.yaml
 ```
 
 ## BigQuery Reservations
