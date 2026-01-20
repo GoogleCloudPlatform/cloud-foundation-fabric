@@ -167,7 +167,7 @@ If you are using an externally managed billing account, make sure user has Billi
 
 If the user applying this stage is starting new on GCP without any pre-existing project configured as default in `gcloud`, org policy creation will fail as the platform will be unable to track API usage quota. In those cases, manually create a temporary project, then enable the services need to bootstrap, and configure the project as default in `gcloud`. Once the first apply has run successfully, the `gcloud` default should be reset to the `iac-0` project, and the temporary one can be deleted.
 
-Create the project via the cloud console, which ensures a unique id is chosen and allows associating a billing account. Once the project has been created, copy its project id (not the name) and use it in the commands below.
+Create the project via the cloud console, which ensures a unique id is chosen and allows associating a billing account. **Make sure the project is linked to a billing account**, as some APIs (like Logging) require it to be enabled for quota tracking. Once the project has been created, copy its project id (not the name) and use it in the commands below.
 
 ```bash
 gcloud config set project [project id]
@@ -179,7 +179,7 @@ gcloud services enable \
 
 #### Importing org policies
 
-If your dataset includes org policies which are already set in the organization, you must either comment them out in the relevant YAML files or configure this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
+If your dataset includes org policies which are already set in the organization, the first apply will fail with a `409 Conflict` error. In this case, you must either comment them out in the relevant YAML files or configure this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
 
 ```bash
 gcloud org-policies list --organization 1234567890
@@ -190,14 +190,15 @@ compute.disableSerialPortAccess                  -            SET
 
 ```tfvars
 # create or edit the 0-org-setup.auto.tfvars.file
+# do NOT include the 'constraints/' prefix, use the names matching the YAML files
 org_policies_imports = [
-  "constraints/compute.managed.restrictProtocolForwardingCreationForTypes",
-  "constraints/essentialcontacts.managed.allowedContactDomains",
-  "constraints/iam.allowedPolicyMemberDomains",
-  "constraints/iam.automaticIamGrantsForDefaultServiceAccounts",
-  "constraints/iam.managed.disableServiceAccountKeyCreation",
-  "constraints/iam.managed.disableServiceAccountKeyUpload",
-  "constraints/storage.uniformBucketLevelAccess"
+  "compute.managed.restrictProtocolForwardingCreationForTypes",
+  "essentialcontacts.managed.allowedContactDomains",
+  "iam.allowedPolicyMemberDomains",
+  "iam.automaticIamGrantsForDefaultServiceAccounts",
+  "iam.managed.disableServiceAccountKeyCreation",
+  "iam.managed.disableServiceAccountKeyUpload",
+  "storage.uniformBucketLevelAccess"
 ]
 ```
 
@@ -230,18 +231,20 @@ Like any other FAST stage, this stage creates output files that contain informat
 
 These files are only persisted by default on a special outputs bucket, but can additionally be also persisted to a local path. This is very useful during the initial deployment, as it allows rapid apply iteration cycles between stages, and provides an easy way to check or derive resource ids.
 
-To enable local output files storage, set the `outputs_location` variable in your tfvars file to a filesystem path dedicated to this organization's output files. The following snippet provides an example.
+To enable local output files storage, set the `output_files.local_path` attribute in your `defaults.yaml` file to a filesystem path dedicated to this organization's output files. The following snippet provides an example.
 
-```tfvars
-# create or edit the 0-org-setup.auto.tfvars.file
-outputs_location = "~/fast-configs/test-0"
+```yaml
+# defaults.yaml
+output_files:
+  local_path: "~/fast-configs/test-0"
 ```
 
 #### Init and apply the stage
 
-Once everything has been configured go through the standard Terraform init/apply cycle.
+Once everything has been configured go through the standard Terraform init/apply cycle. If you are using a temporary project for quota, make sure to export its ID so Terraform can use it for API calls.
 
 ```bash
+export GOOGLE_CLOUD_QUOTA_PROJECT=[project id]
 terraform init
 terraform apply
 ```
