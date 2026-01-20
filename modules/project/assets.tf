@@ -26,7 +26,11 @@ resource "google_cloud_asset_project_feed" "default" {
 
   feed_output_config {
     pubsub_destination {
-      topic = each.value.feed_output_config.pubsub_destination.topic
+      topic = lookup(
+        local.ctx.pubsub_topics,
+        each.value.feed_output_config.pubsub_destination.topic,
+        each.value.feed_output_config.pubsub_destination.topic
+      )
     }
   }
 
