@@ -605,7 +605,7 @@ module "org" {
     }
   }
 }
-# tftest modules=2 resources=3 inventory=feeds.yaml
+# tftest inventory=feeds.yaml
 ```
 
 ## Tags
