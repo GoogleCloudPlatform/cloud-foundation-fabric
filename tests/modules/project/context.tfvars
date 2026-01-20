@@ -34,6 +34,19 @@ context = {
   vpc_sc_perimeters = {
     default = "accessPolicies/888933661165/servicePerimeters/default"
   }
+  pubsub_topics = {
+    test = "projects/test-prod-audit-logs-0/topics/audit-logs"
+  }
+}
+asset_feeds = {
+  test = {
+    billing_project = "test-project"
+    feed_output_config = {
+      pubsub_destination = {
+        topic = "$pubsub_topics:test"
+      }
+    }
+  }
 }
 contacts = {
   "$email_addresses:default" = ["ALL"]
@@ -82,6 +95,13 @@ logging_data_access = {
     DATA_READ = {}
   }
 }
+logging_sinks = {
+  test-pubsub = {
+    destination = "$pubsub_topics:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "pubsub"
+  }
+}
 pam_entitlements = {
   net-admins = {
     max_request_duration = "3600s"
@@ -123,6 +143,20 @@ shared_vpc_service_config = {
     ]
   }
   service_iam_grants = ["$service_agents:compute"]
+}
+iam_by_principals_conditional = {
+  "$iam_principals:myuser" = {
+    roles = [
+      "roles/storage.admin",
+      "$custom_roles:myrole_one",
+      "$custom_roles:myrole_two",
+    ]
+    condition = {
+      title       = "expires_after_2020_12_31"
+      description = "Expiring at midnight of 2020-12-31"
+      expression  = "request.time < timestamp(\"2021-01-01T00:00:00Z\")"
+    }
+  }
 }
 tag_bindings = {
   foo = "$tag_values:test/one"

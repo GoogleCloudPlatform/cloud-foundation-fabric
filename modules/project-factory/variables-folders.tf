@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,23 @@
 variable "folders" {
   description = "Folders data merged with factory data."
   type = map(object({
+    asset_feeds = optional(map(object({
+      billing_project = string
+      content_type    = optional(string)
+      asset_types     = optional(list(string))
+      asset_names     = optional(list(string))
+      feed_output_config = object({
+        pubsub_destination = object({
+          topic = string
+        })
+      })
+      condition = optional(object({
+        expression  = string
+        title       = optional(string)
+        description = optional(string)
+        location    = optional(string)
+      }))
+    })), {})
     name                = optional(string)
     parent              = optional(string)
     deletion_protection = optional(bool)
@@ -40,6 +57,14 @@ variable "folders" {
       }))
     })), {})
     iam_by_principals = optional(map(list(string)), {})
+    iam_by_principals_conditional = optional(map(object({
+      roles = list(string)
+      condition = object({
+        expression  = string
+        title       = string
+        description = optional(string)
+      })
+    })), {})
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)

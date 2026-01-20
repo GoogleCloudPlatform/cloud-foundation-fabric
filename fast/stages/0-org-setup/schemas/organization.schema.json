@@ -4,6 +4,90 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "asset_feeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "billing_project",
+            "feed_output_config"
+          ],
+          "properties": {
+            "billing_project": {
+              "type": "string"
+            },
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "RESOURCE",
+                "IAM_POLICY",
+                "ORG_POLICY",
+                "ACCESS_POLICY",
+                "OS_INVENTORY",
+                "RELATIONSHIP"
+              ]
+            },
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "asset_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "feed_output_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pubsub_destination"
+              ],
+              "properties": {
+                "pubsub_destination": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "topic"
+                  ],
+                  "properties": {
+                    "topic": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "id": {
       "type": "string"
     },
@@ -88,6 +172,9 @@
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
     },
+    "iam_by_principals_conditional": {
+      "$ref": "#/$defs/iam_by_principals_conditional"
+    },
     "iam_by_principals_additive": {
       "$ref": "#/$defs/iam_by_principals"
     },
@@ -95,6 +182,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "kms_key_name": {
+          "type": "string"
+        },
         "storage_location": {
           "type": "string"
         },
@@ -523,6 +613,48 @@
           "items": {
             "type": "string",
             "pattern": "^(?:roles/|\\$custom_roles:)"
+          }
+        }
+      }
+    },
+    "iam_by_principals_conditional": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:\\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "condition",
+            "roles"
+          ],
+          "properties": {
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:roles/|\\$custom_roles:)"
+              }
+            }
           }
         }
       }

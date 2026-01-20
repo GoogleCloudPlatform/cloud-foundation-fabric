@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,14 @@ locals {
     gcp-security-admins     = "group:gcp-security-admins@${local.organization.domain}"
     gcp-support             = "group:gcp-support@${local.organization.domain}"
   }
+  org_logging_identities = merge(
+    module.organization[0].logging_identities.kms == null ? {} : {
+      "organization/logging/kms" = module.organization[0].logging_identities.kms
+    },
+    module.organization[0].logging_identities.logging == null ? {} : {
+      "organization/logging/sinks" = module.organization[0].logging_identities.logging
+    }
+  )
   org_tag_keys = {
     for k, v in module.organization[0].tag_keys : k => v.id
   }
@@ -72,6 +80,7 @@ module "organization" {
   source           = "../../../modules/organization"
   count            = local.organization_id != null ? 1 : 0
   organization_id  = "organizations/${local.organization_id}"
+  asset_feeds      = lookup(local.organization, "asset_feeds", {})
   logging_settings = lookup(local.organization, "logging", null)
   context = {
     condition_vars = {
@@ -139,6 +148,9 @@ module "organization-iam" {
   )
   iam_by_principals = lookup(
     local.organization, "iam_by_principals", {}
+  )
+  iam_by_principals_conditional = lookup(
+    local.organization, "iam_by_principals_conditional", {}
   )
   iam_bindings = lookup(
     local.organization, "iam_bindings", {}
