@@ -135,6 +135,7 @@ variable "context" {
     log_buckets           = optional(map(string), {})
     project_ids           = optional(map(string), {})
     tag_keys              = optional(map(string), {})
+    pubsub_topics         = optional(map(string), {})
     tag_values            = optional(map(string), {})
     vpc_sc_perimeters     = optional(map(string), {})
   })

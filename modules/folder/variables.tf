@@ -140,6 +140,7 @@ variable "context" {
     project_ids     = optional(map(string), {})
     project_numbers = optional(map(string), {})
     tag_values      = optional(map(string), {})
+    pubsub_topics   = optional(map(string), {})
   })
   default  = {}
   nullable = false
