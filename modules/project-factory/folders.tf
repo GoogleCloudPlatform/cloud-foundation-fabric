@@ -58,7 +58,6 @@ module "folder-1" {
     for k, v in local.folders_input : k => v if v.level == 1
   }
   deletion_protection = lookup(each.value, "deletion_protection", false)
-  asset_feeds         = lookup(each.value, "asset_feeds", {})
   parent              = coalesce(each.value.parent, "$folder_ids:default")
   name                = each.value.name
   factories_config = {
@@ -76,7 +75,8 @@ module "folder-1-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  id = module.folder-1[each.key].id
+  id          = module.folder-1[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -102,7 +102,6 @@ module "folder-2" {
     for k, v in local.folders_input : k => v if v.level == 2
   }
   deletion_protection = lookup(each.value, "deletion_protection", false)
-  asset_feeds         = lookup(each.value, "asset_feeds", {})
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
@@ -127,7 +126,8 @@ module "folder-2-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  id = module.folder-2[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
+  id          = module.folder-2[each.key].id
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -156,7 +156,6 @@ module "folder-3" {
     for k, v in local.folders_input : k => v if v.level == 3
   }
   deletion_protection = lookup(each.value, "deletion_protection", false)
-  asset_feeds         = lookup(each.value, "asset_feeds", {})
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
@@ -181,7 +180,8 @@ module "folder-3-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  id = module.folder-3[each.key].id
+  id          = module.folder-3[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -210,7 +210,6 @@ module "folder-4" {
     for k, v in local.folders_input : k => v if v.level == 4
   }
   deletion_protection = lookup(each.value, "deletion_protection", false)
-  asset_feeds         = lookup(each.value, "asset_feeds", {})
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
@@ -235,7 +234,8 @@ module "folder-4-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
-  id = module.folder-4[each.key].id
+  id          = module.folder-4[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)

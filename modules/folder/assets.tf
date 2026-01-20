@@ -15,11 +15,15 @@
  */
 
 resource "google_cloud_asset_folder_feed" "default" {
-  for_each        = var.asset_feeds
-  billing_project = each.value.billing_project
-  folder          = local.folder_id
-  feed_id         = each.key
-  content_type    = each.value.content_type
+  for_each = var.asset_feeds
+  billing_project = lookup(
+    local.ctx.project_ids,
+    each.value.billing_project,
+    each.value.billing_project
+  )
+  folder       = local.folder_id
+  feed_id      = each.key
+  content_type = each.value.content_type
 
   asset_types = each.value.asset_types
   asset_names = each.value.asset_names

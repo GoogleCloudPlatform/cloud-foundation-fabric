@@ -213,11 +213,11 @@ values:
     display_name: Test
     tags: null
     timeouts: null
-  ? module.project-factory.module.folder-4["team-c/apps/test/app-x"].google_cloud_asset_folder_feed.default["compute-instances"]
+  ? module.project-factory.module.folder-4-iam["team-c/apps/test/app-x"].google_cloud_asset_folder_feed.default["compute-instances"]
   : asset_names: null
     asset_types:
     - compute.googleapis.com/Instance
-    billing_project: $project_ids:feeds-project
+    billing_project: my-cai-feeds-project
     condition: []
     content_type: RESOURCE
     feed_id: compute-instances
@@ -841,7 +841,6 @@ values:
     output: null
     triggers_replace: null
 
-
 counts:
   google_billing_budget: 1
   google_cloud_asset_folder_feed: 1
@@ -876,6 +875,6 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 29
+  modules: 30
   resources: 108
   terraform_data: 2
