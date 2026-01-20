@@ -34,6 +34,19 @@ context = {
   vpc_sc_perimeters = {
     default = "accessPolicies/888933661165/servicePerimeters/default"
   }
+  pubsub_topics = {
+    test = "projects/test-prod-audit-logs-0/topics/audit-logs"
+  }
+}
+asset_feeds = {
+  test = {
+    billing_project = "test-project"
+    feed_output_config = {
+      pubsub_destination = {
+        topic = "$pubsub_topics:test"
+      }
+    }
+  }
 }
 contacts = {
   "$email_addresses:default" = ["ALL"]
@@ -80,6 +93,13 @@ logging_data_access = {
       exempted_members = ["$iam_principals:mygroup"]
     }
     DATA_READ = {}
+  }
+}
+logging_sinks = {
+  test-pubsub = {
+    destination = "$pubsub_topics:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "pubsub"
   }
 }
 pam_entitlements = {
