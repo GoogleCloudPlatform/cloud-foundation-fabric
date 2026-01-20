@@ -28,7 +28,7 @@ values:
     feed_output_config:
     - pubsub_destination:
       - topic: projects/test-prod-audit-logs-0/topics/audit-logs
-    org_id: organizations/1234567890
+    org_id: "1234567890"
     timeouts: null
   google_essential_contacts_contact.contact["$email_addresses:default"]:
     email: foo@example.com
