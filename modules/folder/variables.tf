@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,15 +132,18 @@ variable "contacts" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    condition_vars  = optional(map(map(string)), {})
-    custom_roles    = optional(map(string), {})
-    email_addresses = optional(map(string), {})
-    folder_ids      = optional(map(string), {})
-    iam_principals  = optional(map(string), {})
-    project_ids     = optional(map(string), {})
-    project_numbers = optional(map(string), {})
-    tag_values      = optional(map(string), {})
-    pubsub_topics   = optional(map(string), {})
+    bigquery_datasets = optional(map(string), {})
+    condition_vars    = optional(map(map(string)), {})
+    custom_roles      = optional(map(string), {})
+    email_addresses   = optional(map(string), {})
+    folder_ids        = optional(map(string), {})
+    iam_principals    = optional(map(string), {})
+    log_buckets       = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    project_numbers   = optional(map(string), {})
+    pubsub_topics     = optional(map(string), {})
+    storage_buckets   = optional(map(string), {})
+    tag_values        = optional(map(string), {})
   })
   default  = {}
   nullable = false
