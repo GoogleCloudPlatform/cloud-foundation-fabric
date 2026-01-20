@@ -241,10 +241,9 @@ output_files:
 
 #### Init and apply the stage
 
-Once everything has been configured go through the standard Terraform init/apply cycle. If you are using a temporary project for quota, make sure to export its ID so Terraform can use it for API calls.
+Once everything has been configured go through the standard Terraform init/apply cycle.
 
 ```bash
-export GOOGLE_CLOUD_QUOTA_PROJECT=[project id]
 terraform init
 terraform apply
 ```
