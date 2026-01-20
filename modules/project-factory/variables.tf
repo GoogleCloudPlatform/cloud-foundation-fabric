@@ -28,6 +28,7 @@ variable "context" {
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     project_numbers       = optional(map(string), {})
+    pubsub_topics         = optional(map(string), {})
     tag_values            = optional(map(string), {})
     vpc_host_projects     = optional(map(string), {})
     vpc_sc_perimeters     = optional(map(string), {})
