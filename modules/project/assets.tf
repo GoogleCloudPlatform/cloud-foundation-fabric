@@ -15,11 +15,15 @@
  */
 
 resource "google_cloud_asset_project_feed" "default" {
-  for_each        = var.asset_feeds
-  project         = local.project.project_id
-  billing_project = coalesce(each.value.billing_project, local.project.project_id)
-  feed_id         = each.key
-  content_type    = each.value.content_type
+  for_each = var.asset_feeds
+  project  = local.project.project_id
+  billing_project = lookup(
+    local.ctx.project_ids,
+    coalesce(each.value.billing_project, local.project.project_id),
+    coalesce(each.value.billing_project, local.project.project_id)
+  )
+  feed_id      = each.key
+  content_type = each.value.content_type
 
   asset_types = each.value.asset_types
   asset_names = each.value.asset_names

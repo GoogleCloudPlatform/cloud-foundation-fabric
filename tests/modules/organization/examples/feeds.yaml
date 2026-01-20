@@ -23,7 +23,7 @@ values:
     feed_output_config:
     - pubsub_destination:
       - topic: projects/project-id/topics/org-asset-feed
-    org_id: organizations/1122334455
+    org_id: "1122334455"
     timeouts: null
   module.pubsub.google_pubsub_topic.default:
     effective_labels:
