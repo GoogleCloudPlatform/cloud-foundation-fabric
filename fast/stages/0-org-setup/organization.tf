@@ -76,7 +76,7 @@ module "organization" {
   context = {
     condition_vars = {
       organization = {
-        id          = local.organization_id
+        id = local.organization_id
       }
     }
     email_addresses = local.ctx.email_addresses
@@ -84,9 +84,9 @@ module "organization" {
   }
   contacts = lookup(local.organization, "contacts", {})
   factories_config = {
-    custom_roles                  = "${local.paths.organization}/custom-roles"
-    tags                          = "${local.paths.organization}/tags"
-    scc_sha_custom_modules        = "${local.paths.organization}/scc-sha-custom-modules"
+    custom_roles           = "${local.paths.organization}/custom-roles"
+    tags                   = "${local.paths.organization}/tags"
+    scc_sha_custom_modules = "${local.paths.organization}/scc-sha-custom-modules"
   }
   tags_config = {
     ignore_iam = true
@@ -132,8 +132,8 @@ module "organization-iam" {
   })
   factories_config = {
     org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
-    org_policies = "${local.paths.organization}/org-policies"
-    tags         = "${local.paths.organization}/tags"
+    org_policies                  = "${local.paths.organization}/org-policies"
+    tags                          = "${local.paths.organization}/tags"
   }
   iam = lookup(
     local.organization, "iam", {}
