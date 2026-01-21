@@ -21,11 +21,6 @@ import os
 
 # List of folders and files that are expected to have same content
 duplicates = [
-    # deep recursive folder comparison
-    [
-        "fast/stages/0-org-setup/datasets/classic/organization/tags",
-        "fast/stages/0-org-setup/datasets/hardened/organization/tags",
-    ],
     # schemas
     [
         "fast/stages/1-vpcsc/schemas/access-level.schema.json",
