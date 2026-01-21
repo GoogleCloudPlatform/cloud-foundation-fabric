@@ -15,15 +15,21 @@
 custom.firewallRestrictPublicAccessRule:
   action_type: DENY
   condition: |-
-    (size(resource.allowed) > 0) &&
-    (
-      resource.sourceRanges.exists(range, range == '0.0.0.0/0') ||
-      resource.destinationRanges.exists(range, range == '0.0.0.0/0')
+    resource.direction == 'INGRESS' &&
+    size(resource.allowed) > 0 &&
+    resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&
+    !resource.allowed.exists(a,
+      a.IPProtocol == 'icmp' ||
+      (a.IPProtocol == 'tcp' && has(a.ports) && '443' in a.ports) ||
+      (a.IPProtocol == 'udp' && has(a.ports) && '3389' in a.ports) ||
+      (a.IPProtocol == 'sctp' && has(a.ports) && '22' in a.ports)
     )
-  description: Prevent the creation of VPC firewall rules with source or destination
-    any IP address (0.0.0.0/0)
+  description: Prevent VPC Firewall rules from 0.0.0.0/0 except for allowed protocols
+    (ICMP, TCP:443, UDP:3389, SCTP:22). TCP:22 and TCP:3389 are handled by separate
+    constraints.
   display_name: Restrict VPC Firewall rules allowing public Internet access
   method_types:
   - CREATE
+  - UPDATE
   resource_types:
   - compute.googleapis.com/Firewall
