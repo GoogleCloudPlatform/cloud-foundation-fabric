@@ -89,7 +89,9 @@ gcp.restrictNonCmekServices:
           - "run.googleapis.com"
           - "secretmanager.googleapis.com"
           - "securesourcemanager.googleapis.com"
-          - "securitycenter.googleapis.com"
+          # To enabled when needed: https://docs.cloud.google.com/security-command-center/docs/cmek
+          # CMEK needs can be configured at activation time only
+          # - "securitycenter.googleapis.com"
           - "spanner.googleapis.com"
           - "speech.googleapis.com"
           - "sqladmin.googleapis.com"

@@ -12,17 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-custom.iamAllowedMembers:
+custom.iamDisableBasicRoles:
   action_type: DENY
   condition: |-
     resource.bindings.exists(binding,
       binding.members.exists(member,
         MemberSubjectStartsWith(member, ['user:', 'group:']) &&
-        !MemberSubjectEndsWith(member, ['@${organization.domain}', '${iam_principals.gcp-organization-admins}'])
+        !MemberSubjectStartsWith(member, ['${iam_principals.gcp-organization-admins}']) &&
+        (
+          RoleNameMatches(binding.role, ["roles/editor"]) ||
+          RoleNameMatches(binding.role, ["roles/owner"]) ||
+          RoleNameContains(binding.role, ["roles/viewer"])
+        )
       )
     )
-  description: Ensure no binding are done with members outside the organization domain
-  display_name: Deny principals and members outside the organization domain
+  description: Ensure no use of the basic roles (viewer, editor and owner)
+  display_name: Deny use of the basic roles
   method_types:
   - CREATE
   - UPDATE

@@ -26,7 +26,7 @@ locals {
       display_name   = try(v.display_name, null)
       description    = try(v.description, null)
       action_type    = v.action_type
-      condition      = v.condition
+      condition      = templatestring(v.condition, var.context.condition_vars)
       method_types   = v.method_types
       resource_types = v.resource_types
     }

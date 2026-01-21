@@ -76,7 +76,15 @@ module "organization" {
   context = {
     condition_vars = {
       organization = {
-        id = local.organization_id
+        id          = local.organization_id
+        customer_id = local.organization.customer_id
+        domain      = local.organization.domain
+      }
+      iam_principals = {
+        "gcp-organization-admins" = local.iam_principals["gcp-organization-admins"]
+      }
+      project_ids = {
+        "iac-0" = "test13-fsi-prod-iac-core-0"
       }
     }
     email_addresses = local.ctx.email_addresses

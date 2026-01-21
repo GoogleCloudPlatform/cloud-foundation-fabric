@@ -290,6 +290,7 @@ resource "google_compute_subnetwork" "psc" {
   ip_cidr_range = lookup(
     local.ctx.cidr_ranges, each.value.ip_cidr_range, each.value.ip_cidr_range
   )
+  private_ip_google_access = each.value.enable_private_access
   description = (
     # Set description to an empty string (eg "") to create subnet without a description.
     each.value.description == null
