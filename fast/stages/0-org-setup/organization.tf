@@ -77,14 +77,6 @@ module "organization" {
     condition_vars = {
       organization = {
         id          = local.organization_id
-        customer_id = local.organization.customer_id
-        domain      = local.organization.domain
-      }
-      iam_principals = {
-        "gcp-organization-admins" = local.iam_principals["gcp-organization-admins"]
-      }
-      project_ids = {
-        "iac-0" = "test13-fsi-prod-iac-core-0"
       }
     }
     email_addresses = local.ctx.email_addresses
@@ -92,7 +84,6 @@ module "organization" {
   }
   contacts = lookup(local.organization, "contacts", {})
   factories_config = {
-    org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
     custom_roles                  = "${local.paths.organization}/custom-roles"
     tags                          = "${local.paths.organization}/tags"
     scc_sha_custom_modules        = "${local.paths.organization}/scc-sha-custom-modules"
@@ -113,7 +104,8 @@ module "organization-iam" {
     condition_vars = merge(
       local.ctx_condition_vars,
       { folder_ids = module.factory.folder_ids },
-      { project_ids = module.factory.project_ids }
+      { project_ids = module.factory.project_ids },
+      { iam_principals = local.ctx.iam_principals },
     )
     custom_roles = merge(
       local.ctx.custom_roles,
@@ -139,6 +131,7 @@ module "organization-iam" {
     )
   })
   factories_config = {
+    org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
     org_policies = "${local.paths.organization}/org-policies"
     tags         = "${local.paths.organization}/tags"
   }
