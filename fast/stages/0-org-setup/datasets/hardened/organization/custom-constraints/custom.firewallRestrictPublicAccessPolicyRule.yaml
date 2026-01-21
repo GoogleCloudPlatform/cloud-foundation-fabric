@@ -16,6 +16,7 @@ custom.firewallRestrictPublicAccessPolicyRule:
   action_type: DENY
   condition: |-
     resource.rules.exists(rule,
+      rule.action == 'allow' &&
       rule.priority < 2147483644 &&
       rule.direction == 'INGRESS' &&
       rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0') &&

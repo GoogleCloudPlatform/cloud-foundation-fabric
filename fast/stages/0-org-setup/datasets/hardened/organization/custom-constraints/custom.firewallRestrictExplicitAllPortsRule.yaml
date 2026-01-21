@@ -17,11 +17,10 @@ custom.firewallRestrictExplicitAllPortsRule:
   condition: |-
     resource.direction == 'INGRESS' &&
     resource.allowed.exists(rule,
-      !has(rule.ports) || (
-        has(rule.ports) &&
-        rule.ports.exists(port,
-          port == '0-65535' || port == '1-65535'
-        )
+      rule.IPProtocol in ['tcp', 'udp'] && (
+        !has(rule.ports) ||
+        '0-65535' in rule.ports ||
+        '1-65535' in rule.ports
       )
     ) &&
     !resource.name.startsWith('gke-') &&
