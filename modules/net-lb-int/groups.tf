@@ -20,7 +20,7 @@ resource "google_compute_instance_group" "default" {
   for_each    = var.group_configs
   project     = local.project_id
   zone        = lookup(local.ctx.locations, each.value.zone, each.value.zone)
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   instances   = each.value.instances
 
