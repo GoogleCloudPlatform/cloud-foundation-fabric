@@ -7614,7 +7614,7 @@ values:
         than Dataplane V2
       predicate:
       - description: null
-        expression: resource.networkConfig.datapathProvider == 'ADVANCED_DATAPATH'
+        expression: resource.networkConfig.datapathProvider != 'ADVANCED_DATAPATH'
         location: null
         title: null
       recommendation: Ensure only GKE Dataplane V2 are configured
