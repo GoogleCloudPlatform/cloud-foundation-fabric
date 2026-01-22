@@ -20,13 +20,14 @@ custom.iamDisableBasicRoles:
         MemberSubjectStartsWith(member, ['user:', 'group:']) &&
         !MemberSubjectStartsWith(member, ['${iam_principals.gcp-organization-admins}']) &&
         (
-          RoleNameMatches(binding.role, ["roles/editor"]) ||
-          RoleNameMatches(binding.role, ["roles/owner"]) ||
-          RoleNameContains(binding.role, ["roles/viewer"])
+          RoleNameMatches(binding.role, ['roles/owner', 'roles/admin']) ||
+          RoleNameMatches(binding.role, ['roles/editor', 'roles/writer']) ||
+          RoleNameContains(binding.role, ['roles/viewer', 'roles/reader'])
         )
       )
     )
-  description: Ensure no use of the basic roles (viewer, editor and owner)
+  description: Ensure no use of the legacy basic roles (viewer, editor and owner) and 
+    basic roles (reader, writer and admin)
   display_name: Deny use of the basic roles
   method_types:
   - CREATE
