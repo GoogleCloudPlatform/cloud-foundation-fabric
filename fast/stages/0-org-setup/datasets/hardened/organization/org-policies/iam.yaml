@@ -33,7 +33,7 @@ custom.iamDisableProjectServiceAccountImpersonationRoles:
         title: Allow service account impersonation for tagged users
         expression: |
           resource.matchTag('${organization.id}/org-policies', 'allowed-sa-impersonation')
-    - enforce: false
+    - enforce: true
 
 custom.iamDisableRedisAdminRoles:
   rules:

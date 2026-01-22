@@ -19,3 +19,6 @@ org_policies:
   custom.iamDisableAdminServiceAccount:
     rules:
       - enforce: false
+  custom.iamDisableProjectServiceAccountImpersonationRoles:
+    rules:
+      - enforce: false
