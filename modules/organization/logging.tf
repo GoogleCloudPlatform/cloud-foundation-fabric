@@ -60,6 +60,7 @@ resource "google_logging_organization_settings" "default" {
   count                = var.logging_settings != null ? 1 : 0
   organization         = local.organization_id_numeric
   disable_default_sink = var.logging_settings.disable_default_sink
+  kms_key_name         = var.logging_settings.kms_key_name
   storage_location = lookup(
     local.ctx.locations,
     coalesce(var.logging_settings.storage_location, ""),

@@ -79,6 +79,23 @@
   - **import_routes**: *boolean*
 - **policy_based_routes**<a name="refs-policy_based_routes"></a>: *object*
   - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **description**: *string*
+    - **filter**: *object*
+      <br>*additional properties: false*
+      - **dest_range**: *string*
+      - **ip_protocol**: *string*
+      - **src_range**: *string*
+    - **labels**: *object*
+      <br>*additional properties: string*
+    - **next_hop_ilb_ip**: *string*
+    - **priority**: *number*
+    - **target**: *object*
+      <br>*additional properties: false*
+      - **interconnect_attachment**: *string*
+      - **tags**: *array*
+        - items: *string*
+    - **use_default_routing**: *boolean*
 - **psa_config**<a name="refs-psa_config"></a>: *object*
   - **deletion_policy**: *string*
   - **ranges**: *object*
