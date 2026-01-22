@@ -67,7 +67,10 @@ resource "google_storage_bucket" "default" {
 }
 
 resource "google_storage_bucket_object" "dependencies" {
-  count  = var.deployment_files.package_config != null ? 1 : 0
+  count = (
+    var.deployment_files.package_config != null
+    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+  )
   name   = "dependencies.tar.gz"
   bucket = local.bucket_name
   source = try(var.deployment_files.package_config.dependencies_path, null)
@@ -77,7 +80,10 @@ resource "google_storage_bucket_object" "dependencies" {
 }
 
 resource "google_storage_bucket_object" "pickle" {
-  count  = var.deployment_files.package_config != null ? 1 : 0
+  count = (
+    var.deployment_files.package_config != null
+    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+  )
   name   = "pickle.pkl"
   bucket = local.bucket_name
   source = try(var.deployment_files.package_config.pickle_path, null)
@@ -87,7 +93,10 @@ resource "google_storage_bucket_object" "pickle" {
 }
 
 resource "google_storage_bucket_object" "requirements" {
-  count  = var.deployment_files.package_config != null ? 1 : 0
+  count = (
+    var.deployment_files.package_config != null
+    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+  )
   name   = "requirements.txt"
   bucket = local.bucket_name
   source = try(var.deployment_files.package_config.requirements_path, null)

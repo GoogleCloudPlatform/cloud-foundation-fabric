@@ -98,6 +98,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "kms_key_name": {
+          "type": "string"
+        },
         "storage_location": {
           "type": "string"
         },

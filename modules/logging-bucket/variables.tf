@@ -47,6 +47,16 @@ variable "location" {
   default     = "global"
 }
 
+variable "locked" {
+  description = "Whether the bucket is locked. Locked buckets may only be deleted if they are empty. This can only be set for project-level buckets."
+  type        = bool
+  default     = null
+  validation {
+    condition     = var.parent_type == "project" || var.locked == null
+    error_message = "The 'locked' attribute can only be set for project-level buckets."
+  }
+}
+
 variable "log_analytics" {
   description = "Enable and configure Analytics Log."
   type = object({

@@ -32,9 +32,11 @@
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **iam_by_principals_additive**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **logging**: *object*
   <br>*additional properties: false*
+  - **kms_key_name**: *string*
   - **storage_location**: *string*
   - **sinks**: *object*
     <br>*additional properties: false*
@@ -133,6 +135,18 @@
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:roles/|\$custom_roles:)*
+- **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
+  <br>*additional properties: false*
+  - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *object*
+    <br>*additional properties: false*
+    - ⁺**condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+    - ⁺**roles**: *array*
+      - items: *string*
+        <br>*pattern: ^(?:roles/|\$custom_roles:)*
 - **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*

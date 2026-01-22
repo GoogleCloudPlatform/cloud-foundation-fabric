@@ -88,10 +88,22 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
       for_each = var.deployment_files.package_config == null ? {} : { 1 = 1 }
 
       content {
-        python_version           = var.agent_engine_config.python_version
-        dependency_files_gcs_uri = "gs://${local.bucket_name}/${google_storage_bucket_object.dependencies[0].name}"
-        requirements_gcs_uri     = "gs://${local.bucket_name}/${google_storage_bucket_object.requirements[0].name}"
-        pickle_object_gcs_uri    = "gs://${local.bucket_name}/${google_storage_bucket_object.pickle[0].name}"
+        python_version = var.agent_engine_config.python_version
+        dependency_files_gcs_uri = (
+          var.deployment_files.package_config.are_paths_local
+          ? "gs://${local.bucket_name}/${google_storage_bucket_object.dependencies[0].name}"
+          : var.deployment_files.package_config.dependencies_path
+        )
+        requirements_gcs_uri = (
+          var.deployment_files.package_config.are_paths_local
+          ? "gs://${local.bucket_name}/${google_storage_bucket_object.requirements[0].name}"
+          : var.deployment_files.package_config.requirements_path
+        )
+        pickle_object_gcs_uri = (
+          var.deployment_files.package_config.are_paths_local
+          ? "gs://${local.bucket_name}/${google_storage_bucket_object.pickle[0].name}"
+          : var.deployment_files.package_config.pickle_path
+        )
       }
     }
 
