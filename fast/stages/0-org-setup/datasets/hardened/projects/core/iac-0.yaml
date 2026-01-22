@@ -47,6 +47,8 @@ iam_by_principals:
     - roles/serviceusage.serviceUsageConsumer
 services:
   - accesscontextmanager.googleapis.com
+# uncomment if you want to use Assured Workloads
+#  - assuredworkloads.googleapis.com
   - bigquery.googleapis.com
   - bigqueryreservation.googleapis.com
   - bigquerystorage.googleapis.com

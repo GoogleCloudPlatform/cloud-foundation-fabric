@@ -23,6 +23,8 @@ iam_by_principals:
     - roles/resourcemanager.tagUser
     - $custom_roles:service_project_network_admin
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    # uncomment if you want to use Assured Workloads
+    # - roles/assuredworkloads.reader
     - roles/viewer
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
