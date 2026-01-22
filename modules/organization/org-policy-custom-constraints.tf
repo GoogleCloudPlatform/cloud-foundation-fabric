@@ -26,7 +26,7 @@ locals {
       display_name   = try(v.display_name, null)
       description    = try(v.description, null)
       action_type    = v.action_type
-      condition      = templatestring(v.condition, var.context.condition_vars)
+      condition      = v.condition
       method_types   = v.method_types
       resource_types = v.resource_types
     }
@@ -53,7 +53,7 @@ resource "google_org_policy_custom_constraint" "constraint" {
   display_name   = each.value.display_name
   description    = each.value.description
   action_type    = each.value.action_type
-  condition      = each.value.condition
+  condition      = templatestring(each.value.condition, var.context.condition_vars)
   method_types   = each.value.method_types
   resource_types = each.value.resource_types
 }
