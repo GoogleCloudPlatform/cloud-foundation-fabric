@@ -1825,6 +1825,20 @@ values:
     intercept_children: false
     name: vpc-sc
     org_id: '1234567890'
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.denyBridgePerimeters"]:
+    action_type: DENY
+    condition: resource.perimeterType == 'PERIMETER_TYPE_BRIDGE'
+    description: Disables the use of perimeter bridges. Instead, use ingress and egress
+      rules.
+    display_name: Disable perimeter bridges
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.denyBridgePerimeters
+    parent: organizations/1234567890
+    resource_types:
+    - accesscontextmanager.googleapis.com/ServicePerimeter
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["cloudbuild.disableCreateDefaultServiceAccount"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/cloudbuild.disableCreateDefaultServiceAccount
@@ -2743,20 +2757,6 @@ values:
   module.organization[0].google_logging_organization_settings.default[0]:
     organization: '1234567890'
     storage_location: europe-west1
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.denyBridgePerimeters"]:
-    action_type: DENY
-    condition: resource.perimeterType == 'PERIMETER_TYPE_BRIDGE'
-    description: Disables the use of perimeter bridges. Instead, use ingress and egress
-      rules.
-    display_name: Disable perimeter bridges
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.denyBridgePerimeters
-    parent: organizations/1234567890
-    resource_types:
-    - accesscontextmanager.googleapis.com/ServicePerimeter
     timeouts: null
   module.organization[0].google_organization_iam_custom_role.roles["network_firewall_policies_admin"]:
     description: Terraform-managed.
