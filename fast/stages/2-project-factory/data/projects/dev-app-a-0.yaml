@@ -21,10 +21,10 @@ shared_vpc_service_config:
   host_project: $project_ids:net-dev-0
   # network_users:
   #   - group:team-a-admins@example.com
-# iam:
-#   # reset default role on new project
-#   roles/owner: []
-# log_buckets:
-#   _Default:
-#     retention: 90
-#     location: europe-west1
+iam:
+  # reset default role on new project
+  roles/owner: []
+log_buckets:
+  _Default:
+    retention: 90
+    location: europe-west1

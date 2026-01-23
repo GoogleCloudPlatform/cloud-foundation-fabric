@@ -25,6 +25,12 @@ context:
       - 10.0.0.0/8
       - 172.16.0.0/12
       - 192.168.0.0/16
+    gke_primary:
+      - 10.73.0.0/24
+    gke_secondary_pods:
+      - 100.68.0.0/16
+    gke_secondary_services:
+      - 100.71.1.0/24
   locations:
     primary: europe-west1
     secondary: europe-west3

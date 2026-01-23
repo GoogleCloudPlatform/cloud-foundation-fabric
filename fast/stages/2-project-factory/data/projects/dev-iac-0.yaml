@@ -14,16 +14,24 @@
 
 # yaml-language-server: $schema=../../schemas/project.schema.json
 
-parent: $folder_ids:team-a/prod
+parent: $folder_ids:team-a/dev
 services:
   - compute.googleapis.com
-shared_vpc_service_config:
-  host_project: $project_ids:net-prod-0
-  # network_users:
-  #   - group:team-a-admins@example.com
+  - storage.googleapis.com
+service_encryption_key_ids:
+  storage.googleapis.com:
+    - $kms_keys:storage-dev-primary-default
 iam:
   # reset default role on new project
   roles/owner: []
+iam_by_principals:
+  $iam_principals:iac-0/iac-pf-ro:
+    - roles/browser
+    - roles/storage.objectViewer
+    - $custom_roles:storage_viewer
+  $iam_principals:iac-0/iac-pf-rw:
+    - roles/iam.serviceAccountAdmin
+    - roles/storage.admin
 log_buckets:
   _Default:
     retention: 90

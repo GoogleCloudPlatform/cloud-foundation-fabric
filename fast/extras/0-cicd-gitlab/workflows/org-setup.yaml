@@ -1,0 +1,99 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+variables:
+  GOOGLE_CREDENTIALS: cicd-sa-credentials.json
+  FAST_OUTPUTS_BUCKET: test12-fsi-prod-iac-core-0-iac-outputs
+  FAST_WIF_PROVIDER: projects/88475154214/locations/global/workloadIdentityPools/default/providers/gitlab-default
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  TF_VAR_FILES: 0-org-setup.auto.tfvars.json
+    0-globals.auto.tfvars.json
+
+workflow:
+  rules:
+    # merge / apply
+    - if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      variables:
+        COMMAND: plan
+        FAST_SERVICE_ACCOUNT: iac-org-cicd-rw@test12-fsi-prod-iac-core-0.iam.gserviceaccount.com
+        TF_PROVIDERS_FILE: 0-org-setup-providers.tf
+    # pr / plan
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        COMMAND: plan
+        FAST_SERVICE_ACCOUNT: iac-org-cicd-ro@test12-fsi-prod-iac-core-0.iam.gserviceaccount.com
+        TF_PROVIDERS_FILE: 0-org-setup-providers-ro.tf
+
+stages:
+  - gcp-setup
+  - tf-plan-apply
+
+# TODO: document project-level deploy key used to fetch modules
+
+gcp-setup:
+  stage: gcp-setup
+  image:
+    name: google/cloud-sdk:slim
+  artifacts:
+    paths:
+      - cicd-sa-credentials.json
+      - providers.tf
+      - 0-org-setup.auto.tfvars.json
+      - 0-globals.auto.tfvars.json
+  id_tokens:
+    GITLAB_TOKEN:
+      aud:
+        - https://gitlab.com
+  before_script:
+    - echo "$GITLAB_TOKEN" > token.txt
+  script:
+    - |
+      gcloud iam workload-identity-pools create-cred-config \
+        $FAST_WIF_PROVIDER \
+        --service-account=$FAST_SERVICE_ACCOUNT \
+        --service-account-token-lifetime-seconds=900 \
+        --output-file=$GOOGLE_CREDENTIALS \
+        --credential-source-file=token.txt
+    - gcloud config set auth/credential_file_override $GOOGLE_CREDENTIALS
+    - gcloud storage cp -r "gs://$FAST_OUTPUTS_BUCKET/providers/$TF_PROVIDERS_FILE" ./providers.tf
+    - gcloud storage cp gs://$FAST_OUTPUTS_BUCKET/tfvars/0-org-setup.auto.tfvars.json ./
+    - gcloud storage cp gs://$FAST_OUTPUTS_BUCKET/tfvars/0-globals.auto.tfvars.json ./
+
+
+tf-plan-apply:
+  stage: tf-plan-apply
+  dependencies:
+    - gcp-setup
+  id_tokens:
+    GITLAB_TOKEN:
+      aud:
+        - https://gitlab.com
+  image:
+    name: hashicorp/terraform
+    entrypoint:
+      - "/usr/bin/env"
+  variables:
+    SSH_AUTH_SOCK: /tmp/ssh-agent.sock
+  script:
+    - |
+      ssh-agent -a $SSH_AUTH_SOCK
+      echo "$CICD_MODULES_KEY" | ssh-add -
+      mkdir -p ~/.ssh
+      ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+      ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
+    - echo "$GITLAB_TOKEN" > token.txt
+    - terraform init
+    - terraform validate
+    - "if [ $COMMAND == 'plan' ]; then terraform plan -input=false -no-color -lock=false; fi"
+    - "if [ $COMMAND == 'apply' ]; then terraform plan -input=false -no-color -auto-approve; fi"

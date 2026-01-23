@@ -37,13 +37,13 @@ iam_bindings:
           .hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter']
         )
 
-# iam:
-#   # reset default role on new project
-#   roles/owner: []
-# log_buckets:
-#   _Default:
-#     retention: 90
-#     location: europe-west1
+iam:
+  # reset default role on new project
+  roles/owner: []
+log_buckets:
+  _Default:
+    retention: 90
+    location: europe-west1
 
 # uncomment the following if parent is the security folder
 

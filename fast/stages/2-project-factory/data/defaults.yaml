@@ -37,3 +37,12 @@ context:
 #     foo: group:foo@example.com
   locations:
     primary: europe-west1
+
+output_files:
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/projects
+  storage_bucket: $storage_buckets:dev-ta-app-a-0/automation/tf-state
+  providers:
+    dev-ta-app-a-0:
+      storage_bucket: $storage_buckets:dev-ta-app-a-0/automation/tf-state
+      service_account: $iam_principals:service_accounts/dev-ta-app-a-0/automation/rw

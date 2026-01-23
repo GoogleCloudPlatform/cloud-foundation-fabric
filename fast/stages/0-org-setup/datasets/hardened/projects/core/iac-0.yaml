@@ -325,3 +325,15 @@ service_accounts:
 #         identity_provider:
 #           oidc:
 #             template: github
+workload_identity_pools:
+  default:
+    display_name: Default pool for CI/CD.
+    providers:
+      gitlab-default:
+        display_name: Gitlab (example org).
+        attribute_condition: attribute.namespace_path.startsWith("fast-bule")
+        identity_provider:
+          oidc:
+            template: gitlab
+            allowed_audiences:
+              - "https://gitlab.com"

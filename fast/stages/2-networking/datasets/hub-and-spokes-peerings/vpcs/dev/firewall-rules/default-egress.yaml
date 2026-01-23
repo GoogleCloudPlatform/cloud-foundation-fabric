@@ -1,0 +1,27 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../../schemas/firewall-rules.schema.json
+
+egress:
+  egress-default-dev-deny:
+    description: "Deny and log any unmatched egress traffic."
+    deny: true
+    priority: 65535
+    enable_logging:
+      include_metadata: false
+
+  egress-default-to-pga-allow:
+    description: "Allow egress to PGA."
+    priority: 1000
+    destination_ranges:
+      - 34.126.0.0/18
+      - 199.36.153.8/30
+      - 199.36.153.4/30
+    enable_logging:
+      include_metadata: false
+    rules:
+      - protocol: "tcp"
+        ports:
+          - "443"

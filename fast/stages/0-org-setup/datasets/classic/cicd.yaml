@@ -19,18 +19,21 @@ org-setup:
     apply: 0-org-setup-providers.tf
     plan: 0-org-setup-providers-ro.tf
   repository:
-    name: myorg/0-org-setup
-    type: github
+    name: fast-bule/gcp-org-admins/fast_0_org_setup
+    type: gitlab
     apply_branches:
-      - master
+      - main
       - fast-dev
   service_accounts:
     apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
     plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro
   tfvars_files:
-    - 0-org-setup.auto.tfvars
+    - 0-org-setup.auto.tfvars.json
+    - 0-globals.auto.tfvars.json
   workload_identity:
     pool: $workload_identity_pools:iac-0/default
-    provider: $workload_identity_providers:iac-0/default/github-default
+    provider: $workload_identity_providers:iac-0/default/gitlab-default
     iam_principalsets:
-      template: github
+      template: gitlab
+    audiences:
+      - "https://gitlab.com"

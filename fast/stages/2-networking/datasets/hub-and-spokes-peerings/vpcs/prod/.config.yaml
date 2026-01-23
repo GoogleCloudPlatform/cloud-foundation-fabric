@@ -31,5 +31,5 @@ subnets_proxy_only:
     region: $locations:primary
     name: primary-region-proxy-only
     active: true
-# dns_policy:
-#   logging: true
+dns_policy:
+  logging: true

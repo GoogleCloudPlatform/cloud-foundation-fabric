@@ -17,10 +17,10 @@ services:
   - vpcaccess.googleapis.com
 shared_vpc_host_config:
   enabled: true
-# iam:
-#   # reset default role on new project
-#   roles/owner: []
-# log_buckets:
-#   _Default:
-#     retention: 90
-#     location: europe-west1
+iam:
+  # reset default role on new project
+  roles/owner: []
+log_buckets:
+  _Default:
+    retention: 90
+    location: europe-west1

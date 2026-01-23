@@ -13,7 +13,21 @@
 # limitations under the License.
 
 # yaml-language-server: $schema=../../../schemas/perimeter.schema.json
+# use_explicit_dry_run_spec: true
+# spec:
+#   access_levels:
+#     - geo
+#   resources:
+#     - $resource_sets:discovered_projects
+#   ingress_policies:
+#     - fast-org-log-sinks
+#     - fast-org-scc
+#   egress_policies:
+#     - fast-org-scc
+#   restricted_services:
+#     - $service_sets:restricted_services
 
+# To use for enforcing mode
 status:
   access_levels:
     - geo

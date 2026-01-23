@@ -1,0 +1,63 @@
+# skip boilerplate check
+---
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../../schemas/firewall-rules.schema.json
+
+egress:
+  egress-gke-nodes-and-pods-to-kubelet-dev-allow:
+    description: "Allow egress from GKE pods and nodes to nodes (kubelet)."
+    priority: 1000
+    source_ranges:
+      - 10.73.0.0/24
+      - 100.68.0.0/16
+    destination_ranges:
+      - 10.73.0.0/24
+    enable_logging:
+      include_metadata: false
+    rules:
+      - protocol: "tcp"
+        ports:
+          - "10255"
+          - "10250"
+
+  egress-gke-pods-to-pods-and-nodes-dev-allow:
+    description: "Allow egress from GKE pods to pods and nodes."
+    priority: 1000
+    source_ranges:
+      - 100.68.0.0/16
+    destination_ranges:
+      - 10.73.0.0/24
+      - 100.68.0.0/16
+    enable_logging:
+      include_metadata: false
+    rules:
+      - protocol: "all"
+
+  egress-gke-nodes-to-nodes-dev-allow:
+    description: "Allow egress from GKE nodes to nodes."
+    priority: 1000
+    source_ranges:
+      - 10.73.0.0/24
+    destination_ranges:
+      - 10.73.0.0/24
+    enable_logging:
+      include_metadata: false
+    rules:
+      - protocol: "all"
+
+  egress-gke-nodes-and-pods-to-control-plane-dev-allow:
+    description: "Allow egress from GKE nodes and pods to control plane."
+    priority: 1000
+    source_ranges:
+      - 10.73.0.0/24
+      - 100.68.0.0/16
+    destination_ranges:
+      - 10.73.0.0/24
+    enable_logging:
+      include_metadata: false
+    rules:
+      - protocol: "tcp"
+        ports:
+          - "443"
+          - "8132"

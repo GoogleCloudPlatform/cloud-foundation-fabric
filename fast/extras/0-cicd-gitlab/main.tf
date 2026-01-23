@@ -17,26 +17,29 @@
 locals {
   _repository_files = flatten([
     for k, v in var.projects : [
-      for f in concat(
-        [for f in fileset(path.module, "${v.populate_from}/*.svg") : f],
-        [for f in fileset(path.module, "${v.populate_from}/*.md") : f],
-        (v.populate_samples ? [
-          for f in fileset(path.module, "${v.populate_from}/*.sample") : f
-        ] : []),
-        (v.populate_samples ? [
-          for f in fileset(path.module, "${v.populate_from}/data/**/*.*") : f
-        ] : []),
-        [for f in fileset(path.module, "${v.populate_from}/*.tf") : f],
-        [for f in fileset(path.module, "${v.populate_from}/templates/*.tpl") : f],
-        [for f in fileset(path.module, "${v.populate_from}/templates/*.yaml") : f],
-        [for f in fileset(path.module, "${v.populate_from}/schemas/*.json") : f],
-        [for f in fileset(path.module, "${v.populate_from}/terraform.tfvars") : f]
-        ) : {
-        project = k
-        file    = f
-        name    = replace(f, "${v.populate_from}/", "")
-      }
-    ] if v.populate_from != null
+      for dir in [v.populate_from != null ? trimsuffix(v.populate_from, "/") : ""] : [
+        for f in concat(
+          [for f in fileset(path.module, "${dir}/*.svg") : f],
+          [for f in fileset(path.module, "${dir}/*.md") : f],
+          (v.populate_samples ? [
+            for f in fileset(path.module, "${dir}/*.sample") : f
+          ] : []),
+
+          [for f in fileset(path.module, "${dir}/*.tf") : f],
+          [for f in fileset(path.module, "${dir}/*.tpl") : f],
+          [for f in fileset(path.module, "${dir}/*.yaml") : f],
+          [for f in fileset(path.module, "${dir}/datasets/**/*.yaml") : f],
+          [for f in fileset(path.module, "${dir}/datasets/**/*.md") : f],
+          [for f in fileset(path.module, "${dir}/templates/*.tpl") : f],
+          [for f in fileset(path.module, "${dir}/templates/*.yaml") : f],
+          [for f in fileset(path.module, "${dir}/schemas/*.json") : f],
+          [for f in fileset(path.module, "${dir}/terraform.tfvars") : f]
+          ) : {
+          project = k
+          file    = f
+          name    = replace(f, "${dir}/", "")
+        }
+    ]] if v.populate_from != null
   ])
   gitlab_ssh_prefix = "git::ssh://git@${var.gitlab_config.hostname}:${var.gitlab_config.ssh_port}/"
   gitlab_base_path  = var.gitlab_config.hostname == "gitlab.com" ? "${var.gitlab_config.saas_group}/" : ""
@@ -106,6 +109,7 @@ resource "gitlab_repository_file" "modules" {
   project        = gitlab_project.modules.0.id
   branch         = "main"
   file_path      = "${var.modules_config.module_prefix}${each.value}"
+  encoding       = "base64"
   content        = endswith(each.key, ".png") || endswith(each.key, ".gif") || endswith(each.key, ".svg") ? filebase64(each.key) : base64encode(file(each.key))
   commit_message = "${var.commit_config.message} (${each.value})"
   author_name    = var.commit_config.author
@@ -167,6 +171,7 @@ resource "gitlab_repository_file" "default" {
   project   = local.projects[each.value.project]
   branch    = "main"
   file_path = each.value.name
+  encoding  = "base64"
   content = (
     endswith(each.value.name, ".tf") && local.modules_project != null
     ? base64encode(replace(

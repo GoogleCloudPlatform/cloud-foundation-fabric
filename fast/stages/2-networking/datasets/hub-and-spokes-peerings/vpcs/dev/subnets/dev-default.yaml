@@ -5,8 +5,13 @@
 name: dev-default
 region: $locations:primary
 ip_cidr_range: 10.73.0.0/24
+secondary_ip_ranges:
+  pods:
+   ip_cidr_range: 100.68.0.0/16
+  services:
+   ip_cidr_range: 100.71.1.0/24
 description: Default primary-region subnet for dev
-# flow_logs_config:
-#   aggregation_interval: "INTERVAL_5_SEC"
-#   flow_sampling: 1.0
-#   metadata: "INCLUDE_ALL_METADATA"
+flow_logs_config:
+  aggregation_interval: "INTERVAL_5_SEC"
+  flow_sampling: 1.0
+  metadata: "INCLUDE_ALL_METADATA"
