@@ -326,6 +326,48 @@ variable "routing_mode" {
   }
 }
 
+variable "service_connection_policies" {
+  description = "Service connection policies, keyed by name."
+  type = map(object({
+    location      = string
+    service_class = string
+    description   = optional(string)
+    labels        = optional(map(string))
+    psc_config = object({
+      subnetworks                = list(string)
+      limit                      = optional(number)
+      producer_instance_location = optional(string)
+      # maps to allowed_google_producers_resource_hierarchy_level
+      nodes = optional(list(string))
+    })
+  }))
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.service_connection_policies :
+      v.psc_config.producer_instance_location == null || v.psc_config.producer_instance_location == "CUSTOM_RESOURCE_HIERARCHY_LEVELS"
+    ])
+    error_message = "Producer instance location must be null or CUSTOM_RESOURCE_HIERARCHY_LEVELS."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.service_connection_policies :
+      v.psc_config.nodes == null || v.psc_config.producer_instance_location == "CUSTOM_RESOURCE_HIERARCHY_LEVELS"
+    ])
+    error_message = "Nodes can only be set if producer instance location is CUSTOM_RESOURCE_HIERARCHY_LEVELS."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.service_connection_policies : [
+        for n in coalesce(v.psc_config.nodes, []) :
+        can(regex("^(projects|folders|organizations)/[a-zA-Z0-9-]+$", n))
+      ]
+    ]))
+    error_message = "Nodes must be in the format 'projects/id', 'folders/id', or 'organizations/id'."
+  }
+}
+
 variable "shared_vpc_host" {
   description = "Enable shared VPC for this project."
   type        = bool
