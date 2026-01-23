@@ -19,16 +19,38 @@
 locals {
   logging_sinks = {
     for k, v in var.logging_sinks :
-    # rewrite destination and type when type="project"
-    k => merge(v, v.type != "project" ? {} : {
-      destination = "projects/${v.destination}"
-      type        = "logging"
-    })
+    # expand destination contexts
+    k => merge(v,
+      v.type != "bigquery" ? {} : {
+        destination = lookup(
+          local.ctx.bigquery_datasets, v.destination, v.destination
+        )
+      },
+      v.type != "logging" ? {} : {
+        destination = lookup(
+          local.ctx.log_buckets, v.destination, v.destination
+        )
+      },
+      v.type != "project" ? {} : {
+        api         = "logging"
+        destination = "projects/${lookup(local.ctx.project_ids, v.destination, v.destination)}"
+      },
+      v.type != "pubsub" ? {} : {
+        destination = lookup(
+          local.ctx.pubsub_topics, v.destination, v.destination
+        )
+      },
+      v.type != "storage" ? {} : {
+        destination = lookup(
+          local.ctx.storage_buckets, v.destination, v.destination
+        )
+      }
+    )
   }
   sink_bindings = {
     for type in ["bigquery", "logging", "project", "pubsub", "storage"] :
     type => {
-      for name, sink in var.logging_sinks :
+      for name, sink in local.logging_sinks :
       name => sink if sink.iam && sink.type == type
     }
   }
@@ -66,7 +88,7 @@ resource "google_logging_project_sink" "sink" {
   name                   = each.key
   description            = coalesce(each.value.description, "${each.key} (Terraform-managed).")
   project                = local.project.project_id
-  destination            = "${each.value.type}.googleapis.com/${each.value.destination}"
+  destination            = "${lookup(each.value, "api", each.value.type)}.googleapis.com/${each.value.destination}"
   filter                 = each.value.filter
   unique_writer_identity = each.value.unique_writer
   disabled               = each.value.disabled

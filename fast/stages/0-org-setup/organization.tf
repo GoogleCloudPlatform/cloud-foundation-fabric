@@ -109,6 +109,7 @@ module "organization-iam" {
   source          = "../../../modules/organization"
   count           = local.organization.id != null ? 1 : 0
   organization_id = module.organization[0].id
+  asset_feeds     = lookup(local.organization, "asset_feeds", {})
   context = merge(local.ctx, {
     condition_vars = merge(
       local.ctx_condition_vars,

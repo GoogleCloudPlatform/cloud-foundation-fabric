@@ -1,0 +1,50 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.org.google_cloud_asset_organization_feed.default["security-monitoring"]:
+    asset_names: null
+    asset_types: null
+    billing_project: project-id
+    condition: []
+    content_type: IAM_POLICY
+    feed_id: security-monitoring
+    feed_output_config:
+    - pubsub_destination:
+      - topic: projects/project-id/topics/org-asset-feed
+    org_id: "1122334455"
+    timeouts: null
+  module.pubsub.google_pubsub_topic.default:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ingestion_data_source_settings: []
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
+    message_transforms: []
+    name: org-asset-feed
+    project: project-id
+    schema_settings: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_cloud_asset_organization_feed: 1
+  google_pubsub_topic: 1
+  modules: 2
+  resources: 2
+
+outputs: {}

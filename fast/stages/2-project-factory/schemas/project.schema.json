@@ -4,6 +4,89 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "asset_feeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "feed_output_config"
+          ],
+          "properties": {
+            "billing_project": {
+              "type": "string"
+            },
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "RESOURCE",
+                "IAM_POLICY",
+                "ORG_POLICY",
+                "ACCESS_POLICY",
+                "OS_INVENTORY",
+                "RELATIONSHIP"
+              ]
+            },
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "asset_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "feed_output_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pubsub_destination"
+              ],
+              "properties": {
+                "pubsub_destination": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "topic"
+                  ],
+                  "properties": {
+                    "topic": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "automation": {
       "type": "object",
       "additionalProperties": false,

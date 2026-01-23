@@ -75,7 +75,8 @@ module "folder-1-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  id = module.folder-1[each.key].id
+  id          = module.folder-1[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -125,7 +126,8 @@ module "folder-2-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  id = module.folder-2[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
+  id          = module.folder-2[each.key].id
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -178,7 +180,8 @@ module "folder-3-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  id = module.folder-3[each.key].id
+  id          = module.folder-3[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -231,7 +234,8 @@ module "folder-4-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
-  id = module.folder-4[each.key].id
+  id          = module.folder-4[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
