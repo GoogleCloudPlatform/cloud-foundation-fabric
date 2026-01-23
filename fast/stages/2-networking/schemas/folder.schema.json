@@ -349,6 +349,9 @@
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
+    "assured_workload_config": {
+      "$ref": "#/$defs/assured_workload_config"
+    },
     "parent": {
       "type": "string",
       "pattern": "^(?:folders/[0-9]+|organizations/[0-9]+|\\$folder_ids:[a-z0-9_-]+)$"
@@ -767,6 +770,95 @@
           "additionalProperties": false
         }
       }
+    },
+    "assured_workload_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "compliance_regime": {
+          "type": "string",
+          "enum": [
+            "ASSURED_WORKLOADS_FOR_PARTNERS",
+            "AU_REGIONS_AND_US_SUPPORT",
+            "CA_PROTECTED_B",
+            "CA_REGIONS_AND_SUPPORT",
+            "CJIS",
+            "COMPLIANCE_REGIME_UNSPECIFIED",
+            "EU_REGIONS_AND_SUPPORT",
+            "FEDRAMP_HIGH",
+            "FEDRAMP_MODERATE",
+            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
+            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
+            "HIPAA",
+            "HITRUST",
+            "IL2",
+            "IL4",
+            "IL5",
+            "IRS_1075",
+            "ISR_REGIONS_AND_SUPPORT",
+            "ISR_REGIONS",
+            "ITAR",
+            "JP_REGIONS_AND_SUPPORT",
+            "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
+            "REGIONAL_CONTROLS",
+            "US_REGIONAL_ACCESS"
+          ]
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "enable_sovereign_controls": {
+          "type": "boolean"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "partner": {
+          "type": "string",
+          "enum": [
+            "LOCAL_CONTROLS_BY_S3NS",
+            "PARTNER_UNSPECIFIED",
+            "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
+            "SOVEREIGN_CONTROLS_BY_CNTXT",
+            "SOVEREIGN_CONTROLS_BY_PSN",
+            "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
+            "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
+          ]
+        },
+        "partner_permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assured_workloads_monitoring": {
+              "type": "boolean"
+            },
+            "data_logs_viewer": {
+              "type": "boolean"
+            },
+            "service_access_approver": {
+              "type": "boolean"
+            }
+          }
+        },
+        "violation_notifications_enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "compliance_regime",
+        "display_name",
+        "location",
+        "organization"
+      ]
     }
   }
 }
