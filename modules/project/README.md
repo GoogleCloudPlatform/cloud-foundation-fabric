@@ -2267,27 +2267,27 @@ module "project" {
 | [custom_role_id](outputs.tf#L33) | Map of custom role IDs created in the project. |  |
 | [custom_roles](outputs.tf#L38) | Map of custom roles resources created in the project. |  |
 | [default_service_accounts](outputs.tf#L43) | Emails of the default service accounts for this project. |  |
-| [id](outputs.tf#L51) | Project id. |  |
-| [kms_autokeys](outputs.tf#L69) | KMS Autokey key ids. |  |
-| [name](outputs.tf#L76) | Project name. |  |
-| [network_tag_keys](outputs.tf#L88) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L97) | Tag value resources. |  |
-| [notification_channel_names](outputs.tf#L105) | Notification channel names. |  |
-| [notification_channels](outputs.tf#L113) | Full notification channel objects. |  |
-| [number](outputs.tf#L118) | Project number. |  |
-| [organization_policies_ids](outputs.tf#L133) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [project_id](outputs.tf#L140) | Project id. |  |
-| [quota_configs](outputs.tf#L158) | Quota configurations. |  |
-| [quotas](outputs.tf#L169) | Quota resources. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L174) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
-| [service_agents](outputs.tf#L179) | List of all (active) service agents for this project. |  |
-| [services](outputs.tf#L188) | Service APIs to enable in the project. |  |
-| [sink_writer_identities](outputs.tf#L197) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L204) | Tag key resources. |  |
-| [tag_values](outputs.tf#L213) | Tag value resources. |  |
-| [workload_identity_pool_ids](outputs.tf#L221) | Workload identity provider ids. |  |
-| [workload_identity_provider_ids](outputs.tf#L228) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L236) | Workload identity provider attributes. |  |
+| [id](outputs.tf#L48) | Project id. |  |
+| [kms_autokeys](outputs.tf#L66) | KMS Autokey key ids. |  |
+| [name](outputs.tf#L73) | Project name. |  |
+| [network_tag_keys](outputs.tf#L85) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L94) | Tag value resources. |  |
+| [notification_channel_names](outputs.tf#L102) | Notification channel names. |  |
+| [notification_channels](outputs.tf#L110) | Full notification channel objects. |  |
+| [number](outputs.tf#L115) | Project number. |  |
+| [organization_policies_ids](outputs.tf#L130) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [project_id](outputs.tf#L137) | Project id. |  |
+| [quota_configs](outputs.tf#L155) | Quota configurations. |  |
+| [quotas](outputs.tf#L166) | Quota resources. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L171) | Map of SCC CUSTOM SHA MODULES => ID in the project. |  |
+| [service_agents](outputs.tf#L176) | List of all (active) service agents for this project. |  |
+| [services](outputs.tf#L185) | Service APIs to enable in the project. |  |
+| [sink_writer_identities](outputs.tf#L194) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L201) | Tag key resources. |  |
+| [tag_values](outputs.tf#L210) | Tag value resources. |  |
+| [workload_identity_pool_ids](outputs.tf#L218) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L225) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L233) | Workload identity provider attributes. |  |
 
 ## Fixtures
 
