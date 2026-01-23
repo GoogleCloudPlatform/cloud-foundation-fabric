@@ -1,14 +1,27 @@
-# FAST Installation on Cloud de Confiance (GCD)
+# FAST Installation on Google Cloud Dedicated (GCD)
 
-This document serves as an extension to the main **[FAST Organization Setup README](../README.md)**, detailing the specific configurations and steps required to deploy the Fabric FAST landing zone on **Cloud de Confiance (GCD)**.
+This document serves as an extension to the main **[FAST Organization Setup README](../README.md)**, detailing the specific configurations and steps required to deploy the Fabric FAST landing zone on **Google Cloud Dedicated (GCD)**.
 
-It assumes familiarity with the standard FAST bootstrap flow but highlights the critical divergences required for the Trusted Private Cloud (TPC) environment. For a detailed overview of the differences between Google Cloud and Cloud de Confiance, please refer to the [official S3NS documentation](https://documentation.s3ns.fr/docs/overview/tpc-key-differences).
+It assumes familiarity with the standard FAST bootstrap flow but highlights the critical divergences required for the Trusted Private Cloud (TPC) environment. For a detailed overview of the differences between Google Cloud and Google Cloud Dedicated, please refer to the [official S3NS documentation](https://documentation.s3ns.fr/docs/overview/tpc-key-differences).
+
+## Configuration Reference
+
+The following table lists the specific configuration values for different Google Cloud Dedicated (GCD) environments. Please replace the placeholders in the commands and configurations below with the values corresponding to your target universe.
+
+| Variable | GCD In France | GCD In Berlin |
+| :--- | :--- | :--- |
+| `UNIVERSE_WEB_DOMAIN` | `cloud.s3nscloud.fr` | `cloud.berlin-build0.goog` |
+| `UNIVERSE_API_DOMAIN` | `s3nsapis.fr` | `apis-berlin-build0.goog` |
+| `UNIVERSE_NAME` | `s3ns` | `berlin` |
+| `UNIVERSE_PREFIX` | `s3ns` | `eu0` |
+| `UNIVERSE_REGION` | `u-france-east1` | `u-germany-northeast1` |
+
 
 ## 1. Design Overview
 
-The FAST framework uses the concept of **stages**, which perform precise tasks individually but taken together build a functional, ready-to-use organization. These stages are modeled around security boundaries typically found in mature organizations, allowing ownership delegation to specific teams (e.g., Networking, Security).
+The landing zone is built using a series of modular **stages**, each performing specific tasks to create a functional, production-ready organization. These stages align with typical enterprise security boundaries, enabling clear ownership delegation (e.g., to Networking or Security teams).
 
-The core stages included in the toolkit are:
+The core stages are:
 
 - **Organization Setup:** Bootstraps the organization, configures high-level IAM, Organization Policies, and the resource hierarchy.
 - **VPC-SC:** Implements VPC Service Controls and resource auto-discovery.
@@ -17,7 +30,8 @@ The core stages included in the toolkit are:
 
 ## 2. Prerequisites
 
-This section extends the [Prerequisites](../README.md#prerequisites) in the main README. Before beginning the standard setup, ensure the following additional requirements are met.
+In addition to the [standard FAST prerequisites](../README.md#prerequisites), ensure the following GCD-specific requirements are met.
+
 
 ### Identity Provider
 
@@ -33,15 +47,16 @@ git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
 
 ### Google Cloud CLI
 
-Configure the `gcloud` CLI for use with Cloud de Confiance. The following is a simple example that worked for us.
+Initialize the `gcloud` CLI for your GCD universe. Use the values from the [Configuration Reference](#configuration-reference) table to replace the `<PLACEHOLDERS>` in the commands below.
 
-First, create a WIF configuration file for `gcloud` via the following commands
+First, create a Workforce Identity Federation (WIF) login configuration:
 
 ```bash
 AUDIENCE=locations/global/workforcePools/mypool/providers/myprovider
-UNIVERSE_WEB_DOMAIN="cloud.s3nscloud.fr"
-UNIVERSE_API_DOMAIN="s3nsapis.fr"
-UNIVERSE_NAME="s3nsapis"
+# Replace with values from the Configuration Reference table
+UNIVERSE_WEB_DOMAIN="<UNIVERSE_WEB_DOMAIN>"
+UNIVERSE_API_DOMAIN="<UNIVERSE_API_DOMAIN>"
+UNIVERSE_NAME="<UNIVERSE_NAME>"
 WF_POOL_FILE_PATH="/tmp"
 
 gcloud config configurations create $UNIVERSE_NAME
@@ -70,17 +85,17 @@ gcloud auth application-default login \
 
 *This step replaces the standard [Default project](../README.md#default-project) creation flow.*
 
-For the initial bootstrap on GCD, you cannot rely on automatic quota tracking for Organization Policies. You must manually create a temporary project first.
+GCD requires a manual bootstrap project because organization policy services are not automatically available at the organization root during the initial setup.
 
-1. **Create a project:** Create a temporary project via the Cloud Console. **Note:** This project does not require a billing account.
-2. **Enable Service:** Enable the `orgpolicy.googleapis.com` service in this project.
-3. **Configure CLI:** Set this project as your default:
+1. **Create a project:** Use the Cloud Console to create a temporary project. A billing account is **not** required.
+2. **Enable APIs:** Enable the `orgpolicy.googleapis.com` service within this project.
+3. **Set default project:** Configure your CLI context:
 
     ```bash
     gcloud config set project <TEMP_PROJECT_ID>
     ```
 
-4. *Post-Setup:* Once the first Terraform apply is complete, you can switch to the newly created `iac-0` project and delete this temporary one.
+4. **Post-Setup Cleanup:** After the initial `0-org-setup` stage is successfully deployed, switch to the production `iac-0` project and delete this temporary bootstrap project.
 
 ## 4. Terraform Configuration Updates
 
@@ -90,14 +105,14 @@ For the initial bootstrap on GCD, you cannot rely on automatic quota tracking fo
 
 Create a temporary `providers.tf` file to configure the specific universe domain for GCD. This ensures Terraform targets the correct API endpoints.
 
-```hcl
+```terraform
 provider "google" {
   # Replace with your specific universe domain (e.g., s3nsapis.fr)
-  universe_domain = "s3nsapis.fr"
+  universe_domain = "<UNIVERSE_API_DOMAIN>"
 }
 
 provider "google-beta" {
-  universe_domain = "s3nsapis.fr"
+  universe_domain = "<UNIVERSE_API_DOMAIN>"
 }
 ```
 
@@ -112,11 +127,13 @@ projects:
     prefix: ftpc00
     locations:
       logging: global
-      storage: u-france-east1
+      # Replace with values from the Configuration Reference table
+      storage: <UNIVERSE_REGION>
   overrides:
     universe:
-      domain: s3nsapis.fr
-      prefix: s3ns
+      # Replace with values from the Configuration Reference table
+      domain: <UNIVERSE_API_DOMAIN>
+      prefix: <UNIVERSE_PREFIX>
       forced_jit_service_identities:
         - compute.googleapis.com
       unavailable_service_identities:
@@ -129,7 +146,7 @@ projects:
 
 *This section extends the [Importing org policies](../README.md#importing-org-policies) instructions.*
 
-Organization policies must be tailored to the universe constraints. The recommended approach is to **bypass them during the first apply** and add them iteratively.
+Organization policies must be adapted to account for universe-specific constraints and available services. The recommended approach is to **bypass organization policies** during the first apply and then enable them iteratively.
 
 ### Step A: Bypass for First Apply
 
@@ -143,27 +160,28 @@ Once the stage is applied and you have switched credentials to the IaC service a
 
 1. Create an empty `organization/org-policies` folder.
 2. Move policy YAML files back one by one, uncommenting relevant policies.
-3. **Adjust constraints** for GCD-specific values. For example, `compute.trustedImageProjects` must reference the universe-specific project IDs (e.g., `eu0-system`):
+3. **Adjust constraints:** Update policy values for GCD. For example, the `compute.trustedImageProjects` constraint must reference your universe-specific system projects:
 
 ```yaml
 compute.trustedImageProjects:
   rules:
   - allow:
       values:
-        - "is:projects/s3ns-system:cos-cloud"
-        - "is:projects/s3ns-system:debian-cloud"
-        - "is:projects/s3ns-system:rocky-linux-cloud"
-        - "is:projects/s3ns-system:ubuntu-os-cloud"
+        # Replace UNIVERS_PREFIX with the value from the Configuration Reference table
+        - "is:projects/<UNIVERSE_PREFIX>-system:cos-cloud"
+        - "is:projects/<UNIVERSE_PREFIX>-system:debian-cloud"
+        - "is:projects/<UNIVERSE_PREFIX>-system:rocky-linux-cloud"
+        - "is:projects/<UNIVERSE_PREFIX>-system:ubuntu-os-cloud"
 ```
 
 To import pre-existing default policies without modifying them, define the constraint in your `terraform.tfvars` using the `org_policies_imports` variable:
 
-```hcl
+```terraform
 org_policies_imports = [
   "compute.trustedImageProjects",
 ]
 ```
 
-## 6. Next Steps: Applying Other Stages
+## 6. Next Steps
 
-Once the **Organization Setup** stage is complete, you can configure and apply any subsequent stages (VPC-SC, Security, Networking, Project Factory). The universe configuration defined here will be carried over implicitly by the FAST cross-stage output files.
+Once the **Organization Setup** stage is fully deployed, you can proceed with subsequent stages (VPC-SC, Security, Networking, Project Factory). The universe configuration established here is automatically propagated to these stages via the FAST cross-stage output mechanism.
