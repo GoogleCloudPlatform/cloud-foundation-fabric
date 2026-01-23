@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../schemas/folder.schema.json
-
-name: Data Platform
-org_policies:
-  custom.iamDisableAdminServiceAccount:
-    rules:
-      - enforce: false
-  custom.iamDisableProjectServiceAccountImpersonationRoles:
-    rules:
-      - enforce: false
+artifactregistryRequireCMEK:
+  description: Detect if Artifact Registry repositories are not encrypted using CMEK
+  predicate:
+    expression: (!has(resource.kmsKeyName))
+  recommendation: Ensure the Artifact Registry repositoriesa are encrypted using CMEK
+  resource_selector:
+    resource_types:
+      - artifactregistry.googleapis.com/Repository
+  severity: HIGH

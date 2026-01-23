@@ -12,19 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-custom.firewallRestrictPublicAccessRule:
+custom.firewallRestrictPublicAccessPolicyRule:
   action_type: DENY
   condition: |-
-    resource.direction == 'INGRESS' &&
-    size(resource.allowed) > 0 &&
-    resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&
-    !resource.allowed.exists(a,
-      a.IPProtocol == 'icmp'
+    resource.rules.exists(rule,
+      rule.action == 'allow' &&
+      rule.priority < 2147483644 &&
+      rule.direction == 'INGRESS' &&
+      rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0') &&
+      !rule.match.layer4Configs.exists(l4,
+        l4.ipProtocol == 'icmp'
+      )
     )
-  description: Prevent VPC Firewall ingress rules from 0.0.0.0/0 except for allowed protocols (ICMP).
-  display_name: Restrict VPC Firewall ingress rules allowing public Internet access
+  description: Prevent Firewall Policy ingress rules from 0.0.0.0/0 except for allowed protocols (ICMP)
+  display_name: Restrict Firewall Policy ingress rules allowing public Internet access
   method_types:
   - CREATE
   - UPDATE
   resource_types:
-  - compute.googleapis.com/Firewall
+  - compute.googleapis.com/FirewallPolicy

@@ -12,17 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-custom.firewallRestrictPublicAccessRule:
+custom.firewallRestrictExplicitAllPortsRule:
   action_type: DENY
   condition: |-
     resource.direction == 'INGRESS' &&
-    size(resource.allowed) > 0 &&
-    resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&
-    !resource.allowed.exists(a,
-      a.IPProtocol == 'icmp'
-    )
-  description: Prevent VPC Firewall ingress rules from 0.0.0.0/0 except for allowed protocols (ICMP).
-  display_name: Restrict VPC Firewall ingress rules allowing public Internet access
+    resource.allowed.exists(rule,
+      rule.IPProtocol in ['tcp', 'udp'] && (
+        !has(rule.ports) ||
+        '0-65535' in rule.ports ||
+        '1-65535' in rule.ports
+      )
+    ) &&
+    !resource.name.startsWith('gke-') &&
+    !resource.name.startsWith('k8s-') &&
+    !resource.name.endsWith('-hc') &&
+    !resource.name.startsWith('k8s2-') &&
+    !resource.name.startsWith('gkegw1-l7-') &&
+    !resource.name.startsWith('gkemcg1-l7-')
+  description: Prevent VPC firewall rules that explicitly specify all TCP/UDP ports
+    using ranges like 0-65535 or 1-65535
+  display_name: Restrict VPC Firewall rules with explicit all-ports specifications
   method_types:
   - CREATE
   - UPDATE

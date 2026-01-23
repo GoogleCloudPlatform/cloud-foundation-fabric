@@ -12,19 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-custom.firewallRestrictPublicAccessRule:
+custom.cloudkmsAllowedAlgorithms:
   action_type: DENY
   condition: |-
-    resource.direction == 'INGRESS' &&
-    size(resource.allowed) > 0 &&
-    resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&
-    !resource.allowed.exists(a,
-      a.IPProtocol == 'icmp'
-    )
-  description: Prevent VPC Firewall ingress rules from 0.0.0.0/0 except for allowed protocols (ICMP).
-  display_name: Restrict VPC Firewall ingress rules allowing public Internet access
+    has(resource.versionTemplate.algorithm) && resource.versionTemplate.algorithm in [
+      'GOOGLE_SYMMETRIC_ENCRYPTION',
+      'RSA_SIGN_PSS_2048_SHA256',
+      'RSA_SIGN_PSS_3072_SHA256',
+      'RSA_SIGN_PSS_4096_SHA256',
+      'RSA_DECRYPT_OAEP_2048_SHA256',
+      'RSA_DECRYPT_OAEP_4096_SHA256',
+      'RSA_DECRYPT_OAEP_2048_SHA1',
+      'RSA_DECRYPT_OAEP_4096_SHA1'
+    ] == false
+  description: Ensure the algorithm for Cloud KMS keys is configured correctly
+  display_name: Require Cloud KMS keys algorithm to be configured correctly
   method_types:
   - CREATE
   - UPDATE
   resource_types:
-  - compute.googleapis.com/Firewall
+  - cloudkms.googleapis.com/CryptoKey

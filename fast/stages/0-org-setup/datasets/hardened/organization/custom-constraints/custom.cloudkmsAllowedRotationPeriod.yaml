@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../schemas/folder.schema.json
-
-name: Data Platform
-org_policies:
-  custom.iamDisableAdminServiceAccount:
-    rules:
-      - enforce: false
-  custom.iamDisableProjectServiceAccountImpersonationRoles:
-    rules:
-      - enforce: false
+custom.cloudkmsAllowedRotationPeriod:
+  action_type: DENY
+  condition: |-
+    has(resource.rotationPeriod) && resource.rotationPeriod > duration("7776000s")
+  description: Ensure the rotation period for Cloud KMS keys is configured correctly
+  display_name: Require Cloud KMS keys to have rotation period configured correctly
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - cloudkms.googleapis.com/CryptoKey

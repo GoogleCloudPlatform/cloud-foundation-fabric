@@ -12,19 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-custom.firewallRestrictPublicAccessRule:
+custom.firewallRestrictExplicitAllPortsPolicyRule:
   action_type: DENY
   condition: |-
-    resource.direction == 'INGRESS' &&
-    size(resource.allowed) > 0 &&
-    resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&
-    !resource.allowed.exists(a,
-      a.IPProtocol == 'icmp'
+    resource.rules.exists(rule,
+      rule.action == 'allow' &&
+      rule.priority < 2147483644 &&
+      rule.direction == 'INGRESS' &&
+      rule.match.layer4Configs.exists(l4,
+        l4.ipProtocol in ['tcp', 'udp'] && (
+          !has(l4.ports) ||
+          '0-65535' in l4.ports ||
+          '1-65535' in l4.ports
+        )
+      )
     )
-  description: Prevent VPC Firewall ingress rules from 0.0.0.0/0 except for allowed protocols (ICMP).
-  display_name: Restrict VPC Firewall ingress rules allowing public Internet access
+  description: Prevent Firewall Policy rules that explicitly specify all TCP/UDP ports
+    using ranges like 0-65535 or 1-65535
+  display_name: Restrict Firewall Policy rules with explicit all-ports specifications
   method_types:
   - CREATE
   - UPDATE
   resource_types:
-  - compute.googleapis.com/Firewall
+  - compute.googleapis.com/FirewallPolicy

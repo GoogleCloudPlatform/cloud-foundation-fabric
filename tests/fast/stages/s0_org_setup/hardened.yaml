@@ -1286,6 +1286,32 @@ values:
     parent: organizations/1234567890
     tags: null
     timeouts: null
+  module.factory.module.folder-1["data-platform"].google_org_policy_policy.default["custom.iamDisableAdminServiceAccount"]:
+    dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
+    timeouts: null
+  ? module.factory.module.folder-1["data-platform"].google_org_policy_policy.default["custom.iamDisableProjectServiceAccountImpersonationRoles"]
+  : dry_run_spec: []
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
+    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
@@ -2497,6 +2523,1465 @@ values:
     intercept_children: false
     name: vpc-sc
     org_id: '1234567890'
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.accesscontextmanagerDisableBridgePerimeters"]
+  : action_type: DENY
+    condition: resource.perimeterType == 'PERIMETER_TYPE_BRIDGE'
+    description: Ensure no perimeter bridges are used. Instead, use ingress and egress
+      rules.
+    display_name: Deny usage of perimeter bridges
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.accesscontextmanagerDisableBridgePerimeters
+    parent: organizations/1234567890
+    resource_types:
+    - accesscontextmanager.googleapis.com/ServicePerimeter
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudbuildDisableWorkerPoolExternalIP"]:
+    action_type: DENY
+    condition: (resource.privatePoolV1Config.networkConfig.egressOption != "NO_PUBLIC_EGRESS")
+    description: Ensure no unauthorized worker pools external ip used for each build
+    display_name: Deny unauthorized worker pools external ip used for each build
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudbuildDisableWorkerPoolExternalIP
+    parent: organizations/1234567890
+    resource_types:
+    - cloudbuild.googleapis.com/WorkerPool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedAlgorithms"]:
+    action_type: DENY
+    condition: "has(resource.versionTemplate.algorithm) && resource.versionTemplate.algorithm\
+      \ in [\n  'GOOGLE_SYMMETRIC_ENCRYPTION',\n  'RSA_SIGN_PSS_2048_SHA256',\n  'RSA_SIGN_PSS_3072_SHA256',\n\
+      \  'RSA_SIGN_PSS_4096_SHA256',\n  'RSA_DECRYPT_OAEP_2048_SHA256',\n  'RSA_DECRYPT_OAEP_4096_SHA256',\n\
+      \  'RSA_DECRYPT_OAEP_2048_SHA1',\n  'RSA_DECRYPT_OAEP_4096_SHA1'\n] == false"
+    description: Ensure the algorithm for Cloud KMS keys is configured correctly
+    display_name: Require Cloud KMS keys algorithm to be configured correctly
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudkmsAllowedAlgorithms
+    parent: organizations/1234567890
+    resource_types:
+    - cloudkms.googleapis.com/CryptoKey
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedProtectionLevel"]:
+    action_type: DENY
+    condition: has(resource.versionTemplate.protectionLevel) && resource.versionTemplate.protectionLevel
+      in ["SOFTWARE"] == false
+    description: Ensure the protection level for Cloud KMS keys is configured correctly
+    display_name: Require Cloud KMS keys protection level to be configured correctly
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudkmsAllowedProtectionLevel
+    parent: organizations/1234567890
+    resource_types:
+    - cloudkms.googleapis.com/CryptoKey
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedRotationPeriod"]:
+    action_type: DENY
+    condition: has(resource.rotationPeriod) && resource.rotationPeriod > duration("7776000s")
+    description: Ensure the rotation period for Cloud KMS keys is configured correctly
+    display_name: Require Cloud KMS keys to have rotation period configured correctly
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudkmsAllowedRotationPeriod
+    parent: organizations/1234567890
+    resource_types:
+    - cloudkms.googleapis.com/CryptoKey
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunDisableEnvironmentVariablePattern"]
+  : action_type: DENY
+    condition: "resource.spec.template.spec.containers.exists(container,\n  container.env.exists(env,\n\
+      \    [\"[sS][eE][cC][rR][eE][tT]\", \"[kK][eE][yY]\", \"[pP][aA][sS][sS][wW][oO][rR][dD]\"\
+      , \"[tT][oO][kK][eE][nN]\"].exists(\n      pattern, env.name.matches(pattern)\n\
+      \    )\n  )\n)"
+    description: Enforce that certain patterns are not used in environment variables
+      of Cloud Run Service or Cloud Run Functions
+    display_name: Disable usage of certain patterns in Cloud Run Service or Cloud
+      Run Functions environment variables
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudrunDisableEnvironmentVariablePattern
+    parent: organizations/1234567890
+    resource_types:
+    - run.googleapis.com/Service
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobDisableDefaultServiceAccount"]
+  : action_type: DENY
+    condition: resource.spec.template.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
+    description: Enforce that service account associated with Cloud Run Job use a
+      non-default service account
+    display_name: Disable creation of Cloud Run Job using default service account
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudrunJobDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - run.googleapis.com/Job
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobRequireBinaryAuthorization"]:
+    action_type: DENY
+    condition: '!(''run.googleapis.com/binary-authorization'' in resource.metadata.annotations)'
+    description: Enforce that Cloud Run Job are using binary authorization
+    display_name: Disable creation of Cloud Run Job without Binary Authorization
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudrunJobRequireBinaryAuthorization
+    parent: organizations/1234567890
+    resource_types:
+    - run.googleapis.com/Job
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceDisableDefaultServiceAccount"]
+  : action_type: DENY
+    condition: resource.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
+    description: Enforce that service account associated with Cloud Run Service use
+      a non-default service account
+    display_name: Disable creation of Cloud Run Service using default service account
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudrunServiceDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - run.googleapis.com/Service
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceRequireBinaryAuthorization"]
+  : action_type: DENY
+    condition: '!(''run.googleapis.com/binary-authorization'' in resource.metadata.annotations)'
+    description: Enforce that Cloud Run Service are using binary authorization
+    display_name: Disable creation of Cloud Run Service without Binary Authorization
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudrunServiceRequireBinaryAuthorization
+    parent: organizations/1234567890
+    resource_types:
+    - run.googleapis.com/Service
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlDisablePublicAuthorizedNetworks"]
+  : action_type: DENY
+    condition: resource.settings.ipConfiguration.authorizedNetworks.exists(network,
+      network.value == '0.0.0.0/0')
+    description: Ensure That Cloud SQL database instances do not implicitly whitelist
+      all public IP addresses
+    display_name: Require Cloud SQL database instances to not whitelist all public
+      IP addresses
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlDisablePublicAuthorizedNetworks
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlEnforcePasswordComplexity"]:
+    action_type: DENY
+    condition: 'resource.settings.passwordValidationPolicy.complexity != ''COMPLEXITY_DEFAULT''
+      ||
+
+      resource.settings.passwordValidationPolicy.minLength < 12'
+    description: Ensure that Cloud SQL instance is configured with a password complexity
+      to be combination of lowercase, uppercase, numeric, and non-alphanumeric characters
+    display_name: Require Cloud SQL instances to configure password complexity to
+      COMPLEXITY_DEFAULT
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlEnforcePasswordComplexity
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireAutomatedBackup"]:
+    action_type: DENY
+    condition: resource.settings.backupConfiguration.enabled != true
+    description: Ensure that Cloud SQL instance have automated backup enabled
+    display_name: Require Cloud SQL instances to have automated backup enabled
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireAutomatedBackup
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireHighAvailability"]:
+    action_type: DENY
+    condition: resource.settings.availabilityType != "REGIONAL"
+    description: Ensure that Cloud SQL instance is configured with high availability
+    display_name: Require Cloud SQL instances to be configured with high availability
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireHighAvailability
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireMySQLDatabaseFlags"]:
+    action_type: DENY
+    condition: "resource.databaseVersion.startsWith('MYSQL') && (\n  !resource.settings.databaseFlags.exists(flag,\n\
+      \    flag.name == 'skip_show_database' && flag.value == 'on'\n  ) ||\n  !resource.settings.databaseFlags.exists(flag,\n\
+      \    flag.name == 'local_infile' && flag.value == 'off'\n  )\n)"
+    description: Ensure Cloud SQL for MySQL instance database flags are set correctly
+      (e.g skip_show_database, local_infile)
+    display_name: Require Cloud SQL for MySQL instance database flags to be configured
+      correctly (e.g skip_show_database, local_infile)
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireMySQLDatabaseFlags
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePointInTimeRecovery"]:
+    action_type: DENY
+    condition: "(resource.databaseVersion.contains(\"POSTGRES\")\n  || resource.databaseVersion.contains(\"\
+      SQLSERVER\"))\n  && resource.settings.backupConfiguration.pointInTimeRecoveryEnabled\
+      \ == false"
+    description: Ensure that Cloud SQL instance is configure enable point in time
+      recovery in the backup configuration. This setting is possibly for Postgres
+      and SQLServer databases.
+    display_name: Require Cloud SQL instances to enable point in time recovery
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequirePointInTimeRecovery
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags"]
+  : action_type: DENY
+    condition: "resource.databaseVersion.startsWith('POSTGRES') && (\n  !resource.settings.databaseFlags.exists(flag,\
+      \ flag.name == 'log_checkpoints' && flag.value == 'on') ||\n  !resource.settings.databaseFlags.exists(flag,\
+      \ flag.name == 'log_executor_stats' && flag.value == 'off') ||\n  !resource.settings.databaseFlags.exists(flag,\
+      \ flag.name == 'log_lock_waits' && flag.value == 'on')\n)"
+    description: Ensure Cloud SQL for PostgreSQL instance database flags are set correctly
+      (e.g log_checkpoints, log_executor_stats, log_lock_waits)
+    display_name: Require Cloud SQL for PostgreSQL instance database flags to be configured
+      correctly (e.g log_checkpoints, log_executor_stats, log_lock_waits)
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLDatabaseFlags"]:
+    action_type: DENY
+    condition: "resource.databaseVersion.startsWith('POSTGRES') && (\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name == 'log_connections' && f.value == 'on') ||\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name == 'log_disconnections' && f.value == 'on') ||\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name == 'log_min_duration_statement' && f.value == '-1') ||\n  !resource.settings.databaseFlags.exists(f,\
+      \ f.name == 'cloudsql.enable_pgaudit' && f.value == 'on') ||\n  resource.settings.databaseFlags.exists(f,\
+      \ f.name == 'log_error_verbosity' && f.value == 'terse') ||\n  resource.settings.databaseFlags.exists(f,\
+      \ f.name == 'log_statement' && f.value == 'none') ||\n  resource.settings.databaseFlags.exists(f,\n\
+      \    f.name == 'log_min_messages' && f.value in ['error' , 'log', 'fatal', 'panic']\n\
+      \  ) ||\n  resource.settings.databaseFlags.exists(f,\n    f.name == 'log_min_error_statement'\
+      \ && f.value in ['log', 'fatal', 'panic']\n  )\n)"
+    description: Ensure Cloud SQL for PostgreSQL instance database flags are set correctly
+      (e.g log_connections)
+    display_name: Require Cloud SQL for PostgreSQL instance database flags to be configured
+      correctly (e.g log_connections)
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequirePostgreSQLDatabaseFlags
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireRootPassword"]:
+    action_type: DENY
+    condition: resource.settings.passwordValidationPolicy.minLength == 0
+    description: Ensure that Cloud SQL instance is configured to use a root password
+    display_name: Require Cloud SQL instances to configure root password
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireRootPassword
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireSQLServerDatabaseFlags"]:
+    action_type: DENY
+    condition: "resource.databaseVersion.startsWith('SQLSERVER') && (\n  resource.settings.databaseFlags.exists(flag,\n\
+      \    flag.name == 'external scripts enabled' && flag.value == 'on'\n  ) ||\n\
+      \  resource.settings.databaseFlags.exists(flag,\n    flag.name == 'cross db\
+      \ ownership chaining' && flag.value == 'on'\n  ) ||\n  resource.settings.databaseFlags.exists(flag,\n\
+      \    flag.name == 'contained database authentication' && flag.value == 'on'\n\
+      \  ) ||\n  resource.settings.databaseFlags.exists(flag,\n    flag.name == 'user\
+      \ connections' && flag.value != '0'\n  ) ||\n  resource.settings.databaseFlags.exists(flag,\n\
+      \    flag.name == 'user options' && flag.value != '0'\n  ) ||\n  !resource.settings.databaseFlags.exists(flag,\n\
+      \    flag.name == 'remote access' && flag.value == 'off'\n  ) ||\n  !resource.settings.databaseFlags.exists(flag,\n\
+      \    flag.name == '3625' && flag.value == 'on'\n  )\n)"
+    description: Ensure Cloud SQL for SQLServer instance database flags are set correctly
+      (e.g external scripts enabled ...)
+    display_name: Require Cloud SQL for SQLServer instance database flags to be configured
+      correctly (e.g external scripts enabled ...)
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireSQLServerDatabaseFlags
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireSSLConnection"]:
+    action_type: DENY
+    condition: resource.settings.ipConfiguration.sslMode in ['ENCRYPTED_ONLY', 'TRUSTED_CLIENT_CERTIFICATE_REQUIRED']
+      == false
+    description: Ensure that Cloud SQL instance is configured to allow only connections
+      that are encrypted with SSL/TLS
+    display_name: Require Cloud SQL instances to allow only connections that are encrypted
+      with SSL/TLS
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.cloudsqlRequireSSLConnection
+    parent: organizations/1234567890
+    resource_types:
+    - sqladmin.googleapis.com/Instance
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocDisableDefaultServiceAccount"]:
+    action_type: DENY
+    condition: "has(resource.config.gceClusterConfig.serviceAccount) == false ||\n\
+      \  resource.config.gceClusterConfig.serviceAccount.contains('-compute@developer.gserviceaccount.com')"
+    description: Enforce that the Dataproc VMs is not using default user-managed service
+      accounts
+    display_name: Disable Dataproc cluster with default service accounts
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocDisableDefaultServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireDiskCmekEncryption"]:
+    action_type: DENY
+    condition: has(resource.config.encryptionConfig.gcePdKmsKeyName) == false
+    description: Enforce that the Dataproc cluster is created with an CMEK encryption
+      key.
+    display_name: Enable Dataproc CMEK encryption
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocRequireDiskCmekEncryption
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireInternalIp"]:
+    action_type: DENY
+    condition: resource.config.gceClusterConfig.internalIpOnly == false
+    description: Enforce that the Dataproc cluster is created with Internal IPs only
+    display_name: Require Dataproc with internal IPs
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocRequireInternalIp
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireKerberos"]:
+    action_type: DENY
+    condition: resource.config.securityConfig.kerberosConfig.enableKerberos == false
+    description: Enforce that Dataproc cluster is configured using secure mode via
+      Kerberos for authentication
+    display_name: Require Dataproc with Kerberos authentication
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocRequireKerberos
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dnsAllowedSigningAlgorithms"]:
+    action_type: DENY
+    condition: "resource.visibility == 'PUBLIC' &&\nresource.dnssecConfig.state ==\
+      \ 'ON' &&\nresource.dnssecConfig.defaultKeySpecs.exists(spec,\n  spec.algorithm\
+      \ in [\"ECDSAP256SHA256\"] == false\n)"
+    description: Ensure that allowed signing algorithms are used for the Key-Signing
+      key and Zone-Signing key in Cloud DNS DNSSEC
+    display_name: Require Cloud DNS DNSSEC configured to use only allowed algorithms
+      in Cloud DNS DNSSEC
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dnsAllowedSigningAlgorithms
+    parent: organizations/1234567890
+    resource_types:
+    - dns.googleapis.com/ManagedZone
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dnsRequireManageZoneDNSSEC"]:
+    action_type: DENY
+    condition: resource.visibility == "PUBLIC" && (resource.dnssecConfig.state in
+      ["ON", "TRANSFER"] == false)
+    description: Ensure that Cloud DNS DNSSEC is enabled when configuring a DNS Public
+      Managed Zone
+    display_name: Require Cloud DNS DNSSEC enabled when configuring a DNS Public Managed
+      Zone
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dnsRequireManageZoneDNSSEC
+    parent: organizations/1234567890
+    resource_types:
+    - dns.googleapis.com/ManagedZone
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.dnsRequirePolicyLogging"]:
+    action_type: DENY
+    condition: resource.enableLogging != true
+    description: Ensure that Cloud DNS logging is enabled when configuring a DNS Policy
+    display_name: Require Cloud DNS logging enabled when configuring a DNS Policy
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dnsRequirePolicyLogging
+    parent: organizations/1234567890
+    resource_types:
+    - dns.googleapis.com/Policy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallEnforcePolicyRuleLogging"]:
+    action_type: DENY
+    condition: resource.rules.exists(rule, rule.action != 'goto_next' && rule.enableLogging
+      == false)
+    description: Ensure that Firewall Policy rules have logging enabled
+    display_name: Require Firewall Policy rules to have logging enabled
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallEnforcePolicyRuleLogging
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallEnforceRuleLogging"]:
+    action_type: DENY
+    condition: "(\n  (has(resource.logConfig) == false || resource.logConfig.enable\
+      \ == false) &&\n  !resource.name.startsWith(\"gke-\") &&\n  !resource.name.startsWith(\"\
+      k8s-\") &&\n  !resource.name.endsWith(\"-hc\") &&\n  !resource.name.startsWith(\"\
+      k8s2-\") &&\n  !resource.name.startsWith(\"gkegw1-l7-\") &&\n  !resource.name.startsWith(\"\
+      gkemcg1-l7-\")\n)"
+    description: Ensure that VPC Firewall rules have logging enabled
+    display_name: Require VPC Firewall rules to have logging enabled
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallEnforceRuleLogging
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRequireDescription"]:
+    action_type: DENY
+    condition: "(\n  resource.description == \"\" &&\n  !resource.name.startsWith(\"\
+      gke-\") &&\n  !resource.name.startsWith(\"k8s-\") &&\n  !resource.name.endsWith(\"\
+      -hc\") &&\n  !resource.name.startsWith(\"k8s2-\") &&\n  !resource.name.startsWith(\"\
+      gkegw1-l7-\") &&\n  !resource.name.startsWith(\"gkemcg1-l7-\")\n)"
+    description: Prevent the creation of VPC firewall rule that does not have description
+      provided. Description can be used for auditing to refer to security control
+    display_name: Require description on Firewall rule
+    method_types:
+    - CREATE
+    name: custom.firewallRequireDescription
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(r, r.priority < 2147483644 && r.direction ==\
+      \ 'INGRESS' &&\n  r.match.srcIpRanges.exists(r, r == '0.0.0.0/0') &&\n  (\n\
+      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '6379') ||\n   \
+      \ r.match.layer4Configs.containsIpProtocolAndPort('udp', '6379') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp',\
+      \ '9200') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9200')\
+      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '9300') ||\n\
+      \    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9300') ||\n   \
+      \ r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp',\
+      \ '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11214')\
+      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '11214') ||\n\
+      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11215') ||\n  \
+      \  r.match.layer4Configs.containsIpProtocolAndPort('udp', '11215')\n  )\n)"
+    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
+      Redis) are not accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing cache/search database port
+      access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictCacheSearchDatabasesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesRule"]
+  : action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '9200') ||\n    resource.allowed.containsFirewallPort('tcp', '9300') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '11211') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '11214') ||\n    resource.allowed.containsFirewallPort('tcp', '11215') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '6379') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '11211') ||\n    resource.allowed.containsFirewallPort('udp', '11214') ||\n\
+      \    resource.allowed.containsFirewallPort('udp', '11215')\n  )"
+    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
+      Redis) are not accessible from any source when using VPC Firewall Rule.
+    display_name: Restrict VPC Firewall rules allowing cache/search database port
+      access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictCacheSearchDatabasesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '445')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '389') ||\n\
+      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '445') ||\n \
+      \   rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '389') ||\n  \
+      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '636')\n  )\n)"
+    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
+      are not accessible from the Internet when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing directory service access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictDirectoryServicesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '445') ||\n    resource.allowed.containsFirewallPort('tcp', '389') ||\n  \
+      \  resource.allowed.containsFirewallPort('tcp', '636') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '445') ||\n    resource.allowed.containsFirewallPort('udp', '389')\n  )"
+    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
+      are not accessible from the Internet when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing directory service access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictDirectoryServicesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictExplicitAllPortsPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.action == 'allow' &&\n  rule.priority\
+      \ < 2147483644 &&\n  rule.direction == 'INGRESS' &&\n  rule.match.layer4Configs.exists(l4,\n\
+      \    l4.ipProtocol in ['tcp', 'udp'] && (\n      !has(l4.ports) ||\n      '0-65535'\
+      \ in l4.ports ||\n      '1-65535' in l4.ports\n    )\n  )\n)"
+    description: Prevent Firewall Policy rules that explicitly specify all TCP/UDP
+      ports using ranges like 0-65535 or 1-65535
+    display_name: Restrict Firewall Policy rules with explicit all-ports specifications
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictExplicitAllPortsPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictExplicitAllPortsRule"]:
+    action_type: DENY
+    condition: "resource.direction == 'INGRESS' &&\nresource.allowed.exists(rule,\n\
+      \  rule.IPProtocol in ['tcp', 'udp'] && (\n    !has(rule.ports) ||\n    '0-65535'\
+      \ in rule.ports ||\n    '1-65535' in rule.ports\n  )\n) &&\n!resource.name.startsWith('gke-')\
+      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
+      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
+      \ &&\n!resource.name.startsWith('gkemcg1-l7-')"
+    description: Prevent VPC firewall rules that explicitly specify all TCP/UDP ports
+      using ranges like 0-65535 or 1-65535
+    display_name: Restrict VPC Firewall rules with explicit all-ports specifications
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictExplicitAllPortsRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '21')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '23') ||\n\
+      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '80')\n  )\n)"
+    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
+      accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing insecure protocol access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictInsecureProtocolsPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '21') ||\n    resource.allowed.containsFirewallPort('tcp', '23') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '80')\n  )"
+    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
+      accessible from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing insecure protocol access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictInsecureProtocolsRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '25')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '110')\n\
+      \  )\n)"
+    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
+      source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing mail protocol access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictMailProtocolsPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '25') ||\n    resource.allowed.containsFirewallPort('tcp', '110')\n  )"
+    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
+      source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing mail protocol access from any
+      source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictMailProtocolsRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9090')\n)"
+    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
+      from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing management port access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictManagementPortsPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  resource.allowed.containsFirewallPort('tcp', '9090')"
+    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
+      from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing management port access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictManagementPortsRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '53')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '53') ||\n\
+      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '137') ||\n \
+      \   rule.match.layer4Configs.containsIpProtocolAndPort('udp', '137') ||\n  \
+      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '138') ||\n   \
+      \ rule.match.layer4Configs.containsIpProtocolAndPort('udp', '138') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp',\
+      \ '139') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '139')\n\
+      \  )\n)"
+    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
+      accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing network service access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNetworkServicesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '53') ||\n    resource.allowed.containsFirewallPort('udp', '53') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '137') ||\n    resource.allowed.containsFirewallPort('udp', '137') ||\n  \
+      \  resource.allowed.containsFirewallPort('tcp', '138') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '138') ||\n    resource.allowed.containsFirewallPort('tcp', '139') ||\n  \
+      \  resource.allowed.containsFirewallPort('udp', '139')\n  )"
+    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
+      accessible from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing network service access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNetworkServicesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesPolicyRule"]
+  : action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7000')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7001')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7199')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '8888')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9042')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9160')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61620')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61621')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27017')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27018')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27019')\n\
+      \  )\n)"
+    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
+      from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing NoSQL database port access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNoSQLDatabasesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '7000') ||\n    resource.allowed.containsFirewallPort('tcp', '7001') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '7199') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '8888') ||\n    resource.allowed.containsFirewallPort('tcp', '9042') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '9160') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '61620') ||\n    resource.allowed.containsFirewallPort('tcp', '61621') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '27017') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '27018') ||\n    resource.allowed.containsFirewallPort('tcp', '27019')\n \
+      \ )"
+    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
+      from any source when using Firewall Policy Rule
+    display_name: Restrict VPC Firewall rules allowing NoSQL database port access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictNoSQLDatabasesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictPublicAccessPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.action == 'allow' &&\n  rule.priority\
+      \ < 2147483644 &&\n  rule.direction == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  !rule.match.layer4Configs.exists(l4,\n    l4.ipProtocol\
+      \ == 'icmp'\n  )\n)"
+    description: Prevent Firewall Policy ingress rules from 0.0.0.0/0 except for allowed
+      protocols (ICMP)
+    display_name: Restrict Firewall Policy ingress rules allowing public Internet
+      access
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictPublicAccessPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictPublicAccessRule"]:
+    action_type: DENY
+    condition: "resource.direction == 'INGRESS' &&\nsize(resource.allowed) > 0 &&\n\
+      resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&\n!resource.allowed.exists(a,\n\
+      \  a.IPProtocol == 'icmp'\n)"
+    description: Prevent VPC Firewall ingress rules from 0.0.0.0/0 except for allowed
+      protocols (ICMP).
+    display_name: Restrict VPC Firewall ingress rules allowing public Internet access
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictPublicAccessRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictRdpPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n    rule.priority < 2147483644 &&\n \
+      \   rule.direction == 'INGRESS' &&\n    !rule.match.srcIpRanges.all(ipRange,\n\
+      \        ipRange == '35.235.240.0/20' ||\n        ipRange.startsWith('192.168.')\
+      \ ||\n        ipRange.matches('^172\\\\.(?:1[6-9]|2\\\\d|3[0-1]).*') ||\n  \
+      \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
+      \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
+      \ == '3389')\n    )\n)"
+    description: Ensure that RDP access is restricted from any source when using Firewall
+      Policy Rule
+    display_name: Restrict Firewall Policy rules allowing RDP access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictRdpPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictRdpRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
+      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
+      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
+      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
+      \ '3389') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
+      \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
+      d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
+    description: Ensure that RDP access is restricted from any source when using VPC
+      Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing RDP access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictRdpRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
+      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
+      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '3306')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '1521')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2483')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2484')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '5432')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2483')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2484')\
+      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '5432')\n\
+      \  )\n)"
+    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
+      accessible from any source when using Firewall Policy Rule
+    display_name: Restrict Firewall Policy rules allowing SQL database port access
+      from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictSQLDatabasesPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
+      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '3306') ||\n    resource.allowed.containsFirewallPort('tcp', '1521') ||\n\
+      \    resource.allowed.containsFirewallPort('tcp', '2483') ||\n    resource.allowed.containsFirewallPort('tcp',\
+      \ '2484') ||\n    resource.allowed.containsFirewallPort('tcp', '5432') ||\n\
+      \    resource.allowed.containsFirewallPort('udp', '2483') ||\n    resource.allowed.containsFirewallPort('udp',\
+      \ '2484') ||\n    resource.allowed.containsFirewallPort('udp', '5432')\n  )"
+    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
+      accessible from any source when using VPC Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing SQL database port access from
+      any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictSQLDatabasesRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSshPolicyRule"]:
+    action_type: DENY
+    condition: "resource.rules.exists(rule,\n    rule.priority < 2147483644 &&\n \
+      \   rule.direction == 'INGRESS' &&\n    !rule.match.srcIpRanges.all(ipRange,\n\
+      \        ipRange == '35.235.240.0/20' ||\n        ipRange.startsWith('192.168.')\
+      \ ||\n        ipRange.matches('^172\\\\.(?:1[6-9]|2\\\\d|3[0-1]).*') ||\n  \
+      \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
+      \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
+      \ == '22')\n    )\n)"
+    description: Ensure that SSH access is restricted from any source when using Firewall
+      Policy Rule
+    display_name: Restrict Firewall Policy rules allowing SSH access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictSshPolicyRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/FirewallPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSshRule"]:
+    action_type: DENY
+    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
+      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
+      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
+      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
+      \ '22') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
+      \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
+      d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
+    description: Ensure that SSH access is restricted from any source when using VPC
+      Firewall Rule
+    display_name: Restrict VPC Firewall rules allowing SSH access from any source
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.firewallRestrictSshRule
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Firewall
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeAllowedNodePoolImages"]:
+    action_type: DENY
+    condition: resource.config.imageType in ["COS_CONTAINERD"] == false
+    description: Enforce that GKE nodes are using authorized node images
+    display_name: Allow only authorized node pool images
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeAllowedNodePoolImages
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeAllowedReleaseChannels"]:
+    action_type: DENY
+    condition: resource.releaseChannel.channel in ["REGULAR", "STABLE"] == false
+    description: Enforce that GKE cluster are using authorized release channels
+    display_name: Allow only authorized release channels
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeAllowedReleaseChannels
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableAlphaCluster"]:
+    action_type: DENY
+    condition: resource.enableKubernetesAlpha == true
+    description: Enforce that GKE clusters are not using alpha features for production
+      workloads
+    display_name: Disable alpha features for production workloads
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeDisableAlphaCluster
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableKubernetesDashboard"]:
+    action_type: DENY
+    condition: resource.addonsConfig.kubernetesDashboard.disabled == false
+    description: Enforce that GKE clusters does not have Web UI dashboard enabled
+    display_name: Disable Web UI dashboard
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeDisableKubernetesDashboard
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableLegacyAbac"]:
+    action_type: DENY
+    condition: resource.legacyAbac.enabled == true
+    description: Enforce that GKE clusters is configured with no legacy ABAC enabled
+    display_name: Disable legacy ABAC
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeDisableLegacyAbac
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableLegacyMetadataEndpoints"]:
+    action_type: DENY
+    condition: '(''disable-legacy-endpoints'' in resource.config.metadata &&
+
+      resource.config.metadata[''disable-legacy-endpoints''] == ''false'')'
+    description: Enforce that GKE clusters are created with legacy metadata endpoints
+      disabled
+    display_name: Disable legacy metadata endpoints
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeDisableLegacyMetadataEndpoints
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireCOSImage"]:
+    action_type: DENY
+    condition: resource.config.imageType != "COS_CONTAINERD"
+    description: Enforce the nodes pool are using Container-Optimized OS for running
+      containers
+    display_name: Require Container-Optimized OS on node pools
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireCOSImage
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireConfidentialNodes"]:
+    action_type: DENY
+    condition: resource.confidentialNodes.enabled == false
+    description: Enforce that the GKE clusters is using confidential nodes
+    display_name: Require confidential nodes
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireConfidentialNodes
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireDataplaneV2"]:
+    action_type: DENY
+    condition: resource.networkConfig.datapathProvider != 'ADVANCED_DATAPATH'
+    description: Enforce that the GKE clusters is configured to use dataplane v2
+    display_name: Require dataplane v2
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireDataplaneV2
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireGKEMetadataServer"]:
+    action_type: DENY
+    condition: resource.config.workloadMetadataConfig.mode != 'GKE_METADATA'
+    description: Enforce that GKE clusters are configured with GKE metadata server
+      enabled
+    display_name: Require GKE metadata server
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireGKEMetadataServer
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireIntegrityMonitoring"]:
+    action_type: DENY
+    condition: resource.config.shieldedInstanceConfig.enableIntegrityMonitoring ==
+      false
+    description: Enforce that GKE nodes are configured with integrity monitoring enabled
+    display_name: Enable integrity monitoring
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireIntegrityMonitoring
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireIntraNodeVisibility"]:
+    action_type: DENY
+    condition: resource.networkConfig.enableIntraNodeVisibility == false
+    description: Enforce that GKE clusters intranode visibility is enabled
+    display_name: Enable intranode visibility
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireIntraNodeVisibility
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireMasterAuthorizedNetworks"]:
+    action_type: DENY
+    condition: resource.masterAuthorizedNetworksConfig.enabled == false
+    description: Enforce that GKE clusters restrict network access to the control
+      planes by configuring master authorized networks with authorized CIDR IP ranges
+    display_name: Require master authorized network with authorized CIDR IP ranges
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireMasterAuthorizedNetworks
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireMonitoring"]:
+    action_type: DENY
+    condition: resource.monitoringService != 'monitoring.googleapis.com/kubernetes'
+    description: Enforce that GKE clusters monitoring is enabled
+    display_name: Enable monitoring
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireMonitoring
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolAutoRepair"]:
+    action_type: DENY
+    condition: resource.management.autoRepair == false
+    description: Enforce that GKE clusters are configured with node auto-repair enabled
+    display_name: Enable node auto-repair
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireNodePoolAutoRepair
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolAutoUpgrade"]:
+    action_type: DENY
+    condition: resource.management.autoUpgrade == false
+    description: Enforce that GKE clusters are configured with node auto-upgrade enabled
+    display_name: Enable node auto-upgrade
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireNodePoolAutoUpgrade
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolCMEKEncryption"]:
+    action_type: DENY
+    condition: has(resource.config.bootDiskKmsKey) == false
+    description: Enforce that GKE nodes are configured with CMEK Encryption
+    display_name: Require NodePool CMEK Encryption
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireNodePoolCMEKEncryption
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolSandbox"]:
+    action_type: DENY
+    condition: "resource.name.matches(\"default-pool\") == false &&\n  has(resource.config.sandboxConfig)\
+      \ == false &&\n  resource.config.sandboxConfig.type != 'GVISOR'"
+    description: Enforce that the GKE clusters nodes are isolated using GKE sandbox
+      (excepting the default node pool)
+    display_name: Require GKE Sandbox runtime
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireNodePoolSandbox
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequirePrivateEndpoint"]:
+    action_type: DENY
+    condition: resource.privateClusterConfig.enablePrivateEndpoint == false
+    description: Enforce that GKE clusters are created as private clusters with public
+      endpoint disabled
+    display_name: Disable public endpoints
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequirePrivateEndpoint
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireRegionalClusters"]:
+    action_type: DENY
+    condition: resource.location.matches("^[a-z]+(-[a-z, 1-9]+)$") == false
+    description: Enforce the creation of regional GKE clusters
+    display_name: Require regional GKE cluster
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireRegionalClusters
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireSecureBoot"]:
+    action_type: DENY
+    condition: resource.config.shieldedInstanceConfig.enableSecureBoot == false
+    description: Enforce that GKE nodes are configured with secure boot enabled
+    display_name: Enable secure boot
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireSecureBoot
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireVPCNativeCluster"]:
+    action_type: DENY
+    condition: resource.ipAllocationPolicy.useIpAliases == false
+    description: Enforce that GKE clusters are created with VPC-native
+    display_name: Require VPC-native
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.gkeRequireVPCNativeCluster
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/Cluster
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamAllowedMembers"]:
+    action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
+      \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectEndsWith(member,\
+      \ ['@example.org', 'group:fabric-fast-owners@google.com'])\n  )\n)"
+    description: Ensure no binding are done with members outside the organization
+      domain
+    display_name: Deny principals and members outside the organization domain
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamAllowedMembers
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableAdminServiceAccount"]:
+    action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
+      \    !MemberSubjectEndsWith(member, ['@cloudservices.gserviceaccount.com'])\
+      \ &&\n    MemberSubjectStartsWith(member, ['serviceAccount:']) &&\n    !MemberSubjectEndsWith(member,\
+      \ ['@ft0-prod-iac-core-0.iam.gserviceaccount.com'])\n  ) &&\n  (\n    RoleNameMatches(binding.role,\
+      \ ['roles/owner', 'roles/admin']) ||\n    RoleNameMatches(binding.role, ['roles/editor',\
+      \ 'roles/writer']) ||\n    RoleNameContains(binding.role, ['admin', 'Admin'])\n\
+      \  )\n)"
+    description: Ensure no use of the legacy basic roles (owner and editor), basic
+      roles (admin, writer) and usage of admin roles for service account
+    display_name: Deny use of the legacy basic roles, basic roles and usage of admin
+      role for service account
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamDisableAdminServiceAccount
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableBasicRoles"]:
+    action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
+      \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectStartsWith(member,\
+      \ ['group:fabric-fast-owners@google.com']) &&\n    (\n      RoleNameMatches(binding.role,\
+      \ ['roles/owner', 'roles/admin']) ||\n      RoleNameMatches(binding.role, ['roles/editor',\
+      \ 'roles/writer']) ||\n      RoleNameContains(binding.role, ['roles/viewer',\
+      \ 'roles/reader'])\n    )\n  )\n)"
+    description: Ensure no use of the legacy basic roles (viewer, editor and owner)
+      and basic roles (reader, writer and admin)
+    display_name: Deny use of the basic roles
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamDisableBasicRoles
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableProjectServiceAccountImpersonationRoles"]
+  : action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
+      \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectStartsWith(member,\
+      \ ['group:fabric-fast-owners@google.com'])\n  ) &&\n  (\n    RoleNameMatches(binding.role,\
+      \ ['roles/iam.serviceAccountUser']) ||\n    RoleNameMatches(binding.role, ['roles/iam.serviceAccountTokenCreator'])\n\
+      \  )\n)"
+    description: Ensure that IAM Users are not assigned the service account user or
+      service account token creator roles (requires usage of IAM Condition and tags
+      to ensure the constraint is not applied on allowed service accounts)
+    display_name: Deny assignment of the service account user or service account token
+      creator roles to users
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamDisableProjectServiceAccountImpersonationRoles
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisablePublicBindings"]:
+    action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
+      \    MemberSubjectMatches(member, ['allUsers', 'allAuthenticatedUsers'])\n \
+      \ )\n)"
+    description: Ensure no use of public bindings (allUsers, allAuthenticatedUsers)
+    display_name: Deny use of public access bindings with allUsers or allAuthenticatedUsers
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamDisablePublicBindings
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.iamDisableRedisAdminRoles"]:
+    action_type: DENY
+    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
+      \    !MemberSubjectMatches(member, []) &&\n    (\n      RoleNameMatches(binding.role,\
+      \ ['roles/redis.admin']) ||\n      RoleNameMatches(binding.role, ['roles/redis.editor'])\
+      \ ||\n      RoleNameContains(binding.role, ['roles/redis.viewer'])\n    )\n\
+      \  )\n)"
+    description: Ensure no use of the basic roles (viewer, editor and owner)
+    display_name: Deny use of the basic roles
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.iamDisableRedisAdminRoles
+    parent: organizations/1234567890
+    resource_types:
+    - iam.googleapis.com/AllowPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkDisableTargetHTTPProxy"]:
+    action_type: DENY
+    condition: true == true
+    description: Ensure Target HTTP Proxy are not used
+    display_name: Deny usage and creation of Target HTTP Proxy
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.networkDisableTargetHTTPProxy
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/TargetHttpProxy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkDisableWeakSSLPolicy"]:
+    action_type: DENY
+    condition: "(resource.profile == \"COMPATIBLE\") || (resource.profile == \"CUSTOM\"\
+      \ &&\n  resource.customFeatures.exists(feature, feature in [\n  \"TLS_RSA_WITH_AES_128_GCM_SHA256\"\
+      ,\n  \"TLS_RSA_WITH_AES_256_GCM_SHA384\",\n  \"TLS_RSA_WITH_AES_128_CBC_SHA\"\
+      ,\n  \"TLS_RSA_WITH_AES_256_CBC_SHA\",\n  \"TLS_RSA_WITH_3DES_EDE_CBC_SHA\"\
+      ,\n  ])\n) || (resource.profile == \"CUSTOM\" &&\n  resource.minTlsVersion in\
+      \ [\"TLS_1_2\", \"TLS_1_3\"] == false\n) || (resource.profile == \"MODERN\"\
+      \ &&\n  resource.minTlsVersion in [\"TLS_1_2\", \"TLS_1_3\"] == false\n) ||\
+      \ (resource.profile == \"RESTRICTED\" &&\n  resource.minTlsVersion in [\"TLS_1_2\"\
+      , \"TLS_1_3\"] == false\n)"
+    description: Ensure SSL Policies created does not have weak cipher suites
+    display_name: Deny usage of SSL Policies with weak cipher suites
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.networkDisableWeakSSLPolicy
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/SslPolicy
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkRequireBackendServiceLogging"]:
+    action_type: DENY
+    condition: has(resource.logConfig) == false || resource.logConfig.enable == false
+    description: Enforce that Backend Services have logging enabled
+    display_name: Require logging to be enabled on Backend Services
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.networkRequireBackendServiceLogging
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/BackendService
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkRequireCustomModeVpc"]:
+    action_type: DENY
+    condition: resource.autoCreateSubnetworks == true
+    description: Enforce that the subnets creation is using custom mode for a VPC
+      network
+    display_name: Require custom mode VPC network
+    method_types:
+    - CREATE
+    name: custom.networkRequireCustomModeVpc
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Network
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.networkRequireSubnetPrivateGoogleAccess"]
+  : action_type: DENY
+    condition: '!resource.privateIpGoogleAccess && resource.purpose in [''REGIONAL_MANAGED_PROXY'',
+      ''GLOBAL_MANAGED_PROXY''] == false'
+    description: Enforce that the VPC network subnets are configured with private
+      Google access
+    display_name: Require Private Google Access
+    method_types:
+    - CREATE
+    name: custom.networkRequireSubnetPrivateGoogleAccess
+    parent: organizations/1234567890
+    resource_types:
+    - compute.googleapis.com/Subnetwork
+    timeouts: null
+  module.organization-iam[0].google_org_policy_custom_constraint.constraint["custom.storageRequireBucketObjectVersionning"]:
+    action_type: DENY
+    condition: resource.versioning.enabled == false
+    description: Enforce Cloud Storage bucket object versioning to be configured
+    display_name: Require object versioning
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.storageRequireBucketObjectVersionning
+    parent: organizations/1234567890
+    resource_types:
+    - storage.googleapis.com/Bucket
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["ainotebooks.disableFileDownloads"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/ainotebooks.disableFileDownloads
@@ -3252,6 +4737,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["container.managed.enableSecretsEncryption"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/container.managed.enableSecretsEncryption
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["container.managed.enableSecurityBulletinNotifications"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/container.managed.enableSecurityBulletinNotifications
@@ -3327,9 +4827,39 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedAlgorithms"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudkmsAllowedAlgorithms
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedProtectionLevel"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.cloudkmsAllowedProtectionLevel
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.cloudkmsAllowedRotationPeriod"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.cloudkmsAllowedRotationPeriod
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -3597,6 +5127,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.dataprocRequireDiskCmekEncryption"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.dataprocRequireDiskCmekEncryption
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.dataprocRequireInternalIp"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.dataprocRequireInternalIp
@@ -3777,6 +5322,36 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictExplicitAllPortsPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictExplicitAllPortsPolicyRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictExplicitAllPortsRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictExplicitAllPortsRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictInsecureProtocolsPolicyRule"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.firewallRestrictInsecureProtocolsPolicyRule
@@ -3915,6 +5490,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictNoSQLDatabasesRule"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.firewallRestrictNoSQLDatabasesRule
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.firewallRestrictPublicAccessPolicyRule"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.firewallRestrictPublicAccessPolicyRule
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -4257,6 +5847,21 @@ values:
         parameters: null
         values: []
     timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireNodePoolCMEKEncryption"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.gkeRequireNodePoolCMEKEncryption
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireNodePoolSandbox"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/custom.gkeRequireNodePoolSandbox
@@ -4325,6 +5930,63 @@ values:
     - inherit_from_parent: null
       reset: null
       rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.iamDisableAdminServiceAccount"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.iamDisableAdminServiceAccount
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.iamDisableBasicRoles"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.iamDisableBasicRoles
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["custom.iamDisableProjectServiceAccountImpersonationRoles"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/custom.iamDisableProjectServiceAccountImpersonationRoles
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: null
+          expression: 'resource.matchTag(''1234567890/org-policies'', ''allowed-sa-impersonation'')
+
+            '
+          location: null
+          title: Allow service account impersonation for tagged users
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
       - allow_all: null
         condition: []
         deny_all: null
@@ -4552,13 +6214,108 @@ values:
           - run.googleapis.com
           - secretmanager.googleapis.com
           - securesourcemanager.googleapis.com
-          - securitycenter.googleapis.com
           - spanner.googleapis.com
           - speech.googleapis.com
           - sqladmin.googleapis.com
           - storage.googleapis.com
           - storagetransfer.googleapis.com
           - workstations.googleapis.com
+    timeouts: null
+  module.organization-iam[0].google_org_policy_policy.default["gcp.restrictServiceUsage"]:
+    dry_run_spec: []
+    name: organizations/1234567890/policies/gcp.restrictServiceUsage
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - accesscontextmanager.googleapis.com
+          - analyticshub.googleapis.com
+          - anthos.googleapis.com
+          - anthosconfigmanagement.googleapis.com
+          - appoptimize.googleapis.com
+          - artifactregistry.googleapis.com
+          - autoscaling.googleapis.com
+          - bigquery.googleapis.com
+          - bigqueryconnection.googleapis.com
+          - bigquerydatapolicy.googleapis.com
+          - bigquerydatatransfer.googleapis.com
+          - bigquerymigration.googleapis.com
+          - bigqueryreservation.googleapis.com
+          - bigquerystorage.googleapis.com
+          - billingbudgets.googleapis.com
+          - certificatemanager.googleapis.com
+          - cloudaicompanion.googleapis.com
+          - cloudapis.googleapis.com
+          - cloudasset.googleapis.com
+          - cloudbilling.googleapis.com
+          - cloudbuild.googleapis.com
+          - cloudkms.googleapis.com
+          - cloudquotas.googleapis.com
+          - cloudresourcemanager.googleapis.com
+          - cloudsecuritycompliance.googleapis.com
+          - cloudtrace.googleapis.com
+          - composer.googleapis.com
+          - compute.googleapis.com
+          - container.googleapis.com
+          - containerfilesystem.googleapis.com
+          - containerregistry.googleapis.com
+          - containersecurity.googleapis.com
+          - containerthreatdetection.googleapis.com
+          - datacatalog.googleapis.com
+          - dataform.googleapis.com
+          - datalineage.googleapis.com
+          - dataplex.googleapis.com
+          - datastore.googleapis.com
+          - deploymentmanager.googleapis.com
+          - dns.googleapis.com
+          - essentialcontacts.googleapis.com
+          - geminicloudassist.googleapis.com
+          - gkebackup.googleapis.com
+          - gkeconnect.googleapis.com
+          - gkehub.googleapis.com
+          - iam.googleapis.com
+          - iamcredentials.googleapis.com
+          - iap.googleapis.com
+          - logging.googleapis.com
+          - monitoring.googleapis.com
+          - multiclusteringress.googleapis.com
+          - multiclustermetering.googleapis.com
+          - multiclusterservicediscovery.googleapis.com
+          - networkconnectivity.googleapis.com
+          - networkmanagement.googleapis.com
+          - networksecurity.googleapis.com
+          - notebooksecurityscanner.googleapis.com
+          - orgpolicy.googleapis.com
+          - oslogin.googleapis.com
+          - privateca.googleapis.com
+          - pubsub.googleapis.com
+          - recommender.googleapis.com
+          - secretmanager.googleapis.com
+          - securitycenter.googleapis.com
+          - securitycentermanagement.googleapis.com
+          - servicedirectory.googleapis.com
+          - servicemanagement.googleapis.com
+          - servicenetworking.googleapis.com
+          - serviceusage.googleapis.com
+          - sql-component.googleapis.com
+          - sqladmin.googleapis.com
+          - stackdriver.googleapis.com
+          - storage-api.googleapis.com
+          - storage-component.googleapis.com
+          - storage.googleapis.com
+          - sts.googleapis.com
+          - trafficdirector.googleapis.com
+          - vpcaccess.googleapis.com
+          - websecurityscanner.googleapis.com
+          denied_values: null
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["gcp.restrictTLSCipherSuites"]:
     dry_run_spec: []
@@ -4696,6 +6453,21 @@ values:
   module.organization-iam[0].google_org_policy_policy.default["iam.managed.disableServiceAccountApiKeyCreation"]:
     dry_run_spec: []
     name: organizations/1234567890/policies/iam.managed.disableServiceAccountApiKeyCreation
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        parameters: null
+        values: []
+    timeouts: null
+  ? module.organization-iam[0].google_org_policy_policy.default["iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts"]
+  : dry_run_spec: []
+    name: organizations/1234567890/policies/iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts
     parent: organizations/1234567890
     spec:
     - inherit_from_parent: null
@@ -5233,1307 +7005,6 @@ values:
     organization: '1234567890'
     storage_location: europe-west1
     timeouts: null
-  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.accesscontextmanagerDisableBridgePerimeters"]
-  : action_type: DENY
-    condition: resource.perimeterType == 'PERIMETER_TYPE_BRIDGE'
-    description: Ensure no perimeter bridges are used. Instead, use ingress and egress
-      rules.
-    display_name: Deny usage of perimeter bridges
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.accesscontextmanagerDisableBridgePerimeters
-    parent: organizations/1234567890
-    resource_types:
-    - accesscontextmanager.googleapis.com/ServicePerimeter
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudbuildDisableWorkerPoolExternalIP"]:
-    action_type: DENY
-    condition: (resource.privatePoolV1Config.networkConfig.egressOption != "NO_PUBLIC_EGRESS")
-    description: Ensure no unauthorized worker pools external ip used for each build
-    display_name: Deny unauthorized worker pools external ip used for each build
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudbuildDisableWorkerPoolExternalIP
-    parent: organizations/1234567890
-    resource_types:
-    - cloudbuild.googleapis.com/WorkerPool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudkmsAllowedProtectionLevel"]:
-    action_type: DENY
-    condition: has(resource.versionTemplate.protectionLevel) && resource.versionTemplate.protectionLevel
-      in ["SOFTWARE"] == false
-    description: Ensure the protection level for Cloud KMS keys is configured correctly
-    display_name: Require Cloud KMS keys protection level to be configured correctly
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudkmsAllowedProtectionLevel
-    parent: organizations/1234567890
-    resource_types:
-    - cloudkms.googleapis.com/CryptoKey
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunDisableEnvironmentVariablePattern"]:
-    action_type: DENY
-    condition: "resource.spec.template.spec.containers.exists(container,\n  container.env.exists(env,\n\
-      \    [\"[sS][eE][cC][rR][eE][tT]\", \"[kK][eE][yY]\", \"[pP][aA][sS][sS][wW][oO][rR][dD]\"\
-      , \"[tT][oO][kK][eE][nN]\"].exists(\n      pattern, env.name.matches(pattern)\n\
-      \    )\n  )\n)"
-    description: Enforce that certain patterns are not used in environment variables
-      of Cloud Run Service or Cloud Run Functions
-    display_name: Disable usage of certain patterns in Cloud Run Service or Cloud
-      Run Functions environment variables
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunDisableEnvironmentVariablePattern
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Service
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobDisableDefaultServiceAccount"]:
-    action_type: DENY
-    condition: resource.spec.template.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
-    description: Enforce that service account associated with Cloud Run Job use a
-      non-default service account
-    display_name: Disable creation of Cloud Run Job using default service account
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunJobDisableDefaultServiceAccount
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Job
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunJobRequireBinaryAuthorization"]:
-    action_type: DENY
-    condition: '!(''run.googleapis.com/binary-authorization'' in resource.metadata.annotations)'
-    description: Enforce that Cloud Run Job are using binary authorization
-    display_name: Disable creation of Cloud Run Job without Binary Authorization
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunJobRequireBinaryAuthorization
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Job
-    timeouts: null
-  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceDisableDefaultServiceAccount"]
-  : action_type: DENY
-    condition: resource.spec.template.spec.serviceAccountName.endsWith('@developer.gserviceaccount.com')
-    description: Enforce that service account associated with Cloud Run Service use
-      a non-default service account
-    display_name: Disable creation of Cloud Run Service using default service account
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunServiceDisableDefaultServiceAccount
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Service
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudrunServiceRequireBinaryAuthorization"]:
-    action_type: DENY
-    condition: '!(''run.googleapis.com/binary-authorization'' in resource.metadata.annotations)'
-    description: Enforce that Cloud Run Service are using binary authorization
-    display_name: Disable creation of Cloud Run Service without Binary Authorization
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudrunServiceRequireBinaryAuthorization
-    parent: organizations/1234567890
-    resource_types:
-    - run.googleapis.com/Service
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlDisablePublicAuthorizedNetworks"]:
-    action_type: DENY
-    condition: resource.settings.ipConfiguration.authorizedNetworks.exists(network,
-      network.value == '0.0.0.0/0')
-    description: Ensure That Cloud SQL database instances do not implicitly whitelist
-      all public IP addresses
-    display_name: Require Cloud SQL database instances to not whitelist all public
-      IP addresses
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlDisablePublicAuthorizedNetworks
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlEnforcePasswordComplexity"]:
-    action_type: DENY
-    condition: 'resource.settings.passwordValidationPolicy.complexity != ''COMPLEXITY_DEFAULT''
-      ||
-
-      resource.settings.passwordValidationPolicy.minLength < 12'
-    description: Ensure that Cloud SQL instance is configured with a password complexity
-      to be combination of lowercase, uppercase, numeric, and non-alphanumeric characters
-    display_name: Require Cloud SQL instances to configure password complexity to
-      COMPLEXITY_DEFAULT
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlEnforcePasswordComplexity
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireAutomatedBackup"]:
-    action_type: DENY
-    condition: resource.settings.backupConfiguration.enabled != true
-    description: Ensure that Cloud SQL instance have automated backup enabled
-    display_name: Require Cloud SQL instances to have automated backup enabled
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequireAutomatedBackup
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireHighAvailability"]:
-    action_type: DENY
-    condition: resource.settings.availabilityType != "REGIONAL"
-    description: Ensure that Cloud SQL instance is configured with high availability
-    display_name: Require Cloud SQL instances to be configured with high availability
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequireHighAvailability
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireMySQLDatabaseFlags"]:
-    action_type: DENY
-    condition: "resource.databaseVersion.startsWith('MYSQL') && (\n  !resource.settings.databaseFlags.exists(flag,\n\
-      \    flag.name == 'skip_show_database' && flag.value == 'on'\n  ) ||\n  !resource.settings.databaseFlags.exists(flag,\n\
-      \    flag.name == 'local_infile' && flag.value == 'off'\n  )\n)"
-    description: Ensure Cloud SQL for MySQL instance database flags are set correctly
-      (e.g skip_show_database, local_infile)
-    display_name: Require Cloud SQL for MySQL instance database flags to be configured
-      correctly (e.g skip_show_database, local_infile)
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequireMySQLDatabaseFlags
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePointInTimeRecovery"]:
-    action_type: DENY
-    condition: "(resource.databaseVersion.contains(\"POSTGRES\")\n  || resource.databaseVersion.contains(\"\
-      SQLSERVER\"))\n  && resource.settings.backupConfiguration.pointInTimeRecoveryEnabled\
-      \ == false"
-    description: Ensure that Cloud SQL instance is configure enable point in time
-      recovery in the backup configuration. This setting is possibly for Postgres
-      and SQLServer databases.
-    display_name: Require Cloud SQL instances to enable point in time recovery
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequirePointInTimeRecovery
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags"]
-  : action_type: DENY
-    condition: "resource.databaseVersion.startsWith('POSTGRES') && (\n  !resource.settings.databaseFlags.exists(flag,\
-      \ flag.name == 'log_checkpoints' && flag.value == 'on') ||\n  !resource.settings.databaseFlags.exists(flag,\
-      \ flag.name == 'log_executor_stats' && flag.value == 'off') ||\n  !resource.settings.databaseFlags.exists(flag,\
-      \ flag.name == 'log_lock_waits' && flag.value == 'on')\n)"
-    description: Ensure Cloud SQL for PostgreSQL instance database flags are set correctly
-      (e.g log_checkpoints, log_executor_stats, log_lock_waits)
-    display_name: Require Cloud SQL for PostgreSQL instance database flags to be configured
-      correctly (e.g log_checkpoints, log_executor_stats, log_lock_waits)
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequirePostgreSQLDatabaseFlags"]:
-    action_type: DENY
-    condition: "resource.databaseVersion.startsWith('POSTGRES') && (\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_connections' && f.value == 'on') ||\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_disconnections' && f.value == 'on') ||\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_min_duration_statement' && f.value == '-1') ||\n  !resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'cloudsql.enable_pgaudit' && f.value == 'on') ||\n  resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_error_verbosity' && f.value == 'terse') ||\n  resource.settings.databaseFlags.exists(f,\
-      \ f.name == 'log_statement' && f.value == 'none') ||\n  resource.settings.databaseFlags.exists(f,\n\
-      \    f.name == 'log_min_messages' && f.value in ['error' , 'log', 'fatal', 'panic']\n\
-      \  ) ||\n  resource.settings.databaseFlags.exists(f,\n    f.name == 'log_min_error_statement'\
-      \ && f.value in ['log', 'fatal', 'panic']\n  )\n)"
-    description: Ensure Cloud SQL for PostgreSQL instance database flags are set correctly
-      (e.g log_connections)
-    display_name: Require Cloud SQL for PostgreSQL instance database flags to be configured
-      correctly (e.g log_connections)
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequirePostgreSQLDatabaseFlags
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireRootPassword"]:
-    action_type: DENY
-    condition: resource.settings.passwordValidationPolicy.minLength == 0
-    description: Ensure that Cloud SQL instance is configured to use a root password
-    display_name: Require Cloud SQL instances to configure root password
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequireRootPassword
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireSQLServerDatabaseFlags"]:
-    action_type: DENY
-    condition: "resource.databaseVersion.startsWith('SQLSERVER') && (\n  resource.settings.databaseFlags.exists(flag,\n\
-      \    flag.name == 'external scripts enabled' && flag.value == 'on'\n  ) ||\n\
-      \  resource.settings.databaseFlags.exists(flag,\n    flag.name == 'cross db\
-      \ ownership chaining' && flag.value == 'on'\n  ) ||\n  resource.settings.databaseFlags.exists(flag,\n\
-      \    flag.name == 'contained database authentication' && flag.value == 'on'\n\
-      \  ) ||\n  resource.settings.databaseFlags.exists(flag,\n    flag.name == 'user\
-      \ connections' && flag.value != '0'\n  ) ||\n  resource.settings.databaseFlags.exists(flag,\n\
-      \    flag.name == 'user options' && flag.value != '0'\n  ) ||\n  !resource.settings.databaseFlags.exists(flag,\n\
-      \    flag.name == 'remote access' && flag.value == 'off'\n  ) ||\n  !resource.settings.databaseFlags.exists(flag,\n\
-      \    flag.name == '3625' && flag.value == 'on'\n  )\n)"
-    description: Ensure Cloud SQL for SQLServer instance database flags are set correctly
-      (e.g external scripts enabled ...)
-    display_name: Require Cloud SQL for SQLServer instance database flags to be configured
-      correctly (e.g external scripts enabled ...)
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequireSQLServerDatabaseFlags
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.cloudsqlRequireSSLConnection"]:
-    action_type: DENY
-    condition: resource.settings.ipConfiguration.sslMode in ['ENCRYPTED_ONLY', 'TRUSTED_CLIENT_CERTIFICATE_REQUIRED']
-      == false
-    description: Ensure that Cloud SQL instance is configured to allow only connections
-      that are encrypted with SSL/TLS
-    display_name: Require Cloud SQL instances to allow only connections that are encrypted
-      with SSL/TLS
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.cloudsqlRequireSSLConnection
-    parent: organizations/1234567890
-    resource_types:
-    - sqladmin.googleapis.com/Instance
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dataprocDisableDefaultServiceAccount"]:
-    action_type: DENY
-    condition: "has(resource.config.gceClusterConfig.serviceAccount) == false ||\n\
-      \  resource.config.gceClusterConfig.serviceAccount.contains('-compute@developer.gserviceaccount.com')"
-    description: Enforce that the Dataproc VMs is not using default user-managed service
-      accounts
-    display_name: Disable Dataproc cluster with default service accounts
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dataprocDisableDefaultServiceAccount
-    parent: organizations/1234567890
-    resource_types:
-    - dataproc.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireInternalIp"]:
-    action_type: DENY
-    condition: resource.config.gceClusterConfig.internalIpOnly == false
-    description: Enforce that the Dataproc cluster is created with Internal IPs only
-    display_name: Require Dataproc with internal IPs
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dataprocRequireInternalIp
-    parent: organizations/1234567890
-    resource_types:
-    - dataproc.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dataprocRequireKerberos"]:
-    action_type: DENY
-    condition: resource.config.securityConfig.kerberosConfig.enableKerberos == false
-    description: Enforce that Dataproc cluster is configured using secure mode via
-      Kerberos for authentication
-    display_name: Require Dataproc with Kerberos authentication
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dataprocRequireKerberos
-    parent: organizations/1234567890
-    resource_types:
-    - dataproc.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dnsAllowedSigningAlgorithms"]:
-    action_type: DENY
-    condition: "resource.visibility == 'PUBLIC' &&\nresource.dnssecConfig.state ==\
-      \ 'ON' &&\nresource.dnssecConfig.defaultKeySpecs.exists(spec,\n  spec.algorithm\
-      \ in [\"ECDSAP256SHA256\"] == false\n)"
-    description: Ensure that allowed signing algorithms are used for the Key-Signing
-      key and Zone-Signing key in Cloud DNS DNSSEC
-    display_name: Require Cloud DNS DNSSEC configured to use only allowed algorithms
-      in Cloud DNS DNSSEC
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dnsAllowedSigningAlgorithms
-    parent: organizations/1234567890
-    resource_types:
-    - dns.googleapis.com/ManagedZone
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dnsRequireManageZoneDNSSEC"]:
-    action_type: DENY
-    condition: resource.visibility == "PUBLIC" && (resource.dnssecConfig.state in
-      ["ON", "TRANSFER"] == false)
-    description: Ensure that Cloud DNS DNSSEC is enabled when configuring a DNS Public
-      Managed Zone
-    display_name: Require Cloud DNS DNSSEC enabled when configuring a DNS Public Managed
-      Zone
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dnsRequireManageZoneDNSSEC
-    parent: organizations/1234567890
-    resource_types:
-    - dns.googleapis.com/ManagedZone
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.dnsRequirePolicyLogging"]:
-    action_type: DENY
-    condition: resource.enableLogging != true
-    description: Ensure that Cloud DNS logging is enabled when configuring a DNS Policy
-    display_name: Require Cloud DNS logging enabled when configuring a DNS Policy
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.dnsRequirePolicyLogging
-    parent: organizations/1234567890
-    resource_types:
-    - dns.googleapis.com/Policy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallEnforcePolicyRuleLogging"]:
-    action_type: DENY
-    condition: resource.rules.exists(rule, rule.action != 'goto_next' && rule.enableLogging
-      == false)
-    description: Ensure that Firewall Policy rules have logging enabled
-    display_name: Require Firewall Policy rules to have logging enabled
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallEnforcePolicyRuleLogging
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallEnforceRuleLogging"]:
-    action_type: DENY
-    condition: "(\n  (has(resource.logConfig) == false || resource.logConfig.enable\
-      \ == false) &&\n  !resource.name.startsWith(\"gke-\") &&\n  !resource.name.startsWith(\"\
-      k8s-\") &&\n  !resource.name.endsWith(\"-hc\") &&\n  !resource.name.startsWith(\"\
-      k8s2-\") &&\n  !resource.name.startsWith(\"gkegw1-l7-\") &&\n  !resource.name.startsWith(\"\
-      gkemcg1-l7-\")\n)"
-    description: Ensure that VPC Firewall rules have logging enabled
-    display_name: Require VPC Firewall rules to have logging enabled
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallEnforceRuleLogging
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRequireDescription"]:
-    action_type: DENY
-    condition: "(\n  resource.description == \"\" &&\n  !resource.name.startsWith(\"\
-      gke-\") &&\n  !resource.name.startsWith(\"k8s-\") &&\n  !resource.name.endsWith(\"\
-      -hc\") &&\n  !resource.name.startsWith(\"k8s2-\") &&\n  !resource.name.startsWith(\"\
-      gkegw1-l7-\") &&\n  !resource.name.startsWith(\"gkemcg1-l7-\")\n)"
-    description: Prevent the creation of VPC firewall rule that does not have description
-      provided. Description can be used for auditing to refer to security control
-    display_name: Require description on Firewall rule
-    method_types:
-    - CREATE
-    name: custom.firewallRequireDescription
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(r, r.priority < 2147483644 && r.direction ==\
-      \ 'INGRESS' &&\n  r.match.srcIpRanges.exists(r, r == '0.0.0.0/0') &&\n  (\n\
-      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '6379') ||\n   \
-      \ r.match.layer4Configs.containsIpProtocolAndPort('udp', '6379') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp',\
-      \ '9200') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9200')\
-      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '9300') ||\n\
-      \    r.match.layer4Configs.containsIpProtocolAndPort('udp', '9300') ||\n   \
-      \ r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp',\
-      \ '11211') ||\n    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11214')\
-      \ ||\n    r.match.layer4Configs.containsIpProtocolAndPort('udp', '11214') ||\n\
-      \    r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11215') ||\n  \
-      \  r.match.layer4Configs.containsIpProtocolAndPort('udp', '11215')\n  )\n)"
-    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
-      Redis) are not accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing cache/search database port
-      access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictCacheSearchDatabasesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictCacheSearchDatabasesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '9200') ||\n    resource.allowed.containsFirewallPort('tcp', '9300') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '11211') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '11214') ||\n    resource.allowed.containsFirewallPort('tcp', '11215') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '6379') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '11211') ||\n    resource.allowed.containsFirewallPort('udp', '11214') ||\n\
-      \    resource.allowed.containsFirewallPort('udp', '11215')\n  )"
-    description: Ensure that cache and search database ports (Elasticsearch, Memcached,
-      Redis) are not accessible from any source when using VPC Firewall Rule.
-    display_name: Restrict VPC Firewall rules allowing cache/search database port
-      access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictCacheSearchDatabasesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '445')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '389') ||\n\
-      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '445') ||\n \
-      \   rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '389') ||\n  \
-      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '636')\n  )\n)"
-    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
-      are not accessible from the Internet when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing directory service access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictDirectoryServicesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictDirectoryServicesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '445') ||\n    resource.allowed.containsFirewallPort('tcp', '389') ||\n  \
-      \  resource.allowed.containsFirewallPort('tcp', '636') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '445') ||\n    resource.allowed.containsFirewallPort('udp', '389')\n  )"
-    description: Ensure that directory and authentication services (SMB/CIFS, LDAP)
-      are not accessible from the Internet when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing directory service access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictDirectoryServicesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  ? module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsPolicyRule"]
-  : action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '21')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '23') ||\n\
-      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '80')\n  )\n)"
-    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
-      accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing insecure protocol access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictInsecureProtocolsPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictInsecureProtocolsRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '21') ||\n    resource.allowed.containsFirewallPort('tcp', '23') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '80')\n  )"
-    description: Ensure that insecure legacy protocols (Telnet, FTP, HTTP) are not
-      accessible from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing insecure protocol access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictInsecureProtocolsRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '25')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '110')\n\
-      \  )\n)"
-    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
-      source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing mail protocol access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictMailProtocolsPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictMailProtocolsRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '25') ||\n    resource.allowed.containsFirewallPort('tcp', '110')\n  )"
-    description: Ensure that mail protocols (SMTP, POP3) are not accessible from any
-      source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing mail protocol access from any
-      source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictMailProtocolsRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9090')\n)"
-    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
-      from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing management port access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictManagementPortsPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictManagementPortsRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  resource.allowed.containsFirewallPort('tcp', '9090')"
-    description: Ensure that management interfaces (Cisco Secure WebSM) are not accessible
-      from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing management port access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictManagementPortsRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '53')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '53') ||\n\
-      \    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '137') ||\n \
-      \   rule.match.layer4Configs.containsIpProtocolAndPort('udp', '137') ||\n  \
-      \  rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '138') ||\n   \
-      \ rule.match.layer4Configs.containsIpProtocolAndPort('udp', '138') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp',\
-      \ '139') ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '139')\n\
-      \  )\n)"
-    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
-      accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing network service access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNetworkServicesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNetworkServicesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '53') ||\n    resource.allowed.containsFirewallPort('udp', '53') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '137') ||\n    resource.allowed.containsFirewallPort('udp', '137') ||\n  \
-      \  resource.allowed.containsFirewallPort('tcp', '138') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '138') ||\n    resource.allowed.containsFirewallPort('tcp', '139') ||\n  \
-      \  resource.allowed.containsFirewallPort('udp', '139')\n  )"
-    description: Ensure that network infrastructure services (DNS, NetBIOS) are not
-      accessible from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing network service access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNetworkServicesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7000')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7001')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7199')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '8888')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9042')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9160')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61620')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61621')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27017')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27018')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27019')\n\
-      \  )\n)"
-    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
-      from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing NoSQL database port access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNoSQLDatabasesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictNoSQLDatabasesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '7000') ||\n    resource.allowed.containsFirewallPort('tcp', '7001') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '7199') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '8888') ||\n    resource.allowed.containsFirewallPort('tcp', '9042') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '9160') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '61620') ||\n    resource.allowed.containsFirewallPort('tcp', '61621') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '27017') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '27018') ||\n    resource.allowed.containsFirewallPort('tcp', '27019')\n \
-      \ )"
-    description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
-      from any source when using Firewall Policy Rule
-    display_name: Restrict VPC Firewall rules allowing NoSQL database port access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictNoSQLDatabasesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictPublicAccessRule"]:
-    action_type: DENY
-    condition: "(size(resource.allowed) > 0) &&\n(\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') ||\n  resource.destinationRanges.exists(range, range\
-      \ == '0.0.0.0/0')\n)"
-    description: Prevent the creation of VPC firewall rules with source or destination
-      any IP address (0.0.0.0/0)
-    display_name: Restrict VPC Firewall rules allowing public Internet access
-    method_types:
-    - CREATE
-    name: custom.firewallRestrictPublicAccessRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictRdpPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n    rule.priority < 2147483644 &&\n \
-      \   rule.direction == 'INGRESS' &&\n    !rule.match.srcIpRanges.all(ipRange,\n\
-      \        ipRange == '35.235.240.0/20' ||\n        ipRange.startsWith('192.168.')\
-      \ ||\n        ipRange.matches('^172\\\\.(?:1[6-9]|2\\\\d|3[0-1]).*') ||\n  \
-      \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
-      \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
-      \ == '3389')\n    )\n)"
-    description: Ensure that RDP access is restricted from any source when using Firewall
-      Policy Rule
-    display_name: Restrict Firewall Policy rules allowing RDP access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictRdpPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictRdpRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
-      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
-      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
-      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
-      \ '3389') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
-      \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
-      d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
-    description: Ensure that RDP access is restricted from any source when using VPC
-      Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing RDP access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictRdpRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n  rule.priority < 2147483644 &&\n  rule.direction\
-      \ == 'INGRESS' &&\n  rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0')\
-      \ &&\n  (\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '3306')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '1521')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2483')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '2484')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '5432')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2483')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '2484')\
-      \ ||\n    rule.match.layer4Configs.containsIpProtocolAndPort('udp', '5432')\n\
-      \  )\n)"
-    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
-      accessible from any source when using Firewall Policy Rule
-    display_name: Restrict Firewall Policy rules allowing SQL database port access
-      from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSQLDatabasesPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSQLDatabasesRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n  resource.sourceRanges.exists(range,\
-      \ range == '0.0.0.0/0') &&\n  (\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '3306') ||\n    resource.allowed.containsFirewallPort('tcp', '1521') ||\n\
-      \    resource.allowed.containsFirewallPort('tcp', '2483') ||\n    resource.allowed.containsFirewallPort('tcp',\
-      \ '2484') ||\n    resource.allowed.containsFirewallPort('tcp', '5432') ||\n\
-      \    resource.allowed.containsFirewallPort('udp', '2483') ||\n    resource.allowed.containsFirewallPort('udp',\
-      \ '2484') ||\n    resource.allowed.containsFirewallPort('udp', '5432')\n  )"
-    description: Ensure that SQL database ports (MySQL, Oracle, PostgreSQL) are not
-      accessible from any source when using VPC Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing SQL database port access from
-      any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSQLDatabasesRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSshPolicyRule"]:
-    action_type: DENY
-    condition: "resource.rules.exists(rule,\n    rule.priority < 2147483644 &&\n \
-      \   rule.direction == 'INGRESS' &&\n    !rule.match.srcIpRanges.all(ipRange,\n\
-      \        ipRange == '35.235.240.0/20' ||\n        ipRange.startsWith('192.168.')\
-      \ ||\n        ipRange.matches('^172\\\\.(?:1[6-9]|2\\\\d|3[0-1]).*') ||\n  \
-      \      ipRange.startsWith('10.')\n    ) &&\n    rule.match.layer4Configs.all(l4config,\n\
-      \        l4config.ipProtocol == 'tcp' &&\n        l4config.ports.all(port, port\
-      \ == '22')\n    )\n)"
-    description: Ensure that SSH access is restricted from any source when using Firewall
-      Policy Rule
-    display_name: Restrict Firewall Policy rules allowing SSH access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSshPolicyRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/FirewallPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.firewallRestrictSshRule"]:
-    action_type: DENY
-    condition: "resource.direction.matches('INGRESS') &&\n!resource.name.startsWith('gke-')\
-      \ &&\n!resource.name.startsWith('k8s-') &&\n!resource.name.endsWith('-hc') &&\n\
-      !resource.name.startsWith('k8s2-') &&\n!resource.name.startsWith('gkegw1-l7-')\
-      \ &&\n!resource.name.startsWith('gkemcg1-l7-') &&\nresource.allowed.containsFirewallPort('tcp',\
-      \ '22') &&\n!resource.sourceRanges.all(range,\n  range == '35.235.240.0/20'\
-      \ ||\n  range.startsWith('10.') ||\n  range.matches('^172\\\\.(?:1[6-9]|2\\\\\
-      d|3[0-1]).*') ||\n  range.startsWith('192.168.')\n)"
-    description: Ensure that SSH access is restricted from any source when using VPC
-      Firewall Rule
-    display_name: Restrict VPC Firewall rules allowing SSH access from any source
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.firewallRestrictSshRule
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Firewall
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeAllowedNodePoolImages"]:
-    action_type: DENY
-    condition: resource.config.imageType in ["COS_CONTAINERD"] == false
-    description: Enforce that GKE nodes are using authorized node images
-    display_name: Allow only authorized node pool images
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeAllowedNodePoolImages
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeAllowedReleaseChannels"]:
-    action_type: DENY
-    condition: resource.releaseChannel.channel in ["REGULAR", "STABLE"] == false
-    description: Enforce that GKE cluster are using authorized release channels
-    display_name: Allow only authorized release channels
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeAllowedReleaseChannels
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableAlphaCluster"]:
-    action_type: DENY
-    condition: resource.enableKubernetesAlpha == true
-    description: Enforce that GKE clusters are not using alpha features for production
-      workloads
-    display_name: Disable alpha features for production workloads
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeDisableAlphaCluster
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableKubernetesDashboard"]:
-    action_type: DENY
-    condition: resource.addonsConfig.kubernetesDashboard.disabled == false
-    description: Enforce that GKE clusters does not have Web UI dashboard enabled
-    display_name: Disable Web UI dashboard
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeDisableKubernetesDashboard
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableLegacyAbac"]:
-    action_type: DENY
-    condition: resource.legacyAbac.enabled == true
-    description: Enforce that GKE clusters is configured with no legacy ABAC enabled
-    display_name: Disable legacy ABAC
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeDisableLegacyAbac
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeDisableLegacyMetadataEndpoints"]:
-    action_type: DENY
-    condition: '(''disable-legacy-endpoints'' in resource.config.metadata &&
-
-      resource.config.metadata[''disable-legacy-endpoints''] == ''false'')'
-    description: Enforce that GKE clusters are created with legacy metadata endpoints
-      disabled
-    display_name: Disable legacy metadata endpoints
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeDisableLegacyMetadataEndpoints
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireCOSImage"]:
-    action_type: DENY
-    condition: resource.config.imageType != "COS_CONTAINERD"
-    description: Enforce the nodes pool are using Container-Optimized OS for running
-      containers
-    display_name: Require Container-Optimized OS on node pools
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireCOSImage
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireConfidentialNodes"]:
-    action_type: DENY
-    condition: resource.confidentialNodes.enabled == false
-    description: Enforce that the GKE clusters is using confidential nodes
-    display_name: Require confidential nodes
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireConfidentialNodes
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireDataplaneV2"]:
-    action_type: DENY
-    condition: resource.networkConfig.datapathProvider != 'ADVANCED_DATAPATH'
-    description: Enforce that the GKE clusters is configured to use dataplane v2
-    display_name: Require dataplane v2
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireDataplaneV2
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireGKEMetadataServer"]:
-    action_type: DENY
-    condition: resource.config.workloadMetadataConfig.mode != 'GKE_METADATA'
-    description: Enforce that GKE clusters are configured with GKE metadata server
-      enabled
-    display_name: Require GKE metadata server
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireGKEMetadataServer
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireIntegrityMonitoring"]:
-    action_type: DENY
-    condition: resource.config.shieldedInstanceConfig.enableIntegrityMonitoring ==
-      false
-    description: Enforce that GKE nodes are configured with integrity monitoring enabled
-    display_name: Enable integrity monitoring
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireIntegrityMonitoring
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireIntraNodeVisibility"]:
-    action_type: DENY
-    condition: resource.networkConfig.enableIntraNodeVisibility == false
-    description: Enforce that GKE clusters intranode visibility is enabled
-    display_name: Enable intranode visibility
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireIntraNodeVisibility
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireMasterAuthorizedNetworks"]:
-    action_type: DENY
-    condition: resource.masterAuthorizedNetworksConfig.enabled == false
-    description: Enforce that GKE clusters restrict network access to the control
-      planes by configuring master authorized networks with authorized CIDR IP ranges
-    display_name: Require master authorized network with authorized CIDR IP ranges
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireMasterAuthorizedNetworks
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireMonitoring"]:
-    action_type: DENY
-    condition: resource.monitoringService != 'monitoring.googleapis.com/kubernetes'
-    description: Enforce that GKE clusters monitoring is enabled
-    display_name: Enable monitoring
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireMonitoring
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolAutoRepair"]:
-    action_type: DENY
-    condition: resource.management.autoRepair == false
-    description: Enforce that GKE clusters are configured with node auto-repair enabled
-    display_name: Enable node auto-repair
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireNodePoolAutoRepair
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolAutoUpgrade"]:
-    action_type: DENY
-    condition: resource.management.autoUpgrade == false
-    description: Enforce that GKE clusters are configured with node auto-upgrade enabled
-    display_name: Enable node auto-upgrade
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireNodePoolAutoUpgrade
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolCMEKEncryption"]:
-    action_type: DENY
-    condition: has(resource.config.bootDiskKmsKey) == false
-    description: Enforce that GKE nodes are configured with CMEK Encryption
-    display_name: Require NodePool CMEK Encryption
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireNodePoolCMEKEncryption
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireNodePoolSandbox"]:
-    action_type: DENY
-    condition: "resource.name.matches(\"default-pool\") == false &&\n  has(resource.config.sandboxConfig)\
-      \ == false &&\n  resource.config.sandboxConfig.type != 'GVISOR'"
-    description: Enforce that the GKE clusters nodes are isolated using GKE sandbox
-      (excepting the default node pool)
-    display_name: Require GKE Sandbox runtime
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireNodePoolSandbox
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequirePrivateEndpoint"]:
-    action_type: DENY
-    condition: resource.privateClusterConfig.enablePrivateEndpoint == false
-    description: Enforce that GKE clusters are created as private clusters with public
-      endpoint disabled
-    display_name: Disable public endpoints
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequirePrivateEndpoint
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireRegionalClusters"]:
-    action_type: DENY
-    condition: resource.location.matches("^[a-z]+(-[a-z, 1-9]+)$") == false
-    description: Enforce the creation of regional GKE clusters
-    display_name: Require regional GKE cluster
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireRegionalClusters
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireSecureBoot"]:
-    action_type: DENY
-    condition: resource.config.shieldedInstanceConfig.enableSecureBoot == false
-    description: Enforce that GKE nodes are configured with secure boot enabled
-    display_name: Enable secure boot
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireSecureBoot
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/NodePool
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.gkeRequireVPCNativeCluster"]:
-    action_type: DENY
-    condition: resource.ipAllocationPolicy.useIpAliases == false
-    description: Enforce that GKE clusters are created with VPC-native
-    display_name: Require VPC-native
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.gkeRequireVPCNativeCluster
-    parent: organizations/1234567890
-    resource_types:
-    - container.googleapis.com/Cluster
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.iamAllowedMembers"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    !MemberSubjectEndsWith(member, ['@${organization.domain}', '.gserviceaccount.com'])\n\
-      \  )\n)"
-    description: Ensure no binding are done with members outside the organization
-      domain
-    display_name: Deny principals and members outside the organization domain
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamAllowedMembers
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.iamDisablePublicBindings"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    MemberSubjectMatches(member, ['allUsers', 'allAuthenticatedUsers'])\n \
-      \ )\n)"
-    description: Ensure no use of public bindings (allUsers, allAuthenticatedUsers)
-    display_name: Deny use of public access bindings with allUsers or allAuthenticatedUsers
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamDisablePublicBindings
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.iamDisableRedisAdminRoles"]:
-    action_type: DENY
-    condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
-      \    !MemberSubjectMatches(member, []) &&\n    (\n      RoleNameMatches(binding.role,\
-      \ ['roles/redis.admin']) ||\n      RoleNameMatches(binding.role, ['roles/redis.editor'])\
-      \ ||\n      RoleNameContains(binding.role, ['roles/redis.viewer'])\n    )\n\
-      \  )\n)"
-    description: Ensure no use of the basic roles (viewer, editor and owner)
-    display_name: Deny use of the basic roles
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.iamDisableRedisAdminRoles
-    parent: organizations/1234567890
-    resource_types:
-    - iam.googleapis.com/AllowPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.networkDisableTargetHTTPProxy"]:
-    action_type: DENY
-    condition: true == true
-    description: Ensure Target HTTP Proxy are not used
-    display_name: Deny usage and creation of Target HTTP Proxy
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.networkDisableTargetHTTPProxy
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/TargetHttpProxy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.networkDisableWeakSSLPolicy"]:
-    action_type: DENY
-    condition: "(resource.profile == \"COMPATIBLE\") || (resource.profile == \"CUSTOM\"\
-      \ &&\n  resource.customFeatures.exists(feature, feature in [\n  \"TLS_RSA_WITH_AES_128_GCM_SHA256\"\
-      ,\n  \"TLS_RSA_WITH_AES_256_GCM_SHA384\",\n  \"TLS_RSA_WITH_AES_128_CBC_SHA\"\
-      ,\n  \"TLS_RSA_WITH_AES_256_CBC_SHA\",\n  \"TLS_RSA_WITH_3DES_EDE_CBC_SHA\"\
-      ,\n  ])\n) || (resource.profile == \"CUSTOM\" &&\n  resource.minTlsVersion in\
-      \ [\"TLS_1_2\", \"TLS_1_3\"] == false\n) || (resource.profile == \"MODERN\"\
-      \ &&\n  resource.minTlsVersion in [\"TLS_1_2\", \"TLS_1_3\"] == false\n) ||\
-      \ (resource.profile == \"RESTRICTED\" &&\n  resource.minTlsVersion in [\"TLS_1_2\"\
-      , \"TLS_1_3\"] == false\n)"
-    description: Ensure SSL Policies created does not have weak cipher suites
-    display_name: Deny usage of SSL Policies with weak cipher suites
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.networkDisableWeakSSLPolicy
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/SslPolicy
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.networkRequireBackendServiceLogging"]:
-    action_type: DENY
-    condition: has(resource.logConfig) == false || resource.logConfig.enable == false
-    description: Enforce that Backend Services have logging enabled
-    display_name: Require logging to be enabled on Backend Services
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.networkRequireBackendServiceLogging
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/BackendService
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.networkRequireCustomModeVpc"]:
-    action_type: DENY
-    condition: resource.autoCreateSubnetworks == true
-    description: Enforce that the subnets creation is using custom mode for a VPC
-      network
-    display_name: Require custom mode VPC network
-    method_types:
-    - CREATE
-    name: custom.networkRequireCustomModeVpc
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Network
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.networkRequireSubnetPrivateGoogleAccess"]:
-    action_type: DENY
-    condition: '!resource.privateIpGoogleAccess && resource.purpose in [''REGIONAL_MANAGED_PROXY'',
-      ''GLOBAL_MANAGED_PROXY''] == false'
-    description: Enforce that the VPC network subnets are configured with private
-      Google access
-    display_name: Require Private Google Access
-    method_types:
-    - CREATE
-    name: custom.networkRequireSubnetPrivateGoogleAccess
-    parent: organizations/1234567890
-    resource_types:
-    - compute.googleapis.com/Subnetwork
-    timeouts: null
-  module.organization[0].google_org_policy_custom_constraint.constraint["custom.storageRequireBucketObjectVersionning"]:
-    action_type: DENY
-    condition: resource.versioning.enabled == false
-    description: Enforce Cloud Storage bucket object versioning to be configured
-    display_name: Require object versioning
-    method_types:
-    - CREATE
-    - UPDATE
-    name: custom.storageRequireBucketObjectVersionning
-    parent: organizations/1234567890
-    resource_types:
-    - storage.googleapis.com/Bucket
-    timeouts: null
   module.organization[0].google_organization_iam_custom_role.roles["cloudkms_viewer"]:
     description: Terraform-managed.
     org_id: '1234567890'
@@ -6824,6 +7295,27 @@ values:
     role_id: tagViewer
     stage: GA
     title: Custom role tagViewer
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["artifactregistryRequireCMEK"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if Artifact Registry repositories are not encrypted using
+        CMEK
+      predicate:
+      - description: null
+        expression: (!has(resource.kmsKeyName))
+        location: null
+        title: null
+      recommendation: Ensure the Artifact Registry repositoriesa are encrypted using
+        CMEK
+      resource_selector:
+      - resource_types:
+        - artifactregistry.googleapis.com/Repository
+      severity: HIGH
+    display_name: artifactregistryRequireCMEK
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
   ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudfunctionsV1RequireIngressInternalAndLoadBalancer"]
   : custom_config:
     - custom_output: []
@@ -6860,6 +7352,27 @@ values:
         - cloudfunctions.googleapis.com/CloudFunction
       severity: MEDIUM
     display_name: cloudfunctionsV1RequireVPCConnector
+    enablement_state: ENABLED
+    location: global
+    organization: '1234567890'
+    timeouts: null
+  ? module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudkmsAllowedAlgorithms"]
+  : custom_config:
+    - custom_output: []
+      description: Detect if the the algorithm for Cloud KMS keys is not configured
+        correctly
+      predicate:
+      - description: null
+        expression: resource.algorithm in ["GOOGLE_SYMMETRIC_ENCRYPTION", "EXTERNAL_SYMMETRIC_ENCRYPTION"]
+          == false
+        location: null
+        title: null
+      recommendation: Ensure the algorithm for Cloud KMS keys is configured correctly
+      resource_selector:
+      - resource_types:
+        - cloudkms.googleapis.com/CryptoKeyVersion
+      severity: MEDIUM
+    display_name: cloudkmsAllowedAlgorithms
     enablement_state: ENABLED
     location: global
     organization: '1234567890'
@@ -7103,7 +7616,7 @@ values:
         than Dataplane V2
       predicate:
       - description: null
-        expression: resource.networkConfig.datapathProvider == 'ADVANCED_DATAPATH'
+        expression: resource.networkConfig.datapathProvider != 'ADVANCED_DATAPATH'
         location: null
         title: null
       recommendation: Ensure only GKE Dataplane V2 are configured
@@ -7195,6 +7708,10 @@ values:
   module.organization[0].google_tags_tag_value.default["org-policies/allowed-policy-member-domains-all"]:
     description: Allow all domains in DRS org policy.
     short_name: allowed-policy-member-domains-all
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["org-policies/allowed-sa-impersonation"]:
+    description: Allow service account impersonation for tagged principals.
+    short_name: allowed-sa-impersonation
     timeouts: null
   module.projects-observability[0].google_logging_metric.metrics["auditConfigChanges"]:
     bucket_options: []
@@ -8083,8 +8600,8 @@ counts:
   google_logging_project_bucket_config: 6
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
-  google_org_policy_custom_constraint: 80
-  google_org_policy_policy: 155
+  google_org_policy_custom_constraint: 89
+  google_org_policy_policy: 170
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -8093,7 +8610,7 @@ counts:
   google_project_iam_member: 17
   google_project_service: 37
   google_project_service_identity: 11
-  google_scc_management_organization_security_health_analytics_custom_module: 16
+  google_scc_management_organization_security_health_analytics_custom_module: 18
   google_service_account: 14
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
@@ -8105,9 +8622,9 @@ counts:
   google_storage_project_service_account: 3
   google_tags_tag_binding: 7
   google_tags_tag_key: 3
-  google_tags_tag_value: 5
+  google_tags_tag_value: 6
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 58
-  resources: 691
+  resources: 718
   terraform_data: 4

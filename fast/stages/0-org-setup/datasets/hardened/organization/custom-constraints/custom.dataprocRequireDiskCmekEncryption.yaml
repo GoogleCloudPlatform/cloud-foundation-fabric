@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../schemas/folder.schema.json
-
-name: Data Platform
-org_policies:
-  custom.iamDisableAdminServiceAccount:
-    rules:
-      - enforce: false
-  custom.iamDisableProjectServiceAccountImpersonationRoles:
-    rules:
-      - enforce: false
+custom.dataprocRequireDiskCmekEncryption:
+  action_type: DENY
+  condition: |-
+    has(resource.config.encryptionConfig.gcePdKmsKeyName) == false
+  description: Enforce that the Dataproc cluster is created with an CMEK encryption
+    key.
+  display_name: Enable Dataproc CMEK encryption
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - dataproc.googleapis.com/Cluster
