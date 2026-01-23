@@ -34,6 +34,21 @@ variable "folders" {
         location    = optional(string)
       }))
     })), {})
+    assured_workload_config = optional(object({
+      compliance_regime         = string
+      display_name              = string
+      location                  = string
+      organization              = string
+      enable_sovereign_controls = optional(bool)
+      labels                    = optional(map(string), {})
+      partner                   = optional(string)
+      partner_permissions = optional(object({
+        assured_workloads_monitoring = optional(bool)
+        data_logs_viewer             = optional(bool)
+        service_access_approver      = optional(bool)
+      }))
+      violation_notifications_enabled = optional(bool)
+    }), null)
     name                = optional(string)
     parent              = optional(string)
     deletion_protection = optional(bool)

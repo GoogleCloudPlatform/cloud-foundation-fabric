@@ -71,20 +71,27 @@ variable "assured_workload_config" {
     condition = try(contains([
       "ASSURED_WORKLOADS_FOR_PARTNERS",
       "AU_REGIONS_AND_US_SUPPORT",
-      "CA_PROTECTED_B, IL5",
+      "CA_PROTECTED_B",
       "CA_REGIONS_AND_SUPPORT",
       "CJIS",
       "COMPLIANCE_REGIME_UNSPECIFIED",
       "EU_REGIONS_AND_SUPPORT",
       "FEDRAMP_HIGH",
       "FEDRAMP_MODERATE",
-      "HIPAA, HITRUST",
+      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
+      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
+      "HIPAA",
+      "HITRUST",
       "IL2",
       "IL4",
+      "IL5",
+      "IRS_1075",
       "ISR_REGIONS_AND_SUPPORT",
       "ISR_REGIONS",
       "ITAR",
       "JP_REGIONS_AND_SUPPORT",
+      "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
+      "REGIONAL_CONTROLS",
       "US_REGIONAL_ACCESS"
     ], var.assured_workload_config.compliance_regime), true)
     error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
@@ -93,9 +100,11 @@ variable "assured_workload_config" {
     condition = try(contains([
       "LOCAL_CONTROLS_BY_S3NS",
       "PARTNER_UNSPECIFIED",
+      "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
+      "SOVEREIGN_CONTROLS_BY_CNTXT",
       "SOVEREIGN_CONTROLS_BY_PSN",
       "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
-      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
+      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS",
     ], var.assured_workload_config.partner), true)
     error_message = "Field assured_workload_config.partner must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
   }
