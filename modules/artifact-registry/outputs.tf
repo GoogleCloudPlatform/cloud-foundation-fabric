@@ -24,7 +24,7 @@ locals {
     ])
     : join("/", [
       "${local.format_string}.${var.universe.package_domain}",
-      "${var.universe.prefix}",
+      var.universe.prefix,
       element(split(":", var.project_id), 1),
       var.name
     ])
