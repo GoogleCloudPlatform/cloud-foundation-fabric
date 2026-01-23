@@ -28,7 +28,9 @@ locals {
     for k, v in local.ctx.storage_buckets : "$storage_buckets:${k}" => v
   }
   # fail if we have no valid defaults
-  _defaults = yamldecode(file(local.paths.defaults))
+  _defaults = yamldecode(templatefile(local.paths.defaults, {
+    organization = var.organization
+  }))
   discovered_projects = var.resource_discovery.enabled != true ? [] : [
     for v in module.vpc-sc-discovery[0].project_numbers :
     "projects/${v}"

@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/defaults.schema.json
+# yaml-language-server: $schema=../../../schemas/ingress-policy.schema.json
 
-context:
-  identity_sets:
-    scc_identities:
-      - "serviceAccount:service-org-${organization.id}@security-center-api.iam.gserviceaccount.com"
-      - "serviceAccount:service-org-${organization.id}@gcp-sa-csc-hpsa.iam.gserviceaccount.com"
-output_files:
-  # local path is optional but recommended when starting
-  local_path: ~/fast-config/fast-test-00
-  storage_bucket: $storage_buckets:iac-0/iac-outputs
+from:
+  access_levels:
+    - "*"
+  identities:
+    - $identity_sets:scc_identities
+to:
+  operations:
+    - service_name: "*"
+  resources:
+    - "*"

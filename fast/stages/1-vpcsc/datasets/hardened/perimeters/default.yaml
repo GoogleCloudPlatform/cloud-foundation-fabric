@@ -21,5 +21,8 @@ status:
     - $resource_sets:discovered_projects
   ingress_policies:
     - fast-org-log-sinks
+    - fast-org-scc
+  egress_policies:
+    - fast-org-scc
   restricted_services:
     - $service_sets:restricted_services
