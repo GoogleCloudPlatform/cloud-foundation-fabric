@@ -34,25 +34,25 @@ compute.restrictCloudNATUsage:
   rules:
     - allow:
         values:
-          - "under:${folder_ids.networking}"
+          - 'under:${folder_ids["infrastructure/networking"]}'
 
 compute.restrictDedicatedInterconnectUsage:
   rules:
     - allow:
         values:
-          - "under:${folder_ids.networking}"
+          - 'under:${folder_ids["infrastructure/networking"]}'
 
 compute.restrictPartnerInterconnectUsage:
   rules:
     - allow:
         values:
-          - "under:${folder_ids.networking}"
+          - 'under:${folder_ids["infrastructure/networking"]}'
 
 compute.restrictSharedVpcHostProjects:
   rules:
     - allow:
         values:
-          - "under:${folder_ids.networking}"
+          - 'under:${folder_ids["infrastructure/networking"]}'
 
 compute.restrictVpcPeering:
   rules:

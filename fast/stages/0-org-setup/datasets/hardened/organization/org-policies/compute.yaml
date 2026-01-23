@@ -46,6 +46,10 @@ compute.managed.disableSerialPortLogging:
   rules:
     - enforce: true
 
+compute.disableSerialPortLogging:
+  rules:
+    - enforce: true
+
 compute.managed.vmCanIpForward:
   rules:
     - enforce: true
@@ -70,12 +74,12 @@ compute.restrictLoadBalancerCreationForTypes:
         values:
           - "in:INTERNAL"
 
-# compute.restrictNonConfidentialComputing:
-#   rules:
-#     - deny:
-#         values:
-#           - "compute.googleapis.com"
-#           - "container.googleapis.com"
+compute.restrictNonConfidentialComputing:
+  rules:
+    - deny:
+        values:
+          - "compute.googleapis.com"
+          # - "container.googleapis.com"
 
 compute.restrictProtocolForwardingCreationForTypes:
   rules:

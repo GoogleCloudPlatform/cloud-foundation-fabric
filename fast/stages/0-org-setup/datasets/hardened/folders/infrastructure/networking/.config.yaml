@@ -15,6 +15,7 @@
 # yaml-language-server: $schema=../../../../schemas/folder.schema.json
 
 name: Networking
+parent: $folder_ids:infrastructure
 iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-networking-rw:
     - roles/compute.networkAdmin

@@ -14,7 +14,6 @@
 
 # yaml-language-server: $schema=../../../../schemas/project.schema.json
 
-# TODO: data access logs configuration
 name: prod-iac-core-0
 iam_by_principals:
   $iam_principals:gcp-organization-admins:

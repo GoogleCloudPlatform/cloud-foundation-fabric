@@ -14,7 +14,8 @@
 
 # yaml-language-server: $schema=../../../../schemas/project.schema.json
 
-name: prod-billing-exp-0
+parent: $folder_ids:billing
+name: billing-0
 iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-org-ro:
     - roles/bigquery.jobUser

@@ -15,7 +15,7 @@
 # yaml-language-server: $schema=../../../../0-org-setup/schemas/folder.schema.json
 
 name: Development
-parent: $folder_ids:security
+parent: $folder_ids:infrastructure/security
 tag_bindings:
   environment: $tag_values:environment/development
 iam_by_principals:

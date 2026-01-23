@@ -38,14 +38,14 @@ gcp.restrictCmekCryptoKeyProjects:
   rules:
     - allow:
         values:
-          - 'under:${folder_ids["security/dev"]}'
+          - 'under:${folder_ids["infrastructure/security/dev"]}'
       condition:
         title: Restrict CMEK Projects for development projects
         expression: |
           resource.matchTag('${organization.id}/environment', 'development')
     - allow:
         values:
-          - 'under:${folder_ids["security/prod"]}'
+          - 'under:${folder_ids["infrastructure/security/prod"]}'
       condition:
         title: Restrict CMEK Projects for non-development projects
         expression: |
