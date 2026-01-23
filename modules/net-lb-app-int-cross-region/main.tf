@@ -80,11 +80,12 @@ resource "google_compute_global_forwarding_rule" "forwarding_rules" {
 }
 
 resource "google_compute_target_http_proxy" "default" {
-  count       = var.protocol == "HTTPS" ? 0 : 1
-  project     = var.project_id
-  name        = coalesce(var.https_proxy_config.name, var.name)
-  description = var.http_proxy_config.description
-  url_map     = google_compute_url_map.default.id
+  count                       = var.protocol == "HTTPS" ? 0 : 1
+  project                     = var.project_id
+  name                        = coalesce(var.http_proxy_config.name, var.name)
+  description                 = var.http_proxy_config.description
+  http_keep_alive_timeout_sec = var.http_proxy_config.http_keepalive_timeout
+  url_map                     = google_compute_url_map.default.id
 }
 
 resource "google_compute_target_https_proxy" "default" {

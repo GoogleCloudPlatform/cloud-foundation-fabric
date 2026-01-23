@@ -23,7 +23,7 @@ resource "google_compute_backend_bucket" "default" {
     ? var.project_id
     : each.value.project_id
   )
-  name                    = "${var.name}-${each.key}"
+  name                    = coalesce(each.value.name, "${var.name}-${each.key}")
   bucket_name             = each.value.bucket_name
   compression_mode        = each.value.compression_mode
   custom_response_headers = each.value.custom_response_headers
