@@ -289,8 +289,8 @@ region: $locations:primary
 ip_cidr_range: 10.73.0.0/24
 description: Default primary-region subnet for dev
 flow_logs_config: # This section enables VPC Flow Logs
-  aggregation_interval: "INTERVAL_15_MIN"
-  flow_sampling: 0.5
+  aggregation_interval: "INTERVAL_5_SEC"
+  flow_sampling: 1.0
   metadata: "INCLUDE_ALL_METADATA"
 ```
 
