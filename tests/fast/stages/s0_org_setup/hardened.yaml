@@ -3809,12 +3809,13 @@ values:
       \    !MemberSubjectEndsWith(member, ['@cloudservices.gserviceaccount.com'])\
       \ &&\n    MemberSubjectStartsWith(member, ['serviceAccount:']) &&\n    !MemberSubjectEndsWith(member,\
       \ ['@ft0-prod-iac-core-0.iam.gserviceaccount.com'])\n  ) &&\n  (\n    RoleNameMatches(binding.role,\
-      \ ['roles/editor']) ||\n    RoleNameMatches(binding.role, ['roles/owner']) ||\n\
-      \    RoleNameContains(binding.role, ['admin', 'Admin'])\n  )\n)"
-    description: Ensure no use of the basic roles (viewer, editor and owner) and usage
-      of admin role for service account
-    display_name: Deny use of the basic roles and usage of admin role for service
-      account
+      \ ['roles/owner', 'roles/admin']) ||\n    RoleNameMatches(binding.role, ['roles/editor',\
+      \ 'roles/writer']) ||\n    RoleNameContains(binding.role, ['admin', 'Admin'])\n\
+      \  )\n)"
+    description: Ensure no use of the legacy basic roles (owner and editor), basic
+      roles (admin, writer) and usage of admin roles for service account
+    display_name: Deny use of the legacy basic roles, basic roles and usage of admin
+      role for service account
     method_types:
     - CREATE
     - UPDATE
@@ -3828,10 +3829,11 @@ values:
     condition: "resource.bindings.exists(binding,\n  binding.members.exists(member,\n\
       \    MemberSubjectStartsWith(member, ['user:', 'group:']) &&\n    !MemberSubjectStartsWith(member,\
       \ ['group:fabric-fast-owners@google.com']) &&\n    (\n      RoleNameMatches(binding.role,\
-      \ [\"roles/editor\"]) ||\n      RoleNameMatches(binding.role, [\"roles/owner\"\
-      ]) ||\n      RoleNameContains(binding.role, [\"roles/viewer\"])\n    )\n  )\n\
-      )"
-    description: Ensure no use of the basic roles (viewer, editor and owner)
+      \ ['roles/owner', 'roles/admin']) ||\n      RoleNameMatches(binding.role, ['roles/editor',\
+      \ 'roles/writer']) ||\n      RoleNameContains(binding.role, ['roles/viewer',\
+      \ 'roles/reader'])\n    )\n  )\n)"
+    description: Ensure no use of the legacy basic roles (viewer, editor and owner)
+      and basic roles (reader, writer and admin)
     display_name: Deny use of the basic roles
     method_types:
     - CREATE
