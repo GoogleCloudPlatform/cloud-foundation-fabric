@@ -14,6 +14,10 @@
 
 # yaml-language-server: $schema=../../../../schemas/folder.schema.json
 
-name: Production
+name: Development
+parent: $folder_ids:teams
 tag_bindings:
-  environment: $tag_values:environment/production
+  environment: $tag_values:environment/development
+# iam_by_principals:
+#   group:team-a-admins@example.com:
+#     - roles/editor

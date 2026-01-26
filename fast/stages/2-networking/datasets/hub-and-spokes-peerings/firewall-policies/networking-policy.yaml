@@ -2,9 +2,9 @@
 
 # yaml-language-server: $schema=../../../schemas/firewall-policy.schema.json
 
-parent_id: $folder_ids:networking
+parent_id: $folder_ids:infrastructure/networking
 attachments:
-  networking: $folder_ids:networking
+  networking: $folder_ids:infrastructure/networking
 name: network-policy
 ingress_rules:
   allow-healthchecks:

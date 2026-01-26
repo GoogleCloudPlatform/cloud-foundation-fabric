@@ -1,0 +1,135 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../schemas/project.schema.json
+
+parent: $folder_ids:dev
+services:
+  - compute.googleapis.com
+  - cloudkms.googleapis.com
+  - cloudresourcemanager.googleapis.com
+  - container.googleapis.com
+  - compute.googleapis.com
+  - dns.googleapis.com
+  - iam.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - pubsub.googleapis.com
+  - orgpolicy.googleapis.com
+  - storage.googleapis.com
+
+shared_vpc_service_config:
+  host_project: $project_ids:net-dev-0
+  service_agent_iam:
+    roles/compute.networkUser:
+      - cloudservices
+      - container-engine
+    roles/container.hostServiceAgentUser:
+      - container-engine
+  # network_users:
+  #   - group:team-a-admins@example.com
+
+  # shared_vpc_service_config = {y
+  #   attach = true
+  #   host_project = lookup(
+  #     var.host_project_ids,
+  #     var.vpc_config.host_project_id,
+  #     var.vpc_config.host_project_id
+  #   )
+  #   service_agent_iam = merge({
+  #     "roles/compute.networkUser" = [
+  #       "cloudservices", "container-engine"
+  #     ]
+  #     "roles/container.hostServiceAgentUser" = [
+  #       "container-engine"
+  #     ]
+  #     }
+  #   )
+  # }
+
+service_encryption_key_ids:
+  storage.googleapis.com:
+    - $kms_keys:storage-dev-primary-default
+iam_by_principals_additive:
+  $iam_principals:gcp-organization-admins:
+    - roles/iam.serviceAccountTokenCreator
+    - roles/iam.workloadIdentityPoolAdmin
+  $iam_principals:service_accounts/app-dev-0/automation/ro:
+    - roles/browser
+    - roles/iam.serviceAccountViewer
+    - roles/iam.workloadIdentityPoolViewer
+    - roles/bigquery.jobUser
+    - roles/bigquery.dataViewer
+    - roles/compute.viewer
+    - roles/container.viewer
+    - roles/logging.viewer
+    - roles/monitoring.viewer
+    - roles/pubsub.viewer
+    - roles/securitycentermanagement.viewer
+    - roles/storage.objectViewer
+    - $custom_roles:storage_viewer
+    - $custom_roles:cloudkms_viewer
+  $iam_principals:service_accounts/app-dev-0/automation/rw:
+    - roles/iam.serviceAccountAdmin
+    - roles/iam.serviceAccountUser
+    - roles/iam.workloadIdentityPoolAdmin
+    - roles/accesscontextmanager.policyAdmin
+    - roles/bigquery.admin
+    - roles/cloudasset.owner
+    - roles/cloudkms.admin
+    - roles/compute.admin
+    - roles/container.admin
+    - roles/datacatalog.admin
+    - roles/iam.roleAdmin
+    - roles/logging.admin
+    - roles/monitoring.admin
+    - roles/pubsub.admin
+    - roles/resourcemanager.projectIamAdmin
+    - roles/securitycentermanagement.admin
+    - roles/servicenetworking.networksAdmin
+    - roles/serviceusage.serviceUsageAdmin
+    - roles/storage.admin
+iam:
+  # reset default role on new project
+  roles/owner: []
+
+log_buckets:
+  _Default:
+    retention: 90
+    location: europe-west1
+org_policies:
+  custom.iamDisableAdminServiceAccount:
+    rules:
+      - enforce: false
+  compute.managed.disableSerialPortLogging:
+    rules:
+      - enforce: false
+
+automation:
+  project: $project_ids:iac-0
+  service_accounts:
+    rw:
+      description: Read/write automation sa for app 0.
+    ro:
+      description: Read-only automation sa for app 0.
+  bucket:
+    description: Terraform state bucket for app 0.
+    versioning: true
+    encryption_key: $kms_keys:storage-dev-primary-default
+    iam:
+      roles/storage.objectAdmin:
+        - $iam_principals:service_accounts/app-dev-0/automation/rw
+      roles/storage.objectViewer:
+        - $iam_principals:service_accounts/app-dev-0/automation/rw
+        - $iam_principals:service_accounts/app-dev-0/automation/ro

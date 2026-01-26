@@ -61,9 +61,13 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-networking-ro:
     - roles/serviceusage.serviceUsageConsumer
   $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/iam.serviceAccountAdmin
     - roles/serviceusage.serviceUsageConsumer
+    - roles/storage.admin
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - roles/iam.serviceAccountViewer
     - roles/serviceusage.serviceUsageConsumer
+    - $custom_roles:storage_viewer
   $iam_principals:service_accounts/iac-0/iac-security-rw:
     - roles/serviceusage.serviceUsageConsumer
   $iam_principals:service_accounts/iac-0/iac-security-ro:

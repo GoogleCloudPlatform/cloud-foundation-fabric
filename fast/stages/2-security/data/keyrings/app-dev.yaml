@@ -12,22 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../0-org-setup/schemas/project.schema.json
+# yaml-language-server: $schema=../../schemas/keyring.schema.json
 
-parent: $folder_ids:infrastructure/security/prod
-services:
-  - certificatemanager.googleapis.com
-  - cloudkms.googleapis.com
-  - logging.googleapis.com
-  - monitoring.googleapis.com
-  - privateca.googleapis.com
-  - secretmanager.googleapis.com
-labels:
-  environment: development
+location: $locations:primary
+project_id: $project_ids:dev-sec-core-0
+keys:
+  bigquery:
+    rotation_period: 7776000s
+  composer:
+    rotation_period: 7776000s
+  compute:
+    rotation_period: 7776000s
+  storage:
+    rotation_period: 7776000s
+  gke:
+    rotation_period: 7776000s
 iam_bindings:
   key_delegated:
     members:
-      - $iam_principals:service_accounts/iac-0/iac-pf-rw
+      - serviceAccount:app-dev-0-rw@test14-fsi-prod-iac-core-0.iam.gserviceaccount.com
     role: roles/cloudkms.admin
     condition:
       title: Delegated IAM grant on keys.
@@ -36,16 +39,4 @@ iam_bindings:
           'iam.googleapis.com/modifiedGrantsByRole', [])
           .hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter']
         )
-
-iam:
-  # reset default role on new project
-  roles/owner: []
-log_buckets:
-  _Default:
-    retention: 90
-    location: europe-west1
-
-# uncomment the following if parent is the security folder
-
-# tag_bindings:
-#   environment: $tag_values:environment/production
+        

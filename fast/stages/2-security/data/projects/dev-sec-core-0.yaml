@@ -14,7 +14,7 @@
 
 # yaml-language-server: $schema=../../../0-org-setup/schemas/project.schema.json
 
-parent: $folder_ids:security/dev
+parent: $folder_ids:infrastructure/security/dev
 services:
   - certificatemanager.googleapis.com
   - cloudkms.googleapis.com
@@ -25,6 +25,10 @@ services:
 labels:
   environment: development
 iam_bindings:
+  encrypter_decrypter:
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+    members:
+      - serviceAccount:service-13907737736@gs-project-accounts.iam.gserviceaccount.com
   key_delegated:
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-rw

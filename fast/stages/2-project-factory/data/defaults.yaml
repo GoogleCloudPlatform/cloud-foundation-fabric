@@ -41,8 +41,8 @@ context:
 output_files:
   # local path is optional but recommended when starting
   local_path: ~/fast-config/projects
-  storage_bucket: $storage_buckets:dev-ta-app-a-0/automation/tf-state
+  storage_bucket: test14-fsi-prod-iac-core-0-iac-outputs
   providers:
-    dev-ta-app-a-0:
-      storage_bucket: $storage_buckets:dev-ta-app-a-0/automation/tf-state
-      service_account: $iam_principals:service_accounts/dev-ta-app-a-0/automation/rw
+    app-dev-0:
+      storage_bucket: $storage_buckets:app-dev-0/automation/tf-state
+      service_account: $iam_principals:service_accounts/app-dev-0/automation/rw
