@@ -20,6 +20,15 @@
 # access levels are needed, switch to the
 # google_access_context_manager_access_levels resource
 
+locals {
+  access_levels = {
+    for k, v in google_access_context_manager_access_level.basic : k => v.id
+  }
+  ctx_access_levels = merge(local.ctx.access_levels, {
+    for k, v in local.access_levels : "$access_levels:${k}" => v
+  })
+}
+
 resource "google_access_context_manager_access_level" "basic" {
   for_each    = merge(local.data.access_levels, var.access_levels)
   parent      = "accessPolicies/${local.access_policy}"
