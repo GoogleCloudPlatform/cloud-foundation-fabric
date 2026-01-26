@@ -184,8 +184,11 @@ module "test" {
         access_levels       = ["$access_levels:a1", "$access_levels:a2"]
         resources           = ["projects/1111", "projects/2222"]
         restricted_services = ["storage.googleapis.com"]
-        egress_policies     = ["gcs-sa-foo"]
-        ingress_policies    = ["sa-tf-test", "sa-roles"]
+        egress_policies     = ["$egress_policies:gcs-sa-foo"]
+        ingress_policies = [
+          "$ingress_policies:sa-tf-test",
+          "$ingress_policies:sa-roles"
+        ]
         vpc_accessible_services = {
           allowed_services   = ["storage.googleapis.com"]
           enable_restriction = true
@@ -228,7 +231,7 @@ module "vpc-sc" {
   perimeters = {
     p = {
       spec = {
-        ingress_policies = ["i1"]
+        ingress_policies = ["$ingress_policies:i1"]
         resources        = ["projects/my-destionation-project"]
       }
       use_explicit_dry_run_spec = true
@@ -277,10 +280,10 @@ status:
   restricted_services:
     - storage.googleapis.com
   egress_policies:
-    - gcs-sa-foo
+    - $egress_policies:gcs-sa-foo
   ingress_policies:
-    - sa-tf-test-geo
-    - sa-tf-test
+    - $ingress_policies:sa-tf-test-geo
+    - $ingress_policies:sa-tf-test
   vpc_accessible_services:
     allowed_services:
       - storage.googleapis.com
@@ -301,10 +304,10 @@ status:
   restricted_services:
     - storage.googleapis.com
   egress_policies:
-    - gcs-sa-foo
+    - $egress_policies:gcs-sa-foo
   ingress_policies:
-    - sa-tf-test-geo
-    - sa-tf-test
+    - $ingress_policies:sa-tf-test-geo
+    - $ingress_policies:sa-tf-test
   vpc_accessible_services:
     allowed_services:
       - storage.googleapis.com
@@ -451,10 +454,13 @@ module "test" {
   perimeters = {
     default = {
       status = {
-        access_levels    = ["geo-it"]
-        resources        = ["projects/1111"]
-        egress_policies  = ["factory-egress-policy"]
-        ingress_policies = ["variable-policy", "factory-ingress-policy"]
+        access_levels   = ["geo-it"]
+        resources       = ["projects/1111"]
+        egress_policies = ["$egress_policies:factory-egress-policy"]
+        ingress_policies = [
+          "$ingress_policies:variable-policy",
+          "$ingress_policies:factory-ingress-policy"
+        ]
       }
     }
   }
