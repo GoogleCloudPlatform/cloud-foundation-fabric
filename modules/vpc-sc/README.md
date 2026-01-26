@@ -157,7 +157,7 @@ module "test" {
           "serviceAccount:test-tf-0@myproject.iam.gserviceaccount.com",
           "serviceAccount:test-tf-1@myproject.iam.gserviceaccount.com"
         ]
-        access_levels = ["*"]
+        access_levels = ["$access_levels:a1"]
       }
       to = {
         operations = [{ service_name = "*" }]
