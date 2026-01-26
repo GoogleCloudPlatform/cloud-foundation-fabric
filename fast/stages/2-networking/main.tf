@@ -39,6 +39,7 @@ locals {
       },
       local._ctx.iam_principals
     )
+    kms_keys          = merge(var.kms_keys, local._ctx.kms_keys)
     project_ids       = merge(var.project_ids, local._ctx.project_ids)
     storage_buckets   = merge(var.storage_buckets, local._ctx.storage_buckets)
     tag_keys          = merge(var.tag_keys, local._ctx.tag_keys)
