@@ -21,6 +21,6 @@ spec:
   resources:
     - $resource_sets:discovered_projects
   ingress_policies:
-    - fast-org-log-sinks
+    - $ingress_policies:fast-org-log-sinks
   restricted_services:
     - $service_sets:restricted_services
