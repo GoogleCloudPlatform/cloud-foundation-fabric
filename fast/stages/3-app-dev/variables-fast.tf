@@ -31,16 +31,6 @@ variable "billing_account" {
   })
 }
 
-variable "environments" {
-  # tfdoc:variable:source 1-resman
-  description = "Long environment names."
-  type = object({
-    dev = object({
-      name = string
-    })
-  })
-}
-
 variable "folder_ids" {
   # tfdoc:variable:source 1-resman
   description = "Folder name => id mappings."

@@ -26,14 +26,6 @@ locals {
       })
     }
   ]...)
-  subnet_self_links = try(
-    var.subnet_self_links[var.vpc_config.vpc_self_link], {}
-  )
-  vpc_self_link = lookup(
-    var.vpc_self_links,
-    var.vpc_config.vpc_self_link,
-    var.vpc_config.vpc_self_link
-  )
 }
 
 module "gke-cluster" {
@@ -56,18 +48,10 @@ module "gke-cluster" {
   monitoring_config        = each.value.monitoring_config
   node_locations           = each.value.node_locations
   release_channel          = each.value.release_channel
-  vpc_config = merge(each.value.vpc_config, {
-    network = try(
-      var.vpc_self_links[each.value.vpc_config.network],
-      each.value.vpc_config.network,
-      local.vpc_self_link
-    )
-    subnetwork = try(
-      local.subnet_self_links[each.value.vpc_config.subnetwork],
-      each.value.vpc_config.subnetwork,
-      null
-    )
-  })
+  vpc_config = {
+    network = var.vpc_self_links["dev"]
+    subnetwork = var.subnet_self_links["dev"]["europe-west1/dev-default"]
+  }
   deletion_protection = false
   node_config = merge(coalesce(each.value.node_config, {}), {
     service_account = (

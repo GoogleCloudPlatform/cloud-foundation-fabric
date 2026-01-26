@@ -147,28 +147,3 @@ variable "nodepools" {
   default  = {}
   nullable = false
 }
-
-variable "stage_config" {
-  description = "FAST stage configuration used to find resource ids. Must match name defined for the stage in resource management."
-  type = object({
-    environment = string
-    name        = string
-  })
-  default = {
-    environment = "dev"
-    name        = "gke-dev"
-  }
-}
-
-variable "vpc_config" {
-  description = "VPC-level configuration for project and clusters."
-  type = object({
-    host_project_id = string
-    vpc_self_link   = string
-  })
-  nullable = false
-  default = {
-    host_project_id = "dev-spoke-0"
-    vpc_self_link   = "dev-spoke-0"
-  }
-}

@@ -17,7 +17,6 @@
 # tfdoc:file:description Project and usage dataset.
 
 locals {
-  folder_id = "folders/570667342824" #var.folder_ids[var.stage_config.name]
   gke_nodes_sa_roles = [
     "autoscaling.metricsWriter",
     "logging.logWriter",
@@ -26,6 +25,9 @@ locals {
     "stackdriver.resourceMetadata.writer"
   ]
   project_name = "test14-fsi-app-dev-0"
+  _cmek_keys_compute = [
+    "projects/test14-fsi-dev-sec-core-0/locations/europe-west1/keyRings/app-dev/cryptoKeys/compute"
+  ]
   _cmek_keys_container = toset(compact(flatten([
     [for k, v in var.clusters : try(v.node_config.boot_disk_kms_key, null)],
     [
@@ -38,46 +40,8 @@ locals {
     [for k, v in var.clusters : try(v.enable_features.upgrade_notifications.kms_key_name, null)],
   ])))
   service_encryption_key_ids = {
-    for k, v in {
-      "container.googleapis.com" = local._cmek_keys_container
-      "pubsub.googleapis.com"    = local._cmek_keys_pubsub
-    } : k => v if length(v) > 0
+    "compute.googleapis.com" = local._cmek_keys_compute  
+    "container.googleapis.com" = local._cmek_keys_container
+    "pubsub.googleapis.com"    = local._cmek_keys_pubsub
   }
-}
-
-module "gke-project-0" {
-  source          = "../../../modules/project"
-  name            = local.project_name
-  project_reuse = {
-    use_data_source = false
-    attributes = {
-      name   = local.project_name
-      number = "405419313060"
-    }
-  }
-  iam_bindings_additive = {
-    for r in local.gke_nodes_sa_roles : "gke-nodes-sa-${r}" => {
-      member = module.gke-nodes-service-account.iam_email
-      role   = "roles/${r}"
-    }
-  }
-  services = [
-    "container.googleapis.com",
-    "compute.googleapis.com",
-    "pubsub.googleapis.com",
-  ]
-  service_encryption_key_ids = local.service_encryption_key_ids
-}
-
-module "gke-dataset-resource-usage" {
-  source        = "../../../modules/bigquery-dataset"
-  project_id    = module.gke-project-0.project_id
-  id            = "gke_resource_usage"
-  friendly_name = "GKE resource usage."
-}
-
-module "gke-nodes-service-account" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.gke-project-0.project_id
-  name       = "gke-node-default"
 }

@@ -37,27 +37,9 @@ shared_vpc_service_config:
       - container-engine
     roles/container.hostServiceAgentUser:
       - container-engine
-  # network_users:
-  #   - group:team-a-admins@example.com
-
-  # shared_vpc_service_config = {y
-  #   attach = true
-  #   host_project = lookup(
-  #     var.host_project_ids,
-  #     var.vpc_config.host_project_id,
-  #     var.vpc_config.host_project_id
-  #   )
-  #   service_agent_iam = merge({
-  #     "roles/compute.networkUser" = [
-  #       "cloudservices", "container-engine"
-  #     ]
-  #     "roles/container.hostServiceAgentUser" = [
-  #       "container-engine"
-  #     ]
-  #     }
-  #   )
-  # }
-
+  network_users:
+    - $iam_principals:service_accounts/app-dev-0/automation/rw
+    # - group:team-a-admins@example.com
 service_encryption_key_ids:
   storage.googleapis.com:
     - $kms_keys:storage-dev-primary-default
