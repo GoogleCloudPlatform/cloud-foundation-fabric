@@ -1,0 +1,15 @@
+parent: "$folder_ids:data-platform-dev"
+labels:
+  environment: dev
+iam_by_principals:
+  dp-admin:
+    - roles/datacatalog.categoryAdmin
+    - roles/dataplex.catalogAdmin
+    - roles/dataplex.aspectTypeOwner
+    - roles/resourcemanager.tagViewer
+  dp-domain-0-admin:
+    - roles/datacatalog.viewer
+    - roles/dataplex.aspectTypeUser
+  dp-product-0-dev:
+    - roles/datacatalog.viewer
+    - roles/dataplex.aspectTypeUser

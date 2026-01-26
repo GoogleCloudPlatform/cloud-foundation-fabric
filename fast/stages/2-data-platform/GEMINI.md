@@ -245,30 +245,112 @@ We will adopt a "clean slate" parallel development approach to ensure stability 
 
 
 
+
+
+
+
 ### Completed
+
+
 
 *   **Workspace**: Initialized `fast/stages/2-data-platform`.
 
+
+
 *   **Documentation**: Established `GEMINI.md` as the project plan and context.
+
+
 
 *   **Schemas**:
 
+
+
     *   `schemas/defaults.schema.json` imported from `project-factory`.
+
+
+
+    *   `schemas/project.schema.json` and `schemas/folder.schema.json` imported from `project-factory`.
+
+
 
 *   **Data**:
 
+
+
     *   Created `datasets/classic/defaults.yaml`.
 
-    *   Populated `defaults.yaml` with baseline services (`bigquery`, `logging`, etc.) and realistic IAM context placeholders (`dp-admin`, `domain-admins`).
 
-    *   Verified `defaults.yaml` validates against `defaults.schema.json`.
+
+    *   Populated `defaults.yaml` with baseline services and IAM contexts.
+
+
+
+    *   Created `datasets/classic/projects/central.yaml` for the Central Project.
+
+
+
+*   **Code Structure**:
+
+
+
+    *   Created `variables.tf` and `variables-fast.tf`.
+
+
+
+    *   Implemented `main.tf` with defaults loading and context logic.
+
+
+
+    *   Implemented `factory-projects.tf` integrating `module "project-factory"`.
+
+
+
+
 
 
 
 ### Next Steps
 
-1.  **Code Structure**: Create `main.tf` and `variables.tf`.
 
-2.  **Defaults Loading**: Implement `main.tf` logic to read `datasets/classic/defaults.yaml`, decode it, and merge with `var.context`.
 
-3.  **Central Project**: Create the schema for the Central Project configuration and a corresponding YAML file.
+1.  **Verification**: Initialize and plan (using mock inputs) to verify Central Project generation.
+
+
+
+2.  **Data Domains**:
+
+
+
+    *   Create `schemas/data-domain.schema.json`.
+
+
+
+    *   Create `datasets/classic/domains/` sample data.
+
+
+
+    *   Implement domain transformation logic in `main.tf`.
+
+
+
+3.  **Data Products**:
+
+
+
+    *   Create `schemas/data-product.schema.json`.
+
+
+
+    *   Create `datasets/classic/products/` sample data.
+
+
+
+    *   Implement product transformation logic.
+
+
+
+
+
+
+
+
