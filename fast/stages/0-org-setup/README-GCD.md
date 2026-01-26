@@ -127,9 +127,8 @@ projects:
     # customize prefix as per usual FAST instructions
     prefix: ftpc00
     locations:
-      logging: global
-      # Replace with values from the Configuration Reference table
-      storage: <UNIVERSE_REGION>
+      logging: $locations:primary
+      storage: $locations:primary
   overrides:
     universe:
       # Replace with values from the Configuration Reference table
