@@ -1,11 +1,11 @@
 module "test-vm" {
-  source     = "../../../modules/compute-vm"
-  project_id = module.gke-project-0.project_id
-  zone       = "europe-west1-b"
-  name       = "test-vm"
+  source        = "../../../modules/compute-vm"
+  project_id    = module.gke-project-0.project_id
+  zone          = "europe-west1-b"
+  name          = "test-vm"
   instance_type = "n2d-standard-2"
   encryption = {
-    kms_key_self_link = "projects/test14-fsi-dev-sec-core-0/locations/europe-west1/keyRings/app-dev/cryptoKeys/compute"
+    kms_key_self_link = var.compute_kms_key
   }
   confidential_compute = true
   shielded_config = {
@@ -20,7 +20,7 @@ module "test-vm" {
   }
   network_interfaces = [{
     network    = var.vpc_self_links["dev"]
-    subnetwork =  var.subnet_self_links["dev"]["europe-west1/dev-default"]
+    subnetwork = var.subnet_self_links["dev"]["europe-west1/dev-default"]
   }]
   service_account = {
     auto_create = true

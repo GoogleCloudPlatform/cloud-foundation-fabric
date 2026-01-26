@@ -24,23 +24,12 @@ locals {
     "monitoring.metricWriter",
     "stackdriver.resourceMetadata.writer"
   ]
-  project_name = "test14-fsi-app-dev-0"
-  _cmek_keys_compute = [
-    "projects/test14-fsi-dev-sec-core-0/locations/europe-west1/keyRings/app-dev/cryptoKeys/compute"
-  ]
-  _cmek_keys_container = toset(compact(flatten([
-    [for k, v in var.clusters : try(v.node_config.boot_disk_kms_key, null)],
-    [
-      for k, v in var.nodepools : [
-        for nk, nv in v : try(nv.node_config.boot_disk_kms_key, null)
-      ]
-    ]
-  ])))
-  _cmek_keys_pubsub = toset(compact(flatten([
-    [for k, v in var.clusters : try(v.enable_features.upgrade_notifications.kms_key_name, null)],
-  ])))
+  project_name         = var.project_id
+  _cmek_keys_compute   = var.compute_kms_key != null ? [var.compute_kms_key] : []
+  _cmek_keys_container = var.gke_kms_key != null ? [var.gke_kms_key] : []
+  _cmek_keys_pubsub    = local._cmek_keys_container
   service_encryption_key_ids = {
-    "compute.googleapis.com" = local._cmek_keys_compute  
+    "compute.googleapis.com"   = local._cmek_keys_compute
     "container.googleapis.com" = local._cmek_keys_container
     "pubsub.googleapis.com"    = local._cmek_keys_pubsub
   }

@@ -17,8 +17,8 @@
 # tfdoc:file:description Project and usage dataset.
 
 module "gke-project-0" {
-  source          = "../../../modules/project"
-  name            = local.project_name
+  source = "../../../modules/project"
+  name   = local.project_name
   project_reuse = {
     use_data_source = false
     attributes = {
