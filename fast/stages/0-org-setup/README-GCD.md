@@ -8,7 +8,7 @@ It assumes familiarity with the standard FAST bootstrap flow but highlights the 
 
 The following table lists the specific configuration values for different Google Cloud Dedicated (GCD) environments. Please replace the placeholders in the commands and configurations below with the values corresponding to your target universe.
 
-| Variable | GCD In France | GCD In Berlin |
+| Variable | GCD In France (GA) | GCD In Germany (Preview)[^1] |
 | :--- | :--- | :--- |
 | `UNIVERSE_WEB_DOMAIN` | `cloud.s3nscloud.fr` | `cloud.berlin-build0.goog` |
 | `UNIVERSE_API_DOMAIN` | `s3nsapis.fr` | `apis-berlin-build0.goog` |
@@ -16,6 +16,7 @@ The following table lists the specific configuration values for different Google
 | `UNIVERSE_PREFIX` | `s3ns` | `eu0` |
 | `UNIVERSE_REGION` | `u-france-east1` | `u-germany-northeast1` |
 
+[^1]: Note that these APIs are subject to change before GA (General Availability).
 
 ## 1. Design Overview
 
