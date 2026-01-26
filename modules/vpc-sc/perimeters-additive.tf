@@ -49,10 +49,10 @@ resource "google_access_context_manager_service_perimeter" "additive" {
         lookup(local.ctx.service_sets, r, [r])
       ])
       dynamic "egress_policies" {
-        for_each = [
+        for_each = {
           for k in coalesce(spec.value.egress_policies, []) :
-          merge(local.egress_policies[k], { key = k })
-        ]
+          k => merge(local.egress_policies[k], { key = k })
+        }
         iterator = policy
         content {
           title = coalesce(policy.value.title, policy.value.key)
@@ -135,10 +135,10 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       }
 
       dynamic "ingress_policies" {
-        for_each = [
+        for_each = {
           for k in coalesce(spec.value.ingress_policies, []) :
-          merge(local.ingress_policies[k], { key = k })
-        ]
+          k => merge(local.ingress_policies[k], { key = k })
+        }
         iterator = policy
         content {
           title = coalesce(policy.value.title, policy.value.key)
@@ -247,10 +247,10 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       ])
 
       dynamic "egress_policies" {
-        for_each = [
+        for_each = {
           for k in coalesce(status.value.egress_policies, []) :
-          merge(local.egress_policies[k], { key = k })
-        ]
+          k => merge(local.egress_policies[k], { key = k })
+        }
         iterator = policy
         content {
           title = coalesce(policy.value.title, policy.value.key)
@@ -332,10 +332,10 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       }
 
       dynamic "ingress_policies" {
-        for_each = [
+        for_each = {
           for k in coalesce(status.value.ingress_policies, []) :
-          merge(local.ingress_policies[k], { key = k })
-        ]
+          k => merge(local.ingress_policies[k], { key = k })
+        }
         iterator = policy
         content {
           title = coalesce(policy.value.title, policy.value.key)
