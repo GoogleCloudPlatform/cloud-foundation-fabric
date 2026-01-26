@@ -83,6 +83,7 @@ variable "access_policy_create" {
 variable "context" {
   description = "External context used in replacements."
   type = object({
+    access_levels   = optional(map(string), {})
     condition_vars  = optional(map(map(string)), {})
     iam_principals  = optional(map(string), {})
     identity_sets   = optional(map(list(string)), {})

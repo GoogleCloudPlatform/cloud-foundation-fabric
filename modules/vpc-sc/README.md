@@ -181,7 +181,7 @@ module "test" {
   perimeters = {
     r1 = {
       status = {
-        access_levels       = ["a1", "a2"]
+        access_levels       = ["$access_levels:a1", "$access_levels:a2"]
         resources           = ["projects/1111", "projects/2222"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = ["gcs-sa-foo"]
@@ -269,21 +269,21 @@ module "test" {
 description: Main perimeter
 status:
   access_levels:
-    - "geo-it"
-    - "identity-user1"
+    - $access_levels:geo-it
+    - $access_levels:identity-user1
   resources:
-    - "projects/1111"
-    - "projects/2222"
+    - projects/1111
+    - projects/2222
   restricted_services:
-    - "storage.googleapis.com"
+    - storage.googleapis.com
   egress_policies:
-    - "gcs-sa-foo"
+    - gcs-sa-foo
   ingress_policies:
-    - "sa-tf-test-geo"
-    - "sa-tf-test"
+    - sa-tf-test-geo
+    - sa-tf-test
   vpc_accessible_services:
     allowed_services:
-      - "storage.googleapis.com"
+      - storage.googleapis.com
     enable_restriction: yes
 
 # tftest-file id=p1 path=data/perimeters/perimeter-north.yaml schema=perimeter.schema.json
@@ -293,8 +293,8 @@ status:
 description: "Main perimeter"
 status:
   access_levels:
-    - geo-it
-    - identity-user1
+    - $access_levels:geo-it
+    - $access_levels:identity-user1
   resources:
     - projects/1111
     - projects/2222
@@ -363,7 +363,7 @@ to:
 ```yaml
 from:
   access_levels:
-    - geo-it
+    - $access_levels:geo-it
   identities:
     - serviceAccount:test-tf@myproject.iam.gserviceaccount.com
 to:
