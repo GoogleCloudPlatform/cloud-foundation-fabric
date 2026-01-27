@@ -70,6 +70,7 @@ iam_by_principals_additive:
     - roles/iam.roleAdmin
     - roles/logging.admin
     - roles/monitoring.admin
+    - roles/resourcemanager.projectIamAdmin
     - roles/pubsub.admin
     - roles/securitycentermanagement.admin
     - roles/serviceusage.serviceUsageAdmin

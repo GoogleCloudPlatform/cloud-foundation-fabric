@@ -53,7 +53,7 @@ egress:
       - 10.73.0.0/24
       - 100.68.0.0/16
     destination_ranges:
-      - 10.73.0.0/24
+      - 172.16.20.0/24  # 172.16.20.0/28
     enable_logging:
       include_metadata: false
     rules:

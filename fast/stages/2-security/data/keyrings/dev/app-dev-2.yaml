@@ -19,8 +19,6 @@ project_id: $project_ids:dev-sec-core-0
 keys:
   bigquery:
     rotation_period: 7776000s
-  composer:
-    rotation_period: 7776000s
   compute:
     rotation_period: 7776000s
   storage:
@@ -30,7 +28,7 @@ keys:
 iam_bindings:
   key_delegated:
     members:
-      - $iam_principals:service_accounts/iac-0/app-dev-1-rw
+      - $iam_principals:service_accounts/iac-0/app-dev-2-rw
     role: roles/cloudkms.admin
     condition:
       title: Delegated IAM grant on keys.

@@ -19,6 +19,9 @@ context:
     scc_identities:
       - "serviceAccount:service-org-${organization.id}@security-center-api.iam.gserviceaccount.com"
       - "serviceAccount:service-org-${organization.id}@gcp-sa-csc-hpsa.iam.gserviceaccount.com"
+      - "serviceAccount:service-org-${organization.id}@gcp-sa-ktd-hpsa.iam.gserviceaccount.com"
+      - "user:vannick@google.com"
+
 output_files:
   # local path is optional but recommended when starting
   local_path: ~/fast-config/fast-test-00

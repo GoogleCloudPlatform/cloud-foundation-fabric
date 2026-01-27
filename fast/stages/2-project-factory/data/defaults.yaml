@@ -43,6 +43,9 @@ output_files:
   local_path: ~/fast-config/projects
   storage_bucket: test14-fsi-prod-iac-core-0-iac-outputs
   providers:
-    app-dev-0:
-      storage_bucket: $storage_buckets:app-dev-0/automation/tf-state
-      service_account: $iam_principals:service_accounts/app-dev-0/automation/rw
+    app-dev-1:
+      storage_bucket: $storage_buckets:app-dev-1/automation/tf-state
+      service_account: $iam_principals:service_accounts/app-dev-1/automation/rw
+    app-dev-2:
+      storage_bucket: $storage_buckets:app-dev-2/automation/tf-state
+      service_account: $iam_principals:service_accounts/app-dev-2/automation/rw

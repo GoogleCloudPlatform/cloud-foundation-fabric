@@ -18,14 +18,14 @@
 
 locals {
   clusters = {
-    test-00 = {
-      description = "Cluster test 0"
+    test-01 = {
+      description = "Cluster test 1"
       location    = "europe-west1"
     }
   }
   _nodepools = {
-    test-00 = {
-      test-00-nodepool-01 = {
+    test-01 = {
+      test-01-nodepool-01 = {
         node_count = { initial = 1 }
       }
     }
@@ -49,9 +49,11 @@ module "gke-cluster" {
   access_config = {
     dns_access = true
     ip_access = {
+      authorized_ranges       = { private = "10.0.0.0/8" }
       disable_public_endpoint = true
     }
-    private_nodes = true
+    master_ipv4_cidr_block = "172.16.20.0/28"
+    private_nodes          = true
   }
   cluster_autoscaling = try(each.value.cluster_autoscaling, null)
   default_nodepool = {

@@ -16,26 +16,10 @@
 
 # tfdoc:file:description Project and usage dataset.
 
-module "gke-project-0" {
-  source = "../../../modules/project"
-  name   = local.project_name
-  project_reuse = {
-    use_data_source = false
-    attributes = {
-      name   = local.project_name
-      number = "405419313060"
-    }
-  }
-  iam_bindings_additive = {
-    for r in local.gke_nodes_sa_roles : "gke-nodes-sa-${r}" => {
-      member = module.gke-nodes-service-account.iam_email
-      role   = "roles/${r}"
-    }
-  }
-  services = [
-    "container.googleapis.com",
-    "compute.googleapis.com",
-    "pubsub.googleapis.com",
-  ]
-  service_encryption_key_ids = local.service_encryption_key_ids
+module "gke-dataset-resource-usage" {
+  source        = "../../../modules/bigquery-dataset"
+  project_id    = module.gke-project-0.project_id
+  id            = "gke_resource_usage"
+  friendly_name = "GKE resource usage."
 }
+

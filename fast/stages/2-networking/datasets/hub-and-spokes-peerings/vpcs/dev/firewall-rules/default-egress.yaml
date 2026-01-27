@@ -11,6 +11,7 @@ egress:
     priority: 65535
     enable_logging:
       include_metadata: false
+    # disabled: true
 
   egress-default-to-pga-allow:
     description: "Allow egress to PGA."
