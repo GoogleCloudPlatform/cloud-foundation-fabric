@@ -20,26 +20,25 @@ id: $defaults:billing_account
 # - at the org level (don't set anything here, set roles in the org)
 # - at the billing account level (set the roles below)
 # - no admin access to billing account (don't set roles here or in org)
-# The following needs to be commented out for GCD deployments
-# iam_bindings_additive:
-#   billing_admin_org_admins:
-#     role: roles/billing.admin
-#     member: $iam_principals:gcp-organization-admins
-#   billing_admin_org_sa:
-#     role: roles/billing.admin
-#     member: $iam_principals:service_accounts/iac-0/iac-org-rw
-#   billing_viewer_org_ro:
-#     role: roles/billing.viewer
-#     member: $iam_principals:service_accounts/iac-0/iac-org-ro
-#   billing_user_security_sa:
-#     role: roles/billing.user
-#     member: $iam_principals:service_accounts/iac-0/iac-security-rw
-#   billing_user_networking_sa:
-#     role: roles/billing.user
-#     member: $iam_principals:service_accounts/iac-0/iac-networking-rw
-#   billing_user_pf_sa:
-#     role: roles/billing.user
-#     member: $iam_principals:service_accounts/iac-0/iac-pf-rw
+iam_bindings_additive:
+  billing_admin_org_admins:
+    role: roles/billing.admin
+    member: $iam_principals:gcp-organization-admins
+  billing_admin_org_sa:
+    role: roles/billing.admin
+    member: $iam_principals:service_accounts/iac-0/iac-org-rw
+  billing_viewer_org_ro:
+    role: roles/billing.viewer
+    member: $iam_principals:service_accounts/iac-0/iac-org-ro
+  billing_user_security_sa:
+    role: roles/billing.user
+    member: $iam_principals:service_accounts/iac-0/iac-security-rw
+  billing_user_networking_sa:
+    role: roles/billing.user
+    member: $iam_principals:service_accounts/iac-0/iac-networking-rw
+  billing_user_pf_sa:
+    role: roles/billing.user
+    member: $iam_principals:service_accounts/iac-0/iac-pf-rw
 # logging_sinks:
 #   test:
 #     description: Test sink
