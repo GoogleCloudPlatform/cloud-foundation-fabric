@@ -28,7 +28,7 @@ projects:
   # overrides:
   #   vpc_sc:
   #     perimeter_name: $vpc_sc_perimeters:default
-  #     is_dry_run: true
+  #     is_dry_run: false
 
 # environment-specific static contexts can be defined here
 

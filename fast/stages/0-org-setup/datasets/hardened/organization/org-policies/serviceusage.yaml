@@ -70,6 +70,7 @@ gcp.restrictServiceUsage:
           - "iam.googleapis.com"
           - "iamcredentials.googleapis.com"
           - "iap.googleapis.com"
+          - "kmsinventory.googleapis.com"
           - "logging.googleapis.com"
           - "monitoring.googleapis.com"
           - "multiclusteringress.googleapis.com"

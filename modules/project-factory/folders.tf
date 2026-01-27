@@ -89,7 +89,11 @@ module "folder-1-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
-    iam_principals  = local.ctx_iam_principals
+    iam_principals = merge(
+      local.ctx_iam_principals,
+      lookup(local.self_sas_iam_emails, each.key, {}),
+      local.projects_service_agents
+    )
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -142,7 +146,11 @@ module "folder-2-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
-    iam_principals  = local.ctx_iam_principals
+    iam_principals = merge(
+      local.ctx_iam_principals,
+      lookup(local.self_sas_iam_emails, each.key, {}),
+      local.projects_service_agents
+    )
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -195,7 +203,11 @@ module "folder-3-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
-    iam_principals  = local.ctx_iam_principals
+    iam_principals = merge(
+      local.ctx_iam_principals,
+      lookup(local.self_sas_iam_emails, each.key, {}),
+      local.projects_service_agents
+    )
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -248,7 +260,11 @@ module "folder-4-iam" {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
     })
-    iam_principals  = local.ctx_iam_principals
+    iam_principals = merge(
+      local.ctx_iam_principals,
+      lookup(local.self_sas_iam_emails, each.key, {}),
+      local.projects_service_agents
+    )
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })

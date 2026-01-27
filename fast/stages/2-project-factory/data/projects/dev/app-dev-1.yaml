@@ -15,6 +15,7 @@
 # yaml-language-server: $schema=../../schemas/project.schema.json
 
 parent: $folder_ids:dev
+billing_account: ""
 services:
   - compute.googleapis.com
   - cloudkms.googleapis.com
@@ -37,13 +38,13 @@ shared_vpc_service_config:
     roles/container.hostServiceAgentUser:
       - container-engine
   network_users:
-    - $iam_principals:service_accounts/app-dev-0/automation/rw
+    - $iam_principals:service_accounts/app-dev-1/automation/rw
     # - group:team-a-admins@example.com
 service_encryption_key_ids:
   storage.googleapis.com:
     - $kms_keys:storage-dev-primary-default
 iam_by_principals_additive:
-  $iam_principals:service_accounts/app-dev-0/automation/ro:
+  $iam_principals:service_accounts/app-dev-1/automation/ro:
     - roles/browser
     - roles/iam.serviceAccountViewer
     - roles/iam.workloadIdentityPoolViewer
@@ -58,7 +59,7 @@ iam_by_principals_additive:
     - roles/storage.objectViewer
     - $custom_roles:storage_viewer
     - $custom_roles:cloudkms_viewer
-  $iam_principals:service_accounts/app-dev-0/automation/rw:
+  $iam_principals:service_accounts/app-dev-1/automation/rw:
     - roles/iam.serviceAccountAdmin
     - roles/iam.serviceAccountUser
     - roles/bigquery.admin
@@ -92,16 +93,16 @@ automation:
   project: $project_ids:iac-0
   service_accounts:
     rw:
-      description: Read/write automation sa for app 0.
+      description: Read/write automation sa for app 1.
     ro:
-      description: Read-only automation sa for app 0.
+      description: Read-only automation sa for app 1.
   bucket:
-    description: Terraform state bucket for app 0.
+    description: Terraform state bucket for app 1.
     versioning: true
     encryption_key: $kms_keys:storage-dev-primary-default
     iam:
       roles/storage.objectAdmin:
-        - $iam_principals:service_accounts/app-dev-0/automation/rw
+        - $iam_principals:service_accounts/app-dev-1/automation/rw
       roles/storage.objectViewer:
-        - $iam_principals:service_accounts/app-dev-0/automation/rw
-        - $iam_principals:service_accounts/app-dev-0/automation/ro
+        - $iam_principals:service_accounts/app-dev-1/automation/rw
+        - $iam_principals:service_accounts/app-dev-1/automation/ro

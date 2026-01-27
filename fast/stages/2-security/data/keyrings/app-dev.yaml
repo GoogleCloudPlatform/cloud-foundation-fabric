@@ -30,7 +30,7 @@ keys:
 iam_bindings:
   key_delegated:
     members:
-      - serviceAccount:app-dev-0-rw@test14-fsi-prod-iac-core-0.iam.gserviceaccount.com
+      - $iam_principals:service_accounts/iac-0/app-dev-0-rw
     role: roles/cloudkms.admin
     condition:
       title: Delegated IAM grant on keys.

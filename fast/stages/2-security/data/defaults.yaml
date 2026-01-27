@@ -19,6 +19,9 @@ context:
     primary: europe-west1
     secondary: europe-west3
     storage-default: eu
+  iam_principals:
+    service_accounts/iac-0/app-dev-0-rw: serviceAccount:app-dev-0-rw@test14-fsi-prod-iac-core-0.iam.gserviceaccount.com
+    service_accounts/iac-0/app-dev-1-rw: serviceAccount:app-dev-1-rw@test14-fsi-prod-iac-core-0.iam.gserviceaccount.com
 projects:
   defaults:
     locations:

@@ -41,6 +41,9 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
     - roles/cloudkms.viewer
     - $custom_roles:project_iam_viewer
+  # Allow GCS service account for project	test14-fsi-prod-iac-core-0 to use keys. Need by project factory
+  $iam_principals:service_agents/iac-0/storage:
+    - roles/cloudkms.cryptoKeyEncrypterDecrypter
 iam_bindings:
   project_factory:
     role: roles/resourcemanager.projectIamAdmin
