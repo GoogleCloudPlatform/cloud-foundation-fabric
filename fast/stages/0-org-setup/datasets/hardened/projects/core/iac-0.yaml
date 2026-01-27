@@ -31,7 +31,6 @@ iam_by_principals:
     - roles/logging.viewer
     - roles/monitoring.viewer
     - roles/pubsub.viewer
-    - roles/securitycentermanagement.viewer
     - roles/storage.objectViewer
     - $custom_roles:storage_viewer
     - $custom_roles:cloudkms_viewer
@@ -52,7 +51,6 @@ iam_by_principals:
     - roles/monitoring.admin
     - roles/pubsub.admin
     - roles/resourcemanager.projectIamAdmin
-    - roles/securitycentermanagement.admin
     - roles/servicenetworking.networksAdmin
     - roles/serviceusage.serviceUsageAdmin
     - roles/storage.admin
@@ -98,6 +96,7 @@ services:
   - networksecurity.googleapis.com
   - orgpolicy.googleapis.com
   - pubsub.googleapis.com
+  - securitycenter.googleapis.com
   - securitycentermanagement.googleapis.com
   - servicenetworking.googleapis.com
   - serviceusage.googleapis.com

@@ -27,7 +27,7 @@ locals {
   project_name         = var.project_id
   _cmek_keys_compute   = var.compute_kms_key != null ? [var.compute_kms_key] : []
   _cmek_keys_container = var.gke_kms_key != null ? [var.gke_kms_key] : []
-  _cmek_keys_pubsub    = local._cmek_keys_container
+  _cmek_keys_pubsub    = var.pubsub_kms_key != null ? [var.pubsub_kms_key] : []
   service_encryption_key_ids = {
     "compute.googleapis.com"   = local._cmek_keys_compute
     "container.googleapis.com" = local._cmek_keys_container

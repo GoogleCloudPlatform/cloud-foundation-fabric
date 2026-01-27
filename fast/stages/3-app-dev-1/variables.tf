@@ -24,6 +24,11 @@ variable "gke_kms_key" {
   type        = string
   default     = null
 }
+variable "pubsub_kms_key" {
+  description = "KMS key for Pub/Sub."
+  type        = string
+  default     = null
+}
 variable "project_id" {
   description = "Project ID."
   type        = string

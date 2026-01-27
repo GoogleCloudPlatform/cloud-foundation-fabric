@@ -31,3 +31,14 @@ variable "scc_sha_custom_modules" {
   default  = {}
   nullable = false
 }
+
+variable "scc_mute_configs" {
+  description = "SCC mute configurations keyed by name."
+  type = map(object({
+    description = optional(string)
+    filter      = string
+    type        = optional(string, "STATIC")
+  }))
+  default  = {}
+  nullable = false
+}

@@ -76,7 +76,7 @@ module "gke-cluster" {
     shielded_nodes = true
     upgrade_notifications = {
       event_types  = ["SECURITY_BULLETIN_EVENT", "UPGRADE_AVAILABLE_EVENT", "UPGRADE_INFO_EVENT", "UPGRADE_EVENT"]
-      kms_key_name = var.gke_kms_key
+      kms_key_name = var.pubsub_kms_key
     }
     workload_identity = true
   }
