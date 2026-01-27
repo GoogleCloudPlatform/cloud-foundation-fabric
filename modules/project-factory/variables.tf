@@ -29,6 +29,7 @@ variable "context" {
     project_ids           = optional(map(string), {})
     project_numbers       = optional(map(string), {})
     tag_values            = optional(map(string), {})
+    storage_buckets       = optional(map(string), {})
     vpc_host_projects     = optional(map(string), {})
     vpc_sc_perimeters     = optional(map(string), {})
   })

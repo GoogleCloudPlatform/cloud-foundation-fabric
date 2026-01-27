@@ -47,9 +47,13 @@ kms:
       keys:
         logging:
           rotation_period: 7776000s
+        storage:
+          rotation_period: 7776000s
 service_encryption_key_ids:
   logging.googleapis.com:
     - $kms_keys:log-0/ew1/logging
+  storage.googleapis.com:
+    - $kms_keys:log-0/ew1/storage
 log_buckets:
   _Default:
     retention: 90
@@ -75,3 +79,41 @@ org_policies:
   custom.storageRequireBucketObjectVersionning:
     rules:
       - enforce: true
+buckets:
+  # Terraform state bucket for this stage
+  storage-logs:
+    description: Cloud storage bucket for logs.
+    versioning: true
+    encryption_key: $kms_keys:log-0/ew1/storage
+    lifecycle_rules:
+      nearline-30:
+        action:
+          type: SetStorageClass
+          storage_class: NEARLINE
+        condition:
+          age: 30
+          matches_storage_class:
+            - STANDARD
+      coldline-90:
+        action:
+          type: SetStorageClass
+          storage_class: COLDLINE
+        condition:
+          age: 90
+          matches_storage_class:
+            - NEARLINE
+      archive-365:
+        action:
+          type: SetStorageClass
+          storage_class: ARCHIVE
+        condition:
+          age: 365
+          matches_storage_class:
+            - COLDLINE
+    iam:
+      roles/storage.objectCreator:
+        - group:cloud-storage-analytics@google.com
+      roles/storage.admin:
+        - $iam_principals:service_accounts/iac-0/iac-org-rw
+      $custom_roles:storage_viewer:
+        - $iam_principals:service_accounts/iac-0/iac-org-ro

@@ -52,7 +52,7 @@ module "gke-cluster" {
       authorized_ranges       = { private = "10.0.0.0/8" }
       disable_public_endpoint = true
     }
-    master_ipv4_cidr_block = "172.16.20.0/28"
+    master_ipv4_cidr_block = "172.16.20.16/28"
     private_nodes          = true
   }
   cluster_autoscaling = try(each.value.cluster_autoscaling, null)

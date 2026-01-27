@@ -99,6 +99,8 @@ automation:
     description: Terraform state bucket for app 2.
     versioning: true
     encryption_key: $kms_keys:storage-dev-primary-default
+    logging_config: 
+      log_bucket: $storage_buckets:log-0/storage-logs
     iam:
       roles/storage.objectAdmin:
         - $iam_principals:service_accounts/app-dev-2/automation/rw

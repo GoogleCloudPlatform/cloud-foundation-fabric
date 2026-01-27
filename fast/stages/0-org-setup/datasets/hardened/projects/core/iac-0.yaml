@@ -136,6 +136,9 @@ buckets:
     description: Terraform state for the org-level automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
+    # Can be enforced once the bucket is created
+    logging_config: 
+      log_bucket: $storage_buckets:log-0/storage-logs
     lifecycle_rules:
       nearline-30:
         action:
@@ -171,6 +174,9 @@ buckets:
     description: Terraform state for stage automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
+    # Can be enforced once the bucket is created
+    logging_config: 
+      log_bucket: $storage_buckets:log-0/storage-logs
     lifecycle_rules:
       nearline-30:
         action:
@@ -232,6 +238,9 @@ buckets:
     description: Terraform state for the org-level automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
+    # Can be enforced once the bucket is created
+    logging_config: 
+      log_bucket: $storage_buckets:log-0/storage-logs
     lifecycle_rules:
       nearline-30:
         action:

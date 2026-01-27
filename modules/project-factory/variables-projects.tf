@@ -93,6 +93,10 @@ variable "projects" {
           is_locked        = optional(bool)
         }))
         soft_delete_retention = optional(number)
+        logging_config = optional(object({
+          log_bucket        = string
+          log_object_prefix = optional(string)
+        }), null)
       }))
       service_accounts = optional(map(object({
         description = optional(string)
@@ -199,6 +203,10 @@ variable "projects" {
         is_locked        = optional(bool)
       }))
       soft_delete_retention = optional(number)
+      logging_config = optional(object({
+        log_bucket        = string
+        log_object_prefix = optional(string)
+      }), null)
     })), {})
     contacts = optional(map(list(string)), {})
     datasets = optional(map(object({

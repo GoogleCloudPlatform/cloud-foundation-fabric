@@ -125,7 +125,11 @@ resource "google_storage_bucket" "bucket" {
   dynamic "logging" {
     for_each = var.logging_config == null ? [] : [""]
     content {
-      log_bucket        = var.logging_config.log_bucket
+      log_bucket = var.logging_config.log_bucket == null ? null : lookup(
+        try(local.ctx.storage_buckets, {}),
+        var.logging_config.log_bucket,
+        var.logging_config.log_bucket
+      )
       log_object_prefix = var.logging_config.log_object_prefix
     }
   }

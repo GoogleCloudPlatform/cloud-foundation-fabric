@@ -27,6 +27,7 @@ variable "context" {
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     tag_values            = optional(map(string), {})
+    storage_buckets       = optional(map(string), {})
     vpc_host_projects     = optional(map(string), {})
     vpc_sc_perimeters     = optional(map(string), {})
   })
@@ -60,4 +61,9 @@ variable "stage_name" {
   type        = string
   nullable    = false
   default     = "2-project-factory"
+}
+variable "storage_buckets" {
+  description = "Bucket names."
+  type        = map(string)
+  default     = {}
 }

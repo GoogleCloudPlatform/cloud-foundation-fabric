@@ -53,10 +53,17 @@ locals {
         retention_policy        = lookup(opts, "retention_policy", null)
         soft_delete_retention   = lookup(opts, "soft_delete_retention", null)
         lifecycle_rules         = lookup(opts, "lifecycle_rules", {})
+        logging_config          = lookup(opts, "logging_config", null)
         enable_object_retention = lookup(opts, "enable_object_retention", null)
       }
     ]
   ])
+  _storage_buckets = merge(
+    {
+      for k in local.projects_buckets :
+      "${k.project_key}/${k.name}" => "${k.prefix}-${k.project_name}-${k.name}"
+    }
+  )
 }
 
 module "buckets" {
@@ -80,6 +87,12 @@ module "buckets" {
     kms_keys    = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids
+    storage_buckets = merge(
+      try(local.ctx.storage_buckets, {}),
+      try(local.ctx.log_buckets, {}),
+      { for k, v in module.log-buckets : k => v.id },
+      local._storage_buckets
+    )
   })
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
@@ -98,5 +111,6 @@ module "buckets" {
   versioning                  = each.value.versioning
   retention_policy            = each.value.retention_policy
   soft_delete_retention       = each.value.soft_delete_retention
+  logging_config              = each.value.logging_config
   enable_object_retention     = each.value.enable_object_retention
 }
