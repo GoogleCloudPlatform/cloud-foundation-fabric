@@ -15,20 +15,45 @@
 values:
   google_access_context_manager_service_perimeter_resource.default["$vpc_sc_perimeters:default"]:
     perimeter_name: accessPolicies/888933661165/servicePerimeters/default
+    timeouts: null
+  google_cloud_asset_project_feed.default["test"]:
+    asset_names: null
+    asset_types: null
+    billing_project: test-project
+    condition: []
+    content_type: null
+    feed_id: test
+    feed_output_config:
+    - pubsub_destination:
+      - topic: projects/test-prod-audit-logs-0/topics/audit-logs
+    project: my-project
+    timeouts: null
   google_compute_shared_vpc_service_project.shared_vpc_service[0]:
     deletion_policy: null
     host_project: test-vpc-host
     service_project: my-project
+    timeouts: null
   google_essential_contacts_contact.contact["$email_addresses:default"]:
     email: foo@example.com
     language_tag: en
     notification_category_subscriptions:
     - ALL
     parent: projects/my-project
+    timeouts: null
   google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]:
     condition: []
     crypto_key_id: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  google_logging_project_sink.sink["test-pubsub"]:
+    custom_writer_identity: null
+    description: test-pubsub (Terraform-managed).
+    destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
+    disabled: false
+    exclusions: []
+    filter: log_id('cloudaudit.googleapis.com/activity')
+    name: test-pubsub
+    project: my-project
+    unique_writer_identity: true
   google_privileged_access_manager_entitlement.default["net-admins"]:
     additional_notification_targets: []
     approval_workflow:
@@ -62,6 +87,7 @@ values:
     - not_mandatory: []
       unstructured:
       - {}
+    timeouts: null
   google_project.project[0]:
     auto_create_network: false
     billing_account: null
@@ -76,6 +102,7 @@ values:
     tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
+    timeouts: null
   google_project_iam_audit_config.default["allServices"]:
     audit_log_config:
     - exempted_members:
@@ -176,8 +203,15 @@ values:
     disable_on_destroy: false
     project: my-project
     service: compute.googleapis.com
+    timeouts: null
+  google_pubsub_topic_iam_member.pubsub-sinks-binding["test-pubsub"]:
+    condition: []
+    project: test-prod-audit-logs-0
+    role: roles/pubsub.publisher
+    topic: audit-logs
   google_tags_tag_binding.binding["foo"]:
     tag_value: tagValues/1234567890
+    timeouts: null
   google_tags_tag_key_iam_binding.bindings["test:tag_user"]:
     condition: []
     members:
@@ -215,19 +249,22 @@ values:
 
 counts:
   google_access_context_manager_service_perimeter_resource: 1
+  google_cloud_asset_project_feed: 1
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 1
   google_kms_crypto_key_iam_member: 1
+  google_logging_project_sink: 1
   google_privileged_access_manager_entitlement: 1
   google_project: 1
   google_project_iam_audit_config: 1
   google_project_iam_binding: 7
   google_project_iam_member: 7
   google_project_service: 1
+  google_pubsub_topic_iam_member: 1
   google_tags_tag_binding: 1
   google_tags_tag_key_iam_binding: 2
   google_tags_tag_key_iam_member: 1
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 29
+  resources: 32

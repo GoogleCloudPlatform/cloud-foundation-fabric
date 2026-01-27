@@ -54,10 +54,6 @@ resource "google_monitoring_notification_channel" "default" {
 #       condition     = local.factory_budgets == null
 #       error_message = yamlencode(local.factory_budgets)
 #     }
-#     precondition {
-#       condition     = local.factory_budgets == null
-#       error_message = yamlencode(local.ctx.project_sets)
-#     }
 #   }
 # }
 

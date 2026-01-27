@@ -73,6 +73,11 @@ module "factory" {
       subnet_self_links = {
         for v in local.subnet_self_links : v.key => v.link
       }
+      organization = {
+        id          = var.organization.id
+        domain      = var.organization.domain
+        customer_id = var.organization.customer_id
+      }
     }, local.context.condition_vars)
     custom_roles = merge(var.custom_roles, local.context.custom_roles)
     folder_ids   = merge(var.folder_ids, local.context.folder_ids)

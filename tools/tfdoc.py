@@ -517,34 +517,37 @@ def render_toc(readme, toc):
 
 
 @click.command()
-@click.argument('module_path', type=click.Path(exists=True))
+@click.argument('module_paths', type=click.Path(exists=True), nargs=-1)
 @click.option('--exclude-file', '-x', multiple=True)
 @click.option('--files/--no-files', default=False)
 @click.option('--replace/--no-replace', default=True)
 @click.option('--show-extra/--no-show-extra', default=False)
 @click.option('--toc-only', is_flag=True, default=False)
 @click.option('--toc-skip', multiple=True, default=['contents'])
-def main(module_path=None, exclude_file=None, files=False, replace=True,
+def main(module_paths=None, exclude_file=None, files=False, replace=True,
          show_extra=True, toc_only=False, toc_skip=['contents']):
   'Program entry point.'
-  if toc_only and module_path.endswith('.md'):
-    readme_path = module_path
-  else:
-    readme_path = os.path.join(module_path, 'README.md')
-  readme = get_readme(readme_path)
-  if not toc_only:
-    doc = create_tfref(module_path, files, show_extra, exclude_file, readme)
-    readme = render_tfref(readme, doc.content)
-  toc = create_toc(readme, toc_skip)
-  readme = render_toc(readme, toc)
-  if replace:
-    try:
-      with open(readme_path, 'w', encoding='utf-8') as f:
-        f.write(readme)
-    except (IOError, OSError) as e:
-      raise SystemExit(f'Error replacing README {readme_path}: {e}')
-  else:
-    print(readme)
+  if not module_paths:
+    return
+  for module_path in module_paths:
+    if toc_only and module_path.endswith('.md'):
+      readme_path = module_path
+    else:
+      readme_path = os.path.join(module_path, 'README.md')
+    readme = get_readme(readme_path)
+    if not toc_only:
+      doc = create_tfref(module_path, files, show_extra, exclude_file, readme)
+      readme = render_tfref(readme, doc.content)
+    toc = create_toc(readme, toc_skip)
+    readme = render_toc(readme, toc)
+    if replace:
+      try:
+        with open(readme_path, 'w', encoding='utf-8') as f:
+          f.write(readme)
+      except (IOError, OSError) as e:
+        raise SystemExit(f'Error replacing README {readme_path}: {e}')
+    else:
+      print(readme)
 
 
 if __name__ == '__main__':

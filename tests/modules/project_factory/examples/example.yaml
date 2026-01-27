@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -213,6 +213,18 @@ values:
     display_name: Test
     tags: null
     timeouts: null
+  ? module.project-factory.module.folder-4-iam["team-c/apps/test/app-x"].google_cloud_asset_folder_feed.default["compute-instances"]
+  : asset_names: null
+    asset_types:
+    - compute.googleapis.com/Instance
+    billing_project: my-cai-feeds-project
+    condition: []
+    content_type: RESOURCE
+    feed_id: compute-instances
+    feed_output_config:
+    - pubsub_destination:
+      - topic: projects/my-cai-feeds-project/topics/feed
+    timeouts: null
   module.project-factory.module.folder-4["team-c/apps/test/app-x"].google_folder.folder[0]:
     deletion_protection: false
     display_name: App X
@@ -366,6 +378,10 @@ values:
     condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/container.defaultNodeServiceAgent
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.service_agents["pubsub"]:
+    condition: []
+    project: test-pf-dev-ta-app0-be
+    role: roles/pubsub.serviceAgent
   module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["compute.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -377,6 +393,12 @@ values:
     disable_on_destroy: false
     project: test-pf-dev-ta-app0-be
     service: container.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["pubsub.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-pf-dev-ta-app0-be
+    service: pubsub.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["stackdriver.googleapis.com"]
   : disable_dependent_services: false
@@ -393,6 +415,10 @@ values:
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service_identity.default["container.googleapis.com"]
   : project: test-pf-dev-ta-app0-be
     service: container.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["dev-ta-app0-be"].google_project_service_identity.default["pubsub.googleapis.com"]:
+    project: test-pf-dev-ta-app0-be
+    service: pubsub.googleapis.com
     timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_binding.binding["context"]:
     tag_value: tagValues/654321
@@ -560,6 +586,7 @@ values:
       attribute.repository_owner: assertion.repository_owner
       attribute.sub: assertion.sub
       google.subject: assertion.sub
+    aws: []
     description: null
     disabled: false
     display_name: GitHub test provider.
@@ -568,9 +595,11 @@ values:
       issuer_uri: https://token.actions.githubusercontent.com
       jwks_json: null
     project: test-pf-teams-iac-0
+    saml: []
     timeouts: null
     workload_identity_pool_id: test-0
     workload_identity_pool_provider_id: github-test
+    x509: []
   module.project-factory.module.projects["teams-iac-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
     dry_run_spec: []
     name: projects/test-pf-teams-iac-0/policies/compute.disableSerialPortAccess
@@ -585,6 +614,22 @@ values:
         enforce: 'FALSE'
         parameters: null
         values: []
+    timeouts: null
+  ? module.project-factory.module.projects["teams-iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]
+  : dry_run_spec: []
+    name: projects/test-pf-teams-iac-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/test-pf-teams-iac-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - denied_values: null
     timeouts: null
   module.project-factory.module.projects["teams-iac-0"].google_project.project[0]:
     auto_create_network: false
@@ -635,11 +680,19 @@ values:
     service: container.googleapis.com
     timeouts: null
   module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-a"].google_pubsub_topic.default:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ingestion_data_source_settings: []
     kms_key_name: null
+    labels: null
     message_retention_duration: null
+    message_transforms: []
     name: app-0-topic-a
     project: test-pf-dev-ta-app0-be
     schema_settings: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-a"].google_pubsub_topic_iam_binding.authoritative["roles/pubsub.subscriber"]
   : condition: []
@@ -648,28 +701,43 @@ values:
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.subscriber
     topic: app-0-topic-a
-  module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_topic.default:
-    kms_key_name: null
-    message_retention_duration: null
-    name: app-0-topic-b
-    project: test-pf-dev-ta-app0-be
-    schema_settings: []
-    timeouts: null
-  module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]:
-    bigquery_config: []
+  ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
+  : bigquery_config: []
     cloud_storage_config: []
     dead_letter_policy: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     enable_exactly_once_delivery: false
     enable_message_ordering: false
     filter: null
+    labels: null
     message_retention_duration: 604800s
+    message_transforms: []
     name: app-0-topic-b-sub
     project: test-pf-dev-ta-app0-be
     push_config: []
     retain_acked_messages: false
     retry_policy: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
     topic: app-0-topic-b
+  module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_topic.default:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ingestion_data_source_settings: []
+    kms_key_name: null
+    labels: null
+    message_retention_duration: null
+    message_transforms: []
+    name: app-0-topic-b
+    project: test-pf-dev-ta-app0-be
+    schema_settings: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
   : condition: []
     project: $project_ids:dev-spoke-0
@@ -773,9 +841,9 @@ values:
     output: null
     triggers_replace: null
 
-
 counts:
   google_billing_budget: 1
+  google_cloud_asset_folder_feed: 1
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 4
@@ -807,6 +875,6 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 29
-  resources: 107
+  modules: 30
+  resources: 108
   terraform_data: 2
