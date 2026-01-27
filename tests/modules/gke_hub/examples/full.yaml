@@ -133,8 +133,6 @@ values:
     node_pool_auto_config:
     - linux_node_config:
       - {}
-      network_tags:
-      - tags: []
       resource_manager_tags: null
     node_pool_defaults:
     - node_config_defaults:
