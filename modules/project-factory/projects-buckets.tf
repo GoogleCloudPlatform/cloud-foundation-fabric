@@ -21,6 +21,7 @@ locals {
         project_key    = k
         project_name   = v.name
         name           = name
+        bucket_name    = lookup(opts, "name", "${v.name}-${name}")
         create         = lookup(opts, "create", true)
         description    = lookup(opts, "description", "Terraform-managed.")
         encryption_key = lookup(opts, "encryption_key", null)
@@ -66,7 +67,7 @@ module "buckets" {
   }
   project_id     = module.projects-iam[each.value.project_key].project_id
   prefix         = each.value.prefix
-  name           = "${each.value.project_name}-${each.value.name}"
+  name           = each.value.bucket_name
   bucket_create  = each.value.create
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
