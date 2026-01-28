@@ -58,8 +58,6 @@ iam_by_principals_additive:
     - $custom_roles:storage_viewer
     - $custom_roles:cloudkms_viewer
   $iam_principals:service_accounts/app-dev-2/automation/rw:
-    - roles/iam.serviceAccountAdmin
-    - roles/iam.serviceAccountUser
     - roles/bigquery.admin
     - roles/cloudasset.owner
     - roles/cloudkms.admin
@@ -73,9 +71,12 @@ iam_by_principals_additive:
     - roles/securitycentermanagement.admin
     - roles/serviceusage.serviceUsageAdmin
     - roles/storage.admin
+  $iam_principals:service_accounts/app-dev-2/test-cluster:
+    - roles/container.defaultNodeServiceAccount
 iam:
   roles/owner: []
-
+factories_config:
+  observability: "data/observability/"
 log_buckets:
   _Default:
     retention: 90
@@ -87,6 +88,24 @@ org_policies:
   compute.managed.disableSerialPortLogging:
     rules:
       - enforce: false
+notification_channels:
+  email-admin:
+    type: email
+    display_name: Admin Email
+    labels:
+      email_address: vannick@google.com
+# Service accounts are created in the project factory to avoid privilege escalation. Service Acccount User permissions is provided at sa level
+service_accounts:
+  test-vm:
+    display_name: GCE test VM service account.
+    iam:
+      roles/iam.serviceAccountUser: 
+        - $iam_principals:service_accounts/app-dev-2/automation/rw
+  test-cluster:
+    display_name: GKE test cluster service account.
+    iam:
+      roles/iam.serviceAccountUser: 
+        - $iam_principals:service_accounts/app-dev-2/automation/rw
 
 automation:
   project: $project_ids:iac-0
