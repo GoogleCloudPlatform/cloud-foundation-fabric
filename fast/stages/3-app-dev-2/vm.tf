@@ -23,7 +23,11 @@ module "test-vm" {
     subnetwork = var.subnet_self_links["dev"]["europe-west1/dev-default"]
   }]
   service_account = {
-    auto_create = true
+    auto_create = false
+    email       = var.compute_service_account
+  }
+  metadata = {
+    block-project-ssh-keys = "TRUE"
   }
   tags = ["ssh"]
 }

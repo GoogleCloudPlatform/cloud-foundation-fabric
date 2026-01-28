@@ -25,6 +25,8 @@ keys:
     rotation_period: 7776000s
   gke:
     rotation_period: 7776000s
+  pubsub:
+    rotation_period: 7776000s
 iam_bindings:
   key_delegated:
     members:

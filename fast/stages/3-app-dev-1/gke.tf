@@ -51,9 +51,11 @@ module "gke-cluster" {
     ip_access = {
       authorized_ranges       = { private = "10.0.0.0/8" }
       disable_public_endpoint = true
+      private_endpoint_config = {
+        endpoint_subnetwork = var.subnet_self_links.dev["europe-west1/dev-gke-control-plane"]
+      }
     }
-    master_ipv4_cidr_block = "172.16.20.0/28"
-    private_nodes          = true
+    private_nodes = true
   }
   cluster_autoscaling = try(each.value.cluster_autoscaling, null)
   default_nodepool = {
@@ -114,7 +116,7 @@ module "gke-cluster" {
   deletion_protection = false
   node_config = {
     boot_disk_kms_key = var.gke_kms_key
-    service_account   = module.gke-nodes-service-account.email
+    service_account   = var.gke_service_account
   }
 }
 
@@ -139,15 +141,11 @@ module "gke-nodepool" {
       enable_secure_boot          = true
     }
   }
-  node_count           = try(each.value.node_count, { initial = 1 })
-  nodepool_config      = try(each.value.nodepool_config, null)
-  network_config       = try(each.value.network_config, null)
-  reservation_affinity = try(each.value.reservation_affinity, null)
-  service_account = (
-    try(each.value.service_account, null) == null
-    ? { email = module.gke-nodes-service-account.email }
-    : each.value.service_account
-  )
+  node_count            = try(each.value.node_count, { initial = 1 })
+  nodepool_config       = try(each.value.nodepool_config, null)
+  network_config        = try(each.value.network_config, null)
+  reservation_affinity  = try(each.value.reservation_affinity, null)
+  service_account       = { email = var.gke_service_account }
   sole_tenant_nodegroup = try(each.value.sole_tenant_nodegroup, null)
   tags                  = try(each.value.tags, [])
   taints                = try(each.value.taints, {})

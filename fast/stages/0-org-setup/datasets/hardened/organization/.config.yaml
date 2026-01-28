@@ -125,11 +125,11 @@ logging:
       # description: foo
       # exclusions: {}
       destination: $log_buckets:log-0/audit-logs
-      filter: |
-        log_id("cloudaudit.googleapis.com/activity") OR
-        log_id("cloudaudit.googleapis.com/system_event") OR
-        log_id("cloudaudit.googleapis.com/policy") OR
-        log_id("cloudaudit.googleapis.com/access_transparency")
+      # filter: |
+      #   log_id("cloudaudit.googleapis.com/activity") OR
+      #   log_id("cloudaudit.googleapis.com/system_event") OR
+      #   log_id("cloudaudit.googleapis.com/policy") OR
+      #   log_id("cloudaudit.googleapis.com/access_transparency")
     iam:
       destination: $log_buckets:log-0/iam
       filter: |

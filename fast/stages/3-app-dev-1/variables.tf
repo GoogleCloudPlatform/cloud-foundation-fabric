@@ -19,8 +19,18 @@ variable "compute_kms_key" {
   type        = string
   default     = null
 }
+variable "compute_service_account" {
+  description = "Service account for Compute Engine."
+  type        = string
+  default     = null
+}
 variable "gke_kms_key" {
   description = "KMS key for GKE."
+  type        = string
+  default     = null
+}
+variable "gke_service_account" {
+  description = "Service account for GKE nodes."
   type        = string
   default     = null
 }

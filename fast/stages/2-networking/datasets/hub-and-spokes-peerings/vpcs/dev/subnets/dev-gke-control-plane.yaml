@@ -2,14 +2,11 @@
 
 # yaml-language-server: $schema=../../../../../schemas/subnet.schema.json
 
-name: dev-violation
+name: dev-gke-control-plane
 region: $locations:primary
-ip_cidr_range: 10.74.0.0/24
-description: Default primary-region subnet for dev
-# enable_private_access: false
-enable_private_access: true
+ip_cidr_range: 172.16.20.128/25
+description: GKE control plane subnet for dev
 flow_logs_config:
   aggregation_interval: "INTERVAL_5_SEC"
   flow_sampling: 1.0
   metadata: "INCLUDE_ALL_METADATA"
-

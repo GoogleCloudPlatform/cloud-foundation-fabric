@@ -26,12 +26,6 @@ module "gke-project-0" {
       number = var.project_number
     }
   }
-  iam_bindings_additive = {
-    for r in local.gke_nodes_sa_roles : "gke-nodes-sa-${r}" => {
-      member = module.gke-nodes-service-account.iam_email
-      role   = "roles/${r}"
-    }
-  }
   services = [
     "container.googleapis.com",
     "compute.googleapis.com",
