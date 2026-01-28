@@ -18,13 +18,15 @@ variable "agent_engine_config" {
   description = "The agent configuration."
   type = object({
     # Add validation once API stabilizes
-    agent_framework       = string
-    class_methods         = optional(list(any), [])
-    container_concurrency = optional(number)
-    environment_variables = optional(map(string), {})
-    max_instances         = optional(number)
-    min_instances         = optional(number)
-    python_version        = optional(string, "3.12")
+    agent_framework        = string
+    class_methods          = optional(list(any), [])
+    container_concurrency  = optional(number)
+    enable_adk_telemetry   = optional(bool, true)
+    enable_adk_msg_capture = optional(bool, true)
+    environment_variables  = optional(map(string), {})
+    max_instances          = optional(number)
+    min_instances          = optional(number)
+    python_version         = optional(string, "3.12")
     resource_limits = optional(object({
       cpu    = string
       memory = string

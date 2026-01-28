@@ -47,7 +47,12 @@ values:
     spec:
     - agent_framework: google-adk
       class_methods: null
-      deployment_spec: []
+      deployment_spec:
+      - env:
+        - name: GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY
+          value: true
+        - name: OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT
+          value: true
       package_spec: []
       service_account: my-agent@project-id.iam.gserviceaccount.com
       source_code_spec:

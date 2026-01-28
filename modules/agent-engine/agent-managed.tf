@@ -61,6 +61,34 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
         resource_limits       = var.agent_engine_config.resource_limits
 
         dynamic "env" {
+          for_each = (
+            var.agent_engine_config.enable_adk_telemetry
+            ? { 1 = 1 } : {}
+          )
+
+          content {
+            # Enable ADK tracing
+            # For other frameworks see https://docs.cloud.google.com/agent-builder/agent-engine/manage/tracing#adk
+            name  = "GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY"
+            value = tostring(var.agent_engine_config.enable_adk_telemetry)
+          }
+        }
+
+        dynamic "env" {
+          for_each = (
+            var.agent_engine_config.enable_adk_msg_capture
+            ? { 1 = 1 } : {}
+          )
+
+          content {
+            # Enable ADK to log agent message contents
+            # For other frameworks see https://docs.cloud.google.com/agent-builder/agent-engine/manage/tracing#adk
+            name  = "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"
+            value = tostring(var.agent_engine_config.enable_adk_msg_capture)
+          }
+        }
+
+        dynamic "env" {
           for_each = var.agent_engine_config.environment_variables
 
           content {
