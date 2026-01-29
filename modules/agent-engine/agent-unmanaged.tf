@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,10 +70,8 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
         }
 
         dynamic "psc_interface_config" {
-          for_each = (
-            var.networking_config.network_attachment_id == null
-            ? {} : { 1 = 1 }
-          )
+          for_each = var.networking_config == null ? {} : { 1 = 1 }
+
 
           content {
             network_attachment = var.networking_config.network_attachment_id

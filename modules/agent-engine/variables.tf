@@ -128,14 +128,16 @@ variable "name" {
 variable "networking_config" {
   description = "Networking configuration."
   type = object({
-    network_attachment_id = optional(string)
+    network_attachment_id = string
     # key is the domain
     dns_peering_configs = optional(map(object({
       target_network_name = string
       target_project_id   = optional(string)
     })))
   })
+  default = null
 }
+
 variable "project_id" {
   description = "The id of the project where to deploy the agent."
   type        = string
