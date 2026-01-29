@@ -13,6 +13,7 @@ The module creates Agent Engine and related dependencies.
 - [Serialized Object Deployment](#serialized-object-deployment)
   - [Unmanaged deployments](#unmanaged-deployments)
 - [Service accounts](#service-accounts)
+- [Private networking: setup PSC-I](#private-networking-setup-psc-i)
 - [Specify an encryption key](#specify-an-encryption-key)
 - [Define environment variables and use secrets](#define-environment-variables-and-use-secrets)
 - [Getting values from context](#getting-values-from-context)
@@ -231,6 +232,58 @@ module "agent_engine" {
 # tftest inventory=sa-custom.yaml
 ```
 
+## Private networking: setup PSC-I
+
+Your agent can privately access resources in your VPC. This is done with Private Service Connect Interface (PSC-I).
+
+```hcl
+module "agent_engine" {
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
+
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
+  }
+
+  networking_config = {
+    network_attachment_id = google_compute_network_attachment.network_attachment.id
+    dns_peering_configs = {
+      "example.com" = {
+        target_network_name = "my-vpc-1"
+      }
+      "my-company.local" = {
+        target_network_name = "my-vpc-2"
+        target_project_id   = "my-other-project"
+      }
+    }
+  }
+}
+
+resource "google_compute_network_attachment" "network_attachment" {
+  name                  = "network-attachment"
+  project               = var.project_id
+  region                = var.region
+  description           = "Network attachment for Agent Engine PSC-I"
+  connection_preference = "ACCEPT_MANUAL"
+  subnetworks           = [var.subnet.self_link]
+
+  # Agent Engine SA automatically populates this when PSC-I is active.
+  # It adds the tenant project id.
+  lifecycle {
+    ignore_changes = [producer_accept_lists]
+  }
+}
+# tftest inventory=psc-i.yaml
+```
+
 ## Specify an encryption key
 
 You can optionally specify an existing encryption key, created in KMS.
@@ -299,10 +352,11 @@ The module allows you to dynamically reference context values for resources crea
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [agent_engine_config](variables.tf#L17) | The agent configuration. | <code title="object&#40;&#123;&#10;  agent_framework       &#61; string&#10;  class_methods         &#61; optional&#40;list&#40;any&#41;, &#91;&#93;&#41;&#10;  container_concurrency &#61; optional&#40;number&#41;&#10;  environment_variables &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  max_instances         &#61; optional&#40;number&#41;&#10;  min_instances         &#61; optional&#40;number&#41;&#10;  python_version        &#61; optional&#40;string, &#34;3.12&#34;&#41;&#10;  resource_limits &#61; optional&#40;object&#40;&#123;&#10;    cpu    &#61; string&#10;    memory &#61; string&#10;  &#125;&#41;&#41;&#10;  secret_environment_variables &#61; optional&#40;map&#40;object&#40;&#123;&#10;    secret_id &#61; string&#10;    version   &#61; optional&#40;string, &#34;latest&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [agent_engine_config](variables.tf#L17) | The agent configuration. | <code title="object&#40;&#123;&#10;  agent_framework       &#61; string&#10;  class_methods         &#61; optional&#40;list&#40;any&#41;, &#91;&#93;&#41;&#10;  container_concurrency &#61; optional&#40;number&#41;&#10;  environment_variables &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  max_instances         &#61; optional&#40;number&#41;&#10;  min_instances         &#61; optional&#40;number&#41;&#10;  python_version        &#61; optional&#40;string, &#34;3.13&#34;&#41;&#10;  resource_limits &#61; optional&#40;object&#40;&#123;&#10;    cpu    &#61; string&#10;    memory &#61; string&#10;  &#125;&#41;&#41;&#10;  secret_environment_variables &#61; optional&#40;map&#40;object&#40;&#123;&#10;    secret_id &#61; string&#10;    version   &#61; optional&#40;string, &#34;latest&#34;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L122) | The name of the agent. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L128) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L134) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
+| [networking_config](variables.tf#L128) | Networking configuration. | <code title="object&#40;&#123;&#10;  network_attachment_id &#61; optional&#40;string&#41;&#10;  dns_peering_configs &#61; optional&#40;map&#40;object&#40;&#123;&#10;    target_network_name &#61; string&#10;    target_project_id   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L139) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L145) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L40) | The GCS bucket configuration. | <code title="object&#40;&#123;&#10;  create                      &#61; optional&#40;bool, true&#41;&#10;  deletion_protection         &#61; optional&#40;bool, true&#41;&#10;  name                        &#61; optional&#40;string&#41;&#10;  uniform_bucket_level_access &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L52) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [deployment_files](variables.tf#L65) | The to source files path and names. | <code title="object&#40;&#123;&#10;  package_config &#61; optional&#40;object&#40;&#123;&#10;    are_paths_local   &#61; optional&#40;bool, true&#41;&#10;    dependencies_path &#61; optional&#40;string, &#34;.&#47;src&#47;dependencies.tar.gz&#34;&#41;&#10;    pickle_path       &#61; optional&#40;string, &#34;.&#47;src&#47;pickle.pkl&#34;&#41;&#10;    requirements_path &#61; optional&#40;string, &#34;.&#47;src&#47;requirements.txt&#34;&#41;&#10;  &#125;&#41;, null&#41;&#10;  source_config &#61; optional&#40;object&#40;&#123;&#10;    entrypoint_module &#61; optional&#40;string, &#34;agent&#34;&#41;&#10;    entrypoint_object &#61; optional&#40;string, &#34;agent&#34;&#41;&#10;    requirements_path &#61; optional&#40;string, &#34;requirements.txt&#34;&#41;&#10;    source_path       &#61; optional&#40;string, &#34;.&#47;src&#47;source.tar.gz&#34;&#41;&#10;  &#125;&#41;, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  package_config &#61; null&#10;  source_config  &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |

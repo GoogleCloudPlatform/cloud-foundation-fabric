@@ -69,6 +69,31 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
           }
         }
 
+        dynamic "psc_interface_config" {
+          for_each = (
+            var.networking_config.network_attachment_id == null
+            ? {} : { 1 = 1 }
+          )
+
+          content {
+            network_attachment = var.networking_config.network_attachment_id
+
+            dynamic "dns_peering_configs" {
+              for_each = var.networking_config.dns_peering_configs
+
+              content {
+                domain         = each.key
+                target_network = each.value.target_network_id
+                target_project = (
+                  each.value.target_project_id == null
+                  ? var.project_id
+                  : each.value.target_project_id
+                )
+              }
+            }
+          }
+        }
+
         dynamic "secret_env" {
           for_each = var.agent_engine_config.secret_environment_variables
 

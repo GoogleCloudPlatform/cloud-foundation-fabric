@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ variable "agent_engine_config" {
     environment_variables = optional(map(string), {})
     max_instances         = optional(number)
     min_instances         = optional(number)
-    python_version        = optional(string, "3.12")
+    python_version        = optional(string, "3.13")
     resource_limits = optional(object({
       cpu    = string
       memory = string
@@ -125,6 +125,17 @@ variable "name" {
   nullable    = false
 }
 
+variable "networking_config" {
+  description = "Networking configuration."
+  type = object({
+    network_attachment_id = optional(string)
+    # key is the domain
+    dns_peering_configs = optional(map(object({
+      target_network_name = string
+      target_project_id   = optional(string)
+    })))
+  })
+}
 variable "project_id" {
   description = "The id of the project where to deploy the agent."
   type        = string
