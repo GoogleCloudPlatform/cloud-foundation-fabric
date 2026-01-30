@@ -23,6 +23,7 @@ import collections
 import pathlib
 import requests
 import urllib.parse
+import re
 
 import click
 import marko
@@ -35,21 +36,21 @@ LINK = collections.namedtuple('LINK', 'dest valid')
 def check_link(link, readme_path, external):
   'Checks if a link element has a valid destination.'
   link_valid = None
-  url = urllib.parse.urlparse(link.dest)
+  url = urllib.parse.urlparse(link)
   # If the link is public, say the link is anyway valid
   # if --external is not set; check the link otherwise
   if url.scheme:
     link_valid = True
     if external:
       try:
-        response = requests.get(link.dest)
+        response = requests.get(link)
         link_valid = response.ok
       except requests.exceptions.RequestException:
         link_valid = False
   # The link is private
   else:
     link_valid = (readme_path.parent / url.path).exists()
-  return LINK(link.dest, link_valid)
+  return LINK(link, link_valid)
 
 
 def check_docs(dir_name, external=False):
@@ -67,7 +68,12 @@ def check_docs(dir_name, external=False):
     while elements:
       el = elements.popleft()
       if isinstance(el, marko.inline.Link):
-        links.append(check_link(el, readme_path, external))
+        links.append(check_link(el.dest, readme_path, external))
+      elif isinstance(el, marko.block.HTMLBlock):
+        pattern = r'(?:href|src)=([\'"])(.*?)\1'
+        extracted_links = [ match[1] for match in re.findall(pattern, el.body) ]
+        for link in extracted_links:
+            links.append(check_link(link, readme_path, external))
       elif hasattr(el, 'children'):
         elements.extend(el.children)
 
