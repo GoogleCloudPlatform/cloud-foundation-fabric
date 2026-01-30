@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2026-01-07 11:27:43+00:00 to: None since: v51.0.0 -->
 
+## [52.0.0] - 2026-01-30
+
+### BREAKING CHANGES
+
+- `fast/stages/0-org-setup`: custom constraints are moved to module "organization-iam" for provisioning. Manual state migration is required to avoid destroying existing constraints. Refer to UPGRADING.md documentation for more information on the steps to be executed. [[#3661](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3661)]
+
+### FAST
+
+- [[#3661](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3661)] Add context support for constraints and additional controls for hardened datasets (IAM, GKE and others) ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-01-23 01:28:02+00:00 -->
+- [[#3621](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3621)] Improve fallback behaviour documentation for hardened dataset in 0-org-setup ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-01-21 04:42:55+00:00 -->
+- [[#3635](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3635)] Implement various compliance configuration and principle of least privilege for hardened dataset ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-01-19 08:46:15+00:00 -->
+- [[#3646](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3646)] Fix observability in stage 0 defaults ([ludoo](https://github.com/ludoo)) <!-- 2026-01-13 09:34:59+00:00 -->
+
+### MODULES
+
+- [[#3661](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3661)] Add context support for constraints and additional controls for hardened datasets (IAM, GKE and others) ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-01-23 01:28:02+00:00 -->
+
+### TOOLS
+
+- [[#3661](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3661)] Add context support for constraints and additional controls for hardened datasets (IAM, GKE and others) ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-01-23 01:28:02+00:00 -->
+- [[#3621](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3621)] Improve fallback behaviour documentation for hardened dataset in 0-org-setup ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-01-21 04:42:55+00:00 -->
+- [[#3635](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3635)] Implement various compliance configuration and principle of least privilege for hardened dataset ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-01-19 08:46:15+00:00 -->
+
 ## [51.1.0] - 2026-01-30
 
 ### BREAKING CHANGES
@@ -2157,7 +2180,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.0.0...HEAD
+[52.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.0.0...v51.1.0
 [51.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.0...v51.0.0
 [51.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.0.0...v50.1.0
 [50.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...v50.0.0
