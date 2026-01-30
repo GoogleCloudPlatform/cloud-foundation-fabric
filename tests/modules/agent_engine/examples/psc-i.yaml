@@ -58,7 +58,17 @@ values:
     spec:
     - agent_framework: google-adk
       class_methods: null
-      deployment_spec: []
+      deployment_spec:
+      - env: []
+        psc_interface_config:
+        - dns_peering_configs:
+          - domain: example.com
+            target_network: my-vpc-1
+            target_project: project-id
+          - domain: my-company.local
+            target_network: my-vpc-2
+            target_project: my-other-project
+        secret_env: []
       package_spec: []
       service_account: my-agent@project-id.iam.gserviceaccount.com
       source_code_spec:
