@@ -18,7 +18,6 @@ parent: $folder_ids:infrastructure
 name: prod-iac-core-0
 iam_by_principals:
   $iam_principals:gcp-organization-admins:
-    - roles/iam.serviceAccountTokenCreator
     - roles/iam.workloadIdentityPoolAdmin
   $iam_principals:service_accounts/iac-0/iac-org-ro:
     - roles/browser
@@ -295,17 +294,29 @@ service_accounts:
   # IaC service accounts for this stage
   iac-org-ro:
     display_name: IaC service account for org setup (read-only).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   iac-org-rw:
     display_name: IaC service account for org setup (read-write).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   # CI/CD service accounts for this stage
   iac-org-cicd-ro:
     display_name: IaC service account for org setup CI/CD (read-only).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
     iam_sa_roles:
       $service_account_ids:iac-0/iac-org-ro:
         - roles/iam.workloadIdentityUser
         - roles/iam.serviceAccountTokenCreator
   iac-org-cicd-rw:
     display_name: IaC service account for org setup CI/CD (read-write).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
     iam_sa_roles:
       $service_account_ids:iac-0/iac-org-rw:
         - roles/iam.workloadIdentityUser
@@ -313,28 +324,58 @@ service_accounts:
   # IaC service accounts for vpc-sc stage
   iac-vpcsc-ro:
     display_name: IaC service account for VPC service controls (read-only).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   iac-vpcsc-rw:
     display_name: IaC service account for VPC service controls (read-write).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   # IaC service accounts for networking stage
   iac-networking-ro:
     display_name: IaC service account for networking (read-only).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   iac-networking-rw:
     display_name: IaC service account for networking (read-write).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   # IaC service accounts for security stage
   iac-security-ro:
     display_name: IaC service account for security (read-only).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   iac-security-rw:
     display_name: IaC service account for security (read-write).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   # IaC service accounts for project factory stage
   iac-pf-ro:
     display_name: IaC service account for project factory (read-only).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   iac-pf-rw:
     display_name: IaC service account for project factory (read-write).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   # IaC service accounts for data platform (dev) stage
   iac-dp-dev-ro:
     display_name: IaC service account for data platform dev (read-only).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
   iac-dp-dev-rw:
     display_name: IaC service account for data platform dev (read-write).
+    iam:
+      roles/iam.serviceAccountTokenCreator:
+        - $iam_principals:gcp-organization-admins
 # workload_identity_pools:
 #   default:
 #     display_name: Default pool for CI/CD.

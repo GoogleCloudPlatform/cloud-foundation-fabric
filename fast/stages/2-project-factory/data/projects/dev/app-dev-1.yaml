@@ -112,8 +112,14 @@ automation:
   service_accounts:
     rw:
       description: Read/write automation sa for app 1.
+      iam:
+        roles/iam.serviceAccountTokenCreator:
+          - $iam_principals:gcp-organization-admins
     ro:
       description: Read-only automation sa for app 1.
+      iam:
+        roles/iam.serviceAccountTokenCreator:
+          - $iam_principals:gcp-organization-admins
   bucket:
     description: Terraform state bucket for app 1.
     versioning: true
