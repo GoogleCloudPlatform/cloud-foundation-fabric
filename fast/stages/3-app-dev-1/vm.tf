@@ -2,7 +2,7 @@ module "test-vm" {
   source        = "../../../modules/compute-vm"
   project_id    = module.gke-project-0.project_id
   zone          = "europe-west1-b"
-  name          = "test-vm"
+  name          = "test-vm-2"
   instance_type = "n2d-standard-2"
   encryption = {
     kms_key_self_link = var.compute_kms_key
@@ -27,7 +27,7 @@ module "test-vm" {
     email       = var.compute_service_account
   }
   metadata = {
-    block-project-ssh-keys = "TRUE"
+    block-project-ssh-keys = "true" 
   }
   tags = ["ssh"]
 }

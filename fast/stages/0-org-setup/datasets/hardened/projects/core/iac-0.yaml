@@ -104,6 +104,8 @@ services:
   - storage-component.googleapis.com
   - storage.googleapis.com
   - sts.googleapis.com
+factories_config:
+  observability: "datasets/hardened/project-observability/"
 kms:
   keyrings:
     ew1:
@@ -115,6 +117,12 @@ log_buckets:
   _Default:
     retention: 90
     location: europe-west1
+notification_channels:
+  email-admin:
+    type: email
+    display_name: Admin Email
+    labels:
+      email_address: vannick@google.com
 service_encryption_key_ids:
   storage.googleapis.com:
     - $kms_keys:iac-0/ew1/storage

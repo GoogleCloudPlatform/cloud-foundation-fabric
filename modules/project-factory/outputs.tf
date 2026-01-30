@@ -38,6 +38,9 @@ locals {
         }
       }
       kms_keys   = local.projects_kms_keys[k]
+      notification_channels = {
+        for nk, nv in module.projects[k].notification_channels : nk => nv.id
+      }
       number     = module.projects[k].number
       project_id = module.projects[k].project_id
       log_buckets = {
@@ -108,6 +111,13 @@ output "log_buckets" {
   value = merge([
     for k, v in local.outputs_projects : v.log_buckets
   ]...)
+}
+
+output "notification_channels" {
+  description = "Notification channel IDs."
+  value = {
+    for k, v in local.outputs_projects : k => v.notification_channels
+  }
 }
 
 output "project_ids" {

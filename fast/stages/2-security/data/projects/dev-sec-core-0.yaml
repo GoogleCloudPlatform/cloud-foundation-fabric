@@ -28,7 +28,8 @@ iam_bindings:
   key_delegated:
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-rw
-    role: roles/cloudkms.admin
+    # role: roles/cloudkms.admin
+    role: $custom_roles:cloudkms_admin
     condition:
       title: Delegated IAM grant on keys.
       expression: |
@@ -36,7 +37,8 @@ iam_bindings:
           'iam.googleapis.com/modifiedGrantsByRole', [])
           .hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter']
         )
-
+factories_config:
+  observability: "data/observability/"
 iam:
   # reset default role on new project
   roles/owner: []
@@ -44,7 +46,13 @@ log_buckets:
   _Default:
     retention: 90
     location: europe-west1
-
+notification_channels:
+  email-admin:
+    type: email
+    display_name: Admin Email
+    labels:
+      email_address: vannick@google.com
+      
 # uncomment the following if parent is the security folder
 
 # tag_bindings:

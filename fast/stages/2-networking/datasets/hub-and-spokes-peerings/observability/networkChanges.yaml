@@ -13,7 +13,7 @@
 # limitations under the License.
 
 alerts:
-  projectOwnershipChange:
+  networkChanges:
     combiner: OR
     notification_channels: 
       - email-admin
@@ -25,58 +25,49 @@ alerts:
               group_by_fields:
                 - metric.label.principal
                 - metric.label.method_name
-                - metric.label.organization_id
-                - metric.label.folder_id
                 - metric.label.project_id
+                - metric.label.network_id
               per_series_aligner: ALIGN_SUM
           comparison: COMPARISON_GT
           duration: 0s
-          filter:
-            resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
+          filter: resource.type = "global" AND metric.type = "logging.googleapis.com/user/networkChanges"
           threshold_value: 0
           trigger:
             count: 1
-        display_name: Project Ownership Changes
-    display_name: Project Ownership Changes
+        display_name: "Log match condition: VPC Network Changes"
+    display_name: VPC Network Changes
     documentation:
       content: |-
-        Log-based alerting policy in project ${project} detected a project ownership assignments or changes.
+        Log-based alerting policy in project ${project} detected VPC Network changes.
+
+        This alert helps ensure security by monitoring creation, modification, deletion,
+        or peering changes to VPC networks.
         ```
-        (protoPayload.serviceName="cloudresourcemanager.googleapis.com") AND
-        (ProjectOwnership OR projectOwnerInvitee)
-        OR
-        (
-          protoPayload.serviceData.policyDelta.bindingDeltas.action="REMOVE" AND
-          protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
-        )
-        OR
-        (
-          protoPayload.serviceData.policyDelta.bindingDeltas.action="ADD" AND
-          protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
+        resource.type="gce_network" AND (
+          protoPayload.methodName:"compute.networks.insert" OR
+          protoPayload.methodName:"compute.networks.patch" OR
+          protoPayload.methodName:"compute.networks.delete" OR
+          protoPayload.methodName:"compute.networks.addPeering" OR
+          protoPayload.methodName:"compute.networks.updatePeering" OR
+          protoPayload.methodName:"compute.networks.removePeering"
         )
         ```
       mime_type: text/markdown
 logging_metrics:
-  projectOwnershipChange:
-    bucket_name: log-0/audit-logs
-    description: Project Ownership Changes
+  networkChanges:
+    description: VPC Network Changes
     filter: |-
-      (protoPayload.serviceName="cloudresourcemanager.googleapis.com") AND
-      (ProjectOwnership OR projectOwnerInvitee)
-      OR
-      (
-        protoPayload.serviceData.policyDelta.bindingDeltas.action="REMOVE" AND
-        protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
-      )
-      OR
-      (
-        protoPayload.serviceData.policyDelta.bindingDeltas.action="ADD" AND
-        protoPayload.serviceData.policyDelta.bindingDeltas.role="roles/owner"
+      resource.type="gce_network" AND (
+        protoPayload.methodName:"compute.networks.insert" OR
+        protoPayload.methodName:"compute.networks.patch" OR
+        protoPayload.methodName:"compute.networks.delete" OR
+        protoPayload.methodName:"compute.networks.addPeering" OR
+        protoPayload.methodName:"compute.networks.updatePeering" OR
+        protoPayload.methodName:"compute.networks.removePeering"
       )
     label_extractors:
-      folder_id: EXTRACT(labels.folder_id)
       method_name: EXTRACT(protoPayload.methodName)
-      organization_id: EXTRACT(labels.organization_id)
+      network_id: EXTRACT(labels.network_id)
       principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
       project_id: EXTRACT(labels.project_id)
     metric_descriptor:
@@ -87,14 +78,11 @@ logging_metrics:
         - description: method_name
           key: method_name
           value_type: STRING
-        - description: organization_id
-          key: organization_id
-          value_type: STRING
-        - description: folder_id
-          key: folder_id
-          value_type: STRING
         - description: project_id
           key: project_id
+          value_type: STRING
+        - description: network_id
+          key: network_id
           value_type: STRING
       metric_kind: DELTA
       unit: "1"

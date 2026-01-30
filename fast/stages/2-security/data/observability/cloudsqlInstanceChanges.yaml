@@ -13,7 +13,7 @@
 # limitations under the License.
 
 alerts:
-  firewallPolicyRuleChanges:
+  cloudsqlInstanceChanges:
     combiner: OR
     notification_channels: 
       - email-admin
@@ -25,42 +25,36 @@ alerts:
               group_by_fields:
                 - metric.label.principal
                 - metric.label.method_name
+                - metric.label.project_id
+                - metric.label.database_id
               per_series_aligner: ALIGN_SUM
           comparison: COMPARISON_GT
           duration: 0s
           filter:
-            resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/firewallPolicyRuleChanges"
+            resource.type = "global" AND metric.type = "logging.googleapis.com/user/cloudsqlInstanceChanges"
           threshold_value: 0
           trigger:
             count: 1
-        display_name: "Log match condition: Network Firewall Policy Rule Changes"
-    display_name: Network Firewall Policy Rule Changes
+        display_name: "Log match condition: Cloud SQL instance configuration changes"
+    display_name: Cloud SQL Instance Configuration Changes
     documentation:
       content: |-
-        Log-based alerting policy in project ${project} detected Firewall Policy rule changes.
+        Log-based alerting policy in project ${project} detected Cloud SQL instance configuration changes.
 
-        This alert helps ensure security by monitoring creation, modification, or deletion of firewall rules.
+        This alert helps ensure security by monitoring configuration changes to SQL instances.
         ```
-        resource.labels.method:"compute.networkFirewallPolicies" AND (
-          protoPayload.methodName:"compute.networkFirewallPolicies.addRule" OR
-          protoPayload.methodName:"compute.networkFirewallPolicies.removeRule" OR
-          protoPayload.methodName:"compute.networkFirewallPolicies.patchRule"
-        )
+        protoPayload.methodName="cloudsql.instances.update"
         ```
       mime_type: text/markdown
 logging_metrics:
-  firewallPolicyRuleChanges:
-    bucket_name: log-0/audit-logs
-    description: Network Firewall Policy Rule Changes
-    filter: |-
-      resource.labels.method:"compute.networkFirewallPolicies" AND (
-        protoPayload.methodName:"compute.networkFirewallPolicies.addRule" OR
-        protoPayload.methodName:"compute.networkFirewallPolicies.removeRule" OR
-        protoPayload.methodName:"compute.networkFirewallPolicies.patchRule"
-      )
+  cloudsqlInstanceChanges:
+    description: Cloud SQL Instance Configuration Changes
+    filter: protoPayload.methodName="cloudsql.instances.update"
     label_extractors:
+      database_id: EXTRACT(labels.database_id)
       method_name: EXTRACT(protoPayload.methodName)
       principal: EXTRACT(protoPayload.authenticationInfo.principalEmail)
+      project_id: EXTRACT(labels.project_id)
     metric_descriptor:
       labels:
         - description: principal
@@ -68,6 +62,12 @@ logging_metrics:
           value_type: STRING
         - description: method_name
           key: method_name
+          value_type: STRING
+        - description: project_id
+          key: project_id
+          value_type: STRING
+        - description: database_id
+          key: database_id
           value_type: STRING
       metric_kind: DELTA
       unit: "1"

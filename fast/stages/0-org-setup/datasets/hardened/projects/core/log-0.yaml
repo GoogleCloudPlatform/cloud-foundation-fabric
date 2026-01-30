@@ -69,8 +69,12 @@ log_buckets:
     log_analytics:
       enable: true
     retention: 90
-factories_config:
-  observability: datasets/hardened/organization/observability/
+notification_channels:
+  email-admin:
+    type: email
+    display_name: Admin Email
+    labels:
+      email_address: vannick@google.com
 org_policies:
   gcp.restrictCmekCryptoKeyProjects:
     rules:

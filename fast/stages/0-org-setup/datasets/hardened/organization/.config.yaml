@@ -18,8 +18,13 @@
 
 id: $defaults:organization/id
 contacts:
-  $email_addresses:gcp-organization-admins:
-    - ALL
+  $email_addresses:gcp-organization-admins: 
+    - BILLING
+    - LEGAL
+    - PRODUCT_UPDATES
+    - SUSPENSION
+    - SECURITY
+    - TECHNICAL
 # conditional authoritative IAM bindings
 iam_bindings:
   # these don't conflict with IAM / IAM by principal
@@ -40,6 +45,7 @@ iam_bindings:
 # authoritative IAM bindings by principal
 iam_by_principals:
   $iam_principals:gcp-organization-admins:
+    - roles/axt.admin
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
     - roles/cloudsupport.techSupportEditor
@@ -68,7 +74,8 @@ iam_by_principals:
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
     - roles/resourcemanager.tagUser
-    - roles/securitycentermanagement.customModulesEditor
+    - roles/securitycenter.admin
+    - roles/securitycentermanagement.admin
   $iam_principals:service_accounts/iac-0/iac-org-ro:
     - roles/cloudasset.viewer
     - roles/essentialcontacts.viewer
@@ -79,9 +86,10 @@ iam_by_principals:
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
     - roles/serviceusage.serviceUsageViewer
+    - roles/securitycenter.adminViewer
+    - roles/securitycentermanagement.viewer
     - $custom_roles:organization_admin_viewer
     - $custom_roles:tag_viewer
-    - roles/securitycentermanagement.customModulesViewer
   $iam_principals:service_accounts/iac-0/iac-networking-rw:
     # uncomment for cooperative VPC-SC configurations
     # - roles/accesscontextmanager.policyEditor
@@ -115,8 +123,8 @@ iam_by_principals:
 data_access_logs:
   allServices:
     ADMIN_READ: {}
-    # DATA_READ: {}
-    # DATA_WRITE: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary

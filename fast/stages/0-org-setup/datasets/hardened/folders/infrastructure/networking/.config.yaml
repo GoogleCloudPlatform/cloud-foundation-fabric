@@ -24,6 +24,7 @@ iam_by_principals:
     - roles/dns.admin
     - roles/iam.networkAdmin
     - roles/logging.admin
+    - roles/monitoring.admin
     - roles/resourcemanager.folderAdmin
     - roles/resourcemanager.projectCreator
     - roles/resourcemanager.projectDeleter
@@ -35,6 +36,7 @@ iam_by_principals:
     - roles/compute.networkViewer
     - roles/dns.reader
     - roles/logging.viewer
+    - roles/monitoring.viewer
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
     - roles/serviceusage.serviceUsageViewer

@@ -56,6 +56,11 @@ module "projects-observability" {
     kms_keys    = module.factory.kms_keys
     log_buckets = module.factory.log_buckets
     project_ids = module.factory.project_ids
+    notification_channels = lookup(
+      module.factory.notification_channels,
+      local.ob_project.project_id,
+      {}
+    )
   })
   factories_config = {
     observability = var.factories_config.observability

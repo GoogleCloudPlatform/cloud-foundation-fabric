@@ -21,12 +21,14 @@ iam_by_principals:
     - roles/bigquery.jobUser
     - roles/bigquery.dataViewer
     - roles/browser
+    - roles/monitoring.viewer
     - roles/serviceusage.serviceUsageViewer
     - roles/storage.objectViewer
     - $custom_roles:cloudkms_viewer
   $iam_principals:service_accounts/iac-0/iac-org-rw:
     - roles/bigquery.admin
     - roles/cloudkms.admin
+    - roles/monitoring.admin
     - roles/resourcemanager.projectIamAdmin
     - roles/serviceusage.serviceUsageAdmin
     - roles/storage.admin
@@ -39,6 +41,8 @@ services:
 iam:
   # reset default role on new project
   roles/owner: []
+factories_config:
+  observability: "datasets/hardened/project-observability/"
 kms:
   keyrings:
     ew1:
@@ -62,3 +66,9 @@ datasets:
   billing_export:
     friendly_name: Billing export
     encryption_key: $kms_keys:billing-0/ew1/bigquery
+notification_channels:
+  email-admin:
+    type: email
+    display_name: Admin Email
+    labels:
+      email_address: vannick@google.com

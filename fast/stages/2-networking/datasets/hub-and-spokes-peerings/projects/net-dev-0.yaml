@@ -21,7 +21,15 @@ shared_vpc_host_config:
 iam:
   # reset default role on new project
   roles/owner: []
+factories_config:
+  observability: "datasets/hub-and-spokes-peerings/observability/"
 log_buckets:
   _Default:
     retention: 90
     location: europe-west1
+notification_channels:
+  email-admin:
+    type: email
+    display_name: Admin Email
+    labels:
+      email_address: vannick@google.com

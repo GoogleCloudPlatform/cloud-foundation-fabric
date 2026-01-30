@@ -32,7 +32,7 @@ alerts:
           comparison: COMPARISON_GT
           duration: 0s
           filter:
-            resource.type = "logging_bucket" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
+            resource.type = "global" AND metric.type = "logging.googleapis.com/user/projectOwnershipChange"
           threshold_value: 0
           trigger:
             count: 1
@@ -58,7 +58,6 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   projectOwnershipChange:
-    bucket_name: log-0/audit-logs
     description: Project Ownership Changes
     filter: |-
       (protoPayload.serviceName="cloudresourcemanager.googleapis.com") AND

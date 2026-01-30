@@ -94,6 +94,7 @@ module "organization" {
   factories_config = {
     custom_roles           = "${local.paths.organization}/custom-roles"
     tags                   = "${local.paths.organization}/tags"
+    scc_mute_configs       = "${local.paths.organization}/scc-mute-rules"
     scc_sha_custom_modules = "${local.paths.organization}/scc-sha-custom-modules"
   }
   tags_config = {
