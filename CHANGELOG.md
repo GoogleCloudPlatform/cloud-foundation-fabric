@@ -3,7 +3,82 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-01-08 12:16:36+00:00 to: None since: v51.1.0 -->
+## [Unreleased] <!-- from: 2026-01-07 11:27:43+00:00 to: None since: v51.0.0 -->
+
+## [51.1.0] - 2026-01-30
+
+### BREAKING CHANGES
+
+- `modules/vpc-sc`, `fast/stages/1-vpcsc`: Perimeter definitions refer to access levels and policies using context syntax, perimeter definitions need to be upgraded. [[#3678](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3678)]
+- `modules/vpc-sc`: perimeters defined with `ignore_resource_changes` will recreate resource membership via additional resources. [[#3628](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3628)]
+
+### FAST
+
+- [[#3686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3686)] Add PSC-I support to Agent Engine module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-01-30 04:24:07+00:00 -->
+- [[#3683](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3683)] Clarify GCD install process ([juliocc](https://github.com/juliocc)) <!-- 2026-01-28 14:12:06+00:00 -->
+- [[#3679](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3679)] feat: create new dataset `classic-gcd` (based on dataset `classic`) to enable deployment on GCD ([SvenPistre](https://github.com/SvenPistre)) <!-- 2026-01-27 16:59:19+00:00 -->
+- [[#3681](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3681)] Remove observability from classic dataset ([juliocc](https://github.com/juliocc)) <!-- 2026-01-27 14:52:05+00:00 -->
+- [[#3678](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3678)] Use context syntax for VPC-SC access levels and policies ([ludoo](https://github.com/ludoo)) <!-- 2026-01-26 15:12:27+00:00 -->
+- [[#3676](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3676)] Add KMS, Confidential Compute and Shielded VM to 2-networking ([sruffilli](https://github.com/sruffilli)) <!-- 2026-01-26 14:11:12+00:00 -->
+- [[#3677](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3677)] Update README-GCD.md ([zabela](https://github.com/zabela)) <!-- 2026-01-26 13:49:22+00:00 -->
+- [[#3672](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3672)] Update GCD Readme ([juliocc](https://github.com/juliocc)) <!-- 2026-01-23 18:25:24+00:00 -->
+- [[#3666](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3666)] Add support for the Assured Workloads in the project factory ([lopezvit](https://github.com/lopezvit)) <!-- 2026-01-23 12:21:48+00:00 -->
+- [[#3643](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3643)] Minor doc improvements for FAST bootstrap ([drebes](https://github.com/drebes)) <!-- 2026-01-20 19:43:13+00:00 -->
+- [[#3659](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3659)] Add missing context interpolations ([juliocc](https://github.com/juliocc)) <!-- 2026-01-20 19:21:56+00:00 -->
+- [[#3658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3658)] Add `asset_feeds` to resman modules ([juliocc](https://github.com/juliocc)) <!-- 2026-01-20 14:37:36+00:00 -->
+- [[#3657](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3657)] Support org-level logging cmek config in schema, use context for org-level logging config, update schema docs. ([ludoo](https://github.com/ludoo)) <!-- 2026-01-19 15:35:44+00:00 -->
+- [[#3656](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3656)] Support CMEK configuration in org module logging settings, expose identities in FAST context ([ludoo](https://github.com/ludoo)) <!-- 2026-01-19 12:35:31+00:00 -->
+- [[#3649](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3649)] Introduce iam_by_principals_conditional ([juliocc](https://github.com/juliocc)) <!-- 2026-01-14 11:16:07+00:00 -->
+- [[#3648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3648)] fixed bug where label field is ignored for policy based routes ([LaoZhuBaba](https://github.com/LaoZhuBaba)) <!-- 2026-01-14 09:48:16+00:00 -->
+- [[#3645](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3645)] Expose bigquery encryption in project schemas ([ludoo](https://github.com/ludoo)) <!-- 2026-01-13 09:30:20+00:00 -->
+- [[#3633](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3633)] feat: Implement target secure tags for hierarchical firewall policies ([ericyz](https://github.com/ericyz)) <!-- 2026-01-09 08:11:04+00:00 -->
+- [[#3618](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3618)] Support public DNS attributes in FAST network stage ([ericyz](https://github.com/ericyz)) <!-- 2026-01-07 12:14:29+00:00 -->
+
+### MODULES
+
+- [[#3691](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3691)] Allow null prefixes in project factory when override is not set ([ludoo](https://github.com/ludoo)) <!-- 2026-01-30 15:52:50+00:00 -->
+- [[#3689](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3689)] Fix resource policies for regional disks in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-01-30 13:46:40+00:00 -->
+- [[#3687](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3687)] Fix Agent Engine PSC-I configuration ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-01-30 06:38:41+00:00 -->
+- [[#3686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3686)] Add PSC-I support to Agent Engine module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-01-30 04:24:07+00:00 -->
+- [[#3685](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3685)] Add template revision to ignore_changes list ([wehm2000](https://github.com/wehm2000)) <!-- 2026-01-29 10:03:07+00:00 -->
+- [[#3680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3680)] fix(gke-cluster-standard): Avoid perpetual diff on network tags in node_pool_auto_config block ([noony](https://github.com/noony)) <!-- 2026-01-27 14:12:21+00:00 -->
+- [[#3678](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3678)] Use context syntax for VPC-SC access levels and policies ([ludoo](https://github.com/ludoo)) <!-- 2026-01-26 15:12:27+00:00 -->
+- [[#3674](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3674)] Add support for budget filter custom period to billig-account module budgets factory ([ludoo](https://github.com/ludoo)) <!-- 2026-01-24 09:58:25+00:00 -->
+- [[#3673](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3673)] Enable source tag support for hierarchical firewall rules ([ludoo](https://github.com/ludoo)) <!-- 2026-01-24 09:41:14+00:00 -->
+- [[#3654](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3654)] improve configurability and resource references for internal ALB ([singhal0306](https://github.com/singhal0306)) <!-- 2026-01-23 15:35:52+00:00 -->
+- [[#3671](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3671)] Support universe-specific package domain in artifact registry module ([ludoo](https://github.com/ludoo)) <!-- 2026-01-23 14:55:15+00:00 -->
+- [[#3670](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3670)] Fix domains of default service accounts when universe is present ([juliocc](https://github.com/juliocc)) <!-- 2026-01-23 14:11:17+00:00 -->
+- [[#3667](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3667)] Add service connection policies to `modules/net-vpc` ([juliocc](https://github.com/juliocc)) <!-- 2026-01-23 12:51:00+00:00 -->
+- [[#3666](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3666)] Add support for the Assured Workloads in the project factory ([lopezvit](https://github.com/lopezvit)) <!-- 2026-01-23 12:21:48+00:00 -->
+- [[#3659](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3659)] Add missing context interpolations ([juliocc](https://github.com/juliocc)) <!-- 2026-01-20 19:21:56+00:00 -->
+- [[#3658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3658)] Add `asset_feeds` to resman modules ([juliocc](https://github.com/juliocc)) <!-- 2026-01-20 14:37:36+00:00 -->
+- [[#3656](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3656)] Support CMEK configuration in org module logging settings, expose identities in FAST context ([ludoo](https://github.com/ludoo)) <!-- 2026-01-19 12:35:31+00:00 -->
+- [[#3653](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3653)] Add ability to use existing source files in GCS. ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-01-15 16:39:05+00:00 -->
+- [[#3650](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3650)] feat(logging-bucket): support locked parameter for project parent types ([singhal0306](https://github.com/singhal0306)) <!-- 2026-01-15 10:46:33+00:00 -->
+- [[#3652](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3652)] Resolve permadiff for docker_config immutable in artifact registry module ([singhal0306](https://github.com/singhal0306)) <!-- 2026-01-15 09:56:25+00:00 -->
+- [[#3649](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3649)] Introduce iam_by_principals_conditional ([juliocc](https://github.com/juliocc)) <!-- 2026-01-14 11:16:07+00:00 -->
+- [[#3648](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3648)] fixed bug where label field is ignored for policy based routes ([LaoZhuBaba](https://github.com/LaoZhuBaba)) <!-- 2026-01-14 09:48:16+00:00 -->
+- [[#3645](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3645)] Expose bigquery encryption in project schemas ([ludoo](https://github.com/ludoo)) <!-- 2026-01-13 09:30:20+00:00 -->
+- [[#3642](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3642)] Add folder_ids to project condition vars in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2026-01-12 13:41:07+00:00 -->
+- [[#3638](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3638)] Added locality_lb_policy and http_cookie regional ext alb module ([labbott-hub24](https://github.com/labbott-hub24)) <!-- 2026-01-12 11:50:53+00:00 -->
+- [[#3636](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3636)] Add support for mirroring rules to `modules/net-firewall-policy` ([juliocc](https://github.com/juliocc)) <!-- 2026-01-12 11:10:43+00:00 -->
+- [[#3634](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3634)] Allow any VPC for (secure) network_tags ([ericyz](https://github.com/ericyz)) <!-- 2026-01-12 09:34:18+00:00 -->
+- [[#3639](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3639)] Add support to VPC flow logs for PSC subnet ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-01-12 08:56:14+00:00 -->
+- [[#3633](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3633)] feat: Implement target secure tags for hierarchical firewall policies ([ericyz](https://github.com/ericyz)) <!-- 2026-01-09 08:11:04+00:00 -->
+- [[#3631](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3631)] Revert "Use additive resource for perimeter resources in vpc-sc module when ignore changes is set" ([ludoo](https://github.com/ludoo)) <!-- 2026-01-08 13:29:40+00:00 -->
+- [[#3630](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3630)] Revert "Reintroduce support for resource sets in VPC SC module additive perimeters" ([ludoo](https://github.com/ludoo)) <!-- 2026-01-08 13:28:57+00:00 -->
+- [[#3629](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3629)] Reintroduce support for resource sets in VPC SC module additive perimeters ([ludoo](https://github.com/ludoo)) <!-- 2026-01-08 12:53:05+00:00 -->
+- [[#3628](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3628)] Use additive resource for perimeter resources in vpc-sc module when ignore changes is set ([ludoo](https://github.com/ludoo)) <!-- 2026-01-08 12:09:10+00:00 -->
+- [[#3622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3622)] Add support for labels to global addresses in net-vpc module ([LaoZhuBaba](https://github.com/LaoZhuBaba)) <!-- 2026-01-07 13:19:49+00:00 -->
+- [[#3626](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3626)] Fix workforce identity federation provider configuration ([ooshrioo](https://github.com/ooshrioo)) <!-- 2026-01-07 13:02:13+00:00 -->
+
+### TOOLS
+
+- [[#3689](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3689)] Fix resource policies for regional disks in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-01-30 13:46:40+00:00 -->
+- [[#3688](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3688)] fix: extract and validate links within HTML blocks in Markdown files ([SamuPert](https://github.com/SamuPert)) <!-- 2026-01-30 09:42:09+00:00 -->
+- [[#3686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3686)] Add PSC-I support to Agent Engine module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-01-30 04:24:07+00:00 -->
+- [[#3679](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3679)] feat: create new dataset `classic-gcd` (based on dataset `classic`) to enable deployment on GCD ([SvenPistre](https://github.com/SvenPistre)) <!-- 2026-01-27 16:59:19+00:00 -->
+- [[#3658](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3658)] Add `asset_feeds` to resman modules ([juliocc](https://github.com/juliocc)) <!-- 2026-01-20 14:37:36+00:00 -->
 
 ## [51.0.0] - 2026-01-07
 
@@ -2082,7 +2157,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.1...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.0...HEAD
+[51.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.0...v51.0.0
 [51.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.0.0...v50.1.0
 [50.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.1.0...v50.0.0
 [50.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v50.0.0...v49.3.0
