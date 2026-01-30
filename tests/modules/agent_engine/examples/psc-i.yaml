@@ -13,6 +13,17 @@
 # limitations under the License.
 
 values:
+  google_compute_network_attachment.network_attachment:
+    connection_preference: ACCEPT_MANUAL
+    description: Network attachment for Agent Engine PSC-I
+    name: network-attachment
+    producer_accept_lists: null
+    producer_reject_lists: null
+    project: project-id
+    region: europe-west8
+    subnetworks:
+    - subnet_self_link
+    timeouts: null
   module.agent_engine.google_project_iam_member.default["roles/aiplatform.user"]:
     condition: []
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
@@ -38,7 +49,7 @@ values:
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     timeouts: null
-  module.agent_engine.google_vertex_ai_reasoning_engine.unmanaged[0]:
+  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
     description: Terraform managed.
     display_name: my-agent
     encryption_spec: []
@@ -65,11 +76,12 @@ values:
     triggers: null
 
 counts:
+  google_compute_network_attachment: 1
   google_project_iam_member: 3
   google_service_account: 1
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 6
+  resources: 7
   time_sleep: 1
 
 outputs: {}

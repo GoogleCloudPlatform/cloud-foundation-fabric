@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,29 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
           content {
             name  = env.key
             value = env.value
+          }
+        }
+
+        dynamic "psc_interface_config" {
+          for_each = var.networking_config == null ? {} : { 1 = 1 }
+
+
+          content {
+            network_attachment = var.networking_config.network_attachment_id
+
+            dynamic "dns_peering_configs" {
+              for_each = var.networking_config.dns_peering_configs
+
+              content {
+                domain         = each.key
+                target_network = each.value.target_network_id
+                target_project = (
+                  each.value.target_project_id == null
+                  ? var.project_id
+                  : each.value.target_project_id
+                )
+              }
+            }
           }
         }
 
