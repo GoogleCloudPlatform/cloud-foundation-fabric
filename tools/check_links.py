@@ -71,9 +71,9 @@ def check_docs(dir_name, external=False):
         links.append(check_link(el.dest, readme_path, external))
       elif isinstance(el, marko.block.HTMLBlock):
         pattern = r'(?:href|src)=([\'"])(.*?)\1'
-        extracted_links = [ match[1] for match in re.findall(pattern, el.body) ]
+        extracted_links = [match[1] for match in re.findall(pattern, el.body)]
         for link in extracted_links:
-            links.append(check_link(link, readme_path, external))
+          links.append(check_link(link, readme_path, external))
       elif hasattr(el, 'children'):
         elements.extend(el.children)
 
