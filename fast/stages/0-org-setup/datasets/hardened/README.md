@@ -30,11 +30,17 @@ The diagram below shows the relationships between the components:
 
 ## Usage
 
-To use this `hardened` dataset, create a `0-org-setup.auto.tfvars` file in the `fast/stages/0-org-setup` directory and override the `factories_config` variable as shown below:
+To use this `hardened` dataset, create a `0-org-setup.auto.tfvars` file in the `fast/stages/0-org-setup` directory and override the `factories_config` variable as shown below.
+
+Inputting this configuration replaces the default factory paths with the hardened versions. However, please note that configurations not explicitly listed here (such as `billing-account`) will continue to be read from the `classic` dataset folder.
 
 ```tfvars
 factories_config = {
+  defaults         = "datasets/hardened/defaults.yaml"
+  folders          = "datasets/hardened/folders"
+  observability    = "datasets/hardened/observability"
   organization     = "datasets/hardened/organization"
+  projects         = "datasets/hardened/projects"
 }
 ```
 
@@ -73,6 +79,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `compute.disableNestedVirtualization` | Prevent the creation of Compute Engine instances with nested virtualization enabled. |  |
 | `compute.disableSerialPortAccess` | Prevent the enablement of serial port access for VM instances. | **CIS for GCP 3.0**: 4.5<br>**CIS Controls 8.0**: 4.8<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R5**: CM-6, CM-7<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC6.6.1, CC6.6.3, CC6.6.4 |
 | `compute.disableVpcExternalIpv6` | Prevent configuration of subnets with external IPv6 ranges. |  |
+| `compute.disableVpcInternalIpv6` | Enforce the block of VPC subnetworks from using internal IPv6 addresses. A subnetwork with an internal IPv6 address might be exposed to potential risks due to its current limited support. |  |
 | `compute.managed.blockPreviewFeatures` | Ensures that preview feature updates are blocked unless explicitly allowed |  |
 | `compute.managed.disableSerialPortLogging` | Prevent serial port logging to Cloud Logging for VMs. |  |
 | `compute.managed.vmCanIpForward` | Prevent IP forwarding from being enabled on Compute Engine instances. | **CIS for GCP 3.0**: 4.6<br>**CIS Controls 8.0**: 4.4, 4.5<br>**NIST 800-53 R5**: CA-9, SC-7<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
@@ -103,11 +110,14 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `container.managed.enableGoogleGroupsRBAC` | Enforce that GKE is configured so Google Groups can be used with RBAC | **CIS for GKE 1.5**: 5.8.2<br>**PCI-DSS 4.0**: 1.1.2 |
 | `container.managed.enableNetworkPolicy` | Enforce that GKE clusters are configured with Network Policy enabled | **CIS for GKE 1.5**: 5.6.7<br>**PCI-DSS 4.0**: 1.2,1.1,1.4<br>**ISO-2700-1 v2013**: A.13.1.1 |
 | `container.managed.enablePrivateNodes` | Enforce that GKE clusters are created as private clusters with private nodes | **CIS for GKE 1.5**: 5.6.5<br>**PCI-DSS 4.0**: 1.3.1 |
+| `container.managed.enableSecretsEncryption` | Enforce that the GKE clusters is configured to encrypt secret in etcd | **CIS for GKE 1.5**: 5.3.1<br>**PCI-DSS 4.0**: 3.6 |
 | `container.managed.enableSecurityBulletinNotifications` | Require enabling Security Bulletin Notifications in GKE clusters. |  |
 | `container.managed.enableShieldedNodes` | Enforce that GKE nodes is configured with shielded GKE nodes | **CIS for GKE 1.5**: 5.5.5 |
 | `container.managed.enableWorkloadIdentityFederation` | Enforce that GKE clusters are enabled with Workload Identity  | **CIS for GKE 1.5**: 5.2.2<br>**PCI-DSS 4.0**: 7.2.2 |
 | `essentialcontacts.allowedContactDomains` | Restrict essential contact domains to an authorized list. |  |
 | `gcp.resourceLocations` | Restrict resource locations. |  |
+| `gcp.restrictCmekCryptoKeyProjects` | Prevent the use of CMEKs from unauthorized projects. |  |
+| `gcp.restrictNonCmekServices` | Ensure That All BigQuery Tables Are Encrypted With Customer-Managed Encryption Key (CMEK) | **CIS for GCP 3.0**: 7.2<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**: 3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R5**: IA-5, SC-28<br>**NIST Cybersecurity Framework 1.0**: PR-DS-1<br>**ISO-2700-1 v2022**: A.5.33<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `gcp.restrictTLSCipherSuites` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
 | `gcp.restrictTLSVersion` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
 | `iam.allowedPolicyMemberDomains` | Restrict domain sharing to authorized domains. | **CIS for GCP 3.0**: 1.1<br>**NIST 800-53 R4**: AC-3<br>**ISO-2700-1 v2013**: A.9.2.3 |
@@ -136,7 +146,9 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 |---|---|---|
 | `accesscontextmanagerDisableBridgePerimeters` | Ensure no perimeter bridges are used. Instead, use ingress and egress rules. |  |
 | `cloudbuildDisableWorkerPoolExternalIP` | Prevent the configuration of Cloud Build worker pools with external IP addresses. |  |
+| `cloudkmsAllowedAlgorithms` | Ensure the algorithm used for Cloud KMS keys is configured correctly. |  |
 | `cloudkmsAllowedProtectionLevel` | Ensure Cloud KMS keys are configured with the correct protection level. |  |
+| `cloudkmsAllowedRotationPeriod` | Ensure Cloud KMS keys have the correct rotation period configured. | **CIS for GCP 3.0**: 1.10<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**: 3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R4**: SC-12<br>**NIST 800-53 R5**: IA-5, SC-28<br>**ISO-2700-1 v2013**: A.10.1.2<br>**ISO-2700-1 v2022**: A.5.33<br>**SOC2 v2017**: CC6.1.10, CC6.1.3<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `cloudrunDisableEnvironmentVariablePattern` | Prevent secrets from being stored in Cloud Run environment variables. | **CIS for GCP 3.0**: 1.17 |
 | `cloudrunJobDisableDefaultServiceAccount` | Ensure all Cloud Run jobs use a non-default service account. |  |
 | `cloudrunJobRequireBinaryAuthorization` | Enforce all Cloud Run jobs use binary authorization. |  |
@@ -153,6 +165,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudsqlRequireSQLServerDatabaseFlags` | Ensure 'external scripts enabled' database flag for Cloud SQL SQL Server instance is set to 'off' | **CIS for GCP 3.0**: 6.3.1<br>**CIS Controls 8.0**: 2.7<br>**PCI-DSS 4.0**: 1.2.5, 2.2.4, 6.4.3<br>**NIST 800-53 R5**: CM-7, SI-7<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1, PR-PT-3<br>**SOC2 v2017**: CC5.2.1, CC5.2.2, CC5.2.3, CC5.2.4 |
 | `cloudsqlRequireSSLConnection` | Ensure That the Cloud SQL Database Instance Requires All Incoming Connections To Use SSL | **CIS for GCP 3.0**: 6.4<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.13.2.1, A.14.1.3, A.8.2.3 |
 | `dataprocDisableDefaultServiceAccount` | Prevent Dataproc VMs from using default user-managed service accounts. |  |
+| `dataprocRequireDiskCmekEncryption` | Enforce encryption of Dataproc clusters with a Customer-Managed Encryption Key (CMEK). | **CIS for GCP 3.0**: 8.1<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**:  3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R5**: IA-5, SC-28<br>**NIST Cybersecurity Framework 1.0**: PR-DS-1<br>**ISO-2700-1 v2013**: A.5.33<br>**SOC2 v2017**: CC6.1.10, CC6.1.3<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
 | `dataprocRequireInternalIp` | Enforce the use of internal IP addresses only for Dataproc clusters. |  |
 | `dataprocRequireKerberos` | Enforce the use of Kerberos for secure authentication on all Dataproc clusters. |  |
 | `dnsAllowedSigningAlgorithms` | Prevent the use of the RSASHA1 algorithm for the Key-Signing Key in Cloud DNS DNSSEC. | **CIS for GCP 3.0**: 3.4<br>**PCI-DSS 4.0**: 1.1.1, 1.2.1, 1.2.6, 1.2.7, 1.4.2, 1.5.1, 2.1.1, 2.2.1<br>**NIST 800-53 R4**: 4.2<br>**NIST 800-53 R5**: AC-18, CM-2, CM-6, CM-7, CM-9<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1<br>**ISO-2700-1 v2022**: A.8.9<br>**SOC2 v2017**: CC5.2.2<br>**Cloud Controls Matrix 4**: IVS-04 |
@@ -165,6 +178,8 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `firewallRestrictCacheSearchDatabasesRule` | Prevent Cassandra port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictDirectoryServicesPolicyRule` | Prevent directory services port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictDirectoryServicesRule` | Prevent directory services port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
+| `firewallRestrictExplicitAllPortsPolicyRule` | Prevent rules that explicitly specify all TCP/UDP ports using ranges like 0-65535 or 1-65535 via firewall policies. |  |
+| `firewallRestrictExplicitAllPortsRule` | Prevent rules that explicitly specify all TCP/UDP ports using ranges like 0-65535 or 1-65535 via VPC firewall rules or any ports. |  |
 | `firewallRestrictInsecureProtocolsPolicyRule` | Prevent FTP port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictInsecureProtocolsRule` | Prevent FTP port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictMailProtocolsPolicyRule` | Prevent POP3 port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
@@ -175,7 +190,8 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `firewallRestrictNetworkServicesRule` | Prevent DNS port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictNoSQLDatabasesPolicyRule` | Prevent Elasticsearch port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictNoSQLDatabasesRule` | Prevent Elasticsearch port access from the internet via VPC firewall rules. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
-| `firewallRestrictPublicAccessRule` | Prevent the creation of VPC firewall rules with a source or destination of `0.0.0.0/0`. |  |
+| `firewallRestrictPublicAccessPolicyRule` | Prevent open to public access  via firewall policies. |  |
+| `firewallRestrictPublicAccessRule` | Prevent open to public access  via VPC firewall rules. |  |
 | `firewallRestrictRdpPolicyRule` | Prevent RDP access from the internet via firewall policies. | **CIS for GCP 3.0**: 3.7<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictRdpRule` | Prevent RDP access from the internet via VPC firewall rules. | **CIS for GCP 3.0**: 3.7<br>**CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
 | `firewallRestrictSQLDatabasesPolicyRule` | Prevent MySQL port access from the internet via firewall policies. | **CIS Controls 8.0**: 4.4, 4.5<br>**PCI-DSS 4.0**: 1.2.1, 1.4.1<br>**NIST 800-53 R4**: SC-7<br>**NIST 800-53 R5**: CA-9, SC-7<br>**ISO-2700-1 v2013**: A.13.1.1<br>**SOC2 v2017**: CC6.6.1, CC6.6.4 |
@@ -198,6 +214,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `gkeRequireMonitoring` | Enforce that GKE clusters monitoring is enabled | **CIS for GKE 1.5**: 5.7.1<br>**PCI-DSS 4.0**: 10.2 |
 | `gkeRequireNodePoolAutoRepair` | Enforce that GKE clusters are configured with node auto-repair enabled | **CIS for GKE 1.5**: 5.5.2<br>**PCI-DSS 4.0**: 2.2.6 |
 | `gkeRequireNodePoolAutoUpgrade` | Enforce that GKE clusters are configured with node auto-upgrade enabled  | **CIS for GKE 1.5**: 5.5.3<br>**PCI-DSS 4.0**: 2.2.6 |
+| `gkeRequireNodePoolCMEKEncryption` | Enforce that GKE nodes are configured with CMEK Encryption | **CIS for GKE 1.5**: 5.9.1<br>**PCI-DSS 4.0**: 3.6 |
 | `gkeRequireNodePoolSandbox` | Enforce that the GKE clusters nodes are isolated using GKE sandbox | **CIS for GKE 1.5**: 5.10.3<br>**PCI-DSS 4.0**: 6.2.1 |
 | `gkeRequirePrivateEndpoint` | Enforce that GKE clusters are created as private clusters with public endpoint disabled | **CIS for GKE 1.5**: 5.6.4<br>**PCI-DSS 4.0**: 1.3.1 |
 | `gkeRequireRegionalClusters` | Enforce the creation of regional GKE clusters |  |
@@ -225,8 +242,10 @@ SCC Custom SHA Detectors are available only for organization have subscribed to 
 
 | Module | Description | Compliance Mapping |
 |---|---|---|
+| `artifactregistryRequireCMEK` | Ensure Artifact Registry repositories are encrypted with a Customer-Managed Encryption Key (CMEK). |  |
 | `cloudfunctionsV1RequireIngressInternalAndLoadBalancer` | Ensure Cloud Functions Gen1 only allows internal and load balancer traffic. |  |
 | `cloudfunctionsV1RequireVPCConnector` | Ensure Cloud Functions v1 are configured with a VPC connector. |  |
+| `cloudkmsAllowedAlgorithms` | Ensure the algorithm used for Cloud KMS keys is configured correctly. |  |
 | `cloudkmsAllowedProtectionLevel` | Ensure Cloud KMS keys are configured with the correct protection level. |  |
 | `cloudrunDisableJobDefaultServiceAccount` | Ensure all Cloud Run services use a non-default service account. |  |
 | `cloudrunDisableServiceDefaultServiceAccount` | Ensure all Cloud Run jobs use a non-default service account. |  |
@@ -270,8 +289,8 @@ region: $locations:primary
 ip_cidr_range: 10.73.0.0/24
 description: Default primary-region subnet for dev
 flow_logs_config: # This section enables VPC Flow Logs
-  aggregation_interval: "INTERVAL_15_MIN"
-  flow_sampling: 0.5
+  aggregation_interval: "INTERVAL_5_SEC"
+  flow_sampling: 1.0
   metadata: "INCLUDE_ALL_METADATA"
 ```
 
