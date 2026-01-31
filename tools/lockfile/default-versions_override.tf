@@ -27,9 +27,5 @@ terraform {
       source  = "mongodb/mongodbatlas"
       version = "~> 1.0"
     }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "< 4.2.1"
-    }
   }
 }
