@@ -199,11 +199,11 @@ resource "google_apigee_security_profile_v2" "security_profiles" {
   profile_id  = each.key
   description = each.value.description
   dynamic "profile_assessment_configs" {
-    for_each = {for k,v in each.value.profile_assessment_configs: k => v if v != null}
+    for_each = { for k, v in each.value.profile_assessment_configs : k => v if v != null }
     content {
       assessment = profile_assessment_configs.key
       weight     = profile_assessment_configs.value
     }
   }
-  depends_on = [ google_apigee_addons_config.addons_config ]
+  depends_on = [google_apigee_addons_config.addons_config]
 }
