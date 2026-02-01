@@ -2,13 +2,13 @@
 
 This document serves as an extension to the main **[FAST Organization Setup README](../README.md)**, detailing the specific configurations and steps required to deploy the Fabric FAST landing zone on **Google Cloud Dedicated (GCD)**.
 
-It assumes familiarity with the standard FAST bootstrap flow but highlights the critical divergences required for the Trusted Private Cloud (TPC) environment. For a detailed overview of the differences between Google Cloud and Google Cloud Dedicated, please refer to the [official S3NS documentation](https://documentation.s3ns.fr/docs/overview/tpc-key-differences).
+It assumes familiarity with the standard FAST bootstrap flow but highlights the critical divergences required for the Google Cloud Dedicated (GCD) environment.
 
 ## Configuration Reference
 
 The following table lists the specific configuration values for different Google Cloud Dedicated (GCD) environments. Please replace the placeholders in the commands and configurations below with the values corresponding to your target universe.
 
-| Variable | GCD In France | GCD In Berlin |
+| Variable | GCD In France (GA) | GCD In Germany (Preview)[^1] |
 | :--- | :--- | :--- |
 | `UNIVERSE_WEB_DOMAIN` | `cloud.s3nscloud.fr` | `cloud.berlin-build0.goog` |
 | `UNIVERSE_API_DOMAIN` | `s3nsapis.fr` | `apis-berlin-build0.goog` |
@@ -16,6 +16,7 @@ The following table lists the specific configuration values for different Google
 | `UNIVERSE_PREFIX` | `s3ns` | `eu0` |
 | `UNIVERSE_REGION` | `u-france-east1` | `u-germany-northeast1` |
 
+[^1]: Note that these APIs are subject to change before GA (General Availability).
 
 ## 1. Design Overview
 
@@ -39,7 +40,7 @@ An IdP is configured for your organization, and you can sign in with your admini
 
 ### Repository
 
-Clone the latest version of the repository (currently v50.0.0) or download it from the Releases page:
+Clone the latest version of the repository or download it from the Releases page:
 
 ```bash
 git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
@@ -88,11 +89,24 @@ gcloud auth application-default login \
 GCD requires a manual bootstrap project because organization policy services are not automatically available at the organization root during the initial setup.
 
 1. **Create a project:** Use the Cloud Console to create a temporary project. A billing account is **not** required.
-2. **Enable APIs:** Enable the `orgpolicy.googleapis.com` service within this project.
+
 3. **Set default project:** Configure your CLI context:
 
     ```bash
     gcloud config set project <TEMP_PROJECT_ID>
+    ```
+2. **Enable APIs:** Enable the the following services within this project.
+
+    ```bash
+    gcloud services enable \
+      bigquery.googleapis.com \
+      cloudbilling.googleapis.com \
+      cloudresourcemanager.googleapis.com \
+      essentialcontacts.googleapis.com \
+      iam.googleapis.com \
+      logging.googleapis.com \
+      orgpolicy.googleapis.com \
+      serviceusage.googleapis.com
     ```
 
 4. **Post-Setup Cleanup:** After the initial `0-org-setup` stage is successfully deployed, switch to the production `iac-0` project and delete this temporary bootstrap project.
@@ -142,46 +156,107 @@ projects:
         - networksecurity.googleapis.com
 ```
 
-## 5. Managing Organization Policies
+### Switch to GCD Dataset
 
-*This section extends the [Importing org policies](../README.md#importing-org-policies) instructions.*
+Create a `terraform.tfvars` file to configure the `classic-gcd` dataset. This overrides the default factory locations to use the GCD-specific configurations.
 
-Organization policies must be adapted to account for universe-specific constraints and available services. The recommended approach is to **bypass organization policies** during the first apply and then enable them iteratively.
+```terraform
+factories_config = {
+  billing_accounts = "datasets/classic-gcd/billing-accounts"
+  cicd_workflows   = "datasets/classic-gcd/cicd.yaml"
+  defaults         = "datasets/classic-gcd/defaults.yaml"
+  folders          = "datasets/classic-gcd/folders"
+  organization     = "datasets/classic-gcd/organization"
+  projects         = "datasets/classic-gcd/projects"
+}
+```
+## 5. Organization Policies
 
-### Step A: Bypass for First Apply
+The `classic-gcd` dataset provides a baseline set of organization policies compatible with the GCD environment. While it works out-of-the-box, it includes fewer policies than the standard dataset. Notably, it disables domain restricted sharing (`iam.allowedPolicyMemberDomains`) as Cloud Identity is typically not present in GCD organizations. **We strongly encourage you to review the differences between the `classic` dataset and `classic-gcd`, customizing as needed.**
 
-1. **Rename** the `organization/org-policies` folder (e.g., to `organization/org-policies.unused`).
-2. **Comment out** the `org-policies` block in the `projects/iac-0.yaml` file.
-3. Run `terraform apply` as described in the [First apply cycle](../README.md#first-apply-cycle) section.
+### Importing Default Policies
 
-### Step B: Iterative Import
+The first `terraform apply` **must** import the default set of organization policies that are already active in your organization environment. Failure to do so may result in apply errors or unintended policy overwrites.
 
-Once the stage is applied and you have switched credentials to the IaC service account:
+To do this, you need to list the existing policies and add them to the `org_policies_imports` variable in your `terraform.tfvars`.
 
-1. Create an empty `organization/org-policies` folder.
-2. Move policy YAML files back one by one, uncommenting relevant policies.
-3. **Adjust constraints:** Update policy values for GCD. For example, the `compute.trustedImageProjects` constraint must reference your universe-specific system projects:
+Use the following command to generate the configuration and append it directly to your `terraform.tfvars` file:
 
-```yaml
-compute.trustedImageProjects:
-  rules:
-  - allow:
-      values:
-        # Replace UNIVERS_PREFIX with the value from the Configuration Reference table
-        - "is:projects/<UNIVERSE_PREFIX>-system:cos-cloud"
-        - "is:projects/<UNIVERSE_PREFIX>-system:debian-cloud"
-        - "is:projects/<UNIVERSE_PREFIX>-system:rocky-linux-cloud"
-        - "is:projects/<UNIVERSE_PREFIX>-system:ubuntu-os-cloud"
+```bash
+ORG_ID="your-org-id-here"
+
+P=$(gcloud org-policies list --organization="$ORG_ID" --format="value(constraint)") && [ -n "$P" ] && {
+  printf "\norg_policies_imports = [\n"
+  printf "%s\n" "$P" | sed 's/.*/  "&",/'
+  echo "]"
+} >> terraform.tfvars
 ```
 
-To import pre-existing default policies without modifying them, define the constraint in your `terraform.tfvars` using the `org_policies_imports` variable:
+This will append a configuration block similar to:
 
 ```terraform
 org_policies_imports = [
-  "compute.trustedImageProjects",
+  "sql.restrictPublicIp",
+  "compute.vmExternalIpAccess",
+  "iam.disableServiceAccountKeyUpload",
+  "compute.restrictXpnProjectLienRemoval",
 ]
 ```
+## 6. Deploy
 
-## 6. Next Steps
+At this point you can proceed to grant the required permissions to the bootstrap identity and perform the first Terraform run.
 
-Once the **Organization Setup** stage is fully deployed, you can proceed with subsequent stages (VPC-SC, Security, Networking, Project Factory). The universe configuration established here is automatically propagated to these stages via the FAST cross-stage output mechanism.
+### Granting Permissions
+
+Use the following commands to grant the necessary IAM roles to the principal running the deployment:
+
+```bash
+export FAST_PRINCIPAL="group:gcp-organization-admins@example.com"
+
+# find your organization and export its id in the FAST_ORG variable
+gcloud organizations list
+export FAST_ORG_ID=123456
+
+# set needed roles (billing role only needed for organization-owned account)
+export FAST_ROLES="\
+  roles/billing.admin \
+  roles/logging.admin \
+  roles/iam.organizationRoleAdmin \
+  roles/orgpolicy.policyAdmin \
+  roles/resourcemanager.folderAdmin \
+  roles/resourcemanager.organizationAdmin \
+  roles/resourcemanager.projectCreator \
+  roles/resourcemanager.tagAdmin \
+  roles/owner"
+
+for role in $FAST_ROLES; do
+  gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
+    --member $FAST_PRINCIPAL --role $role --condition None
+done
+```
+
+### First Apply
+
+Initialize and apply the configuration:
+
+```bash
+terraform init
+terraform apply
+```
+
+Once the apply completes successfully, continue with the [Provider setup and final apply cycle](../README.md#provider-setup-and-final-apply-cycle) instructions in the main README.
+
+
+## 7. Next Steps
+
+Once the **Organization Setup** stage is fully deployed:
+
+1.  **Delete Temporary Project:** You can now safely delete the temporary bootstrap project created in Step 3. Also remember to set your default gcloud project to the IAC project.
+
+    ```bash
+    gcloud projects delete <TEMP_PROJECT_ID>
+    gcloud config set project <IAC_PROJECT_ID>
+    ```
+
+2.  **Proceed to Next Stages:** Continue with the subsequent FAST stages (VPC-SC, Security, Networking, Project Factory). The universe configuration established here is automatically propagated to these stages via the FAST cross-stage output mechanism.
+

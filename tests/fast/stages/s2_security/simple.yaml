@@ -117,6 +117,7 @@ values:
         \ [])\n  .hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter']\n)\n"
       title: Delegated IAM grant on keys.
     members:
+    - serviceAccount:iac-dp-dev-rw@test.iam.gserviceaccount.com
     - serviceAccount:iac-pf-rw@test.iam.gserviceaccount.com
     project: fast-dev-sec-core-0
     role: roles/cloudkms.admin

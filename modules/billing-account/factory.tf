@@ -44,7 +44,11 @@ locals {
             v.filter.credit_types_treatment
           )
         )
-        label              = try(v.filter.label, null)
+        label = try(v.filter.label, null)
+        period = try(v.filter.period, null) == null ? null : merge(
+          { calendar = null, end_date = null, start_date = null },
+          v.filter.period
+        )
         projects           = try(v.filter.projects, [])
         resource_ancestors = try(v.filter.resource_ancestors, [])
         services           = try(v.filter.services, null)

@@ -66,8 +66,8 @@ module "firewall-policy" {
       priority       = 1002
       enable_logging = true
       match = {
-        source_ranges = ["10.0.0.0/8"]
-        # source_tags    = ["tagValues/123456"]
+        source_ranges  = ["10.0.0.0/8"]
+        source_tags    = ["tagValues/123456"]
         layer4_configs = [{ protocol = "tcp", ports = ["22"] }]
       }
     }
@@ -173,6 +173,7 @@ module "firewall-policy" {
 ### Packet Mirroring Rules
 
 ### Packet Mirroring Rules
+
 Packet mirroring rules can be defined using the `ingress_mirroring_rules` and `egress_mirroring_rules` variables. This is supported only for Global Network Policies.
 
 ```hcl
@@ -345,7 +346,6 @@ issue-1995:
     - protocol: icmp
 # tftest-file id=ingress path=configs/ingress.yaml schema=firewall-policy-rules.schema.json
 ```
-
 
 You might need to reference external security profile groups in your firewall rules, using their Terraform ids. For example, `//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}`. To do so, list your security profile groups in the `security_profile_group_ids` map variable. Then reference them by key from your factories.
 

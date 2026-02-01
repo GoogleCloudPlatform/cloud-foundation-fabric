@@ -28,6 +28,7 @@ iam_bindings:
   key_delegated:
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-rw
+      - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
     role: roles/cloudkms.admin
     condition:
       title: Delegated IAM grant on keys.
@@ -36,6 +37,14 @@ iam_bindings:
           'iam.googleapis.com/modifiedGrantsByRole', [])
           .hasOnly(['roles/cloudkms.cryptoKeyEncrypterDecrypter']
         )
+
+# iam:
+#   # reset default role on new project
+#   roles/owner: []
+# log_buckets:
+#   _Default:
+#     retention: 90
+#     location: europe-west1
 
 # uncomment the following if parent is the security folder
 

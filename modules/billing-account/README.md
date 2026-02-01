@@ -247,7 +247,7 @@ module "billing-account" {
     budgets_data_path = "data/billing-budgets"
   }
 }
-# tftest modules=1 resources=2 files=test-1  inventory=budget-monitoring-channel.yaml
+# tftest modules=1 resources=2 files=test-1  inventory=budget-factory.yaml
 ```
 
 ```yaml
@@ -256,7 +256,11 @@ amount:
   units: 100
 filter:
   period:
-    calendar: MONTH
+    custom:
+      start_date:
+        day: 1
+        month: 1
+        year: 2026
   resource_ancestors:
   - folders/1234567890
 threshold_rules:
