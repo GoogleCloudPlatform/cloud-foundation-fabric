@@ -46,6 +46,14 @@ custom.firewallRestrictDirectoryServicesRule:
   rules:
     - enforce: true
 
+custom.firewallRestrictExplicitAllPortsPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictExplicitAllPortsRule:
+  rules:
+    - enforce: true
+
 custom.firewallRestrictInsecureProtocolsPolicyRule:
   rules:
     - enforce: true
@@ -83,6 +91,10 @@ custom.firewallRestrictNoSQLDatabasesPolicyRule:
     - enforce: true
 
 custom.firewallRestrictNoSQLDatabasesRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictPublicAccessPolicyRule:
   rules:
     - enforce: true
 

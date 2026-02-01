@@ -24,9 +24,9 @@ perimeters = {
   default = {
     use_explicit_dry_run_spec = true
     spec = {
-      access_levels       = ["geo_it", "identity_me"]
-      egress_policies     = ["test"]
-      ingress_policies    = ["fast-org-log-sinks", "test"]
+      access_levels       = ["$access_levels:geo_it", "$access_levels:identity_me"]
+      egress_policies     = ["$egress_policies:test"]
+      ingress_policies    = ["$ingress_policies:fast-org-log-sinks", "$ingress_policies:test"]
       restricted_services = ["$service_sets:restricted_services"]
       resources = [
         "projects/1234567890"

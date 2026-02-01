@@ -92,8 +92,11 @@ resource "google_container_cluster" "cluster" {
   dynamic "node_pool_auto_config" {
     for_each = try(local.cas.enabled, null) == true ? [""] : []
     content {
-      network_tags {
-        tags = var.node_pool_auto_config.network_tags
+      dynamic "network_tags" {
+        for_each = length(var.node_pool_auto_config.network_tags) > 0 ? [""] : []
+        content {
+          tags = var.node_pool_auto_config.network_tags
+        }
       }
       resource_manager_tags = var.node_pool_auto_config.resource_manager_tags
       node_kubelet_config {

@@ -22,6 +22,9 @@ global:
     domain: example.org
     id: 1234567890
     customer_id: abcd123456
+observability:
+  project_id: $project_ids:log-0
+  number: $project_numbers:log-0
 projects:
   defaults:
     prefix: ft0
@@ -29,9 +32,6 @@ projects:
       bigquery: $locations:primary
       logging: $locations:primary
       storage: $locations:primary
-    observability:
-      project_id: $project_ids:log-0
-      project_number: $project_numbers:log-0
   overrides: {}
 output_files:
   local_path: /tmp/fast-config

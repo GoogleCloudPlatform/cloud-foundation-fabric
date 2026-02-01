@@ -19,3 +19,5 @@ routes:
     dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"
+# dns_policy:
+#   logging: true

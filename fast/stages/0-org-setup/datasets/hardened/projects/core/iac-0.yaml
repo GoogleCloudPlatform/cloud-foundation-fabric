@@ -25,13 +25,37 @@ iam_by_principals:
     - roles/cloudbuild.builds.viewer
     - roles/iam.serviceAccountViewer
     - roles/iam.workloadIdentityPoolViewer
+    - roles/bigquery.jobUser
+    - roles/bigquery.dataViewer
+    - roles/compute.viewer
+    - roles/container.viewer
+    - roles/logging.viewer
+    - roles/monitoring.viewer
+    - roles/pubsub.viewer
+    - roles/securitycentermanagement.viewer
+    - roles/storage.objectViewer
     - $custom_roles:storage_viewer
-    - roles/viewer
+    - $custom_roles:cloudkms_viewer
   $iam_principals:service_accounts/iac-0/iac-org-rw:
     - roles/cloudbuild.builds.editor
     - roles/iam.serviceAccountAdmin
     - roles/iam.workloadIdentityPoolAdmin
-    - roles/owner
+    - roles/accesscontextmanager.policyAdmin
+    - roles/bigquery.admin
+    - roles/billing.projectManager
+    - roles/cloudasset.owner
+    - roles/cloudkms.admin
+    - roles/compute.admin
+    - roles/container.admin
+    - roles/datacatalog.admin
+    - roles/iam.roleAdmin
+    - roles/logging.admin
+    - roles/monitoring.admin
+    - roles/pubsub.admin
+    - roles/resourcemanager.projectIamAdmin
+    - roles/securitycentermanagement.admin
+    - roles/servicenetworking.networksAdmin
+    - roles/serviceusage.serviceUsageAdmin
     - roles/storage.admin
   $iam_principals:service_accounts/iac-0/iac-networking-rw:
     - roles/serviceusage.serviceUsageConsumer
@@ -45,6 +69,9 @@ iam_by_principals:
     - roles/serviceusage.serviceUsageConsumer
   $iam_principals:service_accounts/iac-0/iac-security-ro:
     - roles/serviceusage.serviceUsageConsumer
+iam:
+  # reset default role on new project
+  roles/owner: []
 services:
   - accesscontextmanager.googleapis.com
 # uncomment if you want to use Assured Workloads
@@ -83,6 +110,10 @@ kms:
       keys:
         storage:
           rotation_period: 7776000s
+log_buckets:
+  _Default:
+    retention: 90
+    location: europe-west1
 service_encryption_key_ids:
   storage.googleapis.com:
     - $kms_keys:iac-0/ew1/storage
@@ -104,6 +135,31 @@ buckets:
     description: Terraform state for the org-level automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
+    lifecycle_rules:
+      nearline-30:
+        action:
+          type: SetStorageClass
+          storage_class: NEARLINE
+        condition:
+          age: 30
+          matches_storage_class:
+            - STANDARD
+      coldline-90:
+        action:
+          type: SetStorageClass
+          storage_class: COLDLINE
+        condition:
+          age: 90
+          matches_storage_class:
+            - NEARLINE
+      archive-365:
+        action:
+          type: SetStorageClass
+          storage_class: ARCHIVE
+        condition:
+          age: 365
+          matches_storage_class:
+            - COLDLINE
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
@@ -114,6 +170,31 @@ buckets:
     description: Terraform state for stage automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
+    lifecycle_rules:
+      nearline-30:
+        action:
+          type: SetStorageClass
+          storage_class: NEARLINE
+        condition:
+          age: 30
+          matches_storage_class:
+            - STANDARD
+      coldline-90:
+        action:
+          type: SetStorageClass
+          storage_class: COLDLINE
+        condition:
+          age: 90
+          matches_storage_class:
+            - NEARLINE
+      archive-365:
+        action:
+          type: SetStorageClass
+          storage_class: ARCHIVE
+        condition:
+          age: 365
+          matches_storage_class:
+            - COLDLINE
     managed_folders:
       1-vpcsc:
         iam:
@@ -150,6 +231,31 @@ buckets:
     description: Terraform state for the org-level automation.
     versioning: true
     encryption_key: $kms_keys:iac-0/ew1/storage
+    lifecycle_rules:
+      nearline-30:
+        action:
+          type: SetStorageClass
+          storage_class: NEARLINE
+        condition:
+          age: 30
+          matches_storage_class:
+            - STANDARD
+      coldline-90:
+        action:
+          type: SetStorageClass
+          storage_class: COLDLINE
+        condition:
+          age: 90
+          matches_storage_class:
+            - NEARLINE
+      archive-365:
+        action:
+          type: SetStorageClass
+          storage_class: ARCHIVE
+        condition:
+          age: 365
+          matches_storage_class:
+            - COLDLINE
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw

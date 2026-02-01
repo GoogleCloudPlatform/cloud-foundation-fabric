@@ -1,0 +1,46 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/custom-role.schema.json
+# the following permissions are a descoped version of storage.admin
+
+name: cloudKmsViewer
+includedPermissions:
+  - cloudkms.autokeyConfigs.get
+  - cloudkms.cryptoKeyVersions.get
+  - cloudkms.cryptoKeyVersions.list
+  - cloudkms.cryptoKeys.get
+  - cloudkms.cryptoKeys.getIamPolicy
+  - cloudkms.cryptoKeys.list
+  - cloudkms.ekmConfigs.get
+  - cloudkms.ekmConfigs.getIamPolicy
+  - cloudkms.ekmConnections.get
+  - cloudkms.ekmConnections.getIamPolicy
+  - cloudkms.ekmConnections.list
+  - cloudkms.importJobs.get
+  - cloudkms.importJobs.getIamPolicy
+  - cloudkms.importJobs.list
+  - cloudkms.kajPolicyConfigs.get
+  - cloudkms.keyHandles.get
+  - cloudkms.keyHandles.list
+  - cloudkms.keyRings.get
+  - cloudkms.keyRings.getIamPolicy
+  - cloudkms.keyRings.list
+  - cloudkms.locations.get
+  - cloudkms.locations.list
+  - cloudkms.operations.get
+  - cloudkms.singleTenantHsmInstanceProposals.get
+  - cloudkms.singleTenantHsmInstanceProposals.list
+  - cloudkms.singleTenantHsmInstances.get
+  - cloudkms.singleTenantHsmInstances.list

@@ -17,7 +17,8 @@ custom.iamAllowedMembers:
   condition: |-
     resource.bindings.exists(binding,
       binding.members.exists(member,
-        !MemberSubjectEndsWith(member, ['@${organization.domain}', '.gserviceaccount.com'])
+        MemberSubjectStartsWith(member, ['user:', 'group:']) &&
+        !MemberSubjectEndsWith(member, ['@${organization.domain}', '${iam_principals.gcp-organization-admins}'])
       )
     )
   description: Ensure no binding are done with members outside the organization domain

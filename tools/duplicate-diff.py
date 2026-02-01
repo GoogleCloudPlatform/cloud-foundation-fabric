@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,15 +21,6 @@ import os
 
 # List of folders and files that are expected to have same content
 duplicates = [
-    # deep recursive folder comparison
-    [
-        "fast/stages/0-org-setup/datasets/classic/organization/custom-roles",
-        "fast/stages/0-org-setup/datasets/hardened/organization/custom-roles",
-    ],
-    [
-        "fast/stages/0-org-setup/datasets/classic/organization/tags",
-        "fast/stages/0-org-setup/datasets/hardened/organization/tags",
-    ],
     # schemas
     [
         "fast/stages/1-vpcsc/schemas/access-level.schema.json",

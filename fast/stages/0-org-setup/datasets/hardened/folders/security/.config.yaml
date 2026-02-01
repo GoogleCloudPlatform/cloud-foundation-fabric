@@ -1,0 +1,53 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/folder.schema.json
+
+name: Security
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-security-rw:
+    - roles/cloudkms.admin
+    - roles/logging.admin
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.projectDeleter
+    - roles/resourcemanager.projectIamAdmin
+    - roles/resourcemanager.tagUser
+    - roles/securitycenter.admin
+    - roles/serviceusage.serviceUsageAdmin
+  $iam_principals:service_accounts/iac-0/iac-security-ro:
+    - roles/browser
+    - roles/cloudkms.viewer
+    - roles/logging.viewer
+    - roles/resourcemanager.folderViewer
+    - roles/resourcemanager.tagViewer
+    - roles/securitycenter.viewer
+    - roles/serviceusage.serviceUsageViewer
+    - $custom_roles:logging_viewer
+  $iam_principals:service_accounts/iac-0/iac-pf-rw:
+    - roles/cloudkms.cryptoKeyEncrypterDecrypter
+  $iam_principals:service_accounts/iac-0/iac-pf-ro:
+    - roles/cloudkms.viewer
+    - $custom_roles:project_iam_viewer
+iam_bindings:
+  project_factory:
+    role: roles/resourcemanager.projectIamAdmin
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-pf-rw
+    condition:
+      title: Project factory delegated IAM grant.
+      expression: |
+        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
+          'roles/cloudkms.cryptoKeyEncrypterDecrypter'
+        ])

@@ -25,10 +25,10 @@ locals {
   })
   defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
   fast_defaults = {
-    billing_account = coalesce(
+    billing_account = try(coalesce(
       var.data_defaults.billing_account,
       var.billing_account.id
-    )
+    ), null)
     prefix = coalesce(
       var.data_defaults.prefix, var.prefix
     )

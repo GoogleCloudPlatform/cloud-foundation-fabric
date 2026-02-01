@@ -31,6 +31,7 @@ locals {
   })
   defaults = {
     billing_account = try(local._defaults.global.billing_account, null)
+    observability   = try(local._defaults.observability, null)
     organization = (
       try(local._defaults.global.organization.id, null) == null
       ? null
@@ -39,11 +40,6 @@ locals {
     prefix = try(
       local.project_defaults.defaults.prefix,
       local.project_defaults.overrides.prefix,
-      null
-    )
-    observability = try(
-      local.project_defaults.defaults.observability,
-      local.project_defaults.overrides.observability,
       null
     )
   }

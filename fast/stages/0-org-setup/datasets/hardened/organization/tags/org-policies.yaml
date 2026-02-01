@@ -23,3 +23,5 @@ values:
     description: "Allow all domains in essntial contacts org policy."
   allowed-policy-member-domains-all:
     description: "Allow all domains in DRS org policy."
+  allowed-sa-impersonation:
+    description: "Allow service account impersonation for tagged principals."

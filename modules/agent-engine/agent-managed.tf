@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
         var.agent_engine_config.max_instances != null ||
         var.agent_engine_config.min_instances != null ||
         var.agent_engine_config.resource_limits != null ||
+        var.networking_config != null ||
         length(var.agent_engine_config.environment_variables) > 0 ||
         length(var.agent_engine_config.secret_environment_variables) > 0
         ? { 1 = 1 }
@@ -66,6 +67,28 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
           content {
             name  = env.key
             value = env.value
+          }
+        }
+
+        dynamic "psc_interface_config" {
+          for_each = var.networking_config == null ? {} : { 1 = 1 }
+
+          content {
+            network_attachment = var.networking_config.network_attachment_id
+
+            dynamic "dns_peering_configs" {
+              for_each = var.networking_config.dns_peering_configs
+
+              content {
+                domain         = dns_peering_configs.key
+                target_network = dns_peering_configs.value.target_network_name
+                target_project = (
+                  dns_peering_configs.value.target_project_id == null
+                  ? var.project_id
+                  : dns_peering_configs.value.target_project_id
+                )
+              }
+            }
           }
         }
 

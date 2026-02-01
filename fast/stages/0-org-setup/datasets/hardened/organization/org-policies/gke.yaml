@@ -58,6 +58,10 @@ container.managed.enablePrivateNodes:
   rules:
     - enforce: true
 
+container.managed.enableSecretsEncryption:
+  rules:
+    - enforce: true
+
 container.managed.enableSecurityBulletinNotifications:
   rules:
     - enforce: true
@@ -131,6 +135,10 @@ custom.gkeRequireNodePoolAutoRepair:
     - enforce: true
 
 custom.gkeRequireNodePoolAutoUpgrade:
+  rules:
+    - enforce: true
+
+custom.gkeRequireNodePoolCMEKEncryption:
   rules:
     - enforce: true
 

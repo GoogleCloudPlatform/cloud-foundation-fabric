@@ -1,0 +1,87 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# sample subset of useful organization policies, edit to suit requirements
+# start of document (---) avoids errors if the file only contains comments
+
+# yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
+
+# The following needs to be commented out for GCD deployments
+# iam.allowedPolicyMemberDomains:
+#   rules:
+#     - allow:
+#         values:
+#           - is:${organization.customer_id}
+#       condition:
+#         title: Restrict member domains
+#         expression: |
+#           !resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
+#     - allow:
+#         all: true
+#       condition:
+#         title: Allow any member domain
+#         expression: |
+#           resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
+
+# For Workforce identity use-cases:
+# Switch from the above iam.allowedPolicyMemberDomains to the below iam.managed.allowedPolicyMembers configuration
+# To allow principalSet://iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID IAM assignments
+
+#iam.managed.allowedPolicyMembers:
+#  rules:
+#    - enforce: false
+#      condition:
+#        title: Allow any member domain
+#        expression: |
+#          resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
+#    - parameters: '{"allowedMemberSubjects": ["is:${organization.customer_id}"], "allowedPrincipalSets": ["//cloudresourcemanager.googleapis.com/organizations/${organization.id}"]}'
+#      enforce: true
+
+iam.disableAuditLoggingExemption:
+  rules:
+    - enforce: true
+
+iam.automaticIamGrantsForDefaultServiceAccounts:
+  rules:
+    - enforce: true
+
+iam.disableServiceAccountKeyCreation:
+  rules:
+    - enforce: true
+
+iam.disableServiceAccountKeyUpload:
+  rules:
+    - enforce: true
+
+# The following needs to be commented out for GCD deployments
+# iam.managed.disableServiceAccountApiKeyCreation:
+#   rules:
+#     - enforce: true
+
+iam.serviceAccountKeyExposureResponse:
+  rules:
+    - allow:
+        values:
+          - is:DISABLE_KEY
+
+iam.workloadIdentityPoolAwsAccounts:
+  rules:
+    - deny:
+        all: true
+
+iam.workloadIdentityPoolProviders:
+  rules:
+    - deny:
+        all: true
