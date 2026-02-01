@@ -19,6 +19,7 @@ Refactor the FAST Data Platform stage (`fast/stages/3-data-platform-dev`) to ali
 *   **Iterative & Parallel**: Development occurs in a parallel `2-data-platform` directory to avoid breaking the existing stage. We iterate through layers: Schemas -> Defaults -> Central Project -> Domains -> Products.
 *   **Context-First**: Leverage `local.ctx` and `var.context` for all cross-module dependency management, replacing ad-hoc variable passing.
 *   **Explicit Context Keys**: Use explicit prefixes (e.g., `$iam_principals:group-name`) in YAML configurations to trigger context replacement. This enables schema validation and clear intent.
+*   **Project Factory Alignment**: Always attempt to map high-level constructs (Domains, Products) to atomic `project-factory` resources (Project, Folder) defined within the dataset structure, minimizing custom Terraform logic. Prefer being explicit by implementing logic in the dataset (YAML) as a working example users can edit and reuse.
 *   **YAML Style**: Avoid using double quotes for strings in YAML unless necessary (e.g., for reserved characters or special formatting).
 *   **Configuration-Driven**: All logic should be driven by the YAML configuration files in `data/`, minimized hard-coded logic in Terraform files.
 
@@ -49,14 +50,30 @@ Refactor the FAST Data Platform stage (`fast/stages/3-data-platform-dev`) to ali
 
 ### 5.1 Configuration Structure & Schemas
 
-We will adopt the standard `schemas/` directory structure.
+We will adopt the standard `schemas/` directory structure and leverage existing `project-factory` schemas.
 
 *   **Defaults**: Reuse `fast/stages/2-project-factory/schemas/defaults.schema.json`.
-*   **Data Domains**: Create `schemas/data-domain.schema.json`. This schema will compose folder and project attributes, defining the configuration for the Domain Folder and the Shared Project.
-*   **Data Products**: Create `schemas/data-product.schema.json`. This schema will extend the project schema, adding specific attributes like `domain` (link to parent) and `dataset` configurations.
+*   **Data Domains**: Represented by a directory structure `data/domains/{domain}/`.
+    *   `_config.yaml`: Domain Folder configuration (uses `folder.schema.json`).
+    *   `shared.yaml`: Domain Shared Project configuration (uses `project.schema.json`).
+*   **Data Products**:
+    *   `products/_config.yaml` (optional): Products sub-folder configuration (uses `folder.schema.json`).
+    *   `products/{product}.yaml`: Product Project configuration (uses `project.schema.json`).
 *   **Auxiliary Resources**:
     *   `schemas/aspect-types.schema.json`: For `data/aspect-types/*.yaml`.
     *   `schemas/tags.schema.json`: For `data/tags/*.yaml` (if needed, or reuse project factory's tags schema).
+
+#### 5.1.1 Resource Embedding Strategy
+
+To balance configuration simplicity with modularity:
+
+*   **Embed in Project YAML (`central.yaml`, etc.)**:
+    *   **Secure Tags**: Use the `tags` attribute supported by `project-factory`.
+    *   **KMS Keys**: Use `service_encryption_key_ids` supported by `project-factory`.
+    *   **Service Accounts**: Use `service_accounts` supported by `project-factory`.
+*   **Separate Factories (YAML + Module)**:
+    *   **Aspect Types**: Too complex for embedding; use `data/aspect-types/*.yaml` and `module "dataplex-aspect-types"`.
+    *   **Policy Tags**: Too complex for embedding; use `data/tags/*.yaml` and `module "data-catalog-policy-tag"`.
 
 **`data/defaults.yaml`**
 ```yaml
@@ -67,72 +84,49 @@ projects:
       storage: EU
       logging: EU
       bigquery: EU
-    billing_account: "012345-678901-ABCDEF"
+    billing_account: 012345-678901-ABCDEF
 ```
 
-**`data/domains/marketing.yaml`** (Example)
+**`data/domains/marketing/_config.yaml`** (Domain Folder)
 ```yaml
-name: "Marketing Domain"
-folder_config:
-  iam:
-    roles/viewer:
-      - group:marketing-viewers@example.com
-project_config:
-  services:
-    - bigquery.googleapis.com
-service_accounts:
-  automation: # definition for domain automation SA
-    iam_self_roles: []
+name: Marketing Domain
+iam:
+  roles/viewer:
+    - group:marketing-viewers@example.com
 ```
 
-**`data/products/marketing-leads.yaml`** (Example)
+**`data/domains/marketing/shared.yaml`** (Shared Project)
 ```yaml
-domain: "marketing" # Link to parent domain
 services:
   - bigquery.googleapis.com
-iam:
-  roles/bigquery.dataEditor:
-    - group:product-devs@example.com
+service_accounts:
+  automation: # Explicit definition replacing old auto-generation
+    iam_self_roles: []
 ```
 
 ### 5.2 Transformation Logic (Terraform Locals)
 
-In `main.tf`, we will implement the standard loading pattern seen in stages 2.
+In `main.tf`, we will implement logic to traverse the `data/domains` directory structure and flatten it into `project-factory` inputs.
 
 **`main.tf`**
 ```hcl
 locals {
-  # ... paths ...
-  _defaults = yamldecode(file(local.paths.defaults))
-  
-  # Standard context merging logic
-  _ctx = { ... }
-  ctx = merge(local._ctx, { ... })
+  # ... defaults loading ...
 
-  # Project Defaults Logic
-  project_defaults = {
-    defaults = merge(
-      {
-        billing_account = var.billing_account.id
-        prefix          = var.prefix
-        # Migrate other key variables here
-      },
-      try(local._defaults.projects.defaults, {})
-    )
-    overrides = try(local._defaults.projects.overrides, {})
-  }
+  # Logic to traverse data/domains/ and generate:
+  # 1. Folders (Domain root folders, Products sub-folders)
+  # 2. Projects (Shared projects, Product projects)
+  # 3. Stitching parents automatically based on directory structure
 }
 ```
 
 **Logic for Domain/Product Transformation:**
-We will need to read `data/domains/*.yaml` and `data/products/*.yaml` and transform them into the `folders` and `projects` structures expected by `project-factory`.
-
-1.  **Domains**:
-    *   Map `data/domains/{name}.yaml` -> Folder `{name}`.
-    *   Map `data/domains/{name}.yaml` -> Folder `{name}/products`.
-    *   Map `data/domains/{name}.yaml` -> Project `{name}-shared`.
-2.  **Products**:
-    *   Map `data/products/{name}.yaml` -> Project `{name}` (parented under `{domain}/products` folder).
+1.  **Folders**:
+    *   `data/domains/{d}/_config.yaml` -> Folder `{d}` (Parent: Stage Folder).
+    *   `data/domains/{d}/products/_config.yaml` -> Folder `{d}-products` (Parent: Folder `{d}`).
+2.  **Projects**:
+    *   `data/domains/{d}/shared.yaml` -> Project `{d}-shared` (Parent: Folder `{d}`).
+    *   `data/domains/{d}/products/{p}.yaml` -> Project `{p}` (Parent: Folder `{d}-products`).
 
 ### 5.3 Integration with Project Factory
 
@@ -165,34 +159,41 @@ Refactoring will change the Terraform addresses of resources.
 
 **Action**: `moved` blocks will be critical. The logic should aim to produce predictable keys to minimize state friction.
 
-## 7. Constructs Mapping
+## 7. Constructs Mapping & Implementation Analysis
 
-### 7.1 Current High-Level Constructs
+### 7.1 Data Domains
 
-*   **Central Project**: Manually defined via `module "central-project"`. Holds Aspect Types, Policy Tags.
-*   **Data Domains**: Defined via `local.data_domains` (merging files/variables).
-    *   **Domain Folder**: `module "dd-folders"`.
-    *   **Products Sub-folder**: `module "dd-dp-folders"`.
-    *   **Shared Project**: `module "dd-projects"`.
-    *   **Service Accounts**: `module "dd-service-accounts"`.
-*   **Data Products**: Defined via `local.data_products`.
-    *   **Product Project**: `module "dp-projects"`.
-    *   **Service Accounts**: `module "dp-service-accounts"`.
-*   **Aspect Types**: Defined via `module "central-aspect-types"`.
-*   **Policy Tags**: Defined via `module "central-policy-tags"`.
+#### Analysis of Old Construct
+*   **Definition**: `data/data-domains/{domain}/_config.yaml`.
+*   **Resources**: Creates a Folder, a "Data Products" sub-folder, and a Shared Project. Automatically creates `iac-ro` and `iac-rw` service accounts.
+*   **Logic**: Complex custom logic in `factory.tf` to iterate and build resource maps.
 
-### 7.2 Target High-Level Constructs
+#### Implementation Plan (New)
+*   **Structure**: `datasets/classic/domains/{domain}/`.
+*   **Components**:
+    *   `_config.yaml`: Maps to `project-factory` **Folder** (Domain root).
+    *   `shared.yaml`: Maps to `project-factory` **Project** (Shared Project).
+    *   `products/_config.yaml`: Maps to `project-factory` **Folder** (Products sub-folder).
+*   **Automation**: Service accounts are defined explicitly in `shared.yaml` (via `service_accounts`), removing "magic" generation.
 
-*   **Central Project**: Defined in `data/projects/central.yaml` (or similar). Managed by `module "project-factory"`.
-*   **Data Domains**: Defined in `data/domains/*.yaml`.
-    *   **Folders**: Generated programmatically and passed to `project-factory`.
-    *   **Shared Project**: Generated programmatically and passed to `project-factory`.
-    *   **Service Accounts**: Defined within the domain YAML, passed to `project-factory` (project-level SAs).
-*   **Data Products**: Defined in `data/products/*.yaml`.
-    *   **Product Project**: Generated programmatically and passed to `project-factory`.
-    *   **Service Accounts**: Defined within the product YAML, passed to `project-factory`.
-*   **Aspect Types**: Defined in `data/aspect-types/*.yaml`. Managed by `module "dataplex-aspect-types"` (driven by YAML).
-*   **Policy Tags**: Defined in `data/tags/*.yaml` (future). Managed by `module "data-catalog-policy-tag"` (driven by YAML).
+### 7.2 Data Products
+
+#### Analysis of Old Construct
+*   **Definition**: `data/data-domains/{domain}/{product}.yaml`.
+*   **Resources**: Creates a Project under the "Data Products" sub-folder.
+*   **Logic**: Part of the same complex iteration in `factory.tf`.
+
+#### Implementation Plan (New)
+*   **Structure**: `datasets/classic/domains/{domain}/products/{product}.yaml`.
+*   **Components**:
+    *   `{product}.yaml`: Maps to `project-factory` **Project**.
+*   **Parenting**: Logic in `main.tf` stitches this project to the `products` folder of the domain.
+
+### 7.3 Other Constructs
+
+*   **Central Project**: Manually defined -> Defined in `central.yaml`.
+*   **Aspect Types**: Defined via module -> Defined in `data/aspect-types/*.yaml`.
+*   **Policy Tags**: Defined via module -> Defined in `data/tags/*.yaml`.
 
 ## 8. Development Strategy
 
