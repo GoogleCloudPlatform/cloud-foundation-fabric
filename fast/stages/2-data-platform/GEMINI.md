@@ -18,6 +18,8 @@ Refactor the FAST Data Platform stage (`fast/stages/3-data-platform-dev`) to ali
 *   **Context Definition & Alignment**: `defaults.yaml` serves as the authoritative source for static environment context (IAM principals, KMS keys) and baseline project configuration (common services, locations). Keys defined here (e.g., `dp-admin`) are the canonical references used across all Domain and Product YAMLs.
 *   **Iterative & Parallel**: Development occurs in a parallel `2-data-platform` directory to avoid breaking the existing stage. We iterate through layers: Schemas -> Defaults -> Central Project -> Domains -> Products.
 *   **Context-First**: Leverage `local.ctx` and `var.context` for all cross-module dependency management, replacing ad-hoc variable passing.
+*   **Explicit Context Keys**: Use explicit prefixes (e.g., `$iam_principals:group-name`) in YAML configurations to trigger context replacement. This enables schema validation and clear intent.
+*   **YAML Style**: Avoid using double quotes for strings in YAML unless necessary (e.g., for reserved characters or special formatting).
 *   **Configuration-Driven**: All logic should be driven by the YAML configuration files in `data/`, minimized hard-coded logic in Terraform files.
 
 ## 4. Current Architecture vs. Target Architecture

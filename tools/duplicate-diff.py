@@ -55,6 +55,7 @@ duplicates = [
     ],
     [
         "fast/stages/0-org-setup/schemas/folder.schema.json",
+        "fast/stages/2-data-platform/schemas/folder.schema.json",
         "fast/stages/2-networking/schemas/folder.schema.json",
         "fast/stages/2-project-factory/schemas/folder.schema.json",
         "fast/stages/2-security/schemas/folder.schema.json",
@@ -82,6 +83,7 @@ duplicates = [
     [
         "modules/project-factory/schemas/project.schema.json",
         "fast/stages/0-org-setup/schemas/project.schema.json",
+        "fast/stages/2-data-platform/schemas/project.schema.json",
         "fast/stages/2-networking/schemas/project.schema.json",
         "fast/stages/2-project-factory/schemas/project.schema.json",
         "fast/stages/2-security/schemas/project.schema.json",

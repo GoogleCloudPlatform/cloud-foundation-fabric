@@ -18,29 +18,38 @@
 
 projects:
   defaults:
-    billing_account: "012345-678901-ABCDEF"
+    billing_account: 012345-678901-ABCDEF
     locations:
-      storage: europe-west1
-      logging: europe-west1
-      bigquery: europe-west1
+      storage: $locations:primary
+      logging: $locations:primary
+      bigquery: $locations:primary
     services:
       - bigquery.googleapis.com
       - datacatalog.googleapis.com
       - logging.googleapis.com
       - monitoring.googleapis.com
       - storage.googleapis.com
+    service_encryption_key_ids:
+      storage:
+        - $kms_keys:storage-dev-primary
+      bq:
+        - $kms_keys:storage-dev-primary
 
 # environment-specific static contexts can be defined here
+# TODO: localize the following IAM principals
 
 context:
+  locations:
+    primary: europe-west1
   iam_principals:
-    dp-admin: "group:dp-admin@example.com"
-    dp-domain-0-admin: "group:dp-domain-0-admin@example.com"
-    dp-product-0-dev: "group:dp-product-0-dev@example.com"
-    data-consumer-bi: "group:data-consumer-bi@example.com"
-  kms_keys: {}
+    dp-admin: group:dp-admin@example.com
+    dp-domain-0-admin: group:dp-domain-0-admin@example.com
+    dp-product-0-dev: group:dp-product-0-dev@example.com
+    data-consumer-bi: group:data-consumer-bi@example.com
+  kms_keys:
+    storage-dev-primary: ""
   tag_values: {}
 
 output_files:
-  local_path: "~/.fast/outputs"
-  storage_bucket: "fast-outputs-bucket"
+  local_path: ~/.fast/outputs
+  storage_bucket: fast-outputs-bucket

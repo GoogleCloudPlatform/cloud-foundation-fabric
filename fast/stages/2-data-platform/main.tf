@@ -36,6 +36,7 @@ locals {
       },
       local._context.iam_principals
     )
+    kms_keys          = merge(var.kms_keys, local._context.kms_keys)
     project_ids       = merge(var.project_ids, local._context.project_ids)
     tag_values        = merge(var.tag_values, local._context.tag_values)
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)

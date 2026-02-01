@@ -1,15 +1,55 @@
-parent: "$folder_ids:data-platform-dev"
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../schemas/project.schema.json
+
+parent: $folder_ids:data-platform-dev
 labels:
   environment: dev
 iam_by_principals:
-  dp-admin:
+  $iam_principals:dp-admin:
     - roles/datacatalog.categoryAdmin
     - roles/dataplex.catalogAdmin
     - roles/dataplex.aspectTypeOwner
     - roles/resourcemanager.tagViewer
-  dp-domain-0-admin:
+  $iam_principals:dp-domain-0-admin:
     - roles/datacatalog.viewer
     - roles/dataplex.aspectTypeUser
-  dp-product-0-dev:
+  $iam_principals:dp-product-0-dev:
     - roles/datacatalog.viewer
     - roles/dataplex.aspectTypeUser
+# TODO: if using keys managed in this stage, configure the kms factory
+# to create keys in this project, and update defaults.yaml context
+# kms:
+#   keyrings:
+#     region-keyring:
+#       location: europe-west1
+#       keys:
+#         default:
+#           purpose: ENCRYPT_DECRYPT
+#           version_template:
+#             algorithm: GOOGLE_SYMMETRIC_ENCRYPTION
+#             protection_level: SOFTWARE
+#
+# TODO: if using Autokey, configure the handles here
+# kms:
+#   autokeys:
+#     compute-disk-ew1:
+#       location: europe-west1
+#       resource_type_selector: compute.googleapis.com/Disk
+service_encryption_key_ids:
+  storage.googleapis.com:
+    - $kms_keys:storage-dev-primary
+  bigquery.googleapis.com:
+    - $kms_keys:storage-dev-primary
