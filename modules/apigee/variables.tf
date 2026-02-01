@@ -149,3 +149,48 @@ variable "project_id" {
   description = "Project ID."
   type        = string
 }
+
+variable "security_profiles" {
+  description = "Security profiles configuration (ID => {description, profile_assessment_configs})."
+  type = map(object({
+    description = optional(string)
+    profile_assessment_configs = optional(object({
+      sanitize-user-prompt-policy-check = optional(string, null)
+      sanitize-model-response-policy-check = optional(string, null)
+      semantic-cache-lookup-policy-check = optional(string, null)
+      auth-policies-check = optional(string, null)
+      continue-on-error-auth-policies-check = optional(string, null)
+      access-control-policy-check = optional(string, null)
+      basic-auth-policy-check = optional(string, null)
+      hmac-policy-check = optional(string, null)
+      oauthv2-policy-check = optional(string, null)
+      validate-saml-assertion-policy-check = optional(string, null)
+      verify-api-key-policy-check = optional(string, null)      
+      verify-iam-policy-check = optional(string, null)
+      verify-jws-policy-check = optional(string, null)
+      verify-jwt-policy-check = optional(string, null)      
+      cors-policies-check = optional(string, null)
+      cors-policy-check = optional(string, null)
+      cors-assignmessage-policy-check = optional(string, null)
+      mediation-policies-check = optional(string, null)
+      soap-validation-policy-check = optional(string, null)
+      oas-validation-policy-check = optional(string, null)
+      tls-target-server-check = optional(string, null)
+      mtls-target-server-check = optional(string, null)
+      target-enforce-field-check = optional(string, null)      
+      threat-policies-check = optional(string, null)
+      continue-on-error-threat-policies = optional(string, null)
+      json-threat-protection-policy-check = optional(string, null)
+      regex-protection-policy-check = optional(string, null)
+      xml-threat-protection-policy-check = optional(string, null)
+      traffic-management-policies-check = optional(string, null)
+      lookup-cache-policy-check = optional(string, null)
+      quota-policy-check = optional(string, null)
+      response-cache-policy-check = optional(string, null)
+      spike-arrest-policy-check = optional(string, null)      
+    }), {})
+  }))
+  default  = {}
+  nullable = false
+}
+

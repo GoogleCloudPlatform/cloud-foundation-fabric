@@ -330,6 +330,29 @@ module "apigee" {
 # tftest modules=1 resources=1
 ```
 
+### Advanced API Security - Security profiles
+
+```hcl
+module "apigee" {
+  source     = "./fabric/modules/apigee"
+  project_id = "my-project"
+  addons_config = {
+    api_security = true
+  }
+  security_profiles = {
+    my-profile = {
+      description = "My security profile"
+      profile_assessment_configs = {
+        auth-policies-check      = "MAJOR"
+        mediation-policies-check = "MODERATE"
+        threat-policies-check    = "MINOR"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=2
+```
+
 ### IAM
 
 ```hcl

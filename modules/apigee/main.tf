@@ -192,3 +192,17 @@ resource "google_apigee_dns_zone" "dns_zones" {
     target_network_id = each.value.target_network_id
   }
 }
+
+resource "google_apigee_security_profile_v2" "security_profiles" {
+  for_each    = var.security_profiles
+  org_id      = local.org_id
+  profile_id  = each.key
+  description = each.value.description
+  dynamic "profile_assessment_configs" {
+    for_each = {for k,v in each.value.profile_assessment_configs: k => v if v != null}
+    content {
+      assessment = profile_assessment_configs.key
+      weight     = profile_assessment_configs.value
+    }
+  }
+}
