@@ -205,4 +205,5 @@ resource "google_apigee_security_profile_v2" "security_profiles" {
       weight     = profile_assessment_configs.value
     }
   }
+  depends_on = [ google_apigee_addons_config.addons_config ]
 }
