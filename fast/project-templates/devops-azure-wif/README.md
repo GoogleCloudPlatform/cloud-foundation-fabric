@@ -199,6 +199,8 @@ This example uses Microsoft-hosted agents, but also provides some basic starting
 
 ## Pipeline Configuration
 
+The pipelines need the [Azure Devops Terraform Task](https://marketplace.visualstudio.com/items?itemName=ms-devlabs.custom-terraform-tasks), so make sure this is available in your project.
+
 ### Included Examples
 
 Three sample pipelines are provided as examples:
