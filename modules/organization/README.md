@@ -579,6 +579,50 @@ cloudkmKeyRotationPeriod:
     - "cloudkms.googleapis.com/CryptoKey"
 ```
 
+## Security Command Center Mute Configs
+
+[Security Command Center Mute Configs](https://cloud.google.com/security-command-center/docs/how-to-mute-findings) can be defined via the `scc_mute_configs` variable:
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  scc_mute_configs = {
+    muteHighSeverity = {
+      description = "Mute high severity findings"
+      filter      = "severity=\"HIGH\""
+      type        = "DYNAMIC"
+    }
+  }
+}
+# tftest modules=1 resources=1 inventory=scc-mute-configs.yaml
+```
+
+### Security Command Center Mute Configs Factory
+
+Mute configs can also be specified via a factory. Each file is mapped to a mute config, where the config ID defaults to the file name.
+
+Mute configs defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  factories_config = {
+    scc_mute_configs = "data/scc_mute_configs"
+  }
+}
+# tftest modules=1 resources=1 files=mute-config-1 inventory=scc-mute-configs.yaml
+```
+
+```yaml
+# tftest-file id=mute-config-1 path=data/scc_mute_configs/mute-high-severity.yaml schema=scc-mute-config.schema.json
+muteHighSeverity:
+  description: "Mute high severity findings"
+  filter: "severity=\"HIGH\""
+  type: "DYNAMIC"
+```
+
 ## Cloud Asset Inventory Feeds
 
 Cloud Asset Inventory feeds allow you to monitor asset changes in real-time by publishing notifications to a Pub/Sub topic. Feeds configured at the organization level will monitor all resources within the organization.

@@ -132,6 +132,9 @@ resource "google_organization_iam_binding" "authoritative" {
     for v in each.value :
     lookup(local.ctx.iam_principals, v, v)
   ]
+  depends_on = [
+    google_org_policy_custom_constraint.constraint,
+  ]
 }
 
 resource "google_organization_iam_binding" "bindings" {
@@ -150,6 +153,9 @@ resource "google_organization_iam_binding" "bindings" {
     }
   }
   # ensuring that custom role exists is left to the caller, by leveraging custom_role_id output
+  depends_on = [
+    google_org_policy_custom_constraint.constraint,
+  ]
 }
 
 resource "google_organization_iam_member" "bindings" {
@@ -166,4 +172,7 @@ resource "google_organization_iam_member" "bindings" {
     }
   }
   # ensuring that custom role exists is left to the caller, by leveraging custom_role_id output
+  depends_on = [
+    google_org_policy_custom_constraint.constraint,
+  ]
 }
