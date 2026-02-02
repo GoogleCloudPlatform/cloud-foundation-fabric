@@ -35,6 +35,22 @@
         "organization"
       ]
     },
+    "observability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_id",
+        "number"
+      ],
+      "properties": {
+        "project_id": {
+          "type": "string"
+        },
+        "number": {
+          "type": "string"
+        }
+      }
+    },
     "projects": {
       "type": "object",
       "additionalProperties": false,

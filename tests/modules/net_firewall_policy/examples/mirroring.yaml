@@ -1,0 +1,88 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_network_security_security_profile.default:
+    custom_intercept_profile: []
+    custom_mirroring_profile:
+    - mirroring_deployment_groups: null
+      mirroring_endpoint_group: xxx
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    name: sec-profile
+    parent: organizations/1122334455
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    threat_prevention_profile: []
+    timeouts: null
+    type: CUSTOM_MIRRORING
+    url_filtering_profile: []
+  google_network_security_security_profile_group.default:
+    custom_intercept_profile: null
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    name: sec-profile-group
+    parent: organizations/1122334455
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    threat_prevention_profile: null
+    timeouts: null
+    url_filtering_profile: null
+  module.firewall-policy.google_compute_network_firewall_policy.net-global[0]:
+    description: null
+    name: test-mirroring
+    project: my-project
+    timeouts: null
+  module.firewall-policy.google_compute_network_firewall_policy_association.net-global["my-vpc"]:
+    attachment_target: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+    firewall_policy: test-mirroring
+    name: test-mirroring-my-vpc
+    project: my-project
+    timeouts: null
+  module.firewall-policy.google_compute_network_firewall_policy_packet_mirroring_rule.net-global["mirror/ingress/rule-1"]:
+    action: mirror
+    description: Mirror all traffic
+    direction: INGRESS
+    disabled: false
+    firewall_policy: test-mirroring
+    match:
+    - dest_ip_ranges: null
+      layer4_configs:
+      - ip_protocol: tcp
+        ports:
+        - '80'
+        - '443'
+      src_ip_ranges:
+      - 0.0.0.0/0
+    priority: 1000
+    project: my-project
+    rule_name: rule-1
+    target_secure_tags: []
+    timeouts: null
+    tls_inspect: null
+
+counts:
+  google_compute_network_firewall_policy: 1
+  google_compute_network_firewall_policy_association: 1
+  google_compute_network_firewall_policy_packet_mirroring_rule: 1
+  google_network_security_security_profile: 1
+  google_network_security_security_profile_group: 1
+  modules: 1
+  resources: 5

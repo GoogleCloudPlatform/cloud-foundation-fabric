@@ -4,6 +4,90 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "asset_feeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "billing_project",
+            "feed_output_config"
+          ],
+          "properties": {
+            "billing_project": {
+              "type": "string"
+            },
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "RESOURCE",
+                "IAM_POLICY",
+                "ORG_POLICY",
+                "ACCESS_POLICY",
+                "OS_INVENTORY",
+                "RELATIONSHIP"
+              ]
+            },
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "asset_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "feed_output_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pubsub_destination"
+              ],
+              "properties": {
+                "pubsub_destination": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "topic"
+                  ],
+                  "properties": {
+                    "topic": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "automation": {
       "type": "object",
       "additionalProperties": false,
@@ -149,6 +233,9 @@
         }
       }
     },
+    "deletion_protection": {
+      "type": "boolean"
+    },
     "factories_config": {
       "type": "object",
       "additionalProperties": false,
@@ -175,6 +262,9 @@
     },
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
+    },
+    "iam_by_principals_conditional": {
+      "$ref": "#/$defs/iam_by_principals_conditional"
     },
     "name": {
       "type": "string"
@@ -258,6 +348,9 @@
     },
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
+    },
+    "assured_workload_config": {
+      "$ref": "#/$defs/assured_workload_config"
     },
     "parent": {
       "type": "string",
@@ -450,6 +543,48 @@
         }
       }
     },
+    "iam_by_principals_conditional": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:)": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "condition",
+            "roles"
+          ],
+          "properties": {
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:roles/|\\$custom_roles:)"
+              }
+            }
+          }
+        }
+      }
+    },
     "iam_billing_roles": {
       "type": "object",
       "additionalProperties": false,
@@ -635,6 +770,95 @@
           "additionalProperties": false
         }
       }
+    },
+    "assured_workload_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "compliance_regime": {
+          "type": "string",
+          "enum": [
+            "ASSURED_WORKLOADS_FOR_PARTNERS",
+            "AU_REGIONS_AND_US_SUPPORT",
+            "CA_PROTECTED_B",
+            "CA_REGIONS_AND_SUPPORT",
+            "CJIS",
+            "COMPLIANCE_REGIME_UNSPECIFIED",
+            "EU_REGIONS_AND_SUPPORT",
+            "FEDRAMP_HIGH",
+            "FEDRAMP_MODERATE",
+            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
+            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
+            "HIPAA",
+            "HITRUST",
+            "IL2",
+            "IL4",
+            "IL5",
+            "IRS_1075",
+            "ISR_REGIONS_AND_SUPPORT",
+            "ISR_REGIONS",
+            "ITAR",
+            "JP_REGIONS_AND_SUPPORT",
+            "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
+            "REGIONAL_CONTROLS",
+            "US_REGIONAL_ACCESS"
+          ]
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "enable_sovereign_controls": {
+          "type": "boolean"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "partner": {
+          "type": "string",
+          "enum": [
+            "LOCAL_CONTROLS_BY_S3NS",
+            "PARTNER_UNSPECIFIED",
+            "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
+            "SOVEREIGN_CONTROLS_BY_CNTXT",
+            "SOVEREIGN_CONTROLS_BY_PSN",
+            "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
+            "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
+          ]
+        },
+        "partner_permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assured_workloads_monitoring": {
+              "type": "boolean"
+            },
+            "data_logs_viewer": {
+              "type": "boolean"
+            },
+            "service_access_approver": {
+              "type": "boolean"
+            }
+          }
+        },
+        "violation_notifications_enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "compliance_regime",
+        "display_name",
+        "location",
+        "organization"
+      ]
     }
   }
 }

@@ -15,6 +15,7 @@
 - **private**: *reference([private_zone](#refs-private_zone))*
 - **peering**: *reference([peering_zone](#refs-peering_zone))*
 - **forwarding**: *reference([forwarding_zone](#refs-forwarding_zone))*
+- **public**: *reference([public_zone](#refs-public_zone))*
 
 ## Definitions
 
@@ -41,3 +42,19 @@
     - **`^.*$`**: *string*
   - ⁺**client_networks**: *array*
     - items: *string*
+- **public_zone**<a name="refs-public_zone"></a>: *object*
+  <br>*additional properties: false*
+  - **enable_logging**: *boolean*
+  - **dnssec_config**: *object*
+    <br>*additional properties: false*
+    - **state**: *string*
+    - **non_existence**: *string*
+      <br>*enum: ['nsec', 'nsec3']*
+    - **key_signing_key**: *object*
+      <br>*additional properties: false*
+      - **algorithm**: *string*
+      - **key_length**: *number*
+    - **zone_signing_key**: *object*
+      <br>*additional properties: false*
+      - **algorithm**: *string*
+      - **key_length**: *number*

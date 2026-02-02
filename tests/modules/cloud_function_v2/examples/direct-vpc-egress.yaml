@@ -22,7 +22,7 @@ values:
       direct_vpc_egress: VPC_EGRESS_ALL_TRAFFIC
       direct_vpc_network_interface:
       - network: projects/xxx/global/networks/aaa
-        subnetwork: subnet_self_link
+        subnetwork: projects/my-project/regions/subnet_region/subnetworks/subnet_name
         tags:
         - tag1
         - tag2

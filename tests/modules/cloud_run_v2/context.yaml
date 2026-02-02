@@ -32,7 +32,6 @@ values:
     multi_region_settings: []
     name: test-run-context
     project: foo-test-0
-    scaling: []
     template:
     - annotations: null
       containers: []

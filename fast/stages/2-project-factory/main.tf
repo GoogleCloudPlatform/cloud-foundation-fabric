@@ -25,10 +25,10 @@ locals {
   })
   defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
   fast_defaults = {
-    billing_account = coalesce(
+    billing_account = try(coalesce(
       var.data_defaults.billing_account,
       var.billing_account.id
-    )
+    ), null)
     prefix = coalesce(
       var.data_defaults.prefix, var.prefix
     )
@@ -72,6 +72,11 @@ module "factory" {
     condition_vars = merge({
       subnet_self_links = {
         for v in local.subnet_self_links : v.key => v.link
+      }
+      organization = {
+        id          = var.organization.id
+        domain      = var.organization.domain
+        customer_id = var.organization.customer_id
       }
     }, local.context.condition_vars)
     custom_roles = merge(var.custom_roles, local.context.custom_roles)

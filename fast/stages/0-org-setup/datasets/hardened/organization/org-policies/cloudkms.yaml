@@ -18,7 +18,19 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+custom.cloudkmsAllowedAlgorithms:
+  rules:
+    - enforce: true
+
 custom.cloudkmsAllowedProtectionLevel:
+  rules:
+    - enforce: true
+
+custom.cloudkmsAllowedRotationPeriod:
+  rules:
+    - enforce: true
+
+custom.dataprocRequireDiskCmekEncryption:
   rules:
     - enforce: true
 
@@ -77,7 +89,9 @@ gcp.restrictNonCmekServices:
           - "run.googleapis.com"
           - "secretmanager.googleapis.com"
           - "securesourcemanager.googleapis.com"
-          - "securitycenter.googleapis.com"
+          # To enabled when needed: https://docs.cloud.google.com/security-command-center/docs/cmek
+          # CMEK needs can be configured at activation time only
+          # - "securitycenter.googleapis.com"
           - "spanner.googleapis.com"
           - "speech.googleapis.com"
           - "sqladmin.googleapis.com"

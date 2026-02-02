@@ -19,7 +19,7 @@ values:
     disabled: null
     display_name: null
     location: global
-    parent: organizations/organizations/1122334455
+    parent: organizations/1122334455
     session_duration: 3600s
     timeouts: null
     workforce_pool_id: test-pool

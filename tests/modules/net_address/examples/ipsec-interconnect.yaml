@@ -17,7 +17,7 @@ values:
     address: 10.255.255.0
     address_type: INTERNAL
     name: vpn-gw-range-1
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     prefix_length: 29
     project: project-id
     purpose: IPSEC_INTERCONNECT
@@ -26,7 +26,7 @@ values:
     address: 10.255.255.8
     address_type: INTERNAL
     name: vpn-gw-range-2
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     prefix_length: 29
     project: project-id
     purpose: IPSEC_INTERCONNECT

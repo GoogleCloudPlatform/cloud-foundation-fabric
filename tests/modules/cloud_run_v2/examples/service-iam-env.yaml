@@ -32,7 +32,6 @@ values:
     location: europe-west8
     name: example-hello
     project: project-id
-    scaling: []
     template:
     - annotations: null
       containers:

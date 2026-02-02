@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,17 @@
 # limitations under the License.
 
 values:
+  google_cloud_asset_folder_feed.default["test"]:
+    asset_names: null
+    asset_types: null
+    billing_project: test-project
+    condition: []
+    content_type: null
+    feed_id: test
+    feed_output_config:
+    - pubsub_destination:
+      - topic: projects/test-prod-audit-logs-0/topics/audit-logs
+    timeouts: null
   google_essential_contacts_contact.contact["$email_addresses:default"]:
     email: foo@example.com
     language_tag: en
@@ -24,6 +35,7 @@ values:
     display_name: Test Context
     parent: organizations/1234567890
     tags: null
+    timeouts: null
   google_folder_iam_audit_config.default["allServices"]:
     audit_log_config:
     - exempted_members:
@@ -48,6 +60,30 @@ values:
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: roles/viewer
+  google_folder_iam_binding.bindings["iam-bpc:$custom_roles:myrole_one-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleOne
+  google_folder_iam_binding.bindings["iam-bpc:$custom_roles:myrole_two-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleTwo
+  google_folder_iam_binding.bindings["iam-bpc:roles/storage.admin-expires_after_2020_12_31"]:
+    condition:
+    - description: Expiring at midnight of 2020-12-31
+      expression: request.time < timestamp("2021-01-01T00:00:00Z")
+      title: expires_after_2020_12_31
+    members:
+    - user:test-user@example.com
+    role: roles/storage.admin
   google_folder_iam_binding.bindings["myrole_two"]:
     condition:
     - description: null
@@ -60,6 +96,15 @@ values:
     condition: []
     member: user:test-user@example.com
     role: organizations/366118655033/roles/myRoleTwo
+  google_logging_folder_sink.sink["test-pubsub"]:
+    description: test-pubsub (Terraform-managed).
+    destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
+    disabled: false
+    exclusions: []
+    filter: log_id('cloudaudit.googleapis.com/activity')
+    include_children: true
+    intercept_children: false
+    name: test-pubsub
   google_privileged_access_manager_entitlement.default["net-admins"]:
     additional_notification_targets: []
     approval_workflow:
@@ -91,16 +136,26 @@ values:
     - not_mandatory: []
       unstructured:
       - {}
+    timeouts: null
+  google_pubsub_topic_iam_member.pubsub-sinks-binding["test-pubsub"]:
+    condition: []
+    project: test-prod-audit-logs-0
+    role: roles/pubsub.publisher
+    topic: audit-logs
   google_tags_tag_binding.binding["foo"]:
     tag_value: tagValues/1234567890
+    timeouts: null
 
 counts:
+  google_cloud_asset_folder_feed: 1
   google_essential_contacts_contact: 1
   google_folder: 1
   google_folder_iam_audit_config: 1
-  google_folder_iam_binding: 4
+  google_folder_iam_binding: 7
   google_folder_iam_member: 1
+  google_logging_folder_sink: 1
   google_privileged_access_manager_entitlement: 1
+  google_pubsub_topic_iam_member: 1
   google_tags_tag_binding: 1
   modules: 0
-  resources: 10
+  resources: 16

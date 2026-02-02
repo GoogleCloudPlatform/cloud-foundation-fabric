@@ -9,6 +9,7 @@
   - [First apply cycle](#first-apply-cycle)
     - [Default project](#default-project)
     - [Importing org policies](#importing-org-policies)
+    - [Importing existing organization level IAM bindings](#importing-existing-organization-level-iam-bindings)
     - [Local output files storage](#local-output-files-storage)
     - [Init and apply the stage](#init-and-apply-the-stage)
   - [Provider setup and final apply cycle](#provider-setup-and-final-apply-cycle)
@@ -166,19 +167,19 @@ If you are using an externally managed billing account, make sure user has Billi
 
 If the user applying this stage is starting new on GCP without any pre-existing project configured as default in `gcloud`, org policy creation will fail as the platform will be unable to track API usage quota. In those cases, manually create a temporary project, then enable the services need to bootstrap, and configure the project as default in `gcloud`. Once the first apply has run successfully, the `gcloud` default should be reset to the `iac-0` project, and the temporary one can be deleted.
 
-Create the project via the cloud console, which ensures a unique id is chosen and allows associating a billing account. Once the project has been created, copy its project id (not the name) and use it in the commands below.
+Create the project via the cloud console, which ensures a unique id is chosen and allows associating a billing account. **Make sure the project is linked to a billing account**, as some APIs (like Logging) require it to be enabled for quota tracking. Once the project has been created, copy its project id (not the name) and use it in the commands below.
 
 ```bash
 gcloud config set project [project id]
 gcloud services enable \
   bigquery.googleapis.com cloudbilling.googleapis.com cloudresourcemanager.googleapis.com \
   essentialcontacts.googleapis.com iam.googleapis.com logging.googleapis.com \
-  orgpolicy.googleapis.com serviceusage.googleapis.com 
+  orgpolicy.googleapis.com serviceusage.googleapis.com
 ```
 
 #### Importing org policies
 
-If your dataset includes org policies which are already set in the organization, you must either comment them out in the relevant YAML files or configure this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
+If your dataset includes org policies which are already set in the organization, the first apply will fail with a `409 Conflict` error. In this case, you must either comment them out in the relevant YAML files or configure this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
 
 ```bash
 gcloud org-policies list --organization 1234567890
@@ -189,18 +190,40 @@ compute.disableSerialPortAccess                  -            SET
 
 ```tfvars
 # create or edit the 0-org-setup.auto.tfvars.file
+# do NOT include the 'constraints/' prefix, use the names matching the YAML files
 org_policies_imports = [
-  "constraints/compute.managed.restrictProtocolForwardingCreationForTypes",
-  "constraints/essentialcontacts.managed.allowedContactDomains",
-  "constraints/iam.allowedPolicyMemberDomains",
-  "constraints/iam.automaticIamGrantsForDefaultServiceAccounts",
-  "constraints/iam.managed.disableServiceAccountKeyCreation",
-  "constraints/iam.managed.disableServiceAccountKeyUpload",
-  "constraints/storage.uniformBucketLevelAccess"
+  "compute.managed.restrictProtocolForwardingCreationForTypes",
+  "essentialcontacts.managed.allowedContactDomains",
+  "iam.allowedPolicyMemberDomains",
+  "iam.automaticIamGrantsForDefaultServiceAccounts",
+  "iam.managed.disableServiceAccountKeyCreation",
+  "iam.managed.disableServiceAccountKeyUpload",
+  "storage.uniformBucketLevelAccess"
 ]
 ```
 
 Once org policies have been imported, the variable definition can be removed from the tfvars file.
+
+#### Importing existing organization level IAM bindings
+
+For brownfield implementations you may need to import existing organization IAM policies. These snippets can help you add existing settings into the YAML file.
+
+Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4. It was tested using yq `v4.47.2`.
+
+To create `iam:` part of the `/organization/.config.yaml` file, you can use following snippet:
+
+```shell
+gcloud <resource> get-iam-policy <resource name> | yq '.bindings | map({"key": .role, "value": .members}) | from_entries'
+```
+
+To create `iam_by_principals:` part of the factory YAML file, you can use following snippet:
+
+```shell
+gcloud <resource> get-iam-policy <resource name> |  yq '
+[.bindings | .[] | .members[] as $member | { "member": $member, "role": .role}] |
+group_by(.member) | sort_by(.[0].member) | .[] | { .[0].member: map(.role)}
+'
+```
 
 #### Local output files storage
 
@@ -208,11 +231,12 @@ Like any other FAST stage, this stage creates output files that contain informat
 
 These files are only persisted by default on a special outputs bucket, but can additionally be also persisted to a local path. This is very useful during the initial deployment, as it allows rapid apply iteration cycles between stages, and provides an easy way to check or derive resource ids.
 
-To enable local output files storage, set the `outputs_location` variable in your tfvars file to a filesystem path dedicated to this organization's output files. The following snippet provides an example.
+To enable local output files storage, set the `output_files.local_path` attribute in your `defaults.yaml` file to a filesystem path dedicated to this organization's output files. The following snippet provides an example.
 
-```tfvars
-# create or edit the 0-org-setup.auto.tfvars.file
-outputs_location = "~/fast-configs/test-0"
+```yaml
+# defaults.yaml
+output_files:
+  local_path: "~/fast-configs/test-0"
 ```
 
 #### Init and apply the stage
@@ -302,7 +326,7 @@ This dataset implements a design where internal tenants are given control over p
 
 ### Enabling Optional Features
 
-The "Classic FAST" dataset is designed to be more lightweight than the "Hardened FAST" dataset regarding controls and policies. 
+The "Classic FAST" dataset is designed to be more lightweight than the "Hardened FAST" dataset regarding controls and policies.
 But, it fully supports more advanced features like SCC Custom SHA modules and Observability factories if needed.
 Note that the configuration described below is already implemented when using the "Hardened FAST" dataset.
 
@@ -328,7 +352,6 @@ To configure and provision observability resources such as log-based metrics and
 1. Create a folder `datasets/classic/observability`.
 2. Place your monitoring alerts and log-based metrics in this folder. Sample of existing alerts and log-based metrics can be found in the [hardened dataset](./datasets/hardened/observability).
 
-
 ## Detailed configuration
 
 The following sections explain how to configure and run this stage, and should be read in sequence when using it for the first time.
@@ -344,6 +367,7 @@ This is a simple reference table of available interpolation namespaces, refer to
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
 - `$iam_principals:service_agents/my_project/my_api`
+- `$iam_principals:organization/logging/kms`
 - `$kms_keys:my_key`
 - `$kms_keys:autokeys/my_key`
 - `$log_buckets:my_project/my_bucket`
@@ -636,7 +660,7 @@ The provided project configurations also create several key resources for the st
 
 ### CI/CD configuration
 
-CI/CD support is implemented via two different sets of connfigurations:
+CI/CD support is implemented via two different sets of configurations:
 
 - [Workload Identity](https://docs.cloud.google.com/iam/docs/workload-identity-federation) providers are defined in project configurations
 - CI/CD service accounts and templated workflow generation are defined in a dedicated configuration (`var.factories_config.cicd_workflows`).
@@ -666,7 +690,7 @@ workload_identity_pools:
 
 The above configuration can be easily extended to support multiple pools and providers, and is not limited to OpenId Connect but can also leverage other provider types. Check the project module or project schema for the full interface.
 
-Once one or more providers have been defined they can be referenced in the CI/CD cofniguration file. The following example defines a workflow configuration for this stage.
+Once one or more providers have been defined they can be referenced in the CI/CD configuration file. The following example defines a workflow configuration for this stage.
 
 ```yaml
 # cicd-workflows.yaml
@@ -693,6 +717,8 @@ org-setup:
 ```
 
 The configuration prepares a sample workflow file for the target repository, and configures IAM on the service accounts referenced in the configuration, so that repository tokens can impersonate them via the Workload Identity provider.
+
+The above setup supports GitHub and Gitlab providers out of the box. Azure Devops is also supported via a separate, more complex configuration [defined in a dedicated project template](../../project-templates/devops-azure-wif/).
 
 #### Read-write and read-only impersonation
 
@@ -778,8 +804,8 @@ This configuration adds Okta to the list of allowed Workload Identity providers 
       $service_account_ids:iac-0/iac-org-ro:
         - roles/iam.workloadIdentityUser
         - roles/iam.serviceAccountTokenCreator
-    iam: 
-      roles/iam.workloadIdentityUser: 
+    iam:
+      roles/iam.workloadIdentityUser:
         - principalSet://iam.googleapis.com/projects/<REPLACE_WITH_IAC_PROJECT_NUMBER>/locations/global/workloadIdentityPools/iac-0/*    // Modify this
 
   iac-org-cicd-rw:
@@ -788,8 +814,8 @@ This configuration adds Okta to the list of allowed Workload Identity providers 
       $service_account_ids:iac-0/iac-org-rw:
         - roles/iam.workloadIdentityUser
         - roles/iam.serviceAccountTokenCreator
-    iam: 
-      roles/iam.workloadIdentityUser: 
+    iam:
+      roles/iam.workloadIdentityUser:
         - principalSet://iam.googleapis.com/projects/<REPLACE_WITH_IAC_PROJECT_NUMBER>/locations/global/workloadIdentityPools/iac-0/*    // Modify this
 ```
 

@@ -190,23 +190,24 @@ resource "google_compute_region_disk" "disks" {
 }
 
 resource "google_compute_instance" "default" {
-  provider                  = google-beta
-  count                     = local.template_create ? 0 : 1
-  project                   = local.project_id
-  zone                      = local.zone
-  name                      = var.name
-  hostname                  = var.hostname
-  description               = var.description
-  tags                      = var.tags
-  machine_type              = var.instance_type
-  min_cpu_platform          = var.min_cpu_platform
-  can_ip_forward            = var.can_ip_forward
-  allow_stopping_for_update = var.options.allow_stopping_for_update
-  deletion_protection       = var.options.deletion_protection
-  enable_display            = var.enable_display
-  labels                    = var.labels
-  metadata                  = var.metadata
-  metadata_startup_script   = var.metadata_startup_script
+  provider                   = google-beta
+  count                      = local.template_create ? 0 : 1
+  project                    = local.project_id
+  zone                       = local.zone
+  name                       = var.name
+  hostname                   = var.hostname
+  description                = var.description
+  tags                       = var.tags
+  machine_type               = var.instance_type
+  min_cpu_platform           = var.min_cpu_platform
+  can_ip_forward             = var.can_ip_forward
+  allow_stopping_for_update  = var.options.allow_stopping_for_update
+  deletion_protection        = var.options.deletion_protection
+  key_revocation_action_type = var.options.key_revocation_action_type
+  enable_display             = var.enable_display
+  labels                     = var.labels
+  metadata                   = var.metadata
+  metadata_startup_script    = var.metadata_startup_script
   resource_policies = (
     var.resource_policies == null && var.instance_schedule == null
     ? null
