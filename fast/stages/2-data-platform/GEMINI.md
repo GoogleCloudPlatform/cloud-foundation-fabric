@@ -39,7 +39,7 @@ Refactor the FAST Data Platform stage (`fast/stages/3-data-platform-dev`) to ali
 - **Configuration**:
     - `data/defaults.yaml`: Stage-wide defaults (IAM, locations, etc.), validated by `defaults.schema.json`.
     - `data/domains/*.yaml`: Definitions for Data Domains (custom schema or adapted project schema).
-    - `data/products/*.yaml`: Definitions for Data Products (custom schema or adapted project schema).
+    - `data/[domain]/products/*.yaml`: Definitions for Data Products (custom schema or adapted project schema).
 - **Resource Creation**:
     - **One** `module "project-factory"` call in `factory-projects.tf` (or similar).
     - The module receives constructed `folders` and `projects` maps derived from the YAML configuration.
