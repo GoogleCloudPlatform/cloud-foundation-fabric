@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,22 +79,18 @@ locals {
             rule_group                = try(c.condition_prometheus_query_language.rule_group, null)
           }
           condition_threshold = !can(c.condition_threshold) ? null : {
-            comparison         = c.condition_threshold.comparison
-            duration           = c.condition_threshold.duration
-            denominator_filter = try(c.condition_threshold.denominator_filter, null)
-
-
+            comparison              = c.condition_threshold.comparison
+            duration                = c.condition_threshold.duration
+            denominator_filter      = try(c.condition_threshold.denominator_filter, null)
             evaluation_missing_data = try(c.condition_threshold.evaluation_missing_data, null)
             filter                  = try(c.condition_threshold.filter, null)
             threshold_value         = try(c.condition_threshold.threshold_value, null)
-            aggregations = !can(c.condition_threshold.aggregations) ? null : [
-              for a in c.condition_threshold.aggregations : {
-                per_series_aligner   = try(a.per_series_aligner, null)
-                group_by_fields      = try(a.group_by_fields, null)
-                cross_series_reducer = try(a.cross_series_reducer, null)
-                alignment_period     = try(a.alignment_period, null)
-              }
-            ]
+            aggregations = !can(c.condition_threshold.aggregations) ? null : {
+              per_series_aligner   = try(c.condition_threshold.aggregations.per_series_aligner, null)
+              group_by_fields      = try(c.condition_threshold.aggregations.group_by_fields, null)
+              cross_series_reducer = try(c.condition_threshold.aggregations.cross_series_reducer, null)
+              alignment_period     = try(c.condition_threshold.aggregations.alignment_period, null)
+            }
             denominator_aggregations = !can(c.condition_threshold.denominator_aggregations) ? null : {
               per_series_aligner   = try(c.condition_threshold.denominator_aggregations.per_series_aligner, null)
               group_by_fields      = try(c.condition_threshold.denominator_aggregations.group_by_fields, null)
@@ -116,7 +112,7 @@ locals {
         mime_type = try(v.documentation.mime_type, null)
         subject   = try(v.documentation.subject, null)
         links = !can(v.documentation.links) ? null : [
-          for l in v.documentation.link : {
+          for l in v.documentation.links : {
             display_name = try(l.display_name, null)
             url          = try(l.url, null)
         }]
@@ -207,9 +203,12 @@ resource "google_monitoring_alert_policy" "alerts" {
           duration                = condition_monitoring_query_language.value.duration
           query                   = condition_monitoring_query_language.value.query
           evaluation_missing_data = condition_monitoring_query_language.value.evaluation_missing_data
-          trigger {
-            count   = condition_monitoring_query_language.value.trigger.count
-            percent = condition_monitoring_query_language.value.trigger.percent
+          dynamic "trigger" {
+            for_each = condition_monitoring_query_language.value.trigger[*]
+            content {
+              count   = trigger.value.count
+              percent = trigger.value.percent
+            }
           }
         }
       }
@@ -247,9 +246,10 @@ resource "google_monitoring_alert_policy" "alerts" {
           dynamic "denominator_aggregations" {
             for_each = condition_threshold.value.denominator_aggregations[*]
             content {
-              alignment_period   = denominator_aggregations.value.alignment_period
-              group_by_fields    = denominator_aggregations.value.group_by_fields
-              per_series_aligner = denominator_aggregations.value.per_series_aligner
+              alignment_period     = denominator_aggregations.value.alignment_period
+              cross_series_reducer = denominator_aggregations.value.cross_series_reducer
+              group_by_fields      = denominator_aggregations.value.group_by_fields
+              per_series_aligner   = denominator_aggregations.value.per_series_aligner
             }
           }
           dynamic "forecast_options" {

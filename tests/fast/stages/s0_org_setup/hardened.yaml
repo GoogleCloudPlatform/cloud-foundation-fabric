@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -7660,6 +7660,7 @@ values:
     organization: '1234567890'
     timeouts: null
   module.organization[0].google_tags_tag_key.default["context"]:
+    allowed_values_regex: null
     description: Organization-level contexts.
     parent: organizations/1234567890
     purpose: null
@@ -7667,6 +7668,7 @@ values:
     short_name: context
     timeouts: null
   module.organization[0].google_tags_tag_key.default["environment"]:
+    allowed_values_regex: null
     description: Organization-level environments.
     parent: organizations/1234567890
     purpose: null
@@ -7674,6 +7676,7 @@ values:
     short_name: environment
     timeouts: null
   module.organization[0].google_tags_tag_key.default["org-policies"]:
+    allowed_values_regex: null
     description: Organization policy condition tags.
     parent: organizations/1234567890
     purpose: null
@@ -8057,15 +8060,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.folder_id
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8116,13 +8114,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8177,14 +8172,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.database_id
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8231,15 +8222,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.project_id
-          - metric.label.role_name
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8280,12 +8266,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8327,14 +8311,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.firewall_rule_id
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8375,14 +8355,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.network_id
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8425,14 +8401,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.route_id
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8472,15 +8444,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.organization_id
-          - metric.label.folder_id
-          - metric.label.project_id
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
@@ -8522,15 +8489,10 @@ values:
       condition_sql: []
       condition_threshold:
       - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.principal
-          - metric.label.method_name
-          - metric.label.project_id
-          - metric.label.location
-          - metric.label.bucket_name
-          per_series_aligner: ALIGN_SUM
+        - alignment_period: null
+          cross_series_reducer: null
+          group_by_fields: null
+          per_series_aligner: null
         comparison: COMPARISON_GT
         denominator_aggregations: []
         denominator_filter: null
