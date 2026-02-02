@@ -154,7 +154,7 @@ variable "maintenance_config" {
   description = "Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'."
   type = object({
     maintenance_window = optional(object({
-      day          = optional(number, null)
+      day          = optional(number)
       hour         = number
       update_track = optional(string, null)
     }), null)
@@ -169,12 +169,9 @@ variable "maintenance_config" {
     condition = (
       try(var.maintenance_config.maintenance_window, null) == null ? true : (
         # Maintenance window day validation below
-        (
-          try(var.maintenance_config.maintenance_window.day, null) == null ? true :
-          (
-            var.maintenance_config.maintenance_window.day >= 1 &&
-            var.maintenance_config.maintenance_window.day <= 7
-          )
+        var.maintenance_config.maintenance_window.day == null || (
+          var.maintenance_config.maintenance_window.day >= 1 &&
+          var.maintenance_config.maintenance_window.day <= 7
         ) &&
         # Maintenance window hour validation below
         var.maintenance_config.maintenance_window.hour >= 0 &&
@@ -187,7 +184,6 @@ variable "maintenance_config" {
     error_message = "Maintenance window day must be between 1 and 7 or null, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
   }
 }
-
 
 variable "managed_connection_pooling_config" {
   description = "Configuration for Managed Connection Pooling. NOTE: This feature is only available for PostgreSQL on Enterprise Plus edition instances."
