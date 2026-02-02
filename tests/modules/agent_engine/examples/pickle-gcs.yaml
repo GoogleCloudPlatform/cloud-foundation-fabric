@@ -51,7 +51,7 @@ values:
       package_spec:
       - dependency_files_gcs_uri: dependencies.tar.gz
         pickle_object_gcs_uri: pickle.pkl
-        python_version: '3.12'
+        python_version: '3.13'
         requirements_gcs_uri: requirements.txt
       service_account: my-agent@project-id.iam.gserviceaccount.com
       source_code_spec: []

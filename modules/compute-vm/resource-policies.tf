@@ -184,10 +184,10 @@ resource "google_compute_region_disk_resource_policy_attachment" "attached" {
   disk = (
     each.value.source_type == "attach"
     ? each.value.source
-    : google_compute_disk.disks[each.value.disk_key].name
+    : google_compute_region_disk.disks[each.value.disk_key].name
   )
   depends_on = [
     google_compute_instance.default,
-    google_compute_disk.disks
+    google_compute_region_disk.disks
   ]
 }

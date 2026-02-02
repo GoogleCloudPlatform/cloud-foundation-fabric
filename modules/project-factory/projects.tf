@@ -87,6 +87,7 @@ module "projects" {
   prefix              = each.value.prefix
   project_reuse       = each.value.project_reuse
   alerts              = try(each.value.alerts, null)
+  asset_feeds         = each.value.asset_feeds
   auto_create_network = try(each.value.auto_create_network, false)
   compute_metadata    = try(each.value.compute_metadata, {})
   # TODO: concat lists for each key

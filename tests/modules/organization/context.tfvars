@@ -41,6 +41,16 @@ context = {
     "test/one" = "tagValues/1234567890"
   }
 }
+asset_feeds = {
+  test = {
+    billing_project = "test-project"
+    feed_output_config = {
+      pubsub_destination = {
+        topic = "$pubsub_topics:test"
+      }
+    }
+  }
+}
 contacts = {
   "$email_addresses:default" = ["ALL"]
 }

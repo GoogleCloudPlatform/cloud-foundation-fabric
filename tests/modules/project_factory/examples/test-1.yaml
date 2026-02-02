@@ -13,5 +13,10 @@
 # limitations under the License.
 
 values:
+  module.project-factory.module.projects["test-0"].google_project.project[0]:
+    project_id: foo-test-0
   module.project-factory.module.projects["test-1"].google_project.project[0]:
     name: Test Project 1
+    project_id: test-1
+  module.project-factory.module.projects["test-2"].google_project.project[0]:
+    project_id: bar-test-2

@@ -34,6 +34,7 @@ locals {
     # set data_overrides.<field> to "", [] or {} to ensure, that empty value is always passed, or do
     # the same in _projects_input to prevent falling back to default value
     for k, v in local._projects_input : k => merge(v, {
+      asset_feeds = try(v.asset_feeds, {})
       billing_account = try(coalesce( # type: string
         local.data_defaults.overrides.billing_account,
         try(v.billing_account, null),
@@ -79,13 +80,16 @@ locals {
           local.data_defaults.defaults.parent
         ), null
       )
-      prefix = try( # type: string, nullable
-        coalesce(
-          local.data_defaults.overrides.prefix,
-          try(v.prefix, null),
-          local.data_defaults.defaults.prefix
-        ), null
-      )
+      prefix = try(
+        (
+          local.data_defaults.overrides.prefix != null
+          ? local.data_defaults.overrides.prefix
+          : (
+            try(v.prefix, "-") == "-"
+            ? local.data_defaults.defaults.prefix
+            : v.prefix
+          )
+      ), null)
       project_reuse = ( # type: object({...})
         try(v.project_reuse, null) != null
         ? merge(

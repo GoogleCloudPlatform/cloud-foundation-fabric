@@ -64,10 +64,11 @@ module "folder-1" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies     = lookup(each.value, "org_policies", {})
-  pam_entitlements = lookup(each.value, "pam_entitlements", {})
-  tag_bindings     = lookup(each.value, "tag_bindings", {})
-  context          = local.ctx
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  context                 = local.ctx
 }
 
 module "folder-1-iam" {
@@ -75,7 +76,8 @@ module "folder-1-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  id = module.folder-1[each.key].id
+  id          = module.folder-1[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -113,9 +115,10 @@ module "folder-2" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies     = lookup(each.value, "org_policies", {})
-  pam_entitlements = lookup(each.value, "pam_entitlements", {})
-  tag_bindings     = lookup(each.value, "tag_bindings", {})
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
@@ -129,7 +132,8 @@ module "folder-2-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  id = module.folder-2[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
+  id          = module.folder-2[each.key].id
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -170,9 +174,10 @@ module "folder-3" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies     = lookup(each.value, "org_policies", {})
-  pam_entitlements = lookup(each.value, "pam_entitlements", {})
-  tag_bindings     = lookup(each.value, "tag_bindings", {})
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
@@ -186,7 +191,8 @@ module "folder-3-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  id = module.folder-3[each.key].id
+  id          = module.folder-3[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
@@ -227,9 +233,10 @@ module "folder-4" {
     org_policies           = try(each.value.factories_config.org_policies, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
   }
-  org_policies     = lookup(each.value, "org_policies", {})
-  pam_entitlements = lookup(each.value, "pam_entitlements", {})
-  tag_bindings     = lookup(each.value, "tag_bindings", {})
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
@@ -243,7 +250,8 @@ module "folder-4-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
-  id = module.folder-4[each.key].id
+  id          = module.folder-4[each.key].id
+  asset_feeds = lookup(each.value, "asset_feeds", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)

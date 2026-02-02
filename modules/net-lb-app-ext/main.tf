@@ -120,10 +120,11 @@ resource "google_compute_target_http_proxy" "new" {
   count = (
     var.protocol == "HTTP" && !var.use_classic_version ? 1 : 0
   )
-  project     = var.project_id
-  name        = coalesce(var.https_proxy_config.name, var.name)
-  description = var.http_proxy_config.description
-  url_map     = google_compute_url_map.default.id
+  project                     = var.project_id
+  name                        = coalesce(var.http_proxy_config.name, var.name)
+  description                 = var.http_proxy_config.description
+  http_keep_alive_timeout_sec = var.http_proxy_config.http_keepalive_timeout
+  url_map                     = google_compute_url_map.default.id
 }
 
 resource "google_compute_target_https_proxy" "new" {

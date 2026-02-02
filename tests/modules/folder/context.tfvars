@@ -21,8 +21,21 @@ context = {
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
     myuser  = "user:test-user@example.com"
   }
+  pubsub_topics = {
+    test = "projects/test-prod-audit-logs-0/topics/audit-logs"
+  }
   tag_values = {
     "test/one" = "tagValues/1234567890"
+  }
+}
+asset_feeds = {
+  test = {
+    billing_project = "test-project"
+    feed_output_config = {
+      pubsub_destination = {
+        topic = "$pubsub_topics:test"
+      }
+    }
   }
 }
 contacts = {
@@ -80,6 +93,13 @@ logging_data_access = {
       exempted_members = ["$iam_principals:mygroup"]
     }
     DATA_READ = {}
+  }
+}
+logging_sinks = {
+  test-pubsub = {
+    destination = "$pubsub_topics:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "pubsub"
   }
 }
 pam_entitlements = {

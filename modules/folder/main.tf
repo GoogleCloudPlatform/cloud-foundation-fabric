@@ -38,7 +38,7 @@ locals {
     : (
       try(startswith(var.parent, "folders/"))
       ? var.parent
-      : null
+      : lookup(local.ctx.folder_ids, var.parent, null)
     )
   )
 }
@@ -89,7 +89,7 @@ resource "google_assured_workloads_workload" "folder" {
   compliance_regime            = var.assured_workload_config.compliance_regime
   display_name                 = var.assured_workload_config.display_name
   location                     = var.assured_workload_config.location
-  organization                 = var.assured_workload_config.organization
+  organization                 = templatestring(var.assured_workload_config.organization, var.context.condition_vars)
   enable_sovereign_controls    = var.assured_workload_config.enable_sovereign_controls
   labels                       = var.assured_workload_config.labels
   partner                      = var.assured_workload_config.partner
