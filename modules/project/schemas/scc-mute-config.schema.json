@@ -3,7 +3,7 @@
   "title": "SCC Mute Configurations",
   "type": "object",
   "patternProperties": {
-    "^[a-z0-9-]+$": {
+    "^[a-zA-Z]+$": {
       "type": "object",
       "required": [
         "filter"

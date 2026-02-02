@@ -4,7 +4,7 @@
 
 ## Properties
 
-- **`^[a-z0-9-]+$`**: *object*
+- **`^[a-zA-Z]+$`**: *object*
   - **description**: *string*
   - ⁺**filter**: *string*
   - **type**: *string*
