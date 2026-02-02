@@ -19,7 +19,7 @@ variable "scc_mute_configs" {
   type = map(object({
     description = optional(string)
     filter      = string
-    type        = optional(string, "STATIC")
+    type        = optional(string, "DYNAMIC")
   }))
   default  = {}
   nullable = false
