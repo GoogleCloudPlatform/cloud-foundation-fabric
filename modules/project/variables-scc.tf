@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+variable "scc_mute_configs" {
+  description = "SCC mute configurations keyed by name."
+  type = map(object({
+    description = optional(string)
+    filter      = string
+    type        = optional(string, "STATIC")
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "scc_sha_custom_modules" {
   description = "SCC custom modules keyed by module name."
   type = map(object({
