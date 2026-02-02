@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- variable "scc_mute_configs" {
+variable "scc_mute_configs" {
   description = "SCC mute configurations keyed by name."
   type = map(object({
     description = optional(string)
