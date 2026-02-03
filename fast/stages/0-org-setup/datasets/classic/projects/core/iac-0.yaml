@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,11 +83,17 @@ org_policies:
             - https://token.actions.githubusercontent.com
             - https://gitlab.com
             - https://app.terraform.io
+factories_config:
+  observability: datasets/classic/observability/iac-0
 data_access_logs:
   storage.googleapis.com:
     DATA_READ: {}
     DATA_WRITE: {}
   sts.googleapis.com:
+    DATA_READ: {}
+    DATA_WRITE: {}
+  # required to capture service account impersonation events
+  iam.googleapis.com:
     DATA_READ: {}
     DATA_WRITE: {}
 buckets:
