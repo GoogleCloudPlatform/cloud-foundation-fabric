@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ resource "google_monitoring_notification_channel" "channels" {
       v
     )
   }
-  user_labels  = each.value.user_labels
+  user_labels = each.value.user_labels
   dynamic "sensitive_labels" {
     for_each = each.value.sensitive_labels[*]
     content {
