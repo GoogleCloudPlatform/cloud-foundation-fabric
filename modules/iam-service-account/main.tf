@@ -59,7 +59,7 @@ locals {
     try(var.service_account_reuse.use_data_source, null) == true
   )
   project_id_no_universe = element(split(":", local.project_id), 1)
-  # reassemble project id for cases where we are resuing service account
+  # reassemble project id for cases where we are reusing service account
   project_id_universe = (
     local.universe == ""
     ? local.project_id
