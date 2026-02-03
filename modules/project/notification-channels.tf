@@ -45,7 +45,15 @@ resource "google_monitoring_notification_channel" "channels" {
   description  = each.value.description
   display_name = each.value.display_name
   enabled      = each.value.enabled
-  labels       = each.value.labels
+  labels = each.value.labels == null ? null : {
+    for k, v in each.value.labels :
+    # allow interpolation of email addresses and pubsub topics
+    k => try(
+      local.ctx.email_addresses[v],
+      local.ctx.pubsub_topics[v],
+      v
+    )
+  }
   user_labels  = each.value.user_labels
   dynamic "sensitive_labels" {
     for_each = each.value.sensitive_labels[*]
