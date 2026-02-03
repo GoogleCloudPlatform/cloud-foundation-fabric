@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Bootstrap Defaults",
+  "title": "Data Platform Defaults",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -473,6 +473,21 @@
               "required": [
                 "perimeter_name"
               ]
+            }
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "aspect_types": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "location": {
+              "type": "string"
             }
           }
         }

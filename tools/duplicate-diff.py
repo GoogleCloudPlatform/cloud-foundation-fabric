@@ -27,6 +27,7 @@ duplicates = [
         "modules/vpc-sc/schemas/access-level.schema.json",
     ],
     [
+        "fast/stages/2-data-platform/schemas/aspect-type.schema.json",
         "fast/stages/3-data-platform-dev/schemas/aspect-type.schema.json",
         "modules/dataplex-aspect-types/schemas/aspect-type.schema.json",
     ],
@@ -99,6 +100,7 @@ duplicates = [
     ],
     [
         "fast/stages/0-org-setup/schemas/tags.schema.json",
+        "fast/stages/2-data-platform/schemas/tags.schema.json",
         "modules/project/schemas/tags.schema.json",
         "modules/organization/schemas/tags.schema.json",
     ],

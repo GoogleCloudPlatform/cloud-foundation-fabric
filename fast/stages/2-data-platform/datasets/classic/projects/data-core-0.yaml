@@ -29,6 +29,14 @@ iam_by_principals:
   $iam_principals:dp-product-0-dev:
     - roles/datacatalog.viewer
     - roles/dataplex.aspectTypeUser
+factories_config:
+  tags: ../tags/data-core-0
+# the following assumes keys are centrally managed via the security stage
+service_encryption_key_ids:
+  storage.googleapis.com:
+    - $kms_keys:storage-dev-primary
+  bigquery.googleapis.com:
+    - $kms_keys:storage-dev-primary
 # TODO: if using keys managed in this stage, configure the kms factory
 # to create keys in this project, and update defaults.yaml context
 # kms:
@@ -48,8 +56,3 @@ iam_by_principals:
 #     compute-disk-ew1:
 #       location: europe-west1
 #       resource_type_selector: compute.googleapis.com/Disk
-service_encryption_key_ids:
-  storage.googleapis.com:
-    - $kms_keys:storage-dev-primary
-  bigquery.googleapis.com:
-    - $kms_keys:storage-dev-primary

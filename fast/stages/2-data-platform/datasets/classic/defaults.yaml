@@ -32,22 +32,28 @@ projects:
     service_encryption_key_ids:
       storage:
         - $kms_keys:storage-dev-primary
+        # TODO: if keys are managed in the central project refer to those here
+        # - $kms_keys:central/default/storage
       bq:
         - $kms_keys:storage-dev-primary
+        # TODO: if keys are managed in the central project refer to those here
+        # - $kms_keys:central/default/storage
+
+resources:
+  aspect_types:
+    location: $locations:primary
 
 # environment-specific static contexts can be defined here
-# TODO: localize the following IAM principals
 
 context:
   locations:
     primary: europe-west1
+  # TODO: localize the following IAM principals
   iam_principals:
     dp-admin: group:dp-admin@example.com
     dp-domain-0-admin: group:dp-domain-0-admin@example.com
     dp-product-0-dev: group:dp-product-0-dev@example.com
     data-consumer-bi: group:data-consumer-bi@example.com
-  kms_keys:
-    storage-dev-primary: ""
   tag_values: {}
 
 output_files:

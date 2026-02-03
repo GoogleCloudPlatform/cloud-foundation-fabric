@@ -14,7 +14,7 @@
 
 # yaml-language-server: $schema=../../../../../schemas/folder.schema.json
 
-name: Marketing
+name: Domain 0
 iam:
   roles/viewer:
-    - group:marketing-viewers@example.com
+    - group:dp-domain-0-admin@example.com
