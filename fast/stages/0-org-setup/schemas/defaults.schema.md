@@ -14,6 +14,10 @@
     - **customer_id**: *string*
     - **domain**: *string*
     - ⁺**id**: *integer*
+- **observability**: *object*
+  <br>*additional properties: false*
+  - ⁺**project_id**: *string*
+  - ⁺**number**: *string*
 - **projects**: *object*
   <br>*additional properties: false*
   - **defaults**: *object*

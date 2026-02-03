@@ -53,7 +53,7 @@ resource "google_org_policy_custom_constraint" "constraint" {
   display_name   = each.value.display_name
   description    = each.value.description
   action_type    = each.value.action_type
-  condition      = each.value.condition
+  condition      = templatestring(each.value.condition, var.context.condition_vars)
   method_types   = each.value.method_types
   resource_types = each.value.resource_types
 }
