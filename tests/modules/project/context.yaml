@@ -44,6 +44,17 @@ values:
     condition: []
     crypto_key_id: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  google_logging_metric.metrics["test-metric"]:
+    bucket_name: logging.googleapis.com/projects/my-project/locations/global/buckets/audit-bucket
+    bucket_options: []
+    description: null
+    disabled: null
+    filter: resource.type="gce_instance"
+    label_extractors: null
+    name: test-metric
+    project: my-project
+    timeouts: null
+    value_extractor: null
   google_logging_project_sink.sink["test-pubsub"]:
     custom_writer_identity: null
     description: test-pubsub (Terraform-managed).
@@ -54,6 +65,60 @@ values:
     name: test-pubsub
     project: my-project
     unique_writer_identity: true
+  google_monitoring_alert_policy.alerts["test-alert"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations: []
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 60s
+        evaluation_missing_data: null
+        filter: resource.type="gce_instance" AND metric.type="compute.googleapis.com/instance/cpu/utilization"
+        forecast_options: []
+        threshold_value: null
+        trigger: []
+      display_name: test-condition
+    display_name: Test Alert
+    documentation: []
+    enabled: true
+    notification_channels:
+    - projects/my-project/notificationChannels/12345
+    project: my-project
+    severity: null
+    timeouts: null
+    user_labels: null
+  google_monitoring_notification_channel.channels["new-email"]:
+    description: null
+    display_name: null
+    enabled: true
+    force_delete: false
+    labels:
+      email_address: foo@example.com
+    project: my-project
+    sensitive_labels: []
+    timeouts: null
+    type: email
+    user_labels: null
+  google_monitoring_notification_channel.channels["new-pubsub"]:
+    description: null
+    display_name: null
+    enabled: true
+    force_delete: false
+    labels:
+      topic: projects/test-prod-audit-logs-0/topics/audit-logs
+    project: my-project
+    sensitive_labels: []
+    timeouts: null
+    type: pubsub
+    user_labels: null
   google_privileged_access_manager_entitlement.default["net-admins"]:
     additional_notification_targets: []
     approval_workflow:
@@ -253,7 +318,10 @@ counts:
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 1
   google_kms_crypto_key_iam_member: 1
+  google_logging_metric: 1
   google_logging_project_sink: 1
+  google_monitoring_alert_policy: 1
+  google_monitoring_notification_channel: 2
   google_privileged_access_manager_entitlement: 1
   google_project: 1
   google_project_iam_audit_config: 1
@@ -267,4 +335,4 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 32
+  resources: 36
