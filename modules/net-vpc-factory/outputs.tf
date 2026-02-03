@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+output "firewall_rules" {
+  description = "Firewall rules."
+  value       = module.firewall
+}
 
-# TODO
+output "vpcs" {
+  description = "VPCs."
+  value       = module.vpcs
+}
 
 output "vpcs_config" {
   description = "Processed VPC configuration data."

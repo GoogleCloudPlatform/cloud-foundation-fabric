@@ -97,8 +97,8 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    vpcs     = optional(string, "data")
-    defaults = optional(string, "data/defaults.yaml")
+    vpcs     = optional(string)
+    defaults = optional(string)
   })
   default  = {}
   nullable = false
