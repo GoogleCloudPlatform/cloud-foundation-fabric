@@ -92,10 +92,9 @@ module "organization" {
   }
   contacts = lookup(local.organization, "contacts", {})
   factories_config = {
-    org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
-    custom_roles                  = "${local.paths.organization}/custom-roles"
-    tags                          = "${local.paths.organization}/tags"
-    scc_sha_custom_modules        = "${local.paths.organization}/scc-sha-custom-modules"
+    custom_roles           = "${local.paths.organization}/custom-roles"
+    tags                   = "${local.paths.organization}/tags"
+    scc_sha_custom_modules = "${local.paths.organization}/scc-sha-custom-modules"
   }
   tags_config = {
     ignore_iam = true
@@ -114,7 +113,8 @@ module "organization-iam" {
     condition_vars = merge(
       local.ctx_condition_vars,
       { folder_ids = module.factory.folder_ids },
-      { project_ids = module.factory.project_ids }
+      { project_ids = module.factory.project_ids },
+      { iam_principals = local.ctx.iam_principals },
     )
     custom_roles = merge(
       local.ctx.custom_roles,
@@ -140,8 +140,9 @@ module "organization-iam" {
     )
   })
   factories_config = {
-    org_policies = "${local.paths.organization}/org-policies"
-    tags         = "${local.paths.organization}/tags"
+    org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"
+    org_policies                  = "${local.paths.organization}/org-policies"
+    tags                          = "${local.paths.organization}/tags"
   }
   iam = lookup(
     local.organization, "iam", {}
