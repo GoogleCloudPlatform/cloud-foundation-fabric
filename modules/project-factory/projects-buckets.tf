@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ locals {
   projects_buckets = flatten([
     for k, v in local.projects_input : [
       for name, opts in lookup(v, "buckets", {}) : {
+        key            = "${k}/${name}"
         project_key    = k
         project_name   = v.name
-        name           = name
-        bucket_name    = lookup(opts, "name", "${v.name}-${name}")
+        name           = lookup(opts, "name", "${v.name}-${name}")
         create         = lookup(opts, "create", true)
         description    = lookup(opts, "description", "Terraform-managed.")
         encryption_key = lookup(opts, "encryption_key", null)
@@ -61,13 +61,11 @@ locals {
 }
 
 module "buckets" {
-  source = "../gcs"
-  for_each = {
-    for k in local.projects_buckets : "${k.project_key}/${k.name}" => k
-  }
+  source         = "../gcs"
+  for_each       = { for k in local.projects_buckets : k.key => k }
   project_id     = module.projects-iam[each.value.project_key].project_id
   prefix         = each.value.prefix
-  name           = each.value.bucket_name
+  name           = each.value.name
   bucket_create  = each.value.create
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
