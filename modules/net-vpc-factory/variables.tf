@@ -54,7 +54,6 @@ variable "data_defaults" {
       enable_ula_internal = optional(bool)
       internal_range      = optional(string)
     }), {})
-    # TODO: add default values for subnets and other complex fields if needed
   })
   default  = {}
   nullable = false
@@ -98,7 +97,7 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    vpcs     = optional(string, "data/vpcs")
+    vpcs     = optional(string, "data")
     defaults = optional(string, "data/defaults.yaml")
   })
   default  = {}
