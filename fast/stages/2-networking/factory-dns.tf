@@ -116,7 +116,7 @@ module "dns-zones" {
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
   }
-  depends_on = [module.vpcs]
+  depends_on = [module.vpc-factory]
 }
 
 module "dns-response-policies" {
@@ -130,5 +130,5 @@ module "dns-response-policies" {
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
   }
-  depends_on = [module.vpcs]
+  depends_on = [module.vpc-factory]
 }
