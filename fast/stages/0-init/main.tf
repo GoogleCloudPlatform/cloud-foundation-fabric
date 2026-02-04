@@ -20,7 +20,7 @@ locals {
   parent             = "organizations/${local.organization_id}"
   billing_account_id = local.default_config.global.billing_account
   prefix             = local.default_config.projects.defaults.prefix
-  iam_princial       = local.default_config.context.iam_principals.gcp-organization-admins
+  iam_principal      = local.default_config.context.iam_principals.gcp-organization-admins
   active_org_policies = [
     for x in data.google_cloud_asset_search_all_resources.policies.results :
     x.display_name
@@ -28,15 +28,12 @@ locals {
   ]
 }
 
-output "yaml" {
-  value = local.default_config.projects.defaults.prefix
-}
-
 module "organization" {
   source          = "../../../modules/organization"
   organization_id = local.parent
   iam_by_principals_additive = {
-    (local.iam_princial) = [
+    (local.iam_principal) = [
+      "roles/cloudasset.viewer",
       "roles/billing.admin",
       "roles/logging.admin",
       "roles/iam.organizationRoleAdmin",
@@ -81,7 +78,7 @@ module "project" {
 }
 
 data "google_cloud_asset_search_all_resources" "policies" {
-  scope = local.parent
+  scope = module.organization.id
   asset_types = [
     "orgpolicy.googleapis.com/Policy"
   ]
