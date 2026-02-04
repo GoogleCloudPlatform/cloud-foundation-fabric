@@ -135,11 +135,11 @@ Other contexts can be defined freely. Common uses include:
 
 ```hcl
 module "net-vpc-factory" {
-  source = "./modules/net-vpc-factory"
-  
+  source = "./fabric/modules/net-vpc-factory"
+
   context = {
     project_ids = {
-      host-project = "my-host-project-id"
+      net-project = "my-host-project-id"
     }
     locations = {
       primary = "europe-west1"
@@ -150,21 +150,23 @@ module "net-vpc-factory" {
     vpcs = "data/vpcs"
   }
 }
+# tftest files=vpc,fw modules=3 inventory=example.yaml
 ```
 
 **data/vpcs/shared-vpc/.config.yaml**
 ```yaml
-project_id: $project_ids:host-project
-name: shared-vpc
+project_id: $project_ids:net-project
+name: data-vpc-0
 subnets:
   - name: primary-subnet
     region: $locations:primary
     ip_cidr_range: 10.10.0.0/24
+# tftest-file id=vpc path=data/vpcs/data-vpc-0/.config.yaml schema=vpc.schema.json
 ```
 
-**data/vpcs/shared-vpc/firewall-rules/allow-iap.yaml**
+**data/vpcs/data-vpc-0/firewall-rules/allow-iap.yaml**
 ```yaml
-ingress_rules:
+ingress:
   allow-iap:
     description: Allow IAP for SSH
     source_ranges:
@@ -173,6 +175,7 @@ ingress_rules:
       - protocol: tcp
         ports: [22]
     targets: ["ssh"]
+# tftest-file id=fw path=data/vpcs/data-vpc-0/firewall-rules/allow-iap.yaml schema=firewall-rules.schema.json
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
