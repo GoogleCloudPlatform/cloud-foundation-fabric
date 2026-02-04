@@ -101,6 +101,9 @@ variable "service_account_reuse" {
       project_number = number
       unique_id      = string
     }))
+    universe = optional(object({
+      prefix = string
+    }))
   })
   nullable = true
   default  = null
