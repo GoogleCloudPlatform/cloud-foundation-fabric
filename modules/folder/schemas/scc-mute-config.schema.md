@@ -8,4 +8,8 @@
   - **description**: *string*
   - ⁺**filter**: *string*
   - **type**: *string*
-    - enum: `DYNAMIC`, `STATIC`
+    <br>*default: DYNAMIC*, *enum: ['DYNAMIC', 'STATIC']*
+
+## Definitions
+
+
