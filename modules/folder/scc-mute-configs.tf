@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Organization-level SCC mute configurations.
+# tfdoc:file:description Folder-level SCC mute configurations.
 
 locals {
   _scc_mute_configs_factory_path = pathexpand(coalesce(var.factories_config.scc_mute_configs, "-"))
@@ -38,23 +38,17 @@ locals {
     for k, v in local._scc_mute_configs :
     k => merge(v, {
       name   = k
-      parent = var.organization_id
+      parent = local.folder_id
     })
   }
 }
 
-resource "google_scc_v2_organization_mute_config" "scc_mute_configs" {
+resource "google_scc_v2_folder_mute_config" "scc_mute_configs" {
   for_each       = local.scc_mute_configs
-  organization   = replace(var.organization_id, "organizations/", "")
+  folder         = replace(local.folder_id, "folders/", "")
   location       = "global"
   mute_config_id = each.key
   description    = each.value.description
   filter         = each.value.filter
   type           = each.value.type
-
-  depends_on = [
-    google_organization_iam_binding.authoritative,
-    google_organization_iam_binding.bindings,
-    google_organization_iam_member.bindings,
-  ]
 }

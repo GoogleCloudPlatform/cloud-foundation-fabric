@@ -107,6 +107,7 @@ module "projects" {
     custom_roles           = try(each.value.factories_config.custom_roles, null)
     observability          = try(each.value.factories_config.observability, null)
     org_policies           = try(each.value.factories_config.org_policies, null)
+    observability          = try(each.value.factories_config.observability, null)
     quotas                 = try(each.value.factories_config.quotas, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
     tags                   = try(each.value.factories_config.tags, null)

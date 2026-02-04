@@ -169,6 +169,7 @@ variable "factories_config" {
   type = object({
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
   })
   nullable = false
