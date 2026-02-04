@@ -634,6 +634,12 @@
             "iam": {
               "$ref": "#/$defs/iam"
             },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            },
             "iam_self_roles": {
               "type": "array",
               "items": {

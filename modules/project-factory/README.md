@@ -640,6 +640,10 @@ service_accounts:
     iam:
       roles/iam.serviceAccountUser:
         - $iam_principals:service_accounts/_self_/app-0-fe
+    iam_bindings_additive:
+      test:
+        role: roles/iam.serviceAccountUser
+        member: group:team-a-admins@example.org
     iam_sa_roles:
       $service_account_ids:_self_/app-0-fe:
         - roles/iam.serviceAccountUser
@@ -876,6 +880,7 @@ module "project-factory" {
     locations = {
       storage = "eu"
     }
+    prefix = "foo"
   }
   data_merges = {
     labels = {
@@ -884,9 +889,6 @@ module "project-factory" {
     services = [
       "compute.googleapis.com"
     ]
-  }
-  data_overrides = {
-    prefix = "foo"
   }
   factories_config = {
     projects = "data/projects"
@@ -897,6 +899,7 @@ module "project-factory" {
 
 ```yaml
 parent: folders/1234567890
+# prefix from defaults (foo)
 services:
   - iam.googleapis.com
   - contactcenteraiplatform.googleapis.com
@@ -907,6 +910,8 @@ services:
 ```yaml
 parent: folders/1234567890
 descriptive_name: "Test Project 1"
+# null prefix
+prefix: null
 services:
   - iam.googleapis.com
   - contactcenteraiplatform.googleapis.com
@@ -915,6 +920,8 @@ services:
 
 ```yaml
 parent: folders/1234567890
+# explicit prefix
+prefix: bar
 services:
   - iam.googleapis.com
   - storage.googleapis.com
