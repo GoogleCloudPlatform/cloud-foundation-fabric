@@ -54,7 +54,7 @@ gcloud config set project $(terraform output project_id)
 Finally take the value of the `existing_org_policies` and add it to the terraform.tfvars of the `0-org-setup` stage
 
 ```bash
-terraforn output existing_org_policies > terraform.tfvars
+terraform output existing_org_policies > terraform.tfvars
 ```
 
 Now you are ready to go to the `0-org-setup` stage!
