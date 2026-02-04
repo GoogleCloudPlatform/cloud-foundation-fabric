@@ -62,9 +62,6 @@ module "project" {
   )
   parent = var.default_project_config.create ? local.parent : null
   prefix = local.prefix
-  # project_reuse = !var.default_project_config.create ? null : {
-  #   use_data_source = !var.default_project_config.create
-  # }
   services = [
     "bigquery.googleapis.com",
     "cloudbilling.googleapis.com",
