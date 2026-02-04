@@ -24,12 +24,13 @@ variable "defaults_factory_config" {
 variable "default_project_config" {
   description = "Flag indicating whether a temporary project needs be created."
   type = object({
-    name   = optional(string)
-    create = optional(bool, false)
+    id     = optional(string)
+    create = optional(bool, true)
   })
-  default = false
+  default  = {}
+  nullable = false
   validation {
-    condition     = var.default_project_config.create || var.default_project_config.name != null
-    error_message = "When 'create' is false a project name must be provided."
+    condition     = var.default_project_config.create || var.default_project_config.id != null
+    error_message = "When 'create' is false a project id must be provided."
   }
 }

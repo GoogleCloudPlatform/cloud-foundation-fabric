@@ -18,9 +18,18 @@ locals {
   default_config     = yamldecode(file("${path.module}/../0-org-setup/${var.defaults_factory_config}"))
   organization_id    = local.default_config.global.organization.id
   parent             = "organizations/${local.organization_id}"
-  billing_account_id = local.default_config.global.billing_account_id
-  prefix             = local.default_config.global.projects.defaults.prefix
-  iam_princial       = loca.default_config.context.iam_princials.gcp-organization-admins
+  billing_account_id = local.default_config.global.billing_account
+  prefix             = local.default_config.projects.defaults.prefix
+  iam_princial       = local.default_config.context.iam_principals.gcp-organization-admins
+  active_org_policies = [
+    for x in data.google_cloud_asset_search_all_resources.policies.results :
+    x.display_name
+    if x.parent_asset_type == "cloudresourcemanager.googleapis.com/Organization"
+  ]
+}
+
+output "yaml" {
+  value = local.default_config.projects.defaults.prefix
 }
 
 module "organization" {
@@ -41,29 +50,24 @@ module "organization" {
   }
 }
 
-resource "random_integer" "project_id_length" {
-  min = 0
-  max = 30 - length((local.prefix))
-}
-
-resource "random_string" "project_name" {
-  length           = random_integer.project_id_length.result
-  special          = false
-  upper            = false
+resource "random_string" "suffix" {
+  length  = 5
+  special = false
+  upper   = false
 }
 
 module "project" {
   source          = "../../../modules/project"
   billing_account = var.default_project_config.create ? local.billing_account_id : null
-  name            = (var.default_project_config.create 
-  && var.default_project_config.name == null ? 
-  "${local.prefix}-${random_string.projec_name.result}" 
-  : var.default_project_config.name)
-  parent          = var.default_project_config.create ? local.parent : null
-  prefix          = local.prefix
-  project_reuse = {
-    use_data_source = !var.default_project_config.create
-  }
+  name = coalesce(
+    var.default_project_config.id,
+    "${local.prefix}-init-${random_string.suffix.result}"
+  )
+  parent = var.default_project_config.create ? local.parent : null
+  prefix = local.prefix
+  # project_reuse = !var.default_project_config.create ? null : {
+  #   use_data_source = !var.default_project_config.create
+  # }
   services = [
     "bigquery.googleapis.com",
     "cloudbilling.googleapis.com",
@@ -73,5 +77,12 @@ module "project" {
     "logging.googleapis.com",
     "orgpolicy.googleapis.com",
     "serviceusage.googleapis.com"
+  ]
+}
+
+data "google_cloud_asset_search_all_resources" "policies" {
+  scope = local.parent
+  asset_types = [
+    "orgpolicy.googleapis.com/Policy"
   ]
 }
