@@ -105,6 +105,11 @@ output "scc_custom_sha_modules_ids" {
   value       = { for k, v in google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module : k => v.id }
 }
 
+output "scc_mute_configs" {
+  description = "SCC mute configurations."
+  value       = google_scc_v2_organization_mute_config.scc_mute_configs
+}
+
 output "service_agents" {
   description = "Identities of all organization-level service agents."
   value       = local.service_agents
