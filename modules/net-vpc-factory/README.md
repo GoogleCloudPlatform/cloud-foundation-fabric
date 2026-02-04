@@ -35,7 +35,7 @@ The code is meant to be executed by a principal with permissions over the networ
 
 ## VPC Factory
 
-The VPC factory is configured via the `factories_config.vpcs` variable, which sets the path containing the YAML definitions for VPCs, where each VPC and their dependant resources are defined in a dedicated directory.
+The VPC factory is configured via the `factories_config.vpcs` variable, which sets the path containing the YAML definitions for VPCs, where each VPC and their dependent resources are defined in a dedicated directory.
 
 Each VPC directory contains a `.config.yaml` file. The structure of the YAML file mirrors the variables of the [`net-vpc`](../net-vpc/) module.
 
