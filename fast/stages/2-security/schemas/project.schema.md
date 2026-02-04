@@ -284,6 +284,10 @@
         - **num_newer_versions**: *number*
         - **with_state**: *string*
           <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
+  - **logging**: *object*
+    <br>*additional properties: false*
+    - **log_bucket**: *string*
+    - **log_object_prefix**: *string*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*
