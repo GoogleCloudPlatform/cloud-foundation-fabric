@@ -46,6 +46,7 @@ locals {
       lifecycle_rules       = lookup(v.bucket, "lifecycle_rules", {})
       retention_policy      = lookup(v.bucket, "retention_policy", null)
       soft_delete_retention = lookup(v.bucket, "soft_delete_retention", null)
+      logging               = lookup(v.bucket, "logging", null)
       prefix = try(coalesce(
         local.data_defaults.overrides.prefix,
         v.prefix,
@@ -95,8 +96,9 @@ module "automation-bucket" {
     local.data_defaults.defaults.force_destroy,
   ), null)
   context = merge(local.ctx, {
-    project_ids    = local.ctx_project_ids
-    iam_principals = local.ctx_iam_principals
+    project_ids     = local.ctx_project_ids
+    iam_principals  = local.ctx_iam_principals
+    storage_buckets = local.ctx.storage_buckets
   })
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
@@ -120,6 +122,7 @@ module "automation-bucket" {
   )
   retention_policy      = each.value.retention_policy
   soft_delete_retention = each.value.soft_delete_retention
+  logging               = each.value.logging
 }
 
 module "automation-service-accounts" {

@@ -53,6 +53,7 @@ locals {
         retention_policy        = lookup(opts, "retention_policy", null)
         soft_delete_retention   = lookup(opts, "soft_delete_retention", null)
         lifecycle_rules         = lookup(opts, "lifecycle_rules", {})
+        logging                 = lookup(opts, "logging", null)
         enable_object_retention = lookup(opts, "enable_object_retention", null)
       }
     ]
@@ -77,9 +78,10 @@ module "buckets" {
       local.automation_sas_iam_emails,
       lookup(local.self_sas_iam_emails, each.value.project_key, {})
     )
-    kms_keys    = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
-    locations   = local.ctx.locations
-    project_ids = local.ctx_project_ids
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
+    locations       = local.ctx.locations
+    project_ids     = local.ctx_project_ids
+    storage_buckets = local.ctx.storage_buckets
   })
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
@@ -98,5 +100,6 @@ module "buckets" {
   versioning                  = each.value.versioning
   retention_policy            = each.value.retention_policy
   soft_delete_retention       = each.value.soft_delete_retention
+  logging                     = each.value.logging
   enable_object_retention     = each.value.enable_object_retention
 }
