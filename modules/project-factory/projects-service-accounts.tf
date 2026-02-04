@@ -28,6 +28,8 @@ locals {
           "Terraform-managed."
         )
         iam                    = try(opts.iam, {})
+        iam_bindings           = try(opts.iam_bindings, {})
+        iam_bindings_additive  = try(opts.iam_bindings_additive, {})
         iam_billing_roles      = try(opts.iam_billing_roles, {})
         iam_organization_roles = try(opts.iam_organization_roles, {})
         iam_sa_roles           = try(opts.iam_sa_roles, {})
@@ -119,6 +121,8 @@ module "service_accounts-iam" {
       lookup(local.self_sas_ids, each.value.project_key, {})
     )
   })
-  iam          = each.value.iam
-  iam_sa_roles = each.value.iam_sa_roles
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_sa_roles          = each.value.iam_sa_roles
 }
