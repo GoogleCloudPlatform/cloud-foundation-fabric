@@ -1,6 +1,6 @@
 # Net VPC Factory
 
-This module implements the creation of VPCs, subnets, and firewall rules via YAML configurations. It is designed to be embedded in other factories such as the [FAST networking stage](../fast/stages/2-networking).
+This module implements the creation of VPCs, subnets, and firewall rules via YAML configurations. It is designed to be embedded in other factories such as the [FAST networking stage](../../fast/stages/2-networking).
 
 It supports:
 
