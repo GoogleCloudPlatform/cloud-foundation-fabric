@@ -46,7 +46,7 @@ locals {
       lifecycle_rules       = lookup(v.bucket, "lifecycle_rules", {})
       retention_policy      = lookup(v.bucket, "retention_policy", null)
       soft_delete_retention = lookup(v.bucket, "soft_delete_retention", null)
-      logging               = lookup(v.bucket, "logging", null)
+      logging_config        = lookup(v.bucket, "logging_config", null)
       prefix = try(coalesce(
         local.data_defaults.overrides.prefix,
         v.prefix,
@@ -122,7 +122,7 @@ module "automation-bucket" {
   )
   retention_policy      = each.value.retention_policy
   soft_delete_retention = each.value.soft_delete_retention
-  logging               = each.value.logging
+  logging_config        = each.value.logging_config
 }
 
 module "automation-service-accounts" {

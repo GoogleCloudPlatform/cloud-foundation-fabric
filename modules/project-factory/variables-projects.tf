@@ -105,7 +105,7 @@ variable "projects" {
             with_state                 = optional(string)
           })
         })), {})
-        logging = optional(object({
+        logging_config = optional(object({
           log_bucket        = string
           log_object_prefix = optional(string)
         }), null)
@@ -215,7 +215,7 @@ variable "projects" {
           with_state                 = optional(string)
         })
       })), {})
-      logging = optional(object({
+      logging_config = optional(object({
         log_bucket        = string
         log_object_prefix = optional(string)
       }), null)

@@ -184,7 +184,7 @@ variable "location" {
   }
 }
 
-variable "logging" {
+variable "logging_config" {
   description = "Bucket logging configuration."
   type = object({
     log_bucket        = string

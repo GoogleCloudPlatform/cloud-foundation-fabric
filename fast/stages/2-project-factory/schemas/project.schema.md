@@ -284,7 +284,7 @@
         - **num_newer_versions**: *number*
         - **with_state**: *string*
           <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
-  - **logging**: *object*
+  - **logging_config**: *object*
     <br>*additional properties: false*
     - **log_bucket**: *string*
     - **log_object_prefix**: *string*

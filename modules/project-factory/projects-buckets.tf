@@ -53,7 +53,7 @@ locals {
         retention_policy        = lookup(opts, "retention_policy", null)
         soft_delete_retention   = lookup(opts, "soft_delete_retention", null)
         lifecycle_rules         = lookup(opts, "lifecycle_rules", {})
-        logging                 = lookup(opts, "logging", null)
+        logging_config          = lookup(opts, "logging_config", null)
         enable_object_retention = lookup(opts, "enable_object_retention", null)
       }
     ]
@@ -100,6 +100,6 @@ module "buckets" {
   versioning                  = each.value.versioning
   retention_policy            = each.value.retention_policy
   soft_delete_retention       = each.value.soft_delete_retention
-  logging                     = each.value.logging
+  logging_config              = each.value.logging_config
   enable_object_retention     = each.value.enable_object_retention
 }

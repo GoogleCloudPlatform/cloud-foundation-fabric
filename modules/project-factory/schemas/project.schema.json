@@ -1115,7 +1115,7 @@
             }
           }
         },
-        "logging": {
+        "logging_config": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
