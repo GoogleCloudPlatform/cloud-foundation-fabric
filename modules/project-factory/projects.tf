@@ -189,7 +189,7 @@ module "projects-iam" {
   )
   shared_vpc_host_config    = each.value.shared_vpc_host_config
   shared_vpc_service_config = each.value.shared_vpc_service_config
-  tags = each.value.tags
+  tags                      = each.value.tags
   tags_config = {
     force_context_ids = true
   }
