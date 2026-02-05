@@ -95,11 +95,11 @@ module "projects" {
     each.value.contacts, var.data_merges.contacts
   )
   context = merge(local.ctx, {
-    condition_vars = {
+    condition_vars = merge(local.ctx.condition_vars, {
       folder_ids = {
         for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
       }
-    }
+    })
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
