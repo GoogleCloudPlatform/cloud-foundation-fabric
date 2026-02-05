@@ -201,7 +201,6 @@ ln -s ~/fast-config/providers/3-data-platform-dev-providers.tf ./
 # input files from other stages
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-org-setup.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
 ln -s ~/fast-config/3-data-platform-dev.auto.tfvars ./
@@ -222,7 +221,6 @@ gcloud storage cp gs://xxx-prod-iac-core-outputs-0/providers/3-data-platform-dev
 # input files from other stages
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-globals.auto.tfvars.json ./
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/0-org-setup.auto.tfvars.json ./
-gcloud storage cp gs://xxx-prod-iac-core-outputs-0/tfvars/1-resman.auto.tfvars.json ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
 gcloud storage cp gs://xxx-prod-iac-core-outputs-0/3-data-platform-dev.auto.tfvars ./

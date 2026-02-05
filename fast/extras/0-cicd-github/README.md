@@ -87,26 +87,14 @@ This is an example that creates repositories for stages 00 and 01, and populates
 
 ```tfvars
 repositories = {
-  fast_00_bootstrap = {
+  fast_00_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features = {
         issues = true
       }
     }
     populate_from = "../../stages/0-org-setup"
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features = {
-        issues = true
-      }
-    }
-    populate_from = "../../stages/1-resman"
-  }
-  fast_02_networking = {
-    populate_from = "../../stages/2-networking-peering"
   }
 }
 # tftest skip
@@ -120,28 +108,14 @@ Each repository may contain some sample tfvars and data files that can be used a
 
 ```tfvars
 repositories = {
-  fast_00_bootstrap = {
+  fast_00_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features = {
         issues = true
       }
     }
     populate_from = "../../stages/0-org-setup"
-    populate_samples = true
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features = {
-        issues = true
-      }
-    }
-    populate_from = "../../stages/1-resman"
-    populate_samples = true
-  }
-  fast_02_networking = {
-    populate_from = "../../stages/2-networking-peering"
     populate_samples = true
   }
 }
