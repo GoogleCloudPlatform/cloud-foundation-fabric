@@ -3,7 +3,7 @@
 This recipe shows an actual usage scenario for the [cross-region internal application load balancer](../README.md) by implementing the [example provided in the GCP documentation](https://cloud.google.com/load-balancing/docs/l7-internal/setting-up-l7-cross-reg-internal).
 
 <p align="center">
-  <img src="https://cloud.google.com/static/load-balancing/images/cross-reg-int-vm.svg" alt="Scenario diagram.">
+  <img src="https://docs.cloud.google.com/static/load-balancing/images/cross-reg-int-vm.svg" alt="Scenario diagram.">
 </p>
 
 <!-- BEGIN TOC -->
