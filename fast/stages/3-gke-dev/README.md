@@ -30,7 +30,7 @@ Some high level choices applied here:
 - Logging and monitoring uses Cloud Operations for system components and user workloads.
 - [GKE metering](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-usage-metering) is enabled by default and stored in a BigQuery dataset created within the project.
 - [GKE Fleet](https://cloud.google.com/kubernetes-engine/docs/fleets-overview) can be optionally with support for the following features:
-  - [Fleet workload identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
+  - [Fleet workload identity](https://docs.cloud.google.com/kubernetes-engine/fleet-management/docs/use-workload-identity)
   - [Config Management](https://cloud.google.com/anthos-config-management/docs/overview)
   - [Service Mesh](https://cloud.google.com/service-mesh/docs/overview)
   - [Identity Service](https://cloud.google.com/anthos/identity/setup/fleet)
@@ -158,7 +158,7 @@ If clusters share similar configurations, those can be centralized via `locals` 
 
 Fleet management is entirely optional, and uses two separate variables:
 
-- `fleet_config`: specifies the [GKE fleet](https://cloud.google.com/anthos/fleet-management/docs/fleet-concepts#fleet-enabled-components) features to activate
+- `fleet_config`: specifies the [GKE fleet](https://docs.cloud.google.com/kubernetes-engine/fleet-management/docs/fleet-concepts#fleet-enabled-components) features to activate
 - `fleet_configmanagement_templates`: defines configuration templates for specific sets of features ([Config Management](https://cloud.google.com/anthos-config-management/docs/how-to/install-anthos-config-management) currently)
 
 Clusters can then be configured for fleet registration and one of the config management templates attached via the cluster-level `fleet_config` attribute.

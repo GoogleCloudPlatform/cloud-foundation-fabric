@@ -42,7 +42,7 @@ counts:
   google_project_service: 27
   google_project_service_identity: 21
   google_storage_bucket_object: 2
-  modules: 35
+  modules: 36
   random_id: 3
   resources: 199
   terraform_data: 2

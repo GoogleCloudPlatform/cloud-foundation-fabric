@@ -48,6 +48,16 @@ variable "asset_feeds" {
   }
 }
 
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "auto_create_network" {
   description = "Whether to create the default network for the project."
   type        = bool
@@ -196,6 +206,7 @@ variable "factories_config" {
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
     quotas                 = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
     tags                   = optional(string)
   })

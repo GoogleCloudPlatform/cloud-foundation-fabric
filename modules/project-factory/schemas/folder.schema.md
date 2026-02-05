@@ -6,6 +6,28 @@
 
 *additional properties: false*
 
+- **asset_feeds**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**billing_project**: *string*
+    - **content_type**: *string*
+      <br>*enum: ['RESOURCE', 'IAM_POLICY', 'ORG_POLICY', 'ACCESS_POLICY', 'OS_INVENTORY', 'RELATIONSHIP']*
+    - **asset_types**: *array*
+      - items: *string*
+    - **asset_names**: *array*
+      - items: *string*
+    - ⁺**feed_output_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**pubsub_destination**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
 - **automation**: *object*
   <br>*additional properties: false*
   - **prefix**: *string*
@@ -237,7 +259,7 @@
   - ⁺**organization**: *string*
   - **enable_sovereign_controls**: *boolean*
   - **labels**: *object*
-    *additional properties: String*
+    <br>*additional properties: string*
   - **partner**: *string*
     <br>*enum: ['LOCAL_CONTROLS_BY_S3NS', 'PARTNER_UNSPECIFIED', 'SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM', 'SOVEREIGN_CONTROLS_BY_CNTXT', 'SOVEREIGN_CONTROLS_BY_PSN', 'SOVEREIGN_CONTROLS_BY_SIA_MINSAIT', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']*
   - **partner_permissions**: *object*
