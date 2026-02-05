@@ -885,6 +885,10 @@ values:
   : condition: []
     role: roles/iam.serviceAccountUser
     service_account_id: projects/test-pf-dev-ta-app0-be/serviceAccounts/app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.bindings["test"]
+  : condition: []
+    member: group:team-a-admins@example.org
+    role: roles/iam.serviceAccountUser
   ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
     members:
@@ -925,7 +929,7 @@ counts:
   google_pubsub_topic_iam_binding: 1
   google_service_account: 6
   google_service_account_iam_binding: 2
-  google_service_account_iam_member: 1
+  google_service_account_iam_member: 2
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 4
@@ -934,5 +938,5 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 32
-  resources: 110
+  resources: 111
   terraform_data: 2

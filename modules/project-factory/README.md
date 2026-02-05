@@ -643,6 +643,10 @@ service_accounts:
     iam:
       roles/iam.serviceAccountUser:
         - $iam_principals:service_accounts/_self_/app-0-fe
+    iam_bindings_additive:
+      test:
+        role: roles/iam.serviceAccountUser
+        member: group:team-a-admins@example.org
     iam_sa_roles:
       $service_account_ids:_self_/app-0-fe:
         - roles/iam.serviceAccountUser

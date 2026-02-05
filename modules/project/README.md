@@ -1530,7 +1530,7 @@ cpus-ew8:
 
 ## Privileged Access Manager (PAM) Entitlements
 
-[Privileged Access Manager](https://cloud.google.com/iam/docs/privileged-access-manager-overview) entitlements can be defined via the `pam_entitlements` variable.
+[Privileged Access Manager](https://docs.cloud.google.com/iam/docs/pam-overview) entitlements can be defined via the `pam_entitlements` variable.
 
 Note that using PAM entitlements requires specific roles to be granted to the users and groups that will be using them. For more information, see the [official documentation](https://cloud.google.com/iam/docs/pam-permissions-and-setup#before-you-begin).
 
