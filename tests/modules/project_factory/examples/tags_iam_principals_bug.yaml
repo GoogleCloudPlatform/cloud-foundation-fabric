@@ -34,10 +34,10 @@
 values:
   module.project-factory.module.projects["tags-iam-test"].google_project.project[0]:
     name: test-pf-tags-iam-test
-  module.project-factory.module.projects-iam["tags-iam-test"].google_tags_tag_key.default["allow-key-creation"]:
+  module.project-factory.module.projects["tags-iam-test"].google_tags_tag_key.default["allow-key-creation"]:
     description: Allow key creation for automation service account
     short_name: allow-key-creation
-  module.project-factory.module.projects-iam["tags-iam-test"].google_tags_tag_value.default["allow-key-creation/allow"]:
+  module.project-factory.module.projects["tags-iam-test"].google_tags_tag_value.default["allow-key-creation/allow"]:
     description: Allow key creation
     short_name: allow
   ? module.project-factory.module.projects-iam["tags-iam-test"].google_tags_tag_value_iam_binding.default["allow-key-creation/allow:roles/resourcemanager.tagUser"]
