@@ -6,7 +6,7 @@
 
 *additional properties: false*
 
-- **`^[a-z-]+\.[a-zA-Z]+$`**: *object*
+- **`^custom\.[a-zA-Z0-9_-]+$`**: *object*
   <br>*additional properties: false*
   - **display_name**: *string*
   - **description**: *string*
