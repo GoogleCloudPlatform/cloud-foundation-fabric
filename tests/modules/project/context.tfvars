@@ -31,11 +31,52 @@ context = {
   tag_values = {
     "test/one" = "tagValues/1234567890"
   }
+  log_buckets = {
+    audit = "logging.googleapis.com/projects/my-project/locations/global/buckets/audit-bucket"
+  }
+  notification_channels = {
+    email = "projects/my-project/notificationChannels/12345"
+  }
   vpc_sc_perimeters = {
     default = "accessPolicies/888933661165/servicePerimeters/default"
   }
   pubsub_topics = {
     test = "projects/test-prod-audit-logs-0/topics/audit-logs"
+  }
+}
+alerts = {
+  test-alert = {
+    combiner     = "OR"
+    display_name = "Test Alert"
+    conditions = [{
+      display_name = "test-condition"
+      condition_threshold = {
+        comparison = "COMPARISON_GT"
+        duration   = "60s"
+        filter     = "resource.type=\"gce_instance\" AND metric.type=\"compute.googleapis.com/instance/cpu/utilization\""
+      }
+    }]
+    notification_channels = ["$notification_channels:email"]
+  }
+}
+logging_metrics = {
+  test-metric = {
+    filter      = "resource.type=\"gce_instance\""
+    bucket_name = "$log_buckets:audit"
+  }
+}
+notification_channels = {
+  new-email = {
+    type = "email"
+    labels = {
+      email_address = "$email_addresses:default"
+    }
+  }
+  new-pubsub = {
+    type = "pubsub"
+    labels = {
+      topic = "$pubsub_topics:test"
+    }
   }
 }
 asset_feeds = {
