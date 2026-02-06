@@ -1,0 +1,61 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Test for $iam_principals interpolation bug in tags
+#
+# BUG DESCRIPTION:
+# When a project uses tags with IAM that references an automation service account
+# via $iam_principals:service_accounts/PROJECT/automation/SA, the interpolation
+# fails because:
+#
+# 1. In projects.tf, `module "projects"` (line ~78) processes `tags` but passes
+#    a context that does NOT include the project's own automation service accounts
+#
+# 2. In projects.tf, `module "projects-iam"` (line ~141) has the correct context
+#    with automation service accounts merged, but it does NOT process `tags`
+#
+# RESULT: The literal string "$iam_principals:service_accounts/..." is used
+# as the member instead of being interpolated to the actual service account email.
+#
+# This test expects the CORRECT behavior (interpolated value).
+# Currently, it will FAIL until the bug is fixed.
+
+values:
+  module.project-factory.module.projects["tags-iam-test"].google_project.project[0]:
+    name: test-pf-tags-iam-test
+  module.project-factory.module.projects["tags-iam-test"].google_tags_tag_key.default["allow-key-creation"]:
+    description: Allow key creation for automation service account
+    short_name: allow-key-creation
+  module.project-factory.module.projects["tags-iam-test"].google_tags_tag_value.default["allow-key-creation/allow"]:
+    description: Allow key creation
+    short_name: allow
+  ? module.project-factory.module.projects-iam["tags-iam-test"].google_tags_tag_value_iam_binding.default["allow-key-creation/allow:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+      # EXPECTED: This should be the interpolated service account email
+      # BUG: Currently this is the literal "$iam_principals:service_accounts/tags-iam-test/automation/rw"
+      - serviceAccount:tags-iam-test-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/resourcemanager.tagUser
+  module.project-factory.module.automation-service-accounts["tags-iam-test/automation/rw"].google_service_account.service_account[0]:
+    account_id: tags-iam-test-rw
+    email: tags-iam-test-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    project: test-pf-teams-iac-0
+
+counts:
+  google_project: 1
+  google_service_account: 1
+  google_tags_tag_key: 1
+  google_tags_tag_value: 1
+  google_tags_tag_value_iam_binding: 1
+  modules: 5
