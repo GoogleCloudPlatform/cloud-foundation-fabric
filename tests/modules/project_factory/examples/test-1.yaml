@@ -20,3 +20,20 @@ values:
     project_id: test-1
   module.project-factory.module.projects["test-2"].google_project.project[0]:
     project_id: bar-test-2
+  module.project-factory.module.projects-iam["test-0"].google_project_iam_member.bindings["test_context"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/context', 'project-factory')
+      title: Test context
+    member: user:user1@example.com
+    project: foo-test-0
+    role: roles/viewer
+counts:
+  google_project: 3
+  google_project_iam_member: 6
+  google_project_service: 10
+  google_project_service_identity: 3
+  google_storage_project_service_account: 1
+  modules: 5
+  resources: 25
+  terraform_data: 2
