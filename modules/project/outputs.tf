@@ -22,6 +22,13 @@ output "alert_ids" {
   }
 }
 
+output "asset_search_results" {
+  description = "Cloud Asset Inventory search results."
+  value = {
+    for k, v in data.google_cloud_asset_search_all_resources.default : k => v.results
+  }
+}
+
 output "bigquery_reservations" {
   description = "BigQuery reservations and assignments."
   value = {
