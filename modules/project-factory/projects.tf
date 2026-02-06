@@ -61,6 +61,9 @@ locals {
       for kk, vv in v.service_agents : "service_agents/${k}/${kk}" => vv.iam_email
     }
   ]...)
+  proj_tag_keys = {
+    for k, v in merge([for m in module.projects : m.tag_keys]...) : k => v.id
+  }
   proj_tag_values = {
     for k, v in merge([for m in module.projects : m.tag_values]...) : k => v.id
   }
@@ -169,6 +172,7 @@ module "projects-iam" {
       local.ctx.project_ids,
       { for k, v in module.projects : k => v.project_id }
     )
+    tag_keys = local.proj_tag_keys
     tag_values = merge(
       local.ctx.tag_values,
       local.proj_tag_values

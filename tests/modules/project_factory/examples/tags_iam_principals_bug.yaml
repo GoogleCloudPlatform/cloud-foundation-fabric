@@ -47,6 +47,8 @@ values:
       # BUG: Currently this is the literal "$iam_principals:service_accounts/tags-iam-test/automation/rw"
       - serviceAccount:tags-iam-test-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     role: roles/resourcemanager.tagUser
+      # Not possible to test for the tag_value as it is only known after applying
+      # tag_value: allow-key-creation/allow
   module.project-factory.module.automation-service-accounts["tags-iam-test/automation/rw"].google_service_account.service_account[0]:
     account_id: tags-iam-test-rw
     email: tags-iam-test-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
