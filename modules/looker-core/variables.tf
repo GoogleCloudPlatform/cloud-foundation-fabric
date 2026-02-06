@@ -102,6 +102,9 @@ variable "network_config" {
       enable_public_ip   = optional(bool, false)
       enable_private_ip  = optional(bool, true)
     }))
+    psc_config = optional(object({
+      allowed_vpcs = optional(list(string), [])
+    }))
     public = optional(bool, false)
   })
   nullable = false

@@ -90,6 +90,27 @@ module "looker" {
 # tftest modules=3 resources=17 inventory=psa.yaml
 ```
 
+
+### Looker Core with PSC
+
+```hcl
+module "looker" {
+  source     = "./fabric/modules/looker-core"
+  project_id = var.project_id
+  region     = var.region
+  name       = "looker-psc"
+  network_config = {
+    psc_config = {
+      allowed_vpcs = ["projects/test-project/global/networks/test"]
+    }
+  }
+  oauth_config = {
+    support_email = "support@google.com"
+  }
+}
+# tftest modules=1 resources=3 inventory=psc.yaml
+```
+
 ### Looker Core full example
 
 ```hcl
