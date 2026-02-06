@@ -47,7 +47,6 @@ The code is meant to be executed by a high level service account with powerful p
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Tests](#tests)
-  - [Tags with $iam_principals interpolation](#tags-with-iam_principals-interpolation)
 <!-- END TOC -->
 
 ## Folder hierarchy
