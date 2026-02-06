@@ -4,8 +4,12 @@
 
 ## Properties
 
-- **`^[a-zA-Z]+$`**: *object*
+- **`^[a-z]([a-z0-9-]*[a-z0-9])?$`**: *object*
   - **description**: *string*
   - ⁺**filter**: *string*
   - **type**: *string*
-    - enum: `DYNAMIC`, `STATIC`
+    <br>*default: DYNAMIC*, *enum: ['DYNAMIC', 'STATIC']*
+
+## Definitions
+
+
