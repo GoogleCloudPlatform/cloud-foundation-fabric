@@ -924,7 +924,7 @@ module "project-factory" {
     projects = "data/projects"
   }
 }
-# tftest modules=7 resources=30 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=7 resources=31 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -965,7 +965,8 @@ services:
 service_accounts:
   tag-test: {}
 tag_bindings:
-  test: $tag_values:test-0/context/project-factory
+  org-level: $tag_values:context/project-factory
+  project-level: $tag_values:test-0/context/project-factory
 # tftest-file id=test-1 path=data/projects/test-1.yaml
 ```
 

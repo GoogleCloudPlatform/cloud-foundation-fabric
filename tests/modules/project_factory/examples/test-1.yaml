@@ -27,7 +27,10 @@ values:
     - serviceAccount:tag-test@test-1.iam.gserviceaccount.com
     - user:user1@example.com
     role: roles/resourcemanager.tagUser
-  module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["test"]:
+  module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["org-level"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
+  module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["project-level"]:
     # tag_value is undefined at plan time as it depends on the tag
     # tag_value: $tag_values:test-0/context/project-factory
     timeouts: null
@@ -218,10 +221,10 @@ counts:
   google_project_service_identity: 3
   google_service_account: 1
   google_storage_project_service_account: 1
-  google_tags_tag_binding: 1
+  google_tags_tag_binding: 2
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
   modules: 7
-  resources: 30
+  resources: 31
   terraform_data: 2
