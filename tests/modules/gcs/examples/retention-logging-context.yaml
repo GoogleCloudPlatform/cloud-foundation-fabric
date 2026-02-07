@@ -1,4 +1,4 @@
-# Copyright 2026 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,23 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/project
+values:
+  module.bucket.google_storage_bucket.bucket[0]:
+    logging:
+      - log_bucket: log-bucket
+    name: test-my-bucket
+    project: project-id
+    soft_delete_policy:
+      - retention_duration_seconds: 7776000
+    retention_policy:
+      - is_locked: true
+        retention_period: "100"
 
-common_tfvars:
-  - common.tfvars
-
-tests:
-  context:
-  iam_by_principals_additive:
-  iam_by_principals_conditional:
-  no_parent:
-  no_prefix:
-  org_policies_boolean:
-  org_policies_list:
-  parent_folder:
-  parent_org:
-  prefix:
-  service_encryption_keys:
-  service_agents:
-  service_agents_universe:
-  universe:
+counts:
+  google_storage_bucket: 1

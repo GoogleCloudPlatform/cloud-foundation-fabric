@@ -133,10 +133,7 @@ module "projects" {
   tag_bindings = merge(
     each.value.tag_bindings, var.data_merges.tag_bindings
   )
-  tags = each.value.tags
-  tags_config = {
-    ignore_iam = true
-  }
+  tags                    = each.value.tags
   universe                = each.value.universe
   vpc_sc                  = each.value.vpc_sc
   workload_identity_pools = each.value.workload_identity_pools
@@ -189,9 +186,5 @@ module "projects-iam" {
   )
   shared_vpc_host_config    = each.value.shared_vpc_host_config
   shared_vpc_service_config = each.value.shared_vpc_service_config
-  tags                      = each.value.tags
-  tags_config = {
-    force_context_ids = true
-  }
-  universe = each.value.universe
+  universe                  = each.value.universe
 }

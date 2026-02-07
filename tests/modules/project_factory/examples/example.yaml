@@ -30,7 +30,9 @@ values:
     labels: null
     lifecycle_rule: []
     location: EU
-    logging: []
+    logging:
+    - log_bucket: log-bucket
+      log_object_prefix: log-prefix
     name: test-pf-dev-tb-app0-0-tf-state
     project: test-pf-teams-iac-0
     requester_pays: null
@@ -119,6 +121,62 @@ values:
     timeouts: null
     type: email
     user_labels: null
+  module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST8
+    logging: []
+    name: test-pf-dev-ta-app0-be-app-0-bucket-a
+    project: test-pf-dev-ta-app0-be
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-b"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST8
+    logging:
+    - log_bucket: log-bucket
+      log_object_prefix: log-prefix
+    name: test-pf-dev-ta-app0-be-app-0-bucket-b
+    project: test-pf-dev-ta-app0-be
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
   module.project-factory.module.folder-1-iam["team-a"].google_folder_iam_audit_config.default["storage.googleapis.com"]:
     audit_log_config:
     - exempted_members:
@@ -438,7 +496,7 @@ values:
     description: My value 3
     short_name: my-value-2
     timeouts: null
-  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_tags_tag_value_iam_binding.default["my-tag-key-1/my-value-2:roles/resourcemanager.tagUser"]
+  ? module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value_iam_binding.default["my-tag-key-1/my-value-2:roles/resourcemanager.tagUser"]
   : condition: []
     members:
     - user:user@example.com
@@ -872,13 +930,13 @@ counts:
   google_service_account: 6
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 2
-  google_storage_bucket: 1
+  google_storage_bucket: 3
   google_storage_bucket_iam_binding: 2
   google_storage_project_service_account: 4
   google_tags_tag_binding: 2
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 30
-  resources: 109
+  modules: 32
+  resources: 111
   terraform_data: 2
