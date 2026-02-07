@@ -357,6 +357,11 @@ values:
   : condition: []
     project: $project_ids:dev-spoke-0
     role: roles/container.hostServiceAgentUser
+  ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_tags_tag_value_iam_binding.default["my-tag-key-1/my-value-2:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+    - user:user@example.com
+    role: roles/resourcemanager.tagUser
   module.project-factory.module.projects-iam["dev-tb-app0-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: test-pf-dev-tb-app0-0
     timeouts: null
@@ -482,6 +487,7 @@ values:
     tag_value: tagValues/654321
     timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_key.default["my-tag-key-1"]:
+    allowed_values_regex: null
     description: Managed by the Terraform project-factory module.
     parent: projects/test-pf-dev-ta-app0-be
     purpose: null
@@ -496,11 +502,6 @@ values:
     description: My value 3
     short_name: my-value-2
     timeouts: null
-  ? module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_value_iam_binding.default["my-tag-key-1/my-value-2:roles/resourcemanager.tagUser"]
-  : condition: []
-    members:
-    - user:user@example.com
-    role: roles/resourcemanager.tagUser
   module.project-factory.module.projects["dev-tb-app0-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-tb-app0-0
     user_project: null
