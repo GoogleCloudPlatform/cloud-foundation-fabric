@@ -291,7 +291,10 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$service_account_ids:my_project/my_sa`
 - `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
-- `$tag_values:my_value`
+- `$tag_keys:my_key` *static context*
+- `$tag_keys:my_project/my_key` *project-level tag keys*
+- `$tag_values:my_key/my_value` *static context*
+- `$tag_values:my_project/my_key/my_value` *project-level tag values*
 - `$vpc_host_projects:my_project`
 - `$vpc_sc_perimeters:my_perimeter`
 
