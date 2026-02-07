@@ -357,6 +357,9 @@ values:
   : condition: []
     project: $project_ids:dev-spoke-0
     role: roles/container.hostServiceAgentUser
+  module.project-factory.module.projects-iam["dev-ta-app0-be"].google_tags_tag_binding.binding["context"]:
+    tag_value: tagValues/654321
+    timeouts: null
   ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_tags_tag_value_iam_binding.default["my-tag-key-1/my-value-2:roles/resourcemanager.tagUser"]
   : condition: []
     members:
@@ -482,9 +485,6 @@ values:
   module.project-factory.module.projects["dev-ta-app0-be"].google_project_service_identity.default["pubsub.googleapis.com"]:
     project: test-pf-dev-ta-app0-be
     service: pubsub.googleapis.com
-    timeouts: null
-  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_binding.binding["context"]:
-    tag_value: tagValues/654321
     timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_tags_tag_key.default["my-tag-key-1"]:
     allowed_values_regex: null
