@@ -1,0 +1,80 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+features:
+  cloud_run: true
+  firebase: true
+groups:
+  approvers:
+    - gcp-approvers@example.com
+  developers:
+    - gcp-developers@example.com
+project_config:
+  dev:
+    app_name: "example"
+    shared_vpc_service_config:
+      host_project: "host-project-id"
+      service_identity_iam:
+        "roles/compute.networkUser":
+          - "cloudservices"
+          - "container-engine"
+  qa:
+    app_name: "example"
+    shared_vpc_service_config:
+      host_project: "host-project-id"
+      service_identity_iam:
+        "roles/compute.networkUser":
+          - "cloudservices"
+          - "container-engine"
+  prod:
+    app_name: "example"
+    shared_vpc_service_config:
+      host_project: "host-project-id"
+      service_identity_iam:
+        "roles/compute.networkUser":
+          - "cloudservices"
+          - "container-engine"
+
+project_services:
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - stackdriver.googleapis.com
+  - run.googleapis.com
+  - firebase.googleapis.com
+  - firebaserules.googleapis.com
+  - firebasedatabase.googleapis.com
+  - firestore.googleapis.com
+  - cloudbuild.googleapis.com
+  - clouddeploy.googleapis.com
+roles:
+  dev:
+    developers: ["roles/owner", "roles/iam.devOps"]
+    approvers: ["roles/viewer"]
+  qa:
+    developers: ["roles/editor", "roles/iam.devOps"]
+    approvers: ["roles/editor"]
+  prod:
+    developers: ["roles/viewer", "roles/iam.devOps"]
+    approvers: ["roles/owner", "roles/clouddeploy.approver"]
+
+folders:
+  my-development-folder:
+    name: "dev-team-folder" # This will be prefixed with the global prefix, e.g., "myprefix-dev-team-folder"
+    # parent: "folders/1234567890" # Optional: uncomment and set to override the default parent (organization ID)
+    iam:
+      "roles/resourcemanager.folderViewer": [
+        "group:gcp-developers@example.com"]
+      "roles/resourcemanager.folderAdmin": [
+        "group:gcp-organization-admins@example.com"
+      ]

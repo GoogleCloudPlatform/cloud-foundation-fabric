@@ -48,7 +48,7 @@ module "workspace-integration-sa" {
   source     = "../../../modules/iam-service-account"
   count      = local.workspace_log_ingestion ? 1 : 0
   project_id = module.project.project_id
-  name       = "workspace-integration"
+  name       = "workspace-int"
 }
 
 resource "google_service_account_key" "workspace_integration_key" {
