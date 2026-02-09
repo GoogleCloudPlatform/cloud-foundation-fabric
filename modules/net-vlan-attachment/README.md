@@ -613,6 +613,7 @@ module "example-va-a" {
   description = "example-va-a vlan attachment"
   peer_asn    = "65001"
   router_config = {
+    asn    = 16550
     create = true
   }
   partner_interconnect_config = {
@@ -630,6 +631,7 @@ module "example-va-b" {
   description = "example-va-b vlan attachment"
   peer_asn    = "65001"
   router_config = {
+    asn    = 16550
     create = true
   }
   partner_interconnect_config = {
