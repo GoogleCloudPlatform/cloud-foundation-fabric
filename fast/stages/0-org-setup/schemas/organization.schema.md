@@ -101,6 +101,17 @@
 - **workforce_identity_config**: *object*
   <br>*additional properties: false*
   - **pool_name**: *string*
+  - **display_name**: *string*
+  - **description**: *string*
+  - **disabled**: *boolean*
+  - **session_duration**: *string*
+  - **access_restrictions**: *object*
+    <br>*additional properties: false*
+    - **allowed_services**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **domain**: *string*
+    - **disable_programmatic_signin**: *boolean*
   - **providers**: *object*
     <br>*additional properties: false*
     - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
