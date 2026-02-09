@@ -146,17 +146,13 @@ module "net-vpc-factory" {
     vpcs = "data/vpcs"
   }
 }
-# tftest files=vpc,fw modules=3 inventory=example.yaml
+# tftest files=vpc,fw,subnet modules=3 inventory=example.yaml
 ```
 
 **data/vpcs/shared-vpc/.config.yaml**
 ```yaml
 project_id: $project_ids:net-project
 name: data-vpc-0
-subnets:
-  - name: primary-subnet
-    region: $locations:primary
-    ip_cidr_range: 10.10.0.0/24
 # tftest-file id=vpc path=data/vpcs/data-vpc-0/.config.yaml schema=vpc-factory.schema.json
 ```
 **data/vpcs/data-vpc-0/subnets/primary-subnet.yaml**
