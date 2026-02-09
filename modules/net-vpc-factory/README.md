@@ -43,10 +43,6 @@ Each VPC directory contains a `.config.yaml` file. The structure of the YAML fil
 project_id: $project_ids:my-project # Or use the project id directly
 description: "My VPC"
 routing_mode: GLOBAL
-subnets:
-  - name: subnet-a
-    region: europe-west1
-    ip_cidr_range: 10.0.0.0/24
 ```
 
 ### Defaults
@@ -71,7 +67,7 @@ module "net-vpc-factory" {
 
 ### Subnets
 
-Subnets can be defined inline in the VPC `.config.yaml` file (as shown above) or in separate files within a `subnets` subdirectory in the VPC's folder. The factory automatically scans the `subnets` folder if it exists.
+Subnets can be defined in separate files within a `subnets` subdirectory in the VPC's folder.
 
 ```text
 data/vpcs/
@@ -162,6 +158,14 @@ subnets:
     region: $locations:primary
     ip_cidr_range: 10.10.0.0/24
 # tftest-file id=vpc path=data/vpcs/data-vpc-0/.config.yaml schema=vpc.schema.json
+```
+**data/vpcs/data-vpc-0/subnets/primary-subnet.yaml**
+```yaml
+name: primary-subnet
+region: $locations:primary
+ip_cidr_range: 10.10.0.0/24
+description: Primary subnet for data-vpc-0
+# tftest-file id=subnet path=data/vpcs/data-vpc-0/subnets/primary-subnet.yaml schema=subnet.schema.json
 ```
 
 **data/vpcs/data-vpc-0/firewall-rules/allow-iap.yaml**

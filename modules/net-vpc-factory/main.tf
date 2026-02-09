@@ -79,10 +79,6 @@ module "vpcs" {
   network_attachments               = try(each.value.network_attachments, {})
   psa_configs                       = try(each.value.psa_configs, [])
   routing_mode                      = try(each.value.routing_mode, "GLOBAL")
-  subnets                           = try(each.value.subnets, [])
-  subnets_private_nat               = try(each.value.subnets_private_nat, [])
-  subnets_proxy_only                = try(each.value.subnets_proxy_only, [])
-  subnets_psc                       = try(each.value.subnets_psc, [])
   context                           = local.context
 }
 
