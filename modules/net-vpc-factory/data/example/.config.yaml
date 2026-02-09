@@ -2,7 +2,7 @@
 ---
 # start of document (---) avoids errors if the file only contains comments
 
-# yaml-language-server: $schema=../../../schemas/vpc.schema.json
+# yaml-language-server: $schema=../../../schemas/vpc-factory.schema.json
 
 name: example
 project_id: $project_ids:net
