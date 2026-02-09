@@ -39,7 +39,7 @@ resource "terraform_data" "defaults_preconditions" {
     }
     # precondition {
     #   condition     = local.projects_input == null
-    #   error_message = yamlencode(var.context.condition_vars)
+    #   error_message = jsonencode(local.ctx_tag_values)
     # }
   }
 }

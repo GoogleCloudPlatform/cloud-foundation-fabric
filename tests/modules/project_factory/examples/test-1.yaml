@@ -21,6 +21,19 @@ values:
     member: user:user1@example.com
     project: foo-test-0
     role: roles/viewer
+  ? module.project-factory.module.projects-iam["test-0"].google_tags_tag_value_iam_binding.default["context/project-factory:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+    - serviceAccount:tag-test@test-1.iam.gserviceaccount.com
+    - user:user1@example.com
+    role: roles/resourcemanager.tagUser
+  module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["org-level"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
+  module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["project-level"]:
+    # tag_value is undefined at plan time as it depends on the tag
+    # tag_value: $tag_values:test-0/context/project-factory
+    timeouts: null
   module.project-factory.module.projects["test-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-ABCDEF
@@ -83,23 +96,18 @@ values:
     project: foo-test-0
     service: container.googleapis.com
     timeouts: null
-  module.project-factory.module.projects["test-0"].google_tags_tag_key.default["allow-key-creation"]:
+  module.project-factory.module.projects["test-0"].google_tags_tag_key.default["context"]:
     allowed_values_regex: null
-    description: Allow key creation for automation service account
+    description: Test org-level tag value shadowing.
     parent: projects/foo-test-0
     purpose: null
     purpose_data: null
-    short_name: allow-key-creation
+    short_name: context
     timeouts: null
-  module.project-factory.module.projects["test-0"].google_tags_tag_value.default["allow-key-creation/allow"]:
-    description: Allow key creation
-    short_name: allow
+  module.project-factory.module.projects["test-0"].google_tags_tag_value.default["context/project-factory"]:
+    description: Test value.
+    short_name: project-factory
     timeouts: null
-  ? module.project-factory.module.projects["test-0"].google_tags_tag_value_iam_binding.default["allow-key-creation/allow:roles/resourcemanager.tagUser"]
-  : condition: []
-    members:
-    - $iam_principals:service_accounts/tags-iam-test/automation/rw
-    role: roles/resourcemanager.tagUser
   module.project-factory.module.projects["test-1"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-ABCDEF
@@ -144,9 +152,6 @@ values:
   : project: test-1
     service: contactcenteraiplatform.googleapis.com
     timeouts: null
-  module.project-factory.module.projects["test-1"].google_tags_tag_binding.binding["test"]:
-    tag_value: $tag_values/
-    timeouts: null
   module.project-factory.module.projects["test-2"].data.google_storage_project_service_account.gcs_sa[0]:
     project: bar-test-2
     user_project: null
@@ -190,6 +195,16 @@ values:
     project: bar-test-2
     service: storage.googleapis.com
     timeouts: null
+  module.project-factory.module.service-accounts["test-1/tag-test"].google_service_account.service_account[0]:
+    account_id: tag-test
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: tag-test@test-1.iam.gserviceaccount.com
+    member: serviceAccount:tag-test@test-1.iam.gserviceaccount.com
+    project: test-1
+    timeouts: null
   module.project-factory.terraform_data.defaults_preconditions:
     input: null
     output: null
@@ -204,11 +219,12 @@ counts:
   google_project_iam_member: 6
   google_project_service: 10
   google_project_service_identity: 3
+  google_service_account: 1
   google_storage_project_service_account: 1
-  google_tags_tag_binding: 1
+  google_tags_tag_binding: 2
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
-  modules: 5
-  resources: 29
+  modules: 7
+  resources: 31
   terraform_data: 2
