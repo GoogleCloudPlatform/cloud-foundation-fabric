@@ -916,7 +916,7 @@ module "project-factory" {
     projects = "data/projects"
   }
 }
-# tftest modules=5 resources=25 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=5 resources=29 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -933,6 +933,15 @@ iam_bindings_additive:
     condition:
       title: Test context
       expression: resource.matchTag('${organization.id}/context', 'project-factory')
+tags:
+  allow-key-creation:
+    description: Allow key creation for automation service account
+    values:
+      allow:
+        description: Allow key creation
+        iam:
+          roles/resourcemanager.tagUser:
+            - $iam_principals:service_accounts/tags-iam-test/automation/rw
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 
@@ -944,6 +953,8 @@ prefix: null
 services:
   - iam.googleapis.com
   - contactcenteraiplatform.googleapis.com
+tag_bindings:
+  test: $tag_values/
 # tftest-file id=test-1 path=data/projects/test-1.yaml
 ```
 
@@ -955,48 +966,4 @@ services:
   - iam.googleapis.com
   - storage.googleapis.com
 # tftest-file id=test-2 path=data/projects/test-2.yaml
-```
-
-This test validates that `$iam_principals:service_accounts/...` interpolation works correctly
-within tags IAM definitions when referencing automation service accounts created by the same
-project-factory.
-
-```hcl
-module "project-factory" {
-  source = "./fabric/modules/project-factory"
-  data_defaults = {
-    billing_account = "012345-67890A-ABCDEF"
-    locations = {
-      storage = "eu"
-    }
-  }
-  data_overrides = {
-    prefix = "test-pf"
-  }
-  factories_config = {
-    projects = "data/projects"
-  }
-}
-# tftest modules=5 resources=9 files=tags-iam-test inventory=tags_iam_principals_bug.yaml
-```
-
-```yaml
-parent: folders/1234567890
-services:
-  - resourcemanager.googleapis.com
-automation:
-  project: test-pf-teams-iac-0
-  service_accounts:
-    rw:
-      description: Read/write automation service account.
-tags:
-  allow-key-creation:
-    description: Allow key creation for automation service account
-    values:
-      allow:
-        description: Allow key creation
-        iam:
-          roles/resourcemanager.tagUser:
-            - $iam_principals:service_accounts/tags-iam-test/automation/rw
-# tftest-file id=tags-iam-test path=data/projects/tags-iam-test.yaml
 ```
