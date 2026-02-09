@@ -26,8 +26,3 @@ routes:
     dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"
-subnets_proxy_only:
-  - ip_cidr_range: 10.72.240.0/24
-    region: $locations:primary
-    name: primary-region-proxy-only
-    active: true

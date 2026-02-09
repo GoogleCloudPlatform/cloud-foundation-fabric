@@ -65,30 +65,6 @@
         "$ref": "#/$defs/psa_config"
       }
     },
-    "subnets": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/subnet"
-      }
-    },
-    "subnets_private_nat": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/simple_subnet"
-      }
-    },
-    "subnets_proxy_only": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/proxy_only_subnet"
-      }
-    },
-    "subnets_psc": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/simple_subnet"
-      }
-    },
     "nat_config": {
       "$ref": "#/$defs/nat_config"
     },
@@ -315,86 +291,6 @@
               }
             }
           }
-        }
-      }
-    },
-    "simple_subnet": {
-      "type": "object",
-      "required": [
-        "name",
-        "ip_cidr_range",
-        "region"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "ip_cidr_range": {
-          "type": "string"
-        },
-        "region": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        }
-      }
-    },
-    "subnet": {
-      "type": "object",
-      "required": [
-        "name",
-        "region"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "ip_cidr_range": {
-          "type": "string"
-        },
-        "region": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "enable_private_access": {
-          "type": "boolean"
-        },
-        "allow_subnet_cidr_routes_overlap": {
-          "type": "boolean"
-        },
-        "reserved_internal_range": {
-          "type": "string"
-        }
-      }
-    },
-    "proxy_only_subnet": {
-      "type": "object",
-      "required": [
-        "name",
-        "ip_cidr_range",
-        "region"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "ip_cidr_range": {
-          "type": "string"
-        },
-        "region": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "active": {
-          "type": "boolean"
-        },
-        "global": {
-          "type": "boolean"
         }
       }
     }
