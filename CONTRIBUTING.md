@@ -442,7 +442,7 @@ For example, resource management stages only export three map variables: `folder
 
 ```hcl
 variable "folder_ids" {
-  # tfdoc:variable:source 01-resman
+  # tfdoc:variable:source 0-org-setup
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
     networking      = string

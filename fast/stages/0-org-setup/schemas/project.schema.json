@@ -1121,6 +1121,21 @@
             }
           }
         },
+        "logging_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "log_bucket": {
+              "type": "string"
+            },
+            "log_object_prefix": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "log_bucket"
+          ]
+        },
         "location": {
           "type": "string"
         },
