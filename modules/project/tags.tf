@@ -46,7 +46,7 @@ locals {
   tags = {
     for k, v in local._tags_merged : k => {
       id = v.id != null ? v.id : (
-        var.tags_config.force_context_ids == true ? "$tag_keys:${k}" : null
+        var.tags_config.force_context_ids == true ? "$tag_keys:${var.name}/${k}" : null
       )
       description = v.description
       iam = var.tags_config.ignore_iam == true ? {} : {
@@ -64,7 +64,7 @@ locals {
       values = {
         for vk, vv in v.values : vk => {
           id = vv.id != null ? vv.id : (
-            var.tags_config.force_context_ids == true ? "$tag_values:${k}/${vk}" : null
+            var.tags_config.force_context_ids == true ? "$tag_values:${var.name}/${k}/${vk}" : null
           )
           description = vv.description
           iam = var.tags_config.ignore_iam == true ? {} : {
