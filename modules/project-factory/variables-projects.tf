@@ -105,6 +105,10 @@ variable "projects" {
             with_state                 = optional(string)
           })
         })), {})
+        logging_config = optional(object({
+          log_bucket        = string
+          log_object_prefix = optional(string)
+        }), null)
         retention_policy = optional(object({
           retention_period = string
           is_locked        = optional(bool)
@@ -211,6 +215,10 @@ variable "projects" {
           with_state                 = optional(string)
         })
       })), {})
+      logging_config = optional(object({
+        log_bucket        = string
+        log_object_prefix = optional(string)
+      }), null)
       retention_policy = optional(object({
         retention_period = string
         is_locked        = optional(bool)

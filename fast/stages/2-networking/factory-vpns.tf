@@ -61,7 +61,7 @@ resource "google_compute_ha_vpn_gateway" "default" {
   )
   name       = replace(each.key, "/", "-")
   stack_type = try(each.value.stack_type, null)
-  depends_on = [module.vpcs]
+  depends_on = [module.vpc-factory]
 }
 
 module "vpn-ha" {

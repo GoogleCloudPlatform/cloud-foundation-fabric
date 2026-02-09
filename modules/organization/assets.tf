@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+data "google_cloud_asset_search_all_resources" "default" {
+  for_each    = var.asset_search
+  scope       = var.organization_id
+  asset_types = each.value.asset_types
+  query       = each.value.query
+}
+
 resource "google_cloud_asset_organization_feed" "default" {
   for_each = var.asset_feeds
   billing_project = lookup(

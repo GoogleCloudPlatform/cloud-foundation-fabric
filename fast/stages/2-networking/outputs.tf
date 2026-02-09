@@ -19,20 +19,20 @@ locals {
     host_project_ids     = module.projects.project_ids
     host_project_numbers = module.projects.project_numbers
     subnet_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => vpc.subnet_ids
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ids
     }
     subnet_proxy_only_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
         for subnet_key, subnet in vpc.subnets_proxy_only : subnet_key => subnet.id
       }
     }
     subnet_psc_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
         for subnet_key, subnet in vpc.subnets_psc : subnet_key => subnet.id
       }
     }
     vpc_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => vpc.id
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.id
     }
   }
 }

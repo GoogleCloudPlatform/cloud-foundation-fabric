@@ -64,7 +64,6 @@ ln -s ~/fast-config/providers/2-networking-swp-providers.tf ./
 # input files from other stages
 ln -s ~/fast-config/tfvars/0-globals.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/0-org-setup.auto.tfvars.json ./
-ln -s ~/fast-config/tfvars/1-resman.auto.tfvars.json ./
 ln -s ~/fast-config/tfvars/2-networking.auto.tfvars.json ./
 
 # conventional place for stage tfvars (manually created)
@@ -83,7 +82,7 @@ The preconfigured provider file uses impersonation to run with this stage's auto
 Variables in this stage -- like most other FAST stages -- are broadly divided into three separate sets:
 
 - variables which refer to global values for the whole organization (org id, billing account id, prefix, etc.), which are pre-populated via the `0-globals.auto.tfvars.json` file linked or copied above
-- variables which refer to resources managed by previous stages, which are prepopulated here via the `0-org-setup.auto.tfvars.json`, `1-resman.auto.tfvars.json` and `2-networking.auto.tfvars.json` files linked or copied above
+- variables which refer to resources managed by previous stages, which are prepopulated here via the `0-org-setup.auto.tfvars.json`, `2-networking.auto.tfvars.json` files linked or copied above
 - and finally variables that optionally control this stage's behaviour and customizations, and can to be set in a custom `terraform.tfvars` file
 
 The first two sets are defined in the `variables-fast.tf` file, the latter set in the `variables.tf` file. The full list of variables can be found in the [Variables](#variables) table at the bottom of this document.

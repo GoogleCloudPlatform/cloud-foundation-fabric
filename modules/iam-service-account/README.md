@@ -170,8 +170,8 @@ module "service-account-with-tags" {
 | [prefix](variables.tf#L64) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
 | [project_id](variables.tf#L75) | Project id where service account will be created. This can be left null when reusing service accounts. | <code>string</code> |  | <code>null</code> |
 | [project_number](variables.tf#L89) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. This can be left null when reusing service accounts and tags are not used. | <code>string</code> |  | <code>null</code> |
-| [service_account_reuse](variables.tf#L96) | Reuse existing service account if not null. Data source can be forced disabled if tag bindings are not used, or unique id is set. | <code title="object&#40;&#123;&#10;  use_data_source &#61; optional&#40;bool, true&#41;&#10;  attributes &#61; optional&#40;object&#40;&#123;&#10;    project_number &#61; number&#10;    unique_id      &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L109) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account_reuse](variables.tf#L96) | Reuse existing service account if not null. Data source can be forced disabled if tag bindings are not used, or unique id is set. | <code title="object&#40;&#123;&#10;  use_data_source &#61; optional&#40;bool, true&#41;&#10;  attributes &#61; optional&#40;object&#40;&#123;&#10;    project_number &#61; number&#10;    unique_id      &#61; string&#10;  &#125;&#41;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L112) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

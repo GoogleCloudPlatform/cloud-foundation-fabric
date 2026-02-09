@@ -3,7 +3,7 @@
   "title": "SCC Security Health Analytics Custom Modules",
   "type": "object",
   "patternProperties": {
-    "^[a-zA-Z]+$": {
+    "^[a-z][a-zA-Z0-9_]*$": {
       "type": "object",
       "required": [
         "predicate",
@@ -12,38 +12,38 @@
       ],
       "properties": {
         "description": {
-            "type": "string"
+          "type": "string"
         },
         "predicate": {
-            "type": "object",
-            "required": [
-              "expression"
-            ],
-             "properties": {
-                "expression": {
-                    "type": "string"
-                }
-             }
+          "type": "object",
+          "required": [
+            "expression"
+          ],
+          "properties": {
+            "expression": {
+              "type": "string"
+            }
+          }
         },
         "recommendation": {
-            "type": "string"
+          "type": "string"
         },
         "resource_selector": {
-            "type": "object",
-            "required": [
-              "resource_types"
-            ],
-             "properties": {
-                "resource_types": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-             }
+          "type": "object",
+          "required": [
+            "resource_types"
+          ],
+          "properties": {
+            "resource_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         },
         "severity": {
-            "type": "string"
+          "type": "string"
         }
       }
     }

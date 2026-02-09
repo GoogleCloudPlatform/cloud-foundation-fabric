@@ -6,6 +6,28 @@
 
 *additional properties: false*
 
+- **asset_feeds**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **billing_project**: *string*
+    - **content_type**: *string*
+      <br>*enum: ['RESOURCE', 'IAM_POLICY', 'ORG_POLICY', 'ACCESS_POLICY', 'OS_INVENTORY', 'RELATIONSHIP']*
+    - **asset_types**: *array*
+      - items: *string*
+    - **asset_names**: *array*
+      - items: *string*
+    - ⁺**feed_output_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**pubsub_destination**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
 - **automation**: *object*
   <br>*additional properties: false*
   - **prefix**: *string*
@@ -174,6 +196,8 @@
     <br>*additional properties: false*
     - **display_name**: *string*
     - **iam**: *reference([iam](#refs-iam))*
+    - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+    - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
     - **iam_self_roles**: *array*
       - items: *string*
     - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
@@ -284,6 +308,10 @@
         - **num_newer_versions**: *number*
         - **with_state**: *string*
           <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
+  - **logging_config**: *object*
+    <br>*additional properties: false*
+    - **log_bucket**: *string*
+    - **log_object_prefix**: *string*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*

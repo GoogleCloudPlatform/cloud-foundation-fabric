@@ -95,17 +95,18 @@ module "projects" {
     each.value.contacts, var.data_merges.contacts
   )
   context = merge(local.ctx, {
-    condition_vars = {
+    condition_vars = merge(local.ctx.condition_vars, {
       folder_ids = {
         for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
       }
-    }
+    })
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
   factories_config = {
     custom_roles           = try(each.value.factories_config.custom_roles, null)
     org_policies           = try(each.value.factories_config.org_policies, null)
+    observability          = try(each.value.factories_config.observability, null)
     quotas                 = try(each.value.factories_config.quotas, null)
     scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
     tags                   = try(each.value.factories_config.tags, null)

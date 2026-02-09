@@ -4,7 +4,7 @@
 
 ## Properties
 
-- **`^[a-zA-Z]+$`**: *object*
+- **`^[a-z][a-zA-Z0-9_]*$`**: *object*
   - **description**: *string*
   - ⁺**predicate**: *object*
     - ⁺**expression**: *string*

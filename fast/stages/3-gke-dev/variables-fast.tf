@@ -32,7 +32,7 @@ variable "billing_account" {
 }
 
 variable "environments" {
-  # tfdoc:variable:source 1-resman
+  # tfdoc:variable:source 0-org-setup
   description = "Long environment names."
   type = object({
     dev = object({
@@ -42,7 +42,7 @@ variable "environments" {
 }
 
 variable "folder_ids" {
-  # tfdoc:variable:source 1-resman
+  # tfdoc:variable:source 0-org-setup
   description = "Folder name => id mappings."
   type        = map(string)
   nullable    = false

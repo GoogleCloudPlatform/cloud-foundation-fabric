@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,16 @@ variable "asset_feeds" {
     ])
     error_message = "Content type must be one of RESOURCE, IAM_POLICY, ORG_POLICY, ACCESS_POLICY, OS_INVENTORY, RELATIONSHIP."
   }
+}
+
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "contacts" {
@@ -100,6 +110,7 @@ variable "factories_config" {
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)
     pam_entitlements              = optional(string)
+    scc_mute_configs              = optional(string)
     scc_sha_custom_modules        = optional(string)
     tags                          = optional(string)
   })

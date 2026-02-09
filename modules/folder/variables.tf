@@ -48,6 +48,16 @@ variable "asset_feeds" {
   }
 }
 
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "assured_workload_config" {
   description = "Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false."
   type = object({
@@ -169,6 +179,7 @@ variable "factories_config" {
   type = object({
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
   })
   nullable = false
