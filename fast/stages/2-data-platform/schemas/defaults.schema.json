@@ -485,8 +485,29 @@
         "aspect_types": {
           "type": "object",
           "additionalProperties": false,
+          "required": [
+            "project_id"
+          ],
           "properties": {
             "location": {
+              "type": "string"
+            },
+            "project_id": {
+              "type": "string"
+            }
+          }
+        },
+        "policy_tags": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "project_id"
+          ],
+          "properties": {
+            "location": {
+              "type": "string"
+            },
+            "project_id": {
               "type": "string"
             }
           }

@@ -42,6 +42,10 @@ projects:
 resources:
   aspect_types:
     location: $locations:primary
+    project_id: $project_ids:data-core-0
+  policy_tags:
+    location: $locations:primary
+    project_id: $project_ids:data-core-0
 
 # environment-specific static contexts can be defined here
 

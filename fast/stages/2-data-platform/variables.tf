@@ -37,8 +37,9 @@ variable "context" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    aspect_types = optional(string, "datasets/classic/aspect-types")
-    defaults     = optional(string, "datasets/classic/defaults.yaml")
+    aspect_types  = optional(string, "datasets/classic/aspect-types")
+    policy_tags   = optional(string, "datasets/classic/policy-tags")
+    defaults      = optional(string, "datasets/classic/defaults.yaml")
     projects     = optional(string, "datasets/classic/projects")
     data_domains = optional(string, "data/domains")
     data_products = optional(string, "data/products")
