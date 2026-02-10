@@ -132,12 +132,12 @@ provider "google-beta" {
 
 ### Defaults Configuration (`defaults.yaml`)
 
-Update your `defaults.yaml` file to include a `universe` block within the `overrides` section. This configures the correct API domains and disables service identities that are not available in GCD. 
+Update your `defaults.yaml` file to include a `universe` block within the `overrides` section. This configures the correct API domains and disables service identities that are not available in GCD.
 
 Additionally, you must provide valid values for the following fields in the context section:
-* `context.email_addresses.gcp-organization-admins`: used to set the [essential contact]([url](https://docs.cloud.google.com/resource-manager/docs/manage-essential-contacts)) for the core projects
+* `context.email_addresses.gcp-organization-admins`: used to set the [essential contact](https://docs.cloud.google.com/resource-manager/docs/manage-essential-contacts) for the core projects
 * `context.iam_principals.gcp-organization-admins`: Used to grant administrative permissions to the administrators.
-  
+
   **Note on Principals:** If you use a group for the admin principal, ensure your user identity is a member of that group. Otherwise, set this field to your own user identity (e.g., `principal://iam.googleapis.com/locations/global/workforcePools/...`) instead of a group. For further details, refer to the [Configure defaults](./README.md#configure-defaults) section in the standard README.
 
 Your `defaults.yaml should` contain sections that look like this:
@@ -277,4 +277,3 @@ Once the **Organization Setup** stage is fully deployed:
     ```
 
 2.  **Proceed to Next Stages:** Continue with the subsequent FAST stages (VPC-SC, Security, Networking, Project Factory). The universe configuration established here is automatically propagated to these stages via the FAST cross-stage output mechanism.
-
