@@ -111,7 +111,7 @@ module "looker" {
   }
   platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
-# tftest modules=1 resources=3 inventory=psc.yaml
+# tftest inventory=psc.yaml
 ```
 
 ### Looker Core full example
