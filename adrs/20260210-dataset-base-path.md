@@ -63,7 +63,7 @@ variable "factories_config" {
 }
 ```
 
-This allows one-line configuration of the dataset, while still providing a way to cancel out individual factories by omitting the path, or pointing to a non-existing folder. This also implies that all dataset files need to be kept together under a single folder, which was not the case before but matches the "set of data" approach we have embraced lately.
+This allows one-line configuration of the dataset, while still providing a way to cancel out individual factories by omitting the path, or pointing to a non-existing folder. The base path will not be prepended for paths starting with `/` or `.`, to allow for different absolute or relative paths, and to also allow our testing framweork to inject fixtures.
 
 On the project factory side, the `factories_config` variable will also change by adopting a "base path" and grouping existing attributes under a `paths` variable.
 
