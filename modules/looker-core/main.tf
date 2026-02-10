@@ -29,12 +29,20 @@ resource "google_looker_instance" "looker" {
   platform_edition   = var.platform_edition
   private_ip_enabled = try(var.network_config.psa_config.enable_private_ip, null)
   public_ip_enabled  = coalesce(var.network_config.public, false) || try(var.network_config.psa_config.enable_public_ip, false)
+  psc_enabled        = var.network_config.psc_config != null
   region             = var.region
   reserved_range     = try(var.network_config.psa_config.allocated_ip_range, null)
 
   oauth_config {
     client_id     = local.oauth_client_id
     client_secret = local.oauth_client_secret
+  }
+
+  dynamic "psc_config" {
+    for_each = var.network_config.psc_config != null ? [""] : []
+    content {
+      allowed_vpcs = var.network_config.psc_config.allowed_vpcs
+    }
   }
 
   dynamic "admin_settings" {
