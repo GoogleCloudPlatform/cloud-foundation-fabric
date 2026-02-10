@@ -360,6 +360,39 @@
         "pool_name": {
           "type": "string"
         },
+        "display_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "session_duration": {
+          "type": "string"
+        },
+        "access_restrictions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allowed_services": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "domain": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "disable_programmatic_signin": {
+              "type": "boolean"
+            }
+          }
+        },
         "providers": {
           "type": "object",
           "additionalProperties": false,

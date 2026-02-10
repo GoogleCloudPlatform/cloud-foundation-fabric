@@ -18,6 +18,9 @@ locals {
   tfvars = {
     host_project_ids     = module.projects.project_ids
     host_project_numbers = module.projects.project_numbers
+    subnet_ips = {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ips
+    }
     subnet_self_links = {
       for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ids
     }
@@ -75,6 +78,11 @@ output "host_project_ids" {
 output "host_project_numbers" {
   description = "Project numbers."
   value       = local.tfvars.host_project_numbers
+}
+
+output "subnet_ips" {
+  description = "Subnet IP ranges."
+  value       = local.tfvars.subnet_ips
 }
 
 output "subnet_proxy_only_self_links" {
