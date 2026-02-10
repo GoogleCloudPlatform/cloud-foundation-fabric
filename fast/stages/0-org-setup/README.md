@@ -267,7 +267,7 @@ If local output files are available adjust the path, run the script, then copy/p
 ln -s /home/user/fast-configs/test-0/providers/0-org-setup-providers.tf ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-ln -s /home/user/fast-configs/test-0/0-org-setup.auto.tfvars ./
+ln -s /home/user/fast-configs/test-0/tfvars/0-org-setup.auto.tfvars ./
 ```
 
 If you did not configure local output files use the GCS bucket to fetch output files. The bucket name can be derived from the `tfvars.org_setup.automation.outputs_bucket` Terraform output. Adjust the path, run the script, then copy/paste the resulting commands.
@@ -280,7 +280,7 @@ If you did not configure local output files use the GCS bucket to fetch output f
 gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/providers/0-org-setup-providers.tf ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/0-org-setup.auto.tfvars ./
+gcloud storage cp gs://test0-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars ./
 ```
 
 If you had previously configured a temporary project in `gcloud`, you should now set the `iac-0` project as default.
