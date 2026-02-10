@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@ output "egress_public_ip" {
   value       = google_looker_instance.looker.egress_public_ip
 }
 
+output "egress_service_attachments" {
+  description = "Egress service attachment connection statuses and configurations."
+  value       = try(google_looker_instance.looker.psc_config[0].service_attachments, [])
+}
+
 output "id" {
   description = "Fully qualified primary instance id."
   value       = google_looker_instance.looker.id
@@ -36,6 +41,12 @@ output "ingress_public_ip" {
 
 output "instance" {
   description = "Looker Core instance resource."
+  value       = google_looker_instance.looker
+  sensitive   = true
+}
+
+output "instance_id" {
+  description = "Looker Core instance id."
   value       = google_looker_instance.looker.id
   sensitive   = true
 }
@@ -48,6 +59,11 @@ output "instance_name" {
 output "looker_uri" {
   description = "Looker core URI."
   value       = google_looker_instance.looker.looker_uri
+}
+
+output "looker_service_attachment" {
+  description = "Service attachment URI for the Looker instance."
+  value       = try(google_looker_instance.looker.psc_config[0].looker_service_attachment_uri, null)
 }
 
 output "looker_version" {

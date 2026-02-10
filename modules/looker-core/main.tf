@@ -39,6 +39,13 @@ resource "google_looker_instance" "looker" {
     for_each = var.network_config.psc_config != null ? [""] : []
     content {
       allowed_vpcs = var.network_config.psc_config.allowed_vpcs
+      dynamic "service_attachments" {
+        for_each = var.network_config.psc_config.service_attachments
+        content {
+          local_fqdn                    = service_attachments.value.local_fqdn
+          target_service_attachment_uri = service_attachments.value.target_service_attachment_uri
+        }
+      }
     }
   }
 
