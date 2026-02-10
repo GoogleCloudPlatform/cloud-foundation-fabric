@@ -105,8 +105,10 @@ module "looker" {
     }
   }
   oauth_config = {
-    support_email = "support@google.com"
+    client_id     = "xxxxxxxxx"
+    client_secret = "xxxxxxxx"
   }
+  platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
 # tftest modules=1 resources=3 inventory=psc.yaml
 ```
