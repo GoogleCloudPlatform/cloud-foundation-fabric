@@ -48,7 +48,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   cloudsqlInstanceChanges:
-    bucket_name: log-0/audit-logs
+    bucket_name: $log_buckets:log-0/audit-logs
     description: Cloud SQL Instance Configuration Changes
     filter: protoPayload.methodName="cloudsql.instances.update"
     label_extractors:

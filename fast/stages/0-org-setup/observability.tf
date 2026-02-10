@@ -58,7 +58,7 @@ module "projects-observability" {
     project_ids = module.factory.project_ids
   })
   factories_config = {
-    observability = var.factories_config.observability
+    observability = local.paths.observability
   }
 }
 

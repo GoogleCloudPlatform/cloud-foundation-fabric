@@ -63,8 +63,8 @@ module "factory" {
     )
   })
   factories_config = {
-    folders           = var.factories_config.folders
-    project_templates = var.factories_config.project_templates
-    projects          = var.factories_config.projects
+    folders           = local.paths.folders
+    project_templates = local.paths.project_templates
+    projects          = local.paths.projects
   }
 }

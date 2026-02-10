@@ -53,7 +53,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   customRoleChanges:
-    bucket_name: log-0/audit-logs
+    bucket_name: $log_buckets:log-0/audit-logs
     description: Custom Role Changes
     filter: |-
       resource.type="iam_role" AND (

@@ -58,7 +58,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   projectOwnershipChange:
-    bucket_name: log-0/audit-logs
+    bucket_name: $log_buckets:log-0/audit-logs
     description: Project Ownership Changes
     filter: |-
       (protoPayload.serviceName="cloudresourcemanager.googleapis.com") AND

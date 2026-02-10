@@ -44,6 +44,7 @@ values:
     name: providers/0-org-setup-providers.tf
     retention: []
     source: null
+    source_md5hash: 2a0bbb00e4b7f1454a50ac7f26c23c05
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["0-org-setup-ro"]:
@@ -76,6 +77,7 @@ values:
     name: providers/0-org-setup-ro-providers.tf
     retention: []
     source: null
+    source_md5hash: 2a0bbb00e4b7f1454a50ac7f26c23c05
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["1-vpcsc"]:
@@ -109,6 +111,7 @@ values:
     name: providers/1-vpcsc-providers.tf
     retention: []
     source: null
+    source_md5hash: d2df90abc46524d941227a1dec12dd86
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-networking"]:
@@ -142,6 +145,7 @@ values:
     name: providers/2-networking-providers.tf
     retention: []
     source: null
+    source_md5hash: a724885c3dcc9850116aca1ef4d4fc5a
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-project-factory"]:
@@ -175,6 +179,7 @@ values:
     name: providers/2-project-factory-providers.tf
     retention: []
     source: null
+    source_md5hash: 165844578c46bc04c4581139c8b8b8d4
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-security"]:
@@ -208,6 +213,7 @@ values:
     name: providers/2-security-providers.tf
     retention: []
     source: null
+    source_md5hash: 5969d3e40a61a42d849a81417a6a84eb
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["globals"]:
@@ -227,6 +233,7 @@ values:
     name: tfvars/0-globals.auto.tfvars.json
     retention: []
     source: null
+    source_md5hash: cdbf79d3eff8bced040e5deccf39d765
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["org-setup"]:
@@ -263,6 +270,7 @@ values:
     name: versions/0-org-setup-version.txt
     retention: []
     source: fast_version.txt
+    source_md5hash: a564c0ab78f4b481f7886f9871376d2c
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.workflows["org-setup"]:
@@ -376,6 +384,7 @@ values:
     name: workflows/org-setup.yaml
     retention: []
     source: null
+    source_md5hash: e5dc153b195e936b1c81bc33db1935c7
     temporary_hold: null
     timeouts: null
   local_file.providers["0-org-setup"]:
@@ -625,36 +634,6 @@ values:
     filename: /tmp/fast-config/workflows/org-setup.yaml
     sensitive_content: null
     source: null
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: group:fabric-fast-owners@google.com
-    role: roles/billing.admin
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.admin
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_networking_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-networking-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.user
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_pf_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-pf-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.user
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_user_security_sa"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-security-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.user
-  module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_viewer_org_ro"]:
-    billing_account_id: 012345-012345-012345
-    condition: []
-    member: serviceAccount:iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    role: roles/billing.viewer
   module.cicd-sa-apply["org-setup"].google_service_account_iam_binding.authoritative["roles/iam.workloadIdentityUser"]:
     condition: []
     members:
@@ -8014,6 +7993,7 @@ values:
     timeouts: null
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["storageIamChanges"]:
+    bucket_name: l$log_buckets:log-0/audit-logs
     bucket_options: []
     description: Cloud Storage IAM Permission Changes
     disabled: null
