@@ -12,19 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../../../../modules/vpc-sc/schemas/perimeter.schema.json
+# yaml-language-server: $schema=../../../../../../modules/vpc-sc/schemas/ingress-policy.schema.json
 
-use_explicit_dry_run_spec: true
-spec:
+from:
   access_levels:
-    - $access_levels:geo_it
-    - $access_levels:identity_me
-  ingress_policies:
-    - $ingress_policies:fast-org-log-sinks
-    - $ingress_policies:test
-  egress_policies:
-    - $egress_policies:test
-  restricted_services:
-    - $service_sets:restricted_services
+    - "*"
+  identities:
+    - $identity_sets:logging_identities
+to:
+  operations:
+    - service_name: "*"
   resources:
-    - projects/1234567890
+    - $resource_sets:logging_project

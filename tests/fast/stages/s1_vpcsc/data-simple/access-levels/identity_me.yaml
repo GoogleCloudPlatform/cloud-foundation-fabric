@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../../../../modules/vpc-sc/schemas/access-level.schema.json
+# yaml-language-server: $schema=../../../../../../modules/vpc-sc/schemas/access-level.schema.json
 
 # yamllint disable rule:indentation
 conditions:

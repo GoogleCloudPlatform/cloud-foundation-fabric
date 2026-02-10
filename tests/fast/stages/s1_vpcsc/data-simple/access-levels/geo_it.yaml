@@ -12,20 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../../../../modules/vpc-sc/schemas/ingress-policy.schema.json
+# yaml-language-server: $schema=../../../../../../modules/vpc-sc/schemas/access-level.schema.json
 
-from:
-  access_levels:
-    - "*"
-  identities:
-    - user:user@fast.example.com
-to:
-  operations:
-    - service_name: compute.googleapis.com
-      method_selectors:
-        - "*"
-    - service_name: monitoring.googleapis.com
-      method_selectors:
-        - "*"
-  resources:
-    - "*"
+conditions:
+  - regions:
+      - IT

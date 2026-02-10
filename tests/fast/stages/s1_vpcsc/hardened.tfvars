@@ -2,12 +2,7 @@ automation = {
   outputs_bucket = "test"
 }
 factories_config = {
-  paths = {
-    access_levels    = "./data-simple/access-levels"
-    egress_policies  = "./data-simple/egress-policies"
-    ingress_policies = "./data-simple/ingress-policies"
-    perimeters       = "./data-simple/perimeters"
-  }
+  dataset = "datasets/hardened"
 }
 logging = {
   project_number = "1234567890"
