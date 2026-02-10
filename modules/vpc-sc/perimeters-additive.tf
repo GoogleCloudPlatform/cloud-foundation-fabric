@@ -418,12 +418,20 @@ resource "google_access_context_manager_service_perimeter" "additive" {
   lifecycle {
     ignore_changes = [spec[0].resources, status[0].resources]
     precondition {
-      condition     = length(local._undefined_ingress_policies[each.key]) == 0
-      error_message = "Undefined ingress policies: ${join(", ", local._undefined_ingress_policies[each.key])}"
+      condition = length(local._undefined_ingress_policies[each.key]) == 0
+      error_message = join("\n", [
+        "Undefined ingress policies: ${join(", ", local._undefined_ingress_policies[each.key])}",
+        "Ingress policies:",
+        yamlencode(keys(local.ingress_policies))
+      ])
     }
     precondition {
-      condition     = length(local._undefined_egress_policies[each.key]) == 0
-      error_message = "Undefined egress policies: ${join(", ", local._undefined_egress_policies[each.key])}"
+      condition = length(local._undefined_egress_policies[each.key]) == 0
+      error_message = join("\n", [
+        "Undefined egress policies: ${join(", ", local._undefined_egress_policies[each.key])}",
+        "Egress policies:",
+        yamlencode(keys(local.egress_policies))
+      ])
     }
   }
   depends_on = [
