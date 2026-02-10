@@ -2,13 +2,7 @@
 
 This module manages the creation of a [Looker Core instance](https://cloud.google.com/looker/docs/looker-core).
 
-This module accepts Oauth client ID and secret in the input variable `oauth_config` in case you have
-already [set up an oauth client and credentials](https://cloud.google.com/looker/docs/looker-core-create-oauth).
-If that is not the case it is possible to specify support_email in the same variable `oauth_config` for a default oauth
-client id and secret setup within the terraform script, be aware that **such an oauth client id is not suitable for
-authenticating end users**, and it is only used to provision the looker core instance.
-You'll still be forced to create a new oauth and update the looker core instance from the console (or gcloud) as there
-is no terraform support for these resources.
+This module accepts Oauth client ID and secret in the input variable `oauth_config`. You must specify the `client_id` and `client_secret` strings for a pre-existing oauth client. You can [set up an oauth client and credentials](https://cloud.google.com/looker/docs/looker-core-create-oauth) manually.
 
 > [!WARNING]
 > Please be aware that, at the time of this writing, deleting the looker core instance via terraform is not possible due
@@ -41,10 +35,11 @@ module "looker" {
     public = true
   }
   oauth_config = {
-    support_email = "support@google.com"
+    client_id     = "xxxxxxxxx"
+    client_secret = "xxxxxxxx"
   }
 }
-# tftest modules=1 resources=3 inventory=simple.yaml
+# tftest modules=1 resources=1 inventory=simple.yaml
 ```
 
 ### Looker Core private instance with PSA
@@ -84,11 +79,12 @@ module "looker" {
     }
   }
   oauth_config = {
-    support_email = "support@google.com"
+    client_id     = "xxxxxxxxx"
+    client_secret = "xxxxxxxx"
   }
   platform_edition = "LOOKER_CORE_ENTERPRISE_ANNUAL"
 }
-# tftest modules=3 resources=17 inventory=psa.yaml
+# tftest modules=3 resources=15 inventory=psa.yaml
 ```
 
 
@@ -191,15 +187,15 @@ module "looker" {
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L91) | Name of the looker core instance. | <code>string</code> | ✓ |  |
 | [network_config](variables.tf#L96) | Network configuration for cluster and instance. Only one between psa_config, psc_config and public can be used. | <code title="object&#40;&#123;&#10;  psa_config &#61; optional&#40;object&#40;&#123;&#10;    network            &#61; string&#10;    allocated_ip_range &#61; optional&#40;string&#41;&#10;    enable_public_ip   &#61; optional&#40;bool, false&#41;&#10;    enable_private_ip  &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;&#10;  psc_config &#61; optional&#40;object&#40;&#123;&#10;    allowed_vpcs &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  public &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [oauth_config](variables.tf#L121) | Looker Core Oauth config. Either client ID and secret (existing oauth client) or support email (temporary internal oauth client setup) must be specified. | <code title="object&#40;&#123;&#10;  client_id     &#61; optional&#40;string, null&#41;&#10;  client_secret &#61; optional&#40;string, null&#41;&#10;  support_email &#61; optional&#40;string, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L154) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L159) | Region for the Looker core instance. | <code>string</code> | ✓ |  |
+| [oauth_config](variables.tf#L121) | Looker Core Oauth config. | <code title="object&#40;&#123;&#10;  client_id     &#61; string&#10;  client_secret &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L149) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L154) | Region for the Looker core instance. | <code>string</code> | ✓ |  |
 | [admin_settings](variables.tf#L17) | Looker Core admins settings. | <code title="object&#40;&#123;&#10;  allowed_email_domains &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [custom_domain](variables.tf#L26) | Looker core instance custom domain. | <code>string</code> |  | <code>null</code> |
 | [encryption_config](variables.tf#L32) | Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code title="object&#40;&#123;&#10;  kms_key_name &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [maintenance_config](variables.tf#L41) | Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'. | <code title="object&#40;&#123;&#10;  maintenance_window &#61; optional&#40;object&#40;&#123;&#10;    day &#61; optional&#40;string, &#34;SUNDAY&#34;&#41;&#10;    start_time &#61; optional&#40;object&#40;&#123;&#10;      hours   &#61; optional&#40;number, 23&#41;&#10;      minutes &#61; optional&#40;number, 0&#41;&#10;      seconds &#61; optional&#40;number, 0&#41;&#10;      nanos   &#61; optional&#40;number, 0&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, null&#41;&#10;  deny_maintenance_period &#61; optional&#40;object&#40;&#123;&#10;    start_date &#61; object&#40;&#123;&#10;      year  &#61; number&#10;      month &#61; number&#10;      day   &#61; number&#10;    &#125;&#41;&#10;    end_date &#61; object&#40;&#123;&#10;      year  &#61; number&#10;      month &#61; number&#10;      day   &#61; number&#10;    &#125;&#41;&#10;    start_time &#61; optional&#40;object&#40;&#123;&#10;      hours   &#61; optional&#40;number, 23&#41;&#10;      minutes &#61; optional&#40;number, 0&#41;&#10;      seconds &#61; optional&#40;number, 0&#41;&#10;      nanos   &#61; optional&#40;number, 0&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [platform_edition](variables.tf#L134) | Platform editions for a Looker instance. Each edition maps to a set of instance features, like its size. | <code>string</code> |  | <code>&#34;LOOKER_CORE_TRIAL&#34;</code> |
-| [prefix](variables.tf#L144) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [platform_edition](variables.tf#L129) | Platform editions for a Looker instance. Each edition maps to a set of instance features, like its size. | <code>string</code> |  | <code>&#34;LOOKER_CORE_TRIAL&#34;</code> |
+| [prefix](variables.tf#L139) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

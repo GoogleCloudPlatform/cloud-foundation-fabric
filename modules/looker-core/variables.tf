@@ -119,16 +119,11 @@ variable "network_config" {
 }
 
 variable "oauth_config" {
-  description = "Looker Core Oauth config. Either client ID and secret (existing oauth client) or support email (temporary internal oauth client setup) must be specified."
+  description = "Looker Core Oauth config."
   type = object({
-    client_id     = optional(string, null)
-    client_secret = optional(string, null)
-    support_email = optional(string, null)
+    client_id     = string
+    client_secret = string
   })
-  validation {
-    condition     = (var.oauth_config.client_id == null && var.oauth_config.client_secret == null) != (var.oauth_config.support_email == null)
-    error_message = "Please specify either client_id and client_secret or support email."
-  }
 }
 
 variable "platform_edition" {

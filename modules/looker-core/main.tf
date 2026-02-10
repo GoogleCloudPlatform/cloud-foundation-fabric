@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,8 @@
  */
 
 locals {
-  bootstrap_oauth_client = var.oauth_config.client_secret == null || var.oauth_config.client_id == null
-  looker_instance_name   = "${local.prefix}${var.name}"
-  oauth_client_id        = local.bootstrap_oauth_client ? google_iap_client.looker_client[0].client_id : var.oauth_config.client_id
-  oauth_client_secret    = local.bootstrap_oauth_client ? google_iap_client.looker_client[0].secret : var.oauth_config.client_secret
-  prefix                 = var.prefix == null ? "" : "${var.prefix}-"
+  looker_instance_name = "${local.prefix}${var.name}"
+  prefix               = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_looker_instance" "looker" {
@@ -34,8 +31,8 @@ resource "google_looker_instance" "looker" {
   reserved_range     = try(var.network_config.psa_config.allocated_ip_range, null)
 
   oauth_config {
-    client_id     = local.oauth_client_id
-    client_secret = local.oauth_client_secret
+    client_id     = var.oauth_config.client_id
+    client_secret = var.oauth_config.client_secret
   }
 
   dynamic "psc_config" {
@@ -101,22 +98,4 @@ resource "google_looker_instance" "looker" {
       oauth_config # do not replace target oauth client updated on the console with default one
     ]
   }
-}
-
-
-# Only "Organization Internal" brands can be created programmatically via API. To convert it into an external brands please use the GCP Console.
-resource "google_iap_brand" "looker_brand" {
-  count         = local.bootstrap_oauth_client ? 1 : 0
-  support_email = var.oauth_config.support_email
-  #  application_title = "Looker Core Application"
-  application_title = "Cloud IAP protected Application"
-  project           = var.project_id
-}
-
-# Only internal org clients can be created via declarative tools. External clients must be manually created via the GCP console.
-# This is a temporary IAP oauth client to be replaced after Looker Core is provisioned.
-resource "google_iap_client" "looker_client" {
-  count        = local.bootstrap_oauth_client ? 1 : 0
-  display_name = "Looker Core default oauth client."
-  brand        = google_iap_brand.looker_brand[0].name
 }
