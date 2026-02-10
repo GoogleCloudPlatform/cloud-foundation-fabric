@@ -94,7 +94,7 @@ variable "name" {
 }
 
 variable "network_config" {
-  description = "Network configuration for cluster and instance. Only one between psa_config and psc_config can be used."
+  description = "Network configuration for cluster and instance. Only one between psa_config, psc_config and public can be used."
   type = object({
     psa_config = optional(object({
       network            = string
@@ -102,12 +102,19 @@ variable "network_config" {
       enable_public_ip   = optional(bool, false)
       enable_private_ip  = optional(bool, true)
     }))
+    psc_config = optional(object({
+      allowed_vpcs = optional(list(string), [])
+    }))
     public = optional(bool, false)
   })
   nullable = false
   validation {
-    condition     = (coalesce(var.network_config.public, false)) == (var.network_config.psa_config == null)
-    error_message = "Please specify either psa_config or public to true."
+    condition = (
+      (coalesce(var.network_config.public, false) ? 1 : 0) +
+      (var.network_config.psa_config != null ? 1 : 0) +
+      (var.network_config.psc_config != null ? 1 : 0)
+    ) == 1
+    error_message = "Please specify exactly one of psa_config, psc_config or public."
   }
 }
 
