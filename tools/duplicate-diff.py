@@ -62,7 +62,6 @@ duplicates = [
     ],
     [
         "fast/stages/0-org-setup/schemas/observability.schema.json",
-        "modules/project-factory/schemas/observability.schema.json",
         "modules/project/schemas/observability.schema.json",
     ],
     [
