@@ -1,6 +1,6 @@
 # FAST Installation on Google Cloud Dedicated (GCD)
 
-This document serves as an extension to the main **[FAST Organization Setup README](../README.md)**, detailing the specific configurations and steps required to deploy the Fabric FAST landing zone on **Google Cloud Dedicated (GCD)**.
+This document serves as an extension to the main **[FAST Organization Setup README](./README.md)**, detailing the specific configurations and steps required to deploy the Fabric FAST landing zone on **Google Cloud Dedicated (GCD)**.
 
 It assumes familiarity with the standard FAST bootstrap flow but highlights the critical divergences required for the Google Cloud Dedicated (GCD) environment.
 
@@ -31,7 +31,7 @@ The core stages are:
 
 ## 2. Prerequisites
 
-In addition to the [standard FAST prerequisites](../README.md#prerequisites), ensure the following GCD-specific requirements are met.
+In addition to the [standard FAST prerequisites](./README.md#prerequisites), ensure the following GCD-specific requirements are met.
 
 
 ### Identity Provider
@@ -84,7 +84,7 @@ gcloud auth application-default login \
 
 ## 3. Bootstrap: Manual Temporary Project
 
-*This step replaces the standard [Default project](../README.md#default-project) creation flow.*
+*This step replaces the standard [Default project](./README.md#default-project) creation flow.*
 
 GCD requires a manual bootstrap project because organization policy services are not automatically available at the organization root during the initial setup.
 
@@ -113,7 +113,7 @@ GCD requires a manual bootstrap project because organization policy services are
 
 ## 4. Terraform Configuration Updates
 
-*This section details specific modifications to the [Configure defaults](../README.md#configure-defaults) step.*
+*This section details specific modifications to the [Configure defaults](./README.md#configure-defaults) step.*
 
 ### Provider Configuration
 
@@ -132,9 +132,18 @@ provider "google-beta" {
 
 ### Defaults Configuration (`defaults.yaml`)
 
-Update your `defaults.yaml` file to include a `universe` block within the `overrides` section. This configures the correct API domains and disables service identities that are not available in GCD.
+Update your `defaults.yaml` file to include a `universe` block within the `overrides` section. This configures the correct API domains and disables service identities that are not available in GCD. 
+
+Additionally, you must provide valid values for the following fields in the context section:
+* `context.email_addresses.gcp-organization-admins`: used to set the [essential contact]([url](https://docs.cloud.google.com/resource-manager/docs/manage-essential-contacts)) for the core projects
+* `context.iam_principals.gcp-organization-admins`: Used to grant administrative permissions to the administrators.
+  
+  **Note on Principals:** If you use a group for the admin principal, ensure your user identity is a member of that group. Otherwise, set this field to your own user identity (e.g., `principal://iam.googleapis.com/locations/global/workforcePools/...`) instead of a group. For further details, refer to the [Configure defaults](./README.md#configure-defaults) section in the standard README.
+
+Your `defaults.yaml should` contain sections that look like this:
 
 ```yaml
+# ... existing configuration ...
 projects:
   defaults:
     # customize prefix as per usual FAST instructions
@@ -154,6 +163,15 @@ projects:
         - dns.googleapis.com
         - monitoring.googleapis.com
         - networksecurity.googleapis.com
+context:
+  email_addresses:
+    gcp-organization-admins: gcp-organization-admins@example.com
+  iam_principals:
+    gcp-organization-admins: group:gcp-organization-admins@example.com
+  locations:
+    # Replace with values from the Configuration Reference table
+    primary: <UNIVERSE_REGION>
+# ... existing configuration ...
 ```
 
 ### Switch to GCD Dataset
