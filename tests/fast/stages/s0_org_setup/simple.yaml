@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -65,6 +66,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -97,6 +99,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -129,6 +132,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -161,6 +165,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -193,6 +198,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -211,6 +217,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -228,6 +235,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -245,6 +253,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -357,6 +366,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -1112,6 +1122,14 @@ values:
     condition: []
     project: ft0-prod-billing-exp-0
     role: roles/viewer
+  module.factory.module.projects-iam["iac-0"].google_project_iam_audit_config.default["iam.googleapis.com"]:
+    audit_log_config:
+    - exempted_members: []
+      log_type: DATA_READ
+    - exempted_members: []
+      log_type: DATA_WRITE
+    project: ft0-prod-iac-core-0
+    service: iam.googleapis.com
   module.factory.module.projects-iam["iac-0"].google_project_iam_audit_config.default["storage.googleapis.com"]:
     audit_log_config:
     - exempted_members: []
@@ -1241,6 +1259,82 @@ values:
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
     user_project: null
+  module.factory.module.projects["iac-0"].google_logging_metric.metrics["sa-impersonation"]:
+    bucket_name: null
+    bucket_options: []
+    description: null
+    disabled: null
+    filter: 'protoPayload.serviceName="iamcredentials.googleapis.com"
+
+      (protoPayload.methodName="GenerateAccessToken" OR protoPayload.methodName="GenerateIdToken")
+
+      '
+    label_extractors:
+      email_id: EXTRACT(resource.labels.email_id)
+    metric_descriptor:
+    - display_name: Service Account Impersonation
+      labels:
+      - description: ''
+        key: email_id
+        value_type: STRING
+      metric_kind: DELTA
+      unit: '1'
+      value_type: INT64
+    name: sa-impersonation
+    project: ft0-prod-iac-core-0
+    timeouts: null
+    value_extractor: null
+  module.factory.module.projects["iac-0"].google_monitoring_alert_policy.alerts["sa-impersonation-alert"]:
+    alert_strategy: []
+    combiner: OR
+    conditions:
+    - condition_absent: []
+      condition_matched_log: []
+      condition_monitoring_query_language: []
+      condition_prometheus_query_language: []
+      condition_sql: []
+      condition_threshold:
+      - aggregations:
+        - alignment_period: 60s
+          cross_series_reducer: REDUCE_SUM
+          group_by_fields:
+          - metric.label.email_id
+          per_series_aligner: ALIGN_COUNT
+        comparison: COMPARISON_GT
+        denominator_aggregations: []
+        denominator_filter: null
+        duration: 60s
+        evaluation_missing_data: null
+        filter: 'metric.type="logging.googleapis.com/user/sa-impersonation" AND
+
+          resource.type="global"
+
+          '
+        forecast_options: []
+        threshold_value: 0
+        trigger:
+        - count: 1
+          percent: null
+      display_name: Impersonation Detected
+    display_name: Service Account Impersonation Alert
+    documentation: []
+    enabled: true
+    project: ft0-prod-iac-core-0
+    severity: null
+    timeouts: null
+    user_labels: null
+  module.factory.module.projects["iac-0"].google_monitoring_notification_channel.channels["email-security"]:
+    description: null
+    display_name: Security Team Email
+    enabled: true
+    force_delete: false
+    labels:
+      email_address: $email_addresses:gcp-organization-admins
+    project: ft0-prod-iac-core-0
+    sensitive_labels: []
+    timeouts: null
+    type: email
+    user_labels: null
   module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
     dry_run_spec: []
     name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
@@ -2862,6 +2956,7 @@ values:
     stage: GA
     title: Custom role tagViewer
   module.organization[0].google_tags_tag_key.default["context"]:
+    allowed_values_regex: null
     description: Organization-level contexts.
     parent: organizations/1234567890
     purpose: null
@@ -2869,6 +2964,7 @@ values:
     short_name: context
     timeouts: null
   module.organization[0].google_tags_tag_key.default["environment"]:
+    allowed_values_regex: null
     description: Organization-level environments.
     parent: organizations/1234567890
     purpose: null
@@ -2876,6 +2972,7 @@ values:
     short_name: environment
     timeouts: null
   module.organization[0].google_tags_tag_key.default["org-policies"]:
+    allowed_values_regex: null
     description: Organization policy condition tags.
     parent: organizations/1234567890
     purpose: null
@@ -2910,7 +3007,6 @@ values:
     input: null
     output: null
     triggers_replace: null
-
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
@@ -2918,17 +3014,20 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 10
   google_folder_iam_binding: 44
+  google_logging_metric: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
   google_logging_project_settings: 2
+  google_monitoring_alert_policy: 1
+  google_monitoring_notification_channel: 1
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 37
   google_organization_iam_custom_role: 9
   google_project: 3
-  google_project_iam_audit_config: 2
+  google_project_iam_audit_config: 3
   google_project_iam_binding: 17
   google_project_iam_member: 15
   google_project_service: 33
@@ -2948,5 +3047,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 50
-  resources: 324
+  resources: 328
   terraform_data: 4
