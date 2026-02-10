@@ -61,6 +61,10 @@ duplicates = [
         "modules/project-factory/schemas/folder.schema.json",
     ],
     [
+        "fast/stages/0-org-setup/schemas/observability.schema.json",
+        "modules/project/schemas/observability.schema.json",
+    ],
+    [
         "fast/stages/1-vpcsc/schemas/ingress-policy.schema.json",
         "modules/vpc-sc/schemas/ingress-policy.schema.json",
     ],

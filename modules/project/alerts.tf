@@ -135,7 +135,7 @@ resource "google_monitoring_alert_policy" "alerts" {
       # first try to get a channel created by this module
       google_monitoring_notification_channel.channels[x].name,
       # otherwise check the context
-      var.context.notification_channels[x],
+      local.ctx.notification_channels[x],
       # if nothing else, use the provided channel as is
       x
     )

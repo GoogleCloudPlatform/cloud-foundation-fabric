@@ -1,0 +1,51 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.looker.google_looker_instance.looker:
+    admin_settings: []
+    consumer_network: null
+    controlled_egress_config: []
+    controlled_egress_enabled: null
+    custom_domain: []
+    deletion_policy: DEFAULT
+    deny_maintenance_period: []
+    fips_enabled: null
+    gemini_enabled: null
+    maintenance_window: []
+    name: looker-psc
+    oauth_config:
+    - client_id: xxxxxxxxx
+      client_secret: xxxxxxxx
+    periodic_export_config: []
+    platform_edition: LOOKER_CORE_ENTERPRISE_ANNUAL
+    private_ip_enabled: false
+    project: project-id
+    psc_config:
+    - allowed_vpcs:
+      - projects/test-project/global/networks/test
+      service_attachments: []
+    psc_enabled: true
+    public_ip_enabled: false
+    region: europe-west8
+    reserved_range: null
+    timeouts: null
+    user_metadata: []
+
+counts:
+  google_looker_instance: 1
+  modules: 1
+  resources: 1
+
+outputs: {}
