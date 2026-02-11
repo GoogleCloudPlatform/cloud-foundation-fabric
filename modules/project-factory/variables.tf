@@ -167,7 +167,7 @@ variable "factories_config" {
   type = object({
     basepath = string
     budgets = optional(object({
-      billing_account_id = optional(string)
+      billing_account = optional(string)
     }), {})
     paths = optional(object({
       budgets           = optional(string, "budgets")

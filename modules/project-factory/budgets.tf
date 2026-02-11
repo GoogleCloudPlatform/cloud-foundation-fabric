@@ -18,7 +18,7 @@
 
 locals {
   budgets_enabled = (
-    var.factories_config.budgets.billing_account_id != null &&
+    var.factories_config.budgets.billing_account != null &&
     local.paths.budgets != null
   )
   budget_folder_sets = flatten([
@@ -42,7 +42,7 @@ locals {
 module "billing-budgets" {
   source = "../billing-account"
   count  = local.budgets_enabled ? 1 : 0
-  id     = var.factories_config.budgets.billing_account_id
+  id     = var.factories_config.budgets.billing_account
   context = merge(local.ctx, {
     folder_ids = local.ctx.folder_ids
     folder_sets = {
