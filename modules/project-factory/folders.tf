@@ -88,6 +88,7 @@ module "folder-1-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
@@ -140,6 +141,7 @@ module "folder-2-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
@@ -195,6 +197,7 @@ module "folder-3-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
@@ -250,6 +253,7 @@ module "folder-4-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
