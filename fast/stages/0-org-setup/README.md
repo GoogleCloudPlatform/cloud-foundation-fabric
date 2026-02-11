@@ -78,7 +78,7 @@ The admin principal is typically a group that includes the user running the firs
 
 ### Select/configure a factory dataset
 
-The `factories_config` variable configures the location for the dataset, and the individual factories within it. Its default values point to the legacy FAST compatible fileset in the `datasets/classic` folder.
+The `factories_config` variable configures the location for the dataset, and the individual factories within it. Its default values point to the classic FAST compatible fileset in the `datasets/classic` folder.
 
 If this configuration matches requirements, no changes are necessary at this stage. To select a different setup create a `tfvars` file and set paths to the desired data folder, like shown in the example below. The different configurations produced by each fileset are described [later in this document](#default-factory-datasets).
 
@@ -98,13 +98,12 @@ While changing the paths used by the inner factories, or disabling some of them 
 factories_config = {
   # optional
   # dataset = "datasets/hardened"
+  # optional
   paths = {
-    billing_accounts = "datasets/classic/billing-accounts"
-    cicd             = "datasets/classic/cicd.yaml"
-    defaults         = "datasets/classic/defaults.yaml"
-    folders          = "datasets/classic/folders"
-    organization     = "datasets/classic/organization"
-    projects         = "datasets/classic/projects"
+    # absolute paths ignores the dataset base path
+    billing_accounts = "/mydata/foo/billing-accounts"
+    # and if the path does not exist this specific factory is skipped
+    cicd             = "/tmp/fake/cicd.yaml"
   }
 }
 ```
