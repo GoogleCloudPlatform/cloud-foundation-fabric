@@ -586,7 +586,7 @@ One project defined within the folder hierarchy, using a lower level factory for
 ```yaml
 billing_account: 012345-67890A-BCDEF0
 factories_config:
-  org_policies: data/factories/org-policies
+  org_policies: factories/org-policies
 services:
   - container.googleapis.com
   - storage.googleapis.com

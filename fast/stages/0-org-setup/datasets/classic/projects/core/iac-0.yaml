@@ -84,7 +84,7 @@ org_policies:
             - https://gitlab.com
             - https://app.terraform.io
 factories_config:
-  observability: datasets/classic/observability/iac-0
+  observability: observability/iac-0
 data_access_logs:
   storage.googleapis.com:
     DATA_READ: {}
