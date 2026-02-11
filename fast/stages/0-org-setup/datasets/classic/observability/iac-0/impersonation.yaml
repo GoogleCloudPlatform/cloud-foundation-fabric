@@ -54,10 +54,10 @@ alerts:
           trigger:
             count: 1
           aggregations:
-            alignment_period: 60s
-            per_series_aligner: ALIGN_COUNT
-            cross_series_reducer: REDUCE_SUM
-            group_by_fields: ["metric.label.email_id"]
+            - alignment_period: 60s
+              per_series_aligner: ALIGN_COUNT
+              cross_series_reducer: REDUCE_SUM
+              group_by_fields: ["metric.label.email_id"]
     notification_channels:
       - email-security
     enabled: true

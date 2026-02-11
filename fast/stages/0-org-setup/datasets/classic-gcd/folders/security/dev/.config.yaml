@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../../0-org-setup/schemas/folder.schema.json
+# yaml-language-server: $schema=../../../../../schemas/folder.schema.json
 
 name: Development
 parent: $folder_ids:security
