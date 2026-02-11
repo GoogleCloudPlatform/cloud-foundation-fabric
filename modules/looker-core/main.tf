@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,8 @@
  */
 
 locals {
-  bootstrap_oauth_client = var.oauth_config.client_secret == null || var.oauth_config.client_id == null
-  looker_instance_name   = "${local.prefix}${var.name}"
-  oauth_client_id        = local.bootstrap_oauth_client ? google_iap_client.looker_client[0].client_id : var.oauth_config.client_id
-  oauth_client_secret    = local.bootstrap_oauth_client ? google_iap_client.looker_client[0].secret : var.oauth_config.client_secret
-  prefix                 = var.prefix == null ? "" : "${var.prefix}-"
+  looker_instance_name = "${local.prefix}${var.name}"
+  prefix               = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_looker_instance" "looker" {
@@ -32,16 +29,25 @@ resource "google_looker_instance" "looker" {
   psc_enabled        = var.network_config.psc_config != null
   region             = var.region
   reserved_range     = try(var.network_config.psa_config.allocated_ip_range, null)
+  fips_enabled       = var.fips_enabled
+  gemini_enabled     = var.gemini_enabled
 
   oauth_config {
-    client_id     = local.oauth_client_id
-    client_secret = local.oauth_client_secret
+    client_id     = var.oauth_config.client_id
+    client_secret = var.oauth_config.client_secret
   }
 
   dynamic "psc_config" {
     for_each = var.network_config.psc_config != null ? [""] : []
     content {
       allowed_vpcs = var.network_config.psc_config.allowed_vpcs
+      dynamic "service_attachments" {
+        for_each = var.network_config.psc_config.service_attachments
+        content {
+          local_fqdn                    = service_attachments.value.local_fqdn
+          target_service_attachment_uri = service_attachments.value.target_service_attachment_uri
+        }
+      }
     }
   }
 
@@ -55,6 +61,30 @@ resource "google_looker_instance" "looker" {
     for_each = var.custom_domain != null ? [""] : []
     content {
       domain = var.custom_domain
+    }
+  }
+
+  controlled_egress_enabled = var.controlled_egress != null ? var.controlled_egress.enabled : null
+
+  dynamic "controlled_egress_config" {
+    for_each = var.controlled_egress != null ? [""] : []
+    content {
+      marketplace_enabled = var.controlled_egress.marketplace_enabled
+      egress_fqdns        = var.controlled_egress.egress_fqdns
+    }
+  }
+
+  dynamic "periodic_export_config" {
+    for_each = var.periodic_export_config != null ? [""] : []
+    content {
+      kms_key = var.periodic_export_config.kms_key
+      gcs_uri = var.periodic_export_config.gcs_uri
+      start_time {
+        hours   = var.periodic_export_config.start_time.hours
+        minutes = var.periodic_export_config.start_time.minutes
+        seconds = var.periodic_export_config.start_time.seconds
+        nanos   = var.periodic_export_config.start_time.nanos
+      }
     }
   }
   dynamic "deny_maintenance_period" {
@@ -101,22 +131,4 @@ resource "google_looker_instance" "looker" {
       oauth_config # do not replace target oauth client updated on the console with default one
     ]
   }
-}
-
-
-# Only "Organization Internal" brands can be created programmatically via API. To convert it into an external brands please use the GCP Console.
-resource "google_iap_brand" "looker_brand" {
-  count         = local.bootstrap_oauth_client ? 1 : 0
-  support_email = var.oauth_config.support_email
-  #  application_title = "Looker Core Application"
-  application_title = "Cloud IAP protected Application"
-  project           = var.project_id
-}
-
-# Only internal org clients can be created via declarative tools. External clients must be manually created via the GCP console.
-# This is a temporary IAP oauth client to be replaced after Looker Core is provisioned.
-resource "google_iap_client" "looker_client" {
-  count        = local.bootstrap_oauth_client ? 1 : 0
-  display_name = "Looker Core default oauth client."
-  brand        = google_iap_brand.looker_brand[0].name
 }
