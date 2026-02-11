@@ -2041,10 +2041,10 @@ module "project" {
           comparison      = "COMPARISON_GT"
           threshold_value = 100
           duration        = "60s"
-          aggregations = {
+          aggregations = [{
             alignment_period   = "60s"
             per_series_aligner = "ALIGN_RATE"
-          }
+          }]
         }
       }]
     }
