@@ -47,14 +47,12 @@ values:
     name: versions/1-vpcsc-version.txt
     retention: []
     source: fast_version.txt
-    source_md5hash: a564c0ab78f4b481f7886f9871376d2c
     temporary_hold: null
     timeouts: null
   local_file.tfvars["1"]:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /home/ludomagno/fast-config/fast-test-00/tfvars/1-vpcsc.auto.tfvars.json
     sensitive_content: null
     source: null
   module.vpc-sc.google_access_context_manager_access_level.basic["geo"]:
