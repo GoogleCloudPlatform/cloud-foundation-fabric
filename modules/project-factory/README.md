@@ -310,8 +310,8 @@ As an example, the id of the folder defined in `folders/networking/prod/.config.
 
 Project ids ise the `$project_ids:` namespace, with ids defined in two different ways:
 
-- projects defined in the `var.factories_config.project` tree use the filename (dirname is stripped)
-- projects defined in the `var.factories_config.folders` tree use the full path (dirname is kept)
+- projects defined in the `var.factories_config.paths.project` tree use the filename (dirname is stripped)
+- projects defined in the `var.factories_config.paths.folders` tree use the full path (dirname is kept)
 
 As an example, the id of the project defined in the `projects/team-0/app-0-0.yaml` file will be accessible via `$project_ids:app-0-0`. The id of the project defined in the `folders/shared/iac-core-0.yaml` file will be accessible via `$project_ids:shared/iac-core-0`.
 
@@ -463,13 +463,10 @@ module "project-factory" {
   }
   # location where the yaml files are read from
   factories_config = {
+    basepath = "data"
     budgets = {
       billing_account_id = var.billing_account_id
-      data               = "data/budgets"
     }
-    folders           = "data/hierarchy"
-    project_templates = "data/templates"
-    projects          = "data/projects"
   }
   notification_channels = {
     billing-default = {
@@ -498,7 +495,7 @@ service_encryption_key_ids:
     - $kms_keys:compute-prod-ew1
 tag_bindings:
   context: $tag_values:context/gke
-# tftest-file id=t0 path=data/templates/container/base.yaml schema=project.schema.json
+# tftest-file id=t0 path=data/project-templates/container/base.yaml schema=project.schema.json
 ```
 
 A simple hierarchy of folders:
@@ -515,31 +512,31 @@ data_access_logs:
     DATA_READ:
       exempted_members:
         - $iam_principals:gcp-devops
-# tftest-file id=0 path=data/hierarchy/team-a/.config.yaml schema=folder.schema.json
+# tftest-file id=0 path=data/folders/team-a/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Team B
 # explicit parent definition via key
 parent: $folder_ids:teams
-# tftest-file id=1 path=data/hierarchy/team-b/.config.yaml schema=folder.schema.json
+# tftest-file id=1 path=data/folders/team-b/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Team C
 # explicit parent definition via folder id
 parent: folders/5678901234
-# tftest-file id=2 path=data/hierarchy/team-c/.config.yaml schema=folder.schema.json
+# tftest-file id=2 path=data/folders/team-c/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Apps
-# tftest-file id=2.1 path=data/hierarchy/team-c/apps/.config.yaml schema=folder.schema.json
+# tftest-file id=2.1 path=data/folders/team-c/apps/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Test
-# tftest-file id=2.2 path=data/hierarchy/team-c/apps/test/.config.yaml schema=folder.schema.json
+# tftest-file id=2.2 path=data/folders/team-c/apps/test/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
@@ -553,7 +550,7 @@ asset_feeds:
     content_type: RESOURCE
     asset_types:
       - compute.googleapis.com/Instance
-# tftest-file id=2.3 path=data/hierarchy/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
+# tftest-file id=2.3 path=data/folders/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
@@ -574,14 +571,14 @@ pam_entitlements:
     privileged_access:
       - role: roles/writer
 
-# tftest-file id=3 path=data/hierarchy/team-a/app-0/.config.yaml schema=folder.schema.json
+# tftest-file id=3 path=data/folders/team-a/app-0/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: App 0
 tag_bindings:
   drs-allow-all: $tag_values:org-policies/drs-allow-all
-# tftest-file id=4 path=data/hierarchy/team-b/app-0/.config.yaml schema=folder.schema.json
+# tftest-file id=4 path=data/folders/team-b/app-0/.config.yaml schema=folder.schema.json
 ```
 
 One project defined within the folder hierarchy, using a lower level factory for org policies:
@@ -610,7 +607,7 @@ workload_identity_pools:
           oidc:
             template: github
 
-# tftest-file id=5 path=data/hierarchy/teams-iac-0.yaml schema=project.schema.json
+# tftest-file id=5 path=data/folders/teams-iac-0.yaml schema=project.schema.json
 ```
 
 More traditional project definitions via the project factory data:
@@ -858,7 +855,7 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L165) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  folders           &#61; optional&#40;string&#41;&#10;  project_templates &#61; optional&#40;string&#41;&#10;  projects          &#61; optional&#40;string&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account_id &#61; string&#10;    data               &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L165) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  basepath &#61; string&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  paths &#61; optional&#40;object&#40;&#123;&#10;    budgets           &#61; optional&#40;string, &#34;budgets&#34;&#41;&#10;    folders           &#61; optional&#40;string, &#34;folders&#34;&#41;&#10;    project_templates &#61; optional&#40;string, &#34;project-templates&#34;&#41;&#10;    projects          &#61; optional&#40;string, &#34;projects&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars        &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  log_buckets           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_numbers       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  pubsub_topics         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage_buckets       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_defaults](variables.tf#L42) | Optional default values used when corresponding project or folder data from files are missing. | <code title="object&#40;&#123;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  bucket &#61; optional&#40;object&#40;&#123;&#10;    force_destroy &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  labels          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations &#61; optional&#40;object&#40;&#123;&#10;    bigquery &#61; optional&#40;string&#41;&#10;    logging  &#61; optional&#40;string&#41;&#10;    storage  &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  metric_scopes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  parent        &#61; optional&#40;string&#41;&#10;  prefix        &#61; optional&#40;string&#41;&#10;  project_reuse &#61; optional&#40;object&#40;&#123;&#10;    use_data_source &#61; optional&#40;bool, true&#41;&#10;    attributes &#61; optional&#40;object&#40;&#123;&#10;      name             &#61; string&#10;      number           &#61; number&#10;      services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  shared_vpc_service_config &#61; optional&#40;object&#40;&#123;&#10;    host_project &#61; string&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_merges](variables.tf#L107) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code title="object&#40;&#123;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -924,7 +921,7 @@ module "project-factory" {
     ]
   }
   factories_config = {
-    projects = "data/projects"
+    basepath = "data"
   }
 }
 # tftest modules=7 resources=31 files=test-0,test-1,test-2 inventory=test-1.yaml

@@ -108,10 +108,9 @@ module "factory" {
   data_defaults  = local.project_defaults.defaults
   data_merges    = local.project_defaults.merges
   data_overrides = local.project_defaults.overrides
-  factories_config = merge(local.paths, {
-    budgets = local.paths.budgets == null ? null : {
+  factories_config = merge(var.factories_config, {
+    budgets = {
       billing_account_id = var.billing_account.id
-      data               = local.paths.budgets
     }
   })
 }

@@ -19,10 +19,10 @@
 locals {
   # project data from folders tree
   _folder_projects_raw = {
-    for f in try(fileset(local._folders_path, "**/*.yaml"), []) :
+    for f in try(fileset(local.paths.folders, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => merge(
       { parent = dirname(f) == "." ? null : "$folder_ids:${dirname(f)}" },
-      yamldecode(file("${local._folders_path}/${f}"))
+      yamldecode(file("${local.paths.folders}/${f}"))
     ) if !endswith(f, "/.config.yaml")
   }
   _projects_input = {
@@ -32,16 +32,13 @@ locals {
       v
     )
   }
-  _projects_path = try(
-    pathexpand(var.factories_config.projects), null
-  )
   _projects_raw = {
-    for f in try(fileset(local._projects_path, "**/*.yaml"), []) :
-    trimsuffix(f, ".yaml") => yamldecode(file("${local._projects_path}/${f}"))
+    for f in try(fileset(local.paths.projects, "**/*.yaml"), []) :
+    trimsuffix(f, ".yaml") => yamldecode(file("${local.paths.projects}/${f}"))
     if !endswith(f, ".config.yaml")
   }
   _templates_path = try(
-    pathexpand(var.factories_config.project_templates), null
+    pathexpand(local.paths.project_templates), null
   )
   _templates_raw = {
     for f in try(fileset(local._templates_path, "**/*.yaml"), []) :
