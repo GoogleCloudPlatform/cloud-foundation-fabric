@@ -29,6 +29,8 @@ resource "google_looker_instance" "looker" {
   psc_enabled        = var.network_config.psc_config != null
   region             = var.region
   reserved_range     = try(var.network_config.psa_config.allocated_ip_range, null)
+  fips_enabled       = var.fips_enabled
+  gemini_enabled     = var.gemini_enabled
 
   oauth_config {
     client_id     = var.oauth_config.client_id
@@ -59,6 +61,30 @@ resource "google_looker_instance" "looker" {
     for_each = var.custom_domain != null ? [""] : []
     content {
       domain = var.custom_domain
+    }
+  }
+
+  controlled_egress_enabled = var.controlled_egress != null ? var.controlled_egress.enabled : null
+
+  dynamic "controlled_egress_config" {
+    for_each = var.controlled_egress != null ? [""] : []
+    content {
+      marketplace_enabled = var.controlled_egress.marketplace_enabled
+      egress_fqdns        = var.controlled_egress.egress_fqdns
+    }
+  }
+
+  dynamic "periodic_export_config" {
+    for_each = var.periodic_export_config != null ? [""] : []
+    content {
+      kms_key = var.periodic_export_config.kms_key
+      gcs_uri = var.periodic_export_config.gcs_uri
+      start_time {
+        hours   = var.periodic_export_config.start_time.hours
+        minutes = var.periodic_export_config.start_time.minutes
+        seconds = var.periodic_export_config.start_time.seconds
+        nanos   = var.periodic_export_config.start_time.nanos
+      }
     }
   }
   dynamic "deny_maintenance_period" {
