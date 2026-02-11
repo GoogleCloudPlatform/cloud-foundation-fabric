@@ -17,19 +17,16 @@
 # tfdoc:file:description VPC and firewall rules factory.
 
 locals {
-  _vpcs_path = try(
-    pathexpand(var.factories_config.vpcs), null
-  )
   _vpcs_files = try(
-    fileset(local._vpcs_path, "**/.config.yaml"),
+    fileset(local.paths.vpcs, "**/.config.yaml"),
     []
   )
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(
-      yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")),
+      yamldecode(file("${coalesce(local.paths.vpcs, "-")}/${f}")),
       {
         factory_dirname  = dirname(f)
-        factory_basepath = "${local._vpcs_path}/${dirname(f)}"
+        factory_basepath = "${local.paths.vpcs}/${dirname(f)}"
       }
     )
   ]
@@ -93,7 +90,7 @@ moved {
 
 module "vpc-factory" {
   source           = "../../../modules/net-vpc-factory"
-  factories_config = var.factories_config
+  factories_config = local.paths
   context = {
     project_ids = local.ctx_projects.project_ids
     locations   = local.ctx.locations

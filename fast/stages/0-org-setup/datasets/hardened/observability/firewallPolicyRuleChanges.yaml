@@ -50,7 +50,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   firewallPolicyRuleChanges:
-    bucket_name: log-0/audit-logs
+    bucket_name: $log_buckets:log-0/audit-logs
     description: Network Firewall Policy Rule Changes
     filter: |-
       resource.labels.method:"compute.networkFirewallPolicies" AND (

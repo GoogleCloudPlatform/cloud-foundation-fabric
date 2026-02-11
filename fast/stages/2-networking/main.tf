@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 locals {
-  paths = {
-    for k, v in var.factories_config : k => try(pathexpand(v), null)
-  }
   _ctx = {
     for k, v in var.context : k => merge(
       v, try(local._defaults.context[k], {})
@@ -58,6 +55,13 @@ locals {
       local._defaults.output_files.storage_bucket,
       null
     )
+  }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
   }
   project_defaults = {
     defaults = merge(

@@ -2,12 +2,8 @@
 ---
 # start of document (---) avoids errors if the file only contains comments
 
-# yaml-language-server: $schema=../../../schemas/vpc-factory.schema.json
+# yaml-language-server: $schema=../../schemas/vpc-factory.schema.json
 
 name: example
 project_id: $project_ids:net
 auto_create_subnetworks: false
-subnets:
-  - name: example-default-primary
-    region: $locations:primary
-    ip_cidr_range: 172.16.0.0/24

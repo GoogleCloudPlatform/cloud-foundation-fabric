@@ -50,7 +50,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   auditConfigChanges:
-    bucket_name: log-0/audit-logs
+    bucket_name: $log_buckets:log-0/audit-logs
     description: Audit Configuration Changes
     filter: protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*
     label_extractors:

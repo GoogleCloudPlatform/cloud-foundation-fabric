@@ -1,6 +1,6 @@
 # skip boilerplate check
 
-# yaml-language-server: $schema=../../../../schemas/subnet.schema.json
+# yaml-language-server: $schema=../../../schemas/subnet.schema.json
 
 name: example-default-secondary
 region: $locations:secondary

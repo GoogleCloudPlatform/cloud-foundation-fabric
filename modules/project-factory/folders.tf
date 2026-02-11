@@ -19,18 +19,15 @@
 # TODO: folder automation
 
 locals {
-  _folders_path = try(
-    pathexpand(var.factories_config.folders), null
-  )
   _folders_files = try(
-    fileset(local._folders_path, "**/**/.config.yaml"),
+    fileset(local.paths.folders, "**/**/.config.yaml"),
     []
   )
   _folders_raw = merge(
     var.folders,
     {
       for f in local._folders_files : dirname(f) => yamldecode(file(
-        "${coalesce(local._folders_path, "-")}/${f}"
+        "${coalesce(local.paths.folders, "-")}/${f}"
       ))
     }
   )

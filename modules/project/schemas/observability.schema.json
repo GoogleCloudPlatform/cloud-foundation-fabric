@@ -478,23 +478,26 @@
       ]
     },
     "aggregations": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "per_series_aligner": {
-          "type": "string"
-        },
-        "group_by_fields": {
-          "type": "array",
-          "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "per_series_aligner": {
+            "type": "string"
+          },
+          "group_by_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cross_series_reducer": {
+            "type": "string"
+          },
+          "alignment_period": {
             "type": "string"
           }
-        },
-        "cross_series_reducer": {
-          "type": "string"
-        },
-        "alignment_period": {
-          "type": "string"
         }
       }
     },

@@ -231,6 +231,16 @@ variable "projects" {
       friendly_name  = optional(string)
       location       = optional(string)
     })), {})
+    factories_config = optional(object({
+      custom_roles           = optional(string)
+      observability          = optional(string)
+      org_policies           = optional(string)
+      pam_entitlements       = optional(string)
+      quotas                 = optional(string)
+      scc_mute_configs       = optional(string)
+      scc_sha_custom_modules = optional(string)
+      tags                   = optional(string)
+    }), {})
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)

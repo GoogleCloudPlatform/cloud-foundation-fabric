@@ -48,7 +48,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   storageIamChanges:
-    bucket_name: log-0/audit-logs
+    bucket_name: l$log_buckets:log-0/audit-logs
     description: Cloud Storage IAM Permission Changes
     filter: resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
     label_extractors:
