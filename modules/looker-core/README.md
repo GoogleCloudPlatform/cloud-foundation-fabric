@@ -213,7 +213,7 @@ module "looker" {
 | [instance](outputs.tf#L42) | Looker Core instance resource. | ✓ |
 | [instance_id](outputs.tf#L48) | Looker Core instance id. | ✓ |
 | [instance_name](outputs.tf#L54) | Name of the looker instance. |  |
-| [looker_service_attachment](outputs.tf#L64) | Service attachment URI for the Looker instance. |  |
-| [looker_uri](outputs.tf#L59) | Looker core URI. |  |
+| [looker_service_attachment](outputs.tf#L59) | Service attachment URI for the Looker instance. |  |
+| [looker_uri](outputs.tf#L64) | Looker core URI. |  |
 | [looker_version](outputs.tf#L69) | Looker core version. |  |
 <!-- END TFDOC -->

@@ -56,14 +56,14 @@ output "instance_name" {
   value       = google_looker_instance.looker.name
 }
 
-output "looker_uri" {
-  description = "Looker core URI."
-  value       = google_looker_instance.looker.looker_uri
-}
-
 output "looker_service_attachment" {
   description = "Service attachment URI for the Looker instance."
   value       = try(google_looker_instance.looker.psc_config[0].looker_service_attachment_uri, null)
+}
+
+output "looker_uri" {
+  description = "Looker core URI."
+  value       = google_looker_instance.looker.looker_uri
 }
 
 output "looker_version" {
