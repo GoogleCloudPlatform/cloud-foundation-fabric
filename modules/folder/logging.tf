@@ -54,6 +54,31 @@ locals {
       name => sink if sink.iam && sink.type == type
     }
   }
+
+  logging_bucket_sinks_by_project = {
+    for project_id in distinct([
+      for name, sink in local.sink_bindings["logging"] : split("/", sink.destination)[1]
+    ]) :
+    project_id => sort([
+      for name, sink in local.sink_bindings["logging"] : name
+      if split("/", sink.destination)[1] == project_id
+    ])
+  }
+  # 13 destinations => 12 "||" operators (max allowed).
+  logging_bucket_sink_chunks_by_project = {
+    for project_id, names in local.logging_bucket_sinks_by_project :
+    project_id => chunklist(names, 13)
+  }
+  logging_bucket_sink_chunks = merge([
+    for project_id, chunks in local.logging_bucket_sink_chunks_by_project : {
+      for index, names in chunks :
+      "${project_id}-${index}" => {
+        project_id = project_id
+        index      = index + 1
+        sink_names = names
+      }
+    }
+  ]...)
 }
 
 resource "google_logging_folder_settings" "default" {
@@ -135,14 +160,19 @@ resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
 }
 
 resource "google_project_iam_member" "bucket-sinks-binding" {
-  for_each = local.sink_bindings["logging"]
-  project  = split("/", each.value.destination)[1]
+  for_each = local.logging_bucket_sink_chunks
+  project  = each.value.project_id
   role     = "roles/logging.bucketWriter"
-  member   = google_logging_folder_sink.sink[each.key].writer_identity
+
+  member = google_logging_folder_sink.sink[each.value.sink_names[0]].writer_identity
+
   condition {
-    title       = "${each.key} bucket writer"
-    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.folder_id}"
-    expression  = "resource.name.endsWith('${each.value.destination}')"
+    title       = "log_bucket_writer_${each.value.index}"
+    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.value.sink_names[0]].writer_identity} for ${length(each.value.sink_names)} logging bucket(s) (chunk ${each.value.index}) on ${local.folder_id}."
+    expression = join(" || ", [
+      for name in each.value.sink_names :
+      "resource.name.endsWith('${local.sink_bindings["logging"][name].destination}')"
+    ])
   }
 }
 
