@@ -12,11 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/certificate-authority.schema.json
+# yaml-language-server: $schema=../../schemas/defaults.schema.json
 
-location: $locations:primary
-project_id: $project_ids:prod-sec-core-0
-ca_pool_config:
-  create_pool: {}
-ca_configs:
-  prod-ca-0-0: {}
+context:
+  locations:
+    primary: europe-west1
+    secondary: europe-west3
+    storage-default: eu
+projects:
+  defaults:
+    locations:
+      storage: $locations:storage-default
+  # edit and uncomment for vpc-sc cooperative configuration
+  # overrides:
+  #   vpc_sc:
+  #     perimeter_name: $vpc_sc_perimeters:default
+  #     is_dry_run: true
+output_files:
+  # local path is optional but recommended when starting
+  local_path: ~/fast-config/fast-test-00
+  storage_bucket: $storage_buckets:iac-0/iac-outputs

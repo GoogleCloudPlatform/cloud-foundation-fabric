@@ -43,17 +43,19 @@ The default dataset provides two projects, each rooted in a separate folder. I d
 
 If a different folder or project configuration is needed copy the full dataset to a different path to avoid accidental changes from upstream, then add or remove files in `data/folders` and `data/projects`.
 
-A simple KMS keyrin is provided in `keyrings` folder, use it as an example if more are needed. For CAS too a sample configuration is already present, but the Certificate Authorities factory is disabled by default. If CAS is needed define the `factories_config.certificate_authorities` variable attribute in your tfvars and set it to the path of the relevant data folder (`data/certificate-authorities` by default) as shown in this snippet.
+A simple KMS keyrin is provided in `keyrings` folder, use it as an example if more are needed. For CAS too a sample configuration is already present, but the Certificate Authorities factory is disabled by default. If CAS is needed define the `factories_config.paths.certificate_authorities` variable attribute in your tfvars and set it to the path of the relevant data folder (`data/certificate-authorities` by default) as shown in this snippet.
 
 ```hcl
 factories_config = {
-  certificate_authorities = "data/certificate-authorities"
+  paths = {
+    certificate_authorities = "certificate-authorities"
+  }
 }
 ```
 
 ### Defaults file
 
-Configurations defaults are stored in the `defaults.yaml` file in the selected dataset. Relocating the defaults file is good practice to avoid accindetal changes from upstream, this is done via the `factories_config.default` variable attribute.
+Configurations defaults are stored in the `defaults.yaml` file in the selected dataset. Relocating the defaults file is good practice to avoid accindetal changes from upstream, this is done via the `factories_config.paths.default` variable attribute.
 
 Once a suitable place has been found for the file, edit it to match the desired configuration. Several pieces of information coming from the previous stage (prefix, billing account, etc.) are pre-populated in the project defaults so they don't need to be explicitly set. If some of them need to be overridden, the attributes in `projects.overrides` take precedence as shown in this annotated sample.
 
@@ -81,11 +83,15 @@ A tfvars file allows you to control paths for the project factories data, and to
 
 ```hcl
 factories_config = {
-  certificate_authorities = "/some/path/data/certificate-authorities"
-  defaults                = "/some/path/data/defaults.yaml"
-  folders                 = "/some/path/data/folders"
-  keyrings                = "/some/path/data/keyrings"
-  projects                = "/some/path/data/projects"
+  dataset = "datasets/mydataset"
+  paths = {
+    certificate_authorities = "certificate-authorities"
+    # the following default to relative paths in the dataset
+    # defaults                = "defaults.yaml"
+    # folders                 = "folders"
+    # keyrings                = "keyrings"
+    # projects                = "projects"
+  }
 }
 outputs_location = "~/fast-config"
 ```

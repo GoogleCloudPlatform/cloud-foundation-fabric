@@ -12,19 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/keyring.schema.json
+# yaml-language-server: $schema=../../../schemas/certificate-authority.schema.json
 
 location: $locations:primary
-project_id: $project_ids:dev-sec-core-0
-keys:
-  bigquery:
-    rotation_period: 7776000s
-  composer:
-    rotation_period: 7776000s
-  compute:
-    rotation_period: 7776000s
-  storage:
-    rotation_period: 7776000s
-  gke:
-    rotation_period: 7776000s
-
+project_id: $project_ids:prod-sec-core-0
+ca_pool_config:
+  create_pool: {}
+ca_configs:
+  prod-ca-0-0: {}
