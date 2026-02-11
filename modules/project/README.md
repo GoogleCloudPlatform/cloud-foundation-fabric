@@ -2153,8 +2153,8 @@ alerts:
           duration: 60s
           comparison: COMPARISON_GT
           aggregations:
-            alignment_period: 60s
-            per_series_aligner: ALIGN_RATE
+            - alignment_period: 60s
+              per_series_aligner: ALIGN_RATE
     user_labels:
       foo: bar
 ```
