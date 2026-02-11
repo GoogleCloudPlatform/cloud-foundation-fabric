@@ -41,7 +41,10 @@ module "projects" {
   )
   context = local.ctx
   factories_config = {
-    folders  = local.paths.folders
-    projects = local.paths.projects
+    basepath = var.factories_config.dataset
+    budgets = {
+      billing_account = var.billing_account.id
+    }
+    paths = var.factories_config.paths
   }
 }
