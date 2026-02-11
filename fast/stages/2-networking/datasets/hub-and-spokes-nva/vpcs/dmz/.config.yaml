@@ -17,6 +17,14 @@ routers:
         "10.0.0.0/8": "rfc1918-10"
         "172.16.0.0/12": "rfc1918-172"
         "192.168.0.0/16": "rfc1918-192"
+        # # Uncomment to advertise the Cloud DNS query source address range. (see https://docs.cloud.google.com/dns/docs/server-policies-overview#altns-targets:~:text=0/19-,Type%202%20name%20server,-An%20IP%20address)
+        # "35.199.192.0/19": "cloud-dns-resolver"
+        # # Uncomment to advertise the Private Google Access routes. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+        # "199.36.153.8/30": "private-googleapis-com-ipv4"
+        # "2600:2d00:0002:2000::/56": "private-googleapis-com-ipv6"
+        # # Uncomment to advertise the Private Google Access routes that support VPC Service Controls. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+        # "199.36.153.4/30": "restricted-googleapis-com-ipv4"
+        # "2600:2d00:0002:1000::/56": "restricted-googleapis-com-ipv6"
 nat_config:
   nat-ew8:
     region: europe-west1
