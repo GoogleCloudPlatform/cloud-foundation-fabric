@@ -250,7 +250,8 @@ variable "projects" {
         description = optional(string)
       }))
     })), {})
-    iam_by_principals = optional(map(list(string)), {})
+    iam_by_principals          = optional(map(list(string)), {})
+    iam_by_principals_additive = optional(map(list(string)), {})
     iam_by_principals_conditional = optional(map(object({
       roles = list(string)
       condition = object({
