@@ -307,7 +307,6 @@ resource "google_compute_instance" "default" {
         image                  = var.boot_disk.initialize_params.image
         size                   = var.boot_disk.initialize_params.size
         type                   = var.boot_disk.initialize_params.type
-        resource_manager_tags  = var.tag_bindings_immutable
         provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
         provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
         storage_pool           = var.boot_disk.initialize_params.storage_pool
