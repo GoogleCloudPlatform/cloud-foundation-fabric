@@ -540,6 +540,20 @@ variable "tag_bindings_immutable" {
   }
 }
 
+variable "tag_bindings_immutable_ngfw" {
+  description = "Immutable resource manager tag bindings that are purposed for the Next-Generation Firewall (NGFW), in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed."
+  type        = map(string)
+  nullable    = true
+  default     = null
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.tag_bindings_ngfw_immutable, {}) :
+      startswith(k, "tagKeys/") && startswith(v, "tagValues/")
+    ])
+    error_message = "Incorrect format for immutable NGFW tag bindings."
+  }
+}
+
 variable "tags" {
   description = "Instance network tags for firewall rule targets."
   type        = list(string)

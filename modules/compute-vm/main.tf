@@ -77,7 +77,8 @@ locals {
   termination_action = (
     var.options.spot || var.options.max_run_duration != null ? coalesce(var.options.termination_action, "STOP") : null
   )
-  zone = lookup(local.ctx.locations, var.zone, var.zone)
+  zone                  = lookup(local.ctx.locations, var.zone, var.zone)
+  resource_manager_tags = merge(var.tag_bindings_immutable, var.tag_bindings_immutable_ngfw)
 }
 
 resource "google_kms_key_handle" "default" {
@@ -307,6 +308,7 @@ resource "google_compute_instance" "default" {
         image                  = var.boot_disk.initialize_params.image
         size                   = var.boot_disk.initialize_params.size
         type                   = var.boot_disk.initialize_params.type
+        resource_manager_tags  = var.tag_bindings_immutable
         provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
         provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
         storage_pool           = var.boot_disk.initialize_params.storage_pool
@@ -436,9 +438,9 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "params" {
-    for_each = var.tag_bindings_immutable == null ? [] : [""]
+    for_each = local.resource_manager_tags != null ? [local.resource_manager_tags] : []
     content {
-      resource_manager_tags = var.tag_bindings_immutable
+      resource_manager_tags = local.resource_manager_tags
     }
   }
 
