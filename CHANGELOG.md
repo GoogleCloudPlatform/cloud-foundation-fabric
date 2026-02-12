@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2026-01-31 07:47:11+00:00 to: None since: v52.0.0 -->
 
+## [53.0.0] - 2026-02-12
+
+### BREAKING CHANGES
+
+- `modules/project-factory`: the `factories-config` variable has changed type, please review your tfvars configuration before applying.
+`fast`: the `factories-config` variable has changed type across stages, please review your tfvars configuration before applying. [[#3728](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3728)]
+
+### FAST
+
+- [[#3728](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3728)] Change factories_config type in FAST and project/vpc factory modules, add YAML schema validation ([ludoo](https://github.com/ludoo)) <!-- 2026-02-11 15:29:49+00:00 -->
+- [[#3715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3715)] **incompatible change:** Refactor subnets mgmt in net-vpc-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2026-02-09 10:51:43+00:00 -->
+- [[#3705](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3705)] Updated schema regex and checks in 0-org-setup ([lnesteroff](https://github.com/lnesteroff)) <!-- 2026-02-05 11:20:25+00:00 -->
+
+### MODULES
+
+- [[#3728](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3728)] Change factories_config type in FAST and project/vpc factory modules, add YAML schema validation ([ludoo](https://github.com/ludoo)) <!-- 2026-02-11 15:29:49+00:00 -->
+- [[#3715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3715)] Refactor subnets mgmt in net-vpc-factory ([sruffilli](https://github.com/sruffilli)) <!-- 2026-02-09 10:51:43+00:00 -->
+- [[#3705](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3705)] Updated schema regex and checks in 0-org-setup ([lnesteroff](https://github.com/lnesteroff)) <!-- 2026-02-05 11:20:25+00:00 -->
+
+### TOOLS
+
+- [[#3728](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3728)] Change factories_config type in FAST and project/vpc factory modules, add YAML schema validation ([ludoo](https://github.com/ludoo)) <!-- 2026-02-11 15:29:49+00:00 -->
+
 ## [52.1.0] - 2026-02-12
 
 ### BREAKING CHANGES
@@ -2237,7 +2260,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.0.0...HEAD
+[53.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.0.0...v52.1.0
 [52.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.1.0...v52.0.0
 [52.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.0.0...v51.1.0
 [51.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v51.1.0...v51.0.0
