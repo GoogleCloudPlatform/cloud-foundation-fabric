@@ -26,7 +26,7 @@ counts:
   google_compute_router_nat: 1
   google_compute_router_peer: 10
   google_compute_shared_vpc_host_project: 3
-  google_compute_subnetwork: 3
+  google_compute_subnetwork: 4
   google_compute_vpn_tunnel: 10
   google_dns_managed_zone: 5
   google_dns_record_set: 3
@@ -39,5 +39,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 30
   random_id: 15
-  resources: 214
+  resources: 215
   terraform_data: 2

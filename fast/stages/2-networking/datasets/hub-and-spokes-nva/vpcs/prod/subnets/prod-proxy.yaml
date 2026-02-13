@@ -1,0 +1,9 @@
+# skip boilerplate check
+
+# yaml-language-server: $schema=../../../../../schemas/subnet.schema.json
+
+name: prod-proxy
+region: $locations:primary
+ip_cidr_range: 10.72.240.0/24
+description: Primary-region proxy-only subnet for prod
+proxy_only: true

@@ -19,18 +19,15 @@
 # TODO: folder automation
 
 locals {
-  _folders_path = try(
-    pathexpand(var.factories_config.folders), null
-  )
   _folders_files = try(
-    fileset(local._folders_path, "**/**/.config.yaml"),
+    fileset(local.paths.folders, "**/**/.config.yaml"),
     []
   )
   _folders_raw = merge(
     var.folders,
     {
       for f in local._folders_files : dirname(f) => yamldecode(file(
-        "${coalesce(local._folders_path, "-")}/${f}"
+        "${coalesce(local.paths.folders, "-")}/${f}"
       ))
     }
   )
@@ -88,6 +85,7 @@ module "folder-1-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
@@ -140,6 +138,7 @@ module "folder-2-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
@@ -195,6 +194,7 @@ module "folder-3-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {
@@ -250,6 +250,7 @@ module "folder-4-iam" {
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   context = merge(local.ctx, {

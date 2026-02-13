@@ -425,7 +425,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^[a-zA-Z0-9_-]+$": {
           "$ref": "#/$defs/log_bucket"
         }
       }

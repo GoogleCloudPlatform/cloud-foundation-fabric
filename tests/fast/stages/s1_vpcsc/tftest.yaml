@@ -15,7 +15,15 @@
 module: fast/stages/1-vpcsc
 
 tests:
+  hardened:
+    extra_dirs:
+      - ../../../tests/fast/stages/s1_vpcsc/data-simple
   simple:
+    extra_dirs:
+      - ../../../tests/fast/stages/s1_vpcsc/data-simple
   factory:
     inventory:
       - simple.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s1_vpcsc/data-simple
+

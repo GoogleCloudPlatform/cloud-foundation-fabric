@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Net VPC Factory Defaults",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cidr_ranges_sets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "iam_principals": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "locations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "project_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "vpcs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "auto_create_subnetworks": {
+          "type": "boolean",
+          "default": false
+        },
+        "delete_default_route_on_create": {
+          "type": "boolean",
+          "default": true
+        },
+        "mtu": {
+          "type": "number",
+          "default": 1500
+        }
+      }
+    }
+  }
+}

@@ -63,8 +63,8 @@ module "factory" {
     )
   })
   factories_config = {
-    folders           = var.factories_config.folders
-    project_templates = var.factories_config.project_templates
-    projects          = var.factories_config.projects
+    basepath = var.factories_config.dataset
+    budgets  = local.factory_billing
+    paths    = var.factories_config.paths
   }
 }

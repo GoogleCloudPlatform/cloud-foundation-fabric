@@ -17,11 +17,10 @@
 # tfdoc:file:description NVA factory
 
 locals {
-  _nva_path  = try(pathexpand(var.factories_config.nvas), null)
-  _nva_files = try(fileset(local._nva_path, "**/*.yaml"), [])
+  _nva_files = try(fileset(local.paths.nvas, "**/*.yaml"), [])
   _nva_configs = [
     for f in local._nva_files : merge(
-      yamldecode(file("${coalesce(local._nva_path, "-")}/${f}")),
+      yamldecode(file("${coalesce(local.paths.nvas, "-")}/${f}")),
       { filename = replace(f, ".yaml", "") }
     )
   ]
