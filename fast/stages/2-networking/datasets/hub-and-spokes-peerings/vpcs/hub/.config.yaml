@@ -19,6 +19,16 @@ routers:
   vpn-router:
     region: $locations:primary
     asn: 64514
+    # Uncomment to enable custom route advertisement. (see https://docs.cloud.google.com/network-connectivity/docs/router/how-to/advertising-custom-ip)
+    # custom_advertise:
+    #   all_subnets: true
+    #   ip_ranges:
+    #     # Uncomment to advertise the Cloud DNS query source address range. (see https://docs.cloud.google.com/dns/docs/server-policies-overview#altns-targets:~:text=0/19-,Type%202%20name%20server,-An%20IP%20address)
+    #     "35.199.192.0/19": "cloud-dns-resolver"
+    #     # Uncomment to advertise the Private Google Access routes. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+    #     "199.36.153.8/30": "private-googleapis-com"
+    #     # Uncomment to advertise the Private Google Access routes that support VPC Service Controls. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+    #     "199.36.153.4/30": "restricted-googleapis-com"
 routes:
   default:
     dest_range: 0.0.0.0/0
