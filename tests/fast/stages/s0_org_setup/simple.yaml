@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # yamllint disable rule:line-length
+
 values:
   google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
@@ -44,6 +45,7 @@ values:
     name: providers/0-org-setup-providers.tf
     retention: []
     source: null
+    source_md5hash: 2a0bbb00e4b7f1454a50ac7f26c23c05
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["0-org-setup-ro"]:
@@ -76,6 +78,7 @@ values:
     name: providers/0-org-setup-ro-providers.tf
     retention: []
     source: null
+    source_md5hash: 2a0bbb00e4b7f1454a50ac7f26c23c05
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["1-vpcsc"]:
@@ -109,6 +112,7 @@ values:
     name: providers/1-vpcsc-providers.tf
     retention: []
     source: null
+    source_md5hash: d2df90abc46524d941227a1dec12dd86
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-networking"]:
@@ -142,6 +146,7 @@ values:
     name: providers/2-networking-providers.tf
     retention: []
     source: null
+    source_md5hash: a724885c3dcc9850116aca1ef4d4fc5a
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-project-factory"]:
@@ -175,6 +180,7 @@ values:
     name: providers/2-project-factory-providers.tf
     retention: []
     source: null
+    source_md5hash: 165844578c46bc04c4581139c8b8b8d4
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-security"]:
@@ -208,6 +214,7 @@ values:
     name: providers/2-security-providers.tf
     retention: []
     source: null
+    source_md5hash: 5969d3e40a61a42d849a81417a6a84eb
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["globals"]:
@@ -227,6 +234,7 @@ values:
     name: tfvars/0-globals.auto.tfvars.json
     retention: []
     source: null
+    source_md5hash: cdbf79d3eff8bced040e5deccf39d765
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["org-setup"]:
@@ -263,6 +271,7 @@ values:
     name: versions/0-org-setup-version.txt
     retention: []
     source: fast_version.txt
+    source_md5hash: bd0ef4e3857492f0215774bdcb2f3dc7
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.workflows["org-setup"]:
@@ -376,6 +385,7 @@ values:
     name: workflows/org-setup.yaml
     retention: []
     source: null
+    source_md5hash: e5dc153b195e936b1c81bc33db1935c7
     temporary_hold: null
     timeouts: null
   local_file.providers["0-org-setup"]:
@@ -1259,82 +1269,6 @@ values:
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
     user_project: null
-  module.factory.module.projects["iac-0"].google_logging_metric.metrics["sa-impersonation"]:
-    bucket_name: null
-    bucket_options: []
-    description: null
-    disabled: null
-    filter: 'protoPayload.serviceName="iamcredentials.googleapis.com"
-
-      (protoPayload.methodName="GenerateAccessToken" OR protoPayload.methodName="GenerateIdToken")
-
-      '
-    label_extractors:
-      email_id: EXTRACT(resource.labels.email_id)
-    metric_descriptor:
-    - display_name: Service Account Impersonation
-      labels:
-      - description: ''
-        key: email_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: sa-impersonation
-    project: ft0-prod-iac-core-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects["iac-0"].google_monitoring_alert_policy.alerts["sa-impersonation-alert"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.email_id
-          per_series_aligner: ALIGN_COUNT
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 60s
-        evaluation_missing_data: null
-        filter: 'metric.type="logging.googleapis.com/user/sa-impersonation" AND
-
-          resource.type="global"
-
-          '
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: Impersonation Detected
-    display_name: Service Account Impersonation Alert
-    documentation: []
-    enabled: true
-    project: ft0-prod-iac-core-0
-    severity: null
-    timeouts: null
-    user_labels: null
-  module.factory.module.projects["iac-0"].google_monitoring_notification_channel.channels["email-security"]:
-    description: null
-    display_name: Security Team Email
-    enabled: true
-    force_delete: false
-    labels:
-      email_address: $email_addresses:gcp-organization-admins
-    project: ft0-prod-iac-core-0
-    sensitive_labels: []
-    timeouts: null
-    type: email
-    user_labels: null
   module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
     dry_run_spec: []
     name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
@@ -3007,6 +2941,7 @@ values:
     input: null
     output: null
     triggers_replace: null
+
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
@@ -3014,13 +2949,10 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 10
   google_folder_iam_binding: 44
-  google_logging_metric: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
   google_logging_project_settings: 2
-  google_monitoring_alert_policy: 1
-  google_monitoring_notification_channel: 1
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
@@ -3047,5 +2979,18 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 50
-  resources: 328
+  resources: 325
   terraform_data: 4
+
+outputs:
+  iam_principals:
+    domain: domain:example.org
+    gcp-billing-admins: group:gcp-billing-admins@example.org
+    gcp-devops: group:gcp-devops@example.org
+    gcp-network-admins: group:gcp-network-admins@example.org
+    gcp-organization-admins: group:fabric-fast-owners@google.com
+    gcp-secops-admins: group:gcp-secops-admins@example.org
+    gcp-security-admins: group:gcp-security-admins@example.org
+    gcp-support: group:gcp-support@example.org
+  projects: __missing__
+  tfvars: __missing__
