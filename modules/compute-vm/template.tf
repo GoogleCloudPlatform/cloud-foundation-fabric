@@ -156,13 +156,14 @@ resource "google_compute_instance_template" "default" {
       nic_type   = config.value.nic_type
       stack_type = config.value.stack_type
       dynamic "access_config" {
-        for_each = config.value.nat ? [""] : []
+        for_each = config.value.nat || config.value.network_tier != null ? [""] : []
         content {
           nat_ip = try(
             local.ctx.addresses[config.value.addresses.external],
             config.value.addresses.external,
             null
           )
+          network_tier = try(config.value.network_tier, null)
         }
       }
       dynamic "alias_ip_range" {
@@ -380,13 +381,14 @@ resource "google_compute_region_instance_template" "default" {
       nic_type   = config.value.nic_type
       stack_type = config.value.stack_type
       dynamic "access_config" {
-        for_each = config.value.nat ? [""] : []
+        for_each = config.value.nat || config.value.network_tier != null ? [""] : []
         content {
           nat_ip = try(
             local.ctx.addresses[config.value.addresses.external],
             config.value.addresses.external,
             null
           )
+          network_tier = try(config.value.network_tier, null)
         }
       }
       dynamic "alias_ip_range" {
