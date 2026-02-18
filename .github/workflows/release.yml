@@ -38,11 +38,16 @@ jobs:
 
       - name: "Validate input"
         run: |
-          [[ "${{ github.event.inputs.changelog }}" != "true" ]] && { echo 'You didn''t update the changelog.' ; exit 1; }
-          [[ -n "${{ github.event.inputs.version }}" ]] || { echo 'Version not specified!'; exit 1; }
-          [[ "${{ github.event.inputs.version }}" != v* ]] && { echo 'Version does not start with v!' ; exit 1; }
+          [[ "${GITHUB_EVENT_INPUTS_CHANGELOG}" != "true" ]] && { echo 'You didn''t update the changelog.' ; exit 1; }
+          [[ -n "${GITHUB_EVENT_INPUTS_VERSION}" ]] || { echo 'Version not specified!'; exit 1; }
+          [[ "${GITHUB_EVENT_INPUTS_VERSION}" != v* ]] && { echo 'Version does not start with v!' ; exit 1; }
+        env:
+          GITHUB_EVENT_INPUTS_CHANGELOG: ${{ github.event.inputs.changelog }}
+          GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
 
       - name: "Tag and release"
         run: |
-          git tag ${{ github.event.inputs.version }}
-          git push origin ${{ github.event.inputs.version }}
+          git tag ${GITHUB_EVENT_INPUTS_VERSION}
+          git push origin ${GITHUB_EVENT_INPUTS_VERSION}
+        env:
+          GITHUB_EVENT_INPUTS_VERSION: ${{ github.event.inputs.version }}
