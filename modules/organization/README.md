@@ -447,6 +447,68 @@ module "org" {
 # tftest inventory=logging.yaml
 ```
 
+### Externally Managing IAM for Log Sinks
+
+By default the module creates one conditional IAM binding per sink for `roles/logging.bucketWriter` on the destination project. GCP enforces a hard limit of [20 conditional bindings per role and principal](https://cloud.google.com/iam/docs/conditions-overview#limitations) on a single resource. If you route many sinks to the same destination project, you will hit this limit.
+
+Set `iam = false` on the affected sinks and manage the IAM binding externally, consolidating multiple destinations into fewer bindings using an OR'd CEL condition expression (max 12 logical operators per condition).
+
+```hcl
+module "log-bucket-0" {
+  source = "./fabric/modules/logging-bucket"
+  parent = var.project_id
+  name   = "audit-0"
+}
+
+module "log-bucket-1" {
+  source = "./fabric/modules/logging-bucket"
+  parent = var.project_id
+  name   = "audit-1"
+}
+
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  logging_sinks = {
+    audit-0 = {
+      destination = module.log-bucket-0.id
+      filter      = "severity=NOTICE"
+      type        = "logging"
+      iam         = false
+    }
+    audit-1 = {
+      destination = module.log-bucket-1.id
+      filter      = "severity=WARNING"
+      type        = "logging"
+      iam         = false
+    }
+  }
+}
+
+resource "google_project_iam_member" "log-bucket-writer" {
+  project = var.project_id
+  role    = "roles/logging.bucketWriter"
+  member  = module.org.sink_writer_identities["audit-0"]
+  condition {
+    title       = "log_bucket_writer"
+    description = "Grants bucketWriter for audit-0, audit-1."
+    expression = join(" || ", [
+      "resource.name.endsWith('${module.log-bucket-0.id}')",
+      "resource.name.endsWith('${module.log-bucket-1.id}')",
+      # add up to 11 more
+    ])
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+# tftest inventory=logging-iam-external.yaml
+```
+
+When you exceed 13 sinks per binding, use Terraform's `chunklist()` with `for_each` to generate multiple `google_project_iam_member` resources automatically.
+
+For production-scale deployments or strict per-sink isolation, consider using [user-managed service accounts for log routing](https://cloud.google.com/logging/docs/routing/user-managed-service-accounts) instead of the default shared writer identity. This removes the conditional binding limit entirely and provides per-sink auditability.
+
 ## Data Access Logs
 
 Activation of data access logs can be controlled via the `logging_data_access` variable.
