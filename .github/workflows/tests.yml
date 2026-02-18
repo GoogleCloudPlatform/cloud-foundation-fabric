@@ -57,7 +57,7 @@ jobs:
         run: |
           set -e -o xtrace
           if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
-            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+            echo TERRAFORM_VERSION=${DEFAULT_TERRAFORM_VERSION} | tee -a ${GITHUB_ENV}
           elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
             echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
           else
@@ -85,7 +85,7 @@ jobs:
           sed -i -e 's/>=\(.*# tftest\)/=\1/g' tools/lockfile/versions.tf tools/lockfile/versions.tofu
 
           # change terraform version to the one that is running
-          sed -i 's/required_version = .*$/required_version = ">= ${{ env.TERRAFORM_VERSION  }}"/g' \
+          sed -i 's/required_version = .*$/required_version = ">= ${TERRAFORM_VERSION}"/g' \
             tools/lockfile/versions.tf
 
           cd tools/lockfile
@@ -145,7 +145,7 @@ jobs:
         run: |
           set -e -o xtrace
           if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
-            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+            echo TERRAFORM_VERSION=${DEFAULT_TERRAFORM_VERSION} | tee -a ${GITHUB_ENV}
           elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
             echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
           else
@@ -189,7 +189,7 @@ jobs:
         run: |
           set -e -o xtrace
           if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
-            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+            echo TERRAFORM_VERSION=${DEFAULT_TERRAFORM_VERSION} | tee -a ${GITHUB_ENV}
           elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
             echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
           else
@@ -233,7 +233,7 @@ jobs:
         run: |
           set -e -o xtrace
           if [[ ${{ matrix.flavour }} == 'terraform' ]] ; then
-            echo TERRAFORM_VERSION=${{ env.DEFAULT_TERRAFORM_VERSION }} | tee -a ${GITHUB_ENV}
+            echo TERRAFORM_VERSION=${DEFAULT_TERRAFORM_VERSION} | tee -a ${GITHUB_ENV}
           elif [[ ${{ matrix.flavour }} == 'tofu' ]] ; then
             echo TERRAFORM_VERSION=${{ env.DEFAULT_TOFU_VERSION  }} | tee -a ${GITHUB_ENV}
           else
