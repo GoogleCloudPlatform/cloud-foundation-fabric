@@ -52,11 +52,11 @@ runs:
     - name: Configure provider cache
       shell: bash
       run: |
-        echo 'plugin_cache_dir = "${{ env.TF_PLUGIN_CACHE_DIR }}"' \
+        echo 'plugin_cache_dir = "${TF_PLUGIN_CACHE_DIR}"' \
           | tee -a /home/runner/.terraformrc
         echo 'disable_checkpoint = true' \
           | tee -a /home/runner/.terraformrc
-        mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+        mkdir -p ${TF_PLUGIN_CACHE_DIR}
     - name: Download lockfile
       uses: actions/download-artifact@v4
       with:
