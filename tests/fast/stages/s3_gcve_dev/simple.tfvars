@@ -11,7 +11,7 @@ environments = {
 }
 
 folder_ids = {
-  gcve-dev = "folders/00000000000000"
+  "gcve/dev" = "folders/00000000000000"
 }
 
 organization = {
@@ -35,7 +35,7 @@ private_cloud_configs = {
 }
 
 vpc_self_links = {
-  "dev-spoke-0" = "projects/em-prod-net-spoke-0/global/networks/prod-spoke-0",
+  "dev" = "projects/em-dev-net-spoke-0/global/networks/dev-spoke-0",
 }
 
 
