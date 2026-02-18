@@ -26,6 +26,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
   - [Privileged Access Manager (PAM) Entitlements Factory](#privileged-access-manager-pam-entitlements-factory)
 - [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
 - [Log Sinks](#log-sinks)
+  - [Externally Managing IAM for Log Sinks](#externally-managing-iam-for-log-sinks)
 - [Data Access Logs](#data-access-logs)
 - [Custom Roles](#custom-roles)
   - [Custom Roles Factory](#custom-roles-factory)
