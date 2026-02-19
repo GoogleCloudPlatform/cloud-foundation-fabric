@@ -161,7 +161,7 @@ output "service_accounts" {
 }
 
 output "service_agents" {
-  description = "Service account IDs."
+  description = "Service agent emails."
   value = {
     for k, v in local.projects_service_agents
     : trimprefix(k, "service_agents/") => {
