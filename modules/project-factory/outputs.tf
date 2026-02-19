@@ -160,6 +160,17 @@ output "service_accounts" {
   value       = local.outputs_service_accounts
 }
 
+output "service_agents" {
+  description = "Service agent emails."
+  value = {
+    for k, v in local.projects_service_agents
+    : trimprefix(k, "service_agents/") => {
+      email    = trimprefix(v, "serviceAccount:")
+      iamEmail = v
+    }
+  }
+}
+
 output "storage_buckets" {
   description = "Bucket names."
   value = merge(
