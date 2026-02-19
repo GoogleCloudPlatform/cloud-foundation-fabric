@@ -165,8 +165,8 @@ output "service_agents" {
   value = {
     for k, v in local.projects_service_agents
     : trimprefix(k, "service_agents/") => {
-      email    = trimprefix(v, "serviceAccount:")
-      iamEmail = v
+      email     = trimprefix(v, "serviceAccount:")
+      iam_email = v
     }
   }
 }
