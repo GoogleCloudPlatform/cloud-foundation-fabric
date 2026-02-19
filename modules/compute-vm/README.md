@@ -1054,8 +1054,8 @@ module "instance" {
   }
   attached_disks = [
     {
-      name              = "disk-1"
-      size              = 10
+      name = "disk-1"
+      size = 10
       options = {
         replica_zone = "${var.region}-c"
       }
@@ -1067,7 +1067,7 @@ module "instance" {
       schedule = {
         hourly = {
           hours_in_cycle = 1
-          start_time    = "03:00"
+          start_time     = "03:00"
         }
       }
     }
@@ -1183,7 +1183,7 @@ module "sole-tenancy" {
 | [description](variables.tf#L172) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
 | [enable_display](variables.tf#L178) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
 | [encryption](variables.tf#L184) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;  encrypt_boot            &#61; optional&#40;bool, false&#41;&#10;  disk_encryption_key_raw &#61; optional&#40;string&#41;&#10;  kms_key_self_link       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [gpu](variables.tf#L194) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [gpu](variables.tf#L194) | GPU information. Based on <https://cloud.google.com/compute/docs/gpus>. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [group](variables.tf#L229) | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;  named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [hostname](variables.tf#L237) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
 | [iam](variables.tf#L243) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
