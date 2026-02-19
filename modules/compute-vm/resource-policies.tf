@@ -175,8 +175,8 @@ resource "google_compute_region_disk_resource_policy_attachment" "attached" {
     for attachment in local.disk_regional_schedule_attachments :
     "${attachment.disk_key}-${attachment.snapshot_schedule}" => attachment
   }
-
   project = local.project_id
+  region  = local.region
   name = try(
     google_compute_resource_policy.snapshot[each.value.snapshot_schedule].name,
     each.value.snapshot_schedule
