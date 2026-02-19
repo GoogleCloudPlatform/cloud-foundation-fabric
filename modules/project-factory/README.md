@@ -880,8 +880,8 @@ compute.disableSerialPortAccess:
 | [service_account_iam_emails](outputs.tf#L144) | Service account IAM-format emails. |  |
 | [service_account_ids](outputs.tf#L151) | Service account IDs. |  |
 | [service_accounts](outputs.tf#L158) | Service account emails. |  |
-| [service_agent_iam_emails](outputs.tf#L163) | Service account IDs. |  |
-| [storage_buckets](outputs.tf#L171) | Bucket names. |  |
+| [service_agents](outputs.tf#L163) | Service account IDs. |  |
+| [storage_buckets](outputs.tf#L174) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
