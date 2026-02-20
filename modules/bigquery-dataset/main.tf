@@ -231,15 +231,6 @@ resource "google_bigquery_dataset_access" "authorized_routines" {
   }
 }
 
-resource "google_bigquery_dataset_iam_binding" "bindings" {
-  for_each   = var.iam
-  project    = local.project_id
-  dataset_id = google_bigquery_dataset.default.dataset_id
-  role       = lookup(local.ctx.custom_roles, each.key, each.key)
-  members = [
-    for v in each.value : lookup(local.ctx.iam_principals, v, v)
-  ]
-}
 
 resource "google_bigquery_table" "default" {
   provider                 = google-beta

@@ -24,6 +24,12 @@ locals {
         encryption_key = lookup(opts, "encryption_key", null)
         friendly_name  = lookup(opts, "friendly_name", null)
         location       = lookup(opts, "location", null)
+        iam                   = lookup(opts, "iam", {})
+        iam_bindings          = lookup(opts, "iam_bindings", {})
+        iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})
+        iam_by_principals     = lookup(opts, "iam_by_principals", {})
+        tag_bindings          = lookup(opts, "tag_bindings", {})
+        options               = lookup(opts, "options", null)
       }
     ]
   ])
@@ -46,12 +52,19 @@ module "bigquery-datasets" {
     kms_keys    = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids
+    tag_keys    = local.ctx_tag_keys
+    tag_values  = local.ctx_tag_values
   })
   encryption_key = each.value.encryption_key
   friendly_name  = each.value.friendly_name
   location = coalesce(
-    local.data_defaults.overrides.locations.bigquery,
     lookup(each.value, "location", null),
     local.data_defaults.defaults.locations.bigquery
   )
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_by_principals     = each.value.iam_by_principals
+  tag_bindings          = each.value.tag_bindings
+  options               = each.value.options
 }

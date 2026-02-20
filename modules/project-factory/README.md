@@ -639,6 +639,8 @@ service_accounts:
     iam_self_roles:
       - roles/logging.logWriter
       - roles/monitoring.metricWriter
+    tag_bindings:
+      context: $tag_values:context/project-factory
     # this is just for illustrative/test purposes
     iam:
       roles/iam.serviceAccountUser:
@@ -672,6 +674,8 @@ billing_budgets:
 buckets:
   app-0-bucket-a:
     location: europe-west8
+    tag_bindings:
+      context: $tag_values:context/gke
   app-0-bucket-b:
     location: europe-west8
     logging_config:
@@ -703,6 +707,14 @@ pubsub_topics:
   app-0-topic-b:
     subscriptions:
       app-0-topic-b-sub: {}
+kms:
+  keyrings:
+    my-keyring:
+      location: europe-west1
+      keys:
+        my-key: {}
+      tag_bindings:
+        context: $tag_values:context/project-factory
 tags:
   my-tag-key-1:
     values:

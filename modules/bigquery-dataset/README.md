@@ -47,7 +47,7 @@ module "bigquery-dataset" {
 
 Access configuration can also be specified via IAM instead of basic roles via the `iam` variable. When using IAM, basic roles cannot be used via the `access` family variables.
 
-```hcl
+```
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
@@ -55,8 +55,14 @@ module "bigquery-dataset" {
   iam = {
     "roles/bigquery.dataOwner" = ["user:user1@example.org"]
   }
+  iam_bindings = {
+    reader_user = {
+      role    = "roles/bigquery.dataViewer"
+      members = ["user:user2@example.org"]
+    }
+  }
 }
-# tftest modules=1 resources=2 inventory=iam.yaml
+# tftest modules=1 resources=3 inventory=iam.yaml
 ```
 
 ## Authorized Views, Datasets, and Routines
