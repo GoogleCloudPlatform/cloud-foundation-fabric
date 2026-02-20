@@ -18,12 +18,12 @@ locals {
   projects_bigquery_datasets = flatten([
     for k, v in local.projects_input : [
       for name, opts in lookup(v, "datasets", {}) : {
-        project_key    = k
-        project_name   = v.name
-        id             = name
-        encryption_key = lookup(opts, "encryption_key", null)
-        friendly_name  = lookup(opts, "friendly_name", null)
-        location       = lookup(opts, "location", null)
+        project_key           = k
+        project_name          = v.name
+        id                    = name
+        encryption_key        = lookup(opts, "encryption_key", null)
+        friendly_name         = lookup(opts, "friendly_name", null)
+        location              = lookup(opts, "location", null)
         iam                   = lookup(opts, "iam", {})
         iam_bindings          = lookup(opts, "iam_bindings", {})
         iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})
