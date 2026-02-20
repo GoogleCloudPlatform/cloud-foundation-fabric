@@ -56,6 +56,7 @@ locals {
         lifecycle_rules         = lookup(opts, "lifecycle_rules", {})
         logging_config          = lookup(opts, "logging_config", null)
         enable_object_retention = lookup(opts, "enable_object_retention", null)
+        tag_bindings            = lookup(opts, "tag_bindings", {})
       }
     ]
   ])
@@ -81,6 +82,8 @@ module "buckets" {
     locations       = local.ctx.locations
     project_ids     = local.ctx_project_ids
     storage_buckets = local.ctx.storage_buckets
+    tag_keys        = local.ctx_tag_keys
+    tag_values      = local.ctx_tag_values
   })
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
@@ -101,4 +104,5 @@ module "buckets" {
   soft_delete_retention       = each.value.soft_delete_retention
   logging_config              = each.value.logging_config
   enable_object_retention     = each.value.enable_object_retention
+  tag_bindings                = each.value.tag_bindings
 }

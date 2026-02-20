@@ -40,6 +40,7 @@ locals {
           try(local.data_defaults.defaults.service_accounts.iam_self_roles, []),
         ))
         iam_storage_roles = try(opts.iam_storage_roles, {})
+        tag_bindings      = try(opts.tag_bindings, {})
         opts              = opts
       }
     ]
@@ -85,6 +86,7 @@ module "service-accounts" {
   display_name = each.value.display_name
   context = merge(local.ctx, {
     project_ids = local.ctx_project_ids
+    tag_values  = local.ctx_tag_values
   })
   iam_project_roles = merge(
     each.value.iam_project_roles,
@@ -92,6 +94,7 @@ module "service-accounts" {
       "$project_ids:${each.value.project_key}" = each.value.iam_self_roles
     }
   )
+  tag_bindings = each.value.tag_bindings
 }
 
 module "service_accounts-iam" {

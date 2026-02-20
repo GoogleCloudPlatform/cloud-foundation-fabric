@@ -442,7 +442,8 @@ module "project-factory" {
   data_defaults = {
     billing_account = var.billing_account_id
     locations = {
-      storage = "EU"
+      bigquery = "EU"
+      storage  = "EU"
     }
   }
   # make sure the environment label and stackdriver service are always added
@@ -557,7 +558,6 @@ asset_feeds:
 name: App 0
 factories_config:
   org_policies: data/factories/org-policies
-
 pam_entitlements:
   app-0-admins:
     max_request_duration: 3600s
@@ -639,6 +639,8 @@ service_accounts:
     iam_self_roles:
       - roles/logging.logWriter
       - roles/monitoring.metricWriter
+    tag_bindings:
+      context: $tag_values:context/project-factory
     # this is just for illustrative/test purposes
     iam:
       roles/iam.serviceAccountUser:
@@ -672,6 +674,8 @@ billing_budgets:
 buckets:
   app-0-bucket-a:
     location: europe-west8
+    tag_bindings:
+      context: $tag_values:context/gke
   app-0-bucket-b:
     location: europe-west8
     logging_config:
@@ -695,6 +699,12 @@ services:
   - container.googleapis.com
   - pubsub.googleapis.com
   - storage.googleapis.com
+datasets:
+  test_0:
+    friendly_name: Test Dataset
+    iam:
+      roles/bigquery.dataViewer:
+        - $iam_principals:gcp-devops
 pubsub_topics:
   app-0-topic-a:
     iam:
@@ -703,6 +713,14 @@ pubsub_topics:
   app-0-topic-b:
     subscriptions:
       app-0-topic-b-sub: {}
+kms:
+  keyrings:
+    my-keyring:
+      location: europe-west1
+      keys:
+        my-key: {}
+      tag_bindings:
+        context: $tag_values:context/project-factory
 tags:
   my-tag-key-1:
     values:
