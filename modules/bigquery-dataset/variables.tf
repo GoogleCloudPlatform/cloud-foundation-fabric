@@ -68,6 +68,7 @@ variable "authorized_views" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    condition_vars = optional(map(map(string)), {})
     custom_roles   = optional(map(string), {})
     kms_keys       = optional(map(string), {})
     iam_principals = optional(map(string), {})

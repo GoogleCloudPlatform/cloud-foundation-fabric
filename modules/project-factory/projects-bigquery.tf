@@ -66,6 +66,7 @@ module "bigquery-datasets" {
   encryption_key = each.value.encryption_key
   friendly_name  = each.value.friendly_name
   location = coalesce(
+    local.data_defaults.overrides.locations.bigquery,
     lookup(each.value, "location", null),
     local.data_defaults.defaults.locations.bigquery
   )

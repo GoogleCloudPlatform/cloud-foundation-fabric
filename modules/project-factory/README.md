@@ -442,7 +442,8 @@ module "project-factory" {
   data_defaults = {
     billing_account = var.billing_account_id
     locations = {
-      storage = "EU"
+      bigquery = "EU"
+      storage  = "EU"
     }
   }
   # make sure the environment label and stackdriver service are always added
@@ -557,7 +558,6 @@ asset_feeds:
 name: App 0
 factories_config:
   org_policies: data/factories/org-policies
-
 pam_entitlements:
   app-0-admins:
     max_request_duration: 3600s
@@ -701,11 +701,10 @@ services:
   - storage.googleapis.com
 datasets:
   test_0:
-    location: EU
     friendly_name: Test Dataset
     iam:
       roles/bigquery.dataViewer:
-        - group:gcp-devops@example.org
+        - $iam_principals:gcp-devops
 pubsub_topics:
   app-0-topic-a:
     iam:

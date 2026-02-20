@@ -35,7 +35,7 @@ locals {
 
 resource "google_bigquery_dataset_iam_binding" "authoritative" {
   for_each   = local.iam
-  project    = var.project_id
+  project    = local.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   role       = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
@@ -45,7 +45,7 @@ resource "google_bigquery_dataset_iam_binding" "authoritative" {
 
 resource "google_bigquery_dataset_iam_binding" "bindings" {
   for_each   = var.iam_bindings
-  project    = var.project_id
+  project    = local.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   role       = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
@@ -54,7 +54,9 @@ resource "google_bigquery_dataset_iam_binding" "bindings" {
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -63,14 +65,16 @@ resource "google_bigquery_dataset_iam_binding" "bindings" {
 
 resource "google_bigquery_dataset_iam_member" "bindings" {
   for_each   = var.iam_bindings_additive
-  project    = var.project_id
+  project    = local.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   role       = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member     = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
