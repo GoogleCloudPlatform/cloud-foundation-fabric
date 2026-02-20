@@ -699,6 +699,13 @@ services:
   - container.googleapis.com
   - pubsub.googleapis.com
   - storage.googleapis.com
+datasets:
+  test_0:
+    location: EU
+    friendly_name: Test Dataset
+    iam:
+      roles/bigquery.dataViewer:
+        - group:gcp-devops@example.org
 pubsub_topics:
   app-0-topic-a:
     iam:

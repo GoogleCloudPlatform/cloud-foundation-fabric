@@ -81,6 +81,33 @@ values:
     member: serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-teams-iac-0
     timeouts: null
+  module.project-factory.module.bigquery-datasets["dev-ta-app0-be/test_0"].google_bigquery_dataset.default:
+    dataset_id: test_0
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: Test Dataset
+    labels: null
+    location: EU
+    max_time_travel_hours: '168'
+    project: test-pf-dev-ta-app0-be
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  ? module.project-factory.module.bigquery-datasets["dev-ta-app0-be/test_0"].google_bigquery_dataset_iam_binding.authoritative["roles/bigquery.dataViewer"]
+  : condition: []
+    dataset_id: test_0
+    members:
+    - group:gcp-devops@example.org
+    project: test-pf-dev-ta-app0-be
+    role: roles/bigquery.dataViewer
   module.project-factory.module.billing-budgets[0].google_billing_budget.default["test-100"]:
     all_updates_rule:
     - disable_default_iam_recipients: true
@@ -149,6 +176,8 @@ values:
     versioning:
     - enabled: false
   module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_tags_location_tag_binding.binding["context"]:
+    location: europe-west8
+    parent: //storage.googleapis.com/projects/_/buckets/test-pf-dev-ta-app0-be-app-0-bucket-a
     tag_value: tagValues/654321
     timeouts: null
   module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-b"].google_storage_bucket.bucket[0]:
@@ -290,6 +319,26 @@ values:
     deletion_protection: false
     display_name: App X
     tags: null
+    timeouts: null
+  module.project-factory.module.kms["dev-ta-app0-be/my-keyring"].google_kms_crypto_key.default["my-key"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: my-key
+    purpose: ENCRYPT_DECRYPT
+    rotation_period: null
+    skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.project-factory.module.kms["dev-ta-app0-be/my-keyring"].google_kms_key_ring.default[0]:
+    location: europe-west1
+    name: my-keyring
+    project: test-pf-dev-ta-app0-be
+    timeouts: null
+  module.project-factory.module.kms["dev-ta-app0-be/my-keyring"].google_tags_location_tag_binding.binding["context"]:
+    location: europe-west1
+    tag_value: $tag_values:context/project-factory
     timeouts: null
   ? module.project-factory.module.projects-iam["dev-ta-app0-be"].google_compute_shared_vpc_service_project.shared_vpc_service[0]
   : deletion_policy: null
@@ -434,44 +483,6 @@ values:
       environment: test
       goog-terraform-provisioned: 'true'
       team: team-a
-    timeouts: null
-  module.project-factory.module.projects["dev-ta-app0-be"].google_bigquery_dataset.default["test-dataset"]:
-    dataset_id: test_dataset
-    default_collation: null
-    default_partition_expiration_ms: null
-    default_table_expiration_ms: 3600000
-    description: null
-    effective_labels:
-      app: app-0
-      environment: test
-      goog-terraform-provisioned: 'true'
-      team: team-a
-    friendly_name: Test Dataset
-    is_case_insensitive: false
-    labels:
-      app: app-0
-      environment: test
-      team: team-a
-    location: EU
-    max_time_travel_hours: null
-    project: test-pf-dev-ta-app0-be
-    resource_link: null
-    storage_billing_model: null
-    terraform_labels:
-      app: app-0
-      environment: test
-      goog-terraform-provisioned: 'true'
-      team: team-a
-    timeouts: null
-  module.project-factory.module.projects["dev-ta-app0-be"].google_bigquery_dataset_iam_binding.bindings["roles/bigquery.dataViewer"]:
-    condition: []
-    dataset_id: test_dataset
-    members:
-    - group:gcp-devops@example.org
-    project: test-pf-dev-ta-app0-be
-    role: roles/bigquery.dataViewer
-  module.project-factory.module.projects["dev-ta-app0-be"].google_tags_location_tag_binding.binding["test-dataset/context"]:
-    tag_value: tagValues/654321
     timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_project_iam_member.service_agents["compute-system"]:
     condition: []
@@ -801,9 +812,6 @@ values:
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.subscriber
     topic: app-0-topic-a
-  module.project-factory.module.kms["dev-ta-app0-be/my-keyring"].google_tags_location_tag_binding.binding["context"]:
-    tag_value: tagValues/1234567890
-    timeouts: null
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
   : bigquery_config: []
     cloud_storage_config: []
@@ -851,10 +859,8 @@ values:
     role: roles/logging.logWriter
   ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
   : condition: []
-  module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_tags_tag_binding.binding["context"]:
-    parent: //iam.googleapis.com/projects/test-pf-dev-ta-app0-be/serviceAccounts/app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
-    tag_value: tagValues/1234567890
-    timeouts: null
+    project: test-pf-dev-ta-app0-be
+    role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_service_account.service_account[0]:
     account_id: app-0-be
     create_ignore_already_exists: null
@@ -864,6 +870,9 @@ values:
     email: app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     member: serviceAccount:app-0-be@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
+    timeouts: null
+  module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_tags_tag_binding.binding["context"]:
+    tag_value: $tag_values:context/project-factory
     timeouts: null
   ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
   : condition: []
@@ -958,7 +967,7 @@ counts:
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 4
-  google_folder: 9
+  google_folder: 8
   google_folder_iam_audit_config: 1
   google_folder_iam_binding: 1
   google_iam_workload_identity_pool: 1
@@ -969,28 +978,26 @@ counts:
   google_monitoring_notification_channel: 1
   google_org_policy_policy: 3
   google_privileged_access_manager_entitlement: 2
-  google_project: 5
+  google_project: 4
   google_project_iam_audit_config: 1
   google_project_iam_binding: 4
-  google_project_iam_member: 9
+  google_project_iam_member: 22
   google_project_service: 13
   google_project_service_identity: 4
   google_pubsub_subscription: 1
   google_pubsub_topic: 2
   google_pubsub_topic_iam_binding: 1
-  google_service_account: 3
-  google_service_account_iam_binding: 1
+  google_service_account: 6
+  google_service_account_iam_binding: 2
   google_service_account_iam_member: 2
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 2
-  google_storage_project_service_account: 3
-  google_storage_project_service_account: 3
-  google_tags_location_tag_binding: 4
-  google_tags_tag_binding: 2
-  google_tags_tag_binding: 2
+  google_storage_project_service_account: 4
+  google_tags_location_tag_binding: 2
+  google_tags_tag_binding: 3
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 21
-  resources: 90
+  modules: 34
+  resources: 118
   terraform_data: 2

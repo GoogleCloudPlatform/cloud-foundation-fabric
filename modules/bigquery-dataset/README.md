@@ -47,7 +47,7 @@ module "bigquery-dataset" {
 
 Access configuration can also be specified via IAM instead of basic roles via the `iam` variable. When using IAM, basic roles cannot be used via the `access` family variables.
 
-```
+```hcl
 module "bigquery-dataset" {
   source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"

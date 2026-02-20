@@ -29,7 +29,15 @@ locals {
         iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})
         iam_by_principals     = lookup(opts, "iam_by_principals", {})
         tag_bindings          = lookup(opts, "tag_bindings", {})
-        options               = lookup(opts, "options", null)
+        options = {
+          default_collation               = try(opts.options.default_collation, null)
+          default_table_expiration_ms     = try(opts.options.default_table_expiration_ms, null)
+          default_partition_expiration_ms = try(opts.options.default_partition_expiration_ms, null)
+          delete_contents_on_destroy      = try(opts.options.delete_contents_on_destroy, null)
+          is_case_insensitive             = try(opts.options.is_case_insensitive, null)
+          max_time_travel_hours           = try(opts.options.max_time_travel_hours, null)
+          storage_billing_model           = try(opts.options.storage_billing_model, null)
+        }
       }
     ]
   ])
