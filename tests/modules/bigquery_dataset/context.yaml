@@ -34,14 +34,14 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  google_bigquery_dataset_iam_binding.bindings["$custom_roles:myrole_one"]:
+  google_bigquery_dataset_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     dataset_id: dataset_0
     members:
     - user:test-user@example.com
     project: foo-test-0
     role: organizations/366118655033/roles/myRoleOne
-  google_bigquery_dataset_iam_binding.bindings["roles/viewer"]:
+  google_bigquery_dataset_iam_binding.authoritative["roles/viewer"]:
     condition: []
     dataset_id: dataset_0
     members:

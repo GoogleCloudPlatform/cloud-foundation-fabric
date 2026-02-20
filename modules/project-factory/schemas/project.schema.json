@@ -244,6 +244,39 @@
             },
             "encryption_key": {
               "type": "string"
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            },
+            "iam_by_principals": {
+              "$ref": "#/$defs/iam_by_principals"
+            },
+            "options": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "default_table_expiration_ms": {
+                  "type": "number"
+                },
+                "default_partition_expiration_ms": {
+                  "type": "number"
+                },
+                "delete_contents_on_destroy": {
+                  "type": "boolean"
+                },
+                "max_time_travel_hours": {
+                  "type": "number"
+                }
+              }
+            },
+            "tag_bindings": {
+              "$ref": "#/$defs/tag_bindings"
             }
           }
         }
@@ -347,6 +380,9 @@
                 },
                 "iam_bindings_additive": {
                   "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "tag_bindings": {
+                  "$ref": "#/$defs/tag_bindings"
                 },
                 "keys": {
                   "type": "object",
@@ -651,6 +687,9 @@
             },
             "iam_sa_roles": {
               "$ref": "#/$defs/iam_sa_roles"
+            },
+            "tag_bindings": {
+              "$ref": "#/$defs/tag_bindings"
             }
           }
         }
@@ -756,15 +795,6 @@
         }
       }
     },
-    "tag_bindings": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^[a-z0-9_-]+$": {
-          "type": "string"
-        }
-      }
-    },
     "tags": {
       "type": "object",
       "additionalProperties": {
@@ -810,6 +840,15 @@
               }
             }
           }
+        }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
         }
       }
     },
@@ -1192,6 +1231,9 @@
         },
         "enable_object_retention": {
           "type": "boolean"
+        },
+        "tag_bindings": {
+          "$ref": "#/$defs/tag_bindings"
         }
       }
     },
@@ -1802,6 +1844,15 @@
               }
             }
           }
+        }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
         }
       }
     }
