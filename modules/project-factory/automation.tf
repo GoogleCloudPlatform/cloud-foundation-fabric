@@ -60,7 +60,7 @@ locals {
         automation_project = v.project
         name               = sk
         parent             = k
-        parent_name        = v.parent_name
+        prefix             = try(sv.prefix, v.parent_name)
       })
     ] if v.service_accounts != null
   ]))
@@ -129,7 +129,7 @@ module "automation-service-accounts" {
   source      = "../iam-service-account"
   for_each    = local.automation_sas
   project_id  = each.value.automation_project
-  prefix      = each.value.parent_name
+  prefix      = each.value.prefix
   name        = each.value.name
   description = lookup(each.value, "description", null)
   display_name = lookup(

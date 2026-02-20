@@ -114,6 +114,9 @@
                 "description": {
                   "type": "string"
                 },
+                "prefix": {
+                  "type": "string"
+                },
                 "iam": {
                   "$ref": "#/$defs/iam"
                 },
