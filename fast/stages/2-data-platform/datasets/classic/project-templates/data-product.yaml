@@ -1,0 +1,10 @@
+services:
+  - bigquery.googleapis.com
+  - datacatalog.googleapis.com
+  - dataplex.googleapis.com
+  - datastream.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - notebooks.googleapis.com
+  - storage.googleapis.com
+  - storage-component.googleapis.com
