@@ -19,7 +19,7 @@ locals {
     for k, v in local.automation_buckets : v.parent_name => k
   }
   _outputs_automation_sas = {
-    for k, v in local.automation_sas : v.parent_name => k...
+    for k, v in local.automation_sas : v.prefix => k...
   }
   outputs_projects = {
     for k, v in local.projects_input : k => {
