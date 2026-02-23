@@ -17,6 +17,7 @@
 projects:
   defaults:
     locations:
+      bigquery: $locatiosn:primary
       storage: $locations:primary
   merges:
     services:

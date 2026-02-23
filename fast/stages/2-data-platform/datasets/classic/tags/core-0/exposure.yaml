@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/project.schema.json
+# yaml-language-server: $schema=../../../../schemas/tags.schema.json
 
-parent: $folder_ids:data-platform
-name: prod-dp-core-0
-services:
-  - bigquery.googleapis.com
-  - datacatalog.googleapis.com
-  - logging.googleapis.com
-  - monitoring.googleapis.com
-  - storage.googleapis.com
-factories_config:
-  tags: tags/core-0
+description: "Data exposure controls."
+# iam:
+#   "roles/resourcemanager.tagViewer":
+#     - "group:finance-team@example.com"
+values:
+  allow:
+    description: "Data exposure allowed."

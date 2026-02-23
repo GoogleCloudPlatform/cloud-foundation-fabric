@@ -1,0 +1,1863 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "asset_feeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "feed_output_config"
+          ],
+          "properties": {
+            "billing_project": {
+              "type": "string"
+            },
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "RESOURCE",
+                "IAM_POLICY",
+                "ORG_POLICY",
+                "ACCESS_POLICY",
+                "OS_INVENTORY",
+                "RELATIONSHIP"
+              ]
+            },
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "asset_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "feed_output_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pubsub_destination"
+              ],
+              "properties": {
+                "pubsub_destination": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "topic"
+                  ],
+                  "properties": {
+                    "topic": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "automation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project"
+      ],
+      "properties": {
+        "prefix": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "bucket": {
+          "$ref": "#/$defs/bucket"
+        },
+        "service_accounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z0-9-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "prefix": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "iam_billing_roles": {
+                  "$ref": "#/$defs/iam_billing_roles"
+                },
+                "iam_folder_roles": {
+                  "$ref": "#/$defs/iam_folder_roles"
+                },
+                "iam_organization_roles": {
+                  "$ref": "#/$defs/iam_organization_roles"
+                },
+                "iam_project_roles": {
+                  "$ref": "#/$defs/iam_project_roles"
+                },
+                "iam_sa_roles": {
+                  "$ref": "#/$defs/iam_sa_roles"
+                },
+                "iam_storage_roles": {
+                  "$ref": "#/$defs/iam_storage_roles"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "billing_account": {
+      "type": "string"
+    },
+    "billing_budgets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "buckets": {
+      "$ref": "#/$defs/buckets"
+    },
+    "contacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(\\S+@\\S+\\.\\S+|\\$email_addresses:\\S+)$": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ALL",
+              "BILLING",
+              "LEGAL",
+              "SECURITY",
+              "PRODUCT_UPDATES",
+              "SUSPENSION",
+              "TECHNICAL"
+            ]
+          }
+        }
+      }
+    },
+    "data_access_logs": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^([a-z][a-z-]+\\.googleapis\\.com|allServices)$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ADMIN_READ": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "DATA_READ": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "DATA_WRITE": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "exempted_members": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "datasets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "friendly_name": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "encryption_key": {
+              "type": "string"
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            },
+            "iam_by_principals": {
+              "$ref": "#/$defs/iam_by_principals"
+            },
+            "options": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "default_table_expiration_ms": {
+                  "type": "number"
+                },
+                "default_partition_expiration_ms": {
+                  "type": "number"
+                },
+                "delete_contents_on_destroy": {
+                  "type": "boolean"
+                },
+                "max_time_travel_hours": {
+                  "type": "number"
+                }
+              }
+            },
+            "tag_bindings": {
+              "$ref": "#/$defs/tag_bindings"
+            }
+          }
+        }
+      }
+    },
+    "deletion_policy": {
+      "type": "string",
+      "enum": [
+        "PREVENT",
+        "DELETE",
+        "ABANDON"
+      ]
+    },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "custom_roles": {
+          "type": "string"
+        },
+        "observability": {
+          "type": "string"
+        },
+        "org_policies": {
+          "type": "string"
+        },
+        "quotas": {
+          "type": "string"
+        },
+        "scc_sha_custom_modules": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        }
+      }
+    },
+    "iam": {
+      "$ref": "#/$defs/iam"
+    },
+    "iam_bindings": {
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "$ref": "#/$defs/iam_bindings_additive"
+    },
+    "iam_by_principals": {
+      "$ref": "#/$defs/iam_by_principals"
+    },
+    "iam_by_principals_conditional": {
+      "$ref": "#/$defs/iam_by_principals_conditional"
+    },
+    "iam_by_principals_additive": {
+      "$ref": "#/$defs/iam_by_principals"
+    },
+    "kms": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "autokeys": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9-]+[a-z0-9]$": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "location",
+                "resource_type_selector"
+              ],
+              "properties": {
+                "location": {
+                  "type": "string"
+                },
+                "resource_type_selector": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "keyrings": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9-]+[a-z0-9]$": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "location"
+              ],
+              "properties": {
+                "location": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "tag_bindings": {
+                  "$ref": "#/$defs/tag_bindings"
+                },
+                "keys": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^[a-z][a-z0-9-]+[a-z0-9]$": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "destroy_scheduled_duration": {
+                          "type": "string"
+                        },
+                        "rotation_period": {
+                          "type": "string"
+                        },
+                        "iam": {
+                          "$ref": "#/$defs/iam"
+                        },
+                        "iam_bindings": {
+                          "$ref": "#/$defs/iam_bindings"
+                        },
+                        "iam_bindings_additive": {
+                          "$ref": "#/$defs/iam_bindings_additive"
+                        },
+                        "purpose": {
+                          "type": "string",
+                          "default": "ENCRYPT_DECRYPT",
+                          "enum": [
+                            "CRYPTO_KEY_PURPOSE_UNSPECIFIED",
+                            "ENCRYPT_DECRYPT",
+                            "ASYMMETRIC_SIGN",
+                            "ASYMMETRIC_DECRYPT",
+                            "RAW_ENCRYPT_DECRYPT",
+                            "MAC"
+                          ]
+                        },
+                        "version_template": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "algorithm"
+                          ],
+                          "properties": {
+                            "algorithm": {
+                              "type": "string"
+                            },
+                            "protection_level": {
+                              "type": "string",
+                              "default": "SOFTWARE",
+                              "enum": [
+                                "SOFTWARE",
+                                "HSM",
+                                "EXTERNAL",
+                                "EXTERNAL_VPC"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "type": "object"
+    },
+    "pam_entitlements": {
+      "$ref": "#/$defs/pam_entitlements"
+    },
+    "log_buckets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/$defs/log_bucket"
+        }
+      }
+    },
+    "metric_scopes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "type": "string"
+    },
+    "descriptive_name": {
+      "type": "string"
+    },
+    "org_policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]+\\.": {
+          "type": "object",
+          "properties": {
+            "inherit_from_parent": {
+              "type": "boolean"
+            },
+            "reset": {
+              "type": "boolean"
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "allow": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "all": {
+                        "type": "boolean"
+                      },
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "deny": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "all": {
+                        "type": "boolean"
+                      },
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "enforce": {
+                    "type": "boolean"
+                  },
+                  "condition": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "description": {
+                        "type": "string"
+                      },
+                      "expression": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "quotas": {
+      "title": "Quotas",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "service",
+            "quota_id",
+            "preferred_value"
+          ],
+          "properties": {
+            "service": {
+              "type": "string"
+            },
+            "quota_id": {
+              "type": "string"
+            },
+            "preferred_value": {
+              "type": "number"
+            },
+            "dimensions": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "justification": {
+              "type": "string"
+            },
+            "contact_email": {
+              "type": "string"
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "ignore_safety_checks": {
+              "type": "string",
+              "enum": [
+                "QUOTA_DECREASE_BELOW_USAGE",
+                "QUOTA_DECREASE_PERCENTAGE_TOO_HIGH",
+                "QUOTA_SAFETY_CHECK_UNSPECIFIED"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "parent": {
+      "type": "string"
+    },
+    "prefix": {
+      "type": "string"
+    },
+    "project_reuse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "use_data_source": {
+          "type": "boolean"
+        },
+        "attributes": {
+          "type": "object",
+          "required": [
+            "name",
+            "number"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "number": {
+              "type": "number"
+            },
+            "services_enabled": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "project_template": {
+      "type": "string"
+    },
+    "pubsub_topics": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/$defs/pubsub_topic"
+        }
+      }
+    },
+    "service_accounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "display_name": {
+              "type": "string"
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            },
+            "iam_self_roles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "iam_project_roles": {
+              "$ref": "#/$defs/iam_project_roles"
+            },
+            "iam_sa_roles": {
+              "$ref": "#/$defs/iam_sa_roles"
+            },
+            "tag_bindings": {
+              "$ref": "#/$defs/tag_bindings"
+            }
+          }
+        }
+      }
+    },
+    "service_encryption_key_ids": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z-]+\\.googleapis\\.com$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z-]+\\.googleapis\\.com$"
+      }
+    },
+    "shared_vpc_host_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "service_projects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "shared_vpc_service_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host_project"
+      ],
+      "properties": {
+        "host_project": {
+          "type": "string"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "network_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "service_agent_iam": {
+          "type": "object",
+          "additionalItems": false,
+          "patternProperties": {
+            "^[a-z0-9_-]+$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "service_agent_subnet_iam": {
+          "type": "object",
+          "additionalItems": false,
+          "patternProperties": {
+            "^[a-z0-9_-]+$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "service_iam_grants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "network_subnet_users": {
+          "type": "object",
+          "additionalItems": false,
+          "patternProperties": {
+            "^[a-z0-9_-]+$": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "iam": {
+            "$ref": "#/$defs/iam"
+          },
+          "iam_bindings": {
+            "$ref": "#/$defs/iam_bindings"
+          },
+          "iam_bindings_additive": {
+            "$ref": "#/$defs/iam_bindings_additive"
+          },
+          "id": {
+            "type": "string"
+          },
+          "values": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
+        }
+      }
+    },
+    "universe": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prefix": {
+          "type": "string"
+        },
+        "forced_jit_service_identities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailable_services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unavailable_service_identities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "vpc_sc": {
+      "type": "object",
+      "additionalItems": false,
+      "required": [
+        "perimeter_name"
+      ],
+      "properties": {
+        "perimeter_name": {
+          "type": "string"
+        },
+        "is_dry_run": {
+          "type": "boolean"
+        }
+      }
+    },
+    "workload_identity_pools": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]+[a-z0-9]$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "display_name": {
+              "type": "string"
+            },
+            "disabled": {
+              "type": "boolean"
+            },
+            "providers": {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9-]+[a-z0-9]$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    },
+                    "display_name": {
+                      "type": "string"
+                    },
+                    "disabled": {
+                      "type": "boolean"
+                    },
+                    "attribute_condition": {
+                      "type": "string"
+                    },
+                    "attribute_mapping": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "identity_provider": {
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "additionalProperties": false,
+                          "required": [
+                            "aws"
+                          ],
+                          "properties": {
+                            "aws": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "account_id"
+                              ],
+                              "properties": {
+                                "account_id": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "additionalProperties": false,
+                          "required": [
+                            "oidc"
+                          ],
+                          "properties": {
+                            "oidc": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "allowed_audiences": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                "issuer_uri": {
+                                  "type": "string"
+                                },
+                                "jwks_json": {
+                                  "type": "string"
+                                },
+                                "template": {
+                                  "type": "string",
+                                  "enum": [
+                                    "github",
+                                    "gitlab",
+                                    "okta",
+                                    "terraform"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "additionalProperties": false,
+                          "required": [
+                            "saml"
+                          ],
+                          "properties": {
+                            "saml": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "idp_metadata_xml"
+                              ],
+                              "properties": {
+                                "idp_metadata_xml": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "description": {
+          "type": "string"
+        },
+        "encryption_key": {
+          "type": "string"
+        },
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "iam_bindings": {
+          "$ref": "#/$defs/iam_bindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "force_destroy": {
+          "type": "boolean"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "lifecycle_rules": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "action",
+                "condition"
+              ],
+              "properties": {
+                "action": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Delete",
+                        "SetStorageClass",
+                        "AbortIncompleteMultipartUpload"
+                      ]
+                    },
+                    "storage_class": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "age": {
+                      "type": "number"
+                    },
+                    "created_before": {
+                      "type": "string"
+                    },
+                    "custom_time_before": {
+                      "type": "string"
+                    },
+                    "days_since_custom_time": {
+                      "type": "number"
+                    },
+                    "days_since_noncurrent_time": {
+                      "type": "number"
+                    },
+                    "matches_prefix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "matches_storage_class": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "STANDARD",
+                          "MULTI_REGIONAL",
+                          "REGIONAL",
+                          "NEARLINE",
+                          "COLDLINE",
+                          "ARCHIVE",
+                          "DURABLE_REDUCED_AVAILABILITY"
+                        ]
+                      }
+                    },
+                    "matches_suffix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "noncurrent_time_before": {
+                      "type": "string"
+                    },
+                    "num_newer_versions": {
+                      "type": "number"
+                    },
+                    "with_state": {
+                      "type": "string",
+                      "enum": [
+                        "LIVE",
+                        "ARCHIVED",
+                        "ANY"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "logging_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "log_bucket": {
+              "type": "string"
+            },
+            "log_object_prefix": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "log_bucket"
+          ]
+        },
+        "location": {
+          "type": "string"
+        },
+        "managed_folders": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9][a-zA-Z0-9_/-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "force_destroy": {
+                  "type": "boolean"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                }
+              }
+            }
+          }
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "storage_class": {
+          "type": "string"
+        },
+        "uniform_bucket_level_access": {
+          "type": "boolean"
+        },
+        "versioning": {
+          "type": "boolean"
+        },
+        "retention_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "retention_period": {
+              "type": "string"
+            },
+            "is_locked": {
+              "type": "boolean"
+            }
+          }
+        },
+        "soft_delete_retention": {
+          "type": "number"
+        },
+        "enable_object_retention": {
+          "type": "boolean"
+        },
+        "tag_bindings": {
+          "$ref": "#/$defs/tag_bindings"
+        }
+      }
+    },
+    "buckets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "$ref": "#/$defs/bucket"
+        }
+      }
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:roles/|\\$custom_roles:)": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\\$iam_principals:[a-z0-9_-]+)"
+          }
+        }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
+              }
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member": {
+              "type": "string",
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_by_principals": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:roles/|\\$custom_roles:)"
+          }
+        }
+      }
+    },
+    "iam_by_principals_conditional": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "condition",
+            "roles"
+          ],
+          "properties": {
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:roles/|\\$custom_roles:)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_billing_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_folder_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_organization_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_project_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:[a-z0-9-]|\\$project_ids:[a-z0-9_-])+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_sa_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:\\$service_account_ids:|projects/)": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "iam_storage_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "log_bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "kms_key_name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "log_analytics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "dataset_link_id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "retention": {
+          "type": "number"
+        }
+      }
+    },
+    "pam_entitlements": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9-]{0,61}[a-z0-9]$": {
+          "type": "object",
+          "properties": {
+            "max_request_duration": {
+              "type": "string"
+            },
+            "eligible_users": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "privileged_access": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "string"
+                  },
+                  "condition": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "role"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "requester_justification_config": {
+              "type": "object",
+              "properties": {
+                "not_mandatory": {
+                  "type": "boolean"
+                },
+                "unstructured": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            },
+            "manual_approvals": {
+              "type": "object",
+              "properties": {
+                "require_approver_justification": {
+                  "type": "boolean"
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "approvers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "approvals_needed": {
+                        "type": "number"
+                      },
+                      "approver_email_recipients": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "approvers"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "require_approver_justification",
+                "steps"
+              ],
+              "additionalProperties": false
+            },
+            "additional_notification_targets": {
+              "type": "object",
+              "properties": {
+                "admin_email_recipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "requester_email_recipients": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "max_request_duration",
+            "eligible_users",
+            "privileged_access"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "pubsub_topic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "iam_bindings": {
+          "$ref": "#/$defs/iam_bindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "iam_by_principals": {
+          "$ref": "#/$defs/iam_by_principals"
+        },
+        "kms_key": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "message_retention_duration": {
+          "type": "string"
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "definition",
+            "schema_type"
+          ],
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "msg_encoding": {
+              "type": "string"
+            },
+            "schema_type": {
+              "type": "string"
+            }
+          }
+        },
+        "subscriptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ack_deadline_seconds": {
+                  "type": "number"
+                },
+                "enable_exactly_once_delivery": {
+                  "type": "boolean"
+                },
+                "enable_message_ordering": {
+                  "type": "boolean"
+                },
+                "expiration_policy_ttl": {
+                  "type": "string"
+                },
+                "filter": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "labels": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "message_retention_duration": {
+                  "type": "string"
+                },
+                "retain_acked_messages": {
+                  "type": "boolean"
+                },
+                "bigquery": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "table"
+                  ],
+                  "properties": {
+                    "table": {
+                      "type": "string"
+                    },
+                    "drop_unknown_fields": {
+                      "type": "boolean"
+                    },
+                    "service_account_email": {
+                      "type": "string"
+                    },
+                    "use_table_schema": {
+                      "type": "boolean"
+                    },
+                    "use_topic_schema": {
+                      "type": "boolean"
+                    },
+                    "write_metadata": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "cloud_storage": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "bucket"
+                  ],
+                  "properties": {
+                    "bucket": {
+                      "type": "string"
+                    },
+                    "filename_prefix": {
+                      "type": "string"
+                    },
+                    "filename_suffix": {
+                      "type": "string"
+                    },
+                    "max_duration": {
+                      "type": "string"
+                    },
+                    "max_bytes": {
+                      "type": "number"
+                    },
+                    "avro_config": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "write_metadata": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                },
+                "dead_letter_policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "topic"
+                  ],
+                  "properties": {
+                    "topic": {
+                      "type": "string"
+                    },
+                    "max_delivery_attempts": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "push": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "endpoint"
+                  ],
+                  "properties": {
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "no_wrapper": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "write_metadata": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "oidc_token": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "service_account_email"
+                      ],
+                      "properties": {
+                        "audience": {
+                          "type": "string"
+                        },
+                        "service_account_email": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "retry_policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "minimum_backoff": {
+                      "type": "number"
+                    },
+                    "maximum_backoff": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
