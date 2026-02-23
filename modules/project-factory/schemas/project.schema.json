@@ -303,6 +303,9 @@
         "custom_roles": {
           "type": "string"
         },
+        "data_catalog_taxonomy": {
+          "type": "string"
+        },
         "observability": {
           "type": "string"
         },

@@ -1,0 +1,12 @@
+description: taxonomy description
+activated_policy_types:
+  - FINE_GRAINED_ACCESS_CONTROL
+iam:
+  roles/viewer:
+    - $iam_principals:gcp-devops
+tags:
+  tag-a:
+    description: tag a description
+    iam:
+      roles/viewer:
+        - $iam_principals:gcp-devops

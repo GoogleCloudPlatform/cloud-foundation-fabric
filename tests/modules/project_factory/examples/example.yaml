@@ -966,6 +966,7 @@ counts:
   google_cloud_asset_folder_feed: 1
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
+  google_data_catalog_taxonomy: 1
   google_essential_contacts_contact: 4
   google_folder: 8
   google_folder_iam_audit_config: 1
@@ -998,6 +999,6 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 34
-  resources: 118
+  modules: 35
+  resources: 119
   terraform_data: 2

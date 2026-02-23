@@ -94,3 +94,4 @@ pytest tests/examples/test_plan.py
 *   **File Structure:**
     *   Move away from `main.tf`, `variables.tf`, `outputs.tf`.
     *   Use descriptive filenames: `iam.tf`, `gcs.tf`, `mounts.tf`.
+*   **Lexical Order:** Preserve lexical order when adding attributes to schemas, variable types, and maps.
