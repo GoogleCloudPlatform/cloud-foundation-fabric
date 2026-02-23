@@ -23,4 +23,5 @@ services:
   - monitoring.googleapis.com
   - storage.googleapis.com
 factories_config:
+  aspect_types: aspect-types/core-0
   tags: tags/core-0

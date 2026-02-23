@@ -127,8 +127,12 @@ module "projects" {
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
-  factories_config        = each.value.factories_config
-  kms_autokeys            = try(each.value.kms.autokeys, {})
+  # postpone factories that might leverage context
+  factories_config = {
+    for k, v in each.value.factories_config :
+    k => v if !contains(["aspect_types", "pam_entitlements"], k)
+  }
+  kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
@@ -186,7 +190,8 @@ module "projects-iam" {
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    aspect_types     = each.value.factories_config.aspect_types
+    pam_entitlements = each.value.factories_config.pam_entitlements
   }
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})

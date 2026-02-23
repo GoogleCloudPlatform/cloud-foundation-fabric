@@ -297,6 +297,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "aspect_types": {
+          "type": "string"
+        },
         "custom_roles": {
           "type": "string"
         },

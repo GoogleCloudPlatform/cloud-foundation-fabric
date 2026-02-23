@@ -51,6 +51,7 @@ locals {
         local.data_defaults.defaults.contacts
       )
       factories_config = {
+        aspect_types           = try(v.factories_config.aspect_types, null)
         custom_roles           = try(v.factories_config.custom_roles, null)
         observability          = try(v.factories_config.observability, null)
         org_policies           = try(v.factories_config.org_policies, null)
