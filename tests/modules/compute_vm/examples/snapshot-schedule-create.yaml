@@ -136,7 +136,7 @@ values:
     type: pd-balanced
   module.instance.google_compute_region_disk_resource_policy_attachment.attached["disk-1-data"]:
     disk: schedule-test-disk-1
-    name: data
+    name: schedule-test-data
     project: project-id
     region: europe-west8
     timeouts: null
@@ -151,20 +151,30 @@ values:
     snapshot_schedule_policy:
     - retention_policy: []
       schedule:
+      - daily_schedule: []
+        hourly_schedule:
+        - hours_in_cycle: 1
+          start_time: 03:00
+        weekly_schedule: []
+      snapshot_properties: []
+    timeouts: null
+    workload_policy: []
+  module.instance.google_compute_resource_policy.snapshot["data"]:
+    description: Schedule policy data for schedule-test.
+    disk_consistency_group_policy: []
+    group_placement_policy: []
+    instance_schedule_policy: []
+    name: schedule-test-data
+    project: project-id
+    region: europe-west8
+    snapshot_schedule_policy:
+    - retention_policy: []
+      schedule:
       - daily_schedule:
         - days_in_cycle: 1
-          start_time: 03:00
+          start_time: 04:00
         hourly_schedule: []
         weekly_schedule: []
       snapshot_properties: []
     timeouts: null
     workload_policy: []
-
-counts:
-  google_compute_disk_resource_policy_attachment: 1
-  google_compute_instance: 1
-  google_compute_region_disk: 1
-  google_compute_region_disk_resource_policy_attachment: 1
-  google_compute_resource_policy: 1
-  modules: 1
-  resources: 5
