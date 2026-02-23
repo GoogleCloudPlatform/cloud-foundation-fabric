@@ -69,7 +69,17 @@ locals {
   project_numbers = {
     for k, v in module.projects : k => v.number
   }
-  projects_input = merge(var.projects, local._projects_output)
+  projects_input = {
+    for k, v in merge(var.projects, local._projects_output) : k => merge(v, {
+      factories_config = {
+        for kk, vv in v.factories_config : kk => try(pathexpand(
+          var.factories_config.basepath == null || startswith(vv, "/") || startswith(vv, ".")
+          ? vv :
+          "${var.factories_config.basepath}/${vv}"
+        ), null)
+      }
+    })
+  }
   projects_service_agents = merge([
     for k, v in module.projects : {
       for kk, vv in v.service_agents : "service_agents/${k}/${kk}" => vv.iam_email
@@ -117,14 +127,8 @@ module "projects" {
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
-  factories_config = {
-    for k, v in each.value.factories_config : k => try(pathexpand(
-      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
-      ? v :
-      "${var.factories_config.basepath}/${v}"
-    ), null)
-  }
-  kms_autokeys = try(each.value.kms.autokeys, {})
+  factories_config        = each.value.factories_config
+  kms_autokeys            = try(each.value.kms.autokeys, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
