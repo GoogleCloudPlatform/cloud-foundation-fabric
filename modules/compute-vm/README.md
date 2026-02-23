@@ -1071,11 +1071,11 @@ module "instance" {
         }
       }
     }
-    boot = {
+    data = {
       schedule = {
         daily = {
           days_in_cycle = 1
-          start_time    = "03:00"
+          start_time    = "04:00"
         }
       }
     }
