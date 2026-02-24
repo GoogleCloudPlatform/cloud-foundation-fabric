@@ -24,7 +24,7 @@ services:
   - storage.googleapis.com
   # Uncomment the following lines to enable a centralized Composer environment
   # - composer.googleapis.com
-service_accounts:
+# service_accounts:
   # Uncomment the following lines to enable a centralized Composer environment
   # composer:
   #   iam_project_roles:

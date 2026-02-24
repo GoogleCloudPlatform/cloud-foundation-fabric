@@ -94,6 +94,7 @@ module "factory" {
         for k, v in var.service_accounts :
         k => "serviceAccount:${v}" if v != null
       },
+      try(local.defaults.context.iam_principals, {}),
       local.context.iam_principals
     )
     kms_keys              = merge(var.kms_keys, local.context.kms_keys)

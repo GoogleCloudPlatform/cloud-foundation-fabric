@@ -32,14 +32,14 @@ automation:
   service_accounts:
     iac-ro:
       display_name: Automation RO
-      iam_sa_roles:
+      iam:
         roles/iam.serviceAccountTokenCreator:
-          - dp-product-a-0
+          - $iam_principals:dp-product-a-0
     iac-rw:
       display_name: Automation RW
-      iam_sa_roles:
+      iam:
         roles/iam.serviceAccountTokenCreator:
-          - dp-product-a-0
+          - $iam_principals:dp-product-a-0
   bucket:
     name: tf-state
     iam:
@@ -47,7 +47,7 @@ automation:
         - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw
       roles/storage.objectViewer:
         - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro
-        - dp-product-a-0
+        - $iam_principals:dp-product-a-0
     versioning: true
 iam:
   roles/owner:
@@ -67,7 +67,7 @@ datasets:
   public:
     iam:
       roles/bigquery.dataViewer:
-        - data-consumer-bi
+        - $iam_principals:data-consumer-bi
     tag_bindings:
       exposure: $tag_values:prod-dp-core-0/exposure/public
 
@@ -79,7 +79,7 @@ buckets:
   public:
     iam:
       roles/storage.objectViewer:
-        - data-consumer-bi
+        - $iam_principals:data-consumer-bi
     tag_bindings:
       exposure: $tag_values:prod-dp-core-0/exposure/public
 
@@ -97,3 +97,9 @@ iam_by_principals:
     - roles/storage.bucketViewer
     - roles/storage.objectAdmin
 
+
+# shared_vpc_service_config:
+#   host_project: $project_ids:net-dev-0
+#   service_agent_iam:
+#     roles/compute.networkUser:
+#       - $service_agents:dataproc
