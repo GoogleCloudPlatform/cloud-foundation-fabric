@@ -111,6 +111,9 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
+                "display_name": {
+                  "type": "string"
+                },
                 "description": {
                   "type": "string"
                 },
