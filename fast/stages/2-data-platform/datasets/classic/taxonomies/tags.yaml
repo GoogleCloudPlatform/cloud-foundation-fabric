@@ -12,13 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../schemas/project.schema.json
-
-parent: $folder_ids:domain-a
-name: prod-dp-prdc-0
-project_template: data-product
-service_accounts:
-  processing: {}
-buckets:
-  exposed-0:
-    versioning: true
+description: Taxonomy for data platform.
+tags:
+  high:
+    description: High sensitivity data.
+  medium:
+    description: Medium sensitivity data.
+  low:
+    description: Low sensitivity data.

@@ -19,5 +19,5 @@ description: "Data exposure controls."
 #   "roles/resourcemanager.tagViewer":
 #     - "group:finance-team@example.com"
 values:
-  allow:
+  public:
     description: "Data exposure allowed."

@@ -27,3 +27,7 @@ projects:
 context:
   locations:
     primary: europe-west1
+  # iam_principals:
+  #   dp-platform: "group:dp-platform@example.com"
+  #   dp-domain-a: "group:dp-domain-a@example.com"
+  #   dp-product-a-0: "group:dp-product-a-0@example.com"

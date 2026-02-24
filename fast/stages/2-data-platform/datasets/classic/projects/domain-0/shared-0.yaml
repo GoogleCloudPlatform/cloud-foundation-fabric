@@ -1,0 +1,59 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../schemas/project.schema.json
+
+parent: $folder_ids:domain-0
+name: prod-dp-dd-0
+services:
+  - bigquery.googleapis.com
+  - datacatalog.googleapis.com
+  - dataplex.googleapis.com
+  - datalineage.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - storage.googleapis.com
+  - composer.googleapis.com
+automation:
+  project: prod-dp-core-0
+  service_accounts:
+    iac-ro:
+      display_name: Automation RO
+      iam_sa_roles:
+        roles/iam.serviceAccountTokenCreator:
+          - dp-product-a-0
+    iac-rw:
+      display_name: Automation RW
+      iam_sa_roles:
+        roles/iam.serviceAccountTokenCreator:
+          - dp-product-a-0
+  bucket:
+    name: tf-state
+    iam:
+      roles/storage.admin:
+        - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-rw
+      roles/storage.objectViewer:
+        - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-ro
+        - dp-product-a-0
+    versioning: true
+iam:
+  roles/owner:
+    - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-rw
+  roles/viewer:
+    - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-ro
+service_accounts:
+  composer:
+    iam_project_roles:
+      roles/composer.worker:
+        - service_account:composer
