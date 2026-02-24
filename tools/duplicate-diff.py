@@ -29,7 +29,6 @@ duplicates = [
     [
         "modules/dataplex-aspect-types/schemas/aspect-type.schema.json",
         "modules/project-factory/schemas/aspect-type.schema.json",
-        "fast/stages/3-data-platform-dev/schemas/aspect-type.schema.json",
     ],
     [
         "modules/data-catalog-policy-tag/schemas/policy-tag.schema.json",
@@ -40,7 +39,6 @@ duplicates = [
         "fast/stages/0-org-setup/schemas/budget.schema.json",
         "modules/billing-account/schemas/budget.schema.json",
         "modules/project-factory/schemas/budget.schema.json",
-        "fast/stages/2-data-platform/schemas/budget.schema.json",
     ],
     [
         "fast/stages/0-org-setup/schemas/custom-constraint.schema.json",
@@ -65,7 +63,6 @@ duplicates = [
         "fast/stages/2-project-factory/schemas/folder.schema.json",
         "fast/stages/2-security/schemas/folder.schema.json",
         "modules/project-factory/schemas/folder.schema.json",
-        "fast/stages/2-data-platform/schemas/folder.schema.json",
     ],
     [
         "fast/stages/0-org-setup/schemas/observability.schema.json",
@@ -96,7 +93,6 @@ duplicates = [
         "fast/stages/2-networking/schemas/project.schema.json",
         "fast/stages/2-project-factory/schemas/project.schema.json",
         "fast/stages/2-security/schemas/project.schema.json",
-        "fast/stages/2-data-platform/schemas/project.schema.json",
     ],
     [
         "modules/folder/schemas/scc-sha-custom-modules.schema.json",
@@ -111,7 +107,6 @@ duplicates = [
         "fast/stages/0-org-setup/schemas/tags.schema.json",
         "modules/project/schemas/tags.schema.json",
         "modules/organization/schemas/tags.schema.json",
-        "fast/stages/2-data-platform/schemas/tags.schema.json",
     ],
     [
         "modules/cloud-function-v1/bundle.tf",

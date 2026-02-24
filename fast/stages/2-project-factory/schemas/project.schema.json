@@ -297,7 +297,13 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "aspect_types": {
+          "type": "string"
+        },
         "custom_roles": {
+          "type": "string"
+        },
+        "data_catalog_taxonomy": {
           "type": "string"
         },
         "observability": {
