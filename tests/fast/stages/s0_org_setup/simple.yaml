@@ -819,7 +819,6 @@ values:
     force_destroy: false
     name: 2-security/
     timeouts: null
-    timeouts: null
   ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["1-vpcsc/$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
@@ -859,8 +858,6 @@ values:
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
     managed_folder: 2-security/
-    role: roles/storage.admin
-    role: organizations/1234567890/roles/storageViewer
     role: roles/storage.admin
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
