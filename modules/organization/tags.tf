@@ -221,6 +221,14 @@ resource "google_tags_tag_key_iam_binding" "bindings" {
     for v in local.tags[each.value.tag]["iam_bindings"][each.value.binding].members :
     lookup(local.ctx.iam_principals, v, v)
   ]
+  dynamic "condition" {
+    for_each = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition == null ? [] : [""]
+    content {
+      expression  = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.expression
+      title       = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.title
+      description = local.tags[each.value.tag]["iam_bindings"][each.value.binding].condition.description
+    }
+  }
 }
 
 resource "google_tags_tag_key_iam_member" "bindings" {
@@ -236,6 +244,14 @@ resource "google_tags_tag_key_iam_member" "bindings" {
     local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member,
     local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].member
   )
+  dynamic "condition" {
+    for_each = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition == null ? [] : [""]
+    content {
+      expression  = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.expression
+      title       = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.title
+      description = local.tags[each.value.tag]["iam_bindings_additive"][each.value.binding].condition.description
+    }
+  }
 }
 
 # values
@@ -279,6 +295,14 @@ resource "google_tags_tag_value_iam_binding" "bindings" {
     for v in local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].members :
     lookup(local.ctx.iam_principals, v, v)
   ]
+  dynamic "condition" {
+    for_each = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition == null ? [] : [""]
+    content {
+      expression  = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.expression
+      title       = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.title
+      description = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings"][each.value.binding].condition.description
+    }
+  }
 }
 
 resource "google_tags_tag_value_iam_member" "bindings" {
@@ -296,6 +320,14 @@ resource "google_tags_tag_value_iam_member" "bindings" {
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].member,
     local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].member
   )
+  dynamic "condition" {
+    for_each = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition == null ? [] : [""]
+    content {
+      expression  = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.expression
+      title       = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.title
+      description = local.tags[each.value.tag]["values"][each.value.name]["iam_bindings_additive"][each.value.binding].condition.description
+    }
+  }
 }
 
 # bindings

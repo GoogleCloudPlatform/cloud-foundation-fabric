@@ -772,6 +772,15 @@ module "org" {
               role   = "roles/resourcemanager.tagUser"
               member = "group:app2-team@example.org"
             }
+            delegate_user_app2 = {
+              role      = "roles/resourcemanager.tagAdmin"
+              member    = "group:app2-team@example.org"
+              condition = {
+                expression  = "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\"roles/resourcemanager.tagUser\"])"
+                title       = "only_taguser_delegation"
+                description = "Allow the IaC data service account to grant the tagUser role to any principal on projects it manages."
+              }
+            }
           }
         }
         prod = {
