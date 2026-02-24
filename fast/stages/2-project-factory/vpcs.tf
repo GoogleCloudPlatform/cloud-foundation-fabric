@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-output "projects" {
-  description = "Attributes for managed projects."
-  value       = module.factory.projects
-}
+# tfdoc:file:description VPC factory.
 
-resource "google_storage_bucket_object" "version" {
-  count          = fileexists("fast_version.txt") ? 1 : 0
-  bucket         = var.automation.outputs_bucket
-  name           = "versions/${var.stage_name}-version.txt"
-  source         = "fast_version.txt"
-  source_md5hash = filemd5("fast_version.txt")
+module "vpc-factory" {
+  source = "../../../modules/net-vpc-factory"
+  factories_config = {
+    vpcs = try(local.paths.vpcs, null)
+  }
+  context = merge(local.context, {
+    project_ids = merge(
+      local.context.project_ids,
+      module.factory.project_ids
+    )
+  })
 }
