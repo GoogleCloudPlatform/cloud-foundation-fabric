@@ -212,7 +212,7 @@ variable "maintenance_config" {
   default = {
     daily_window_start_time = "03:00"
     recurring_window        = null
-    maintenance_exclusion   = []
+    maintenance_exclusions  = []
   }
 }
 
