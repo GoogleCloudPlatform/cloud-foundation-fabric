@@ -21,12 +21,11 @@ counts:
   google_data_catalog_policy_tag: 3
   google_data_catalog_taxonomy: 1
   google_dataplex_aspect_type: 1
-  google_folder: 2
-  google_folder_iam_binding: 1
+  google_folder: 1
   google_logging_project_settings: 3
   google_project: 3
-  google_project_iam_binding: 12
-  google_project_iam_member: 12
+  google_project_iam_binding: 13
+  google_project_iam_member: 11
   google_project_service: 23
   google_project_service_identity: 8
   google_service_account: 6
@@ -38,6 +37,6 @@ counts:
   google_tags_location_tag_binding: 2
   google_tags_tag_key: 1
   google_tags_tag_value: 1
-  modules: 24
-  resources: 106
+  modules: 22
+  resources: 104
   terraform_data: 2

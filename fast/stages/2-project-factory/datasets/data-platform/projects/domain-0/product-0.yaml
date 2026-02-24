@@ -31,12 +31,12 @@ automation:
   project: prod-dp-dd-0
   service_accounts:
     iac-ro:
-      display_name: Automation RO
+      display_name: Product 0/0 (ro)
       iam:
         roles/iam.serviceAccountTokenCreator:
           - $iam_principals:dp-product-a-0
     iac-rw:
-      display_name: Automation RW
+      display_name: Product 0/0 (rw)
       iam:
         roles/iam.serviceAccountTokenCreator:
           - $iam_principals:dp-product-a-0
@@ -49,11 +49,6 @@ automation:
         - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro
         - $iam_principals:dp-product-a-0
     versioning: true
-iam:
-  roles/owner:
-    - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw
-  roles/viewer:
-    - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro
 
 service_accounts:
   processing:
@@ -87,6 +82,10 @@ buckets:
   private: {}
 
 iam_by_principals:
+  $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw:
+    - roles/owner
+  $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro:
+    - roles/viewer
   $iam_principals:service_accounts/_self_/processing:
     - roles/bigquery.dataEditor
     - roles/bigquery.jobUser
