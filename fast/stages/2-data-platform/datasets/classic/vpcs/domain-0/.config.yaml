@@ -1,0 +1,6 @@
+name: domain-0
+project_id: $project_ids:shared-0
+subnets:
+  - name: example-subnet-0
+    ip_cidr_range: 10.0.0.0/24
+    region: $locations:primary

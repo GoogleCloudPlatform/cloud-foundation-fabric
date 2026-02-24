@@ -66,3 +66,7 @@ shared_vpc_service_config:
     roles/compute.networkUser:
       - $service_agents:composer
       - $iam_principals:service_accounts/_self_/composer
+
+# If this project contains a local VPC, it should be configured as a Shared VPC host.
+# shared_vpc_host_config:
+#   enabled: true

@@ -44,6 +44,7 @@ variable "factories_config" {
       projects          = optional(string, "projects")
       project_templates = optional(string, "project-templates")
       budgets           = optional(string)
+      vpcs              = optional(string)
     }), {})
   })
   nullable = false

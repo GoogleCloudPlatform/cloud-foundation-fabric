@@ -21,6 +21,11 @@ locals {
     for k, v in var.context : k => merge(v, try(local.defaults.context[k], {}))
   }
   context = merge(local._context, {
+    project_ids = merge(
+      var.project_ids,
+      var.host_project_ids,
+      local._context.project_ids
+    )
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
   })
   defaults = yamldecode(file(pathexpand(local.paths.defaults)))
