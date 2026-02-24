@@ -46,7 +46,12 @@ values:
     short_name: prod
     timeouts: null
   module.org.google_tags_tag_value_iam_binding.bindings["environment/prod:admin"]:
-    condition: []
+    condition:
+    - title: gcp_support
+      expression: |
+        request.time.getHours("Europe/Berlin") <= 9 &&
+        request.time.getHours("Europe/Berlin") >= 17
+      description: null 
     members:
     - group:gcp-support@example.org
     role: roles/resourcemanager.tagAdmin
@@ -59,6 +64,13 @@ values:
     condition: []
     member: group:app2-team@example.org
     role: roles/resourcemanager.tagUser
+  module.org.google_tags_tag_value_iam_member.bindings["environment/dev:delegate_user_app2"]:
+    condition:
+    - expression: api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(["roles/resourcemanager.tagUser"])
+      title: only_taguser_delegation
+      description: "Allow the IaC data service account to grant the tagUser role to any principal on projects it manages."
+    member: group:app2-team@example.org
+    role: roles/resourcemanager.tagAdmin
 
 counts:
   google_tags_tag_binding: 1
@@ -67,6 +79,6 @@ counts:
   google_tags_tag_key_iam_member: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 2
-  google_tags_tag_value_iam_member: 1
+  google_tags_tag_value_iam_member: 2
   modules: 1
-  resources: 10
+  resources: 11
