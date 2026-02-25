@@ -220,4 +220,20 @@ resource "google_compute_region_backend_service" "default" {
       policy = "CONSISTENT_HASH_SUBSETTING"
     }
   }
+
+  dynamic "tls_settings" {
+    for_each = each.value.tls_settings == null ? [] : [each.value.tls_settings]
+    content {
+      # authentication_config is not supported by the beta provider in this resource?
+      # Wait, lint will tell me. Search result said yes.
+      authentication_config = tls_settings.value.authentication_config
+      sni                   = tls_settings.value.sni
+      dynamic "subject_alt_names" {
+        for_each = tls_settings.value.subject_alt_names == null ? [] : tls_settings.value.subject_alt_names
+        content {
+          dns_name = subject_alt_names.value
+        }
+      }
+    }
+  }
 }
