@@ -23,8 +23,6 @@ counts:
   google_privateca_certificate_authority: 1
   google_storage_bucket_object: 1
   modules: 1
-  google_storage_bucket_object: 1
-  modules: 1
   resources: 10
 
 values:
