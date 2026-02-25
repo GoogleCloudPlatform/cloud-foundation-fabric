@@ -192,20 +192,28 @@ resource "google_container_node_pool" "nodepool" {
   }
 
   node_config {
-    boot_disk_kms_key = var.node_config.boot_disk_kms_key
-    disk_size_gb      = var.node_config.disk_size_gb
-    disk_type         = var.node_config.disk_type
-    image_type        = var.node_config.image_type
-    labels            = var.k8s_labels
-    resource_labels   = var.labels
-    local_ssd_count   = var.node_config.local_ssd_count
-    machine_type      = var.node_config.machine_type
-    metadata          = local.node_metadata
-    min_cpu_platform  = var.node_config.min_cpu_platform
-    node_group        = var.sole_tenant_nodegroup
-    oauth_scopes      = local.service_account_scopes
-    preemptible       = var.node_config.preemptible
-    service_account   = local.service_account_email
+    boot_disk_kms_key = try(var.node_config.boot_disk.kms_key, var.node_config.boot_disk_kms_key)
+    boot_disk {
+      size_gb   = try(var.node_config.boot_disk.size_gb, var.node_config.disk_size_gb)
+      disk_type = try(var.node_config.boot_disk.type, var.node_config.disk_type)
+      provisioned_iops = try(
+        var.node_config.boot_disk.provisioned_iops, null
+      )
+      provisioned_throughput = try(
+        var.node_config.boot_disk.provisioned_throughput, null
+      )
+    }
+    image_type       = var.node_config.image_type
+    labels           = var.k8s_labels
+    resource_labels  = var.labels
+    local_ssd_count  = var.node_config.local_ssd_count
+    machine_type     = var.node_config.machine_type
+    metadata         = local.node_metadata
+    min_cpu_platform = var.node_config.min_cpu_platform
+    node_group       = var.sole_tenant_nodegroup
+    oauth_scopes     = local.service_account_scopes
+    preemptible      = var.node_config.preemptible
+    service_account  = local.service_account_email
     spot = (
       var.node_config.spot == true && var.node_config.preemptible != true
     )
