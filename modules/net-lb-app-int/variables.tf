@@ -91,7 +91,8 @@ variable "neg_configs" {
       target_urlmask = optional(string)
       target_service = optional(object({
         name = string
-        tag  = optional(string)
+        # TODO: deprecate after one major release
+        tag = optional(string)
       }))
     }))
     gce = optional(object({
