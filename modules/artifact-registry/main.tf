@@ -15,21 +15,34 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p         = "$"
   format_obj    = one([for k, v in var.format : v if v != null])
   format_string = one([for k, v in var.format : k if v != null])
-  mode_string   = one([for k, v in local.format_obj : k if v != null && v != false])
+  kms_key = (
+    var.encryption_key == null
+    ? null
+    : lookup(local.ctx.kms_keys, var.encryption_key, var.encryption_key)
+  )
+  location    = lookup(local.ctx.locations, var.location, var.location)
+  mode_string = one([for k, v in local.format_obj : k if v != null && v != false])
+  project_id  = lookup(local.ctx.project_ids, var.project_id, var.project_id)
 }
 
 resource "google_artifact_registry_repository" "registry" {
   provider               = google-beta
-  project                = var.project_id
-  location               = var.location
+  project                = local.project_id
+  location               = local.location
   description            = var.description
   format                 = upper(local.format_string)
   labels                 = var.labels
   repository_id          = var.name
   mode                   = "${upper(local.mode_string)}_REPOSITORY"
-  kms_key_name           = var.encryption_key
+  kms_key_name           = local.kms_key
   cleanup_policy_dry_run = var.cleanup_policy_dry_run
 
   vulnerability_scanning_config {
@@ -221,6 +234,6 @@ resource "google_artifact_registry_repository" "registry" {
 resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//artifactregistry.googleapis.com/${google_artifact_registry_repository.registry.id}"
-  location  = var.location
-  tag_value = each.value
+  location  = local.location
+  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
 }

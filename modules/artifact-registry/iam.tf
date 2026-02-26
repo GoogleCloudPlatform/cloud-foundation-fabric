@@ -22,26 +22,34 @@ moved {
 resource "google_artifact_registry_repository_iam_binding" "authoritative" {
   provider   = google-beta
   for_each   = local.iam
-  project    = var.project_id
+  project    = local.project_id
   location   = google_artifact_registry_repository.registry.location
   repository = google_artifact_registry_repository.registry.name
-  role       = each.key
-  members    = each.value
+  role       = lookup(local.ctx.custom_roles, each.key, each.key)
+  members = [
+    for member in each.value :
+    lookup(local.ctx.iam_principals, member, member)
+  ]
 }
 
 # renamed as bindings2 to allow the moved block above
 resource "google_artifact_registry_repository_iam_binding" "bindings2" {
   for_each   = var.iam_bindings
-  project    = var.project_id
+  project    = local.project_id
   location   = google_artifact_registry_repository.registry.location
   repository = google_artifact_registry_repository.registry.name
-  role       = each.value.role
-  members    = each.value.members
+  role       = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  members = [
+    for member in each.value.members :
+    lookup(local.ctx.iam_principals, member, member)
+  ]
 
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }
@@ -50,16 +58,18 @@ resource "google_artifact_registry_repository_iam_binding" "bindings2" {
 
 resource "google_artifact_registry_repository_iam_member" "members" {
   for_each   = var.iam_bindings_additive
-  project    = var.project_id
+  project    = local.project_id
   location   = google_artifact_registry_repository.registry.location
   repository = google_artifact_registry_repository.registry.name
-  role       = each.value.role
-  member     = each.value.member
+  role       = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
+  member     = lookup(local.ctx.iam_principals, each.value.member, each.value.member)
 
   dynamic "condition" {
     for_each = each.value.condition == null ? [] : [""]
     content {
-      expression  = each.value.condition.expression
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
       title       = each.value.condition.title
       description = each.value.condition.description
     }

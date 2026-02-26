@@ -1,0 +1,48 @@
+values:
+  google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    format: DOCKER
+    kms_key_name: projects/my-project/locations/europe-west1/keyRings/my-keyring/cryptoKeys/my-key
+    labels: null
+    location: europe-west1
+    maven_config: []
+    mode: STANDARD_REPOSITORY
+    project: my-project
+    remote_repository_config: []
+    repository_id: registry-default
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    virtual_repository_config: []
+    vulnerability_scanning_config:
+    - enablement_config: null
+  google_artifact_registry_repository_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    location: europe-west1
+    members:
+    - user:bar@example.org
+    project: my-project
+    role: roles/viewer
+  google_tags_location_tag_binding.binding["$tag_values:tv1"]:
+    location: europe-west1
+    tag_value: tagValues/1234567890
+    timeouts: null
+
+counts:
+  google_artifact_registry_repository: 1
+  google_artifact_registry_repository_iam_binding: 1
+  google_tags_location_tag_binding: 1
+  modules: 0
+  resources: 3
+
+outputs:
+  id: __missing__
+  name: __missing__
+  repository: __missing__
+  url: europe-west1-docker.pkg.dev/my-project/registry-default
+
