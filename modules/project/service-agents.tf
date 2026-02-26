@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,6 +125,23 @@ locals {
       try(var.project_reuse.attributes.services_enabled, [])
     )) : s if !contains(local._u_unavailable_si, s)
   ]
+
+
+  default_service_accounts = (
+    var.universe == null
+    ? {
+      compute = "${local.project.number}-compute@developer.gserviceaccount.com"
+      gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
+    }
+    : {
+      compute = "${local.project.number}-compute@developer.${local._u_domain}iam.gserviceaccount.com"
+      gae = format(
+        "%s@appspot.%siam.gserviceaccount.com",
+        trimprefix(local.project.project_id, "${var.universe.prefix}:"),
+        local._u_domain
+      )
+    }
+  )
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
@@ -135,6 +152,12 @@ data "google_storage_project_service_account" "gcs_sa" {
 
 data "google_bigquery_default_service_account" "bq_sa" {
   count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
+  project    = local.project.project_id
+  depends_on = [google_project_service.project_services]
+}
+
+data "google_logging_project_settings" "logging_sa" {
+  count      = contains(var.services, "logging.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
 }

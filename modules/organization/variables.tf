@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
+variable "asset_feeds" {
+  description = "Cloud Asset Inventory feeds."
+  type = map(object({
+    billing_project = string
+    content_type    = optional(string)
+    asset_types     = optional(list(string))
+    asset_names     = optional(list(string))
+    feed_output_config = object({
+      pubsub_destination = object({
+        topic = string
+      })
+    })
+    condition = optional(object({
+      expression  = string
+      title       = optional(string)
+      description = optional(string)
+      location    = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.asset_feeds :
+      v.content_type == null || contains(
+        ["RESOURCE", "IAM_POLICY", "ORG_POLICY", "ACCESS_POLICY", "OS_INVENTORY", "RELATIONSHIP"],
+        v.content_type
+      )
+    ])
+    error_message = "Content type must be one of RESOURCE, IAM_POLICY, ORG_POLICY, ACCESS_POLICY, OS_INVENTORY, RELATIONSHIP."
+  }
+}
+
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
 
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
@@ -66,6 +110,7 @@ variable "factories_config" {
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)
     pam_entitlements              = optional(string)
+    scc_mute_configs              = optional(string)
     scc_sha_custom_modules        = optional(string)
     tags                          = optional(string)
   })

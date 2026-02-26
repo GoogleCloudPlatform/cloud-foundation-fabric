@@ -15,14 +15,11 @@
  */
 
 locals {
-  _billing_accounts_path = try(
-    pathexpand(var.factories_config.billing_accounts), null
-  )
   _billing_accounts_raw = {
-    for f in try(fileset(local._billing_accounts_path, "*.yaml"), []) :
+    for f in try(fileset(local.paths.billing_accounts, "*.yaml"), []) :
     trimsuffix(f, ".yaml") => merge(
       { id = null },
-      yamldecode(file("${local._billing_accounts_path}/${f}"))
+      yamldecode(file("${local.paths.billing_accounts}/${f}"))
     )
   }
   billing_accounts = {

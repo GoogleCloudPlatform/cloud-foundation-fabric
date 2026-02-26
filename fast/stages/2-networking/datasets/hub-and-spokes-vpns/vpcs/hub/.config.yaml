@@ -6,7 +6,7 @@
 
 project_id: $project_ids:net-core-0
 name: hub-0
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 nat_config:
   nat-ew8:
     region: $locations:primary
@@ -20,8 +20,7 @@ routers:
         "172.16.0.0/12": "rfc1918-172"
         "192.168.0.0/16": "rfc1918-192"
 routes:
-  gateway:
-    dest_range: "8.8.8.8/32"
-    priority: 100
+  default:
+    dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"

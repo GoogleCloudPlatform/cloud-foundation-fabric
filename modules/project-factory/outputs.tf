@@ -19,7 +19,7 @@ locals {
     for k, v in local.automation_buckets : v.parent_name => k
   }
   _outputs_automation_sas = {
-    for k, v in local.automation_sas : v.parent_name => k...
+    for k, v in local.automation_sas : v.prefix => k...
   }
   outputs_projects = {
     for k, v in local.projects_input : k => {
@@ -46,6 +46,12 @@ locals {
           module.log-buckets["${k}/${sk}"].id
         )
       }
+      pubsub_topics = {
+        for sk, sv in lookup(v, "pubsub_topics", {}) :
+        "${k}/${sk}" => (
+          module.pubsub["${k}/${sk}"].id
+        )
+      }
       service_accounts = {
         for sk, sv in lookup(v, "service_accounts", {}) :
         "${k}/${sk}" => {
@@ -60,6 +66,9 @@ locals {
           module.buckets["${k}/${sk}"].name
         )
       }
+      workload_identity_pools = (
+        module.projects[k].workload_identity_pool_ids
+      )
       workload_identity_providers = (
         module.projects[k].workload_identity_providers
       )
@@ -118,6 +127,13 @@ output "projects" {
   value       = local.outputs_projects
 }
 
+output "pubsub_topics" {
+  description = "PubSub topic ids."
+  value = merge([
+    for k, v in local.outputs_projects : v.pubsub_topics
+  ]...)
+}
+
 output "service_account_emails" {
   description = "Service account emails."
   value = {
@@ -142,6 +158,17 @@ output "service_account_ids" {
 output "service_accounts" {
   description = "Service account emails."
   value       = local.outputs_service_accounts
+}
+
+output "service_agents" {
+  description = "Service agent emails."
+  value = {
+    for k, v in local.projects_service_agents
+    : trimprefix(k, "service_agents/") => {
+      email     = trimprefix(v, "serviceAccount:")
+      iam_email = v
+    }
+  }
 }
 
 output "storage_buckets" {

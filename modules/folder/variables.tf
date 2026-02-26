@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
+variable "asset_feeds" {
+  description = "Cloud Asset Inventory feeds."
+  type = map(object({
+    billing_project = string
+    content_type    = optional(string)
+    asset_types     = optional(list(string))
+    asset_names     = optional(list(string))
+    feed_output_config = object({
+      pubsub_destination = object({
+        topic = string
+      })
+    })
+    condition = optional(object({
+      expression  = string
+      title       = optional(string)
+      description = optional(string)
+      location    = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.asset_feeds :
+      v.content_type == null || contains(
+        ["RESOURCE", "IAM_POLICY", "ORG_POLICY", "ACCESS_POLICY", "OS_INVENTORY", "RELATIONSHIP"],
+        v.content_type
+      )
+    ])
+    error_message = "Content type must be one of RESOURCE, IAM_POLICY, ORG_POLICY, ACCESS_POLICY, OS_INVENTORY, RELATIONSHIP."
+  }
+}
+
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
 
 variable "assured_workload_config" {
   description = "Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false."
@@ -37,20 +81,27 @@ variable "assured_workload_config" {
     condition = try(contains([
       "ASSURED_WORKLOADS_FOR_PARTNERS",
       "AU_REGIONS_AND_US_SUPPORT",
-      "CA_PROTECTED_B, IL5",
+      "CA_PROTECTED_B",
       "CA_REGIONS_AND_SUPPORT",
       "CJIS",
       "COMPLIANCE_REGIME_UNSPECIFIED",
       "EU_REGIONS_AND_SUPPORT",
       "FEDRAMP_HIGH",
       "FEDRAMP_MODERATE",
-      "HIPAA, HITRUST",
+      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
+      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
+      "HIPAA",
+      "HITRUST",
       "IL2",
       "IL4",
+      "IL5",
+      "IRS_1075",
       "ISR_REGIONS_AND_SUPPORT",
       "ISR_REGIONS",
       "ITAR",
       "JP_REGIONS_AND_SUPPORT",
+      "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
+      "REGIONAL_CONTROLS",
       "US_REGIONAL_ACCESS"
     ], var.assured_workload_config.compliance_regime), true)
     error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
@@ -59,9 +110,11 @@ variable "assured_workload_config" {
     condition = try(contains([
       "LOCAL_CONTROLS_BY_S3NS",
       "PARTNER_UNSPECIFIED",
+      "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
+      "SOVEREIGN_CONTROLS_BY_CNTXT",
       "SOVEREIGN_CONTROLS_BY_PSN",
       "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
-      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
+      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS",
     ], var.assured_workload_config.partner), true)
     error_message = "Field assured_workload_config.partner must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
   }
@@ -98,14 +151,18 @@ variable "contacts" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    condition_vars  = optional(map(map(string)), {})
-    custom_roles    = optional(map(string), {})
-    email_addresses = optional(map(string), {})
-    folder_ids      = optional(map(string), {})
-    iam_principals  = optional(map(string), {})
-    project_ids     = optional(map(string), {})
-    project_numbers = optional(map(string), {})
-    tag_values      = optional(map(string), {})
+    bigquery_datasets = optional(map(string), {})
+    condition_vars    = optional(map(map(string)), {})
+    custom_roles      = optional(map(string), {})
+    email_addresses   = optional(map(string), {})
+    folder_ids        = optional(map(string), {})
+    iam_principals    = optional(map(string), {})
+    log_buckets       = optional(map(string), {})
+    project_ids       = optional(map(string), {})
+    project_numbers   = optional(map(string), {})
+    pubsub_topics     = optional(map(string), {})
+    storage_buckets   = optional(map(string), {})
+    tag_values        = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -122,6 +179,7 @@ variable "factories_config" {
   type = object({
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
   })
   nullable = false

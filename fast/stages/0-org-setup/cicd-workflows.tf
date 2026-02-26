@@ -24,8 +24,15 @@ locals {
   }
   cicd_ctx_wif = {
     for k, v in merge(
-      local.ctx.workload_identity_providers, local.workload_identity_providers
+      local.ctx.workload_identity_providers,
+      local.workload_identity_providers
     ) : "$workload_identity_providers:${k}" => v
+  }
+  cicd_ctx_wif_pools = {
+    for k, v in merge(
+      local.ctx.workload_identity_pools,
+      local.workload_identity_pools
+    ) : "$workload_identity_pools:${k}" => v
   }
   # normalize workflow configurations, correctness is checked via preconditions
   cicd_workflows = {
@@ -57,6 +64,11 @@ locals {
       }
       tfvars_files = try(v.tfvars_files, [])
       workload_identity = {
+        pool = try(
+          local.cicd_ctx_wif_pools[v.workload_identity.pool],
+          v.workload_identity.pool,
+          null
+        )
         provider = try(
           local.cicd_ctx_wif[v.workload_identity.provider],
           v.workload_identity.provider,
@@ -69,6 +81,7 @@ locals {
             plan  = try(v.workload_identity.iam_principalsets.plan)
           }
         )
+        audiences = try(v.workload_identity.audiences, [])
       }
     }
   }
@@ -90,6 +103,7 @@ module "cicd-sa-apply" {
   name     = each.value.service_accounts.apply
   service_account_reuse = {
     use_data_source = false
+    universe        = try(local.project_defaults.overrides.universe, null)
   }
   iam = {
     "roles/iam.workloadIdentityUser" = (
@@ -97,14 +111,14 @@ module "cicd-sa-apply" {
       ? [
         format(
           each.value.workload_identity.iam_principalsets.plan,
-          each.value.workload_identity.provider,
+          each.value.workload_identity.pool,
           each.value.repository.name
         )
       ]
       : [
         for v in each.value.repository.apply_branches : format(
           each.value.workload_identity.iam_principalsets.apply,
-          each.value.workload_identity.provider,
+          each.value.workload_identity.pool,
           each.value.repository.name,
           v
         )
@@ -119,12 +133,13 @@ module "cicd-sa-plan" {
   name     = each.value.service_accounts.plan
   service_account_reuse = {
     use_data_source = false
+    universe        = try(local.project_defaults.overrides.universe, null)
   }
   iam = {
     "roles/iam.workloadIdentityUser" = [
       format(
         each.value.workload_identity.iam_principalsets.plan,
-        each.value.workload_identity.provider,
+        each.value.workload_identity.pool,
         each.value.repository.name
       )
     ]
@@ -139,8 +154,9 @@ resource "local_file" "workflows" {
 }
 
 resource "google_storage_bucket_object" "workflows" {
-  for_each = local.output_files.storage_bucket == null ? {} : local.cicd_workflows_contents
-  bucket   = local.of_outputs_bucket
-  name     = "workflows/${each.key}.yaml"
-  content  = each.value
+  for_each       = local.output_files.storage_bucket == null ? {} : local.cicd_workflows_contents
+  bucket         = local.of_outputs_bucket
+  name           = "workflows/${each.key}.yaml"
+  content        = each.value
+  source_md5hash = md5(each.value)
 }

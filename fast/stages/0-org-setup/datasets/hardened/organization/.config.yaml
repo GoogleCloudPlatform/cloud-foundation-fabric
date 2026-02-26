@@ -42,6 +42,7 @@ iam_by_principals:
   $iam_principals:gcp-organization-admins:
     - roles/cloudasset.owner
     - roles/cloudsupport.admin
+    - roles/cloudsupport.techSupportEditor
     - roles/compute.osAdminLogin
     - roles/compute.osLoginExternalUser
     - roles/compute.xpnAdmin
@@ -63,6 +64,7 @@ iam_by_principals:
     - roles/resourcemanager.folderAdmin
     - roles/resourcemanager.organizationAdmin
     - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.projectDeleter
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
     - roles/resourcemanager.tagUser
@@ -79,13 +81,30 @@ iam_by_principals:
     - roles/serviceusage.serviceUsageViewer
     - $custom_roles:organization_admin_viewer
     - $custom_roles:tag_viewer
+    - roles/securitycentermanagement.customModulesViewer
   $iam_principals:service_accounts/iac-0/iac-networking-rw:
+    # uncomment for cooperative VPC-SC configurations
+    # - roles/accesscontextmanager.policyEditor
     - roles/compute.orgFirewallPolicyAdmin
     - roles/compute.xpnAdmin
   $iam_principals:service_accounts/iac-0/iac-networking-ro:
+    # uncomment for cooperative VPC-SC configurations
+    # - roles/accesscontextmanager.policyReader
     - roles/compute.orgFirewallPolicyUser
     - roles/compute.viewer
+  # uncomment for cooperative VPC-SC configurations
+  # $iam_principals:service_accounts/iac-0/iac-pf-rw:
+  #   - roles/accesscontextmanager.policyEditor
+  # uncomment if you want to use Assured Workloads
+  # $iam_principals:service_accounts/iac-0/iac-pf-rw:
+  #   - roles/assuredworkloads.editor
   $iam_principals:service_accounts/iac-0/iac-security-rw:
+    # uncomment for cooperative VPC-SC configurations
+    # - roles/accesscontextmanager.policyEditor
+    - roles/cloudasset.viewer
+  $iam_principals:service_accounts/iac-0/iac-security-ro:
+    # uncomment for cooperative VPC-SC configurations
+    # - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
   $iam_principals:service_accounts/iac-0/iac-vpcsc-rw:
     - roles/accesscontextmanager.policyAdmin
@@ -93,6 +112,14 @@ iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-vpcsc-ro:
     - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
+  # Uncomment if you want to use PAM.
+  # $service_agents:pam:
+  #   - roles/privilegedaccessmanager.serviceAgent
+data_access_logs:
+  allServices:
+    ADMIN_READ: {}
+    # DATA_READ: {}
+    # DATA_WRITE: {}
 logging:
   # disable_default_log_sink: false
   storage_location: $locations:primary

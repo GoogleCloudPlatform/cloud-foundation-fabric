@@ -442,7 +442,7 @@ For example, resource management stages only export three map variables: `folder
 
 ```hcl
 variable "folder_ids" {
-  # tfdoc:variable:source 01-resman
+  # tfdoc:variable:source 0-org-setup
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
     networking      = string
@@ -846,7 +846,7 @@ Building an inventory file by hand is difficult. To simplify this task, the defa
 Suppose you want to generate the inventory for the last DNS example above (the one creating the recordsets from a YAML file). Assuming that example is the first code block under the "Private Zone" section in the README for the `dns` module, you can run the following command to build the inventory:
 
 ```bash
-pytest -s 'tests/examples/test_plan.py::test_example[modules/dns:Private Zone:1]'
+pytest -s 'tests/examples/test_plan.py::test_example[terraform:modules/dns:Private Zone:1]'
 ```
 
 which will generate a output similar to this:

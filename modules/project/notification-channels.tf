@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,16 @@ resource "google_monitoring_notification_channel" "channels" {
   description  = each.value.description
   display_name = each.value.display_name
   enabled      = each.value.enabled
-  labels       = each.value.labels
-  user_labels  = each.value.user_labels
+  labels = each.value.labels == null ? null : {
+    for k, v in each.value.labels :
+    # allow interpolation of email addresses and pubsub topics
+    k => try(
+      local.ctx.email_addresses[v],
+      local.ctx.pubsub_topics[v],
+      v
+    )
+  }
+  user_labels = each.value.user_labels
   dynamic "sensitive_labels" {
     for_each = each.value.sensitive_labels[*]
     content {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,6 +103,24 @@ variable "description" {
   description = "Optional description."
   type        = string
   default     = "Terraform managed."
+}
+
+variable "direct_vpc_egress" {
+  description = "Direct VPC egress configuration."
+  type = object({
+    mode       = string
+    network    = string
+    subnetwork = string
+    tags       = optional(list(string))
+  })
+  default = null
+  validation {
+    condition = var.direct_vpc_egress == null || contains(
+      ["VPC_EGRESS_ALL_TRAFFIC", "VPC_EGRESS_PRIVATE_RANGES_ONLY"],
+      try(var.direct_vpc_egress.mode, "")
+    )
+    error_message = "Direct VPC egress mode must be one of VPC_EGRESS_ALL_TRAFFIC, VPC_EGRESS_PRIVATE_RANGES_ONLY."
+  }
 }
 
 variable "docker_repository_id" {

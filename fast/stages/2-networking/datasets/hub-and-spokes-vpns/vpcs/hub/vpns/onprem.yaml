@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../../../../schemas/vpn.schema.json
+
 name: to-onprem
 region: $locations:primary
 peer_gateways:
@@ -28,6 +30,19 @@ tunnels:
     bgp_peer:
       address: 169.254.128.1
       asn: 64513
+      # Uncomment to enable custom route advertisements for this BGP peer. (see https://docs.cloud.google.com/network-connectivity/docs/router/concepts/advertised-routes#am-custom)
+      # custom_advertise:
+      #   all_subnets: true
+      #   ip_ranges:
+      #     "10.0.0.0/8": "rfc1918-10"
+      #     "172.16.0.0/12": "rfc1918-172"
+      #     "192.168.0.0/16": "rfc1918-192"
+      #     # Uncomment to advertise the Cloud DNS query source address range. (see https://docs.cloud.google.com/dns/docs/server-policies-overview#altns-targets:~:text=0/19-,Type%202%20name%20server,-An%20IP%20address)
+      #     "35.199.192.0/19": "cloud-dns-resolver"
+      #     # Uncomment to advertise the Private Google Access routes. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+      #     "199.36.153.8/30": "private-googleapis-com"
+      #     # Uncomment to advertise the Private Google Access routes that support VPC Service Controls. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+      #     "199.36.153.4/30": "restricted-googleapis-com"
     bgp_session_range: "169.254.128.2/30"
     peer_external_gateway_interface: 0
     shared_secret: "mySecret"
@@ -36,6 +51,19 @@ tunnels:
     bgp_peer:
       address: 169.254.128.5
       asn: 64513
+      # Uncomment to enable custom route advertisements for this BGP peer. (see https://docs.cloud.google.com/network-connectivity/docs/router/concepts/advertised-routes#am-custom)
+      # custom_advertise:
+      #   all_subnets: true
+      #   ip_ranges:
+      #     "10.0.0.0/8": "rfc1918-10"
+      #     "172.16.0.0/12": "rfc1918-172"
+      #     "192.168.0.0/16": "rfc1918-192"
+      #     # Uncomment to advertise the Cloud DNS query source address range. (see https://docs.cloud.google.com/dns/docs/server-policies-overview#altns-targets:~:text=0/19-,Type%202%20name%20server,-An%20IP%20address)
+      #     "35.199.192.0/19": "cloud-dns-resolver"
+      #     # Uncomment to advertise the Private Google Access routes. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+      #     "199.36.153.8/30": "private-googleapis-com"
+      #     # Uncomment to advertise the Private Google Access routes that support VPC Service Controls. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+      #     "199.36.153.4/30": "restricted-googleapis-com"
     bgp_session_range: "169.254.128.6/30"
     peer_external_gateway_interface: 0
     shared_secret: "mySecret"

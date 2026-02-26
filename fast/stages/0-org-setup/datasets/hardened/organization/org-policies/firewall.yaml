@@ -26,6 +26,78 @@ custom.firewallEnforceRuleLogging:
   rules:
     - enforce: true
 
+custom.firewallRequireDescription:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictCacheSearchDatabasesPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictCacheSearchDatabasesRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictDirectoryServicesPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictDirectoryServicesRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictExplicitAllPortsPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictExplicitAllPortsRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictInsecureProtocolsPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictInsecureProtocolsRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictMailProtocolsPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictMailProtocolsRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictManagementPortsPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictManagementPortsRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictNetworkServicesPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictNetworkServicesRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictNoSQLDatabasesPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictNoSQLDatabasesRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictPublicAccessPolicyRule:
+  rules:
+    - enforce: true
+
 custom.firewallRestrictPublicAccessRule:
   rules:
     - enforce: true
@@ -35,6 +107,14 @@ custom.firewallRestrictRdpPolicyRule:
     - enforce: true
 
 custom.firewallRestrictRdpRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictSQLDatabasesPolicyRule:
+  rules:
+    - enforce: true
+
+custom.firewallRestrictSQLDatabasesRule:
   rules:
     - enforce: true
 

@@ -14,6 +14,10 @@
     - **customer_id**: *string*
     - **domain**: *string*
     - ⁺**id**: *integer*
+- **observability**: *object*
+  <br>*additional properties: false*
+  - ⁺**project_id**: *string*
+  - ⁺**number**: *string*
 - **projects**: *object*
   <br>*additional properties: false*
   - **defaults**: *object*
@@ -150,6 +154,10 @@
   - **vpc_host_projects**: *object*
     <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*
+    <br>*additional properties: string*
+  - **workload_identity_pools**: *object*
+    <br>*additional properties: string*
+  - **workload_identity_providers**: *object*
     <br>*additional properties: string*
 - **output_files**: *object*
   <br>*additional properties: false*

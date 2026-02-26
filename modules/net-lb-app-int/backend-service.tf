@@ -164,9 +164,9 @@ resource "google_compute_region_backend_service" "default" {
     for_each = each.value.iap_config == null ? [] : [each.value.iap_config]
     content {
       enabled                     = true
-      oauth2_client_id            = iap.value.oauth2_client_id
-      oauth2_client_secret        = iap.value.oauth2_client_secret
-      oauth2_client_secret_sha256 = iap.value.oauth2_client_secret_sha256
+      oauth2_client_id            = try(iap.value.oauth2_client_id, null)
+      oauth2_client_secret        = try(iap.value.oauth2_client_secret, null)
+      oauth2_client_secret_sha256 = try(iap.value.oauth2_client_secret_sha256, null)
     }
   }
 
@@ -218,6 +218,22 @@ resource "google_compute_region_backend_service" "default" {
     for_each = each.value.enable_subsetting == true ? [""] : []
     content {
       policy = "CONSISTENT_HASH_SUBSETTING"
+    }
+  }
+
+  dynamic "tls_settings" {
+    for_each = each.value.tls_settings == null ? [] : [each.value.tls_settings]
+    content {
+      # authentication_config is not supported by the beta provider in this resource?
+      # Wait, lint will tell me. Search result said yes.
+      authentication_config = tls_settings.value.authentication_config
+      sni                   = tls_settings.value.sni
+      dynamic "subject_alt_names" {
+        for_each = tls_settings.value.subject_alt_names == null ? [] : tls_settings.value.subject_alt_names
+        content {
+          dns_name = subject_alt_names.value
+        }
+      }
     }
   }
 }

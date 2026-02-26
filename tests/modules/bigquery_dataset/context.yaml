@@ -15,7 +15,8 @@
 values:
   google_bigquery_dataset.default:
     dataset_id: dataset_0
-    default_encryption_configuration: []
+    default_encryption_configuration:
+    - kms_key_name: projects/366118655033/locations/europe-west8/keyRings/mykeyring/cryptoKeys/mykey
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
@@ -33,14 +34,14 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  google_bigquery_dataset_iam_binding.bindings["$custom_roles:myrole_one"]:
+  google_bigquery_dataset_iam_binding.authoritative["$custom_roles:myrole_one"]:
     condition: []
     dataset_id: dataset_0
     members:
     - user:test-user@example.com
     project: foo-test-0
     role: organizations/366118655033/roles/myRoleOne
-  google_bigquery_dataset_iam_binding.bindings["roles/viewer"]:
+  google_bigquery_dataset_iam_binding.authoritative["roles/viewer"]:
     condition: []
     dataset_id: dataset_0
     members:

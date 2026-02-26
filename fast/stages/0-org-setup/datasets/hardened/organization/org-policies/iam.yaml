@@ -18,6 +18,27 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+custom.iamDisableAdminServiceAccount:
+  rules:
+    - enforce: true
+
+custom.iamDisableBasicRoles:
+  rules:
+    - enforce: true
+
+custom.iamDisableProjectServiceAccountImpersonationRoles:
+  rules:
+    - enforce: false
+      condition:
+        title: Allow service account impersonation for tagged users
+        expression: |
+          resource.matchTag('${organization.id}/org-policies', 'allowed-sa-impersonation')
+    - enforce: true
+
+custom.iamDisableRedisAdminRoles:
+  rules:
+    - enforce: false
+
 iam.allowedPolicyMemberDomains:
   rules:
     - allow:
@@ -34,6 +55,20 @@ iam.allowedPolicyMemberDomains:
         expression: |
           resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
 
+# For Workforce identity use-cases:
+# Switch from the above iam.allowedPolicyMemberDomains to the below iam.managed.allowedPolicyMembers configuration
+# To allow principalSet://iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID IAM assignments
+
+#iam.managed.allowedPolicyMembers:
+#  rules:
+#    - enforce: false
+#      condition:
+#        title: Allow any member domain
+#        expression: |
+#          resource.matchTag('${organization.id}/org-policies', 'allowed-policy-member-domains-all')
+#    - parameters: '{"allowedMemberSubjects": ["is:${organization.customer_id}"], "allowedPrincipalSets": ["//cloudresourcemanager.googleapis.com/organizations/${organization.id}"]}'
+#      enforce: true
+
 iam.disableAuditLoggingExemption:
   rules:
     - enforce: true
@@ -47,6 +82,10 @@ iam.disableServiceAccountKeyUpload:
     - enforce: true
 
 iam.managed.disableServiceAccountApiKeyCreation:
+  rules:
+    - enforce: true
+
+iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts:
   rules:
     - enforce: true
 

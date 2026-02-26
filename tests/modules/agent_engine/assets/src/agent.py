@@ -42,4 +42,4 @@ root_agent = LlmAgent(
     tools=[get_exchange_rate],
 )
 
-local_agent = AdkApp(agent=root_agent)
+agent = AdkApp(agent=root_agent)

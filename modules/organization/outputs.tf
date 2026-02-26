@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "asset_search_results" {
+  description = "Cloud Asset Inventory search results."
+  value = {
+    for k, v in data.google_cloud_asset_search_all_resources.default : k => v.results
+  }
+}
 
 output "custom_constraint_ids" {
   description = "Map of CUSTOM_CONSTRAINTS => ID in the organization."
@@ -45,6 +52,18 @@ output "id" {
     google_tags_tag_value.default,
     google_tags_tag_value_iam_binding.default,
   ]
+}
+
+output "logging_identities" {
+  description = "Principals used for logging sinks."
+  value = {
+    kms = try(
+      google_logging_organization_settings.default[0].kms_service_account_id, null
+    )
+    logging = try(
+      google_logging_organization_settings.default[0].logging_service_account_id, null
+    )
+  }
 }
 
 output "network_tag_keys" {
@@ -91,6 +110,11 @@ output "organization_policies_ids" {
 output "scc_custom_sha_modules_ids" {
   description = "Map of SCC CUSTOM SHA MODULES => ID in the organization."
   value       = { for k, v in google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module : k => v.id }
+}
+
+output "scc_mute_configs" {
+  description = "SCC mute configurations."
+  value       = google_scc_v2_organization_mute_config.scc_mute_configs
 }
 
 output "service_agents" {

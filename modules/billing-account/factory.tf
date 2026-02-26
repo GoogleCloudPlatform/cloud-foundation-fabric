@@ -44,9 +44,13 @@ locals {
             v.filter.credit_types_treatment
           )
         )
-        label              = try(v.filter.label, null)
-        projects           = try(v.filter.projects, null)
-        resource_ancestors = try(v.filter.resource_ancestors, null)
+        label = try(v.filter.label, null)
+        period = try(v.filter.period, null) == null ? null : merge(
+          { calendar = null, end_date = null, start_date = null },
+          v.filter.period
+        )
+        projects           = try(v.filter.projects, [])
+        resource_ancestors = try(v.filter.resource_ancestors, [])
         services           = try(v.filter.services, null)
         subaccounts        = try(v.filter.subaccounts, null)
       }
@@ -82,7 +86,7 @@ check "factory_budgets" {
   assert {
     condition = alltrue([
       for k, v in local.factory_budgets :
-      v.threshold_rules == null || try(v.threshold_rules.percent, null) != null
+      v.threshold_rules == null || try(v.threshold_rules[*].percent, null) != null
     ])
     error_message = "Threshold rules need percent set."
   }
@@ -97,5 +101,22 @@ check "factory_budgets" {
       ]
     ]))
     error_message = "Notification rules need either a pubsub topic or monitoring channels defined."
+  }
+  assert {
+    condition = alltrue(flatten([
+      for k, v in local.factory_budgets : [
+        for c in try(v.filter.credit_types_treatment.include_specified, []) : contains([
+          "COMMITTED_USAGE_DISCOUNT",
+          "COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE",
+          "DISCOUNT",
+          "FREE_TIER",
+          "PROMOTION",
+          "RESELLER_MARGIN",
+          "SUBSCRIPTION_BENEFIT",
+          "SUSTAINED_USAGE_DISCOUNT"
+        ], c) if c != null
+      ]
+    ]))
+    error_message = "Budget filter credit types must be one of COMMITTED_USAGE_DISCOUNT, COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE, DISCOUNT, FREE_TIER, PROMOTION, RESELLER_MARGIN, SUBSCRIPTION_BENEFIT, SUSTAINED_USAGE_DISCOUNT."
   }
 }

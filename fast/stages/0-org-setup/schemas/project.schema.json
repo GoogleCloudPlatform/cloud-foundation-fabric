@@ -4,6 +4,89 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "asset_feeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "feed_output_config"
+          ],
+          "properties": {
+            "billing_project": {
+              "type": "string"
+            },
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "RESOURCE",
+                "IAM_POLICY",
+                "ORG_POLICY",
+                "ACCESS_POLICY",
+                "OS_INVENTORY",
+                "RELATIONSHIP"
+              ]
+            },
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "asset_names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "feed_output_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pubsub_destination"
+              ],
+              "properties": {
+                "pubsub_destination": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "topic"
+                  ],
+                  "properties": {
+                    "topic": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "automation": {
       "type": "object",
       "additionalProperties": false,
@@ -29,6 +112,9 @@
               "additionalProperties": false,
               "properties": {
                 "description": {
+                  "type": "string"
+                },
+                "prefix": {
                   "type": "string"
                 },
                 "iam": {
@@ -158,6 +244,42 @@
             },
             "location": {
               "type": "string"
+            },
+            "encryption_key": {
+              "type": "string"
+            },
+            "iam": {
+              "$ref": "#/$defs/iam"
+            },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            },
+            "iam_by_principals": {
+              "$ref": "#/$defs/iam_by_principals"
+            },
+            "options": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "default_table_expiration_ms": {
+                  "type": "number"
+                },
+                "default_partition_expiration_ms": {
+                  "type": "number"
+                },
+                "delete_contents_on_destroy": {
+                  "type": "boolean"
+                },
+                "max_time_travel_hours": {
+                  "type": "number"
+                }
+              }
+            },
+            "tag_bindings": {
+              "$ref": "#/$defs/tag_bindings"
             }
           }
         }
@@ -179,9 +301,6 @@
           "type": "string"
         },
         "observability": {
-          "type": "string"
-        },
-        "org_policies": {
           "type": "string"
         },
         "org_policies": {
@@ -209,6 +328,9 @@
     },
     "iam_by_principals": {
       "$ref": "#/$defs/iam_by_principals"
+    },
+    "iam_by_principals_conditional": {
+      "$ref": "#/$defs/iam_by_principals_conditional"
     },
     "iam_by_principals_additive": {
       "$ref": "#/$defs/iam_by_principals"
@@ -261,6 +383,9 @@
                 },
                 "iam_bindings_additive": {
                   "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "tag_bindings": {
+                  "$ref": "#/$defs/tag_bindings"
                 },
                 "keys": {
                   "type": "object",
@@ -339,7 +464,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^[a-z0-9-]+$": {
+        "^[a-zA-Z0-9_-]+$": {
           "$ref": "#/$defs/log_bucket"
         }
       }
@@ -351,6 +476,9 @@
       }
     },
     "name": {
+      "type": "string"
+    },
+    "descriptive_name": {
       "type": "string"
     },
     "org_policies": {
@@ -522,6 +650,15 @@
     "project_template": {
       "type": "string"
     },
+    "pubsub_topics": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/$defs/pubsub_topic"
+        }
+      }
+    },
     "service_accounts": {
       "type": "object",
       "additionalProperties": false,
@@ -536,6 +673,12 @@
             "iam": {
               "$ref": "#/$defs/iam"
             },
+            "iam_bindings": {
+              "$ref": "#/$defs/iam_bindings"
+            },
+            "iam_bindings_additive": {
+              "$ref": "#/$defs/iam_bindings_additive"
+            },
             "iam_self_roles": {
               "type": "array",
               "items": {
@@ -547,6 +690,9 @@
             },
             "iam_sa_roles": {
               "$ref": "#/$defs/iam_sa_roles"
+            },
+            "tag_bindings": {
+              "$ref": "#/$defs/tag_bindings"
             }
           }
         }
@@ -652,15 +798,6 @@
         }
       }
     },
-    "tag_bindings": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^[a-z0-9_-]+$": {
-          "type": "string"
-        }
-      }
-    },
     "tags": {
       "type": "object",
       "additionalProperties": {
@@ -706,6 +843,15 @@
               }
             }
           }
+        }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
         }
       }
     },
@@ -919,6 +1065,119 @@
             "type": "string"
           }
         },
+        "lifecycle_rules": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "action",
+                "condition"
+              ],
+              "properties": {
+                "action": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "type"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Delete",
+                        "SetStorageClass",
+                        "AbortIncompleteMultipartUpload"
+                      ]
+                    },
+                    "storage_class": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "condition": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "age": {
+                      "type": "number"
+                    },
+                    "created_before": {
+                      "type": "string"
+                    },
+                    "custom_time_before": {
+                      "type": "string"
+                    },
+                    "days_since_custom_time": {
+                      "type": "number"
+                    },
+                    "days_since_noncurrent_time": {
+                      "type": "number"
+                    },
+                    "matches_prefix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "matches_storage_class": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "STANDARD",
+                          "MULTI_REGIONAL",
+                          "REGIONAL",
+                          "NEARLINE",
+                          "COLDLINE",
+                          "ARCHIVE",
+                          "DURABLE_REDUCED_AVAILABILITY"
+                        ]
+                      }
+                    },
+                    "matches_suffix": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "noncurrent_time_before": {
+                      "type": "string"
+                    },
+                    "num_newer_versions": {
+                      "type": "number"
+                    },
+                    "with_state": {
+                      "type": "string",
+                      "enum": [
+                        "LIVE",
+                        "ARCHIVED",
+                        "ANY"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "logging_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "log_bucket": {
+              "type": "string"
+            },
+            "log_object_prefix": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "log_bucket"
+          ]
+        },
         "location": {
           "type": "string"
         },
@@ -963,15 +1222,21 @@
           "additionalProperties": false,
           "properties": {
             "retention_period": {
-              "type": "number"
+              "type": "string"
             },
             "is_locked": {
               "type": "boolean"
             }
           }
         },
+        "soft_delete_retention": {
+          "type": "number"
+        },
         "enable_object_retention": {
           "type": "boolean"
+        },
+        "tag_bindings": {
+          "$ref": "#/$defs/tag_bindings"
         }
       }
     },
@@ -1087,6 +1352,48 @@
           "items": {
             "type": "string",
             "pattern": "^(?:roles/|\\$custom_roles:)"
+          }
+        }
+      }
+    },
+    "iam_by_principals_conditional": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "condition",
+            "roles"
+          ],
+          "properties": {
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?:roles/|\\$custom_roles:)"
+              }
+            }
           }
         }
       }
@@ -1308,6 +1615,247 @@
             "privileged_access"
           ],
           "additionalProperties": false
+        }
+      }
+    },
+    "pubsub_topic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iam": {
+          "$ref": "#/$defs/iam"
+        },
+        "iam_bindings": {
+          "$ref": "#/$defs/iam_bindings"
+        },
+        "iam_bindings_additive": {
+          "$ref": "#/$defs/iam_bindings_additive"
+        },
+        "iam_by_principals": {
+          "$ref": "#/$defs/iam_by_principals"
+        },
+        "kms_key": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "message_retention_duration": {
+          "type": "string"
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "definition",
+            "schema_type"
+          ],
+          "properties": {
+            "definition": {
+              "type": "string"
+            },
+            "msg_encoding": {
+              "type": "string"
+            },
+            "schema_type": {
+              "type": "string"
+            }
+          }
+        },
+        "subscriptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ack_deadline_seconds": {
+                  "type": "number"
+                },
+                "enable_exactly_once_delivery": {
+                  "type": "boolean"
+                },
+                "enable_message_ordering": {
+                  "type": "boolean"
+                },
+                "expiration_policy_ttl": {
+                  "type": "string"
+                },
+                "filter": {
+                  "type": "string"
+                },
+                "iam": {
+                  "$ref": "#/$defs/iam"
+                },
+                "iam_bindings": {
+                  "$ref": "#/$defs/iam_bindings"
+                },
+                "iam_bindings_additive": {
+                  "$ref": "#/$defs/iam_bindings_additive"
+                },
+                "labels": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "message_retention_duration": {
+                  "type": "string"
+                },
+                "retain_acked_messages": {
+                  "type": "boolean"
+                },
+                "bigquery": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "table"
+                  ],
+                  "properties": {
+                    "table": {
+                      "type": "string"
+                    },
+                    "drop_unknown_fields": {
+                      "type": "boolean"
+                    },
+                    "service_account_email": {
+                      "type": "string"
+                    },
+                    "use_table_schema": {
+                      "type": "boolean"
+                    },
+                    "use_topic_schema": {
+                      "type": "boolean"
+                    },
+                    "write_metadata": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "cloud_storage": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "bucket"
+                  ],
+                  "properties": {
+                    "bucket": {
+                      "type": "string"
+                    },
+                    "filename_prefix": {
+                      "type": "string"
+                    },
+                    "filename_suffix": {
+                      "type": "string"
+                    },
+                    "max_duration": {
+                      "type": "string"
+                    },
+                    "max_bytes": {
+                      "type": "number"
+                    },
+                    "avro_config": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "write_metadata": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                },
+                "dead_letter_policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "topic"
+                  ],
+                  "properties": {
+                    "topic": {
+                      "type": "string"
+                    },
+                    "max_delivery_attempts": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "push": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "endpoint"
+                  ],
+                  "properties": {
+                    "endpoint": {
+                      "type": "string"
+                    },
+                    "attributes": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "no_wrapper": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "write_metadata": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "oidc_token": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "service_account_email"
+                      ],
+                      "properties": {
+                        "audience": {
+                          "type": "string"
+                        },
+                        "service_account_email": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "retry_policy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "minimum_backoff": {
+                      "type": "number"
+                    },
+                    "maximum_backoff": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
         }
       }
     }

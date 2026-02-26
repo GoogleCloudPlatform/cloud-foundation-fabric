@@ -14,6 +14,8 @@ The module also makes fewer assumptions about implicit defaults, only using one 
   - [Hierarchical Policy](#hierarchical-policy)
   - [Global Network policy](#global-network-policy)
   - [Regional Network policy](#regional-network-policy)
+  - [Packet Mirroring Rules](#packet-mirroring-rules)
+  - [Packet Mirroring Rules](#packet-mirroring-rules)
   - [Factory](#factory)
     - [Firewall Rule Factory Schema](#firewall-rule-factory-schema)
   - [Dynamic Rule Matching](#dynamic-rule-matching)
@@ -64,8 +66,8 @@ module "firewall-policy" {
       priority       = 1002
       enable_logging = true
       match = {
-        source_ranges = ["10.0.0.0/8"]
-        # source_tags    = ["tagValues/123456"]
+        source_ranges  = ["10.0.0.0/8"]
+        source_tags    = ["tagValues/123456"]
         layer4_configs = [{ protocol = "tcp", ports = ["22"] }]
       }
     }
@@ -168,6 +170,61 @@ module "firewall-policy" {
 # tftest modules=2 resources=8 inventory=regional-net.yaml
 ```
 
+### Packet Mirroring Rules
+
+### Packet Mirroring Rules
+
+Packet mirroring rules can be defined using the `ingress_mirroring_rules` and `egress_mirroring_rules` variables. This is supported only for Global Network Policies.
+
+```hcl
+resource "google_network_security_security_profile" "default" {
+  provider = google-beta
+  name     = "sec-profile"
+  parent   = var.organization_id
+  type     = "CUSTOM_MIRRORING"
+
+  custom_mirroring_profile {
+    mirroring_endpoint_group = "xxx"
+  }
+}
+
+resource "google_network_security_security_profile_group" "default" {
+  provider                 = google-beta
+  name                     = "sec-profile-group"
+  parent                   = var.organization_id
+  custom_mirroring_profile = google_network_security_security_profile.default.id
+}
+
+
+module "firewall-policy" {
+  source    = "./fabric/modules/net-firewall-policy"
+  name      = "test-mirroring"
+  parent_id = "my-project"
+  region    = "global"
+  attachments = {
+    my-vpc = var.vpc.self_link
+  }
+  security_profile_group_ids = {
+    my-spg = "//networksecurity.googleapis.com/${google_network_security_security_profile_group.default.id}"
+  }
+  ingress_mirroring_rules = {
+    rule-1 = {
+      priority    = 1000
+      action      = "mirror"
+      description = "Mirror all traffic"
+      match = {
+        source_ranges = ["0.0.0.0/0"]
+        layer4_configs = [
+          { protocol = "tcp", ports = ["80", "443"] }
+        ]
+      }
+      security_profile_group = "//networksecurity.googleapis.com/${google_network_security_security_profile_group.default.id}"
+    }
+  }
+}
+# tftest inventory=mirroring.yaml
+```
+
 ### Factory
 
 Similarly to other modules, a rules factory is also included here to allow route management via descriptive configuration files.
@@ -177,6 +234,8 @@ Factory configuration is via three optional attributes in the `rules_factory_con
 - `cidr_file_path` specifying the path to a mapping of logical names to CIDR ranges, used for source and destination ranges in rules when available
 - `egress_rules_file_path` specifying the path to the egress rules file
 - `ingress_rules_file_path` specifying the path to the ingress rules file
+- `ingress_mirroring_rules_file_path` specifying the path to the mirroring rules file
+- `egress_mirroring_rules_file_path` specifying the path to the mirroring rules file
 
 Factory rules are merged with rules declared in code, with the latter taking precedence where both use the same key.
 Also, the factory applies implicit defaults: `action` defaults to `deny` for egress and `allow` for ingress, while omitting `layer4_configs`  makes the rule match all protocols.
@@ -260,6 +319,34 @@ issue-1995:
 # tftest-file id=ingress path=configs/ingress.yaml schema=firewall-policy-rules.schema.json
 ```
 
+```yaml
+icmp:
+  priority: 1000
+  match:
+   source_ranges:
+   - 10.0.0.0/8
+   layer4_configs:
+   - protocol: icmp
+issue-1995:
+  priority: 10020
+  description: Allow intra-cluster communication required by k8s networking model
+  enable_logging: true
+  target_service_accounts:
+  - sa-gke-cluster@burner-project.iam.gserviceaccount.com
+  match:
+    source_ranges:
+    - gke-nodes-range
+    layer4_configs:
+    - protocol: tcp
+      ports:
+      - 1-65535
+    - protocol: udp
+      ports:
+      - 1-65535
+    - protocol: icmp
+# tftest-file id=ingress path=configs/ingress.yaml schema=firewall-policy-rules.schema.json
+```
+
 You might need to reference external security profile groups in your firewall rules, using their Terraform ids. For example, `//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}`. To do so, list your security profile groups in the `security_profile_group_ids` map variable. Then reference them by key from your factories.
 
 ```hcl
@@ -272,33 +359,54 @@ module "vpc" {
 resource "google_network_security_security_profile" "security_profile" {
   name     = "security-profile"
   type     = "THREAT_PREVENTION"
-  parent   = "organizations/0123456789"
+  parent   = var.organization_id
   location = "global"
 }
 
 resource "google_network_security_security_profile_group" "security_profile_group" {
   name                      = "security-profile-group"
-  parent                    = "organizations/0123456789"
+  parent                    = var.organization_id
   location                  = "global"
   description               = "Sample security profile group."
   threat_prevention_profile = google_network_security_security_profile.security_profile.id
 }
+
+resource "google_network_security_security_profile" "mirror_profile" {
+  provider = google-beta
+  name     = "sec-profile"
+  parent   = var.organization_id
+  type     = "CUSTOM_MIRRORING"
+
+  custom_mirroring_profile {
+    mirroring_endpoint_group = "xxx"
+  }
+}
+
+resource "google_network_security_security_profile_group" "mirror_profile_group" {
+  provider                 = google-beta
+  name                     = "sec-profile-group"
+  parent                   = var.organization_id
+  custom_mirroring_profile = google_network_security_security_profile.mirror_profile.id
+}
+
 
 module "firewall-policy" {
   source    = "./fabric/modules/net-firewall-policy"
   name      = "fw-policy"
   parent_id = "my-project"
   security_profile_group_ids = {
-    http-sg = "//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}"
+    http-sg   = "//networksecurity.googleapis.com/${google_network_security_security_profile_group.security_profile_group.id}"
+    mirror-sg = "//networksecurity.googleapis.com/${google_network_security_security_profile_group.mirror_profile_group.id}"
   }
   attachments = {
     my-vpc = module.vpc.self_link
   }
   factories_config = {
-    ingress_rules_file_path = "configs/ingress-spg.yaml"
+    ingress_rules_file_path           = "configs/ingress-spg.yaml"
+    ingress_mirroring_rules_file_path = "configs/mirror-spg.yaml"
   }
 }
-# tftest modules=2 resources=9 files=ingress-spg inventory=factory-spg.yaml
+# tftest modules=2 resources=11 files=ingress-spg,mirror-spg inventory=factory-spg.yaml
 ```
 
 ```yaml
@@ -316,6 +424,21 @@ http:
       - 80
 ```
 
+```yaml
+# tftest-file id=mirror-spg path=configs/mirror-spg.yaml schema=firewall-policy-mirroring-rules.schema.json
+mirror-ssh:
+  priority: 1000
+  action: mirror
+  security_profile_group: mirror-sg
+  match:
+    source_ranges:
+    - 10.0.0.0/8
+    layer4_configs:
+    - protocol: tcp
+      ports:
+      - 22
+```
+
 #### Firewall Rule Factory Schema
 
 The following schema outlines all available fields for defining a rule within a factory YAML file. Use this as a reference, and note the inline comments for fields that apply only to specific policy types.
@@ -329,7 +452,7 @@ rule-name:
   enable_logging:
   security_profile_group: # Not for Regional policies
   target_service_accounts: []
-  target_tags: [] # Not for Hierarchical policies
+  target_tags: []
   target_resources: [] # For Hierarchical policies only
   tls_inspect: # Not for Regional policies
   match:
@@ -386,16 +509,18 @@ The following variable is defined at the top level of the rule (not within the `
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L133) | Policy name. | <code>string</code> | ✓ |  |
-| [parent_id](variables.tf#L139) | Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L197) | Policy name. | <code>string</code> | ✓ |  |
+| [parent_id](variables.tf#L203) | Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy. | <code>string</code> | ✓ |  |
 | [attachments](variables.tf#L17) | Ids of the resources to which this policy will be attached, in descriptive name => self link format. Specify folders or organization for hierarchical policy, VPCs for network policy. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L24) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  cidr_ranges      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  cidr_ranges_sets &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  folder_ids       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L40) | Policy description. | <code>string</code> |  | <code>null</code> |
-| [egress_rules](variables.tf#L46) | List of egress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. The match.layer4configs map is in protocol => optional [ports] format. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;deny&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  security_profile_group  &#61; optional&#40;string&#41;&#10;  target_resources        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tls_inspect             &#61; optional&#40;bool, null&#41;&#10;  match &#61; object&#40;&#123;&#10;    address_groups       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    fqdns                &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region_codes         &#61; optional&#40;list&#40;string&#41;&#41;&#10;    threat_intelligences &#61; optional&#40;list&#40;string&#41;&#41;&#10;    destination_ranges   &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L84) | Paths to folders for the optional factories. | <code title="object&#40;&#123;&#10;  cidr_file_path          &#61; optional&#40;string&#41;&#10;  egress_rules_file_path  &#61; optional&#40;string&#41;&#10;  ingress_rules_file_path &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_rules](variables.tf#L95) | List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;allow&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  security_profile_group  &#61; optional&#40;string&#41;&#10;  target_resources        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tls_inspect             &#61; optional&#40;bool, null&#41;&#10;  match &#61; object&#40;&#123;&#10;    address_groups       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    fqdns                &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region_codes         &#61; optional&#40;list&#40;string&#41;&#41;&#10;    threat_intelligences &#61; optional&#40;list&#40;string&#41;&#41;&#10;    destination_ranges   &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L145) | Policy region. Leave null for hierarchical policy, set to 'global' for a global network policy. | <code>string</code> |  | <code>null</code> |
-| [security_profile_group_ids](variables.tf#L151) | The optional security groups ids to be referenced in factories. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [egress_mirroring_rules](variables.tf#L46) | List of egress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'. | <code title="map&#40;object&#40;&#123;&#10;  priority               &#61; number&#10;  action                 &#61; optional&#40;string, &#34;mirror&#34;&#41;&#10;  description            &#61; optional&#40;string&#41;&#10;  disabled               &#61; optional&#40;bool, false&#41;&#10;  security_profile_group &#61; optional&#40;string&#41;&#10;  target_tags            &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tls_inspect            &#61; optional&#40;bool, null&#41;&#10;  match &#61; object&#40;&#123;&#10;    destination_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [egress_rules](variables.tf#L77) | List of egress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. The match.layer4configs map is in protocol => optional [ports] format. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;deny&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  security_profile_group  &#61; optional&#40;string&#41;&#10;  target_resources        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tls_inspect             &#61; optional&#40;bool, null&#41;&#10;  match &#61; object&#40;&#123;&#10;    address_groups       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    fqdns                &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region_codes         &#61; optional&#40;list&#40;string&#41;&#41;&#10;    threat_intelligences &#61; optional&#40;list&#40;string&#41;&#41;&#10;    destination_ranges   &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L115) | Paths to folders for the optional factories. | <code title="object&#40;&#123;&#10;  cidr_file_path                    &#61; optional&#40;string&#41;&#10;  egress_rules_file_path            &#61; optional&#40;string&#41;&#10;  ingress_rules_file_path           &#61; optional&#40;string&#41;&#10;  ingress_mirroring_rules_file_path &#61; optional&#40;string&#41;&#10;  egress_mirroring_rules_file_path  &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_mirroring_rules](variables.tf#L128) | List of ingress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'. | <code title="map&#40;object&#40;&#123;&#10;  priority               &#61; number&#10;  action                 &#61; optional&#40;string, &#34;mirror&#34;&#41;&#10;  description            &#61; optional&#40;string&#41;&#10;  disabled               &#61; optional&#40;bool, false&#41;&#10;  security_profile_group &#61; optional&#40;string&#41;&#10;  target_tags            &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tls_inspect            &#61; optional&#40;bool, null&#41;&#10;  match &#61; object&#40;&#123;&#10;    destination_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_rules](variables.tf#L159) | List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. | <code title="map&#40;object&#40;&#123;&#10;  priority                &#61; number&#10;  action                  &#61; optional&#40;string, &#34;allow&#34;&#41;&#10;  description             &#61; optional&#40;string&#41;&#10;  disabled                &#61; optional&#40;bool, false&#41;&#10;  enable_logging          &#61; optional&#40;bool&#41;&#10;  security_profile_group  &#61; optional&#40;string&#41;&#10;  target_resources        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_service_accounts &#61; optional&#40;list&#40;string&#41;&#41;&#10;  target_tags             &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tls_inspect             &#61; optional&#40;bool, null&#41;&#10;  match &#61; object&#40;&#123;&#10;    address_groups       &#61; optional&#40;list&#40;string&#41;&#41;&#10;    fqdns                &#61; optional&#40;list&#40;string&#41;&#41;&#10;    region_codes         &#61; optional&#40;list&#40;string&#41;&#41;&#10;    threat_intelligences &#61; optional&#40;list&#40;string&#41;&#41;&#10;    destination_ranges   &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_ranges        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    source_tags          &#61; optional&#40;list&#40;string&#41;&#41;&#10;    layer4_configs &#61; optional&#40;list&#40;object&#40;&#123;&#10;      protocol &#61; optional&#40;string, &#34;all&#34;&#41;&#10;      ports    &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;, &#91;&#123;&#125;&#93;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L209) | Policy region. Leave null for hierarchical policy, set to 'global' for a global network policy. | <code>string</code> |  | <code>null</code> |
+| [security_profile_group_ids](variables.tf#L215) | The optional security groups ids to be referenced in factories. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

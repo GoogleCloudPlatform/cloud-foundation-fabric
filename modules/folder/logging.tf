@@ -19,18 +19,39 @@
 locals {
   logging_sinks = {
     for k, v in var.logging_sinks :
-    # rewrite destination and type when type="project"
-    k => merge(v, v.type != "project" ? {} : {
-      destination = "projects/${v.destination}"
-      type        = "logging"
-    })
+    # expand destination contexts
+    k => merge(v,
+      v.type != "bigquery" ? {} : {
+        destination = lookup(
+          local.ctx.bigquery_datasets, v.destination, v.destination
+        )
+      },
+      v.type != "logging" ? {} : {
+        destination = lookup(
+          local.ctx.log_buckets, v.destination, v.destination
+        )
+      },
+      v.type != "project" ? {} : {
+        api         = "logging"
+        destination = "projects/${lookup(local.ctx.project_ids, v.destination, v.destination)}"
+      },
+      v.type != "pubsub" ? {} : {
+        destination = lookup(
+          local.ctx.pubsub_topics, v.destination, v.destination
+        )
+      },
+      v.type != "storage" ? {} : {
+        destination = lookup(
+          local.ctx.storage_buckets, v.destination, v.destination
+        )
+      }
+    )
   }
   sink_bindings = {
     for type in ["bigquery", "logging", "project", "pubsub", "storage"] :
     type => {
-      for name, sink in var.logging_sinks :
-      name => sink
-      if sink.iam == true && sink.type == type
+      for name, sink in local.logging_sinks :
+      name => sink if sink.iam && sink.type == type
     }
   }
 }
@@ -52,7 +73,7 @@ resource "google_folder_iam_audit_config" "default" {
       log_type = audit_log_config.key
       exempted_members = [
         for m in try(audit_log_config.value.exempted_members, []) :
-        lookup(local.ctx.iam_principals, m, m)
+        lookup(local.ctx_iam_principals, m, m)
       ]
     }
   }
@@ -63,7 +84,7 @@ resource "google_logging_folder_sink" "sink" {
   name               = each.key
   description        = coalesce(each.value.description, "${each.key} (Terraform-managed).")
   folder             = local.folder_id
-  destination        = "${each.value.type}.googleapis.com/${each.value.destination}"
+  destination        = "${lookup(each.value, "api", each.value.type)}.googleapis.com/${each.value.destination}"
   filter             = each.value.filter
   include_children   = each.value.include_children
   intercept_children = each.value.intercept_children

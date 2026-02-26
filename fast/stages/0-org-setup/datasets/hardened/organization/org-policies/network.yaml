@@ -18,6 +18,10 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+compute.disableVpcInternalIpv6:
+  rules:
+    - enforce: true
+
 compute.requireVpcFlowLogs:
   rules:
     - allow:
@@ -55,6 +59,13 @@ compute.restrictVpcPeering:
     - allow:
         values:
           - "under:organizations/${organization.id}"
+
+# compute.restrictVpnPeerIPs:
+#   rules:
+#     - allow:
+#         values:
+#           - "1.1.1.1"
+#           - "2.2.2.2"
 
 custom.networkDisableTargetHTTPProxy:
   rules:

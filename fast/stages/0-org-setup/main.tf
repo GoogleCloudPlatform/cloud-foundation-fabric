@@ -15,9 +15,6 @@
  */
 
 locals {
-  paths = {
-    for k, v in var.factories_config : k => try(pathexpand(v), null)
-  }
   _ctx = {
     for k, v in var.context : k => merge(
       v,
@@ -31,6 +28,7 @@ locals {
   })
   defaults = {
     billing_account = try(local._defaults.global.billing_account, null)
+    observability   = try(local._defaults.observability, null)
     organization = (
       try(local._defaults.global.organization.id, null) == null
       ? null
@@ -52,14 +50,27 @@ locals {
     storage_bucket = try(local._defaults.output_files.storage_bucket, null)
     providers      = try(local._defaults.output_files.providers, {})
   }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
+  }
   project_defaults = {
     defaults  = try(local._defaults.projects.defaults, {})
     overrides = try(local._defaults.projects.overrides, {})
   }
+  workload_identity_pools = merge([
+    for k, v in module.factory.projects : {
+      for wk, wv in v.workload_identity_pools :
+      "${k}/${wk}" => wv
+    }
+  ]...)
   workload_identity_providers = merge([
     for k, v in module.factory.projects : {
       for wk, wv in v.workload_identity_providers :
-      "${k}/${wk}" => wv.pool
+      "${k}/${wk}" => wv.name
     }
   ]...)
 }

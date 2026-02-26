@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ variable "context" {
   type = object({
     custom_roles   = optional(map(string), {})
     iam_principals = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
     locations      = optional(map(string), {})
     project_ids    = optional(map(string), {})
   })
@@ -42,6 +43,12 @@ variable "labels" {
 variable "message_retention_duration" {
   description = "Minimum duration to retain a message after it is published to the topic."
   type        = string
+  default     = null
+}
+
+variable "message_storage_enforce_in_transit" {
+  description = "If true, var.regions is also used to enforce in-transit guarantees for messages."
+  type        = bool
   default     = null
 }
 

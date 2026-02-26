@@ -1,0 +1,63 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/observability.schema.json
+
+notification_channels:
+  email-security:
+    type: email
+    display_name: Security Team Email
+    labels:
+      email_address: $email_addresses:gcp-organization-admins
+    enabled: true
+
+logging_metrics:
+  sa-impersonation:
+    filter: |
+      protoPayload.serviceName="iamcredentials.googleapis.com"
+      (protoPayload.methodName="GenerateAccessToken" OR protoPayload.methodName="GenerateIdToken")
+    label_extractors:
+      email_id: EXTRACT(resource.labels.email_id)
+    metric_descriptor:
+      metric_kind: DELTA
+      value_type: INT64
+      unit: "1"
+      display_name: Service Account Impersonation
+      labels:
+        - key: email_id
+          value_type: STRING
+
+alerts:
+  sa-impersonation-alert:
+    display_name: Service Account Impersonation Alert
+    combiner: OR
+    conditions:
+      - display_name: Impersonation Detected
+        condition_threshold:
+          filter: |
+            metric.type="logging.googleapis.com/user/sa-impersonation" AND
+            resource.type="global"
+          comparison: COMPARISON_GT
+          threshold_value: 0
+          duration: 60s
+          trigger:
+            count: 1
+          aggregations:
+            - alignment_period: 60s
+              per_series_aligner: ALIGN_COUNT
+              cross_series_reducer: REDUCE_SUM
+              group_by_fields: ["metric.label.email_id"]
+    notification_channels:
+      - email-security
+    enabled: true

@@ -1,6 +1,6 @@
 # Projects Data Source Module 
 
-This module extends functionality of [google_projects](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/projects) data source by retrieving all the projects under a specific `parent` recursively with only one API call against [Cloud Asset Inventory](https://cloud.google.com/asset-inventory) service. 
+This module extends functionality of [google_projects](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/projects) data source by retrieving all the projects under a specific `parent` recursively with only one API call against [Cloud Asset Inventory](https://cloud.google.com/asset-inventory/docs) service. 
 
 A good usage pattern would be when we want all the projects under a specific folder (including nested subfolders) to be included into [VPC Service Controls](../vpc-sc/). Instead of manually maintaining the list of project numbers as an input to the `vpc-sc` module we can use that module to retrieve all the project numbers dynamically.
 

@@ -230,6 +230,13 @@ variable "enable_features" {
       enable_insecure_binding_system_authenticated   = optional(bool)
     }))
     secret_manager_config = optional(bool)
+    secret_sync_config = optional(object({
+      enabled = bool
+      rotation_config = optional(object({
+        enabled           = optional(bool)
+        rotation_interval = optional(string)
+      }))
+    }))
     security_posture_config = optional(object({
       mode               = string
       vulnerability_mode = string
@@ -243,9 +250,10 @@ variable "enable_features" {
     shielded_nodes       = optional(bool, false)
     tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
-      enabled     = optional(bool, true)
-      event_types = optional(list(string), [])
-      topic_id    = optional(string)
+      enabled      = optional(bool, true)
+      event_types  = optional(list(string), [])
+      topic_id     = optional(string)
+      kms_key_name = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
     workload_identity        = optional(bool, true)
@@ -334,7 +342,7 @@ variable "maintenance_config" {
   default = {
     daily_window_start_time = "03:00"
     recurring_window        = null
-    maintenance_exclusion   = []
+    maintenance_exclusions  = []
   }
 }
 

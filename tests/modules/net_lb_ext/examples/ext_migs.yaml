@@ -45,7 +45,7 @@ values:
     - access_config: []
       alias_ip_range: []
       ipv6_access_config: []
-      network: projects/xxx/global/networks/aaa
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
       nic_type: null
       queue_count: null
       security_policy: null
@@ -83,7 +83,7 @@ values:
     description: Managed by the compute-vm Terraform module.
     name: my-ig-b
     named_port: []
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     timeouts: null
     zone: europe-west8-b
@@ -119,7 +119,7 @@ values:
     - access_config: []
       alias_ip_range: []
       ipv6_access_config: []
-      network: projects/xxx/global/networks/aaa
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
       nic_type: null
       queue_count: null
       security_policy: null
@@ -157,7 +157,7 @@ values:
     description: Managed by the compute-vm Terraform module.
     name: my-ig-c
     named_port: []
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     timeouts: null
     zone: europe-west8-c

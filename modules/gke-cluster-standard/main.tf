@@ -47,7 +47,7 @@ resource "google_container_cluster" "cluster" {
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
-    : "DATAPATH_PROVIDER_UNSPECIFIED"
+    : "LEGACY_DATAPATH"
   )
 
   dynamic "default_snat_status" {
@@ -92,8 +92,11 @@ resource "google_container_cluster" "cluster" {
   dynamic "node_pool_auto_config" {
     for_each = try(local.cas.enabled, null) == true ? [""] : []
     content {
-      network_tags {
-        tags = var.node_pool_auto_config.network_tags
+      dynamic "network_tags" {
+        for_each = length(var.node_pool_auto_config.network_tags) > 0 ? [""] : []
+        content {
+          tags = var.node_pool_auto_config.network_tags
+        }
       }
       resource_manager_tags = var.node_pool_auto_config.resource_manager_tags
       node_kubelet_config {
@@ -561,6 +564,19 @@ resource "google_container_cluster" "cluster" {
       enabled = var.enable_features.secret_manager_config
     }
   }
+  dynamic "secret_sync_config" {
+    for_each = var.enable_features.secret_sync_config != null ? [""] : []
+    content {
+      enabled = var.enable_features.secret_sync_config.enabled
+      dynamic "rotation_config" {
+        for_each = try(var.enable_features.secret_sync_config.rotation_config, null) != null ? [""] : []
+        content {
+          enabled           = var.enable_features.secret_sync_config.rotation_config.enabled
+          rotation_interval = var.enable_features.secret_sync_config.rotation_config.rotation_interval
+        }
+      }
+    }
+  }
   dynamic "security_posture_config" {
     for_each = var.enable_features.security_posture_config != null ? [""] : []
     content {
@@ -689,4 +705,5 @@ resource "google_pubsub_topic" "notifications" {
   labels = {
     content = "gke-notifications"
   }
+  kms_key_name = try(var.enable_features.upgrade_notifications.kms_key_name, null)
 }

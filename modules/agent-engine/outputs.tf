@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+output "agent" {
+  description = "The Agent Engine object."
+  value       = local.resource.object
+}
+
 output "id" {
   description = "Fully qualified Agent Engine id."
-  value       = google_vertex_ai_reasoning_engine.default.id
+  value       = local.resource.id
 }
 
 output "service_account" {

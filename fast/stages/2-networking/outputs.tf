@@ -18,21 +18,24 @@ locals {
   tfvars = {
     host_project_ids     = module.projects.project_ids
     host_project_numbers = module.projects.project_numbers
+    subnet_ips = {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ips
+    }
     subnet_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => vpc.subnet_ids
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ids
     }
     subnet_proxy_only_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
         for subnet_key, subnet in vpc.subnets_proxy_only : subnet_key => subnet.id
       }
     }
     subnet_psc_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
         for subnet_key, subnet in vpc.subnets_psc : subnet_key => subnet.id
       }
     }
     vpc_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => vpc.id
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.id
     }
   }
 }
@@ -44,9 +47,10 @@ resource "google_storage_bucket_object" "version" {
     local.output_files.storage_bucket != null &&
     fileexists("fast_version.txt") ? 1 : 0
   )
-  bucket = local.output_files.storage_bucket
-  name   = "versions/${local.defaults.stage_name}-version.txt"
-  source = "fast_version.txt"
+  bucket         = local.output_files.storage_bucket
+  name           = "versions/${local.defaults.stage_name}-version.txt"
+  source         = "fast_version.txt"
+  source_md5hash = filemd5("fast_version.txt")
 }
 
 resource "local_file" "tfvars" {
@@ -57,10 +61,11 @@ resource "local_file" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "tfvars" {
-  count   = local.output_files.storage_bucket != null ? 1 : 0
-  bucket  = local.output_files.storage_bucket
-  name    = "tfvars/${local.defaults.stage_name}.auto.tfvars.json"
-  content = jsonencode(local.tfvars)
+  count          = local.output_files.storage_bucket != null ? 1 : 0
+  bucket         = local.output_files.storage_bucket
+  name           = "tfvars/${local.defaults.stage_name}.auto.tfvars.json"
+  content        = jsonencode(local.tfvars)
+  source_md5hash = md5(jsonencode(local.tfvars))
 }
 
 # outputs
@@ -73,6 +78,11 @@ output "host_project_ids" {
 output "host_project_numbers" {
   description = "Project numbers."
   value       = local.tfvars.host_project_numbers
+}
+
+output "subnet_ips" {
+  description = "Subnet IP ranges."
+  value       = local.tfvars.subnet_ips
 }
 
 output "subnet_proxy_only_self_links" {

@@ -202,9 +202,9 @@ resource "google_compute_backend_service" "default" {
     for_each = each.value.iap_config == null ? [] : [each.value.iap_config]
     content {
       enabled                     = true
-      oauth2_client_id            = iap.value.oauth2_client_id
-      oauth2_client_secret        = iap.value.oauth2_client_secret
-      oauth2_client_secret_sha256 = iap.value.oauth2_client_secret_sha256
+      oauth2_client_id            = try(iap.value.oauth2_client_id, null)
+      oauth2_client_secret        = try(iap.value.oauth2_client_secret, null)
+      oauth2_client_secret_sha256 = try(iap.value.oauth2_client_secret_sha256, null)
     }
   }
 
@@ -290,6 +290,13 @@ resource "google_compute_backend_service" "default" {
           origin_region      = ss.value.aws_v4_authentication.origin_region
         }
       }
+    }
+  }
+
+  dynamic "tls_settings" {
+    for_each = each.value.tls_settings == null ? [] : [each.value.tls_settings]
+    content {
+      sni = tls_settings.value.sni
     }
   }
 }

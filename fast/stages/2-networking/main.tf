@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 locals {
-  paths = {
-    for k, v in var.factories_config : k => try(pathexpand(v), null)
-  }
   _ctx = {
     for k, v in var.context : k => merge(
       v, try(local._defaults.context[k], {})
@@ -39,6 +36,7 @@ locals {
       },
       local._ctx.iam_principals
     )
+    kms_keys          = merge(var.kms_keys, local._ctx.kms_keys)
     project_ids       = merge(var.project_ids, local._ctx.project_ids)
     storage_buckets   = merge(var.storage_buckets, local._ctx.storage_buckets)
     tag_keys          = merge(var.tag_keys, local._ctx.tag_keys)
@@ -57,6 +55,13 @@ locals {
       local._defaults.output_files.storage_bucket,
       null
     )
+  }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
   }
   project_defaults = {
     defaults = merge(

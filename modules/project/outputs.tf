@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,13 @@ output "alert_ids" {
   value = {
     for k, v in google_monitoring_alert_policy.alerts :
     k => v.id
+  }
+}
+
+output "asset_search_results" {
+  description = "Cloud Asset Inventory search results."
+  value = {
+    for k, v in data.google_cloud_asset_search_all_resources.default : k => v.results
   }
 }
 
@@ -42,10 +49,7 @@ output "custom_roles" {
 
 output "default_service_accounts" {
   description = "Emails of the default service accounts for this project."
-  value = {
-    compute = "${local.project.number}-compute@developer.gserviceaccount.com"
-    gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
-  }
+  value       = local.default_service_accounts
 }
 
 output "id" {
@@ -215,6 +219,13 @@ output "tag_values" {
   value = {
     for k, v in google_tags_tag_value.default :
     k => v if try(local.tag_values[k].tag_network, null) == null
+  }
+}
+
+output "workload_identity_pool_ids" {
+  description = "Workload identity provider ids."
+  value = {
+    for k, v in google_iam_workload_identity_pool.default : k => v.name
   }
 }
 

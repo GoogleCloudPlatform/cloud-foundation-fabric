@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,6 +48,8 @@ values:
     control_plane_endpoints_config:
     - dns_endpoint_config:
       - allow_external_traffic: true
+        enable_k8s_certs_via_dns: null
+        enable_k8s_tokens_via_dns: null
       ip_endpoints_config:
       - enabled: false
     cost_management_config:
@@ -97,13 +99,12 @@ values:
       managed_prometheus:
       - enabled: true
     name: cluster-1
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_performance_config: []
     network_policy: []
     node_config:
     - advanced_machine_features: []
       boot_disk_kms_key: null
-      containerd_config: []
       enable_confidential_storage: null
       ephemeral_storage_config: []
       ephemeral_storage_local_ssd_config: []
@@ -128,8 +129,7 @@ values:
       taint: []
     node_pool_defaults:
     - node_config_defaults:
-      - containerd_config: []
-        gcfs_config:
+      - gcfs_config:
         - enabled: false
     notification_config:
     - pubsub:
@@ -160,7 +160,7 @@ values:
       content: gke-notifications
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
-    kms_key_name: null
+    kms_key_name: projects/myproject/locations/global/keyRings/mykeyring/cryptoKeys/mykey
     labels:
       content: gke-notifications
     message_retention_duration: null

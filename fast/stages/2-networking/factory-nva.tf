@@ -17,11 +17,10 @@
 # tfdoc:file:description NVA factory
 
 locals {
-  _nva_path  = try(pathexpand(var.factories_config.nvas), null)
-  _nva_files = try(fileset(local._nva_path, "**/*.yaml"), [])
+  _nva_files = try(fileset(local.paths.nvas, "**/*.yaml"), [])
   _nva_configs = [
     for f in local._nva_files : merge(
-      yamldecode(file("${coalesce(local._nva_path, "-")}/${f}")),
+      yamldecode(file("${coalesce(local.paths.nvas, "-")}/${f}")),
       { filename = replace(f, ".yaml", "") }
     )
   ]
@@ -60,9 +59,12 @@ locals {
                 )
               }
             )
-            attachments = try(nva_def.auto_instance_config.nics, [])
-            tags        = try(nva_def.auto_instance_config.tags, ["nva"])
-            options     = try(nva_def.auto_instance_config.options, null)
+            attachments          = try(nva_def.auto_instance_config.nics, [])
+            confidential_compute = try(nva_def.auto_instance_config.confidential_compute, false)
+            encryption           = try(nva_def.auto_instance_config.encryption, null)
+            options              = try(nva_def.auto_instance_config.options, null)
+            shielded_config      = try(nva_def.auto_instance_config.shielded_config, null)
+            tags                 = try(nva_def.auto_instance_config.tags, ["nva"])
           }
         }
       ]
@@ -134,8 +136,12 @@ module "nva-instance" {
       size                   = 10 # TODO: make configurable?
     }
   }
-  metadata = each.value.metadata
+  metadata             = each.value.metadata
+  encryption           = each.value.encryption
+  shielded_config      = each.value.shielded_config
+  confidential_compute = each.value.confidential_compute
   context = {
+    kms_keys    = local.ctx.kms_keys
     locations   = local.ctx.locations
     networks    = local.ctx_vpcs.self_links
     project_ids = local.ctx_projects.project_ids

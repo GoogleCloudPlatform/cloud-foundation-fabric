@@ -6,6 +6,28 @@
 
 *additional properties: false*
 
+- **asset_feeds**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**billing_project**: *string*
+    - **content_type**: *string*
+      <br>*enum: ['RESOURCE', 'IAM_POLICY', 'ORG_POLICY', 'ACCESS_POLICY', 'OS_INVENTORY', 'RELATIONSHIP']*
+    - **asset_types**: *array*
+      - items: *string*
+    - **asset_names**: *array*
+      - items: *string*
+    - ⁺**feed_output_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**pubsub_destination**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
 - **id**: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
@@ -32,9 +54,11 @@
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **iam_by_principals_additive**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **logging**: *object*
   <br>*additional properties: false*
+  - **kms_key_name**: *string*
   - **storage_location**: *string*
   - **sinks**: *object*
     <br>*additional properties: false*
@@ -77,6 +101,17 @@
 - **workforce_identity_config**: *object*
   <br>*additional properties: false*
   - **pool_name**: *string*
+  - **display_name**: *string*
+  - **description**: *string*
+  - **disabled**: *boolean*
+  - **session_duration**: *string*
+  - **access_restrictions**: *object*
+    <br>*additional properties: false*
+    - **allowed_services**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **domain**: *string*
+    - **disable_programmatic_signin**: *boolean*
   - **providers**: *object*
     <br>*additional properties: false*
     - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
@@ -133,6 +168,18 @@
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:roles/|\$custom_roles:)*
+- **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
+  <br>*additional properties: false*
+  - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *object*
+    <br>*additional properties: false*
+    - ⁺**condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+    - ⁺**roles**: *array*
+      - items: *string*
+        <br>*pattern: ^(?:roles/|\$custom_roles:)*
 - **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*

@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,12 +63,13 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     uniform_bucket_level_access: true
-  module.agent_engine.google_storage_bucket_object.dependencies:
+  module.agent_engine.google_storage_bucket_object.dependencies[0]:
     bucket: my-agent
     cache_control: null
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -77,7 +78,7 @@ values:
     metadata: null
     name: dependencies.tar.gz
     retention: []
-    source: assets/src//dependencies.tar.gz
+    source: assets/src/dependencies.tar.gz
     source_md5hash: 49a4c43e6bef605c2fa6ddabac48ba6a
     temporary_hold: null
     timeouts: null
@@ -87,6 +88,7 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -95,16 +97,17 @@ values:
     metadata: null
     name: pickle.pkl
     retention: []
-    source: assets/src//pickle.pkl
+    source: assets/src/pickle.pkl
     source_md5hash: 493cf9bf3e59e39913e61916549f95a5
     temporary_hold: null
     timeouts: null
-  module.agent_engine.google_storage_bucket_object.requirements:
+  module.agent_engine.google_storage_bucket_object.requirements[0]:
     bucket: my-agent
     cache_control: null
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
     deletion_policy: null
     detect_md5hash: null
@@ -113,11 +116,11 @@ values:
     metadata: null
     name: requirements.txt
     retention: []
-    source: assets/src//requirements.txt
+    source: assets/src/requirements.txt
     source_md5hash: 0acf2b14e855722af60e03e8fa8b04ff
     temporary_hold: null
     timeouts: null
-  module.agent_engine.google_vertex_ai_reasoning_engine.default:
+  module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
     description: Terraform managed.
     display_name: my-agent
     encryption_spec: []
@@ -130,9 +133,10 @@ values:
       package_spec:
       - dependency_files_gcs_uri: gs://my-agent/dependencies.tar.gz
         pickle_object_gcs_uri: gs://my-agent/pickle.pkl
-        python_version: '3.12'
+        python_version: '3.13'
         requirements_gcs_uri: gs://my-agent/requirements.txt
       service_account: my-agent@project-id.iam.gserviceaccount.com
+      source_code_spec: []
     timeouts: null
   module.agent_engine.time_sleep.wait_5_minutes:
     create_duration: 5m

@@ -17,10 +17,9 @@
 # tfdoc:file:description DNS zones and RPZ factory.
 
 locals {
-  _dns_path  = try(pathexpand(var.factories_config.dns), null)
-  _dns_files = try(fileset(local._dns_path, "**/*.yaml"), [])
+  _dns_files = try(fileset(local.paths.dns, "**/*.yaml"), [])
   _dns_preprocess = [
-    for f in local._dns_files : merge(yamldecode(file("${coalesce(local._dns_path, "-")}/${f}")), {
+    for f in local._dns_files : merge(yamldecode(file("${coalesce(local.paths.dns, "-")}/${f}")), {
       key = replace(f, ".yaml", "")
     })
   ]
@@ -63,22 +62,27 @@ locals {
               client_networks = zone_config.forwarding.client_networks
             }
           }
-          : {}
+          : {},
+          contains(keys(try(zone_config, {})), "public")
+          ? {
+            public = {
+              enable_logging = try(zone_config.public.enable_logging, false),
+              dnssec_config  = try(zone_config.public.dnssec_config, {})
+            }
+          }
+          : {},
         )
       }
     )
   }
   # DNS response policies
-  _dns_response_policies_path = try(
-    pathexpand(var.factories_config.dns-response-policies), null
-  )
   _dns_response_policies_files = try(
-    fileset(local._dns_response_policies_path, "**/*.yaml"), []
+    fileset(local.paths.dns_response_policies, "**/*.yaml"), []
   )
   _dns_response_policies_preprocess = [
     for f in local._dns_response_policies_files :
     merge(
-      yamldecode(file("${coalesce(local._dns_response_policies_path, "-")}/${f}")),
+      yamldecode(file("${coalesce(local.paths.dns_response_policies, "-")}/${f}")),
       {
         key = replace(f, ".yaml", "")
       }
@@ -108,7 +112,7 @@ module "dns-zones" {
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
   }
-  depends_on = [module.vpcs]
+  depends_on = [module.vpc-factory]
 }
 
 module "dns-response-policies" {
@@ -122,5 +126,5 @@ module "dns-response-policies" {
     project_ids = local.ctx_projects.project_ids
     networks    = local.ctx_vpcs.self_links
   }
-  depends_on = [module.vpcs]
+  depends_on = [module.vpc-factory]
 }

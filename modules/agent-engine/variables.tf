@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,21 @@ variable "agent_engine_config" {
     # Add validation once API stabilizes
     agent_framework       = string
     class_methods         = optional(list(any), [])
+    container_concurrency = optional(number)
     environment_variables = optional(map(string), {})
-    python_version        = optional(string, "3.12")
+    max_instances         = optional(number)
+    min_instances         = optional(number)
+    python_version        = optional(string, "3.13")
+    resource_limits = optional(object({
+      cpu    = string
+      memory = string
+    }))
     secret_environment_variables = optional(map(object({
       secret_id = string
       version   = optional(string, "latest")
     })), {})
   })
+  nullable = false
 }
 
 variable "bucket_config" {
@@ -54,6 +62,43 @@ variable "context" {
   default  = {}
 }
 
+variable "deployment_files" {
+  description = "The to source files path and names."
+  type = object({
+    package_config = optional(object({
+      are_paths_local   = optional(bool, true)
+      dependencies_path = optional(string, "./src/dependencies.tar.gz")
+      pickle_path       = optional(string, "./src/pickle.pkl")
+      requirements_path = optional(string, "./src/requirements.txt")
+    }), null)
+    source_config = optional(object({
+      entrypoint_module = optional(string, "agent")
+      entrypoint_object = optional(string, "agent")
+      requirements_path = optional(string, "requirements.txt")
+      source_path       = optional(string, "./src/source.tar.gz")
+    }), null)
+  })
+  nullable = false
+  default = {
+    package_config = null
+    source_config  = {}
+  }
+  validation {
+    condition = (
+      var.deployment_files.package_config != null ||
+      var.deployment_files.source_config != null
+    )
+    error_message = "You must provide either 'package_config' or 'source_config'."
+  }
+  validation {
+    condition = !(
+      var.deployment_files.package_config != null &&
+      var.deployment_files.source_config != null
+    )
+    error_message = "You cannot specify both 'package_config' and 'source_config' simultaneously."
+  }
+}
+
 variable "description" {
   description = "The Agent Engine description."
   type        = string
@@ -67,8 +112,8 @@ variable "encryption_key" {
   default     = null
 }
 
-variable "generate_pickle" {
-  description = "Generate the pickle file from a source file."
+variable "managed" {
+  description = "Whether the Terraform module should control the code updates."
   type        = bool
   nullable    = false
   default     = true
@@ -78,6 +123,19 @@ variable "name" {
   description = "The name of the agent."
   type        = string
   nullable    = false
+}
+
+variable "networking_config" {
+  description = "Networking configuration."
+  type = object({
+    network_attachment_id = string
+    # key is the domain
+    dns_peering_configs = optional(map(object({
+      target_network_name = string
+      target_project_id   = optional(string)
+    })))
+  })
+  default = null
 }
 
 variable "project_id" {
@@ -90,18 +148,4 @@ variable "region" {
   description = "The region where to deploy the agent."
   type        = string
   nullable    = false
-}
-
-variable "source_files" {
-  description = "The to source files path and names."
-  type = object({
-    dependencies        = optional(string, "dependencies.tar.gz")
-    path                = optional(string, "./src")
-    pickle_out          = optional(string, "pickle.pkl")
-    pickle_src          = optional(string, "agent.py")
-    pickle_src_var_name = optional(string, "local_agent")
-    requirements        = optional(string, "requirements.txt")
-  })
-  nullable = false
-  default  = {}
 }

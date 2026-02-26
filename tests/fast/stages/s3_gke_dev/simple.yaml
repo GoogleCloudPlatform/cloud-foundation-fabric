@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,17 +12,517 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yamllint disable rule:line-length
+
+values:
+  google_storage_bucket_object.version[0]:
+    bucket: fast2-prod-iac-core-outputs
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: versions/3-gke-dev-version.txt
+    retention: []
+    source: fast_version.txt
+    temporary_hold: null
+    timeouts: null
+  module.gke-cluster["mycluster"].google_container_cluster.cluster:
+    addons_config:
+    - cloudrun_config:
+      - disabled: true
+        load_balancer_type: null
+      config_connector_config:
+      - enabled: false
+      dns_cache_config:
+      - enabled: true
+      gce_persistent_disk_csi_driver_config:
+      - enabled: true
+      gcp_filestore_csi_driver_config:
+      - enabled: true
+      gcs_fuse_csi_driver_config:
+      - enabled: true
+      gke_backup_agent_config:
+      - enabled: false
+      horizontal_pod_autoscaling:
+      - disabled: false
+      http_load_balancing:
+      - disabled: false
+      istio_config:
+      - auth: null
+        disabled: true
+      kalm_config:
+      - enabled: false
+      network_policy_config:
+      - disabled: true
+      stateful_ha_config:
+      - enabled: false
+    allow_net_admin: null
+    binary_authorization: []
+    control_plane_endpoints_config:
+    - dns_endpoint_config:
+      - allow_external_traffic: true
+        enable_k8s_certs_via_dns: null
+        enable_k8s_tokens_via_dns: null
+      ip_endpoints_config:
+      - enabled: false
+    cost_management_config:
+    - enabled: true
+    datapath_provider: ADVANCED_DATAPATH
+    default_max_pods_per_node: 110
+    deletion_protection: false
+    description: my cluster
+    disable_l4_lb_firewall_reconciliation: false
+    dns_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_autopilot: null
+    enable_cilium_clusterwide_network_policy: false
+    enable_fqdn_network_policy: true
+    enable_intranode_visibility: false
+    enable_k8s_beta_apis: []
+    enable_kubernetes_alpha: false
+    enable_l4_ilb_subsetting: false
+    enable_legacy_abac: false
+    enable_multi_networking: false
+    enable_shielded_nodes: true
+    enable_tpu: false
+    fleet: []
+    in_transit_encryption_config: null
+    initial_node_count: 1
+    ip_allocation_policy:
+    - additional_ip_ranges_config: []
+      additional_pod_ranges_config: []
+      cluster_secondary_range_name: pods
+      services_secondary_range_name: services
+      stack_type: IPV4
+    location: europe-west1
+    logging_config:
+    - enable_components:
+      - SYSTEM_COMPONENTS
+      - WORKLOADS
+    maintenance_policy:
+    - daily_maintenance_window:
+      - start_time: 03:00
+      maintenance_exclusion: []
+      recurring_window: []
+    master_auth:
+    - client_certificate_config:
+      - issue_client_certificate: false
+    min_master_version: null
+    monitoring_config:
+    - enable_components:
+      - SYSTEM_COMPONENTS
+      managed_prometheus:
+      - enabled: true
+    name: mycluster
+    network: default
+    network_performance_config: []
+    network_policy: []
+    node_config:
+    - advanced_machine_features: []
+      boot_disk_kms_key: null
+      enable_confidential_storage: null
+      ephemeral_storage_config: []
+      ephemeral_storage_local_ssd_config: []
+      fast_socket: []
+      flex_start: null
+      gvnic: []
+      host_maintenance_policy: []
+      local_nvme_ssd_block_config: []
+      local_ssd_encryption_mode: null
+      max_run_duration: null
+      node_group: null
+      preemptible: false
+      reservation_affinity: []
+      resource_labels: null
+      resource_manager_tags: null
+      sandbox_config: []
+      secondary_boot_disks: []
+      service_account: gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+      shielded_instance_config:
+      - enable_integrity_monitoring: true
+        enable_secure_boot: true
+      sole_tenant_config: []
+      spot: false
+      storage_pools: null
+      tags: null
+      taint: []
+    node_pool_defaults:
+    - node_config_defaults:
+      - gcfs_config:
+        - enabled: false
+    pod_security_policy_config: []
+    private_cluster_config:
+    - enable_private_endpoint: true
+      enable_private_nodes: true
+      private_endpoint_subnetwork: null
+    project: fast-dev-gke-core-0
+    remove_default_node_pool: true
+    resource_labels: null
+    resource_usage_export_config: []
+    secret_manager_config: []
+    secret_sync_config: []
+    subnetwork: projects/prj-host/regions/europe-west1/subnetworks/gke-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    user_managed_keys_config: []
+    workload_identity_config:
+    - workload_pool: fast-dev-gke-core-0.svc.id.goog
+  module.gke-dataset-resource-usage.google_bigquery_dataset.default:
+    dataset_id: gke_resource_usage
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: GKE resource usage.
+    labels: null
+    location: EU
+    max_time_travel_hours: '168'
+    project: fast-dev-gke-core-0
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.gke-nodepool["mycluster/mynodepool"].google_container_node_pool.nodepool:
+    autoscaling: []
+    cluster: mycluster
+    initial_node_count: 1
+    location: europe-west1
+    name: mynodepool
+    node_config:
+    - advanced_machine_features: []
+      boot_disk:
+      - disk_type: pd-balanced
+      boot_disk_kms_key: null
+      enable_confidential_storage: null
+      ephemeral_storage_config: []
+      ephemeral_storage_local_ssd_config: []
+      fast_socket: []
+      flex_start: null
+      gvnic: []
+      host_maintenance_policy: []
+      local_nvme_ssd_block_config: []
+      local_ssd_encryption_mode: null
+      max_run_duration: null
+      node_group: null
+      oauth_scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring
+      - https://www.googleapis.com/auth/monitoring.write
+      - https://www.googleapis.com/auth/userinfo.email
+      preemptible: false
+      reservation_affinity: []
+      resource_labels: null
+      resource_manager_tags: null
+      sandbox_config: []
+      secondary_boot_disks: []
+      service_account: gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+      shielded_instance_config:
+      - enable_integrity_monitoring: true
+        enable_secure_boot: true
+      sole_tenant_config: []
+      spot: false
+      storage_pools: null
+      tags: null
+      taint: []
+    placement_policy: []
+    project: fast-dev-gke-core-0
+    queued_provisioning: []
+    timeouts: null
+  module.gke-nodes-service-account.google_service_account.service_account[0]:
+    account_id: gke-node-default
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+    member: serviceAccount:gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+    project: fast-dev-gke-core-0
+    timeouts: null
+  module.gke-project-0.data.google_logging_project_settings.logging_sa[0]:
+    project: fast-dev-gke-core-0
+  module.gke-project-0.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: fast-dev-net-spoke-0
+    service_project: fast-dev-gke-core-0
+    timeouts: null
+  module.gke-project-0.google_org_policy_policy.default["compute.managed.disableSerialPortLogging"]:
+    dry_run_spec: []
+    name: projects/fast-dev-gke-core-0/policies/compute.managed.disableSerialPortLogging
+    parent: projects/fast-dev-gke-core-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
+    timeouts: null
+  module.gke-project-0.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-BCDEF0
+    deletion_policy: DELETE
+    effective_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    folder_id: '12345678'
+    labels:
+      environment: development
+    name: fast-dev-gke-core-0
+    org_id: null
+    project_id: fast-dev-gke-core-0
+    tags: null
+    terraform_labels:
+      environment: development
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.gke-project-0.google_project_iam_binding.authoritative["roles/gkehub.serviceAgent"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/gkehub.serviceAgent
+  module.gke-project-0.google_project_iam_member.bindings["gke-nodes-sa-autoscaling.metricsWriter"]:
+    condition: []
+    member: serviceAccount:gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+    project: fast-dev-gke-core-0
+    role: roles/autoscaling.metricsWriter
+  module.gke-project-0.google_project_iam_member.bindings["gke-nodes-sa-logging.logWriter"]:
+    condition: []
+    member: serviceAccount:gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+    project: fast-dev-gke-core-0
+    role: roles/logging.logWriter
+  module.gke-project-0.google_project_iam_member.bindings["gke-nodes-sa-monitoring.metricWriter"]:
+    condition: []
+    member: serviceAccount:gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+    project: fast-dev-gke-core-0
+    role: roles/monitoring.metricWriter
+  module.gke-project-0.google_project_iam_member.bindings["gke-nodes-sa-monitoring.viewer"]:
+    condition: []
+    member: serviceAccount:gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+    project: fast-dev-gke-core-0
+    role: roles/monitoring.viewer
+  module.gke-project-0.google_project_iam_member.bindings["gke-nodes-sa-stackdriver.resourceMetadata.writer"]:
+    condition: []
+    member: serviceAccount:gke-node-default@fast-dev-gke-core-0.iam.gserviceaccount.com
+    project: fast-dev-gke-core-0
+    role: roles/stackdriver.resourceMetadata.writer
+  module.gke-project-0.google_project_iam_member.service_agents["anthos"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/anthos.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["anthosconfigmanagement"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/anthosconfigmanagement.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/compute.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/container.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["dns"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/dns.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["gkehub"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/gkehub.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/container.defaultNodeServiceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["mcsd"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/multiclusterservicediscovery.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/monitoring.notificationServiceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["multiclusteringress"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/multiclusteringress.serviceAgent
+  module.gke-project-0.google_project_iam_member.service_agents["pubsub"]:
+    condition: []
+    project: fast-dev-gke-core-0
+    role: roles/pubsub.serviceAgent
+  module.gke-project-0.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:cloudservices"]:
+    condition: []
+    project: fast-dev-net-spoke-0
+    role: roles/compute.networkUser
+  module.gke-project-0.google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:container-engine"]:
+    condition: []
+    project: fast-dev-net-spoke-0
+    role: roles/compute.networkUser
+  ? module.gke-project-0.google_project_iam_member.shared_vpc_host_robots["roles/container.hostServiceAgentUser:container-engine"]
+  : condition: []
+    project: fast-dev-net-spoke-0
+    role: roles/container.hostServiceAgentUser
+  module.gke-project-0.google_project_service.org_policy_service[0]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: orgpolicy.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["anthos.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: anthos.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["anthosconfigmanagement.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: anthosconfigmanagement.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["cloudresourcemanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: cloudresourcemanager.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["dns.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["gkeconnect.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: gkeconnect.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["gkehub.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: gkehub.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["iam.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: iam.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["multiclusteringress.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: multiclusteringress.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["multiclusterservicediscovery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: multiclusterservicediscovery.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["pubsub.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: pubsub.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service.project_services["trafficdirector.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-dev-gke-core-0
+    service: trafficdirector.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["anthos.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: anthos.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["anthosconfigmanagement.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: anthosconfigmanagement.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["container.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["dns.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["gkehub.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: gkehub.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["multiclusteringress.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: multiclusteringress.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["multiclusterservicediscovery.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: multiclusterservicediscovery.googleapis.com
+    timeouts: null
+  module.gke-project-0.google_project_service_identity.default["pubsub.googleapis.com"]:
+    project: fast-dev-gke-core-0
+    service: pubsub.googleapis.com
+    timeouts: null
+
 counts:
   google_bigquery_dataset: 1
   google_compute_shared_vpc_service_project: 1
   google_container_cluster: 1
   google_container_node_pool: 1
+  google_logging_project_settings: 1
+  google_org_policy_policy: 1
   google_project: 1
   google_project_iam_binding: 1
-  google_project_iam_member: 17
-  google_project_service: 13
-  google_project_service_identity: 8
+  google_project_iam_member: 19
+  google_project_service: 16
+  google_project_service_identity: 9
   google_service_account: 1
   google_storage_bucket_object: 1
   modules: 5
-  resources: 46
+  resources: 54

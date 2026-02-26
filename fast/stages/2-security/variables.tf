@@ -36,11 +36,14 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    certificate_authorities = optional(string) # "data/certificate-authorities"
-    defaults                = optional(string, "data/defaults.yaml")
-    folders                 = optional(string, "data/folders")
-    keyrings                = optional(string, "data/keyrings")
-    projects                = optional(string, "data/projects")
+    dataset = optional(string, "datasets/classic")
+    paths = optional(object({
+      certificate_authorities = optional(string) # "certificate-authorities"
+      defaults                = optional(string, "defaults.yaml")
+      folders                 = optional(string, "folders")
+      keyrings                = optional(string, "keyrings")
+      projects                = optional(string, "projects")
+    }), {})
   })
   nullable = false
   default  = {}

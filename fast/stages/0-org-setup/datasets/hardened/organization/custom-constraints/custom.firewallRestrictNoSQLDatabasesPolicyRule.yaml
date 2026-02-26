@@ -1,0 +1,46 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/custom-constraint.schema.json
+
+custom.firewallRestrictNoSQLDatabasesPolicyRule:
+  action_type: DENY
+  condition: |-
+    resource.rules.exists(rule,
+      rule.priority < 2147483644 &&
+      rule.direction == 'INGRESS' &&
+      rule.match.srcIpRanges.exists(range, range == '0.0.0.0/0') &&
+      (
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7000') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7001') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '7199') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '8888') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9042') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '9160') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61620') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '61621') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27017') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27018') ||
+        rule.match.layer4Configs.containsIpProtocolAndPort('tcp', '27019')
+      )
+    )
+  description: Ensure that NoSQL database ports (Cassandra, MongoDB) are not accessible
+    from any source when using Firewall Policy Rule
+  display_name: Restrict Firewall Policy rules allowing NoSQL database port access
+    from any source
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - compute.googleapis.com/FirewallPolicy

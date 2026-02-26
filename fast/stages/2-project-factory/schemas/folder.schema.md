@@ -6,6 +6,28 @@
 
 *additional properties: false*
 
+- **asset_feeds**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**billing_project**: *string*
+    - **content_type**: *string*
+      <br>*enum: ['RESOURCE', 'IAM_POLICY', 'ORG_POLICY', 'ACCESS_POLICY', 'OS_INVENTORY', 'RELATIONSHIP']*
+    - **asset_types**: *array*
+      - items: *string*
+    - **asset_names**: *array*
+      - items: *string*
+    - ⁺**feed_output_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**pubsub_destination**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
 - **automation**: *object*
   <br>*additional properties: false*
   - **prefix**: *string*
@@ -29,6 +51,8 @@
   <br>*additional properties: false*
   - **project**: *string*
     <br>*pattern: ^(projects/|\$project_ids:|\$project_numbers:)*
+- **billing_budgets**: *array*
+  - items: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
   - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*
@@ -50,6 +74,7 @@
       <br>*additional properties: false*
       - **exempted_members**: *array*
         - items: *string*
+- **deletion_protection**: *boolean*
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **org_policies**: *string*
@@ -59,6 +84,7 @@
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **name**: *string*
 - **org_policies**: *object*
   <br>*additional properties: false*
@@ -86,6 +112,7 @@
           - **location**: *string*
           - **title**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
+- **assured_workload_config**: *reference([assured_workload_config](#refs-assured_workload_config))*
 - **parent**: *string*
   <br>*pattern: ^(?:folders/[0-9]+|organizations/[0-9]+|\$folder_ids:[a-z0-9_-]+)$*
 - **tag_bindings**: *object*
@@ -154,6 +181,18 @@
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:roles/|\$custom_roles:)*
+- **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
+  <br>*additional properties: false*
+  - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *object*
+    <br>*additional properties: false*
+    - ⁺**condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+    - ⁺**roles**: *array*
+      - items: *string*
+        <br>*pattern: ^(?:roles/|\$custom_roles:)*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*
@@ -211,3 +250,21 @@
         - items: *string*
       - **requester_email_recipients**: *array*
         - items: *string*
+- **assured_workload_config**<a name="refs-assured_workload_config"></a>: *object*
+  <br>*additional properties: false*
+  - ⁺**compliance_regime**: *string*
+    <br>*enum: ['ASSURED_WORKLOADS_FOR_PARTNERS', 'AU_REGIONS_AND_US_SUPPORT', 'CA_PROTECTED_B', 'CA_REGIONS_AND_SUPPORT', 'CJIS', 'COMPLIANCE_REGIME_UNSPECIFIED', 'EU_REGIONS_AND_SUPPORT', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS', 'HIPAA', 'HITRUST', 'IL2', 'IL4', 'IL5', 'IRS_1075', 'ISR_REGIONS_AND_SUPPORT', 'ISR_REGIONS', 'ITAR', 'JP_REGIONS_AND_SUPPORT', 'KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS', 'REGIONAL_CONTROLS', 'US_REGIONAL_ACCESS']*
+  - ⁺**display_name**: *string*
+  - ⁺**location**: *string*
+  - ⁺**organization**: *string*
+  - **enable_sovereign_controls**: *boolean*
+  - **labels**: *object*
+    <br>*additional properties: string*
+  - **partner**: *string*
+    <br>*enum: ['LOCAL_CONTROLS_BY_S3NS', 'PARTNER_UNSPECIFIED', 'SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM', 'SOVEREIGN_CONTROLS_BY_CNTXT', 'SOVEREIGN_CONTROLS_BY_PSN', 'SOVEREIGN_CONTROLS_BY_SIA_MINSAIT', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']*
+  - **partner_permissions**: *object*
+    <br>*additional properties: false*
+    - **assured_workloads_monitoring**: *boolean*
+    - **data_logs_viewer**: *boolean*
+    - **service_access_approver**: *boolean*
+  - **violation_notifications_enabled**: *boolean*

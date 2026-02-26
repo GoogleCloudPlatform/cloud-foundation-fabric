@@ -17,19 +17,60 @@
 name: prod-audit-logs-0
 iam_by_principals:
   $iam_principals:service_accounts/iac-0/iac-org-ro:
-    - roles/viewer
+    - roles/browser
+    - roles/logging.viewer
+    - roles/monitoring.viewer
+    - roles/pubsub.viewer
+    - roles/storage.objectViewer
+    - $custom_roles:cloudkms_viewer
   $iam_principals:service_accounts/iac-0/iac-org-rw:
-    - roles/owner
+    - roles/cloudkms.admin
+    - roles/logging.admin
+    - roles/monitoring.admin
+    - roles/pubsub.admin
+    - roles/resourcemanager.projectIamAdmin
+    - roles/serviceusage.serviceUsageAdmin
+    - roles/storage.admin
+iam:
+  # reset default role on new project
+  roles/owner: []
 services:
+  - cloudkms.googleapis.com
   - logging.googleapis.com
   - pubsub.googleapis.com
   - storage.googleapis.com
+kms:
+  keyrings:
+    ew1:
+      location: europe-west1
+      keys:
+        logging:
+          rotation_period: 7776000s
+service_encryption_key_ids:
+  logging.googleapis.com:
+    - $kms_keys:log-0/ew1/logging
 log_buckets:
-  audit-logs: {}
-  iam: {}
+  _Default:
+    retention: 90
+    location: europe-west1
+  audit-logs:
+    kms_key_name: $kms_keys:log-0/ew1/logging
+    retention: 90
+  iam:
+    kms_key_name: $kms_keys:log-0/ew1/logging
+    retention: 90
   vpc-sc:
+    kms_key_name: $kms_keys:log-0/ew1/logging
     log_analytics:
       enable: true
-    retention: 31
+    retention: 90
 factories_config:
-  observability: datasets/hardened/organization/observability/
+  observability: organization/observability/
+org_policies:
+  gcp.restrictCmekCryptoKeyProjects:
+    rules:
+      - allow:
+          all: true
+  custom.storageRequireBucketObjectVersionning:
+    rules:
+      - enforce: true

@@ -41,6 +41,11 @@ variable "backup_configuration" {
     log_retention_days             = optional(number, 7)
     point_in_time_recovery_enabled = optional(bool)
     retention_count                = optional(number, 7)
+    retain_backups_on_delete       = optional(bool)
+    final_backup = optional(object({
+      enabled        = optional(bool, false)
+      retention_days = optional(number, 7)
+    }))
   })
   default = {
     enabled                        = false
@@ -50,6 +55,8 @@ variable "backup_configuration" {
     log_retention_days             = 7
     point_in_time_recovery_enabled = null
     retention_count                = 7
+    retain_backups_on_delete       = null
+    final_backup                   = null
   }
 }
 
@@ -147,7 +154,7 @@ variable "maintenance_config" {
   description = "Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'."
   type = object({
     maintenance_window = optional(object({
-      day          = number
+      day          = optional(number)
       hour         = number
       update_track = optional(string, null)
     }), null)
@@ -162,8 +169,10 @@ variable "maintenance_config" {
     condition = (
       try(var.maintenance_config.maintenance_window, null) == null ? true : (
         # Maintenance window day validation below
-        var.maintenance_config.maintenance_window.day >= 1 &&
-        var.maintenance_config.maintenance_window.day <= 7 &&
+        var.maintenance_config.maintenance_window.day == null || (
+          var.maintenance_config.maintenance_window.day >= 1 &&
+          var.maintenance_config.maintenance_window.day <= 7
+        ) &&
         # Maintenance window hour validation below
         var.maintenance_config.maintenance_window.hour >= 0 &&
         var.maintenance_config.maintenance_window.hour <= 23 &&
@@ -172,7 +181,7 @@ variable "maintenance_config" {
         contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
       )
     )
-    error_message = "Maintenance window day must be between 1 and 7, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
+    error_message = "Maintenance window day must be between 1 and 7 or null, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
   }
 }
 

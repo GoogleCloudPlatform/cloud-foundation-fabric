@@ -19,8 +19,9 @@ values:
     name: nodepool-dws
     node_config:
     - boot_disk_kms_key: null
-      disk_size_gb: 50
-      disk_type: pd-ssd
+      boot_disk:
+      - size_gb: 50
+        disk_type: pd-ssd
       ephemeral_storage_config:
       - local_ssd_count: 1
       ephemeral_storage_local_ssd_config: []

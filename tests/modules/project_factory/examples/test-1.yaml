@@ -1,0 +1,230 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.project-factory.module.projects-iam["test-0"].google_project_iam_member.bindings["test_context"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/context', 'project-factory')
+      title: Test context
+    member: user:user1@example.com
+    project: foo-test-0
+    role: roles/viewer
+  ? module.project-factory.module.projects-iam["test-0"].google_tags_tag_value_iam_binding.default["context/project-factory:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+    - serviceAccount:tag-test@test-1.iam.gserviceaccount.com
+    - user:user1@example.com
+    role: roles/resourcemanager.tagUser
+  module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["org-level"]:
+    tag_value: tagValues/1234567890
+    timeouts: null
+  module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["project-level"]:
+    # tag_value is undefined at plan time as it depends on the tag
+    # tag_value: $tag_values:test-0/context/project-factory
+    timeouts: null
+  module.project-factory.module.projects["test-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-ABCDEF
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    folder_id: '1234567890'
+    labels:
+      owner: foo
+    name: foo-test-0
+    org_id: null
+    project_id: foo-test-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    timeouts: null
+  module.project-factory.module.projects["test-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: foo-test-0
+    role: roles/compute.serviceAgent
+  module.project-factory.module.projects["test-0"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: foo-test-0
+    role: roles/container.serviceAgent
+  module.project-factory.module.projects["test-0"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: foo-test-0
+    role: roles/container.defaultNodeServiceAgent
+  module.project-factory.module.projects["test-0"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-test-0
+    service: compute.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["test-0"].google_project_service.project_services["contactcenteraiplatform.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-test-0
+    service: contactcenteraiplatform.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-0"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-test-0
+    service: container.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-0"].google_project_service.project_services["iam.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: foo-test-0
+    service: iam.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["test-0"].google_project_service_identity.default["contactcenteraiplatform.googleapis.com"]
+  : project: foo-test-0
+    service: contactcenteraiplatform.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-0"].google_project_service_identity.default["container.googleapis.com"]:
+    project: foo-test-0
+    service: container.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-0"].google_tags_tag_key.default["context"]:
+    allowed_values_regex: null
+    description: Test org-level tag value shadowing.
+    parent: projects/foo-test-0
+    purpose: null
+    purpose_data: null
+    short_name: context
+    timeouts: null
+  module.project-factory.module.projects["test-0"].google_tags_tag_value.default["context/project-factory"]:
+    description: Test value.
+    short_name: project-factory
+    timeouts: null
+  module.project-factory.module.projects["test-1"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-ABCDEF
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    folder_id: '1234567890'
+    labels:
+      owner: foo
+    name: Test Project 1
+    org_id: null
+    project_id: test-1
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    timeouts: null
+  module.project-factory.module.projects["test-1"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: test-1
+    role: roles/compute.serviceAgent
+  module.project-factory.module.projects["test-1"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-1
+    service: compute.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["test-1"].google_project_service.project_services["contactcenteraiplatform.googleapis.com"]
+  : disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-1
+    service: contactcenteraiplatform.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-1"].google_project_service.project_services["iam.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: test-1
+    service: iam.googleapis.com
+    timeouts: null
+  ? module.project-factory.module.projects["test-1"].google_project_service_identity.default["contactcenteraiplatform.googleapis.com"]
+  : project: test-1
+    service: contactcenteraiplatform.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-2"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: bar-test-2
+    user_project: null
+  module.project-factory.module.projects["test-2"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-67890A-ABCDEF
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    folder_id: '1234567890'
+    labels:
+      owner: foo
+    name: bar-test-2
+    org_id: null
+    project_id: bar-test-2
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+      owner: foo
+    timeouts: null
+  module.project-factory.module.projects["test-2"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: bar-test-2
+    role: roles/compute.serviceAgent
+  module.project-factory.module.projects["test-2"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: bar-test-2
+    service: compute.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-2"].google_project_service.project_services["iam.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: bar-test-2
+    service: iam.googleapis.com
+    timeouts: null
+  module.project-factory.module.projects["test-2"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: bar-test-2
+    service: storage.googleapis.com
+    timeouts: null
+  module.project-factory.module.service-accounts["test-1/tag-test"].google_service_account.service_account[0]:
+    account_id: tag-test
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: tag-test@test-1.iam.gserviceaccount.com
+    member: serviceAccount:tag-test@test-1.iam.gserviceaccount.com
+    project: test-1
+    timeouts: null
+  module.project-factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.project-factory.terraform_data.project-preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+
+counts:
+  google_project: 3
+  google_project_iam_member: 6
+  google_project_service: 10
+  google_project_service_identity: 3
+  google_service_account: 1
+  google_storage_project_service_account: 1
+  google_tags_tag_binding: 2
+  google_tags_tag_key: 1
+  google_tags_tag_value: 1
+  google_tags_tag_value_iam_binding: 1
+  modules: 7
+  resources: 31
+  terraform_data: 2

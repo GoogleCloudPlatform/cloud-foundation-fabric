@@ -119,6 +119,8 @@ values:
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.project.data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-project
+  module.project.data.google_logging_project_settings.logging_sa[0]:
+    project: test-project
   module.project.data.google_storage_project_service_account.gcs_sa[0]:
     project: test-project
     user_project: null
@@ -511,6 +513,7 @@ counts:
   google_kms_key_ring_iam_binding: 1
   google_logging_project_bucket_config: 1
   google_logging_project_exclusion: 1
+  google_logging_project_settings: 1
   google_logging_project_sink: 4
   google_org_policy_policy: 7
   google_project: 2
@@ -525,6 +528,6 @@ counts:
   google_storage_bucket_iam_member: 1
   google_storage_project_service_account: 1
   modules: 8
-  resources: 63
+  resources: 64
 
 outputs: {}

@@ -2,9 +2,11 @@ automation = {
   outputs_bucket = "test"
 }
 factories_config = {
-  access_levels    = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/access-levels"
-  egress_policies  = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/egress-policies"
-  ingress_policies = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/ingress-policies"
+  paths = {
+    access_levels    = "./data-simple/access-levels"
+    egress_policies  = "./data-simple/egress-policies"
+    ingress_policies = "./data-simple/ingress-policies"
+  }
 }
 logging = {
   project_number = "1234567890"
@@ -24,9 +26,9 @@ perimeters = {
   default = {
     use_explicit_dry_run_spec = true
     spec = {
-      access_levels       = ["geo_it", "identity_me"]
-      egress_policies     = ["test"]
-      ingress_policies    = ["fast-org-log-sinks", "test"]
+      access_levels       = ["$access_levels:geo_it", "$access_levels:identity_me"]
+      egress_policies     = ["$egress_policies:test"]
+      ingress_policies    = ["$ingress_policies:fast-org-log-sinks", "$ingress_policies:test"]
       restricted_services = ["$service_sets:restricted_services"]
       resources = [
         "projects/1234567890"

@@ -247,7 +247,58 @@
       "type": "object",
       "patternProperties": {
         "^[a-z0-9-]+$": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "filter": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "dest_range": {
+                  "type": "string"
+                },
+                "ip_protocol": {
+                  "type": "string"
+                },
+                "src_range": {
+                  "type": "string"
+                }
+              }
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "next_hop_ilb_ip": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "number"
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "interconnect_attachment": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "use_default_routing": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },

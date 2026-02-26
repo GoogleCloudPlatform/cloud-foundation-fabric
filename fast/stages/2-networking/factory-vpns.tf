@@ -18,12 +18,12 @@
 
 locals {
   _vpns_files = try(
-    fileset(local._vpcs_path, "**/vpns/*.yaml"),
+    fileset(local.paths.vpcs, "**/vpns/*.yaml"),
     []
   )
   _vpns_preprocess = [
     for f in local._vpns_files : merge(
-      yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")),
+      yamldecode(file("${coalesce(local.paths.vpcs, "-")}/${f}")),
       {
         factory_basepath = dirname(dirname(f))
       }
@@ -61,7 +61,7 @@ resource "google_compute_ha_vpn_gateway" "default" {
   )
   name       = replace(each.key, "/", "-")
   stack_type = try(each.value.stack_type, null)
-  depends_on = [module.vpcs]
+  depends_on = [module.vpc-factory]
 }
 
 module "vpn-ha" {

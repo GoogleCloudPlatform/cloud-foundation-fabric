@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ locals {
     # set data_overrides.<field> to "", [] or {} to ensure, that empty value is always passed, or do
     # the same in _projects_input to prevent falling back to default value
     for k, v in local._projects_input : k => merge(v, {
+      asset_feeds = try(v.asset_feeds, {})
       billing_account = try(coalesce( # type: string
         local.data_defaults.overrides.billing_account,
         try(v.billing_account, null),
@@ -49,12 +50,22 @@ locals {
         try(v.contacts, null),
         local.data_defaults.defaults.contacts
       )
-      factories_config           = try(v.factories_config, {})
-      iam                        = try(v.iam, {})                        # type: map(list(string))
-      iam_bindings               = try(v.iam_bindings, {})               # type: map(object({...}))
-      iam_bindings_additive      = try(v.iam_bindings_additive, {})      # type: map(object({...}))
-      iam_by_principals_additive = try(v.iam_by_principals_additive, {}) # type: map(list(string))
-      iam_by_principals          = try(v.iam_by_principals, {})          # map(list(string))
+      factories_config = {
+        custom_roles           = try(v.factories_config.custom_roles, null)
+        observability          = try(v.factories_config.observability, null)
+        org_policies           = try(v.factories_config.org_policies, null)
+        pam_entitlements       = try(v.factories_config.pam_entitlements, null)
+        quotas                 = try(v.factories_config.quotas, null)
+        scc_mute_configs       = try(v.factories_config.scc_mute_configs, null)
+        scc_sha_custom_modules = try(v.factories_config.scc_sha_custom_modules, null)
+        tags                   = try(v.factories_config.tags, null)
+      }
+      iam                           = try(v.iam, {})                           # type: map(list(string))
+      iam_bindings                  = try(v.iam_bindings, {})                  # type: map(object({...}))
+      iam_bindings_additive         = try(v.iam_bindings_additive, {})         # type: map(object({...}))
+      iam_by_principals_additive    = try(v.iam_by_principals_additive, {})    # type: map(list(string))
+      iam_by_principals             = try(v.iam_by_principals, {})             # map(list(string))
+      iam_by_principals_conditional = try(v.iam_by_principals_conditional, {}) # map(object({...}))
       kms = {
         autokeys = try(v.kms.autokeys, {})
         keyrings = try(v.kms.keyrings, {})
@@ -68,22 +79,26 @@ locals {
         try(v.metric_scopes, null),
         local.data_defaults.defaults.metric_scopes
       )
-      name         = lookup(v, "name", basename(k)) # type: string
-      org_policies = try(v.org_policies, {})        # type: map(object({...}))
-      parent = try(                                 # type: string, nullable
+      descriptive_name = lookup(v, "descriptive_name", null)
+      name             = lookup(v, "name", basename(k)) # type: string
+      org_policies     = try(v.org_policies, {})        # type: map(object({...}))
+      parent = try(                                     # type: string, nullable
         coalesce(
           local.data_defaults.overrides.parent,
           try(v.parent, null),
           local.data_defaults.defaults.parent
         ), null
       )
-      prefix = try( # type: string, nullable
-        coalesce(
-          local.data_defaults.overrides.prefix,
-          try(v.prefix, null),
-          local.data_defaults.defaults.prefix
-        ), null
-      )
+      prefix = try(
+        (
+          local.data_defaults.overrides.prefix != null
+          ? local.data_defaults.overrides.prefix
+          : (
+            try(v.prefix, "-") == "-"
+            ? local.data_defaults.defaults.prefix
+            : v.prefix
+          )
+      ), null)
       project_reuse = ( # type: object({...})
         try(v.project_reuse, null) != null
         ? merge(
