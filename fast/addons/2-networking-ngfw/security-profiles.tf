@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,14 @@ locals {
       )
     })
   }
+  url_filtering_profiles = {
+    for k, v in var.security_profiles : k => v.url_filtering_profile
+    if v.url_filtering_profile != {}
+  }
 }
 
 resource "google_network_security_security_profile" "default" {
+  provider    = google-beta
   for_each    = local.security_profiles
   name        = each.key
   description = each.value.description
@@ -56,11 +61,41 @@ resource "google_network_security_security_profile" "default" {
   }
 }
 
+resource "google_network_security_security_profile" "url_filtering" {
+  provider    = google-beta
+  for_each    = local.url_filtering_profiles
+  name        = "url-${each.key}"
+  description = var.security_profiles[each.key].description
+  parent      = "organizations/${var.organization.id}"
+  location    = "global"
+  type        = "URL_FILTERING"
+  dynamic "url_filtering_profile" {
+    for_each = length(each.value) > 0 ? [""] : []
+    content {
+      dynamic "url_filters" {
+        for_each = each.value
+        content {
+          filtering_action = url_filters.value.action
+          priority         = url_filters.value.priority
+          urls             = url_filters.value.urls
+        }
+      }
+    }
+  }
+}
+
 resource "google_network_security_security_profile_group" "default" {
-  for_each                  = var.security_profiles
-  name                      = each.key
-  description               = each.value.description
-  parent                    = "organizations/${var.organization.id}"
-  location                  = "global"
-  threat_prevention_profile = google_network_security_security_profile.default[each.key].id
+  provider    = google-beta
+  for_each    = var.security_profiles
+  name        = each.key
+  description = each.value.description
+  parent      = "organizations/${var.organization.id}"
+  location    = "global"
+  threat_prevention_profile = (
+    google_network_security_security_profile.default[each.key].id
+  )
+  url_filtering_profile = try(
+    google_network_security_security_profile.url_filtering[each.key].id,
+    null
+  )
 }

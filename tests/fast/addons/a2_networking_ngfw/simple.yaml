@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,11 +16,197 @@ counts:
   google_certificate_manager_trust_config: 1
   google_network_security_firewall_endpoint: 1
   google_network_security_firewall_endpoint_association: 1
-  google_network_security_security_profile: 1
+  google_network_security_security_profile: 2
   google_network_security_security_profile_group: 1
   google_network_security_tls_inspection_policy: 1
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 1
   google_storage_bucket_object: 1
   modules: 1
-  resources: 9
+  resources: 10
+
+values:
+  google_network_security_firewall_endpoint.default["europe-west8-b"]:
+    billing_project_id: xxx-prod-net-landing-0
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    endpoint_settings: []
+    labels: null
+    location: europe-west8-b
+    name: ngfw-0
+    parent: organizations/123456789012
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_network_security_firewall_endpoint_association.default["europe-west8-b-prod"]:
+    disabled: false
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west8-b
+    name: ngfw-0-europe-west8-b-prod
+    network: projects/xxx-prod-net-spoke-0/global/networks/prod-spoke-0
+    parent: projects/xxx-prod-net-spoke-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_network_security_security_profile.default["ngfw-0"]:
+    custom_intercept_profile: []
+    custom_mirroring_profile: []
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    name: ngfw-0
+    parent: organizations/123456789012
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    threat_prevention_profile:
+    - antivirus_overrides: []
+      severity_overrides:
+      - action: ALLOW
+        severity: INFORMATIONAL
+      threat_overrides:
+      - action: ALLOW
+        threat_id: '280647'
+    timeouts: null
+    type: THREAT_PREVENTION
+    url_filtering_profile: []
+  google_network_security_security_profile.url_filtering["ngfw-0"]:
+    custom_intercept_profile: []
+    custom_mirroring_profile: []
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    name: url-ngfw-0
+    parent: organizations/123456789012
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    threat_prevention_profile: []
+    timeouts: null
+    type: URL_FILTERING
+    url_filtering_profile: []
+  google_network_security_security_profile_group.default["ngfw-0"]:
+    custom_intercept_profile: null
+    custom_mirroring_profile: null
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    name: ngfw-0
+    parent: organizations/123456789012
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_network_security_tls_inspection_policy.default["ngfw-0"]:
+    custom_tls_features: null
+    description: null
+    exclude_public_ca_set: null
+    location: europe-west8
+    min_tls_version: TLS_VERSION_UNSPECIFIED
+    name: ngfw-0
+    project: xxx-prod-net-landing-0
+    timeouts: null
+    tls_feature_profile: PROFILE_UNSPECIFIED
+  google_storage_bucket_object.tfvars:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: different hash
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: tfvars/2-networking-ngfw.auto.tfvars.json
+    retention: []
+    source: null
+    source_md5hash: null
+    temporary_hold: null
+    timeouts: null
+  module.cas["ngfw-0"].google_privateca_ca_pool.default[0]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    encryption_spec: []
+    issuance_policy: []
+    labels: null
+    location: europe-west8
+    name: ngfw-0
+    project: xxx-prod-net-landing-0
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
+    timeouts: null
+  module.cas["ngfw-0"].google_privateca_certificate_authority.default["ca-0"]:
+    certificate_authority_id: ca-0
+    config:
+    - subject_config:
+      - subject:
+        - common_name: fast.example.com
+          country_code: null
+          locality: null
+          organization: FAST Test
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_protection: false
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: RSA_PKCS1_2048_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 315360000s
+    location: europe-west8
+    pem_ca_certificate: null
+    project: xxx-prod-net-landing-0
+    skip_grace_period: true
+    subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SELF_SIGNED
+    user_defined_access_urls: []
