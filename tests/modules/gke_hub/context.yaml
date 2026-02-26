@@ -12,7 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/gke-cluster-autopilot
+values:
+  google_gke_hub_membership.default["cluster-1"]:
+    authority: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    endpoint:
+    - gke_cluster:
+      - resource_link: //container.googleapis.com/projects/my-project/locations/europe-west1/clusters/cluster-1
+    labels: null
+    location: ew1
+    membership_id: cluster-1
+    project: project
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
 
-tests:
-  context:
+counts:
+  google_gke_hub_membership: 1
+  modules: 0
+  resources: 1
+
+outputs:
+  cluster_ids: __missing__
+

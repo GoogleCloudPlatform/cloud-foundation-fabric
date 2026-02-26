@@ -1,0 +1,70 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_container_node_pool.nodepool:
+    autoscaling: []
+    cluster: cluster
+    initial_node_count: 1
+    location: ew1
+    name: nodepool
+    node_config:
+    - advanced_machine_features: []
+      boot_disk:
+      - {}
+      boot_disk_kms_key: key
+      enable_confidential_storage: null
+      ephemeral_storage_config: []
+      ephemeral_storage_local_ssd_config: []
+      fast_socket: []
+      flex_start: null
+      gvnic: []
+      host_maintenance_policy: []
+      local_nvme_ssd_block_config: []
+      local_ssd_encryption_mode: null
+      max_run_duration: null
+      node_group: null
+      oauth_scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring
+      - https://www.googleapis.com/auth/monitoring.write
+      - https://www.googleapis.com/auth/userinfo.email
+      preemptible: false
+      reservation_affinity: []
+      resource_labels: null
+      resource_manager_tags: null
+      sandbox_config: []
+      secondary_boot_disks: []
+      sole_tenant_config: []
+      spot: false
+      storage_pools: null
+      tags: null
+      taint: []
+    placement_policy: []
+    project: project
+    queued_provisioning: []
+    timeouts: null
+
+counts:
+  google_container_node_pool: 1
+  modules: 0
+  resources: 1
+
+outputs:
+  id: __missing__
+  name: nodepool
+  service_account_email: null
+  service_account_iam_email: 'serviceAccount:'
+

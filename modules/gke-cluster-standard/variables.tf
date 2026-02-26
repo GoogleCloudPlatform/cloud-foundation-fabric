@@ -145,6 +145,20 @@ variable "cluster_autoscaling" {
   }
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    kms_keys    = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnetworks = optional(map(string), {})
+    tag_values  = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "default_nodepool" {
   description = "Enable default nodepool."
   type = object({
@@ -345,6 +359,8 @@ variable "maintenance_config" {
     maintenance_exclusions  = []
   }
 }
+
+
 
 variable "max_pods_per_node" {
   description = "Maximum number of pods per node in this cluster."

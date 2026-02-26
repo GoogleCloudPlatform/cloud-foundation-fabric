@@ -213,7 +213,13 @@ iam = {
 
 ### 3. Expected Output (`context.yaml`)
 
-Create `tests/modules/<module>/context.yaml` containing the expected plan output (inventory). This ensures the module correctly resolves `$iam_principals:my-user` to `user:test@example.com` in the generated resource.
+Run the following command to generate the initial plan summary, then **manually add the Apache 2.0 license header**:
+
+```bash
+python3 tools/plan_summary.py modules/<module> tests/modules/<module>/context.tfvars > tests/modules/<module>/context.yaml
+```
+
+The file `tests/modules/<module>/context.yaml` contains the expected plan output (inventory). This ensures the module correctly resolves `$iam_principals:my-user` to `user:test@example.com` in the generated resource.
 
 ```yaml
 values:
@@ -250,7 +256,7 @@ values:
 | [`cloud-identity-group`](./modules/cloud-identity-group) | ❌ | ✅ |
 | [`cloud-run-v2`](./modules/cloud-run-v2) | ✅ | ✅ |
 | [`cloudsql-instance`](./modules/cloudsql-instance) | ❌ | ✅ |
-| [`compute-mig`](./modules/compute-mig) | ✅ | ✅ |
+| [`compute-mig`](./modules/compute-mig) | 🔵 | ✅ |
 | [`compute-vm`](./modules/compute-vm) | ✅ | ✅ |
 | [`container-registry`](./modules/container-registry) | ❌ | ✅ |
 | [`data-catalog-policy-tag`](./modules/data-catalog-policy-tag) | ✅ | ✅ |
@@ -332,8 +338,9 @@ values:
 
 ### Tests
 
-- **Configuration**: Use map structure in `tftest.yaml` (test names as keys).
+- **Configuration**: Use correct structure in `tftest.yaml` (test names as keys, empty values or dicts). **Do not use `count`**.
 - **Inventory**:
   - Use `tools/plan_summary.py` to generate `context.yaml`.
+  - **Always add the Apache 2.0 license header** to the generated YAML file.
   - Verify context keys (e.g. `$tag_values:tv1`) are handled correctly.
 

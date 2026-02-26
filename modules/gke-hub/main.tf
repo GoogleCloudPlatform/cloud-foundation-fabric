@@ -23,16 +23,6 @@ locals {
     var.features.configmanagement == true &&
     lookup(var.configmanagement_templates, cluster.configmanagement, null) != null
   }
-
-  # Filter and prepare policy controller configurations
-  cluster_pc_config = {
-    for key, cluster in var.clusters :
-    key => lookup(var.policycontroller_templates, cluster.policycontroller, null)
-    if cluster.policycontroller != null &&
-    var.features.policycontroller == true &&
-    lookup(var.policycontroller_templates, cluster.policycontroller, null) != null
-  }
-
   # Filter and prepare service mesh configurations
   cluster_mesh_config = {
     for key, cluster in var.clusters :
@@ -41,19 +31,38 @@ locals {
     var.features.servicemesh == true &&
     lookup(var.servicemesh_templates, cluster.servicemesh, null) != null
   }
-
+  # Filter and prepare policy controller configurations
+  cluster_pc_config = {
+    for key, cluster in var.clusters :
+    key => lookup(var.policycontroller_templates, cluster.policycontroller, null)
+    if cluster.policycontroller != null &&
+    var.features.policycontroller == true &&
+    lookup(var.policycontroller_templates, cluster.policycontroller, null) != null
+  }
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   hub_features = {
     for k, v in var.features :
     k => v
     if v != null && v != false && v != ""
   }
+  location = var.location == null ? null : lookup(
+    local.ctx.locations, var.location, var.location
+  )
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
 }
 
 resource "google_gke_hub_membership" "default" {
   provider      = google-beta
   for_each      = var.clusters
-  project       = var.project_id
-  location      = var.location
+  project       = local.project_id
+  location      = local.location
   membership_id = each.key
   endpoint {
     gke_cluster {
@@ -71,7 +80,7 @@ resource "google_gke_hub_membership" "default" {
 resource "google_gke_hub_feature" "default" {
   provider = google-beta
   for_each = local.hub_features
-  project  = var.project_id
+  project  = local.project_id
   name     = each.key
   location = "global"
   dynamic "spec" {
@@ -214,11 +223,11 @@ resource "google_gke_hub_feature" "default" {
 resource "google_gke_hub_feature_membership" "servicemesh" {
   provider            = google-beta
   for_each            = local.cluster_mesh_config
-  project             = var.project_id
+  project             = local.project_id
   location            = "global"
   feature             = google_gke_hub_feature.default["servicemesh"].name
   membership          = google_gke_hub_membership.default[each.key].membership_id
-  membership_location = var.location
+  membership_location = local.location
 
   mesh {
     management = each.value.management
@@ -228,11 +237,11 @@ resource "google_gke_hub_feature_membership" "servicemesh" {
 resource "google_gke_hub_feature_membership" "policycontroller" {
   provider            = google-beta
   for_each            = local.cluster_pc_config
-  project             = var.project_id
+  project             = local.project_id
   location            = "global"
   feature             = google_gke_hub_feature.default["policycontroller"].name
   membership          = google_gke_hub_membership.default[each.key].membership_id
-  membership_location = var.location
+  membership_location = local.location
 
   policycontroller {
     version = each.value.version
@@ -323,11 +332,11 @@ resource "google_gke_hub_feature_membership" "policycontroller" {
 resource "google_gke_hub_feature_membership" "default" {
   provider            = google-beta
   for_each            = local.cluster_cm_config
-  project             = var.project_id
+  project             = local.project_id
   location            = "global"
   feature             = google_gke_hub_feature.default["configmanagement"].name
   membership          = google_gke_hub_membership.default[each.key].membership_id
-  membership_location = var.location
+  membership_location = local.location
 
   configmanagement {
     version = each.value.version

@@ -25,6 +25,17 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    kms_keys    = optional(map(string), {})
+    locations   = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "gke_version" {
   description = "Kubernetes nodes version. Ignored if auto_upgrade is set in management_config."
   type        = string

@@ -18,20 +18,39 @@ locals {
   cas        = var.cluster_autoscaling
   cas_apd    = try(local.cas.auto_provisioning_defaults, null)
   cas_apd_us = try(local.cas_apd.upgrade_settings, null)
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  location = var.location == null ? null : lookup(
+    local.ctx.locations, var.location, var.location
+  )
+  network = var.vpc_config.network == null ? null : lookup(
+    local.ctx.networks, var.vpc_config.network, var.vpc_config.network
+  )
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
+  subnetwork = var.vpc_config.subnetwork == null ? null : lookup(
+    local.ctx.subnetworks, var.vpc_config.subnetwork, var.vpc_config.subnetwork
+  )
+  # lookup for kms keys in node_config is handled inline in the resource
 }
 
 resource "google_container_cluster" "cluster" {
   provider    = google-beta
-  project     = var.project_id
+  project     = local.project_id
   name        = var.name
   description = var.description
-  location    = var.location
+  location    = local.location
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
   min_master_version                       = var.min_master_version
-  network                                  = var.vpc_config.network
-  subnetwork                               = var.vpc_config.subnetwork
+  network                                  = local.network
+  subnetwork                               = local.subnetwork
   resource_labels                          = var.labels
   default_max_pods_per_node                = var.max_pods_per_node
   enable_multi_networking                  = var.enable_features.multi_networking
@@ -60,7 +79,11 @@ resource "google_container_cluster" "cluster" {
   # the default node pool is deleted here, use the gke-nodepool module instead.
   # shielded nodes are controlled by the cluster-level enable_features variable
   node_config {
-    boot_disk_kms_key     = var.node_config.boot_disk_kms_key
+    boot_disk_kms_key = try(lookup(
+      local.ctx.kms_keys,
+      var.node_config.boot_disk_kms_key,
+      var.node_config.boot_disk_kms_key
+    ), null)
     service_account       = var.node_config.service_account
     tags                  = var.node_config.tags
     labels                = var.node_config.k8s_labels
@@ -177,12 +200,16 @@ resource "google_container_cluster" "cluster" {
       dynamic "auto_provisioning_defaults" {
         for_each = local.cas_apd != null ? [""] : []
         content {
-          boot_disk_kms_key = local.cas_apd.boot_disk_kms_key
-          disk_size         = local.cas_apd.disk_size
-          disk_type         = local.cas_apd.disk_type
-          image_type        = local.cas_apd.image_type
-          oauth_scopes      = local.cas_apd.oauth_scopes
-          service_account   = local.cas_apd.service_account
+          boot_disk_kms_key = try(lookup(
+            local.ctx.kms_keys,
+            local.cas_apd.boot_disk_kms_key,
+            local.cas_apd.boot_disk_kms_key
+          ), null)
+          disk_size       = local.cas_apd.disk_size
+          disk_type       = local.cas_apd.disk_type
+          image_type      = local.cas_apd.image_type
+          oauth_scopes    = local.cas_apd.oauth_scopes
+          service_account = local.cas_apd.service_account
           dynamic "management" {
             for_each = local.cas_apd.management != null ? [""] : []
             content {
@@ -282,8 +309,12 @@ resource "google_container_cluster" "cluster" {
   dynamic "database_encryption" {
     for_each = var.enable_features.database_encryption != null ? [""] : []
     content {
-      state    = var.enable_features.database_encryption.state
-      key_name = var.enable_features.database_encryption.key_name
+      state = var.enable_features.database_encryption.state
+      key_name = try(lookup(
+        local.ctx.kms_keys,
+        var.enable_features.database_encryption.key_name,
+        var.enable_features.database_encryption.key_name
+      ), null)
     }
   }
   dynamic "dns_config" {
@@ -663,7 +694,11 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     dynamic "encryption_key" {
       for_each = each.value.encryption_key != null ? [""] : []
       content {
-        gcp_kms_encryption_key = each.value.encryption_key
+        gcp_kms_encryption_key = try(lookup(
+          local.ctx.kms_keys,
+          each.value.encryption_key,
+          each.value.encryption_key
+        ), null)
       }
     }
     all_namespaces = (
@@ -705,5 +740,9 @@ resource "google_pubsub_topic" "notifications" {
   labels = {
     content = "gke-notifications"
   }
-  kms_key_name = try(var.enable_features.upgrade_notifications.kms_key_name, null)
+  kms_key_name = try(lookup(
+    local.ctx.kms_keys,
+    var.enable_features.upgrade_notifications.kms_key_name,
+    var.enable_features.upgrade_notifications.kms_key_name
+  ), null)
 }

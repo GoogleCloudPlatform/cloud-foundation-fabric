@@ -58,6 +58,18 @@ locals {
       effect = "NO_EXECUTE"
     }
   })
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  location = var.location == null ? null : lookup(
+    local.ctx.locations, var.location, var.location
+  )
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
 }
 
 resource "google_service_account" "service_account" {
@@ -73,9 +85,9 @@ resource "google_service_account" "service_account" {
 
 resource "google_container_node_pool" "nodepool" {
   provider           = google-beta
-  project            = var.project_id
+  project            = local.project_id
   cluster            = coalesce(var.cluster_id, var.cluster_name)
-  location           = var.location
+  location           = local.location
   name               = var.name
   version            = var.gke_version
   max_pods_per_node  = var.max_pods_per_node
@@ -192,7 +204,11 @@ resource "google_container_node_pool" "nodepool" {
   }
 
   node_config {
-    boot_disk_kms_key = try(var.node_config.boot_disk.kms_key, var.node_config.boot_disk_kms_key)
+    boot_disk_kms_key = try(
+      lookup(local.ctx.kms_keys, var.node_config.boot_disk.kms_key, var.node_config.boot_disk.kms_key),
+      lookup(local.ctx.kms_keys, var.node_config.boot_disk_kms_key, var.node_config.boot_disk_kms_key),
+      null
+    )
     boot_disk {
       size_gb   = try(var.node_config.boot_disk.size_gb, var.node_config.disk_size_gb)
       disk_type = try(var.node_config.boot_disk.type, var.node_config.disk_type)

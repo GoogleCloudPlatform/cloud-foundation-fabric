@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-values:
-  google_container_cluster.cluster:
-    node_pool_auto_config:
-    - network_tags:
-      - tags:
-        - cluster-1-nodes
-        - deep-dark-wood
-        - hello-gruffalo
-        - my--precious---nodes
-        - nodes-cluster-1
+module: modules/gke-nodepool
 
-counts:
-  google_container_cluster: 1
+tests:
+  context:

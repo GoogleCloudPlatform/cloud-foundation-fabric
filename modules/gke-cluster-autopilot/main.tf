@@ -14,18 +14,39 @@
  * limitations under the License.
  */
 
+locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  location = var.location == null ? null : lookup(
+    local.ctx.locations, var.location, var.location
+  )
+  network = var.vpc_config.network == null ? null : lookup(
+    local.ctx.networks, var.vpc_config.network, var.vpc_config.network
+  )
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
+  subnetwork = var.vpc_config.subnetwork == null ? null : lookup(
+    local.ctx.subnetworks, var.vpc_config.subnetwork, var.vpc_config.subnetwork
+  )
+}
+
 resource "google_container_cluster" "cluster" {
   provider    = google-beta
-  project     = var.project_id
+  project     = local.project_id
   name        = var.name
   description = var.description
-  location    = var.location
+  location    = local.location
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
   min_master_version       = var.min_master_version
-  network                  = var.vpc_config.network
-  subnetwork               = var.vpc_config.subnetwork
+  network                  = local.network
+  subnetwork               = local.subnetwork
   resource_labels          = var.labels
   enable_multi_networking  = var.enable_features.multi_networking
   enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
@@ -78,8 +99,12 @@ resource "google_container_cluster" "cluster" {
   }
   cluster_autoscaling {
     auto_provisioning_defaults {
-      boot_disk_kms_key = var.node_config.boot_disk_kms_key
-      service_account   = var.node_config.service_account
+      boot_disk_kms_key = try(lookup(
+        local.ctx.kms_keys,
+        var.node_config.boot_disk_kms_key,
+        var.node_config.boot_disk_kms_key
+      ), null)
+      service_account = var.node_config.service_account
     }
   }
   control_plane_endpoints_config {
@@ -93,8 +118,12 @@ resource "google_container_cluster" "cluster" {
   dynamic "database_encryption" {
     for_each = var.enable_features.database_encryption != null ? [""] : []
     content {
-      state    = var.enable_features.database_encryption.state
-      key_name = var.enable_features.database_encryption.key_name
+      state = var.enable_features.database_encryption.state
+      key_name = try(lookup(
+        local.ctx.kms_keys,
+        var.enable_features.database_encryption.key_name,
+        var.enable_features.database_encryption.key_name
+      ), null)
     }
   }
   dynamic "default_snat_status" {
@@ -427,7 +456,11 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
     dynamic "encryption_key" {
       for_each = each.value.encryption_key != null ? [""] : []
       content {
-        gcp_kms_encryption_key = each.value.encryption_key
+        gcp_kms_encryption_key = try(lookup(
+          local.ctx.kms_keys,
+          each.value.encryption_key,
+          each.value.encryption_key
+        ), null)
       }
     }
 
@@ -451,5 +484,9 @@ resource "google_pubsub_topic" "notifications" {
   labels = {
     content = "gke-notifications"
   }
-  kms_key_name = try(var.enable_features.upgrade_notifications.kms_key_name, null)
+  kms_key_name = try(lookup(
+    local.ctx.kms_keys,
+    var.enable_features.upgrade_notifications.kms_key_name,
+    var.enable_features.upgrade_notifications.kms_key_name
+  ), null)
 }

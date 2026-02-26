@@ -27,6 +27,7 @@ variable "clusters" {
   nullable = false
 }
 
+
 variable "configmanagement_templates" {
   description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
   type = map(object({
@@ -59,6 +60,16 @@ variable "configmanagement_templates" {
     ])
     error_message = "The 'policy_controller' field in configmanagement_templates is deprecated. Please use the 'policycontroller_templates' variable instead to configure Policy Controller with its own API."
   }
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    locations   = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "features" {
