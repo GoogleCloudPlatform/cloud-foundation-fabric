@@ -46,6 +46,5 @@ output "id" {
   value = try(
     google_compute_instance_group_manager.default[0].id,
     google_compute_region_instance_group_manager.default[0].id,
-    null
   )
 }

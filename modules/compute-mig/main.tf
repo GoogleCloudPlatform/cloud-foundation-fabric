@@ -20,14 +20,26 @@ locals {
     ? try(google_compute_health_check.default[0].self_link, null)
     : try(var.auto_healing_policies.health_check, null)
   )
-  is_regional = length(split("-", var.location)) == 2
+  is_regional = length(split("-", local.location)) == 2
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p = "$"
+  location = var.location == null ? null : lookup(
+    local.ctx.locations, var.location, var.location
+  )
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
 }
 
 resource "google_compute_instance_group_manager" "default" {
   provider                  = google-beta
   count                     = local.is_regional ? 0 : 1
-  project                   = var.project_id
-  zone                      = var.location
+  project                   = local.project_id
+  zone                      = local.location
   name                      = var.name
   base_instance_name        = var.name
   description               = var.description
@@ -119,8 +131,8 @@ resource "google_compute_instance_group_manager" "default" {
 resource "google_compute_region_instance_group_manager" "default" {
   provider           = google-beta
   count              = local.is_regional ? 1 : 0
-  project            = var.project_id
-  region             = var.location
+  project            = local.project_id
+  region             = local.location
   name               = var.name
   base_instance_name = var.name
   description        = var.description

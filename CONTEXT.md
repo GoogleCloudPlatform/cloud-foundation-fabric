@@ -250,7 +250,7 @@ values:
 | [`cloud-identity-group`](./modules/cloud-identity-group) | ❌ | ✅ |
 | [`cloud-run-v2`](./modules/cloud-run-v2) | ✅ | ✅ |
 | [`cloudsql-instance`](./modules/cloudsql-instance) | ❌ | ✅ |
-| [`compute-mig`](./modules/compute-mig) | ❌ | ✅ |
+| [`compute-mig`](./modules/compute-mig) | ✅ | ✅ |
 | [`compute-vm`](./modules/compute-vm) | ✅ | ✅ |
 | [`container-registry`](./modules/container-registry) | ❌ | ✅ |
 | [`data-catalog-policy-tag`](./modules/data-catalog-policy-tag) | ✅ | ✅ |

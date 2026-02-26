@@ -1,0 +1,50 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_region_instance_group_manager.default[0]:
+    all_instances_config: []
+    auto_healing_policies: []
+    base_instance_name: mig-1
+    description: Terraform managed.
+    instance_flexibility_policy: []
+    list_managed_instances_results: PAGELESS
+    name: mig-1
+    named_port: []
+    params: []
+    project: project-1
+    region: europe-west1
+    stateful_disk: []
+    stateful_external_ip: []
+    stateful_internal_ip: []
+    target_pools: null
+    target_size: 1
+    timeouts: null
+    version:
+    - instance_template: projects/my-project/global/instanceTemplates/default
+      name: default
+      target_size: []
+    wait_for_instances: false
+    wait_for_instances_status: STABLE
+
+counts:
+  google_compute_region_instance_group_manager: 1
+  modules: 0
+  resources: 1
+
+outputs:
+  autoscaler: null
+  group_manager: __missing__
+  health_check: null
+  id: __missing__
