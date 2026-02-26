@@ -275,10 +275,10 @@ values:
 | [`folder`](./modules/folder) | ✅ | ✅ |
 | [`gcs`](./modules/gcs) | ✅ | ✅ |
 | [`gcve-private-cloud`](./modules/gcve-private-cloud) | ❌ | ✅ |
-| [`gke-cluster-autopilot`](./modules/gke-cluster-autopilot) | ❌ | ✅ |
-| [`gke-cluster-standard`](./modules/gke-cluster-standard) | ❌ | ✅ |
-| [`gke-hub`](./modules/gke-hub) | ❌ | ✅ |
-| [`gke-nodepool`](./modules/gke-nodepool) | ❌ | ✅ |
+| [`gke-cluster-autopilot`](./modules/gke-cluster-autopilot) | 🔵 | ✅ |
+| [`gke-cluster-standard`](./modules/gke-cluster-standard) | 🔵 | ✅ |
+| [`gke-hub`](./modules/gke-hub) | 🔵 | ✅ |
+| [`gke-nodepool`](./modules/gke-nodepool) | 🔵 | ✅ |
 | [`iam-service-account`](./modules/iam-service-account) | ✅ | ✅ |
 | [`kms`](./modules/kms) | ✅ | ✅ |
 | [`logging-bucket`](./modules/logging-bucket) | ✅ | ✅ |
