@@ -301,7 +301,7 @@ values:
 | [`net-vpc`](./modules/net-vpc) | ✅ | ✅ |
 | [`net-vpc-factory`](./modules/net-vpc-factory) | ✅ | ✅ |
 | [`net-vpc-firewall`](./modules/net-vpc-firewall) | ✅ | ✅ |
-| [`net-vpc-peering`](./modules/net-vpc-peering) | ❌ | ❌ |
+| [`net-vpc-peering`](./modules/net-vpc-peering) | 🔵 | ❌ |
 | [`net-vpn-dynamic`](./modules/net-vpn-dynamic) | ❌ | ✅ |
 | [`net-vpn-ha`](./modules/net-vpn-ha) | ✅ | ✅ |
 | [`net-vpn-static`](./modules/net-vpn-static) | ❌ | ✅ |

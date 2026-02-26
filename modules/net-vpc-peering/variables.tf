@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    networks = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "local_network" {
   description = "Resource link of the network to add a peering to."
   type        = string
