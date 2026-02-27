@@ -1,10 +1,10 @@
-project_id   = "project"
+project_id   = "$project_ids:project"
 cluster_name = "cluster"
-location     = "ew1"
+location     = "$locations:ew1"
 name         = "nodepool"
 node_config = {
   boot_disk = {
-    kms_key = "key"
+    kms_key = "$kms_keys:key"
   }
 }
 context = {

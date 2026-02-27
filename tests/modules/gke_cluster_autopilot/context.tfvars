@@ -1,17 +1,17 @@
-project_id = "project"
+project_id = "$project_ids:project"
 name       = "test"
-location   = "ew1"
+location   = "$locations:ew1"
 vpc_config = {
-  network    = "vpc"
-  subnetwork = "subnet"
+  network    = "$networks:vpc"
+  subnetwork = "$subnetworks:subnet"
 }
 node_config = {
-  boot_disk_kms_key = "key"
+  boot_disk_kms_key = "$kms_key:key"
 }
 enable_features = {
   database_encryption = {
     state    = "ENCRYPTED"
-    key_name = "key"
+    key_name = "$kms_keys:key"
   }
 }
 context = {

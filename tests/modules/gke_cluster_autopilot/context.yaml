@@ -32,7 +32,7 @@ values:
     binary_authorization: []
     cluster_autoscaling:
     - auto_provisioning_defaults:
-      - boot_disk_kms_key: key
+      - boot_disk_kms_key: $kms_key:key
         disk_size: null
         disk_type: null
         image_type: null
@@ -52,7 +52,7 @@ values:
     cost_management_config:
     - enabled: true
     database_encryption:
-    - key_name: key
+    - key_name: projects/my-project/locations/europe-west1/keyRings/my-ring/cryptoKeys/my-key
       state: ENCRYPTED
     deletion_protection: true
     description: null
@@ -74,7 +74,7 @@ values:
     fleet: []
     in_transit_encryption_config: null
     initial_node_count: 1
-    location: ew1
+    location: europe-west1
     logging_config:
     - enable_components:
       - SYSTEM_COMPONENTS
@@ -94,7 +94,7 @@ values:
       managed_prometheus:
       - enabled: true
     name: test
-    network: vpc
+    network: projects/my-project/global/networks/my-network
     network_performance_config: []
     network_policy: []
     networking_mode: VPC_NATIVE
@@ -109,7 +109,7 @@ values:
     - enable_private_endpoint: true
       enable_private_nodes: true
       private_endpoint_subnetwork: null
-    project: project
+    project: my-project
     release_channel:
     - channel: REGULAR
     remove_default_node_pool: null
@@ -117,7 +117,7 @@ values:
     resource_usage_export_config: []
     secret_manager_config: []
     secret_sync_config: []
-    subnetwork: subnet
+    subnetwork: projects/my-project/regions/europe-west1/subnetworks/my-subnetwork
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -134,10 +134,10 @@ outputs:
   dns_endpoint: __missing__
   endpoint: __missing__
   id: __missing__
-  location: ew1
+  location: europe-west1
   master_version: __missing__
   name: test
   notifications: null
   self_link: __missing__
-  workload_identity_pool: project.svc.id.goog
+  workload_identity_pool: $project_ids:project.svc.id.goog
 

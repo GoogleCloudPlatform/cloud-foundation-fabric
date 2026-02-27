@@ -21,9 +21,9 @@ values:
     - gke_cluster:
       - resource_link: //container.googleapis.com/projects/my-project/locations/europe-west1/clusters/cluster-1
     labels: null
-    location: ew1
+    location: europe-west1
     membership_id: cluster-1
-    project: project
+    project: my-project
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null

@@ -17,13 +17,13 @@ values:
     autoscaling: []
     cluster: cluster
     initial_node_count: 1
-    location: ew1
+    location: europe-west1
     name: nodepool
     node_config:
     - advanced_machine_features: []
       boot_disk:
       - {}
-      boot_disk_kms_key: key
+      boot_disk_kms_key: projects/my-project/locations/europe-west1/keyRings/my-ring/cryptoKeys/my-key
       enable_confidential_storage: null
       ephemeral_storage_config: []
       ephemeral_storage_local_ssd_config: []
@@ -53,7 +53,7 @@ values:
       tags: null
       taint: []
     placement_policy: []
-    project: project
+    project: my-project
     queued_provisioning: []
     timeouts: null
 
