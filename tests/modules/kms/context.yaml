@@ -59,7 +59,7 @@ values:
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: roles/viewer
-  google_kms_crypto_key_iam_binding.bindings["myrole_two"]:
+  google_kms_crypto_key_iam_binding.bindings["key-a:myrole_two"]:
     condition:
     - description: null
       expression: resource.matchTag('1234567890/environment', 'development')
@@ -67,7 +67,7 @@ values:
     members:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     role: organizations/366118655033/roles/myRoleTwo
-  google_kms_crypto_key_iam_member.members["myrole_three"]:
+  google_kms_crypto_key_iam_member.members["key-b:myrole_three"]:
     condition: []
     member: serviceAccount:test@test-project.iam.gserviceaccount.com
     role: organizations/366118655033/roles/myRoleThree
