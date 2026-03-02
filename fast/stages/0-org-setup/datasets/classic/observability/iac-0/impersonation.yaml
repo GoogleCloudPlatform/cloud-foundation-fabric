@@ -38,26 +38,27 @@ logging_metrics:
         - key: email_id
           value_type: STRING
 
-alerts:
-  sa-impersonation-alert:
-    display_name: Service Account Impersonation Alert
-    combiner: OR
-    conditions:
-      - display_name: Impersonation Detected
-        condition_threshold:
-          filter: |
-            metric.type="logging.googleapis.com/user/sa-impersonation" AND
-            resource.type="global"
-          comparison: COMPARISON_GT
-          threshold_value: 0
-          duration: 60s
-          trigger:
-            count: 1
-          aggregations:
-            - alignment_period: 60s
-              per_series_aligner: ALIGN_COUNT
-              cross_series_reducer: REDUCE_SUM
-              group_by_fields: ["metric.label.email_id"]
-    notification_channels:
-      - email-security
-    enabled: true
+# TODO: this is commented to prevent lag in metric creation from breaking apply
+# alerts:
+#   sa-impersonation-alert:
+#     display_name: Service Account Impersonation Alert
+#     combiner: OR
+#     conditions:
+#       - display_name: Impersonation Detected
+#         condition_threshold:
+#           filter: |
+#             metric.type="logging.googleapis.com/user/sa-impersonation" AND
+#             resource.type="global"
+#           comparison: COMPARISON_GT
+#           threshold_value: 0
+#           duration: 60s
+#           trigger:
+#             count: 1
+#           aggregations:
+#             - alignment_period: 60s
+#               per_series_aligner: ALIGN_COUNT
+#               cross_series_reducer: REDUCE_SUM
+#               group_by_fields: ["metric.label.email_id"]
+#     notification_channels:
+#       - email-security
+#     enabled: true
