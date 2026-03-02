@@ -37,9 +37,22 @@ module "kms" {
       iam = {
         "roles/cloudkms.admin" = ["group:${var.group_email}"]
       }
+      iam_bindings = {
+        agent = {
+          role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+          members = [var.service_account.iam_email]
+        }
+      }
     }
     key-b = {
       rotation_period = "604800s"
+      iam_bindings = {
+        # reusing the same binding name across different keys is supported
+        agent = {
+          role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+          members = [var.service_account.iam_email]
+        }
+      }
       iam_bindings_additive = {
         key-b-iam1 = {
           key    = "key-b"
@@ -55,7 +68,7 @@ module "kms" {
     }
   }
 }
-# tftest modules=1 resources=6 inventory=basic.yaml e2e
+# tftest modules=1 resources=8 inventory=basic.yaml e2e
 ```
 
 ### Using an existing keyring
