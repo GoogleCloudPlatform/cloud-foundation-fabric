@@ -23,6 +23,11 @@ locals {
   }
   outputs_projects = {
     for k, v in local.projects_input : k => {
+      aspect_types = (
+        v.factories_config.aspect_types == null
+        ? {}
+        : module.aspect_types[k].ids
+      )
       automation = {
         bucket = try(
           module.automation-bucket[local._outputs_automation_buckets[k]].name,

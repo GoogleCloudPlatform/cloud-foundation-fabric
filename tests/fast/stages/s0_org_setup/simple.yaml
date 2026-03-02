@@ -819,11 +819,6 @@ values:
     force_destroy: false
     name: 2-security/
     timeouts: null
-  module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["3-data-platform-dev/"]:
-    bucket: ft0-prod-iac-core-0-iac-stage-state
-    force_destroy: false
-    name: 3-data-platform-dev/
-    timeouts: null
   ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["1-vpcsc/$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
@@ -863,16 +858,6 @@ values:
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
     managed_folder: 2-security/
-    role: roles/storage.admin
-  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/$custom_roles:storage_viewer"]
-  : bucket: ft0-prod-iac-core-0-iac-stage-state
-    condition: []
-    managed_folder: 3-data-platform-dev/
-    role: organizations/1234567890/roles/storageViewer
-  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/roles/storage.admin"]
-  : bucket: ft0-prod-iac-core-0-iac-stage-state
-    condition: []
-    managed_folder: 3-data-platform-dev/
     role: roles/storage.admin
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
@@ -1579,26 +1564,6 @@ values:
   module.factory.module.projects["log-0"].google_project_service_identity.default["pubsub.googleapis.com"]:
     project: ft0-prod-audit-logs-0
     service: pubsub.googleapis.com
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-dp-dev-ro"].google_service_account.service_account[0]:
-    account_id: iac-dp-dev-ro
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for data platform dev (read-only).
-    email: iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-dp-dev-rw"].google_service_account.service_account[0]:
-    account_id: iac-dp-dev-rw
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for data platform dev (read-write).
-    email: iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
     timeouts: null
   module.factory.module.service-accounts["iac-0/iac-networking-ro"].google_service_account.service_account[0]:
     account_id: iac-networking-ro
@@ -2964,22 +2929,22 @@ counts:
   google_project_iam_member: 15
   google_project_service: 33
   google_project_service_identity: 9
-  google_service_account: 14
+  google_service_account: 12
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_object: 10
-  google_storage_managed_folder: 5
-  google_storage_managed_folder_iam_binding: 10
+  google_storage_managed_folder: 4
+  google_storage_managed_folder_iam_binding: 8
   google_storage_project_service_account: 3
   google_tags_tag_binding: 7
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 50
-  resources: 325
+  modules: 48
+  resources: 320
   terraform_data: 4
 
 outputs:
