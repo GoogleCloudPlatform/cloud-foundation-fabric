@@ -94,9 +94,10 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
-    beta_apis            = optional(list(string))
-    binary_authorization = optional(bool, false)
-    cost_management      = optional(bool, true)
+    beta_apis                         = optional(list(string))
+    binary_authorization              = optional(bool, false)
+    cilium_clusterwide_network_policy = optional(bool, false)
+    cost_management                   = optional(bool, true)
     dns = optional(object({
       additive_vpc_scope_dns_domain = optional(string)
       provider                      = optional(string)
@@ -108,6 +109,7 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
+    fqdn_network_policy = optional(bool, false)
     gateway_api         = optional(bool, false)
     groups_for_rbac     = optional(string)
     l4_ilb_subsetting   = optional(bool, false)
