@@ -30,8 +30,100 @@ locals {
 
 resource "google_compute_health_check" "default" {
   provider            = google-beta
-  count               = local.hc != null ? 1 : 0
+  count               = local.hc != null && !try(local.hc.is_regional, false) ? 1 : 0
   project             = local.project_id
+  name                = coalesce(local.hc.name, var.name)
+  description         = local.hc.description
+  check_interval_sec  = local.hc.check_interval_sec
+  healthy_threshold   = local.hc.healthy_threshold
+  timeout_sec         = local.hc.timeout_sec
+  unhealthy_threshold = local.hc.unhealthy_threshold
+
+  dynamic "grpc_health_check" {
+    for_each = local.hc_grpc ? [""] : []
+    content {
+      port               = local.hc.grpc.port
+      port_name          = local.hc.grpc.port_name
+      port_specification = local.hc.grpc.port_specification
+      grpc_service_name  = local.hc.grpc.service_name
+    }
+  }
+
+  dynamic "http_health_check" {
+    for_each = local.hc_http ? [""] : []
+    content {
+      host               = local.hc.http.host
+      port               = local.hc.http.port
+      port_name          = local.hc.http.port_name
+      port_specification = local.hc.http.port_specification
+      proxy_header       = local.hc.http.proxy_header
+      request_path       = local.hc.http.request_path
+      response           = local.hc.http.response
+    }
+  }
+
+  dynamic "http2_health_check" {
+    for_each = local.hc_http2 ? [""] : []
+    content {
+      host               = local.hc.http2.host
+      port               = local.hc.http2.port
+      port_name          = local.hc.http2.port_name
+      port_specification = local.hc.http2.port_specification
+      proxy_header       = local.hc.http2.proxy_header
+      request_path       = local.hc.http2.request_path
+      response           = local.hc.http2.response
+    }
+  }
+
+  dynamic "https_health_check" {
+    for_each = local.hc_https ? [""] : []
+    content {
+      host               = local.hc.https.host
+      port               = local.hc.https.port
+      port_name          = local.hc.https.port_name
+      port_specification = local.hc.https.port_specification
+      proxy_header       = local.hc.https.proxy_header
+      request_path       = local.hc.https.request_path
+      response           = local.hc.https.response
+    }
+  }
+
+  dynamic "ssl_health_check" {
+    for_each = local.hc_ssl ? [""] : []
+    content {
+      port               = local.hc.ssl.port
+      port_name          = local.hc.ssl.port_name
+      port_specification = local.hc.ssl.port_specification
+      proxy_header       = local.hc.ssl.proxy_header
+      request            = local.hc.ssl.request
+      response           = local.hc.ssl.response
+    }
+  }
+
+  dynamic "tcp_health_check" {
+    for_each = local.hc_tcp ? [""] : []
+    content {
+      port               = local.hc.tcp.port
+      port_name          = local.hc.tcp.port_name
+      port_specification = local.hc.tcp.port_specification
+      proxy_header       = local.hc.tcp.proxy_header
+      request            = local.hc.tcp.request
+      response           = local.hc.tcp.response
+    }
+  }
+
+  dynamic "log_config" {
+    for_each = try(local.hc.enable_logging, null) == true ? [""] : []
+    content {
+      enable = true
+    }
+  }
+}
+
+resource "google_compute_region_health_check" "default" {
+  count               = local.hc != null && try(local.hc.is_regional, false) ? 1 : 0
+  project             = local.project_id
+  region              = local.region
   name                = coalesce(local.hc.name, var.name)
   description         = local.hc.description
   check_interval_sec  = local.hc.check_interval_sec

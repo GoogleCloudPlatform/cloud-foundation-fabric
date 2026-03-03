@@ -89,9 +89,16 @@ variable "network_config" {
 variable "node_config" {
   description = "Node-level configuration."
   type = object({
-    boot_disk_kms_key   = optional(string)
-    disk_size_gb        = optional(number)
-    disk_type           = optional(string, "pd-balanced")
+    boot_disk = optional(object({
+      kms_key                = optional(string)
+      size_gb                = optional(number)
+      type                   = optional(string)
+      provisioned_iops       = optional(number)
+      provisioned_throughput = optional(number)
+    }))
+    boot_disk_kms_key   = optional(string)                # usage of this is discouraged
+    disk_size_gb        = optional(number)                # usage of this is discouraged
+    disk_type           = optional(string, "pd-balanced") # usage of this is discouraged
     ephemeral_ssd_count = optional(number)
     gcfs                = optional(bool, false)
     guest_accelerator = optional(object({

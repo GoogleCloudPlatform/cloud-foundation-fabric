@@ -1284,45 +1284,6 @@ values:
     project: ft0-prod-iac-core-0
     timeouts: null
     value_extractor: null
-  module.factory.module.projects["iac-0"].google_monitoring_alert_policy.alerts["sa-impersonation-alert"]:
-    alert_strategy: []
-    combiner: OR
-    conditions:
-    - condition_absent: []
-      condition_matched_log: []
-      condition_monitoring_query_language: []
-      condition_prometheus_query_language: []
-      condition_sql: []
-      condition_threshold:
-      - aggregations:
-        - alignment_period: 60s
-          cross_series_reducer: REDUCE_SUM
-          group_by_fields:
-          - metric.label.email_id
-          per_series_aligner: ALIGN_COUNT
-        comparison: COMPARISON_GT
-        denominator_aggregations: []
-        denominator_filter: null
-        duration: 60s
-        evaluation_missing_data: null
-        filter: 'metric.type="logging.googleapis.com/user/sa-impersonation" AND
-
-          resource.type="global"
-
-          '
-        forecast_options: []
-        threshold_value: 0
-        trigger:
-        - count: 1
-          percent: null
-      display_name: Impersonation Detected
-    display_name: Service Account Impersonation Alert
-    documentation: []
-    enabled: true
-    project: ft0-prod-iac-core-0
-    severity: null
-    timeouts: null
-    user_labels: null
   module.factory.module.projects["iac-0"].google_monitoring_notification_channel.channels["email-security"]:
     description: null
     display_name: Security Team Email
@@ -3019,7 +2980,6 @@ counts:
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
   google_logging_project_settings: 2
-  google_monitoring_alert_policy: 1
   google_monitoring_notification_channel: 1
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
@@ -3047,5 +3007,5 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 50
-  resources: 328
+  resources: 327
   terraform_data: 4

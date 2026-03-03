@@ -97,6 +97,11 @@ variable "backend_service_configs" {
         nanos   = optional(number)
       }))
     }))
+    tls_settings = optional(object({
+      authentication_config = optional(string)
+      sni                   = optional(string)
+      subject_alt_names     = optional(list(string))
+    }))
   }))
   default  = {}
   nullable = false

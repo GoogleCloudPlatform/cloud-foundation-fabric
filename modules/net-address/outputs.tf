@@ -91,7 +91,7 @@ output "psc" {
         forwarding_rule = {
           id                = try(google_compute_forwarding_rule.psc_consumer[k].id, null)
           name              = try(google_compute_forwarding_rule.psc_consumer[k].name, null)
-          psc_connection_id = try(google_compute_global_forwarding_rule.psc_consumer[k].psc_connection_id, null)
+          psc_connection_id = try(google_compute_forwarding_rule.psc_consumer[k].psc_connection_id, null)
         }
       }
     }

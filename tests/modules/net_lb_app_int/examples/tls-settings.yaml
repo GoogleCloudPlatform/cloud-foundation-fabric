@@ -1,0 +1,141 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.ilb-l7.google_compute_forwarding_rule.default:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: Terraform managed.
+    ip_collection: null
+    ip_protocol: TCP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: ilb-test
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+    network_tier: PREMIUM
+    no_automate_dns_zone: null
+    port_range: '80'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: subnet_self_link
+    timeouts: null
+  module.ilb-l7.google_compute_health_check.default["default"]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check:
+    - host: null
+      port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request_path: /
+      response: null
+    https_health_check: []
+    name: ilb-test-default
+    project: project-id
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check: []
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.ilb-l7.google_compute_region_backend_service.default["default"]:
+    affinity_cookie_ttl_sec: null
+    backend:
+    - balancing_mode: UTILIZATION
+      capacity_scaler: 1
+      custom_metrics: []
+      description: Terraform managed.
+      failover: false
+      group: projects/myprj/zones/europe-west1-a/instanceGroups/my-ig
+      max_connections: null
+      max_connections_per_endpoint: null
+      max_connections_per_instance: null
+      max_rate: null
+      max_rate_per_endpoint: null
+      max_rate_per_instance: null
+      max_utilization: null
+      traffic_duration: ''
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    custom_metrics: []
+    description: Terraform managed.
+    dynamic_forwarding: []
+    enable_cdn: null
+    failover_policy: []
+    ha_policy: []
+    ip_address_selection_policy: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    locality_lb_policy: null
+    name: ilb-test-default
+    network: null
+    network_pass_through_lb_traffic_policy: []
+    outlier_detection: []
+    params: []
+    project: project-id
+    protocol: HTTP
+    region: europe-west1
+    security_policy: null
+    strong_session_affinity_cookie: []
+    subsetting: []
+    timeouts: null
+    tls_settings:
+    - authentication_config: null
+      sni: backend.example.com
+      subject_alt_names:
+      - dns_name: backend.example.com
+        uniform_resource_identifier: null
+  module.ilb-l7.google_compute_region_target_http_proxy.default[0]:
+    description: Terraform managed.
+    http_keep_alive_timeout_sec: null
+    name: ilb-test
+    project: project-id
+    region: europe-west1
+    timeouts: null
+  module.ilb-l7.google_compute_region_url_map.default:
+    default_route_action: []
+    default_url_redirect: []
+    description: Terraform managed.
+    header_action: []
+    host_rule: []
+    name: ilb-test
+    path_matcher: []
+    project: project-id
+    region: europe-west1
+    test: []
+    timeouts: null
+
+counts:
+  google_compute_forwarding_rule: 1
+  google_compute_health_check: 1
+  google_compute_region_backend_service: 1
+  google_compute_region_target_http_proxy: 1
+  google_compute_region_url_map: 1
+  modules: 1
+  resources: 5
+
+outputs: {}

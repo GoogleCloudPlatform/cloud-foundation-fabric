@@ -14,30 +14,57 @@
 
 values:
   module.kms.google_kms_crypto_key.default["key-a"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     name: key-a
     purpose: ENCRYPT_DECRYPT
     rotation_period: null
     skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.kms.google_kms_crypto_key.default["key-b"]:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     name: key-b
     purpose: ENCRYPT_DECRYPT
     rotation_period: 604800s
     skip_initial_version_creation: false
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.kms.google_kms_crypto_key.default["key-c"]:
+    effective_labels:
+      env: test
+      goog-terraform-provisioned: 'true'
     labels:
       env: test
     name: key-c
     purpose: ENCRYPT_DECRYPT
     rotation_period: null
     skip_initial_version_creation: false
+    terraform_labels:
+      env: test
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.kms.google_kms_crypto_key_iam_binding.authoritative["key-a.roles/cloudkms.admin"]:
     condition: []
     members:
     - group:organization-admins@example.org
     role: roles/cloudkms.admin
-  module.kms.google_kms_crypto_key_iam_member.members["key-b-iam1"]:
+  module.kms.google_kms_crypto_key_iam_binding.bindings["key-a:agent"]:
+    condition: []
+    members:
+    - serviceAccount:sa1@sa.example
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.kms.google_kms_crypto_key_iam_binding.bindings["key-b:agent"]:
+    condition: []
+    members:
+    - serviceAccount:sa1@sa.example
+    role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.kms.google_kms_crypto_key_iam_member.members["key-b:key-b-iam1"]:
     condition: []
     member: group:organization-admins@example.org
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
@@ -45,9 +72,10 @@ values:
     location: europe-west8
     name: test-test
     project: project-id
+    timeouts: null
 
 counts:
   google_kms_crypto_key: 3
-  google_kms_crypto_key_iam_binding: 1
+  google_kms_crypto_key_iam_binding: 3
   google_kms_crypto_key_iam_member: 1
   google_kms_key_ring: 1

@@ -142,7 +142,11 @@ variable "backend_service_configs" {
         access_key_version = optional(string)
         origin_region      = optional(string)
       }))
-  })) }))
+    }))
+    tls_settings = optional(object({
+      sni = optional(string)
+    }))
+  }))
   default  = {}
   nullable = false
   validation {

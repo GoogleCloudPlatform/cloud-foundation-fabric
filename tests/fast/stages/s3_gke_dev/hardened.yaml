@@ -245,8 +245,9 @@ values:
     name: mynodepool
     node_config:
     - advanced_machine_features: []
+      boot_disk:
+      - disk_type: pd-balanced
       boot_disk_kms_key: projects/prj-host/locations/europe-west1/keyRings/dev-primary-default/cryptoKeys/gke
-      disk_type: pd-balanced
       enable_confidential_storage: null
       ephemeral_storage_config: []
       ephemeral_storage_local_ssd_config: []
