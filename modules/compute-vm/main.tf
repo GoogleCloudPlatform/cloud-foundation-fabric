@@ -121,6 +121,13 @@ resource "google_compute_disk" "boot" {
       )
     }
   }
+
+  # This prevents the VM from being re-created when the image family updates
+  lifecycle {
+    ignore_changes = [
+      image
+    ]
+  }
 }
 
 resource "google_compute_disk" "disks" {
