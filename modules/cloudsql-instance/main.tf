@@ -20,6 +20,34 @@ locals {
   is_postgres  = can(regex("^POSTGRES", var.database_version))
   has_replicas = length(var.replicas) > 0
   is_regional  = var.availability_type == "REGIONAL" ? true : false
+
+  // Effective backup config: full settings when enabled, minimal disabled state otherwise.
+  // point_in_time_recovery_enabled must be explicitly false (not null) when backups are disabled.
+  //
+  // Background: backup_configuration is defined as Optional+Computed in the Google provider SDKv2
+  // schema (https://github.com/hashicorp/terraform-provider-google/blob/main/google/services/sql/resource_sql_database_instance.go#L424).
+  // Per the SDK: "the provider may return its own value if the user does not set a value"
+  // (https://github.com/hashicorp/terraform-plugin-sdk/blob/main/helper/schema/schema.go#L112-L117).
+  // This means an absent block is treated as "don't manage" rather than "set to disabled",
+  // leaving existing GCP backup settings unchanged. See also: https://developer.hashicorp.com/terraform/language/attr-as-blocks
+  backup_config = var.backup_configuration.enabled ? {
+    enabled                        = true
+    binary_log_enabled             = local.is_mysql ? var.backup_configuration.binary_log_enabled || local.has_replicas || local.is_regional : null
+    start_time                     = var.backup_configuration.start_time
+    location                       = var.backup_configuration.location
+    point_in_time_recovery_enabled = var.backup_configuration.point_in_time_recovery_enabled
+    log_retention_days             = var.backup_configuration.log_retention_days
+    retention_count                = var.backup_configuration.retention_count
+    } : {
+    enabled                        = false
+    binary_log_enabled             = null
+    start_time                     = null
+    location                       = null
+    point_in_time_recovery_enabled = false
+    log_retention_days             = null
+    retention_count                = null
+  }
+
   users = {
     for k, v in var.users : k =>
     local.is_mysql
@@ -102,27 +130,21 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
-    dynamic "backup_configuration" {
-      for_each = var.backup_configuration.enabled ? { 1 = 1 } : {}
-      content {
-        enabled = true
-        // enable binary log if the user asks for it or we have replicas (default in regional),
-        // but only for MySQL
-        binary_log_enabled = (
-          local.is_mysql
-          ? var.backup_configuration.binary_log_enabled || local.has_replicas || local.is_regional
-          : null
-        )
-        start_time = var.backup_configuration.start_time
-        location   = var.backup_configuration.location
-        point_in_time_recovery_enabled = (
-          var.backup_configuration.point_in_time_recovery_enabled
-        )
-        transaction_log_retention_days = (
-          var.backup_configuration.log_retention_days
-        )
-        backup_retention_settings {
-          retained_backups = var.backup_configuration.retention_count
+    # Always render backup_configuration so Terraform actively manages the enabled state.
+    # When enabled=false this emits `enabled = false`, which actually disables backups in GCP
+    # rather than silently omitting the block (which would leave existing settings unchanged).
+    # See local.backup_config above for the rationale and documentation links.
+    backup_configuration {
+      enabled                        = local.backup_config.enabled
+      binary_log_enabled             = local.backup_config.binary_log_enabled
+      start_time                     = local.backup_config.start_time
+      location                       = local.backup_config.location
+      point_in_time_recovery_enabled = local.backup_config.point_in_time_recovery_enabled
+      transaction_log_retention_days = local.backup_config.log_retention_days
+      dynamic "backup_retention_settings" {
+        for_each = var.backup_configuration.enabled ? { 1 = 1 } : {}
+        content {
+          retained_backups = local.backup_config.retention_count
           retention_unit   = "COUNT"
         }
       }
