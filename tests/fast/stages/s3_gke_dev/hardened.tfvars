@@ -16,7 +16,6 @@ clusters = {
       master_global_access    = true
     }
     access_config = {
-      dns_access = true
       ip_access = {
         disable_public_endpoint = true
       }
