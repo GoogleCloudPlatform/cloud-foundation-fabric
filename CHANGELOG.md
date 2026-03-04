@@ -3,7 +3,52 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-01-31 07:47:11+00:00 to: None since: v52.0.0 -->
+## [Unreleased] <!-- from: 2026-02-12 09:53:27+00:00 to: None since: v53.0.0 -->
+
+### BREAKING CHANGES
+
+- `modules/kms`: they key for IAM authoritative and additive bindings has changed, reapply twice to preserve bindings after updating the module. [[#3775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3775)]
+- `modules/net-lb-app-int`: `neg_configs.cloudrun.target_service.tag` has been moved to `neg_configs.cloudrun.tag`, the old location is still supported but will be deprecated in the future. [[#3771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3771)]
+- `modules/gke-nodepool`: Disk configuration has moved to a new `node_config.boot_disk` block to align with upcoming provider changes. Support for the legacy flat attributes has been kept to ensure backward compatibility. [[#3767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3767)]
+- `modules/bigquery-dataset`: the resource names for IAM bindings have changed and will trigger recreation [[#3755](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3755)]
+
+
+### FAST
+
+- [[#3765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3765)] Fix support for credit types in billing module budgets ([ludoo](https://github.com/ludoo)) <!-- 2026-02-25 14:31:35+00:00 -->
+- [[#3757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3757)] Added custom prefix support for automation SA ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-02-21 08:54:01+00:00 -->
+- [[#3755](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3755)] Support additional attributes for buckets/datasets in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-20 11:58:00+00:00 -->
+- [[#3747](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3747)] Fix network references in FAST gcve stage ([norbert-loderer](https://github.com/norbert-loderer)) <!-- 2026-02-19 10:53:34+00:00 -->
+- [[#3742](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3742)] Fix vpc-sc role name ([wiktorn](https://github.com/wiktorn)) <!-- 2026-02-17 09:18:06+00:00 -->
+- [[#3730](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3730)] Dataset configuration template for custom BGP advertisements on Cloud Router and BGP Peers ([SamuPert](https://github.com/SamuPert)) <!-- 2026-02-13 10:53:58+00:00 -->
+
+### MODULES
+
+- [[#3775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3775)] Allow reusing IAM binding key across objects in kms module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-02 07:06:37+00:00 -->
+- [[#3776](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3776)] fix(net-lb-app-ext-regional): use list(string) for route_rules cors_policy attributes ([cvanwijck-hub24](https://github.com/cvanwijck-hub24)) <!-- 2026-03-02 06:28:02+00:00 -->
+- [[#3771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3771)] Allow specifying cloudrun target without service name in net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-27 14:43:46+00:00 -->
+- [[#3770](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3770)] Add support for regional health checks to net-lb-int module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-27 09:32:18+00:00 -->
+- [[#3767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3767)] Support hyperdisk-balanced options on gke-nodepool module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-25 15:10:29+00:00 -->
+- [[#3766](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3766)] Support TLS settings in app load balancer modules ([ludoo](https://github.com/ludoo)) <!-- 2026-02-25 14:49:38+00:00 -->
+- [[#3765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3765)] Fix support for credit types in billing module budgets ([ludoo](https://github.com/ludoo)) <!-- 2026-02-25 14:31:35+00:00 -->
+- [[#3761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3761)] Add parameter to modules/pubsub to support message_storage_policy.enforce_in_transit ([lyricnz](https://github.com/lyricnz)) <!-- 2026-02-24 16:58:43+00:00 -->
+- [[#3763](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3763)] Fixed psc connection id in net-address module output ([apichick](https://github.com/apichick)) <!-- 2026-02-24 16:31:57+00:00 -->
+- [[#3759](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3759)] Bugfix/maintenance exclusion ([lyricnz](https://github.com/lyricnz)) <!-- 2026-02-23 11:26:39+00:00 -->
+- [[#3757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3757)] Added custom prefix support for automation SA ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-02-21 08:54:01+00:00 -->
+- [[#3756](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3756)] Fix example for snapshot schedules ([wiktorn](https://github.com/wiktorn)) <!-- 2026-02-20 14:43:23+00:00 -->
+- [[#3755](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3755)] Support additional attributes for buckets/datasets in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-20 11:58:00+00:00 -->
+- [[#3753](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3753)] Fix regional resource policy attachment in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-19 10:27:04+00:00 -->
+- [[#3752](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3752)] Fix project factory service agents outputs from iamEmail to iam_email ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-02-19 09:42:02+00:00 -->
+- [[#3750](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3750)] [project-factory] Add service_agent outputs ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-02-19 09:08:16+00:00 -->
+- [[#3749](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3749)] Bump ajv from 8.17.1 to 8.18.0 in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-02-19 08:48:02+00:00 -->
+- [[#3746](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3746)] docs(organization): document external IAM management for logging sinks at scale ([mInrOz](https://github.com/mInrOz)) <!-- 2026-02-18 15:08:23+00:00 -->
+- [[#3741](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3741)] Allow specifying "network_tier" for Compute Engine VM Templates ([hexa2k9](https://github.com/hexa2k9)) <!-- 2026-02-16 15:50:00+00:00 -->
+- [[#3740](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3740)] Fix permadiff on E2E test ([wiktorn](https://github.com/wiktorn)) <!-- 2026-02-16 12:45:38+00:00 -->
+- [[#3737](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3737)] Bump qs from 6.14.1 to 6.14.2 in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-02-16 08:53:49+00:00 -->
+
+### TOOLS
+
+- [[#3748](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3748)] Refactor Github Action per b/485167538 ([google-admin](https://github.com/google-admin)) <!-- 2026-02-18 17:49:30+00:00 -->
 
 ## [53.0.0] - 2026-02-12
 

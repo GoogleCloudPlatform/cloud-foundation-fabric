@@ -84,6 +84,7 @@ variable "context" {
     custom_roles      = optional(map(string), {})
     email_addresses   = optional(map(string), {})
     iam_principals    = optional(map(string), {})
+    kms_keys          = optional(map(string), {})
     locations         = optional(map(string), {})
     log_buckets       = optional(map(string), {})
     project_ids       = optional(map(string), {})

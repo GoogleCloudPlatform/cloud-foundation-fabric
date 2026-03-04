@@ -157,6 +157,7 @@ variable "context" {
     email_addresses   = optional(map(string), {})
     folder_ids        = optional(map(string), {})
     iam_principals    = optional(map(string), {})
+    kms_keys          = optional(map(string), {})
     log_buckets       = optional(map(string), {})
     project_ids       = optional(map(string), {})
     project_numbers   = optional(map(string), {})
@@ -194,6 +195,8 @@ variable "firewall_policy" {
   })
   default = null
 }
+
+# keep the following variable as it allows passing in a dynamic value for id
 
 variable "folder_create" {
   description = "Create folder. When set to false, uses id to reference an existing folder."
