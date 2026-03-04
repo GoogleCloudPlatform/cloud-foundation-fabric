@@ -31,8 +31,8 @@ variable "availability_type" {
 }
 
 variable "backup_configuration" {
-  description = "Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas."
-  nullable    = false
+  description = "Backup settings for primary instance. Set to null to leave existing GCP backup settings unmanaged. When set, all fields are managed by Terraform including disabling backups when enabled=false."
+  nullable    = true
   type = object({
     enabled                        = optional(bool, false)
     binary_log_enabled             = optional(bool, false)
@@ -47,17 +47,7 @@ variable "backup_configuration" {
       retention_days = optional(number, 7)
     }))
   })
-  default = {
-    enabled                        = false
-    binary_log_enabled             = false
-    start_time                     = "23:00"
-    location                       = null
-    log_retention_days             = 7
-    point_in_time_recovery_enabled = null
-    retention_count                = 7
-    retain_backups_on_delete       = null
-    final_backup                   = null
-  }
+  default = null
 }
 
 variable "collation" {
