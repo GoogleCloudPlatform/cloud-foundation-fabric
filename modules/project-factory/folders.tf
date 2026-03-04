@@ -58,10 +58,14 @@ module "folder-1" {
   id                  = lookup(each.value, "id", null)
   deletion_protection = lookup(each.value, "deletion_protection", false)
   parent              = coalesce(each.value.parent, "$folder_ids:default")
-  name                = each.value.name
+  name                = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
@@ -80,9 +84,14 @@ module "folder-1-iam" {
   id            = module.folder-1[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
@@ -112,10 +121,14 @@ module "folder-2" {
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name = each.value.name
+  name = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
@@ -139,9 +152,14 @@ module "folder-2-iam" {
   id            = module.folder-2[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
@@ -174,10 +192,14 @@ module "folder-3" {
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name = each.value.name
+  name = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
@@ -201,9 +223,14 @@ module "folder-3-iam" {
   id            = module.folder-3[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
@@ -236,10 +263,14 @@ module "folder-4" {
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name = each.value.name
+  name = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
@@ -263,9 +294,14 @@ module "folder-4-iam" {
   id            = module.folder-4[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
