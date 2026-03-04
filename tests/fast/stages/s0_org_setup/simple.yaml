@@ -2953,6 +2953,10 @@ counts:
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
   google_logging_project_settings: 2
+<<<<<<< HEAD
+=======
+  google_monitoring_notification_channel: 1
+>>>>>>> origin/master
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
@@ -2979,7 +2983,11 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 50
+<<<<<<< HEAD
   resources: 325
+=======
+  resources: 327
+>>>>>>> origin/master
   terraform_data: 4
 
 outputs:

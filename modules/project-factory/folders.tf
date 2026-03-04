@@ -54,6 +54,8 @@ module "folder-1" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
   deletion_protection = lookup(each.value, "deletion_protection", false)
   parent              = coalesce(each.value.parent, "$folder_ids:default")
   name                = each.value.name
@@ -65,6 +67,7 @@ module "folder-1" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
   context                 = local.ctx
 }
 
@@ -73,13 +76,14 @@ module "folder-1-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  id          = module.folder-1[each.key].id
-  asset_feeds = lookup(each.value, "asset_feeds", {})
+  folder_create = false
+  id            = module.folder-1[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
-  folder_create                 = false
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -88,8 +92,10 @@ module "folder-1-iam" {
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -100,6 +106,8 @@ module "folder-2" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
   deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
@@ -113,6 +121,7 @@ module "folder-2" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
@@ -126,13 +135,14 @@ module "folder-2-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  asset_feeds = lookup(each.value, "asset_feeds", {})
-  id          = module.folder-2[each.key].id
+  folder_create = false
+  id            = module.folder-2[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
-  folder_create                 = false
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -141,11 +151,13 @@ module "folder-2-iam" {
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -156,6 +168,8 @@ module "folder-3" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
   deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
@@ -169,6 +183,7 @@ module "folder-3" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
@@ -182,13 +197,14 @@ module "folder-3-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  id          = module.folder-3[each.key].id
-  asset_feeds = lookup(each.value, "asset_feeds", {})
+  folder_create = false
+  id            = module.folder-3[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
-  folder_create                 = false
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -197,11 +213,13 @@ module "folder-3-iam" {
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -212,6 +230,8 @@ module "folder-4" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
   deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
@@ -225,6 +245,7 @@ module "folder-4" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
@@ -238,13 +259,14 @@ module "folder-4-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
-  id          = module.folder-4[each.key].id
-  asset_feeds = lookup(each.value, "asset_feeds", {})
+  folder_create = false
+  id            = module.folder-4[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
   }
-  folder_create                 = false
   autokey_config                = lookup(each.value, "autokey_config", null)
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -253,11 +275,13 @@ module "folder-4-iam" {
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
     })
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })

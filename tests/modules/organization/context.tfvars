@@ -2,6 +2,9 @@ context = {
   bigquery_datasets = {
     test = "projects/test-prod-audit-logs-0/datasets/logs"
   }
+  kms_keys = {
+    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
+  }
   condition_vars = {
     organization = {
       id = 1234567890
@@ -137,6 +140,7 @@ logging_sinks = {
   }
 }
 logging_settings = {
+  kms_key_name     = "$kms_keys:test"
   storage_location = "$locations:default"
 }
 pam_entitlements = {
