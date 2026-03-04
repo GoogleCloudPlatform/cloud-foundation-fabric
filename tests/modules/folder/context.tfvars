@@ -16,6 +16,9 @@ context = {
   folder_ids = {
     default = "organizations/1234567890"
   }
+  kms_keys = {
+    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
+  }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
@@ -94,6 +97,9 @@ logging_data_access = {
     }
     DATA_READ = {}
   }
+}
+logging_settings = {
+  kms_key_name = "$kms_keys:test"
 }
 logging_sinks = {
   test-pubsub = {

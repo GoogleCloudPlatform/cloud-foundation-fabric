@@ -21,12 +21,17 @@ locals {
     } if k != "condition_vars"
   }
   ctx_p = "$"
+  _folder_id = (
+    var.id == null
+    ? null
+    : lookup(local.ctx.folder_ids, var.id, var.id)
+  )
   folder_id = (
     var.assured_workload_config == null
     ? (
       var.folder_create
-      ? try(google_folder.folder[0].id, null)
-      : var.id
+      ? coalesce(local._folder_id, try(google_folder.folder[0].id, ""))
+      : local._folder_id
     )
     : format("folders/%s", try(google_assured_workloads_workload.folder[0].resources[0].resource_id, ""))
   )
