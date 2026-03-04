@@ -113,9 +113,10 @@ resource "google_sql_database_instance" "primary" {
       for_each = var.backup_configuration != null ? [1] : []
       content {
         enabled = var.backup_configuration.enabled
-        // auto-enable binary log for MySQL when replicas or regional HA are in use
+        // auto-enable binary log for MySQL when replicas or regional HA are in use;
+        // must be null (not true) when backups are disabled
         binary_log_enabled = (
-          local.is_mysql
+          local.is_mysql && var.backup_configuration.enabled
           ? var.backup_configuration.binary_log_enabled || local.has_replicas || local.is_regional
           : null
         )
