@@ -637,7 +637,7 @@ module "folder" {
 }
 
 output "service_accounts" {
-  value = module.folder.asset_search_results["copute-sas"]
+  value = module.folder.asset_search_results["compute-sas"]
 }
 # tftest skip
 ```
