@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2026-02-12 09:53:27+00:00 to: None since: v53.0.0 -->
 
+## [54.0.0] - 2026-03-05
+
+### BREAKING CHANGES
+
+- `modules/project-factory`: Use of the `factories_config` attribute for folders changed: if you are passing relative paths, prepend a `/` or `./` to keep the old behaviour. [[#3782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3782)]
+
+### FAST
+
+- [[#3782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3782)] Additional changes to folder module and project factory ([ludoo](https://github.com/ludoo)) <!-- 2026-03-05 09:32:35+00:00 -->
+- [[#3768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3768)] Add support for URL filtering profiles to FAST NGFW add-on ([ludoo](https://github.com/ludoo)) <!-- 2026-02-26 10:54:44+00:00 -->
+- [[#3739](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3739)] Fix 404 on creating alerts ([wiktorn](https://github.com/wiktorn)) <!-- 2026-02-16 15:21:47+00:00 -->
+
+### MODULES
+
+- [[#3782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3782)] Additional changes to folder module and project factory ([ludoo](https://github.com/ludoo)) <!-- 2026-03-05 09:32:35+00:00 -->
+
+### TOOLS
+
+- [[#3782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3782)] Additional changes to folder module and project factory ([ludoo](https://github.com/ludoo)) <!-- 2026-03-05 09:32:35+00:00 -->
+- [[#3768](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3768)] Add support for URL filtering profiles to FAST NGFW add-on ([ludoo](https://github.com/ludoo)) <!-- 2026-02-26 10:54:44+00:00 -->
+
 ## [53.1.0] - 2026-03-05
 
 ### BREAKING CHANGES
@@ -2316,7 +2337,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...HEAD
+[54.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...v53.1.0
 [53.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.1.0...v53.0.0
 [53.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.0.0...v52.1.0
 [52.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.1.0...v52.0.0
