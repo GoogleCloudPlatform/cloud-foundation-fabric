@@ -5,16 +5,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2026-02-12 09:53:27+00:00 to: None since: v53.0.0 -->
 
+## [53.1.0] - 2026-03-05
+
 ### BREAKING CHANGES
 
+- `modules/gke-cluster-autopilot`: The type of the `access_config.dns_access` variable attribute has changed, check your code if you set it explicitly. [[#3781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3781)]
+- `modules/gke-cluster-standard`: The type of the `access_config.dns_access` variable attribute has changed, check your code if you set it explicitly. [[#3781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3781)]
+- `fast/stages/3-gke-dev`: The type of the `access_config.dns_access` variable attribute has changed, check your code if you set it explicitly. [[#3781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3781)]
 - `modules/kms`: they key for IAM authoritative and additive bindings has changed, reapply twice to preserve bindings after updating the module. [[#3775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3775)]
 - `modules/net-lb-app-int`: `neg_configs.cloudrun.target_service.tag` has been moved to `neg_configs.cloudrun.tag`, the old location is still supported but will be deprecated in the future. [[#3771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3771)]
 - `modules/gke-nodepool`: Disk configuration has moved to a new `node_config.boot_disk` block to align with upcoming provider changes. Support for the legacy flat attributes has been kept to ensure backward compatibility. [[#3767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3767)]
 - `modules/bigquery-dataset`: the resource names for IAM bindings have changed and will trigger recreation [[#3755](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3755)]
 
-
 ### FAST
 
+- [[#3781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3781)] Support additional dns_access attributes in GKE cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2026-03-04 10:06:48+00:00 -->
+- [[#3779](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3779)] Add missing folder features to project factory and align logging across folder/org modules ([ludoo](https://github.com/ludoo)) <!-- 2026-03-04 09:28:48+00:00 -->
+- [[#3777](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3777)] Comment alerting policy in FAST stage 0 classic dataset to prevent e2e errors ([ludoo](https://github.com/ludoo)) <!-- 2026-03-02 08:32:13+00:00 -->
 - [[#3765](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3765)] Fix support for credit types in billing module budgets ([ludoo](https://github.com/ludoo)) <!-- 2026-02-25 14:31:35+00:00 -->
 - [[#3757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3757)] Added custom prefix support for automation SA ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-02-21 08:54:01+00:00 -->
 - [[#3755](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3755)] Support additional attributes for buckets/datasets in project factory module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-20 11:58:00+00:00 -->
@@ -24,6 +31,10 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3780](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3780)] fix(cloudsql): always render backup_configuration block to allow disabling backups ([brokenthumbs](https://github.com/brokenthumbs)) <!-- 2026-03-05 10:12:11+00:00 -->
+- [[#3778](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3778)] Add Cilium Clusterwide Network Policy and FQDN Network Policy for Autopilot Clusters ([robrankin](https://github.com/robrankin)) <!-- 2026-03-04 10:59:38+00:00 -->
+- [[#3781](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3781)] Support additional dns_access attributes in GKE cluster modules ([ludoo](https://github.com/ludoo)) <!-- 2026-03-04 10:06:48+00:00 -->
+- [[#3779](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3779)] Add missing folder features to project factory and align logging across folder/org modules ([ludoo](https://github.com/ludoo)) <!-- 2026-03-04 09:28:48+00:00 -->
 - [[#3775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3775)] Allow reusing IAM binding key across objects in kms module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-02 07:06:37+00:00 -->
 - [[#3776](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3776)] fix(net-lb-app-ext-regional): use list(string) for route_rules cors_policy attributes ([cvanwijck-hub24](https://github.com/cvanwijck-hub24)) <!-- 2026-03-02 06:28:02+00:00 -->
 - [[#3771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3771)] Allow specifying cloudrun target without service name in net-lb-app-int module ([ludoo](https://github.com/ludoo)) <!-- 2026-02-27 14:43:46+00:00 -->
@@ -2305,7 +2316,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.1.0...HEAD
+[53.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.1.0...v53.0.0
 [53.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.0.0...v52.1.0
 [52.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.1.0...v52.0.0
 [52.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v52.0.0...v51.1.0
