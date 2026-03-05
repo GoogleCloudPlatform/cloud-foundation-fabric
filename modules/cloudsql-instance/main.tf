@@ -120,8 +120,8 @@ resource "google_sql_database_instance" "primary" {
           ? var.backup_configuration.binary_log_enabled || local.has_replicas || local.is_regional
           : null
         )
-        start_time                     = var.backup_configuration.start_time
-        location                       = var.backup_configuration.location
+        start_time = var.backup_configuration.start_time
+        location   = var.backup_configuration.location
         // must be explicitly false (not null) when backups are disabled
         point_in_time_recovery_enabled = (
           var.backup_configuration.enabled
