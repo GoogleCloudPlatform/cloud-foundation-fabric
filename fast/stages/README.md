@@ -44,7 +44,6 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Environment-level resources (3)
 
-- [Data Platform](./3-data-platform-dev/)
 - [GKE Multitenant](./3-gke-dev/)
 - [Google Cloud VMware Engine](./3-gcve-dev/)
 

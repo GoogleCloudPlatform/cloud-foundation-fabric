@@ -1,0 +1,22 @@
+automation = {
+  outputs_bucket = "fast2-prod-iac-core-outputs"
+}
+prefix = "test"
+billing_account = {
+  id = "000000-111111-222222"
+}
+folder_ids = {
+  data-platform = "folders/1234567890"
+}
+tag_values = {
+  "environment/development" = "tagValues/1234567890"
+  "environment/production"  = "tagValues/2345678901"
+}
+factories_config = {
+  dataset = "datasets/data-platform"
+}
+organization = {
+  domain      = "fast.example.com"
+  id          = 123456789012
+  customer_id = "C00000000"
+}

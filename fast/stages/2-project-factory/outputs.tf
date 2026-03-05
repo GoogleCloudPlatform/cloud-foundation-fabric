@@ -19,6 +19,11 @@ output "projects" {
   value       = module.factory.projects
 }
 
+output "vpcs" {
+  description = "VPCs."
+  value       = module.vpc-factory.vpcs
+}
+
 resource "google_storage_bucket_object" "version" {
   count          = fileexists("fast_version.txt") ? 1 : 0
   bucket         = var.automation.outputs_bucket

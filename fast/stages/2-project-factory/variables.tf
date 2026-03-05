@@ -39,10 +39,12 @@ variable "factories_config" {
   type = object({
     dataset = optional(string, "datasets/classic")
     paths = optional(object({
-      defaults = optional(string, "defaults.yaml")
-      folders  = optional(string, "folders")
-      projects = optional(string, "projects")
-      budgets  = optional(string)
+      defaults          = optional(string, "defaults.yaml")
+      folders           = optional(string, "folders")
+      projects          = optional(string, "projects")
+      project_templates = optional(string)
+      budgets           = optional(string)
+      vpcs              = optional(string)
     }), {})
   })
   nullable = false

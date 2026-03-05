@@ -94,3 +94,5 @@ pytest tests/examples/test_plan.py
 *   **File Structure:**
     *   Move away from `main.tf`, `variables.tf`, `outputs.tf`.
     *   Use descriptive filenames: `iam.tf`, `gcs.tf`, `mounts.tf`.
+*   **Lexical Order:** Preserve lexical order when adding attributes to schemas, variable types, and maps.
+*   **IAM References:** Always validate new principal references against the interpolation tables in `modules/project-factory/README.md`. Use correct namespaces (e.g. `$iam_principals:service_accounts/_self_/...` for local SAs).

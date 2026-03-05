@@ -31,4 +31,4 @@ node_modules
 fast/**/globals.auto.tfvars.json
 cloud_sql_proxy
 env/
-
+**/.gemini-work
