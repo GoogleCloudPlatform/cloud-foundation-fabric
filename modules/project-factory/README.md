@@ -557,7 +557,7 @@ asset_feeds:
 ```yaml
 name: App 0
 factories_config:
-  org_policies: data/factories/org-policies
+  org_policies: ./data/factories/org-policies
 pam_entitlements:
   app-0-admins:
     max_request_duration: 3600s

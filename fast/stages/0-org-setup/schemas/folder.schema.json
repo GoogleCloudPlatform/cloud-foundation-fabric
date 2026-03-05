@@ -262,7 +262,7 @@
     },
     "id": {
       "type": "string",
-      "pattern": "^(folders/[0-9]+|\\$folder_ids:[a-z0-9_-]+)$"
+      "pattern": "^(folders/[0-9]+|\\$folder_ids:[a-z0-9_/-]+)$"
     },
     "firewall_policy": {
       "type": "object",
