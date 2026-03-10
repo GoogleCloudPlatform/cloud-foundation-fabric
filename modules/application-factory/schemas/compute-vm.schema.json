@@ -1,0 +1,248 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Compute VM",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["zone", "network_interfaces"],
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override resource name derived from filename."
+    },
+    "zone": {
+      "type": "string"
+    },
+    "instance_type": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "can_ip_forward": {
+      "type": "boolean"
+    },
+    "confidential_compute": {
+      "type": "boolean"
+    },
+    "enable_display": {
+      "type": "boolean"
+    },
+    "hostname": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "metadata_startup_script": {
+      "type": "string"
+    },
+    "min_cpu_platform": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "boot_disk": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "auto_delete": { "type": "boolean" },
+        "source": { "type": "string" },
+        "use_independent_disk": { "type": "boolean" },
+        "initialize_params": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "architecture": { "type": "string" },
+            "image": { "type": "string" },
+            "provisioned_iops": { "type": "number" },
+            "provisioned_throughput": { "type": "number" },
+            "size": { "type": "number" },
+            "storage_pool": { "type": "string" },
+            "type": { "type": "string" }
+          }
+        }
+      }
+    },
+    "attached_disks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["size"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "device_name": { "type": "string" },
+          "size": { "type": "string" },
+          "source": { "type": "string" },
+          "source_type": {
+            "type": "string",
+            "enum": ["image", "snapshot", "attach"]
+          },
+          "options": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "architecture": { "type": "string" },
+              "auto_delete": { "type": "boolean" },
+              "mode": { "type": "string" },
+              "provisioned_iops": { "type": "number" },
+              "provisioned_throughput": { "type": "number" },
+              "replica_zone": { "type": "string" },
+              "storage_pool": { "type": "string" },
+              "type": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "network_interfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["network", "subnetwork"],
+        "additionalProperties": false,
+        "properties": {
+          "network": { "type": "string" },
+          "subnetwork": { "type": "string" },
+          "alias_ips": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "nat": { "type": "boolean" },
+          "nic_type": { "type": "string" },
+          "stack_type": { "type": "string" },
+          "addresses": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "internal": { "type": "string" },
+              "external": { "type": "string" }
+            }
+          },
+          "network_tier": { "type": "string" }
+        }
+      }
+    },
+    "network_attached_interfaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "encryption": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "encrypt_boot": { "type": "boolean" },
+        "disk_encryption_key_raw": { "type": "string" },
+        "kms_key_self_link": { "type": "string" }
+      }
+    },
+    "gpu": {
+      "type": "object",
+      "required": ["count", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "count": { "type": "number" },
+        "type": { "type": "string" }
+      }
+    },
+    "group": {
+      "type": "object",
+      "required": ["named_ports"],
+      "additionalProperties": false,
+      "properties": {
+        "named_ports": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow_stopping_for_update": { "type": "boolean" },
+        "deletion_protection": { "type": "boolean" },
+        "spot": { "type": "boolean" },
+        "termination_action": {
+          "type": "string",
+          "enum": ["STOP", "DELETE"]
+        },
+        "key_revocation_action_type": {
+          "type": "string",
+          "enum": ["NONE", "STOP"]
+        }
+      }
+    },
+    "scratch_disks": {
+      "type": "object",
+      "required": ["count", "interface"],
+      "additionalProperties": false,
+      "properties": {
+        "count": { "type": "number" },
+        "interface": { "type": "string" }
+      }
+    },
+    "service_account": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "auto_create": { "type": "boolean" },
+        "email": { "type": "string" },
+        "scopes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "shielded_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enable_secure_boot": { "type": "boolean" },
+        "enable_vtpm": { "type": "boolean" },
+        "enable_integrity_monitoring": { "type": "boolean" }
+      }
+    },
+    "create_template": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "regional": { "type": "boolean" }
+      }
+    },
+    "instance_schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "active": { "type": "boolean" },
+        "description": { "type": "string" },
+        "expiration_time": { "type": "string" },
+        "start_time": { "type": "string" },
+        "timezone": { "type": "string" },
+        "vm_start": { "type": "string" },
+        "vm_stop": { "type": "string" }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pub/Sub Topic",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override resource name derived from filename."
+    },
+    "kms_key": {
+      "type": "string"
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "message_retention_duration": {
+      "type": "string"
+    },
+    "message_storage_enforce_in_transit": {
+      "type": "boolean"
+    },
+    "regions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "schema": {
+      "type": "object",
+      "required": ["definition", "schema_type"],
+      "additionalProperties": false,
+      "properties": {
+        "definition": { "type": "string" },
+        "msg_encoding": { "type": "string" },
+        "schema_type": { "type": "string" }
+      }
+    },
+    "subscriptions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ack_deadline_seconds": { "type": "number" },
+          "enable_exactly_once_delivery": { "type": "boolean" },
+          "enable_message_ordering": { "type": "boolean" },
+          "expiration_policy_ttl": { "type": "string" },
+          "filter": { "type": "string" },
+          "labels": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "message_retention_duration": { "type": "string" },
+          "retain_acked_messages": { "type": "boolean" },
+          "iam": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "bigquery": {
+            "type": "object",
+            "required": ["table"],
+            "additionalProperties": false,
+            "properties": {
+              "table": { "type": "string" },
+              "drop_unknown_fields": { "type": "boolean" },
+              "service_account_email": { "type": "string" },
+              "use_table_schema": { "type": "boolean" },
+              "use_topic_schema": { "type": "boolean" },
+              "write_metadata": { "type": "boolean" }
+            }
+          },
+          "cloud_storage": {
+            "type": "object",
+            "required": ["bucket"],
+            "additionalProperties": false,
+            "properties": {
+              "bucket": { "type": "string" },
+              "filename_prefix": { "type": "string" },
+              "filename_suffix": { "type": "string" },
+              "max_duration": { "type": "string" },
+              "max_bytes": { "type": "number" },
+              "avro_config": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "write_metadata": { "type": "boolean" }
+                }
+              }
+            }
+          },
+          "dead_letter_policy": {
+            "type": "object",
+            "required": ["topic"],
+            "additionalProperties": false,
+            "properties": {
+              "topic": { "type": "string" },
+              "max_delivery_attempts": { "type": "number" }
+            }
+          },
+          "push": {
+            "type": "object",
+            "required": ["endpoint"],
+            "additionalProperties": false,
+            "properties": {
+              "endpoint": { "type": "string" },
+              "attributes": {
+                "type": "object",
+                "additionalProperties": { "type": "string" }
+              },
+              "no_wrapper": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "write_metadata": { "type": "boolean" }
+                }
+              },
+              "oidc_token": {
+                "type": "object",
+                "required": ["service_account_email"],
+                "additionalProperties": false,
+                "properties": {
+                  "audience": { "type": "string" },
+                  "service_account_email": { "type": "string" }
+                }
+              }
+            }
+          },
+          "retry_policy": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "minimum_backoff": { "type": "number" },
+              "maximum_backoff": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "iam": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

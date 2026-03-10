@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GCS Bucket",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override resource name derived from filename."
+    },
+    "location": {
+      "type": "string"
+    },
+    "storage_class": {
+      "type": "string",
+      "enum": ["STANDARD", "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE", "ARCHIVE"]
+    },
+    "prefix": {
+      "type": "string"
+    },
+    "autoclass": {
+      "type": "boolean"
+    },
+    "cors": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "method": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "response_header": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "max_age_seconds": {
+          "type": "number"
+        }
+      }
+    },
+    "default_event_based_hold": {
+      "type": "boolean"
+    },
+    "enable_hierarchical_namespace": {
+      "type": "boolean"
+    },
+    "enable_object_retention": {
+      "type": "boolean"
+    },
+    "encryption_key": {
+      "type": "string"
+    },
+    "force_destroy": {
+      "type": "boolean"
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "lifecycle_rules": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["action", "condition"],
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "type": "object",
+            "required": ["type"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["Delete", "SetStorageClass", "AbortIncompleteMultipartUpload"]
+              },
+              "storage_class": { "type": "string" }
+            }
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "age": { "type": "number" },
+              "created_before": { "type": "string" },
+              "custom_time_before": { "type": "string" },
+              "days_since_custom_time": { "type": "number" },
+              "days_since_noncurrent_time": { "type": "number" },
+              "matches_prefix": { "type": "array", "items": { "type": "string" } },
+              "matches_storage_class": { "type": "array", "items": { "type": "string" } },
+              "matches_suffix": { "type": "array", "items": { "type": "string" } },
+              "noncurrent_time_before": { "type": "string" },
+              "num_newer_versions": { "type": "number" },
+              "with_state": { "type": "string", "enum": ["LIVE", "ARCHIVED", "ANY"] }
+            }
+          }
+        }
+      }
+    },
+    "logging_config": {
+      "type": "object",
+      "required": ["log_bucket"],
+      "additionalProperties": false,
+      "properties": {
+        "log_bucket": { "type": "string" },
+        "log_object_prefix": { "type": "string" }
+      }
+    },
+    "public_access_prevention": {
+      "type": "string",
+      "enum": ["enforced", "inherited"]
+    },
+    "requester_pays": {
+      "type": "boolean"
+    },
+    "retention_policy": {
+      "type": "object",
+      "required": ["retention_period"],
+      "additionalProperties": false,
+      "properties": {
+        "retention_period": { "type": "string" },
+        "is_locked": { "type": "boolean" }
+      }
+    },
+    "soft_delete_retention": {
+      "type": "number"
+    },
+    "uniform_bucket_level_access": {
+      "type": "boolean"
+    },
+    "versioning": {
+      "type": "boolean"
+    },
+    "website": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "main_page_suffix": { "type": "string" },
+        "not_found_page": { "type": "string" }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "iam": {
+      "$ref": "#/$defs/iam"
+    },
+    "iam_bindings": {
+      "$ref": "#/$defs/iam_bindings"
+    },
+    "iam_bindings_additive": {
+      "$ref": "#/$defs/iam_bindings_additive"
+    },
+    "iam_by_principals": {
+      "$ref": "#/$defs/iam_by_principals"
+    }
+  },
+  "$defs": {
+    "iam": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "iam_bindings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["members", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "members": { "type": "array", "items": { "type": "string" } },
+          "role": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "required": ["expression", "title"],
+            "additionalProperties": false,
+            "properties": {
+              "expression": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "iam_bindings_additive": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["member", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "member": { "type": "string" },
+          "role": { "type": "string" },
+          "condition": {
+            "type": "object",
+            "required": ["expression", "title"],
+            "additionalProperties": false,
+            "properties": {
+              "expression": { "type": "string" },
+              "title": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "iam_by_principals": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}
