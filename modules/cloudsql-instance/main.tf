@@ -87,7 +87,7 @@ resource "google_sql_database_instance" "primary" {
     retain_backups_on_delete    = try(var.backup_configuration.retain_backups_on_delete, null)
 
     ip_configuration {
-      ipv4_enabled = var.network_config.connectivity.public_ipv4
+      ipv4_enabled    = var.network_config.connectivity.public_ipv4
       private_network = local.psa_private_network
       allocated_ip_range = try(
         var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null
@@ -254,12 +254,12 @@ resource "google_sql_database_instance" "primary" {
 }
 
 resource "google_sql_database_instance" "replicas" {
-  provider            = google-beta
-  for_each            = local.has_replicas ? var.replicas : {}
-  project             = local.project_id
-  name                = "${local.prefix}${each.key}"
-  region              = lookup(local.ctx.locations, each.value.region, each.value.region)
-  database_version    = var.database_version
+  provider         = google-beta
+  for_each         = local.has_replicas ? var.replicas : {}
+  project          = local.project_id
+  name             = "${local.prefix}${each.key}"
+  region           = lookup(local.ctx.locations, each.value.region, each.value.region)
+  database_version = var.database_version
   encryption_key_name = (
     each.value.encryption_key_name == null
     ? null

@@ -29,14 +29,14 @@ locals {
 }
 
 resource "google_artifact_registry_repository" "registry" {
-  provider               = google-beta
-  project                = local.project_id
-  location               = local.location
-  description            = var.description
-  format                 = upper(local.format_string)
-  labels                 = var.labels
-  repository_id          = var.name
-  mode                   = "${upper(local.mode_string)}_REPOSITORY"
+  provider      = google-beta
+  project       = local.project_id
+  location      = local.location
+  description   = var.description
+  format        = upper(local.format_string)
+  labels        = var.labels
+  repository_id = var.name
+  mode          = "${upper(local.mode_string)}_REPOSITORY"
   kms_key_name = var.encryption_key == null ? null : lookup(
     local.ctx.kms_keys, var.encryption_key, var.encryption_key
   )

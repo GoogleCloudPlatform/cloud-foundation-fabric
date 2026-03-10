@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-variable "context" {
-  description = "Context-specific interpolations."
-  type = object({
-    kms_keys    = optional(map(string), {})
-    locations   = optional(map(string), {})
-    networks    = optional(map(string), {})
-    project_ids = optional(map(string), {})
-  })
-  default  = {}
-  nullable = false
-}
-
 variable "activation_policy" {
   description = "This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS."
   type        = string
@@ -73,6 +61,18 @@ variable "connector_enforcement" {
   description = "Specifies if connections must use Cloud SQL connectors."
   type        = string
   default     = null
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    kms_keys    = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "data_cache" {
