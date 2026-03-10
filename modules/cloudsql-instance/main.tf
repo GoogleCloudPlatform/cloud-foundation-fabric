@@ -1,5 +1,5 @@
-/** TO MOD
- * Copyright 2024 Google LLC
+/**
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,33 @@
  */
 
 locals {
-  prefix       = var.prefix == null ? "" : "${var.prefix}-"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  encryption_key_name = (
+    var.encryption_key_name == null
+    ? null
+    : lookup(local.ctx.kms_keys, var.encryption_key_name, var.encryption_key_name)
+  )
+  has_replicas = length(var.replicas) > 0
   is_mysql     = can(regex("^MYSQL", var.database_version))
   is_postgres  = can(regex("^POSTGRES", var.database_version))
-  has_replicas = length(var.replicas) > 0
   is_regional  = var.availability_type == "REGIONAL" ? true : false
+  psa_private_network = (
+    try(var.network_config.connectivity.psa_config.private_network, null) == null
+    ? null
+    : lookup(
+      local.ctx.networks,
+      var.network_config.connectivity.psa_config.private_network,
+      var.network_config.connectivity.psa_config.private_network
+    )
+  )
+  prefix     = var.prefix == null ? "" : "${var.prefix}-"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = lookup(local.ctx.locations, var.region, var.region)
 
   users = {
     for k, v in var.users : k =>
@@ -41,11 +63,11 @@ locals {
 
 resource "google_sql_database_instance" "primary" {
   provider            = google-beta
-  project             = var.project_id
+  project             = local.project_id
   name                = "${local.prefix}${var.name}"
-  region              = var.region
+  region              = local.region
   database_version    = var.database_version
-  encryption_key_name = var.encryption_key_name
+  encryption_key_name = local.encryption_key_name
   root_password       = var.root_password.random_password ? random_password.root_password[0].result : var.root_password.password
 
   settings {
@@ -66,9 +88,7 @@ resource "google_sql_database_instance" "primary" {
 
     ip_configuration {
       ipv4_enabled = var.network_config.connectivity.public_ipv4
-      private_network = try(
-        var.network_config.connectivity.psa_config.private_network, null
-      )
+      private_network = local.psa_private_network
       allocated_ip_range = try(
         var.network_config.connectivity.psa_config.allocated_ip_ranges.primary, null
       )
@@ -234,13 +254,17 @@ resource "google_sql_database_instance" "primary" {
 }
 
 resource "google_sql_database_instance" "replicas" {
-  provider             = google-beta
-  for_each             = local.has_replicas ? var.replicas : {}
-  project              = var.project_id
-  name                 = "${local.prefix}${each.key}"
-  region               = each.value.region
-  database_version     = var.database_version
-  encryption_key_name  = each.value.encryption_key_name
+  provider            = google-beta
+  for_each            = local.has_replicas ? var.replicas : {}
+  project             = local.project_id
+  name                = "${local.prefix}${each.key}"
+  region              = lookup(local.ctx.locations, each.value.region, each.value.region)
+  database_version    = var.database_version
+  encryption_key_name = (
+    each.value.encryption_key_name == null
+    ? null
+    : lookup(local.ctx.kms_keys, each.value.encryption_key_name, each.value.encryption_key_name)
+  )
   master_instance_name = google_sql_database_instance.primary.name
 
   settings {
@@ -263,9 +287,7 @@ resource "google_sql_database_instance" "replicas" {
       ipv4_enabled = (
         var.network_config.connectivity.public_ipv4
       )
-      private_network = (
-        try(var.network_config.connectivity.psa_config.private_network, null)
-      )
+      private_network = local.psa_private_network
       allocated_ip_range = try(
         var.network_config.connectivity.psa_config.allocated_ip_ranges.replica, null
       )
@@ -314,7 +336,7 @@ resource "google_sql_database_instance" "replicas" {
 
 resource "google_sql_database" "databases" {
   for_each = var.databases != null ? toset(var.databases) : toset([])
-  project  = var.project_id
+  project  = local.project_id
   instance = google_sql_database_instance.primary.name
   name     = each.key
 }
@@ -345,7 +367,7 @@ resource "random_password" "root_password" {
 
 resource "google_sql_user" "users" {
   for_each = local.users
-  project  = var.project_id
+  project  = local.project_id
   instance = google_sql_database_instance.primary.name
   name     = each.value.name
   host     = each.value.host
@@ -365,7 +387,7 @@ resource "google_sql_ssl_cert" "client_certificates" {
     : toset([])
   )
   provider    = google-beta
-  project     = var.project_id
+  project     = local.project_id
   instance    = google_sql_database_instance.primary.name
   common_name = each.key
 }
