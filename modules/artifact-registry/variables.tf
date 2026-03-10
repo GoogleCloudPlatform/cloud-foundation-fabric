@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    artifact_registries = optional(map(string), {})
+    condition_vars      = optional(map(map(string)), {})
+    custom_roles        = optional(map(string), {})
+    iam_principals      = optional(map(string), {})
+    kms_keys            = optional(map(string), {})
+    locations           = optional(map(string), {})
+    project_ids         = optional(map(string), {})
+    secrets             = optional(map(string), {})
+    tag_values          = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "cleanup_policies" {
   description = "Object containing details about the cleanup policies for an Artifact Registry repository."
   type = map(object({

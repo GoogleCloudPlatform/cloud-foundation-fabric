@@ -18,14 +18,14 @@ locals {
   url = (
     var.universe == null
     ? join("/", [
-      "${var.location}-${local.format_string}.pkg.dev",
-      var.project_id,
+      "${local.location}-${local.format_string}.pkg.dev",
+      local.project_id,
       var.name
     ])
     : join("/", [
       "${local.format_string}.${var.universe.package_domain}",
       var.universe.prefix,
-      element(split(":", var.project_id), 1),
+      element(split(":", local.project_id), 1),
       var.name
     ])
   )
