@@ -12,22 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-lb-app-int
-common_tfvars:
-  - common.tfvars
-tests:
-  context:
-  defaults:
-  groups:
-  health-checks-custom:
-  health-checks-external:
-  health-checks-grpc:
-  health-checks-http:
-  health-checks-http2:
-  health-checks-https:
-  health-checks-ssl:
-  health-checks-tcp:
-  https:
-  negs:
-  ssl:
-  urlmaps:
+values:
+  google_sql_database_instance.primary:
+    database_version: POSTGRES_13
+    encryption_key_name: projects/myprj/locations/europe-west8/keyRings/mykr/cryptoKeys/mykey
+    name: db-test
+    project: my-project
+    region: europe-west8
+    settings:
+    - ip_configuration:
+      - ipv4_enabled: false
+        private_network: projects/myprj/global/networks/myvpc
+
+counts:
+  google_sql_database_instance: 1
+  modules: 0
+  resources: 1
