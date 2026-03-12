@@ -16,10 +16,15 @@ values:
   google_compute_interconnect_attachment.default:
     admin_enabled: true
     bandwidth: BPS_100G
+    candidate_cloud_router_ip_address: null
+    candidate_cloud_router_ipv6_address: null
+    candidate_customer_router_ip_address: null
+    candidate_customer_router_ipv6_address: null
     candidate_subnets:
     - 169.254.1.0/29
     description: test attachment
-    edge_availability_domain: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     encryption: NONE
     interconnect: projects/my-project/global/interconnects/my-interconnect
     ipsec_internal_addresses: null
@@ -72,3 +77,10 @@ values:
     byte_length: 12
     keepers: null
     prefix: null
+
+counts:
+  google_compute_interconnect_attachment: 1
+  google_compute_router_interface: 1
+  google_compute_router_peer: 1
+  modules: 0
+  random_id: 1
