@@ -32,7 +32,6 @@ values:
     labels: null
     mtu: '1500'
     name: test-attachment
-    params: []
     project: my-project
     region: europe-west1
     router: my-router
