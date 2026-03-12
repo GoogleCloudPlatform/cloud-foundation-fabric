@@ -112,7 +112,7 @@ module "db" {
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=1 resources=3 inventory=replicas.yaml e2e
+# tftest modules=1 resources=3 inventory=replicas.yaml
 ```
 
 ### Custom flags, databases and users
