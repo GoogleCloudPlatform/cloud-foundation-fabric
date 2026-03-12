@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  network    = lookup(local.ctx.networks, var.vpc_config.network, var.vpc_config.network)
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = lookup(local.ctx.locations, var.region, var.region)
+  subnetwork = lookup(local.ctx.subnets, var.vpc_config.subnetwork, var.vpc_config.subnetwork)
+}
 
 locals {
   # we need keys in the endpoint type to address issue #1055
@@ -60,18 +73,22 @@ locals {
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  provider              = google-beta
-  project               = var.project_id
-  region                = var.region
-  name                  = var.name
-  description           = var.description
-  ip_address            = var.address
+  provider    = google-beta
+  project     = local.project_id
+  region      = local.region
+  name        = var.name
+  description = var.description
+  ip_address = (
+    var.address == null
+    ? null
+    : lookup(local.ctx.addresses, var.address, var.address)
+  )
   ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
-  network               = var.vpc_config.network
+  network               = local.network
   network_tier          = var.network_tier_premium ? "PREMIUM" : "STANDARD"
   port_range            = join(",", local.fwd_rule_ports)
-  subnetwork            = var.vpc_config.subnetwork
+  subnetwork            = local.subnetwork
   labels                = var.labels
   target                = local.fwd_rule_target
   # during the preview phase you cannot change this attribute on an existing rule
@@ -87,8 +104,8 @@ resource "google_compute_forwarding_rule" "default" {
 
 resource "google_compute_region_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.create_configs
-  project     = var.project_id
-  region      = var.region
+  project     = local.project_id
+  region      = local.region
   name        = coalesce(each.value.name, "${var.name}-${each.key}")
   certificate = each.value.certificate
   private_key = each.value.private_key
@@ -100,8 +117,8 @@ resource "google_compute_region_ssl_certificate" "default" {
 
 resource "google_compute_region_target_http_proxy" "default" {
   count       = var.protocol == "HTTPS" ? 0 : 1
-  project     = var.project_id
-  region      = var.region
+  project     = local.project_id
+  region      = local.region
   name        = coalesce(var.https_proxy_config.name, var.name)
   description = var.http_proxy_config.description
   url_map     = google_compute_region_url_map.default.id
@@ -109,8 +126,8 @@ resource "google_compute_region_target_http_proxy" "default" {
 
 resource "google_compute_region_target_https_proxy" "default" {
   count                            = var.protocol == "HTTPS" ? 1 : 0
-  project                          = var.project_id
-  region                           = var.region
+  project                          = local.project_id
+  region                           = local.region
   name                             = coalesce(var.https_proxy_config.name, var.name)
   description                      = var.https_proxy_config.description
   ssl_certificates                 = length(local.proxy_ssl_certificates) == 0 ? null : local.proxy_ssl_certificates
@@ -121,12 +138,14 @@ resource "google_compute_region_target_https_proxy" "default" {
 
 resource "google_compute_service_attachment" "default" {
   count          = var.service_attachment == null ? 0 : 1
-  project        = var.project_id
-  region         = var.region
+  project        = local.project_id
+  region         = local.region
   name           = var.name
   description    = var.description
   target_service = google_compute_forwarding_rule.default.id
-  nat_subnets    = var.service_attachment.nat_subnets
+  nat_subnets = [
+    for s in var.service_attachment.nat_subnets : lookup(local.ctx.subnets, s, s)
+  ]
   connection_preference = (
     var.service_attachment.automatic_connection
     ? "ACCEPT_AUTOMATIC"
@@ -154,7 +173,7 @@ resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
   zone = each.value.zone
@@ -164,12 +183,12 @@ resource "google_compute_network_endpoint_group" "default" {
   description           = var.description
   network_endpoint_type = each.value.type
   network = (
-    each.value.network != null ? each.value.network : var.vpc_config.network
+    each.value.network != null ? each.value.network : local.network
   )
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : coalesce(each.value.subnetwork, var.vpc_config.subnetwork)
+    : coalesce(each.value.subnetwork, local.subnetwork)
   )
 }
 
@@ -191,7 +210,7 @@ resource "google_compute_region_network_endpoint_group" "default" {
   for_each = local.neg_regional
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
   region                = each.value.region
@@ -211,7 +230,7 @@ resource "google_compute_region_network_endpoint_group" "psc" {
   for_each = local.neg_regional_psc
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
   region = each.value.psc.region
@@ -246,7 +265,7 @@ locals {
 
 resource "google_compute_region_network_endpoint_group" "internet" {
   for_each = local.neg_internet
-  project  = var.project_id
+  project  = local.project_id
   name     = "${var.name}-${each.key}"
   region   = each.value.internet.region
   # re-enable once provider properly supports this
@@ -255,7 +274,7 @@ resource "google_compute_region_network_endpoint_group" "internet" {
   network_endpoint_type = (
     each.value.internet.use_fqdn ? "INTERNET_FQDN_PORT" : "INTERNET_IP_PORT"
   )
-  network = var.vpc_config.network
+  network = local.network
 }
 
 resource "google_compute_region_network_endpoint" "internet" {
