@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: fast/stages/2-networking
+# yaml-language-server: $schema=../../../../../schemas/vlan-attachments.schema.json
 
-tests:
-  # peering is renamed to simple so as to trigger tflint
-  simple:
-  ncc:
-  nva:
-  vlan_attachments:
-    inventory:
-      - vlan_attachments.yaml
-    extra_dirs:
-      - ../../../tests/fast/stages/s2_networking/data-testvlan
-  vpns:
+name: to-onprem-vlan-0
+region: $locations:primary
+router_config:
+  create: false
+  name: $routers:hub/vpn-router
+ncc_spoke_config:
+  hub: $ncc_hubs:hub
+peer_asn: "64513"
+dedicated_interconnect_config:
+  bandwidth: BPS_10G
+  interconnect: "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/my-interconnect-0"
+  vlan_tag: "123"

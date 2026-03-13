@@ -72,7 +72,7 @@ locals {
     "${vpn_key}/${replace(vpn_config.ncc_spoke_config.hub, "$ncc_hubs:", "")}" => merge(
       vpn_config.ncc_spoke_config,
       {
-        name             = replace("${vpn_key}/${vpn_config.ncc_spoke_config.hub}", "$ncc_hubs:", "") # TODO: eww
+        name             = replace("${vpn_key}/${vpn_config.ncc_spoke_config.hub}", "$ncc_hubs:", "")
         project_id       = vpn_config.project_id
         hub              = vpn_config.ncc_spoke_config.hub
         group            = try(vpn_config.ncc_spoke_config.group, null)
@@ -82,6 +82,22 @@ locals {
         tunnel_self_link = [for t, _ in vpn_config.tunnels : module.vpn-ha[vpn_key].tunnel_self_links[t]]
       }
     ) if try(vpn_config.ncc_spoke_config != null, false)
+  }
+  ncc_vlan_attachment_spokes = {
+    for va_key, va_config in local.vlan_attachments :
+    "${va_key}/${replace(va_config.ncc_spoke_config.hub, "$ncc_hubs:", "")}" => merge(
+      va_config.ncc_spoke_config,
+      {
+        name           = replace("${va_key}/${va_config.ncc_spoke_config.hub}", "$ncc_hubs:", "")
+        project_id     = va_config.project_id
+        hub            = va_config.ncc_spoke_config.hub
+        group          = try(va_config.ncc_spoke_config.group, null)
+        location       = va_config.region
+        description    = lookup(va_config.ncc_spoke_config, "description", "Terraform-managed.")
+        labels         = lookup(va_config.ncc_spoke_config, "labels", {})
+        attachment_uri = module.vlan-attachments[va_key].id
+      }
+    ) if try(va_config.ncc_spoke_config != null, false)
   }
 }
 
@@ -192,4 +208,35 @@ resource "google_network_connectivity_spoke" "tunnels" {
   depends_on = [module.vpn-ha]
 }
 
-
+resource "google_network_connectivity_spoke" "vlan_attachments" {
+  for_each = local.ncc_vlan_attachment_spokes
+  project = lookup(
+    local.ctx_projects.project_ids,
+    replace(each.value.project_id, "$project_ids:", ""),
+    each.value.project_id
+  )
+  name = replace(each.key, "/", "-")
+  location = lookup(
+    local.ctx.locations,
+    replace(each.value.location, "$locations:", ""),
+    each.value.location
+  )
+  description = each.value.description
+  labels      = each.value.labels
+  hub = lookup(
+    local.ctx_ncc_hubs,
+    replace(each.value.hub, "$ncc_hubs:", ""),
+    each.value.hub
+  )
+  group = each.value.group == null ? null : lookup(
+    local.ctx_ncc_groups,
+    replace(each.value.group, "$ncc_groups:", ""),
+    each.value.group
+  )
+  linked_interconnect_attachments {
+    uris                       = [each.value.attachment_uri]
+    site_to_site_data_transfer = true
+    include_import_ranges      = ["ALL_IPV4_RANGES"]
+  }
+  depends_on = [module.vlan-attachments]
+}

@@ -16,6 +16,12 @@
   <br>*enum: ['GLOBAL', 'REGIONAL']*
 - **firewall_policy_enforcement_order**: *string*
   <br>*enum: ['BEFORE_CLASSIC_FIREWALL', 'AFTER_CLASSIC_FIREWALL']*
+- **factories_config**: *object*
+  <br>*additional properties: false*
+  - **firewall_rules**: *string*
+  - **subnets**: *string*
+  - **vlan_attachments**: *string*
+  - **vpns**: *string*
 - **create_googleapis_routes**: *reference([create_googleapis_routes](#refs-create_googleapis_routes))*
 - **dns_policy**: *reference([dns_policy](#refs-dns_policy))*
 - **ipv6_config**: *reference([ipv6_config](#refs-ipv6_config))*

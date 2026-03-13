@@ -6,6 +6,13 @@
 
 *additional properties: false*
 
+- **asset_search**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**asset_types**: *array*
+      - items: *string*
+    - **query**: *string*
 - **asset_feeds**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
@@ -75,6 +82,26 @@
       - **exempted_members**: *array*
         - items: *string*
 - **deletion_protection**: *boolean*
+- **id**: *string*
+  <br>*pattern: ^(folders/[0-9]+|\$folder_ids:[a-z0-9_/-]+)$*
+- **firewall_policy**: *object*
+  <br>*additional properties: false*
+  - ⁺**name**: *string*
+  - ⁺**policy**: *string*
+- **logging**: *object*
+  <br>*additional properties: false*
+  - **kms_key_name**: *string*
+  - **storage_location**: *string*
+  - **sinks**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9-_]+$`**: *object*
+      <br>*additional properties: false*
+      - **description**: *string*
+      - **destination**: *string*
+      - **exclusions**: *object*
+      - **filter**: *string*
+      - **type**: *string*
+        <br>*default: logging*, *enum: ['bigquery', 'logging', 'project', 'pubsub', 'storage']*
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **org_policies**: *string*

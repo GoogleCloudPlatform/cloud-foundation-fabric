@@ -55,13 +55,22 @@ locals {
         subnets_psc                       = try(v.subnets_psc, [])
         subnets                           = try(v.subnets, [])
         subnets_factory_config = {
-          subnets_folder = "${v.factory_basepath}/subnets"
+          subnets_folder = try(
+            startswith(v.factories_config.subnets, "/") || startswith(v.factories_config.subnets, ".") ? v.factories_config.subnets :
+            "${v.factory_basepath}/${v.factories_config.subnets}",
+            "${v.factory_basepath}/subnets"
+          )
         }
         firewall_factory_config = {
-          rules_folder = "${v.factory_basepath}/firewall-rules"
+          rules_folder = try(
+            startswith(v.factories_config.firewall_rules, "/") || startswith(v.factories_config.firewall_rules, ".") ? v.factories_config.firewall_rules :
+            "${v.factory_basepath}/${v.factories_config.firewall_rules}",
+            "${v.factory_basepath}/firewall-rules"
+          )
         }
-        peering_config = try(v.peering_config, {})
-        vpn_config     = try(v.vpn_config, {})
+        factories_config = try(v.factories_config, {})
+        peering_config   = try(v.peering_config, {})
+        vpn_config       = try(v.vpn_config, {})
       }
     )
   }
