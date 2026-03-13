@@ -114,17 +114,17 @@ variable "tunnels" {
     # from the 169.254.0.0/16 block.
     bgp_session_range = string
     cipher_suite = optional(object({
-      phase1 = object({
-        dh         = list(string)
-        encryption = list(string)
-        integrity  = list(string)
-        prf        = list(string)
-      })
-      phase2 = object({
-        encryption = list(string)
-        integrity  = list(string)
-        pfs        = list(string)
-      })
+      phase1 = optional(object({
+        dh         = optional(list(string))
+        encryption = optional(list(string))
+        integrity  = optional(list(string))
+        prf        = optional(list(string))
+      }))
+      phase2 = optional(object({
+        encryption = optional(list(string))
+        integrity  = optional(list(string))
+        pfs        = optional(list(string))
+      }))
     }))
     ike_version                     = optional(number, 2)
     name                            = optional(string)

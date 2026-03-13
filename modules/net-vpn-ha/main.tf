@@ -196,18 +196,18 @@ resource "google_compute_vpn_tunnel" "tunnels" {
       dynamic "phase1" {
         for_each = [cipher_suite.value.phase1]
         content {
-          dh         = phase1.value.dh
-          encryption = phase1.value.encryption
-          integrity  = phase1.value.integrity
-          prf        = phase1.value.prf
+          dh         = try(phase1.value.dh, null)
+          encryption = try(phase1.value.encryption, null)
+          integrity  = try(phase1.value.integrity, null)
+          prf        = try(phase1.value.prf, null)
         }
       }
       dynamic "phase2" {
         for_each = [cipher_suite.value.phase2]
         content {
-          encryption = phase2.value.encryption
-          integrity  = phase2.value.integrity
-          pfs        = phase2.value.pfs
+          encryption = try(phase2.value.encryption, null)
+          integrity  = try(phase2.value.integrity, null)
+          pfs        = try(phase2.value.pfs, null)
         }
       }
     }
