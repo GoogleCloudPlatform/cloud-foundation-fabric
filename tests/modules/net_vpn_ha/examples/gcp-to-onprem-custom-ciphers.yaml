@@ -133,22 +133,22 @@ values:
     zero_custom_learned_route_priority: false
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-0"]:
     cipher_suite:
-    - phase1:
-      - dh:
-        - Group-14
-        encryption:
-        - AES-CBC-256
-        integrity:
-        - HMAC-SHA2-256-128
-        prf:
-        - PRF-HMAC-SHA2-256
-      phase2:
-      - encryption:
-        - AES-CBC-128
-        integrity:
-        - HMAC-SHA2-256-128
-        pfs:
-        - Group-14
+      - phase1:
+          - dh:
+              - Group-14
+            encryption:
+              - AES-CBC-256
+            integrity:
+              - HMAC-SHA2-256-128
+            prf:
+              - PRF-HMAC-SHA2-256
+        phase2:
+          - encryption:
+              - AES-CBC-128
+            integrity:
+              - HMAC-SHA2-256-128
+            pfs:
+              - Group-14
     description: null
     effective_labels:
       goog-terraform-provisioned: "true"
@@ -170,22 +170,22 @@ values:
     vpn_gateway_interface: 0
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-1"]:
     cipher_suite:
-    - phase1:
-      - dh:
-        - Group-14
-        encryption:
-        - AES-CBC-256
-        integrity:
-        - HMAC-SHA2-256-128
-        prf:
-        - PRF-HMAC-SHA2-256
-      phase2:
-      - encryption:
-        - AES-CBC-128
-        integrity:
-        - HMAC-SHA2-256-128
-        pfs:
-        - Group-14
+      - phase1:
+          - dh:
+              - Group-14
+            encryption:
+              - AES-CBC-256
+            integrity:
+              - HMAC-SHA2-256-128
+            prf:
+              - PRF-HMAC-SHA2-256
+        phase2:
+          - encryption:
+              - AES-CBC-128
+            integrity:
+              - HMAC-SHA2-256-128
+            pfs:
+              - Group-14
     description: null
     effective_labels:
       goog-terraform-provisioned: "true"
