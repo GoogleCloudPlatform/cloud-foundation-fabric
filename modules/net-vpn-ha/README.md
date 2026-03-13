@@ -298,10 +298,10 @@ module "vpn_ha" {
     }
   }
   vpn_gateway_create = {
-    stack_type = "IPV4_IPV6"
+    ipv6 = true
   }
 }
-# tftest modules=1 resources=12 intentory=ipv6.yaml
+# tftest modules=1 resources=12 inventory=ipv6.yaml
 ```
 
 You can optionally avoid to specify MD5 keys and the module will automatically generate them for you.
