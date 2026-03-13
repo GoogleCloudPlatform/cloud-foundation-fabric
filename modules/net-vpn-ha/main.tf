@@ -189,6 +189,29 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   ike_version           = each.value.ike_version
   shared_secret         = coalesce(each.value.shared_secret, local.secret)
   vpn_gateway           = local.vpn_gateway
+
+  dynamic "cipher_suite" {
+    for_each = each.value.cipher_suite != null ? [each.value.cipher_suite] : []
+    content {
+      dynamic "phase1" {
+        for_each = [cipher_suite.value.phase1]
+        content {
+          dh         = phase1.value.dh
+          encryption = phase1.value.encryption
+          integrity  = phase1.value.integrity
+          prf        = phase1.value.prf
+        }
+      }
+      dynamic "phase2" {
+        for_each = [cipher_suite.value.phase2]
+        content {
+          encryption = phase2.value.encryption
+          integrity  = phase2.value.integrity
+          pfs        = phase2.value.pfs
+        }
+      }
+    }
+  }
 }
 
 resource "random_id" "secret" {
