@@ -19,4 +19,9 @@ tests:
   simple:
   ncc:
   nva:
+  vlan_attachments:
+    inventory:
+      - vlan_attachments.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s2_networking/data-testvlan
   vpns:

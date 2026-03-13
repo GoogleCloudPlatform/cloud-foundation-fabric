@@ -20,11 +20,23 @@ locals {
   _vlan_attachments_files = try(
     merge([
       for vpc_key, vpc in local.vpcs : {
-        for f in fileset("${vpc.factory_basepath}/vlan-attachments", "**/*.yaml") :
+        for f in try(fileset(
+          try(
+            startswith(vpc.factories_config.vlan_attachments, "/") || startswith(vpc.factories_config.vlan_attachments, ".") ? vpc.factories_config.vlan_attachments :
+            "${vpc.factory_basepath}/${vpc.factories_config.vlan_attachments}",
+            "${vpc.factory_basepath}/vlan-attachments"
+          ),
+          "**/*.yaml"
+        ), []) :
         "${vpc_key}-${replace(f, ".yaml", "")}" => {
           vpc_key  = vpc_key
           filename = f
-          path     = "${vpc.factory_basepath}/vlan-attachments/${f}"
+          path = try(
+            startswith(vpc.factories_config.vlan_attachments, "/") || startswith(vpc.factories_config.vlan_attachments, ".")
+            ? "${vpc.factories_config.vlan_attachments}/${f}"
+            : "${vpc.factory_basepath}/${vpc.factories_config.vlan_attachments}/${f}",
+            "${vpc.factory_basepath}/vlan-attachments/${f}"
+          )
         }
       }
     ]...),

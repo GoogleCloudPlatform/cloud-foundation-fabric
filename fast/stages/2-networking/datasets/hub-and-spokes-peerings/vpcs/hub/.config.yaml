@@ -36,3 +36,5 @@ routes:
     next_hop: "default-internet-gateway"
 # dns_policy:
 #   logging: true
+factories_config:
+  vlan_attachments: "none"

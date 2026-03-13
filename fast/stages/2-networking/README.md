@@ -159,18 +159,19 @@ The following diagram shows the canonical paths for the different factory config
 ```tree
 .
 ├── dns
-│   ├── response-policies   # Response Policy Rules for DNS.
-│   └── zones               # DNS zones (private, forwarding, peering).
-├── firewall-policies       # Hierarchical firewall policies.
-├── ncc-hubs                # NCC configurations.
-├── nvas                    # NVA configurations.
-├── projects                # Project definitions.
+│   ├── response-policies    # Response Policy Rules for DNS.
+│   └── zones                # DNS zones (private, forwarding, peering).
+├── firewall-policies        # Hierarchical firewall policies.
+├── ncc-hubs                 # NCC configurations.
+├── nvas                     # NVA configurations.
+├── projects                 # Project definitions.
 └── vpcs
-    └── [vpc-name]          # Each subfolder represents a VPC.
-        ├── .config.yaml    # Main VPC configuration, peerings, NAT.
-        ├── firewall-rules  # VPC-level firewall rules.
-        ├── subnets         # Subnet definitions.
-        └── vpns            # VPN configurations.
+    └── [vpc-name]           # Each subfolder represents a VPC.
+        ├── .config.yaml     # Main VPC configuration, peerings, NAT.
+        ├── firewall-rules   # VPC-level firewall rules.
+        ├── subnets          # Subnet definitions.
+        ├── vlan-attachments # VLAN attachment configurations.
+        └── vpns             # VPN configurations.
 ```
 
 ### Networking projects
@@ -233,9 +234,10 @@ routers:
 
 ### VPC Connectivity
 
-This stage supports multiple ways to connect VPCs:
+This stage supports multiple ways to connect VPCs to other VPCs or other networks:
 
 - **VPC Peering:** Managed via the `peering_config` section in a VPC's `.config.yaml` file.
+- **VLAN Attachments:** Partner or Dedicated Interconnect VLAN attachments are defined in the `vpcs/[vpc-name]/vlan-attachments` directory. By default, they are disabled by passing a non-existing directory via `factories_config`.
 - **VPNs:** High-availability VPNs are defined in the `vpcs/[vpc-name]/vpns` directory.
 - **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file.
 
