@@ -1,0 +1,299 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.vm.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: projects/debian-cloud/global/images/family/debian-11
+        resource_manager_tags: null
+        size: 10
+        source_image_encryption_key: []
+        source_snapshot_encryption_key: []
+        storage_pool: null
+        type: pd-balanced
+      interface: null
+      mode: READ_WRITE
+    can_ip_forward: false
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    instance_encryption_key: []
+    key_revocation_action_type: NONE
+    labels: null
+    machine_type: f1-micro
+    metadata: null
+    metadata_startup_script: null
+    name: my-vm
+    network_interface:
+    - access_config:
+      - public_ptr_domain_name: null
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: subnet_self_link
+      vlan: null
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: my-project
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      preemption_notice_duration: []
+      provisioning_model: STANDARD
+      skip_guest_os_shutdown: false
+      termination_time: null
+    scratch_disk: []
+    service_account:
+    - email: tf-vm-my-vm@my-project.iam.gserviceaccount.com
+      scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/userinfo.email
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west1-b
+  module.vm.google_service_account.service_account[0]:
+    account_id: tf-vm-my-vm
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform VM my-vm.
+    email: tf-vm-my-vm@my-project.iam.gserviceaccount.com
+    member: serviceAccount:tf-vm-my-vm@my-project.iam.gserviceaccount.com
+    project: my-project
+    timeouts: null
+  module.vpn-dynamic.google_compute_address.gateway[0]:
+    address_type: EXTERNAL
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_collection: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: vpn-gateway-1
+    network: null
+    project: my-project
+    region: europe-west1
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.vpn-dynamic.google_compute_forwarding_rule.esp:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: null
+    ip_collection: null
+    ip_protocol: ESP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: vpn-gateway-1-esp
+    no_automate_dns_zone: null
+    ports: null
+    project: my-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.vpn-dynamic.google_compute_forwarding_rule.udp-4500:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: null
+    ip_collection: null
+    ip_protocol: UDP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: vpn-gateway-1-udp-4500
+    no_automate_dns_zone: null
+    port_range: '4500'
+    ports: null
+    project: my-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.vpn-dynamic.google_compute_forwarding_rule.udp-500:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: null
+    ip_collection: null
+    ip_protocol: UDP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: vpn-gateway-1-udp-500
+    no_automate_dns_zone: null
+    port_range: '500'
+    ports: null
+    project: my-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.vpn-dynamic.google_compute_router.router[0]:
+    bgp:
+    - advertise_mode: DEFAULT
+      advertised_groups: []
+      advertised_ip_ranges: []
+      asn: 64514
+      keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    md5_authentication_keys: []
+    name: vpn-gateway-1
+    network: vpc-name
+    params: []
+    project: my-project
+    region: europe-west1
+    timeouts: null
+  module.vpn-dynamic.google_compute_router_interface.router_interface["remote-1"]:
+    interconnect_attachment: null
+    ip_range: 169.254.139.133/30
+    name: gateway-1-remote-1
+    private_ip_address: null
+    project: my-project
+    region: europe-west1
+    router: vpn-gateway-1
+    subnetwork: null
+    timeouts: null
+    vpn_tunnel: gateway-1-remote-1
+  module.vpn-dynamic.google_compute_router_peer.bgp_peer["remote-1"]:
+    advertise_mode: DEFAULT
+    advertised_groups: []
+    advertised_ip_ranges: []
+    advertised_route_priority: 1000
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    enable: true
+    enable_ipv6: false
+    export_policies: null
+    import_policies: null
+    interface: gateway-1-remote-1
+    md5_authentication_key: []
+    name: gateway-1-remote-1
+    peer_asn: 64513
+    peer_ip_address: 169.254.139.134
+    project: my-project
+    region: europe-west1
+    router: vpn-gateway-1
+    router_appliance_instance: null
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  module.vpn-dynamic.google_compute_vpn_gateway.gateway:
+    description: null
+    name: gateway-1
+    network: vpc-name
+    params: []
+    project: my-project
+    region: europe-west1
+    timeouts: null
+  module.vpn-dynamic.google_compute_vpn_tunnel.tunnels["remote-1"]:
+    cipher_suite:
+    - phase1:
+      - dh:
+        - Group-14
+        encryption:
+        - AES-CBC-256
+        integrity:
+        - HMAC-SHA2-256-128
+        prf:
+        - PRF-HMAC-SHA2-256
+      phase2:
+      - encryption:
+        - AES-CBC-128
+        integrity:
+        - HMAC-SHA2-256-128
+        pfs:
+        - Group-14
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ike_version: 2
+    labels: null
+    name: gateway-1-remote-1
+    params: []
+    peer_external_gateway: null
+    peer_external_gateway_interface: null
+    peer_gcp_gateway: null
+    project: my-project
+    region: europe-west1
+    router: vpn-gateway-1
+    shared_secret_wo: null
+    shared_secret_wo_version: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    vpn_gateway: null
+    vpn_gateway_interface: null
+  module.vpn-dynamic.random_id.secret:
+    byte_length: 8
+    keepers: null
+    prefix: null
+
+counts:
+  google_compute_instance: 1
+  google_service_account: 1
+  google_compute_address: 1
+  google_compute_forwarding_rule: 3
+  google_compute_router: 1
+  google_compute_router_interface: 1
+  google_compute_router_peer: 1
+  google_compute_vpn_gateway: 1
+  google_compute_vpn_tunnel: 1
+  modules: 2
+  random_id: 1
+  resources: 12
