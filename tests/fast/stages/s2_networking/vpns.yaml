@@ -19,12 +19,13 @@ counts:
   google_compute_firewall_policy_association: 1
   google_compute_firewall_policy_rule: 5
   google_compute_ha_vpn_gateway: 5
+  google_compute_interconnect_attachment: 2
   google_compute_network: 3
   google_compute_route: 12
   google_compute_router: 4
-  google_compute_router_interface: 10
+  google_compute_router_interface: 12
   google_compute_router_nat: 1
-  google_compute_router_peer: 10
+  google_compute_router_peer: 12
   google_compute_shared_vpc_host_project: 3
   google_compute_subnetwork: 4
   google_compute_vpn_tunnel: 10
@@ -37,7 +38,7 @@ counts:
   google_project_service: 27
   google_project_service_identity: 21
   google_storage_bucket_object: 2
-  modules: 30
-  random_id: 15
-  resources: 215
+  modules: 32
+  random_id: 17
+  resources: 223
   terraform_data: 2
