@@ -6,6 +6,9 @@ billing_account = {
 }
 factories_config = {
   dataset = "./data-testvlan"
+  paths = {
+    defaults = "defaults.yaml"
+  }
 }
 folder_ids = {
   "networking"      = "folders/12345678"

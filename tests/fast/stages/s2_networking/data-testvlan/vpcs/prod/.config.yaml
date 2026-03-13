@@ -4,17 +4,25 @@
 
 # yaml-language-server: $schema=../../../../schemas/vpc.schema.json
 
-project_id: $project_ids:net-core-0
-name: hub-0
+project_id: $project_ids:net-prod-0
+name: prod-0
 delete_default_routes_on_create: true
-routers:
-  vpn-router:
+mtu: 1500
+nat_config:
+  nat-primary:
     region: $locations:primary
-    asn: 64514
+ncc_config:
+  hub: $ncc_hubs:hub
+  group: $ncc_groups:hub/default
+psa_configs:
+  - ranges:
+      psa: 10.72.224.0/24
+    export_routes: true
+    import_routes: true
+    peered_domains:
+      - "test."
 routes:
   default:
     dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"
-factories_config:
-  vlan_attachments: "none"
