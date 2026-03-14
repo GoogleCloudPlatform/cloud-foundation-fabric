@@ -196,3 +196,5 @@ counts:
   modules: 1
   random_id: 3
   resources: 12
+
+outputs: {}

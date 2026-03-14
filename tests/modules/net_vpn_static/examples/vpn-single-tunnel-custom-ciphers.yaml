@@ -108,7 +108,6 @@ values:
     description: null
     name: remote
     network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
-    params: []
     project: project-id
     region: europe-west8
     timeouts: null
@@ -138,7 +137,6 @@ values:
     local_traffic_selector:
     - 0.0.0.0/0
     name: remote-remote-0
-    params: []
     peer_external_gateway: null
     peer_external_gateway_interface: null
     peer_gcp_gateway: null
@@ -170,3 +168,5 @@ counts:
   modules: 2
   random_id: 1
   resources: 8
+
+outputs: {}

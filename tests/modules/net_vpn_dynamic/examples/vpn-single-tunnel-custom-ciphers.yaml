@@ -59,7 +59,6 @@ values:
       queue_count: null
       security_policy: null
       subnetwork: subnet_self_link
-      vlan: null
     network_performance_config: []
     params: []
     partner_metadata: null
@@ -79,7 +78,6 @@ values:
       on_host_maintenance: MIGRATE
       on_instance_stop_action: []
       preemptible: false
-      preemption_notice_duration: []
       provisioning_model: STANDARD
       skip_guest_os_shutdown: false
       termination_time: null
@@ -237,7 +235,6 @@ values:
     description: null
     name: gateway-1
     network: vpc-name
-    params: []
     project: my-project
     region: europe-west1
     timeouts: null
@@ -265,7 +262,6 @@ values:
     ike_version: 2
     labels: null
     name: gateway-1-remote-1
-    params: []
     peer_external_gateway: null
     peer_external_gateway_interface: null
     peer_gcp_gateway: null
@@ -285,15 +281,17 @@ values:
     prefix: null
 
 counts:
-  google_compute_instance: 1
-  google_service_account: 1
   google_compute_address: 1
   google_compute_forwarding_rule: 3
-  google_compute_router: 1
+  google_compute_instance: 1
   google_compute_router_interface: 1
   google_compute_router_peer: 1
+  google_compute_router: 1
   google_compute_vpn_gateway: 1
   google_compute_vpn_tunnel: 1
+  google_service_account: 1
   modules: 2
   random_id: 1
   resources: 12
+
+outputs: {}

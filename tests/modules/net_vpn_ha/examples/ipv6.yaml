@@ -23,7 +23,6 @@ values:
       ipv6_address: null
     labels: null
     name: mynet-to-onprem-default
-    params: []
     project: project-id
     redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
     terraform_labels:
@@ -37,7 +36,6 @@ values:
     labels: null
     name: mynet-to-onprem
     network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
-    params: []
     project: project-id
     region: europe-west8
     stack_type: IPV4_IPV6
@@ -138,7 +136,6 @@ values:
     ike_version: 2
     labels: null
     name: mynet-to-onprem-remote-0
-    params: []
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: project-id
@@ -160,7 +157,6 @@ values:
     ike_version: 2
     labels: null
     name: mynet-to-onprem-remote-1
-    params: []
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: project-id
@@ -190,10 +186,12 @@ values:
 counts:
   google_compute_external_vpn_gateway: 1
   google_compute_ha_vpn_gateway: 1
-  google_compute_router: 1
   google_compute_router_interface: 2
   google_compute_router_peer: 2
+  google_compute_router: 1
   google_compute_vpn_tunnel: 2
   modules: 1
   random_id: 3
   resources: 12
+
+outputs: {}
