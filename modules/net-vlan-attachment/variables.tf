@@ -20,6 +20,18 @@ variable "admin_enabled" {
   default     = true
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    routers     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "dedicated_interconnect_config" {
   description = "Dedicated interconnect configuration."
   type = object({
@@ -30,6 +42,10 @@ variable "dedicated_interconnect_config" {
     interconnect = string
     vlan_tag     = string
   })
+  validation {
+    condition     = var.dedicated_interconnect_config == null ? true : contains(["BPS_50M", "BPS_100M", "BPS_200M", "BPS_300M", "BPS_400M", "BPS_500M", "BPS_1G", "BPS_2G", "BPS_5G", "BPS_10G", "BPS_20G", "BPS_50G", "BPS_100G", "BPS_400G"], var.dedicated_interconnect_config.bandwidth)
+    error_message = "The bandwidth must be one of BPS_50M, BPS_100M, BPS_200M, BPS_300M, BPS_400M, BPS_500M, BPS_1G, BPS_2G, BPS_5G, BPS_10G, BPS_20G, BPS_50G, BPS_100G, BPS_400G."
+  }
   default = null
 }
 

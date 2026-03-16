@@ -18,6 +18,24 @@
     "description": {
       "type": "string"
     },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firewall_rules": {
+          "type": "string"
+        },
+        "subnets": {
+          "type": "string"
+        },
+        "vlan_attachments": {
+          "type": "string"
+        },
+        "vpns": {
+          "type": "string"
+        }
+      }
+    },
     "auto_create_subnetworks": {
       "type": "boolean"
     },
