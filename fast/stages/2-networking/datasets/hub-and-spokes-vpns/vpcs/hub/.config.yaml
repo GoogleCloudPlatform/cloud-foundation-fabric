@@ -19,6 +19,14 @@ routers:
         "10.0.0.0/8": "rfc1918-10"
         "172.16.0.0/12": "rfc1918-172"
         "192.168.0.0/16": "rfc1918-192"
+  hybrid-connectivity-router:
+    region: $locations:primary
+    asn: 64515
+    custom_advertise:
+      ip_ranges:
+        "10.0.0.0/8": "rfc1918-10"
+        "172.16.0.0/12": "rfc1918-172"
+        "192.168.0.0/16": "rfc1918-192"
 routes:
   default:
     dest_range: 0.0.0.0/0

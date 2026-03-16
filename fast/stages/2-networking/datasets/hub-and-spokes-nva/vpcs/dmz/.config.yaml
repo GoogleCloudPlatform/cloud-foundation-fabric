@@ -9,7 +9,7 @@ name: dmz
 delete_default_routes_on_create: true
 mtu: 1500
 routers:
-  vpn-router:
+  hybrid-connectivity-router:
     region: $locations:primary
     asn: 64514
     custom_advertise:

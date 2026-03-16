@@ -18,7 +18,7 @@ name: to-onprem-vlan-1
 region: $locations:primary
 router_config:
   create: false
-  name: $routers:hub/vpn-router
+  name: $routers:hub/hybrid-connectivity-router
 ncc_spoke_config:
   hub: $ncc_hubs:hub
 peer_asn: "64513"

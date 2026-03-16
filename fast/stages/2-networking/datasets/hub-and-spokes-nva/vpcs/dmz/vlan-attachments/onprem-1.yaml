@@ -18,7 +18,7 @@ name: to-onprem-vlan-1
 region: $locations:primary
 router_config:
   create: false
-  name: $routers:dmz/vpn-router
+  name: $routers:dmz/hybrid-connectivity-router
 peer_asn: "64513"
 dedicated_interconnect_config:
   bandwidth: BPS_10G

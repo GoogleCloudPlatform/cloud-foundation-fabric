@@ -21,7 +21,7 @@ counts:
   google_compute_ha_vpn_gateway: 5
   google_compute_network: 3
   google_compute_route: 12
-  google_compute_router: 4
+  google_compute_router: 5
   google_compute_router_interface: 10
   google_compute_router_nat: 1
   google_compute_router_peer: 10
@@ -39,5 +39,5 @@ counts:
   google_storage_bucket_object: 2
   modules: 30
   random_id: 15
-  resources: 215
+  resources: 216
   terraform_data: 2

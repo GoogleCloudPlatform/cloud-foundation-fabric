@@ -16,7 +16,7 @@ peering_config:
   to-dev:
     peer_network: $networks:dev
 routers:
-  vpn-router:
+  hybrid-connectivity-router:
     region: $locations:primary
     asn: 64514
     # Uncomment to enable custom route advertisement. (see https://docs.cloud.google.com/network-connectivity/docs/router/how-to/advertising-custom-ip)
