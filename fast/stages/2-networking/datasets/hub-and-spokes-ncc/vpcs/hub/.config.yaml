@@ -8,7 +8,7 @@ project_id: $project_ids:net-core-0
 name: hub-0
 delete_default_routes_on_create: true
 routers:
-  vpn-router:
+  hybrid-connectivity-router:
     region: $locations:primary
     asn: 64514
 routes:
@@ -16,3 +16,5 @@ routes:
     dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"
+factories_config:
+  vlan_attachments: "none"
