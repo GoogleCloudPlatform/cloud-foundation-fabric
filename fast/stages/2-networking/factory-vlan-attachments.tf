@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@
 # tfdoc:file:description VLAN attachments factory.
 
 locals {
+  # Discover YAML files that define VLAN attachments across all VPCs.
+  # It checks each VPC's configured `vlan_attachments` factory path (defaulting to
+  # `<factory_basepath>/vlan-attachments`).
+  # Returns a flattened map of all discovered files keyed by `<vpc_key>-<filename>`.
   _vlan_attachments_files = try(
     merge([
       for vpc_key, vpc in local.vpcs : {
@@ -42,6 +46,9 @@ locals {
     ]...),
     {}
   )
+  # Read and decode the discovered YAML files. This step also injects VPC-level 
+  # inferred attributes  into each configuration, such as the `project_id` and 
+  # `network`, ensuring each attachment is correctly associated with its parent VPC.
   _vlan_attachments_preprocess = {
     for k, v in local._vlan_attachments_files : k => merge(
       try(yamldecode(file(v.path)), {}),
@@ -55,7 +62,6 @@ locals {
   }
   vlan_attachments = {
     for k, v in local._vlan_attachments_preprocess : k => merge(v, {
-      # Default mappings and overrides
       region = try(v.region, local.vpc_defaults.region, null)
       mtu    = try(v.mtu, local.vpcs[v.vpc_key].mtu, local.vpc_defaults.mtu, 1500)
     })
