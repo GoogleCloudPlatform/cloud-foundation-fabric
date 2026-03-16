@@ -104,7 +104,7 @@ variable "assured_workload_config" {
       "FEDRAMP_MODERATE",
       "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
       "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
-      "HIPAA", # DEPRECATED
+      "HIPAA",   # DEPRECATED
       "HITRUST", # DEPRECATED
       "IL2",
       "IL4",
