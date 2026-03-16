@@ -92,6 +92,7 @@ variable "attached_disks" {
 variable "boot_disk" {
   description = "Boot disk properties. Initialize params are ignored when source is set."
   type = object({
+    name              = optional(string)
     auto_delete       = optional(bool, true)
     snapshot_schedule = optional(list(string))
     source            = optional(string)
