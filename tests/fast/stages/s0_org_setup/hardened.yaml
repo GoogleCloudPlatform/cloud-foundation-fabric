@@ -1278,32 +1278,6 @@ values:
     parent: organizations/1234567890
     tags: null
     timeouts: null
-  module.factory.module.folder-1["data-platform"].google_org_policy_policy.default["custom.iamDisableAdminServiceAccount"]:
-    dry_run_spec: []
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        parameters: null
-        values: []
-    timeouts: null
-  ? module.factory.module.folder-1["data-platform"].google_org_policy_policy.default["custom.iamDisableProjectServiceAccountImpersonationRoles"]
-  : dry_run_spec: []
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        parameters: null
-        values: []
-    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
@@ -2223,21 +2197,6 @@ values:
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
-  module.factory.module.projects["log-0"].google_org_policy_policy.default["custom.storageRequireBucketObjectVersionning"]:
-    dry_run_spec: []
-    name: projects/ft0-prod-audit-logs-0/policies/custom.storageRequireBucketObjectVersionning
-    parent: projects/ft0-prod-audit-logs-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.factory.module.projects["log-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
     dry_run_spec: []
     name: projects/ft0-prod-audit-logs-0/policies/gcp.restrictCmekCryptoKeyProjects
