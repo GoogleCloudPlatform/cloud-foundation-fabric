@@ -235,8 +235,8 @@ variable "machine_config" {
   nullable = false
   default  = {}
   validation {
-    condition     = contains([2, 4, 8, 16, 32, 64, 96, 128], var.machine_config.cpu_count)
-    error_message = "The number of CPU's in the VM instance must be one of [2, 4, 8, 16, 32, 64, 96, 128]"
+    condition     = contains([1, 2, 4, 8, 16, 32, 64, 96, 128], var.machine_config.cpu_count)
+    error_message = "The number of CPU's in the VM instance must be one of [1, 2, 4, 8, 16, 32, 64, 96, 128]"
   }
 }
 
