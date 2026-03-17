@@ -8557,7 +8557,7 @@ counts:
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 89
-  google_org_policy_policy: 170
+  google_org_policy_policy: 167
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -8582,7 +8582,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 58
-  resources: 718
+  resources: 715
   terraform_data: 4
 
 outputs:
