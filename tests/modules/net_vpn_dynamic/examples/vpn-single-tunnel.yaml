@@ -45,7 +45,7 @@ values:
     instance_encryption_key: []
     key_revocation_action_type: NONE
     labels: null
-    machine_type: f1-micro
+    machine_type: e2-micro
     metadata: null
     metadata_startup_script: null
     name: my-vm
