@@ -4104,7 +4104,7 @@ values:
         parameters: null
         values:
         - allowed_values:
-          - ALLOW_INTERNAL_AND_GCLB
+          - is:ALLOW_INTERNAL_AND_GCLB
           denied_values: null
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["cloudfunctions.allowedVpcConnectorEgressSettings"]:
