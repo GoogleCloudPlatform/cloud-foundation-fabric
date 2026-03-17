@@ -22,7 +22,7 @@ cloudfunctions.allowedIngressSettings:
   rules:
     - allow:
         values:
-          - "ALLOW_INTERNAL_AND_GCLB"
+          - "is:ALLOW_INTERNAL_AND_GCLB"
 
 cloudfunctions.allowedVpcConnectorEgressSettings:
   rules:

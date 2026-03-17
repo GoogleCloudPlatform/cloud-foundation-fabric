@@ -977,6 +977,14 @@
   is_primary: false
   aliases: []
   skip_iam: false
+- name: csc-hpsa
+  display_name: Cloud Security Compliance Service Agent
+  api: cloudsecuritycompliance.googleapis.com
+  identity: service-${project_number}@gcp-sa-csc-hpsa.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: cloud-cw
   display_name: Content Warehouse Service Account
   api: contentwarehouse.googleapis.com

@@ -131,6 +131,13 @@
   role: null
   is_primary: false
   aliases: []
+- name: csc-hpsa
+  display_name: Cloud Security Compliance Service Agent
+  api: cloudsecuritycompliance.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-csc-hpsa.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: dataplex-cmek
   display_name: Dataplex Cmek Service Agent
   api: dataplex.googleapis.com
