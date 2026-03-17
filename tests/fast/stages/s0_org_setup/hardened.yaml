@@ -4562,6 +4562,8 @@ values:
           - is:projects/gke-node-images
           - is:projects/gke-windows-node-images
           - is:projects/ubuntu-os-gke-cloud
+          - is:projects/rocky-linux-accelerator-cloud
+          - is:projects/ubuntu-os-accelerator-images
           denied_values: null
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
