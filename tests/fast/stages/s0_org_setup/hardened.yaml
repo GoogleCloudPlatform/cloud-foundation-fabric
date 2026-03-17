@@ -7976,7 +7976,6 @@ values:
     timeouts: null
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["storageIamChanges"]:
-    bucket_name: l$log_buckets:log-0/audit-logs
     bucket_options: []
     description: Cloud Storage IAM Permission Changes
     disabled: null
