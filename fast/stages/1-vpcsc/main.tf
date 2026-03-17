@@ -39,6 +39,10 @@ locals {
         for k, v in var.service_accounts :
         "service_accounts/${k}" => "serviceAccount:${v}"
       },
+      {
+        for k, v in try(var.service_agents, {}) :
+        "service_agents/${k}" => v.iam_email
+      },
       local._ctx.iam_principals
     )
     identity_sets = merge(local._ctx.identity_sets, {

@@ -73,6 +73,14 @@ variable "service_accounts" {
   default     = {}
 }
 
+variable "service_agents" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Service agents."
+  type        = any
+  nullable    = false
+  default     = {}
+}
+
 variable "storage_buckets" {
   # tfdoc:variable:source 0-org-setup
   description = "Storage buckets created in the bootstrap stage."

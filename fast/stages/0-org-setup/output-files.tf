@@ -103,6 +103,7 @@ locals {
       project_numbers = module.factory.project_numbers
       # project_numbers = module.factory.project_numbers
       service_accounts             = module.factory.service_account_emails
+      service_agents               = module.organization[0].service_agents
       storage_buckets              = module.factory.storage_buckets
       tag_values                   = local.of_ctx.tag_values
       workload_identity_providers  = local.workload_identity_providers
