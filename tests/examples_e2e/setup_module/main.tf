@@ -283,18 +283,8 @@ resource "local_file" "terraform_tfvars" {
       email     = google_service_account.service_account.email
       iam_email = "serviceAccount:${google_service_account.service_account.email}"
     }
-    subnet = {
-      name          = google_compute_subnetwork.primary.name
-      region        = google_compute_subnetwork.primary.region
-      ip_cidr_range = google_compute_subnetwork.primary.ip_cidr_range
-      self_link     = google_compute_subnetwork.primary.self_link
-    }
-    subnet_secondary = {
-      name          = google_compute_subnetwork.secondary.name
-      region        = google_compute_subnetwork.secondary.region
-      ip_cidr_range = google_compute_subnetwork.secondary.ip_cidr_range
-      self_link     = google_compute_subnetwork.secondary.self_link
-    }
+    subnet           = google_compute_subnetwork.primary
+    subnet_secondary = google_compute_subnetwork.secondary
     subnet_psc_1 = {
       name          = google_compute_subnetwork.primary_psc.name
       region        = google_compute_subnetwork.primary_psc.region

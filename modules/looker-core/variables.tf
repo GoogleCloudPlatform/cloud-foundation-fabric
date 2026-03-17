@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,16 @@ variable "admin_settings" {
   nullable = true
 }
 
+variable "controlled_egress" {
+  description = "Controlled egress configuration."
+  type = object({
+    enabled             = optional(bool, true)
+    marketplace_enabled = optional(bool)
+    egress_fqdns        = optional(list(string))
+  })
+  default = null
+}
+
 variable "custom_domain" {
   description = "Looker core instance custom domain."
   type        = string
@@ -36,6 +46,18 @@ variable "encryption_config" {
   })
   default  = null
   nullable = true
+}
+
+variable "fips_enabled" {
+  description = "FIPS 140-2 Encryption enablement for Looker (Google Cloud Core)."
+  type        = bool
+  default     = null
+}
+
+variable "gemini_enabled" {
+  description = "Gemini enablement for Looker (Google Cloud Core)."
+  type        = bool
+  default     = null
 }
 
 variable "maintenance_config" {
@@ -94,7 +116,7 @@ variable "name" {
 }
 
 variable "network_config" {
-  description = "Network configuration for cluster and instance. Only one between psa_config and psc_config can be used."
+  description = "Network configuration for cluster and instance. Only one between psa_config, psc_config and public can be used."
   type = object({
     psa_config = optional(object({
       network            = string
@@ -102,26 +124,47 @@ variable "network_config" {
       enable_public_ip   = optional(bool, false)
       enable_private_ip  = optional(bool, true)
     }))
+    psc_config = optional(object({
+      allowed_vpcs = optional(list(string), [])
+      service_attachments = optional(list(object({
+        local_fqdn                    = string
+        target_service_attachment_uri = string
+      })), [])
+    }))
     public = optional(bool, false)
   })
   nullable = false
   validation {
-    condition     = (coalesce(var.network_config.public, false)) == (var.network_config.psa_config == null)
-    error_message = "Please specify either psa_config or public to true."
+    condition = (
+      (coalesce(var.network_config.public, false) ? 1 : 0) +
+      (var.network_config.psa_config != null ? 1 : 0) +
+      (var.network_config.psc_config != null ? 1 : 0)
+    ) == 1
+    error_message = "Please specify exactly one of psa_config, psc_config or public."
   }
 }
 
 variable "oauth_config" {
-  description = "Looker Core Oauth config. Either client ID and secret (existing oauth client) or support email (temporary internal oauth client setup) must be specified."
+  description = "Looker Core Oauth config."
   type = object({
-    client_id     = optional(string, null)
-    client_secret = optional(string, null)
-    support_email = optional(string, null)
+    client_id     = string
+    client_secret = string
   })
-  validation {
-    condition     = (var.oauth_config.client_id == null && var.oauth_config.client_secret == null) != (var.oauth_config.support_email == null)
-    error_message = "Please specify either client_id and client_secret or support email."
-  }
+}
+
+variable "periodic_export_config" {
+  description = "Configuration for periodic export."
+  type = object({
+    kms_key = string
+    gcs_uri = string
+    start_time = object({
+      hours   = optional(number, 23)
+      minutes = optional(number, 0)
+      seconds = optional(number, 0)
+      nanos   = optional(number, 0)
+    })
+  })
+  default = null
 }
 
 variable "platform_edition" {

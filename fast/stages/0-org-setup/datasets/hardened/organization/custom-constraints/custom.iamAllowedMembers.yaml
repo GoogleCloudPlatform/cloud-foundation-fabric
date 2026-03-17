@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../../../schemas/custom-constraint.schema.json
+
 custom.iamAllowedMembers:
   action_type: DENY
   condition: |-
     resource.bindings.exists(binding,
       binding.members.exists(member,
-        !MemberSubjectEndsWith(member, ['@${organization.domain}', '.gserviceaccount.com'])
+        MemberSubjectStartsWith(member, ['user:', 'group:']) &&
+        !MemberSubjectEndsWith(member, ['@${organization.domain}', '${iam_principals.gcp-organization-admins}'])
       )
     )
   description: Ensure no binding are done with members outside the organization domain

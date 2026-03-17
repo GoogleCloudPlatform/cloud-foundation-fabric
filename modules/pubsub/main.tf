@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,13 @@ resource "google_pubsub_schema" "default" {
 }
 
 resource "google_pubsub_topic" "default" {
-  project                    = local.project_id
-  name                       = var.name
-  kms_key_name               = var.kms_key
+  project = local.project_id
+  name    = var.name
+  kms_key_name = (
+    var.kms_key == null
+    ? null
+    : lookup(local.ctx.kms_keys, var.kms_key, var.kms_key)
+  )
   labels                     = var.labels
   message_retention_duration = var.message_retention_duration
   dynamic "message_storage_policy" {
@@ -45,6 +49,7 @@ resource "google_pubsub_topic" "default" {
       allowed_persistence_regions = [
         for v in var.regions : lookup(local.ctx.locations, v, v)
       ]
+      enforce_in_transit = var.message_storage_enforce_in_transit
     }
   }
   dynamic "schema_settings" {

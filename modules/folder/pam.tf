@@ -70,7 +70,7 @@ resource "google_privileged_access_manager_entitlement" "default" {
 
   eligible_users {
     principals = [
-      for u in each.value.eligible_users : lookup(local.ctx.iam_principals, u, u)
+      for u in each.value.eligible_users : lookup(local.ctx_iam_principals, u, u)
     ]
   }
 
@@ -113,7 +113,7 @@ resource "google_privileged_access_manager_entitlement" "default" {
           content {
             approvers {
               principals = [
-                for a in step.value.approvers : lookup(local.ctx.iam_principals, a, a)
+                for a in step.value.approvers : lookup(local.ctx_iam_principals, a, a)
               ]
             }
 

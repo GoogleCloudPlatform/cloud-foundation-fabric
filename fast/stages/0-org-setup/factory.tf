@@ -34,7 +34,12 @@ module "factory" {
   )
   data_overrides = local.project_defaults.overrides
   context = merge(local.ctx, {
-    condition_vars = local.ctx_condition_vars
+    condition_vars = merge(local.ctx_condition_vars, {
+      custom_roles = merge(
+        try(local.ctx.condition_vars.custom_roles, {}),
+        module.organization[0].custom_role_id
+      )
+    })
     custom_roles = merge(
       local.ctx.custom_roles,
       module.organization[0].custom_role_id
@@ -45,15 +50,21 @@ module "factory" {
         default = try(module.organization[0].id, null)
       }
     )
-    iam_principals = local.iam_principals
+    iam_principals = merge(
+      {
+        for k, v in local.org_logging_identities :
+        k => "serviceAccount:${v}" if v != null
+      },
+      local.iam_principals
+    )
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
     )
   })
   factories_config = {
-    folders           = var.factories_config.folders
-    project_templates = var.factories_config.project_templates
-    projects          = var.factories_config.projects
+    basepath = var.factories_config.dataset
+    budgets  = local.factory_billing
+    paths    = var.factories_config.paths
   }
 }

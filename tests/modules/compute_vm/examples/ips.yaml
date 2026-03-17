@@ -21,7 +21,7 @@ values:
         public_ptr_domain_name: null
       alias_ip_range: []
       ipv6_access_config: []
-      network: projects/xxx/global/networks/aaa
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
       nic_type: null
       queue_count: null
       subnetwork: subnet_self_link
@@ -33,7 +33,7 @@ values:
     - access_config: []
       alias_ip_range: []
       ipv6_access_config: []
-      network: projects/xxx/global/networks/aaa
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
       network_ip: 10.0.0.2
       nic_type: null
       queue_count: null

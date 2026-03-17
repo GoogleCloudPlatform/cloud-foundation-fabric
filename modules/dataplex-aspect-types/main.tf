@@ -37,12 +37,22 @@ locals {
       metadata_template = lookup(v, "metadata_template", null)
     }
   })
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } if k != "condition_vars"
+  }
+  ctx_p    = "$"
+  location = try(local.ctx.locations[var.location], var.location)
+  project_id = var.project_id == null ? null : lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
 }
 
 resource "google_dataplex_aspect_type" "default" {
   for_each          = local.aspect_types
-  project           = var.project_id
-  location          = var.location
+  project           = local.project_id
+  location          = local.location
   aspect_type_id    = each.key
   description       = each.value.description
   display_name      = each.value.display_name

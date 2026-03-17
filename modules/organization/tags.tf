@@ -182,7 +182,9 @@ resource "google_tags_tag_key" "default" {
     lookup(each.value, "network", null) == null ? null : "GCE_FIREWALL"
   )
   purpose_data = (
-    lookup(each.value, "network", null) == null ? null : { network = each.value.network }
+    lookup(each.value, "network", null) == null ? null : (
+      each.value.network == "ALL" ? { organization = "auto" } : { network = each.value.network }
+    )
   )
   short_name  = each.key
   description = each.value.description

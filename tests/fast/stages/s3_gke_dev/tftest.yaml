@@ -16,3 +16,8 @@ module: fast/stages/3-gke-dev/
 
 tests:
   simple:
+    inventory:
+      - simple.yaml
+  hardened:
+    inventory:
+      - hardened.yaml

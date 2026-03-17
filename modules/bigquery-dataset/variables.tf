@@ -68,7 +68,9 @@ variable "authorized_views" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    condition_vars = optional(map(map(string)), {})
     custom_roles   = optional(map(string), {})
+    kms_keys       = optional(map(string), {})
     iam_principals = optional(map(string), {})
     locations      = optional(map(string), {})
     project_ids    = optional(map(string), {})
@@ -102,11 +104,9 @@ variable "friendly_name" {
   default     = null
 }
 
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles."
-  type        = map(list(string))
-  default     = {}
-}
+
+
+
 
 variable "id" {
   description = "Dataset id."

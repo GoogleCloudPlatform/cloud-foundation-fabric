@@ -31,10 +31,10 @@ locals {
     }
   }
   ctx_p = "$"
-  health_check = (
-    var.health_check != null
-    ? var.health_check
-    : google_compute_health_check.default[0].self_link
+  health_check = coalesce(
+    var.health_check,
+    try(google_compute_health_check.default[0].self_link, null),
+    try(google_compute_region_health_check.default[0].self_link, null)
   )
   network = lookup(
     local.ctx.networks, var.vpc_config.network, var.vpc_config.network

@@ -88,7 +88,7 @@ values:
     default_port: null
     description: Terraform managed.
     name: glb-test-0-neg-0
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     network_endpoint_type: NON_GCP_PRIVATE_IP_PORT
     project: project-id
     subnetwork: null
@@ -124,4 +124,3 @@ counts:
   resources: 7
 
 outputs: {}
-

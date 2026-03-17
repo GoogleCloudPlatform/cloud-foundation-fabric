@@ -28,7 +28,6 @@ values:
     location: europe-west8
     name: example-hello
     project: project-id
-    scaling: []
     template:
     - annotations: null
       containers:
@@ -56,7 +55,7 @@ values:
     max_instances: 10
     min_instances: 3
     name: example-hello
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     region: europe-west8
     subnet: []

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@ locals {
   projects_buckets = flatten([
     for k, v in local.projects_input : [
       for name, opts in lookup(v, "buckets", {}) : {
+        key            = "${k}/${name}"
         project_key    = k
         project_name   = v.name
-        name           = name
+        name           = lookup(opts, "name", "${v.name}-${name}")
         create         = lookup(opts, "create", true)
         description    = lookup(opts, "description", "Terraform-managed.")
         encryption_key = lookup(opts, "encryption_key", null)
@@ -36,11 +37,11 @@ locals {
         labels                = lookup(opts, "labels", {})
         location              = lookup(opts, "location", null)
         managed_folders       = lookup(opts, "managed_folders", {})
-        prefix = coalesce(
+        prefix = try(coalesce(
           local.data_defaults.overrides.prefix,
           try(v.prefix, null),
           local.data_defaults.defaults.prefix
-        )
+        ), null)
         storage_class = lookup(
           opts, "storage_class", "STANDARD"
         )
@@ -51,20 +52,22 @@ locals {
           opts, "versioning", false
         )
         retention_policy        = lookup(opts, "retention_policy", null)
+        soft_delete_retention   = lookup(opts, "soft_delete_retention", null)
+        lifecycle_rules         = lookup(opts, "lifecycle_rules", {})
+        logging_config          = lookup(opts, "logging_config", null)
         enable_object_retention = lookup(opts, "enable_object_retention", null)
+        tag_bindings            = lookup(opts, "tag_bindings", {})
       }
     ]
   ])
 }
 
 module "buckets" {
-  source = "../gcs"
-  for_each = {
-    for k in local.projects_buckets : "${k.project_key}/${k.name}" => k
-  }
-  project_id     = module.projects[each.value.project_key].project_id
+  source         = "../gcs"
+  for_each       = { for k in local.projects_buckets : k.key => k }
+  project_id     = module.projects-iam[each.value.project_key].project_id
   prefix         = each.value.prefix
-  name           = "${each.value.project_name}-${each.value.name}"
+  name           = each.value.name
   bucket_create  = each.value.create
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
@@ -75,15 +78,19 @@ module "buckets" {
       local.automation_sas_iam_emails,
       lookup(local.self_sas_iam_emails, each.value.project_key, {})
     )
-    kms_keys    = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
-    locations   = local.ctx.locations
-    project_ids = local.ctx_project_ids
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys, local.kms_autokeys)
+    locations       = local.ctx.locations
+    project_ids     = local.ctx_project_ids
+    storage_buckets = local.ctx.storage_buckets
+    tag_keys        = local.ctx_tag_keys
+    tag_values      = local.ctx_tag_values
   })
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
   iam_by_principals     = each.value.iam_by_principals
   labels                = each.value.labels
+  lifecycle_rules       = each.value.lifecycle_rules
   location = coalesce(
     local.data_defaults.overrides.locations.storage,
     lookup(each.value, "location", null),
@@ -94,5 +101,8 @@ module "buckets" {
   uniform_bucket_level_access = each.value.uniform_bucket_level_access
   versioning                  = each.value.versioning
   retention_policy            = each.value.retention_policy
+  soft_delete_retention       = each.value.soft_delete_retention
+  logging_config              = each.value.logging_config
   enable_object_retention     = each.value.enable_object_retention
+  tag_bindings                = each.value.tag_bindings
 }

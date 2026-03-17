@@ -27,6 +27,7 @@
     - items: *string*
   - ⁺**workload_identity**: *object*
     <br>*additional properties: false*
+    - ⁺**pool**: *string*
     - ⁺**provider**: *string*
     - ⁺**iam_principalsets**: *object*
 

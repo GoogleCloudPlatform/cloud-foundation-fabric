@@ -230,3 +230,12 @@ variable "tag_bindings" {
   nullable    = false
   default     = {}
 }
+
+variable "universe" {
+  description = "GCP universe where to deploy the project. The prefix will be prepended to the project id."
+  type = object({
+    package_domain = string
+    prefix         = string
+  })
+  default = null
+}

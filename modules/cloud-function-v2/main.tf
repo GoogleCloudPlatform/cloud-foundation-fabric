@@ -105,6 +105,22 @@ resource "google_cloudfunctions2_function" "function" {
     timeout_seconds                = var.function_config.timeout_seconds
     vpc_connector                  = local.vpc_connector
     vpc_connector_egress_settings  = var.vpc_connector.egress_settings
+    direct_vpc_egress              = try(var.direct_vpc_egress.mode, null)
+
+    dynamic "direct_vpc_network_interface" {
+      for_each = var.direct_vpc_egress == null ? [] : [""]
+      content {
+        network = lookup(
+          local.ctx.networks, var.direct_vpc_egress.network,
+          var.direct_vpc_egress.network
+        )
+        subnetwork = lookup(
+          local.ctx.subnets, var.direct_vpc_egress.subnetwork,
+          var.direct_vpc_egress.subnetwork
+        )
+        tags = var.direct_vpc_egress.tags
+      }
+    }
 
     dynamic "secret_environment_variables" {
       for_each = { for k, v in var.secrets : k => v if !v.is_volume }

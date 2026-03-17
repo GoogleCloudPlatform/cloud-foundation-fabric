@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,14 @@ locals {
           condition_absent = !can(c.condition_absent) ? null : {
             duration = c.condition_absent.duration
             filter   = try(c.condition_absent.filter, null)
-            aggregations = !can(c.condition_absent.aggregations) ? null : {
-              per_series_aligner   = try(c.condition_absent.aggregations.per_series_aligner, null)
-              group_by_fields      = try(c.condition_absent.aggregations.group_by_fields, null)
-              cross_series_reducer = try(c.condition_absent.aggregations.cross_series_reducer, null)
-              alignment_period     = try(c.condition_absent.aggregations.alignment_period, null)
-            }
+            aggregations = !can(c.condition_absent.aggregations) ? null : [
+              for a in c.condition_absent.aggregations : {
+                per_series_aligner   = try(a.per_series_aligner, null)
+                group_by_fields      = try(a.group_by_fields, null)
+                cross_series_reducer = try(a.cross_series_reducer, null)
+                alignment_period     = try(a.alignment_period, null)
+              }
+            ]
             trigger = !can(c.condition_absent.trigger) ? null : {
               count   = try(c.condition_absent.trigger.count, null)
               percent = try(c.condition_absent.trigger.percent, null)
@@ -79,11 +81,9 @@ locals {
             rule_group                = try(c.condition_prometheus_query_language.rule_group, null)
           }
           condition_threshold = !can(c.condition_threshold) ? null : {
-            comparison         = c.condition_threshold.comparison
-            duration           = c.condition_threshold.duration
-            denominator_filter = try(c.condition_threshold.denominator_filter, null)
-
-
+            comparison              = c.condition_threshold.comparison
+            duration                = c.condition_threshold.duration
+            denominator_filter      = try(c.condition_threshold.denominator_filter, null)
             evaluation_missing_data = try(c.condition_threshold.evaluation_missing_data, null)
             filter                  = try(c.condition_threshold.filter, null)
             threshold_value         = try(c.condition_threshold.threshold_value, null)
@@ -95,12 +95,14 @@ locals {
                 alignment_period     = try(a.alignment_period, null)
               }
             ]
-            denominator_aggregations = !can(c.condition_threshold.denominator_aggregations) ? null : {
-              per_series_aligner   = try(c.condition_threshold.denominator_aggregations.per_series_aligner, null)
-              group_by_fields      = try(c.condition_threshold.denominator_aggregations.group_by_fields, null)
-              cross_series_reducer = try(c.condition_threshold.denominator_aggregations.cross_series_reducer, null)
-              alignment_period     = try(c.condition_threshold.denominator_aggregations.alignment_period, null)
-            }
+            denominator_aggregations = !can(c.condition_threshold.denominator_aggregations) ? null : [
+              for a in c.condition_threshold.denominator_aggregations : {
+                per_series_aligner   = try(a.per_series_aligner, null)
+                group_by_fields      = try(a.group_by_fields, null)
+                cross_series_reducer = try(a.cross_series_reducer, null)
+                alignment_period     = try(a.alignment_period, null)
+              }
+            ]
             forecast_options = !can(c.condition_threshold.forecast_options) ? null : {
               forecast_horizon = c.condition_threshold.forecast_options.forecast_horizon
             }
@@ -116,7 +118,7 @@ locals {
         mime_type = try(v.documentation.mime_type, null)
         subject   = try(v.documentation.subject, null)
         links = !can(v.documentation.links) ? null : [
-          for l in v.documentation.link : {
+          for l in v.documentation.links : {
             display_name = try(l.display_name, null)
             url          = try(l.url, null)
         }]
@@ -139,7 +141,7 @@ resource "google_monitoring_alert_policy" "alerts" {
       # first try to get a channel created by this module
       google_monitoring_notification_channel.channels[x].name,
       # otherwise check the context
-      var.context.notification_channels[x],
+      local.ctx.notification_channels[x],
       # if nothing else, use the provided channel as is
       x
     )
@@ -177,7 +179,7 @@ resource "google_monitoring_alert_policy" "alerts" {
           duration = condition_absent.value.duration
           filter   = condition_absent.value.filter
           dynamic "aggregations" {
-            for_each = condition_absent.value.aggregations[*]
+            for_each = coalesce(condition_absent.value.aggregations, [])
             content {
               alignment_period     = aggregations.value.alignment_period
               cross_series_reducer = aggregations.value.cross_series_reducer
@@ -207,9 +209,12 @@ resource "google_monitoring_alert_policy" "alerts" {
           duration                = condition_monitoring_query_language.value.duration
           query                   = condition_monitoring_query_language.value.query
           evaluation_missing_data = condition_monitoring_query_language.value.evaluation_missing_data
-          trigger {
-            count   = condition_monitoring_query_language.value.trigger.count
-            percent = condition_monitoring_query_language.value.trigger.percent
+          dynamic "trigger" {
+            for_each = condition_monitoring_query_language.value.trigger[*]
+            content {
+              count   = trigger.value.count
+              percent = trigger.value.percent
+            }
           }
         }
       }
@@ -236,7 +241,7 @@ resource "google_monitoring_alert_policy" "alerts" {
           filter                  = condition_threshold.value.filter
           threshold_value         = condition_threshold.value.threshold_value
           dynamic "aggregations" {
-            for_each = condition_threshold.value.aggregations[*]
+            for_each = coalesce(condition_threshold.value.aggregations, [])
             content {
               alignment_period     = aggregations.value.alignment_period
               cross_series_reducer = aggregations.value.cross_series_reducer
@@ -245,11 +250,12 @@ resource "google_monitoring_alert_policy" "alerts" {
             }
           }
           dynamic "denominator_aggregations" {
-            for_each = condition_threshold.value.denominator_aggregations[*]
+            for_each = coalesce(condition_threshold.value.denominator_aggregations, [])
             content {
-              alignment_period   = denominator_aggregations.value.alignment_period
-              group_by_fields    = denominator_aggregations.value.group_by_fields
-              per_series_aligner = denominator_aggregations.value.per_series_aligner
+              alignment_period     = denominator_aggregations.value.alignment_period
+              cross_series_reducer = denominator_aggregations.value.cross_series_reducer
+              group_by_fields      = denominator_aggregations.value.group_by_fields
+              per_series_aligner   = denominator_aggregations.value.per_series_aligner
             }
           }
           dynamic "forecast_options" {

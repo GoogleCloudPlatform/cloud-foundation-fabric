@@ -20,6 +20,7 @@ locals {
   is_postgres  = can(regex("^POSTGRES", var.database_version))
   has_replicas = length(var.replicas) > 0
   is_regional  = var.availability_type == "REGIONAL" ? true : false
+
   users = {
     for k, v in var.users : k =>
     local.is_mysql
@@ -61,6 +62,7 @@ resource "google_sql_database_instance" "primary" {
     collation                   = var.collation
     connector_enforcement       = var.connector_enforcement
     time_zone                   = var.time_zone
+    retain_backups_on_delete    = try(var.backup_configuration.retain_backups_on_delete, null)
 
     ip_configuration {
       ipv4_enabled = var.network_config.connectivity.public_ipv4
@@ -101,29 +103,47 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
+    # backup_configuration is Optional+Computed in the provider schema, meaning an absent block
+    # is treated as "don't manage" rather than "set to disabled". Setting var.backup_configuration
+    # to null preserves existing GCP settings; passing an object (even with enabled=false) causes
+    # Terraform to actively manage and apply the desired state.
+    # See: https://github.com/hashicorp/terraform-provider-google/blob/main/google/services/sql/resource_sql_database_instance.go#L424
+    # See: https://developer.hashicorp.com/terraform/language/attr-as-blocks
     dynamic "backup_configuration" {
-      for_each = var.backup_configuration.enabled ? { 1 = 1 } : {}
+      for_each = var.backup_configuration != null ? [1] : []
       content {
-        enabled = true
-        // enable binary log if the user asks for it or we have replicas (default in regional),
-        // but only for MySQL
+        enabled = var.backup_configuration.enabled
+        // auto-enable binary log for MySQL when replicas or regional HA are in use;
+        // must be null (not true) when backups are disabled
         binary_log_enabled = (
-          local.is_mysql
+          local.is_mysql && var.backup_configuration.enabled
           ? var.backup_configuration.binary_log_enabled || local.has_replicas || local.is_regional
           : null
         )
         start_time = var.backup_configuration.start_time
         location   = var.backup_configuration.location
+        // must be explicitly false (not null) when backups are disabled
         point_in_time_recovery_enabled = (
-          var.backup_configuration.point_in_time_recovery_enabled
+          var.backup_configuration.enabled
+          ? var.backup_configuration.point_in_time_recovery_enabled
+          : false
         )
-        transaction_log_retention_days = (
-          var.backup_configuration.log_retention_days
-        )
-        backup_retention_settings {
-          retained_backups = var.backup_configuration.retention_count
-          retention_unit   = "COUNT"
+        transaction_log_retention_days = var.backup_configuration.log_retention_days
+        dynamic "backup_retention_settings" {
+          for_each = var.backup_configuration.enabled ? { 1 = 1 } : {}
+          content {
+            retained_backups = var.backup_configuration.retention_count
+            retention_unit   = "COUNT"
+          }
         }
+      }
+    }
+
+    dynamic "final_backup_config" {
+      for_each = try(var.backup_configuration.final_backup != null ? [var.backup_configuration.final_backup] : [], [])
+      content {
+        enabled        = final_backup_config.value.enabled
+        retention_days = final_backup_config.value.retention_days
       }
     }
 

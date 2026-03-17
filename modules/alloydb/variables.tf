@@ -30,9 +30,9 @@ variable "automated_backup_configuration" {
       days_of_week = optional(list(string), [
         "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
       ])
-      start_times = optional(object({
-        hours = optional(number, 23)
-      }), {})
+      start_times = optional(list(object({
+        hours = number
+      })), [{ hours = 23 }])
     }), {})
     retention_count  = optional(number, 7)
     retention_period = optional(string)
@@ -45,8 +45,11 @@ variable "automated_backup_configuration" {
         # Backup window validation below
         !(var.automated_backup_configuration.retention_count != null && var.automated_backup_configuration.retention_period != null) &&
         # Backup window hours below
-        var.automated_backup_configuration.weekly_schedule.start_times.hours >= 0 &&
-        var.automated_backup_configuration.weekly_schedule.start_times.hours <= 23 &&
+        (alltrue([
+          for v in var.automated_backup_configuration.weekly_schedule.start_times :
+          v.hours >= 0 &&
+          v.hours <= 23
+        ])) &&
         # Backup window day validation
         setintersection(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"], var.automated_backup_configuration.weekly_schedule.days_of_week) == toset(var.automated_backup_configuration.weekly_schedule.days_of_week)
       ) : true
@@ -200,8 +203,9 @@ variable "initial_user" {
   description = "AlloyDB cluster initial user credentials."
   type = object({
     user     = optional(string, "postgres")
-    password = string
+    password = optional(string)
   })
+  default = null
 }
 
 variable "instance_name" {

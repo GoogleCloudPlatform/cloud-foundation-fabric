@@ -83,9 +83,9 @@ variable "attached_disks" {
   }
   validation {
     condition = alltrue([for d in var.attached_disks :
-      (d.options.architecture == null || contains(["ARM64", "x86_64"], d.options.architecture))
+      (d.options.architecture == null || contains(["ARM64", "X86_64"], d.options.architecture))
     ])
-    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
+    error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
   }
 }
 
@@ -125,9 +125,9 @@ variable "boot_disk" {
   validation {
     condition = (
       var.boot_disk.initialize_params.architecture == null ||
-      contains(["ARM64", "x86_64"], var.boot_disk.initialize_params.architecture)
+      contains(["ARM64", "X86_64"], var.boot_disk.initialize_params.architecture)
     )
-    error_message = "Architecture can be null, 'x86_64' or 'ARM64'."
+    error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
   }
 }
 
@@ -370,8 +370,9 @@ variable "options" {
       threads_per_core             = optional(number)
       visible_core_count           = optional(number)
     }))
-    allow_stopping_for_update = optional(bool, true)
-    deletion_protection       = optional(bool, false)
+    allow_stopping_for_update  = optional(bool, true)
+    deletion_protection        = optional(bool, false)
+    key_revocation_action_type = optional(string)
     graceful_shutdown = optional(object({
       enabled           = optional(bool, false)
       max_duration_secs = optional(number)
@@ -388,10 +389,11 @@ variable "options" {
     termination_action = optional(string)
   })
   default = {
-    allow_stopping_for_update = true
-    deletion_protection       = false
-    spot                      = false
-    termination_action        = null
+    allow_stopping_for_update  = true
+    deletion_protection        = false
+    spot                       = false
+    termination_action         = null
+    key_revocation_action_type = "NONE"
   }
   validation {
     condition = (
@@ -413,6 +415,14 @@ variable "options" {
       )
     )
     error_message = "Allowed values for options.advanced_machine_features.performance_monitoring_unit are ARCHITECTURAL', 'ENHANCED', 'STANDARD' and null."
+  }
+  validation {
+    condition = (
+      var.options.key_revocation_action_type == null
+      ||
+      contains(["NONE", "STOP"], var.options.key_revocation_action_type)
+    )
+    error_message = "Allowed values for options.key_revocation_action_type are 'NONE' or 'STOP'."
   }
 }
 

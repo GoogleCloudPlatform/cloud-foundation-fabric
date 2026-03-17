@@ -82,10 +82,14 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "pool",
             "provider",
             "iam_principalsets"
           ],
           "properties": {
+            "pool": {
+              "type": "string"
+            },
             "provider": {
               "type": "string"
             },

@@ -17,7 +17,11 @@
 variable "access_config" {
   description = "Control plane endpoint and nodes access configurations."
   type = object({
-    dns_access = optional(bool, true)
+    dns_access = optional(object({
+      allow_external_traffic = optional(bool, true)
+      enable_k8s_tokens      = optional(bool)
+      enable_k8s_certs       = optional(bool)
+    }), {})
     ip_access = optional(object({
       authorized_ranges                              = optional(map(string))
       disable_public_endpoint                        = optional(bool)
@@ -94,9 +98,10 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
-    beta_apis            = optional(list(string))
-    binary_authorization = optional(bool, false)
-    cost_management      = optional(bool, true)
+    beta_apis                         = optional(list(string))
+    binary_authorization              = optional(bool, false)
+    cilium_clusterwide_network_policy = optional(bool, false)
+    cost_management                   = optional(bool, true)
     dns = optional(object({
       additive_vpc_scope_dns_domain = optional(string)
       provider                      = optional(string)
@@ -108,6 +113,7 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
+    fqdn_network_policy = optional(bool, false)
     gateway_api         = optional(bool, false)
     groups_for_rbac     = optional(string)
     l4_ilb_subsetting   = optional(bool, false)
@@ -116,6 +122,13 @@ variable "enable_features" {
     rbac_binding_config = optional(object({
       enable_insecure_binding_system_unauthenticated = optional(bool)
       enable_insecure_binding_system_authenticated   = optional(bool)
+    }))
+    secret_sync_config = optional(object({
+      enabled = bool
+      rotation_config = optional(object({
+        enabled           = optional(bool)
+        rotation_interval = optional(string)
+      }))
     }))
     secret_manager_config = optional(bool)
     security_posture_config = optional(object({
@@ -131,9 +144,10 @@ variable "enable_features" {
     service_external_ips = optional(bool, true)
     tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
-      enabled     = optional(bool, true)
-      event_types = optional(list(string), [])
-      topic_id    = optional(string)
+      enabled      = optional(bool, true)
+      event_types  = optional(list(string), [])
+      topic_id     = optional(string)
+      kms_key_name = optional(string)
     }))
     vertical_pod_autoscaling = optional(bool, false)
     enterprise_cluster       = optional(bool)
@@ -204,7 +218,7 @@ variable "maintenance_config" {
   default = {
     daily_window_start_time = "03:00"
     recurring_window        = null
-    maintenance_exclusion   = []
+    maintenance_exclusions  = []
   }
 }
 

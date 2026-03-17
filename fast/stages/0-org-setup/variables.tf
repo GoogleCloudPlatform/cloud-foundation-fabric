@@ -30,6 +30,7 @@ variable "context" {
     tag_values                  = optional(map(string), {})
     vpc_host_projects           = optional(map(string), {})
     vpc_sc_perimeters           = optional(map(string), {})
+    workload_identity_pools     = optional(map(string), {})
     workload_identity_providers = optional(map(string), {})
   })
   default  = {}
@@ -39,13 +40,17 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    billing_accounts  = optional(string, "datasets/classic/billing-accounts")
-    cicd_workflows    = optional(string)
-    defaults          = optional(string, "datasets/classic/defaults.yaml")
-    folders           = optional(string, "datasets/classic/folders")
-    organization      = optional(string, "datasets/classic/organization")
-    project_templates = optional(string, "datasets/classic/templates")
-    projects          = optional(string, "datasets/classic/projects")
+    dataset = optional(string, "datasets/classic")
+    paths = optional(object({
+      billing_accounts  = optional(string, "billing-accounts")
+      cicd_workflows    = optional(string)
+      defaults          = optional(string, "defaults.yaml")
+      folders           = optional(string, "folders")
+      observability     = optional(string, "observability")
+      organization      = optional(string, "organization")
+      project_templates = optional(string, "templates")
+      projects          = optional(string, "projects")
+    }), {})
   })
   nullable = false
   default  = {}

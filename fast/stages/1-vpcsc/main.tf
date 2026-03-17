@@ -15,9 +15,6 @@
  */
 
 locals {
-  paths = {
-    for k, v in var.factories_config : k => try(pathexpand(v), null)
-  }
   _ctx = {
     for k, v in var.context : k => merge(
       v, try(local._defaults.context[k], {})
@@ -78,6 +75,13 @@ locals {
       null
     )
   }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
+  }
 }
 
 module "vpc-sc-discovery" {
@@ -100,7 +104,7 @@ module "vpc-sc" {
   access_levels           = var.access_levels
   egress_policies         = var.egress_policies
   context                 = local.ctx
-  factories_config        = var.factories_config
+  factories_config        = local.paths
   ingress_policies        = var.ingress_policies
   perimeters              = var.perimeters
   project_id_search_scope = "organizations/${var.organization.id}"

@@ -25,6 +25,7 @@ locals {
         iam                   = lookup(opts, "iam", {})
         iam_bindings          = lookup(opts, "iam_bindings", {})
         iam_bindings_additive = lookup(opts, "iam_bindings_additive", {})
+        tag_bindings          = lookup(opts, "tag_bindings", {})
         keys                  = lookup(opts, "keys", {})
       } if try(opts.location, null) != null
     ]
@@ -64,6 +65,7 @@ module "kms" {
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
+  tag_bindings          = each.value.tag_bindings
   keys                  = each.value.keys
   context = merge(local.ctx, {
     iam_principals = merge(
@@ -75,5 +77,7 @@ module "kms" {
     )
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids
+    tag_keys    = local.ctx_tag_keys
+    tag_values  = local.ctx_tag_values
   })
 }

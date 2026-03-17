@@ -15,7 +15,7 @@
 variables:
   GOOGLE_CREDENTIALS: cicd-sa-credentials.json
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
-  FAST_WIF_PROVIDER: ${workload_identity.pool_id}
+  FAST_WIF_PROVIDER: ${workload_identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   %{~ if tfvars_files != [] ~}
   TF_VAR_FILES: ${join("\n    ", tfvars_files)}

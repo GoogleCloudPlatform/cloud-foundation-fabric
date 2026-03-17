@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,31 +29,51 @@ values:
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
     description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
     friendly_name: null
     labels: null
     location: EU
     max_time_travel_hours: '168'
     project: project-id
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.destination-project.data.google_logging_project_settings.logging_sa[0]:
+    project: test-dest-prj
   module.destination-project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    deletion_policy: 'DELETE'
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     folder_id: '1122334455'
     labels: null
     name: test-dest-prj
     org_id: null
     project_id: test-dest-prj
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.destination-project.google_project_service.project_services["logging.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-dest-prj
     service: logging.googleapis.com
+    timeouts: null
   module.folder-sink.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
     condition: []
     role: roles/bigquery.dataEditor
   module.folder-sink.google_folder.folder[0]:
+    deletion_protection: false
     display_name: Folder name
     parent: folders/1122334455
+    tags: null
+    timeouts: null
   module.folder-sink.google_logging_folder_exclusion.logging-exclusion["no-gce-instances"]:
     description: no-gce-instances (Terraform-managed).
     disabled: null
@@ -66,6 +86,7 @@ values:
     exclusions: []
     filter: severity=ALERT
     include_children: true
+    intercept_children: false
     name: alert
   module.folder-sink.google_logging_folder_sink.sink["debug"]:
     description: debug (Terraform-managed).
@@ -77,6 +98,7 @@ values:
       name: no-compute
     filter: severity=DEBUG
     include_children: true
+    intercept_children: false
     name: debug
   module.folder-sink.google_logging_folder_sink.sink["info"]:
     bigquery_options:
@@ -86,6 +108,7 @@ values:
     exclusions: []
     filter: severity=INFO
     include_children: true
+    intercept_children: false
     name: info
   module.folder-sink.google_logging_folder_sink.sink["notice"]:
     description: notice (Terraform-managed).
@@ -94,6 +117,7 @@ values:
     exclusions: []
     filter: severity=NOTICE
     include_children: true
+    intercept_children: false
     name: notice
   module.folder-sink.google_logging_folder_sink.sink["warnings"]:
     description: warnings (Terraform-managed).
@@ -102,6 +126,7 @@ values:
     exclusions: []
     filter: severity=WARNING
     include_children: true
+    intercept_children: false
     name: warnings
   module.folder-sink.google_project_iam_member.bucket-sinks-binding["debug"]:
     condition:
@@ -109,7 +134,7 @@ values:
     role: roles/logging.bucketWriter
   module.folder-sink.google_project_iam_member.project-sinks-binding["alert"]:
     condition: []
-    project: test-dest-prj
+    project: projects/test-dest-prj
     role: roles/logging.logWriter
   module.folder-sink.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
     condition: []
@@ -120,14 +145,19 @@ values:
     bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
+    timeouts: null
   module.gcs.google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     enable_object_retention: null
     encryption: []
     force_destroy: true
+    hierarchical_namespace: []
+    ip_filter: []
     labels: null
     lifecycle_rule: []
     location: EU
@@ -137,13 +167,25 @@ values:
     requester_pays: null
     retention_policy: []
     storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
     uniform_bucket_level_access: true
   module.pubsub.google_pubsub_topic.default:
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ingestion_data_source_settings: []
     kms_key_name: null
     labels: null
     message_retention_duration: null
+    message_transforms: []
     name: pubsub_sink
     project: project-id
+    schema_settings: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
 
 counts:
   google_bigquery_dataset: 1
@@ -152,6 +194,7 @@ counts:
   google_logging_folder_exclusion: 1
   google_logging_folder_sink: 5
   google_logging_project_bucket_config: 1
+  google_logging_project_settings: 1
   google_project: 1
   google_project_iam_member: 2
   google_project_service: 1
@@ -160,4 +203,4 @@ counts:
   google_storage_bucket: 1
   google_storage_bucket_iam_member: 1
   modules: 6
-  resources: 18
+  resources: 19

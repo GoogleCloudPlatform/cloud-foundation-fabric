@@ -32,7 +32,6 @@ values:
     multi_region_settings: []
     name: test-cf-kms
     project: foo-test-0
-    scaling: []
     template:
     - annotations: null
       containers: []

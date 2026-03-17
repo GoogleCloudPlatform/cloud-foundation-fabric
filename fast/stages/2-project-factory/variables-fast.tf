@@ -24,7 +24,7 @@ variable "automation" {
 }
 
 variable "billing_account" {
-  # tfdoc:variable:source 0-org-setup
+  # tfdoc:variable:source 0-globals
   description = "Billing account id."
   type = object({
     id = string
@@ -71,6 +71,16 @@ variable "kms_keys" {
   default     = {}
 }
 
+variable "organization" {
+  # tfdoc:variable:source 0-globals
+  description = "Organization details."
+  type = object({
+    domain      = string
+    id          = number
+    customer_id = string
+  })
+}
+
 variable "perimeters" {
   # tfdoc:variable:source 1-vpcsc
   description = "Optional VPC-SC perimeter ids."
@@ -80,7 +90,7 @@ variable "perimeters" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 0-org-setup
+  # tfdoc:variable:source 0-globals
   description = "Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants."
   type        = string
   validation {
@@ -122,7 +132,7 @@ variable "tag_values" {
 }
 
 variable "universe" {
-  # tfdoc:variable:source 0-org-setup
+  # tfdoc:variable:source 0-globals
   description = "GCP universe where to deploy projects. The prefix will be prepended to the project id."
   type = object({
     domain                         = string

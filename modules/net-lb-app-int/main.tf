@@ -102,8 +102,8 @@ resource "google_compute_region_target_http_proxy" "default" {
   count       = var.protocol == "HTTPS" ? 0 : 1
   project     = var.project_id
   region      = var.region
-  name        = var.name
-  description = var.description
+  name        = coalesce(var.https_proxy_config.name, var.name)
+  description = var.http_proxy_config.description
   url_map     = google_compute_region_url_map.default.id
 }
 
@@ -199,8 +199,10 @@ resource "google_compute_region_network_endpoint_group" "default" {
   description           = var.description
   network_endpoint_type = "SERVERLESS"
   cloud_run {
-    service  = try(each.value.target_service.name, null)
-    tag      = try(each.value.target_service.tag, null)
+    service = try(each.value.target_service.name, null)
+    tag = try(
+      coalesce(each.value.tag, try(each.value.target_service.tag, null)), null
+    )
     url_mask = each.value.target_urlmask
   }
 }

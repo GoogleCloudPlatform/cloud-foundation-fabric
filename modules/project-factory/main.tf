@@ -26,6 +26,13 @@ locals {
     local.projects_sas_iam_emails,
     local.automation_sas_iam_emails
   )
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+  }
 }
 
 resource "terraform_data" "defaults_preconditions" {
@@ -38,8 +45,8 @@ resource "terraform_data" "defaults_preconditions" {
       error_message = "No default storage location defined in defaults or overrides variables."
     }
     # precondition {
-    #   condition     = local.projects_input == null
-    #   error_message = yamlencode(local.projects_input["iac-0"])
+    #   condition     = local.paths == null
+    #   error_message = jsonencode(local.paths)
     # }
   }
 }

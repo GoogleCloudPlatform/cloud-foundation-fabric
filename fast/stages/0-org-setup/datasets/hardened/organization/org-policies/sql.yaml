@@ -30,6 +30,10 @@ custom.cloudsqlRequireAutomatedBackup:
   rules:
     - enforce: true
 
+custom.cloudsqlRequireHighAvailability:
+  rules:
+    - enforce: true
+
 custom.cloudsqlRequireMySQLDatabaseFlags:
   rules:
     - enforce: true
@@ -37,6 +41,10 @@ custom.cloudsqlRequireMySQLDatabaseFlags:
 custom.cloudsqlRequirePointInTimeRecovery:
   rules:
     - enforce: true
+
+custom.cloudsqlRequirePostgreSQLDatabaseAdditionalFlags:
+  rules:
+    - enforce: false
 
 custom.cloudsqlRequirePostgreSQLDatabaseFlags:
   rules:

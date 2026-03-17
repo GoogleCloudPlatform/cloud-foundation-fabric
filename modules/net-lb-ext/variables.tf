@@ -76,12 +76,6 @@ variable "backends" {
   nullable = false
 }
 
-variable "description" {
-  description = "Optional description used for resources."
-  type        = string
-  default     = "Terraform managed."
-}
-
 variable "forwarding_rules_config" {
   description = "The optional forwarding rules configuration."
   type = map(object({
@@ -101,6 +95,8 @@ variable "forwarding_rules_config" {
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
   type = map(object({
+    name        = optional(string)
+    description = optional(string, "Terraform managed.")
     zone        = string
     instances   = optional(list(string))
     named_ports = optional(map(number), {})

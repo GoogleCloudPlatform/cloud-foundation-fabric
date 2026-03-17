@@ -784,6 +784,14 @@
   is_primary: false
   aliases: []
   skip_iam: true
+- name: csc-hpsa
+  display_name: Cloud Security Compliance Service Agent
+  api: cloudsecuritycompliance.googleapis.com
+  identity: service-${project_number}@gcp-sa-csc-hpsa.${universe_domain}iam.gserviceaccount.com
+  role: roles/cloudsecuritycompliance.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: spanner
   display_name: Cloud Spanner Production Service Account
   api: spanner.googleapis.com
@@ -1258,6 +1266,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: geminidataanalytics
+  display_name: Gemini Data Analytics Service Account
+  api: geminidataanalytics.googleapis.com
+  identity: service-${project_number}@gcp-sa-geminidataanalytics.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: cloudaicompanion
   display_name: Gemini for Google Cloud Service Agent
   api: cloudaicompanion.googleapis.com
@@ -1479,7 +1495,7 @@
   display_name: Looker Service Account
   api: looker.googleapis.com
   identity: service-${project_number}@gcp-sa-looker.${universe_domain}iam.gserviceaccount.com
-  role: roles/looker.serviceAgent
+  role: roles/looker.restrictedServiceAgent
   is_primary: true
   aliases: []
   skip_iam: false
@@ -1844,6 +1860,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: vectorsearch
+  display_name: Vector Search Service Account
+  api: vectorsearch.googleapis.com
+  identity: service-${project_number}@gcp-sa-vectorsearch.${universe_domain}iam.gserviceaccount.com
+  role: roles/vectorsearch.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: vertex-shtune
   display_name: Vertex AI Ancillary Secure Fine Tuning Service Agent
   api: aiplatform.googleapis.com
@@ -1988,4 +2012,3 @@
   is_primary: false
   aliases: []
   skip_iam: false
-

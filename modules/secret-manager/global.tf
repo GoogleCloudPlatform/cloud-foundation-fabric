@@ -95,7 +95,7 @@ resource "google_secret_manager_secret_version" "default" {
   deletion_policy = each.value.deletion_policy
   enabled         = each.value.enabled
   is_secret_data_base64 = try(
-    each.value.data_config.is_base64, null
+    each.value.data_config.is_base64, false
   )
   secret_data_wo_version = try(
     each.value.data_config.write_only_version, null

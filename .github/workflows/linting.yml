@@ -90,6 +90,11 @@ jobs:
         run: |
           python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
 
+      - name: Check YAML schemas
+        id: yaml-schema
+        run: |
+          python3 tools/check_yaml_schema.py modules fast
+
       - name: Check python formatting
         id: yapf
         uses: pre-commit/action@1b06ec171f2f6faa71ed760c4042bd969e4f8b43

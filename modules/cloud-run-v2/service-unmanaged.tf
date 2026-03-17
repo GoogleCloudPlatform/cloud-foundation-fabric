@@ -266,6 +266,7 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
       build_config,
       client,
       client_version,
+      template[0].revision,
       template[0].annotations["run.googleapis.com/operation-id"],
       template[0].containers,
       template[0].labels

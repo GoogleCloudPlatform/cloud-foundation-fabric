@@ -32,7 +32,6 @@ values:
     multi_region_settings: []
     name: test-run-vpc
     project: test-project
-    scaling: []
     template:
     - annotations: null
       containers: []

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,17 @@
 variable "workforce_identity_config" {
   description = "Workforce Identity Federation pool and providers."
   type = object({
-    pool_name = optional(string, "default")
+    pool_name        = optional(string, "default")
+    description      = optional(string)
+    disabled         = optional(bool)
+    display_name     = optional(string)
+    session_duration = optional(string)
+    access_restrictions = optional(object({
+      disable_programmatic_signin = optional(bool)
+      allowed_services = optional(list(object({
+        domain = optional(string)
+      })))
+    }))
     providers = optional(map(object({
       description                = optional(string)
       display_name               = optional(string)

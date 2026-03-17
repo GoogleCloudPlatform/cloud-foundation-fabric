@@ -44,6 +44,12 @@ variable "iam" {
   default     = null
 }
 
+variable "labels" {
+  description = "Labels to be assigned to the zone."
+  type        = map(string)
+  default     = {}
+}
+
 variable "name" {
   description = "Zone name, must be unique within the project."
   type        = string

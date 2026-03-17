@@ -66,7 +66,7 @@ values:
     enable_display: null
     guest_accelerator: []
     instance_description: null
-    key_revocation_action_type: null
+    key_revocation_action_type: NONE
     labels: null
     machine_type: f1-micro
     metadata: null

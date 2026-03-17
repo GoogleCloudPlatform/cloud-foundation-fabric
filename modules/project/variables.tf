@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
+variable "asset_feeds" {
+  description = "Cloud Asset Inventory feeds."
+  type = map(object({
+    billing_project = optional(string)
+    content_type    = optional(string)
+    asset_types     = optional(list(string))
+    asset_names     = optional(list(string))
+    feed_output_config = object({
+      pubsub_destination = object({
+        topic = string
+      })
+    })
+    condition = optional(object({
+      expression  = string
+      title       = optional(string)
+      description = optional(string)
+      location    = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.asset_feeds :
+      v.content_type == null || contains(
+        ["RESOURCE", "IAM_POLICY", "ORG_POLICY", "ACCESS_POLICY", "OS_INVENTORY", "RELATIONSHIP"],
+        v.content_type
+      )
+    ])
+    error_message = "Content type must be one of RESOURCE, IAM_POLICY, ORG_POLICY, ACCESS_POLICY, OS_INVENTORY, RELATIONSHIP."
+  }
+}
+
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
 
 variable "auto_create_network" {
   description = "Whether to create the default network for the project."
@@ -91,15 +135,18 @@ variable "contacts" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    bigquery_datasets     = optional(map(string), {})
     condition_vars        = optional(map(map(string)), {})
     custom_roles          = optional(map(string), {})
     email_addresses       = optional(map(string), {})
     folder_ids            = optional(map(string), {})
-    kms_keys              = optional(map(string), {})
     iam_principals        = optional(map(string), {})
-    notification_channels = optional(map(string), {})
+    kms_keys              = optional(map(string), {})
     log_buckets           = optional(map(string), {})
+    notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
+    pubsub_topics         = optional(map(string), {})
+    storage_buckets       = optional(map(string), {})
     tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})
     vpc_sc_perimeters     = optional(map(string), {})
@@ -146,7 +193,7 @@ variable "deletion_policy" {
 }
 
 variable "descriptive_name" {
-  description = "Name of the project name. Used for project name instead of `name` variable."
+  description = "Descriptive project name. Set when name differs from project id."
   type        = string
   default     = null
 }
@@ -159,6 +206,7 @@ variable "factories_config" {
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
     quotas                 = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
     tags                   = optional(string)
   })
@@ -277,8 +325,9 @@ variable "project_reuse" {
 variable "service_agents_config" {
   description = "Automatic service agent configuration options."
   type = object({
-    create_primary_agents = optional(bool, true)
-    grant_default_roles   = optional(bool, true)
+    create_primary_agents      = optional(bool, true)
+    grant_default_roles        = optional(bool, true)
+    grant_service_agent_editor = optional(bool, true)
   })
   default  = {}
   nullable = false

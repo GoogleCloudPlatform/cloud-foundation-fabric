@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,15 @@
 # TODO: folder automation
 
 locals {
-  _folders_path = try(
-    pathexpand(var.factories_config.folders), null
-  )
   _folders_files = try(
-    fileset(local._folders_path, "**/**/.config.yaml"),
+    fileset(local.paths.folders, "**/**/.config.yaml"),
     []
   )
   _folders_raw = merge(
     var.folders,
     {
       for f in local._folders_files : dirname(f) => yamldecode(file(
-        "${coalesce(local._folders_path, "-")}/${f}"
+        "${coalesce(local.paths.folders, "-")}/${f}"
       ))
     }
   )
@@ -57,17 +54,25 @@ module "folder-1" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  parent = coalesce(each.value.parent, "$folder_ids:default")
-  name   = each.value.name
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
+  deletion_protection = lookup(each.value, "deletion_protection", false)
+  parent              = coalesce(each.value.parent, "$folder_ids:default")
+  name                = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
-  context             = local.ctx
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
+  context                 = local.ctx
 }
 
 module "folder-1-iam" {
@@ -75,20 +80,31 @@ module "folder-1-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 1
   }
-  id = module.folder-1[each.key].id
+  folder_create = false
+  id            = module.folder-1[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
-  folder_create         = false
-  autokey_config        = lookup(each.value, "autokey_config", null)
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
-  logging_data_access   = lookup(each.value, "data_access_logs", {})
+  autokey_config                = lookup(each.value, "autokey_config", null)
+  iam                           = lookup(each.value, "iam", {})
+  iam_bindings                  = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
+  iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -99,18 +115,26 @@ module "folder-2" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
+  deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name = each.value.name
+  name = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
@@ -124,23 +148,34 @@ module "folder-2-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 2
   }
-  id = module.folder-2[each.key].id
+  folder_create = false
+  id            = module.folder-2[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
-  folder_create         = false
-  autokey_config        = lookup(each.value, "autokey_config", null)
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
-  logging_data_access   = lookup(each.value, "data_access_logs", {})
+  autokey_config                = lookup(each.value, "autokey_config", null)
+  iam                           = lookup(each.value, "iam", {})
+  iam_bindings                  = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
+  iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -151,18 +186,26 @@ module "folder-3" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
+  deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name = each.value.name
+  name = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
@@ -176,23 +219,34 @@ module "folder-3-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 3
   }
-  id = module.folder-3[each.key].id
+  folder_create = false
+  id            = module.folder-3[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
-  folder_create         = false
-  autokey_config        = lookup(each.value, "autokey_config", null)
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
-  logging_data_access   = lookup(each.value, "data_access_logs", {})
+  autokey_config                = lookup(each.value, "autokey_config", null)
+  iam                           = lookup(each.value, "iam", {})
+  iam_bindings                  = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
+  iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })
@@ -203,18 +257,26 @@ module "folder-4" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
+  folder_create       = lookup(each.value, "id", null) == null
+  id                  = lookup(each.value, "id", null)
+  deletion_protection = lookup(each.value, "deletion_protection", false)
   parent = coalesce(
     each.value.parent, "$folder_ids:${each.value.parent_key}"
   )
-  name = each.value.name
+  name = try(each.value.name, null)
   factories_config = {
-    org_policies           = try(each.value.factories_config.org_policies, null)
-    scc_sha_custom_modules = try(each.value.factories_config.scc_sha_custom_modules, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["org_policies", "scc_sha_custom_modules"], k)
   }
-  org_policies        = lookup(each.value, "org_policies", {})
-  pam_entitlements    = lookup(each.value, "pam_entitlements", {})
-  tag_bindings        = lookup(each.value, "tag_bindings", {})
-  logging_data_access = lookup(each.value, "logging_data_access", {})
+  org_policies            = lookup(each.value, "org_policies", {})
+  pam_entitlements        = lookup(each.value, "pam_entitlements", {})
+  tag_bindings            = lookup(each.value, "tag_bindings", {})
+  assured_workload_config = lookup(each.value, "assured_workload_config", null)
+  logging_settings        = lookup(each.value, "logging", null)
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
@@ -228,23 +290,34 @@ module "folder-4-iam" {
   for_each = {
     for k, v in local.folders_input : k => v if v.level == 4
   }
-  id = module.folder-4[each.key].id
+  folder_create = false
+  id            = module.folder-4[each.key].id
+  asset_feeds   = lookup(each.value, "asset_feeds", {})
+  asset_search  = lookup(each.value, "asset_search", {})
+  # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
-    # we do anything that can refer to IAM and custom roles in this call
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if contains(["pam_entitlements"], k)
   }
-  folder_create         = false
-  autokey_config        = lookup(each.value, "autokey_config", null)
-  iam                   = lookup(each.value, "iam", {})
-  iam_bindings          = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive = lookup(each.value, "iam_bindings_additive", {})
-  iam_by_principals     = lookup(each.value, "iam_by_principals", {})
-  logging_data_access   = lookup(each.value, "data_access_logs", {})
+  autokey_config                = lookup(each.value, "autokey_config", null)
+  iam                           = lookup(each.value, "iam", {})
+  iam_bindings                  = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
+  iam_by_principals             = lookup(each.value, "iam_by_principals", {})
+  iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
+  iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  logging_data_access           = lookup(each.value, "data_access_logs", {})
+  logging_sinks                 = try(each.value.logging.sinks, {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
     })
     iam_principals  = local.ctx_iam_principals
+    kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
     project_numbers = local.ctx_project_numbers
   })

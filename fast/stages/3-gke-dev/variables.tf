@@ -18,7 +18,11 @@ variable "clusters" {
   description = "Clusters configuration. Refer to the gke-cluster module for type details."
   type = map(object({
     access_config = optional(object({
-      dns_access = optional(bool, true)
+      dns_access = optional(object({
+        allow_external_traffic = optional(bool, true)
+        enable_k8s_tokens      = optional(bool)
+        enable_k8s_certs       = optional(bool)
+      }), {})
       ip_access = optional(object({
         authorized_ranges               = optional(map(string), {})
         disable_public_endpoint         = optional(bool, true)
@@ -91,6 +95,9 @@ variable "clusters" {
         services = string
       }), { pods = "pods", services = "services" })
     })
+    node_config = optional(object({
+      boot_disk_kms_key = optional(string)
+    }))
   }))
   default  = {}
   nullable = false

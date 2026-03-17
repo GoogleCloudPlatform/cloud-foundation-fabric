@@ -17,7 +17,7 @@ values:
     address: 10.0.0.32
     address_type: INTERNAL
     name: one
-    network: projects/xxx/global/networks/aaa
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     purpose: PRIVATE_SERVICE_CONNECT
 

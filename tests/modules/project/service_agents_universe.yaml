@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,8 +76,8 @@ values:
 
 outputs:
   default_service_accounts:
-    compute: 12345-compute@developer.gserviceaccount.com
-    gae: alpha:my-project@appspot.gserviceaccount.com
+    compute: 12345-compute@developer.alpha-system.iam.gserviceaccount.com
+    gae: my-project@appspot.alpha-system.iam.gserviceaccount.com
   id: alpha:my-project
   name: my-project
   number: 12345

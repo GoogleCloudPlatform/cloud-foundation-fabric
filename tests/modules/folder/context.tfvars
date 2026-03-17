@@ -16,13 +16,29 @@ context = {
   folder_ids = {
     default = "organizations/1234567890"
   }
+  kms_keys = {
+    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
+  }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
     myuser  = "user:test-user@example.com"
   }
+  pubsub_topics = {
+    test = "projects/test-prod-audit-logs-0/topics/audit-logs"
+  }
   tag_values = {
     "test/one" = "tagValues/1234567890"
+  }
+}
+asset_feeds = {
+  test = {
+    billing_project = "test-project"
+    feed_output_config = {
+      pubsub_destination = {
+        topic = "$pubsub_topics:test"
+      }
+    }
   }
 }
 contacts = {
@@ -41,6 +57,20 @@ iam_by_principals = {
     "roles/owner",
     "$custom_roles:myrole_one"
   ]
+}
+iam_by_principals_conditional = {
+  "$iam_principals:myuser" = {
+    roles = [
+      "roles/storage.admin",
+      "$custom_roles:myrole_one",
+      "$custom_roles:myrole_two",
+    ]
+    condition = {
+      title       = "expires_after_2020_12_31"
+      description = "Expiring at midnight of 2020-12-31"
+      expression  = "request.time < timestamp(\"2021-01-01T00:00:00Z\")"
+    }
+  }
 }
 iam_bindings = {
   myrole_two = {
@@ -66,6 +96,16 @@ logging_data_access = {
       exempted_members = ["$iam_principals:mygroup"]
     }
     DATA_READ = {}
+  }
+}
+logging_settings = {
+  kms_key_name = "$kms_keys:test"
+}
+logging_sinks = {
+  test-pubsub = {
+    destination = "$pubsub_topics:test"
+    filter      = "log_id('cloudaudit.googleapis.com/activity')"
+    type        = "pubsub"
   }
 }
 pam_entitlements = {

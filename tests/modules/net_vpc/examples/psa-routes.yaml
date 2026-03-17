@@ -22,6 +22,9 @@ values:
     prefix_length: 24
     project: project-id
     purpose: VPC_PEERING
+    labels:
+      data_classification: sensitive
+      environment: test
     timeouts: null
   module.vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false

@@ -29,6 +29,8 @@ variable "description" {
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
+    name        = optional(string)
+    description = optional(string, "Terraform managed.")
     zone        = string
     instances   = optional(list(string))
     named_ports = optional(map(number), {})
@@ -166,6 +168,21 @@ variable "protocol" {
     )
     error_message = "Protocol must be HTTP or HTTPS"
   }
+}
+
+variable "service_attachment" {
+  description = "PSC service attachments."
+  type = object({
+    automatic_connection  = optional(bool, false)
+    consumer_accept_lists = optional(map(string), {})
+    consumer_reject_lists = optional(list(string))
+    description           = optional(string)
+    domain_name           = optional(map(string))
+    enable_proxy_protocol = optional(bool, false)
+    nat_subnets           = map(list(string))
+    reconcile_connections = optional(bool)
+  })
+  default = null
 }
 
 variable "service_directory_registration" {

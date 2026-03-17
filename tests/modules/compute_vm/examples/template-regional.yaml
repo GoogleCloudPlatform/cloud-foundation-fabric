@@ -45,7 +45,7 @@ values:
     network_interface:
     - access_config: []
       alias_ip_range: []
-      network: projects/xxx/global/networks/aaa
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
       network_ip: null
       nic_type: null
       queue_count: null

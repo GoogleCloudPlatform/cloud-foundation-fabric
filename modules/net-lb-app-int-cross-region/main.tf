@@ -61,7 +61,7 @@ resource "google_compute_global_forwarding_rule" "forwarding_rules" {
   project               = var.project_id
   name                  = "${var.name}-${each.key}"
   description           = var.description
-  ip_address            = try(var.addresses[each.value], null)
+  ip_address            = try(var.addresses[each.key], null)
   ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = var.vpc_config.network
@@ -80,11 +80,12 @@ resource "google_compute_global_forwarding_rule" "forwarding_rules" {
 }
 
 resource "google_compute_target_http_proxy" "default" {
-  count       = var.protocol == "HTTPS" ? 0 : 1
-  project     = var.project_id
-  name        = coalesce(var.https_proxy_config.name, var.name)
-  description = var.http_proxy_config.description
-  url_map     = google_compute_url_map.default.id
+  count                       = var.protocol == "HTTPS" ? 0 : 1
+  project                     = var.project_id
+  name                        = coalesce(var.http_proxy_config.name, var.name)
+  description                 = var.http_proxy_config.description
+  http_keep_alive_timeout_sec = var.http_proxy_config.http_keepalive_timeout
+  url_map                     = google_compute_url_map.default.id
 }
 
 resource "google_compute_target_https_proxy" "default" {
@@ -97,6 +98,37 @@ resource "google_compute_target_https_proxy" "default" {
   quic_override                    = var.https_proxy_config.quic_override
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_url_map.default.id
+}
+
+resource "google_compute_service_attachment" "default" {
+  for_each       = var.service_attachment == null ? {} : google_compute_global_forwarding_rule.forwarding_rules
+  project        = var.project_id
+  region         = each.key
+  name           = each.value.name
+  description    = var.service_attachment.description
+  target_service = each.value.id
+  nat_subnets    = var.service_attachment.nat_subnets[each.key]
+  connection_preference = (
+    var.service_attachment.automatic_connection
+    ? "ACCEPT_AUTOMATIC"
+    : "ACCEPT_MANUAL"
+  )
+  consumer_reject_lists = var.service_attachment.consumer_reject_lists
+  domain_names = (
+    var.service_attachment.domain_name == null
+    ? null
+    : [var.service_attachment.domain_name[each.key]]
+  )
+  enable_proxy_protocol = var.service_attachment.enable_proxy_protocol
+  reconcile_connections = var.service_attachment.reconcile_connections
+  dynamic "consumer_accept_lists" {
+    for_each = var.service_attachment.consumer_accept_lists
+    iterator = accept
+    content {
+      project_id_or_num = accept.key
+      connection_limit  = accept.value
+    }
+  }
 }
 
 resource "google_compute_network_endpoint_group" "default" {

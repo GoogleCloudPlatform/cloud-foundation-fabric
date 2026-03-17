@@ -27,6 +27,10 @@ variable "context" {
     log_buckets           = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
+    project_numbers       = optional(map(string), {})
+    pubsub_topics         = optional(map(string), {})
+    storage_buckets       = optional(map(string), {})
+    tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})
     vpc_host_projects     = optional(map(string), {})
     vpc_sc_perimeters     = optional(map(string), {})
@@ -161,13 +165,16 @@ variable "data_overrides" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    folders           = optional(string)
-    project_templates = optional(string)
-    projects          = optional(string)
+    basepath = string
     budgets = optional(object({
-      billing_account_id = string
-      data               = string
-    }))
+      billing_account = optional(string)
+    }), {})
+    paths = optional(object({
+      budgets           = optional(string, "budgets")
+      folders           = optional(string, "folders")
+      project_templates = optional(string, "project-templates")
+      projects          = optional(string, "projects")
+    }), {})
   })
   nullable = false
 }

@@ -36,7 +36,7 @@ values:
     parent: organizations/1234567890
     purpose: GCE_FIREWALL
     purpose_data:
-      network: foobar
+      network: test-project/test-vpc
     short_name: net_environment
   google_tags_tag_value.default["foobar/one"]:
     description: Managed by the Terraform organization module.

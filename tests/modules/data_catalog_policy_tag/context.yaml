@@ -1,0 +1,63 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_data_catalog_policy_tag.default["high"]:
+    description: high - Terraform managed.
+    display_name: high
+    parent_policy_tag: null
+    timeouts: null
+  google_data_catalog_policy_tag.default["low"]:
+    description: low - Terraform managed.
+    display_name: low
+    parent_policy_tag: null
+    timeouts: null
+  google_data_catalog_policy_tag.default["medium"]:
+    description: medium - Terraform managed.
+    display_name: medium
+    parent_policy_tag: null
+    timeouts: null
+  google_data_catalog_policy_tag_iam_binding.authoritative["high.roles/datacatalog.categoryFineGrainedReader"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    role: roles/datacatalog.categoryFineGrainedReader
+  google_data_catalog_taxonomy.default:
+    activated_policy_types:
+    - FINE_GRAINED_ACCESS_CONTROL
+    description: Taxonomy - Terraform managed
+    display_name: test
+    project: myproject
+    region: europe-west8
+    timeouts: null
+  google_data_catalog_taxonomy_iam_binding.authoritative["roles/datacatalog.categoryAdmin"]:
+    condition: []
+    members:
+    - group:test-group@example.com
+    role: roles/datacatalog.categoryAdmin
+  google_data_catalog_taxonomy_iam_member.bindings["am1-admin"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/environment', 'development')
+      title: Test
+    member: user:test-user@example.com
+    role: organizations/366118655033/roles/myRoleOne
+counts:
+  google_data_catalog_policy_tag: 3
+  google_data_catalog_policy_tag_iam_binding: 1
+  google_data_catalog_taxonomy: 1
+  google_data_catalog_taxonomy_iam_binding: 1
+  google_data_catalog_taxonomy_iam_member: 1
+  modules: 0
+  resources: 7

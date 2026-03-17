@@ -31,11 +31,11 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^roles/": {
+        "^(?:roles/|\\$custom_roles:)": {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\\$iam_principals:[a-z0-9_-]+)"
           }
         }
       }
@@ -52,12 +52,12 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+                "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
               }
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",
@@ -92,11 +92,11 @@
           "properties": {
             "member": {
               "type": "string",
-              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|[a-z])"
+              "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:)"
             },
             "condition": {
               "type": "object",

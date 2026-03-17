@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,14 @@ locals {
     for name, rule in merge(var.ingress_rules) :
     "ingress/${name}" => merge(rule, { name = name, direction = "INGRESS" })
   }
+  _mirroring_rules_egress = {
+    for name, rule in merge(var.egress_mirroring_rules) :
+    "mirror/egress/${name}" => merge(rule, { name = name, direction = "EGRESS" })
+  }
+  _mirroring_rules_ingress = {
+    for name, rule in merge(var.ingress_mirroring_rules) :
+    "mirror/ingress/${name}" => merge(rule, { name = name, direction = "INGRESS" })
+  }
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
@@ -32,6 +40,10 @@ locals {
   rules = merge(
     local.factory_egress_rules, local.factory_ingress_rules,
     local._rules_egress, local._rules_ingress
+  )
+  mirroring_rules = merge(
+    local.factory_mirroring_egress_rules, local.factory_mirroring_ingress_rules,
+    local._mirroring_rules_egress, local._mirroring_rules_ingress
   )
   # do not depend on the parent id as that might be dynamic and prevent count
   use_hierarchical = var.region == null

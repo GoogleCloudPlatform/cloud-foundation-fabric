@@ -149,38 +149,16 @@ This is an example that creates repositories for stages 00 and 01 and 02:
 
 ```tfvars
 projects = {
-  fast_00_bootstrap = {
+  fast_0_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features = {
         issues = true
       }
     }
     group         = "org-admins"
     populate_from = "../../stages/0-org-setup"
-    workflow_file = "bootstrap-workflow.yaml"
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features = {
-        issues = true
-      }
-    }
-    group         = "org-admins"
-    populate_from = "../../stages/1-resman"
-    workflow_file = "resman-workflow.yaml"
-  }
-  fast_02_networking = {
-    create_options = {
-      description = "FAST networking management."
-      features = {
-        issues = true
-      }
-    }
-    group         = "net-admins"
-    populate_from = "../../stages/2-networking-legacy-a-peering"
-    workflow_file = "networking-workflow.yaml"
+    workflow_file = "org-setup-workflow.yaml"
   }
 }
 # tftest skip
@@ -203,9 +181,9 @@ attribute to `true`. Here's an updated example:
 
 ```tfvars
 projects = {
-  fast_00_bootstrap = {
+  fast_0_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features    = {
         issues = true
       }
@@ -213,31 +191,7 @@ projects = {
     group           = "org-admins"
     populate_from   = "../../stages/0-org-setup"
     populate_sample = true
-    workflow_file   = "bootstrap-workflow.yaml"
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "org-admins"
-    populate_from   = "../../stages/1-resman"
-    populate_sample = true
-    workflow_file   = "resman-workflow.yaml"
-  }
-  fast_02_networking = {
-    create_options = {
-      description = "FAST networking management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "net-admins"
-    populate_from   = "../../stages/2-networking-legacy-a-peering"
-    populate_sample = true
-    workflow_file   = "networking-workflow.yaml"
+    workflow_file   = "org-setup-workflow.yaml"
   }
 }
 # tftest skip
@@ -258,9 +212,9 @@ initialization.
 
 ```tfvars
 projects = {
-  fast_00_bootstrap = {
+  fast_0_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features    = {
         issues = true
       }
@@ -268,31 +222,7 @@ projects = {
     group           = "org-admins"
     populate_from   = "../../stages/0-org-setup"
     populate_sample = true
-    workflow_file   = "bootstrap-workflow.yaml"
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "org-admins"
-    populate_from   = "../../stages/1-resman"
-    populate_sample = true
-    workflow_file   = "resman-workflow.yaml"
-  }
-  fast_02_networking = {
-    create_options = {
-      description = "FAST networking management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "net-admins"
-    populate_from   = "../../stages/2-networking-legacy-a-peering"
-    populate_sample = true
-    workflow_file   = "networking-workflow.yaml"
+    workflow_file   = "org-setup-workflow.yaml"
   }
 }
 
@@ -301,16 +231,6 @@ groups = {
     name        = "gcp-org-admins"
     path        = "gcp-org-admins"
     description = "GCP Organization administrators"
-  }
-  net-admins = {
-    name        = "gcp-net-admins"
-    path        = "gcp-net-admins"
-    description = "GCP Network administrators"
-  }
-  shared = {
-    name        = "shared"
-    path        = "shared"
-    description = "Shared repositories"
   }
 }
 # tftest skip
@@ -327,16 +247,6 @@ groups = {
     name        = "gcp-org-admins"
     path        = "gcp-org-admins"
     description = "GCP Organization administrators"
-  }
-  net-admins = {
-    name        = "gcp-net-admins"
-    path        = "gcp-net-admins"
-    description = "GCP Network administrators"
-  }
-  shared = {
-    name        = "shared"
-    path        = "shared"
-    description = "Shared repositories"
   }
 }
 # tftest skip

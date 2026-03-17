@@ -43,9 +43,10 @@ except ImportError:
 @click.command()
 @click.option('--example', default=False, is_flag=True)
 @click.option('--extra-files', default=[], multiple=True)
+@click.option("--extra-dirs", default=[], multiple=True)
 @click.argument('module', type=click.Path(), nargs=1)
 @click.argument('tfvars', type=click.Path(exists=True), nargs=-1)
-def main(example, module, tfvars, extra_files):
+def main(example, module, tfvars, extra_files, extra_dirs):
   try:
     if example:
       tmp_dir = tempfile.TemporaryDirectory()
@@ -58,7 +59,9 @@ def main(example, module, tfvars, extra_files):
     else:
       module = BASEDIR / module
 
-    summary = fixtures.plan_summary(module, Path(), tfvars, extra_files)
+    summary = fixtures.plan_summary(module, Path(), tfvars,
+                                    extra_files=extra_files,
+                                    extra_dirs=extra_dirs)
     print(yaml.dump({'values': summary.values}))
     print(yaml.dump({'counts': summary.counts}))
     outputs = {

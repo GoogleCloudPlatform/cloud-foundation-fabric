@@ -42,6 +42,7 @@ locals {
   }
 }
 
+
 resource "google_logging_project_bucket_config" "bucket" {
   count            = var.parent_type == "project" ? 1 : 0
   project          = local.parent_id
@@ -50,10 +51,11 @@ resource "google_logging_project_bucket_config" "bucket" {
   bucket_id        = var.name
   description      = var.description
   enable_analytics = var.log_analytics.enable
+  locked           = var.locked
   dynamic "cmek_settings" {
     for_each = var.kms_key_name == null ? [] : [""]
     content {
-      kms_key_name = var.kms_key_name
+      kms_key_name = lookup(local.ctx.kms_keys, var.kms_key_name, var.kms_key_name)
     }
   }
 }

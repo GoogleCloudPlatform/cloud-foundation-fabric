@@ -164,10 +164,11 @@ resource "local_file" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "tfvars" {
-  for_each = local.tfvars_dd
-  bucket   = var.automation.outputs_bucket
-  name     = "tfvars/${local.files_prefix}/${each.key}.auto.tfvars.json"
-  content  = jsonencode(each.value)
+  for_each       = local.tfvars_dd
+  bucket         = var.automation.outputs_bucket
+  name           = "tfvars/${local.files_prefix}/${each.key}.auto.tfvars.json"
+  content        = jsonencode(each.value)
+  source_md5hash = md5(jsonencode(each.value))
 }
 
 # provider files for data domains and products
@@ -180,17 +181,19 @@ resource "local_file" "providers" {
 }
 
 resource "google_storage_bucket_object" "providers" {
-  for_each = local.providers
-  bucket   = var.automation.outputs_bucket
-  name     = "providers/${local.files_prefix}/${each.key}"
-  content  = each.value
+  for_each       = local.providers
+  bucket         = var.automation.outputs_bucket
+  name           = "providers/${local.files_prefix}/${each.key}"
+  content        = each.value
+  source_md5hash = md5(each.value)
 }
 
 resource "google_storage_bucket_object" "version" {
-  count  = fileexists("fast_version.txt") ? 1 : 0
-  bucket = var.automation.outputs_bucket
-  name   = "versions/3-${var.stage_config.name}-version.txt"
-  source = "fast_version.txt"
+  count          = fileexists("fast_version.txt") ? 1 : 0
+  bucket         = var.automation.outputs_bucket
+  name           = "versions/3-${var.stage_config.name}-version.txt"
+  source         = "fast_version.txt"
+  source_md5hash = filemd5("fast_version.txt")
 }
 
 # regular outputs

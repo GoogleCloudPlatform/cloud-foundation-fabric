@@ -1,0 +1,45 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/custom-constraint.schema.json
+
+custom.firewallRestrictCacheSearchDatabasesPolicyRule:
+  action_type: DENY
+  condition: |-
+    resource.rules.exists(r, r.priority < 2147483644 && r.direction == 'INGRESS' &&
+      r.match.srcIpRanges.exists(r, r == '0.0.0.0/0') &&
+      (
+        r.match.layer4Configs.containsIpProtocolAndPort('tcp', '6379') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('udp', '6379') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('tcp', '9200') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('udp', '9200') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('tcp', '9300') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('udp', '9300') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11211') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('udp', '11211') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11214') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('udp', '11214') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('tcp', '11215') ||
+        r.match.layer4Configs.containsIpProtocolAndPort('udp', '11215')
+      )
+    )
+  description: Ensure that cache and search database ports (Elasticsearch, Memcached,
+    Redis) are not accessible from any source when using Firewall Policy Rule
+  display_name: Restrict Firewall Policy rules allowing cache/search database port
+    access from any source
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - compute.googleapis.com/FirewallPolicy

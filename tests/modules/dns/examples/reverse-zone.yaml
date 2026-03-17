@@ -19,7 +19,7 @@ values:
     name: test-example
     private_visibility_config:
     - networks:
-      - network_url: projects/xxx/global/networks/aaa
+      - network_url: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
     project: project-id
     reverse_lookup: false
     service_directory_config: []

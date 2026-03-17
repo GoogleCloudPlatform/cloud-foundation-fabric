@@ -2,6 +2,9 @@ context = {
   bigquery_datasets = {
     test = "projects/test-prod-audit-logs-0/datasets/logs"
   }
+  kms_keys = {
+    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
+  }
   condition_vars = {
     organization = {
       id = 1234567890
@@ -41,6 +44,16 @@ context = {
     "test/one" = "tagValues/1234567890"
   }
 }
+asset_feeds = {
+  test = {
+    billing_project = "test-project"
+    feed_output_config = {
+      pubsub_destination = {
+        topic = "$pubsub_topics:test"
+      }
+    }
+  }
+}
 contacts = {
   "$email_addresses:default" = ["ALL"]
 }
@@ -49,7 +62,8 @@ iam = {
     "$iam_principals:myuser"
   ]
   "roles/viewer" = [
-    "$iam_principals:mysa"
+    "$iam_principals:mysa",
+    "$iam_principalsets:service_accounts/all"
   ]
 }
 iam_by_principals = {
@@ -57,6 +71,20 @@ iam_by_principals = {
     "roles/owner",
     "$custom_roles:myrole_one"
   ]
+}
+iam_by_principals_conditional = {
+  "$iam_principals:myuser" = {
+    roles = [
+      "roles/storage.admin",
+      "$custom_roles:myrole_one",
+      "$custom_roles:myrole_two"
+    ]
+    condition = {
+      title       = "expires_after_2020_12_31"
+      description = "Expiring at midnight of 2020-12-31"
+      expression  = "request.time < timestamp(\"2021-01-01T00:00:00Z\")"
+    }
+  }
 }
 iam_bindings = {
   myrole_two = {
@@ -112,6 +140,7 @@ logging_sinks = {
   }
 }
 logging_settings = {
+  kms_key_name     = "$kms_keys:test"
   storage_location = "$locations:default"
 }
 pam_entitlements = {

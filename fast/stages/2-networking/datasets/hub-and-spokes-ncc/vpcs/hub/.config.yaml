@@ -6,15 +6,13 @@
 
 project_id: $project_ids:net-core-0
 name: hub-0
-delete_default_routes_on_create: false
+delete_default_routes_on_create: true
 routers:
   vpn-router:
     region: $locations:primary
     asn: 64514
 routes:
-  gateway:
-    # The configuration above is purely illustrative. Adjust as needed.
-    dest_range: "8.8.8.8/32"
-    priority: 100
+  default:
+    dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"

@@ -23,15 +23,22 @@ locals {
   context = merge(local._context, {
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
   })
-  defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
+  defaults = yamldecode(file(pathexpand(local.paths.defaults)))
   fast_defaults = {
-    billing_account = coalesce(
+    billing_account = try(coalesce(
       var.data_defaults.billing_account,
       var.billing_account.id
-    )
+    ), null)
     prefix = coalesce(
       var.data_defaults.prefix, var.prefix
     )
+  }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
   }
   project_defaults = {
     defaults = {
@@ -73,6 +80,11 @@ module "factory" {
       subnet_self_links = {
         for v in local.subnet_self_links : v.key => v.link
       }
+      organization = {
+        id          = var.organization.id
+        domain      = var.organization.domain
+        customer_id = var.organization.customer_id
+      }
     }, local.context.condition_vars)
     custom_roles = merge(var.custom_roles, local.context.custom_roles)
     folder_ids   = merge(var.folder_ids, local.context.folder_ids)
@@ -96,14 +108,11 @@ module "factory" {
   data_defaults  = local.project_defaults.defaults
   data_merges    = local.project_defaults.merges
   data_overrides = local.project_defaults.overrides
-  factories_config = merge(var.factories_config, {
+  factories_config = {
+    basepath = var.factories_config.dataset
     budgets = {
-      billing_account_id = try(
-        var.factories_config.budgets.billing_account_id, var.billing_account.id
-      )
-      data = try(
-        var.factories_config.budgets.data, "data/budgets"
-      )
+      billing_account = var.billing_account.id
     }
-  })
+    paths = var.factories_config.paths
+  }
 }

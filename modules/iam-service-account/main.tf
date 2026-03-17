@@ -42,7 +42,7 @@ locals {
   )
   static_iam_email = "serviceAccount:${local.static_email}"
   static_id = (
-    "projects/${local.project_id}/serviceAccounts/${local.static_email}"
+    "projects/${local.project_id_universe}/serviceAccounts/${local.static_email}"
   )
   service_account = (
     local.use_data_source
@@ -50,11 +50,21 @@ locals {
     : try(google_service_account.service_account[0], null)
   )
   # universe-related locals
-  universe = try(regex("^([^:]*):[a-z]", local.project_id)[0], "")
+  universe = try(
+    regex("^([^:]*):[a-z]", local.project_id)[0],
+    var.service_account_reuse.universe.prefix,
+    ""
+  )
   use_data_source = (
     try(var.service_account_reuse.use_data_source, null) == true
   )
   project_id_no_universe = element(split(":", local.project_id), 1)
+  # reassemble project id for cases where we are reusing service account
+  project_id_universe = (
+    local.universe == ""
+    ? local.project_id
+    : "${local.universe}:${local.project_id_no_universe}"
+  )
   sa_domain = join(".", compact([
     local.project_id_no_universe, local.universe
   ]))

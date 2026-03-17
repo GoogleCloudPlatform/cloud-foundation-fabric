@@ -66,9 +66,10 @@ resource "google_compute_region_backend_service" "default" {
   protocol = (
     each.value.protocol == null ? var.protocol : each.value.protocol
   )
-  security_policy  = each.value.security_policy
-  session_affinity = each.value.session_affinity
-  timeout_sec      = each.value.timeout_sec
+  security_policy    = each.value.security_policy
+  session_affinity   = each.value.session_affinity
+  locality_lb_policy = each.value.locality_lb_policy
+  timeout_sec        = each.value.timeout_sec
 
   dynamic "backend" {
     for_each = { for b in coalesce(each.value.backends, []) : b.backend => b }
@@ -197,9 +198,9 @@ resource "google_compute_region_backend_service" "default" {
     for_each = each.value.iap_config == null ? [] : [each.value.iap_config]
     content {
       enabled                     = true
-      oauth2_client_id            = iap.value.oauth2_client_id
-      oauth2_client_secret        = iap.value.oauth2_client_secret
-      oauth2_client_secret_sha256 = iap.value.oauth2_client_secret_sha256
+      oauth2_client_id            = try(iap.value.oauth2_client_id, null)
+      oauth2_client_secret        = try(iap.value.oauth2_client_secret, null)
+      oauth2_client_secret_sha256 = try(iap.value.oauth2_client_secret_sha256, null)
     }
   }
 
@@ -242,6 +243,20 @@ resource "google_compute_region_backend_service" "default" {
         content {
           seconds = interval.value.seconds
           nanos   = interval.value.nanos
+        }
+      }
+    }
+  }
+
+  dynamic "tls_settings" {
+    for_each = each.value.tls_settings == null ? [] : [each.value.tls_settings]
+    content {
+      authentication_config = tls_settings.value.authentication_config
+      sni                   = tls_settings.value.sni
+      dynamic "subject_alt_names" {
+        for_each = tls_settings.value.subject_alt_names == null ? [] : tls_settings.value.subject_alt_names
+        content {
+          dns_name = subject_alt_names.value
         }
       }
     }

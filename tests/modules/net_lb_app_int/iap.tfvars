@@ -1,0 +1,43 @@
+/**
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+project_id = "my-project"
+name       = "ilb-l7-test"
+region     = "europe-west1"
+vpc_config = {
+  network    = "projects/my-project/global/networks/default"
+  subnetwork = "projects/my-project/regions/europe-west1/subnetworks/default"
+}
+backend_service_configs = {
+  google-managed = {
+    backends   = [{ group = "group-1" }]
+    iap_config = {}
+  }
+  oauth-managed = {
+    backends = [{ group = "group-2" }]
+    iap_config = {
+      oauth2_client_id     = "client-id"
+      oauth2_client_secret = "client-secret"
+    }
+  }
+  migration-mode = {
+    backends = [{ group = "group-3" }]
+    iap_config = {
+      oauth2_client_id     = " "
+      oauth2_client_secret = " "
+    }
+  }
+}

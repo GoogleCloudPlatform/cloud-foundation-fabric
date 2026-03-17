@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,4 +63,34 @@ variable "iam_by_principals" {
   type        = map(list(string))
   default     = {}
   nullable    = false
+}
+
+variable "iam_by_principals_conditional" {
+  description = "Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required."
+  type = map(object({
+    roles = list(string)
+    condition = object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    })
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.iam_by_principals_conditional : v.condition != null
+    ])
+    error_message = "The `condition` attribute is required. Use `iam_by_principals` for non-conditional bindings."
+  }
+  validation {
+    condition = alltrue([
+      for title, conditions in {
+        for k, v in var.iam_by_principals_conditional :
+        v.condition.title => v.condition...
+      } :
+      length(distinct(conditions)) == 1
+    ])
+    error_message = "IAM bindings with the same condition title must have identical expressions and descriptions."
+  }
 }

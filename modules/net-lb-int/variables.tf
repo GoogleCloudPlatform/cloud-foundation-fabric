@@ -100,6 +100,7 @@ variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
   type = map(object({
     zone        = string
+    name        = optional(string)
     description = optional(string, "Terraform managed.")
     instances   = optional(list(string))
     named_ports = optional(map(number), {})
@@ -121,6 +122,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
+    is_regional         = optional(bool, false)
     name                = optional(string)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)

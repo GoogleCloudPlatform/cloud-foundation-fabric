@@ -1,7 +1,7 @@
 # Refactor IAM interface
 
 **authors:** [Ludo](https://github.com/ludoo), [Julio](https://github.com/juliocc)
-**last modified:** January 14, 2025
+**last modified:** January 13, 2026
 
 ## Status
 
@@ -9,6 +9,7 @@
 - Authoritative bindings type changed as per [#1622](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/1622).
 - Extended by [#2064](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/issues/2064).
 - Extended by #2805 and #2814 to include `iam_by_principals_additive`
+- Extended on #3649 to include `iam_by_principals_conditional`
 
 ## Context
 
@@ -149,6 +150,44 @@ variable "iam_by_principals_additive" {
 }
 ```
 
+### IAM by Principals Conditional
+> [!NOTE]
+> This section was added on 2026-01-13
+
+The new `iam_by_principals_conditional` variable allows defining authoritative bindings keyed by principal, where each principal maps to a list of roles and a shared condition. This provides a compact way to manage conditional access for specific principals across multiple roles. The conditions are strictly required for this variable.
+
+```hcl
+variable "iam_by_principals_conditional" {
+  description = "Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required."
+  type = map(object({
+    roles = list(string)
+    condition = object({
+      expression  = string
+      title       = string
+      description = optional(string)
+    })
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.iam_by_principals_conditional : v.condition != null
+    ])
+    error_message = "The `condition` attribute is required. Use `iam_by_principals` for non-conditional bindings."
+  }
+  validation {
+    condition = alltrue([
+      for title, conditions in {
+        for k, v in var.iam_by_principals_conditional :
+        v.condition.title => v.condition...
+      } :
+      length(distinct(conditions)) == 1
+    ])
+    error_message = "IAM bindings with the same condition title must have identical expressions and descriptions."
+  }
+}
+```
+
 ## Decision
 
 The proposal above summarizes the state of discussions between the authors, and implementation will be tested.
@@ -264,6 +303,30 @@ locals {
       }
     ]...
   )
+  _iam_bindings_conditional = flatten([
+    for principal, config in var.iam_by_principals_conditional : [
+      for role in config.roles : {
+        principal = principal
+        role      = role
+        condition = config.condition
+      }
+    ]
+  ])
+  _iam_bindings_conditional_grouped = {
+    for binding in local._iam_bindings_conditional :
+    "iam-bpc:${binding.role}-${binding.condition.title}" => binding...
+  }
+  iam_bindings = merge(
+    var.iam_bindings,
+    {
+      for k, v in local._iam_bindings_conditional_grouped :
+      k => {
+        role      = v[0].role
+        condition = v[0].condition
+        members   = [for b in v : b.principal]
+      }
+    }
+  )
 }
 resource "google_RESOURCE_TYPE_iam_binding" "authoritative" {
   for_each = local.iam
@@ -273,7 +336,7 @@ resource "google_RESOURCE_TYPE_iam_binding" "authoritative" {
 }
 
 resource "google_RESOURCE_TYPE_iam_binding" "bindings" {
-  for_each = var.iam_bindings
+  for_each = local.iam_bindings
   role     = each.value.role
   members  = each.value.members
   // add extra attributes (e.g. resource id)
