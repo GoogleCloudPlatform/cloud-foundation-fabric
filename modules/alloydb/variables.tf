@@ -149,7 +149,7 @@ variable "cross_region_replication" {
     error_message = "Please choose to either promote secondary cluster or align an existing cluster after switchover."
   }
   validation {
-    condition     = contains([1, 2, 4, 8, 16, 32, 64,72, 96, 128], try(var.cross_region_replication.secondary_machine_config.cpu_count, 2))
+    condition     = contains([1, 2, 4, 8, 16, 32, 64, 72, 96, 128], try(var.cross_region_replication.secondary_machine_config.cpu_count, 2))
     error_message = "The number of CPU's in the VM instance must be one of [1, 2, 4, 8, 16, 32, 64, 72, 96, 128]"
   }
 }
@@ -354,9 +354,9 @@ variable "read_pool" {
   validation {
     condition = alltrue([
       for k, v in var.read_pool :
-      contains([2, 4, 8, 16, 32, 64, 96, 128], v.machine_config.cpu_count)
+      contains([1, 2, 4, 8, 16, 32, 64, 72, 96, 128], v.machine_config.cpu_count)
     ])
-    error_message = "The number of CPU's in the VM instance must be one of [2, 4, 8, 16, 32, 64, 96, 128]"
+    error_message = "The number of CPU's in the VM instance must be one of [1, 2, 4, 8, 16, 32, 64, 72, 96, 128]"
   }
   validation {
     condition = alltrue([
