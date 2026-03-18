@@ -124,17 +124,17 @@
   role: null
   is_primary: false
   aliases: []
+- name: csc-hpsa
+  display_name: Cloud Security Compliance Service Agent
+  api: cloudsecuritycompliance.googleapis.com
+  identity: service-org-${organization_number}@gcp-sa-csc-hpsa.iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
 - name: ktd-hpsa
   display_name: Container Threat Detection Service Agent
   api: containerthreatdetection.googleapis.com
   identity: service-org-${organization_number}@gcp-sa-ktd-hpsa.iam.gserviceaccount.com
-  role: null
-  is_primary: false
-  aliases: []
-- name: csc-hpsa
-  display_name: Cloud Security Compliance Service Agent
-  api: securitycenter.googleapis.com
-  identity: service-org-${organization_number}@gcp-sa-csc-hpsa.iam.gserviceaccount.com
   role: null
   is_primary: false
   aliases: []
