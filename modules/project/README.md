@@ -1084,8 +1084,6 @@ muteHighSeverity:
 
 ## Tags
 
-```
-
 Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
 
 ```hcl
