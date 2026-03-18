@@ -19,6 +19,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: assuredoss
   display_name: Assured OSS Service Agent
   api: assuredoss.googleapis.com
@@ -26,6 +27,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: asm-hpsa
   display_name: Attack Surface Management Service Agent
   api: securitycenter.googleapis.com
@@ -33,6 +35,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: audit-manager
   display_name: Audit Manager Service Agent
   api: auditmanager.googleapis.com
@@ -40,6 +43,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: chronicle-soar
   display_name: Chronicle Soar Service Agent
   api: chronicle.googleapis.com
@@ -47,6 +51,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: effectivepolicy
   display_name: Cloud Asset Effective Policy Service Agent
   api: cloudasset.googleapis.com
@@ -54,6 +59,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: othercloudcfg
   display_name: Cloud Asset Other Cloud Config Service Agent
   api: cloudasset.googleapis.com
@@ -61,6 +67,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: cloudkms
   display_name: Cloud KMS Organization Service Agent
   api: cloudkms.googleapis.com
@@ -68,6 +75,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: logging
   display_name: Cloud Logging Service Agent
   api: logging.googleapis.com
@@ -75,6 +83,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: nss-hpsa
   display_name: Cloud Notebook Security Scanner Service Agent
   api: notebooksecurityscanner.googleapis.com
@@ -82,6 +91,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: observability
   display_name: Cloud Observability Service Account
   api: observability.googleapis.com
@@ -89,6 +99,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: cloudresourcemanager
   display_name: Cloud Resource Manager Service Agent
   api: cloudresourcemanager.googleapis.com
@@ -96,6 +107,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: riskmanager
   display_name: Cloud Risk Manager Service Agent
   api: dlp.googleapis.com
@@ -103,6 +115,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: scc-bulk-export
   display_name: Cloud Security Command Center Bulk Export Service Account
   api: securitycenter.googleapis.com
@@ -110,6 +123,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: scc-notification
   display_name: Cloud Security Command Center Notification Service Account
   api: securitycenter.googleapis.com
@@ -117,6 +131,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: security-center-api
   display_name: Cloud Security Command Center Service Agent
   api: securitycenter.googleapis.com
@@ -124,6 +139,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: csc-hpsa
   display_name: Cloud Security Compliance Service Agent
   api: cloudsecuritycompliance.googleapis.com
@@ -131,6 +147,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: ktd-hpsa
   display_name: Container Threat Detection Service Agent
   api: containerthreatdetection.googleapis.com
@@ -138,6 +155,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: dataplex-cmek
   display_name: Dataplex Cmek Service Agent
   api: dataplex.googleapis.com
@@ -145,6 +163,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: dataplex
   display_name: Dataplex Service Agent
   api: dataplex.googleapis.com
@@ -152,6 +171,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: osconfig-rollout
   display_name: Google Cloud OS Config Rollout Service Agent
   api: osconfig.googleapis.com
@@ -159,6 +179,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: osconfig
   display_name: Google Cloud OS Config Service Agent
   api: osconfig.googleapis.com
@@ -166,6 +187,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: v1-remediator
   display_name: Policy Remediator Service Agent (prod)
   api: policyremediator.googleapis.com
@@ -173,6 +195,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: pam
   display_name: Privileged Access Manager Service Agent
   api: privilegedaccessmanager.googleapis.com
@@ -180,6 +203,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: progrollout
   display_name: Progressive Rollout Service Agent
   api: progressiverollout.googleapis.com
@@ -187,6 +211,7 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 - name: sccspanner
   display_name: SCC CMEK Spanner Service Agent (PROD)
   api: securitycenter.googleapis.com
@@ -194,4 +219,5 @@
   role: null
   is_primary: false
   aliases: []
+  skip_iam: false
 
