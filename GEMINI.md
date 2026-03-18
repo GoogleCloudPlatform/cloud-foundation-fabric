@@ -53,15 +53,24 @@ Cloud Foundation Fabric is a comprehensive suite of Terraform modules and end-to
 Always format code and update documentation before committing.
 
 ```bash
-# Format Terraform code
-terraform fmt -recursive
+# Format Terraform code (check then fix)
+terraform fmt -check -recursive modules/<module-name>
+terraform fmt -recursive modules/<module-name>
 
-# Update module documentation (variables/outputs tables)
-./tools/tfdoc.py modules/<module-name>
+# Check README consistency (variables table must match variables.tf)
+python3 tools/check_documentation.py modules/<module-name>
 
-# Run all lint checks (wraps pre-commit hooks)
-./tools/lint.sh
+# Regenerate README variables/outputs tables when check fails
+python3 tools/tfdoc.py --replace modules/<module-name>
+
+# YAML linting
+yamllint -c .yamllint --no-warnings <yaml-files>
+
+# License/boilerplate check
+python3 tools/check_boilerplate.py --scan-files <files>
 ```
+
+**Common gotcha — unsorted variables (`[SV]` error):** `check_documentation.py` requires variables in `variables.tf` to be in strict alphabetical order. When adding a new variable, insert it at the correct alphabetical position, not at the top of the file.
 
 #### 2. Testing
 
@@ -85,6 +94,90 @@ pytest tests/examples/test_plan.py
 *   **Branching:** Use `username/feature-name`.
 *   **Commits:** Atomic commits with clear messages.
 *   **Docs:** Do not manually edit the variables/outputs tables in READMEs; use `tfdoc.py`.
+
+## Adding Context Support to a Module
+
+Several modules support symbolic variable interpolation via a `context` variable. This allows callers to pass symbolic references like `"$project_ids:myprj"` instead of raw values, which get resolved at plan time.
+
+### Pattern
+
+**1. Add a `context` variable** in `variables.tf` at its alphabetical position. Use keys relevant to the module — standard keys are `locations`, `networks`, `project_ids`, `subnets`; module-specific keys may be added (e.g., `kms_keys`, `artifact_registries`, `secrets`):
+
+```hcl
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    kms_keys    = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+```
+
+**2. Build `ctx` and `ctx_p` locals** in `main.tf`. If the module has IAM condition support, exclude `condition_vars` from the flattening (it is passed directly to `templatestring()`):
+
+```hcl
+locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    } # add: if k != "condition_vars"  — only when condition_vars is a key
+  }
+  ctx_p      = "$"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = lookup(local.ctx.locations, var.region, var.region)
+}
+```
+
+**3. Apply lookups in resources.** Three patterns:
+
+```hcl
+# Simple field
+project = local.project_id
+
+# Nullable field (null must stay null, not looked up)
+encryption_key_name = (
+  var.encryption_key_name == null
+  ? null
+  : lookup(local.ctx.kms_keys, var.encryption_key_name, var.encryption_key_name)
+)
+
+# Deeply optional nested field
+private_network = (
+  try(var.network_config.psa_config.private_network, null) == null
+  ? null
+  : lookup(local.ctx.networks, var.network_config.psa_config.private_network,
+      var.network_config.psa_config.private_network)
+)
+
+# Per-element list
+nat_subnets = [for s in var.nat_subnets : lookup(local.ctx.subnets, s, s)]
+```
+
+**4. Long ternaries** are wrapped in parentheses with condition and branches on separate lines:
+
+```hcl
+ip_address = (
+  var.address == null
+  ? null
+  : lookup(local.ctx.addresses, var.address, var.address)
+)
+```
+
+### Tests
+
+Add a `context` test alongside existing module tests:
+
+- `tests/modules/<module_name>/tftest.yaml` — declare the module path and list `context:` under `tests:`
+- `tests/modules/<module_name>/context.tfvars` — provide all required module variables using symbolic references; include a `context` block with maps that resolve them
+- `tests/modules/<module_name>/context.yaml` — assert resolved (concrete) values in the plan output
+
+### README example
+
+Modify one existing README example (do not add a new one) to demonstrate context usage. The resolved values should match the existing inventory YAML so no inventory changes are needed.
 
 ## Architecture & Conventions
 

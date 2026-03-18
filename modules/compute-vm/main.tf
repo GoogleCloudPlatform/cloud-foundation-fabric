@@ -98,7 +98,7 @@ resource "google_compute_disk" "boot" {
   zone    = local.zone
   # by default, GCP creates boot disks with the same name as instance, the deviation here is kept for backwards
   # compatibility
-  name                   = "${var.name}-boot"
+  name                   = coalesce(var.boot_disk.name, "${var.name}-boot")
   type                   = var.boot_disk.initialize_params.type
   size                   = var.boot_disk.initialize_params.size
   architecture           = var.boot_disk.initialize_params.architecture

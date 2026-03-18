@@ -1,0 +1,49 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_forwarding_rule.default:
+    ip_address: 10.0.0.10
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: ilb-l7-test
+    network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
+    project: foo-test-0
+    region: europe-west8
+    subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
+  google_compute_health_check.default["default"]:
+    project: foo-test-0
+  google_compute_region_backend_service.default["default"]:
+    project: foo-test-0
+    region: europe-west8
+  google_compute_region_target_http_proxy.default[0]:
+    project: foo-test-0
+    region: europe-west8
+  google_compute_region_url_map.default:
+    project: foo-test-0
+    region: europe-west8
+  google_compute_service_attachment.default[0]:
+    nat_subnets:
+    - projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/test-nat
+    project: foo-test-0
+    region: europe-west8
+
+counts:
+  google_compute_forwarding_rule: 1
+  google_compute_health_check: 1
+  google_compute_region_backend_service: 1
+  google_compute_region_target_http_proxy: 1
+  google_compute_region_url_map: 1
+  google_compute_service_attachment: 1
+  modules: 0
+  resources: 6
