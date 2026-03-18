@@ -15,9 +15,6 @@
  */
 
 locals {
-  paths = {
-    for k, v in var.factories_config : k => try(pathexpand(v), null)
-  }
   _ctx = {
     for k, v in var.context : k => merge(
       v,
@@ -52,6 +49,13 @@ locals {
     local_path     = try(local._defaults.output_files.local_path, null)
     storage_bucket = try(local._defaults.output_files.storage_bucket, null)
     providers      = try(local._defaults.output_files.providers, {})
+  }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
   }
   project_defaults = {
     defaults  = try(local._defaults.projects.defaults, {})

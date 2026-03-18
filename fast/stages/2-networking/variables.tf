@@ -37,15 +37,18 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    defaults              = optional(string, "datasets/hub-and-spokes-peerings/defaults.yaml")
-    dns                   = optional(string, "datasets/hub-and-spokes-peerings/dns/zones")
-    dns-response-policies = optional(string, "datasets/hub-and-spokes-peerings/dns/response-policies")
-    firewall-policies     = optional(string, "datasets/hub-and-spokes-peerings/firewall-policies")
-    folders               = optional(string, "datasets/hub-and-spokes-peerings/folders")
-    ncc-hubs              = optional(string, "datasets/hub-and-spokes-peerings/ncc-hubs")
-    nvas                  = optional(string, "datasets/hub-and-spokes-peerings/nvas")
-    projects              = optional(string, "datasets/hub-and-spokes-peerings/projects")
-    vpcs                  = optional(string, "datasets/hub-and-spokes-peerings/vpcs")
+    dataset = optional(string, "datasets/hub-and-spokes-peerings")
+    paths = optional(object({
+      defaults              = optional(string, "defaults.yaml")
+      dns                   = optional(string, "dns/zones")
+      dns_response_policies = optional(string, "dns/response-policies")
+      firewall_policies     = optional(string, "firewall-policies")
+      folders               = optional(string, "folders")
+      ncc_hubs              = optional(string, "ncc-hubs")
+      nvas                  = optional(string, "nvas")
+      projects              = optional(string, "projects")
+      vpcs                  = optional(string, "vpcs")
+    }), {})
   })
   nullable = false
   default  = {}

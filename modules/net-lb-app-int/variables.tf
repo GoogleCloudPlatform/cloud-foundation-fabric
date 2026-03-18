@@ -86,12 +86,14 @@ variable "neg_configs" {
     project_id  = optional(string)
     description = optional(string)
     cloudrun = optional(object({
-      region = string
+      region         = string
+      tag            = optional(string)
+      target_urlmask = optional(string)
       target_service = optional(object({
         name = string
-        tag  = optional(string)
+        # TODO: deprecate after one major release
+        tag = optional(string)
       }))
-      target_urlmask = optional(string)
     }))
     gce = optional(object({
       zone = string

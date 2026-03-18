@@ -15,15 +15,39 @@
 values:
   module.bigquery-dataset.google_bigquery_dataset.default:
     dataset_id: my_dataset
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: null
+    labels: null
+    location: EU
+    max_time_travel_hours: '168'
     project: my-project
-  module.bigquery-dataset.google_bigquery_dataset_iam_binding.bindings["roles/bigquery.dataOwner"]:
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.bigquery-dataset.google_bigquery_dataset_iam_binding.authoritative["roles/bigquery.dataOwner"]:
     condition: []
     dataset_id: my_dataset
     members:
     - user:user1@example.org
     project: my-project
     role: roles/bigquery.dataOwner
+  module.bigquery-dataset.google_bigquery_dataset_iam_binding.bindings["reader_user"]:
+    condition: []
+    dataset_id: my_dataset
+    members:
+    - user:user2@example.org
+    project: my-project
+    role: roles/bigquery.dataViewer
 
 counts:
   google_bigquery_dataset: 1
-  google_bigquery_dataset_iam_binding: 1
+  google_bigquery_dataset_iam_binding: 2

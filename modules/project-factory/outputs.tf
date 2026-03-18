@@ -19,7 +19,7 @@ locals {
     for k, v in local.automation_buckets : v.parent_name => k
   }
   _outputs_automation_sas = {
-    for k, v in local.automation_sas : v.parent_name => k...
+    for k, v in local.automation_sas : v.prefix => k...
   }
   outputs_projects = {
     for k, v in local.projects_input : k => {
@@ -158,6 +158,17 @@ output "service_account_ids" {
 output "service_accounts" {
   description = "Service account emails."
   value       = local.outputs_service_accounts
+}
+
+output "service_agents" {
+  description = "Service agent emails."
+  value = {
+    for k, v in local.projects_service_agents
+    : trimprefix(k, "service_agents/") => {
+      email     = trimprefix(v, "serviceAccount:")
+      iam_email = v
+    }
+  }
 }
 
 output "storage_buckets" {

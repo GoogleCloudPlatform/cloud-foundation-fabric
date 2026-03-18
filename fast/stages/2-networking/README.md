@@ -302,7 +302,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
 | [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> |
-| [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-firewall</code> |  |
+| [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-factory</code> |  |
 | [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
@@ -318,7 +318,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [prefix](variables-fast.tf#L75) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  cidr_ranges_sets  &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage_buckets   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  defaults              &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;defaults.yaml&#34;&#41;&#10;  dns                   &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;dns&#47;zones&#34;&#41;&#10;  dns-response-policies &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;dns&#47;response-policies&#34;&#41;&#10;  firewall-policies     &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;firewall-policies&#34;&#41;&#10;  folders               &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;folders&#34;&#41;&#10;  ncc-hubs              &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;ncc-hubs&#34;&#41;&#10;  nvas                  &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;nvas&#34;&#41;&#10;  projects              &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;projects&#34;&#41;&#10;  vpcs                  &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#47;vpcs&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  dataset &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#34;&#41;&#10;  paths &#61; optional&#40;object&#40;&#123;&#10;    defaults              &#61; optional&#40;string, &#34;defaults.yaml&#34;&#41;&#10;    dns                   &#61; optional&#40;string, &#34;dns&#47;zones&#34;&#41;&#10;    dns_response_policies &#61; optional&#40;string, &#34;dns&#47;response-policies&#34;&#41;&#10;    firewall_policies     &#61; optional&#40;string, &#34;firewall-policies&#34;&#41;&#10;    folders               &#61; optional&#40;string, &#34;folders&#34;&#41;&#10;    ncc_hubs              &#61; optional&#40;string, &#34;ncc-hubs&#34;&#41;&#10;    nvas                  &#61; optional&#40;string, &#34;nvas&#34;&#41;&#10;    projects              &#61; optional&#40;string, &#34;projects&#34;&#41;&#10;    vpcs                  &#61; optional&#40;string, &#34;vpcs&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_keys](variables-fast.tf#L50) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -334,10 +334,11 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [host_project_ids](outputs.tf#L70) | Project IDs. |  |
-| [host_project_numbers](outputs.tf#L75) | Project numbers. |  |
-| [subnet_proxy_only_self_links](outputs.tf#L80) | Subnet proxy-only self-links. |  |
-| [subnet_psc_self_links](outputs.tf#L85) | Subnet PSC self-links. |  |
-| [subnet_self_links](outputs.tf#L90) | Subnet self-links. |  |
-| [vpc_self_links](outputs.tf#L95) | VPC self-links. |  |
+| [host_project_ids](outputs.tf#L73) | Project IDs. |  |
+| [host_project_numbers](outputs.tf#L78) | Project numbers. |  |
+| [subnet_ips](outputs.tf#L83) | Subnet IP ranges. |  |
+| [subnet_proxy_only_self_links](outputs.tf#L88) | Subnet proxy-only self-links. |  |
+| [subnet_psc_self_links](outputs.tf#L93) | Subnet PSC self-links. |  |
+| [subnet_self_links](outputs.tf#L98) | Subnet self-links. |  |
+| [vpc_self_links](outputs.tf#L103) | VPC self-links. |  |
 <!-- END TFDOC -->

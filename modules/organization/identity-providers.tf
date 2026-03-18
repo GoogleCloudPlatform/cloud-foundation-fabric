@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,22 @@ resource "google_iam_workforce_pool" "default" {
   parent            = var.organization_id
   location          = "global"
   workforce_pool_id = var.workforce_identity_config.pool_name
+  description       = var.workforce_identity_config.description
+  disabled          = var.workforce_identity_config.disabled
+  display_name      = var.workforce_identity_config.display_name
+  session_duration  = var.workforce_identity_config.session_duration
+  dynamic "access_restrictions" {
+    for_each = var.workforce_identity_config.access_restrictions != null ? [""] : []
+    content {
+      disable_programmatic_signin = var.workforce_identity_config.access_restrictions.disable_programmatic_signin
+      dynamic "allowed_services" {
+        for_each = coalesce(var.workforce_identity_config.access_restrictions.allowed_services, [])
+        content {
+          domain = allowed_services.value.domain
+        }
+      }
+    }
+  }
 }
 
 resource "google_iam_workforce_pool_provider" "default" {

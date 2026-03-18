@@ -49,6 +49,7 @@ resource "google_pubsub_topic" "default" {
       allowed_persistence_regions = [
         for v in var.regions : lookup(local.ctx.locations, v, v)
       ]
+      enforce_in_transit = var.message_storage_enforce_in_transit
     }
   }
   dynamic "schema_settings" {

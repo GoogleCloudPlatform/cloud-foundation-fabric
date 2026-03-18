@@ -31,7 +31,7 @@ locals {
           logging_filter            = try(nat_config.logging_filter, null)
           router_asn                = try(nat_config.router_asn, null)
           router_create             = try(nat_config.router_create, true)
-          router_network            = module.vpcs[vpc_key].self_link
+          router_network            = module.vpc-factory.vpcs[vpc_key].id
           rules                     = try(nat_config.rules, [])
           type                      = try(nat_config.type, "PUBLIC")
         })

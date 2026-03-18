@@ -292,4 +292,11 @@ resource "google_compute_backend_service" "default" {
       }
     }
   }
+
+  dynamic "tls_settings" {
+    for_each = each.value.tls_settings == null ? [] : [each.value.tls_settings]
+    content {
+      sni = tls_settings.value.sni
+    }
+  }
 }

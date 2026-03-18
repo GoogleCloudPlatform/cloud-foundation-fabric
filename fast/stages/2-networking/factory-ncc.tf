@@ -17,11 +17,10 @@
 # tfdoc:file:description NCC Hubs and Groups factory
 
 locals {
-  _ncc_path  = try(pathexpand(var.factories_config.ncc-hubs), null)
-  _ncc_files = try(fileset(local._ncc_path, "**/*.yaml"), [])
+  _ncc_files = try(fileset(local.paths.ncc_hubs, "**/*.yaml"), [])
   _ncc_preprocess = [
     for f in local._ncc_files : yamldecode(
-      file("${coalesce(local._ncc_path, "-")}/${f}")
+      file("${coalesce(local.paths.ncc_hubs, "-")}/${f}")
     )
   ]
   # Since NCC groups depend on NCC hubs, two different lookup maps avoid circular dependencies.

@@ -4,6 +4,30 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "asset_search": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "asset_types"
+          ],
+          "properties": {
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "query": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "asset_feeds": {
       "type": "object",
       "additionalProperties": false,
@@ -235,6 +259,73 @@
     },
     "deletion_protection": {
       "type": "boolean"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^(folders/[0-9]+|\\$folder_ids:[a-z0-9_/-]+)$"
+    },
+    "firewall_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "policy"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        }
+      }
+    },
+    "logging": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kms_key_name": {
+          "type": "string"
+        },
+        "storage_location": {
+          "type": "string"
+        },
+        "sinks": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9-_]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "exclusions": {
+                  "type": "object"
+                },
+                "filter": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "default": "logging",
+                  "enum": [
+                    "bigquery",
+                    "logging",
+                    "project",
+                    "pubsub",
+                    "storage"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "factories_config": {
       "type": "object",

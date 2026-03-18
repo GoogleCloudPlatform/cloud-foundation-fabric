@@ -65,7 +65,7 @@ log_buckets:
       enable: true
     retention: 90
 factories_config:
-  observability: datasets/hardened/organization/observability/
+  observability: organization/observability/
 org_policies:
   gcp.restrictCmekCryptoKeyProjects:
     rules:

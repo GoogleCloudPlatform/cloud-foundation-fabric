@@ -50,7 +50,16 @@ locals {
         try(v.contacts, null),
         local.data_defaults.defaults.contacts
       )
-      factories_config              = try(v.factories_config, {})
+      factories_config = {
+        custom_roles           = try(v.factories_config.custom_roles, null)
+        observability          = try(v.factories_config.observability, null)
+        org_policies           = try(v.factories_config.org_policies, null)
+        pam_entitlements       = try(v.factories_config.pam_entitlements, null)
+        quotas                 = try(v.factories_config.quotas, null)
+        scc_mute_configs       = try(v.factories_config.scc_mute_configs, null)
+        scc_sha_custom_modules = try(v.factories_config.scc_sha_custom_modules, null)
+        tags                   = try(v.factories_config.tags, null)
+      }
       iam                           = try(v.iam, {})                           # type: map(list(string))
       iam_bindings                  = try(v.iam_bindings, {})                  # type: map(object({...}))
       iam_bindings_additive         = try(v.iam_bindings_additive, {})         # type: map(object({...}))

@@ -1,6 +1,6 @@
 # Managed Kafka Cluster with Topics
 
-This setup allows creating and configuring a managed Kafka cluster using [Google Cloud Managed Service for Apache Kafka](https://cloud.google.com/managed-service-for-apache-kafka), with configurable topics, networking, and labels. It is designed to be FAST-compliant and integrates seamlessly with existing Google Cloud infrastructure.
+This setup allows creating and configuring a managed Kafka cluster using [Google Cloud Managed Service for Apache Kafka](https://cloud.google.com/products/managed-service-for-apache-kafka), with configurable topics, networking, and labels. It is designed to be FAST-compliant and integrates seamlessly with existing Google Cloud infrastructure.
 
 ## Prerequisites
 

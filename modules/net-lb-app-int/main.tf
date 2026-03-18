@@ -199,8 +199,10 @@ resource "google_compute_region_network_endpoint_group" "default" {
   description           = var.description
   network_endpoint_type = "SERVERLESS"
   cloud_run {
-    service  = try(each.value.target_service.name, null)
-    tag      = try(each.value.target_service.tag, null)
+    service = try(each.value.target_service.name, null)
+    tag = try(
+      coalesce(each.value.tag, try(each.value.target_service.tag, null)), null
+    )
     url_mask = each.value.target_urlmask
   }
 }

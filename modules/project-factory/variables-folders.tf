@@ -17,6 +17,10 @@
 variable "folders" {
   description = "Folders data merged with factory data."
   type = map(object({
+    asset_search = optional(map(object({
+      asset_types = list(string)
+      query       = optional(string)
+    })), {})
     asset_feeds = optional(map(object({
       billing_project = string
       content_type    = optional(string)
@@ -49,10 +53,31 @@ variable "folders" {
       }))
       violation_notifications_enabled = optional(bool)
     }), null)
+    contacts            = optional(map(list(string)), {})
+    id                  = optional(string)
     name                = optional(string)
     parent              = optional(string)
     deletion_protection = optional(bool)
-    iam                 = optional(map(list(string)), {})
+    firewall_policy = optional(object({
+      name   = string
+      policy = string
+    }))
+    logging = optional(object({
+      kms_key_name     = optional(string)
+      storage_location = optional(string)
+      sinks = optional(map(object({
+        description        = optional(string)
+        destination        = string
+        disabled           = optional(bool, false)
+        exclusions         = optional(map(string), {})
+        filter             = optional(string)
+        iam                = optional(bool, true)
+        include_children   = optional(bool, true)
+        intercept_children = optional(bool, false)
+        type               = optional(string, "logging")
+      })), {})
+    }))
+    iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
       role    = string
@@ -71,7 +96,8 @@ variable "folders" {
         description = optional(string)
       }))
     })), {})
-    iam_by_principals = optional(map(list(string)), {})
+    iam_by_principals          = optional(map(list(string)), {})
+    iam_by_principals_additive = optional(map(list(string)), {})
     iam_by_principals_conditional = optional(map(object({
       roles = list(string)
       condition = object({

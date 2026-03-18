@@ -102,4 +102,21 @@ check "factory_budgets" {
     ]))
     error_message = "Notification rules need either a pubsub topic or monitoring channels defined."
   }
+  assert {
+    condition = alltrue(flatten([
+      for k, v in local.factory_budgets : [
+        for c in try(v.filter.credit_types_treatment.include_specified, []) : contains([
+          "COMMITTED_USAGE_DISCOUNT",
+          "COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE",
+          "DISCOUNT",
+          "FREE_TIER",
+          "PROMOTION",
+          "RESELLER_MARGIN",
+          "SUBSCRIPTION_BENEFIT",
+          "SUSTAINED_USAGE_DISCOUNT"
+        ], c) if c != null
+      ]
+    ]))
+    error_message = "Budget filter credit types must be one of COMMITTED_USAGE_DISCOUNT, COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE, DISCOUNT, FREE_TIER, PROMOTION, RESELLER_MARGIN, SUBSCRIPTION_BENEFIT, SUSTAINED_USAGE_DISCOUNT."
+  }
 }

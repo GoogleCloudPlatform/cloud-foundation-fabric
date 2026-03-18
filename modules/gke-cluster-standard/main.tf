@@ -47,7 +47,7 @@ resource "google_container_cluster" "cluster" {
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
-    : "DATAPATH_PROVIDER_UNSPECIFIED"
+    : "LEGACY_DATAPATH"
   )
 
   dynamic "default_snat_status" {
@@ -273,7 +273,9 @@ resource "google_container_cluster" "cluster" {
   }
   control_plane_endpoints_config {
     dns_endpoint_config {
-      allow_external_traffic = var.access_config.dns_access == true
+      allow_external_traffic    = var.access_config.dns_access.allow_external_traffic == true
+      enable_k8s_tokens_via_dns = var.access_config.dns_access.enable_k8s_tokens
+      enable_k8s_certs_via_dns  = var.access_config.dns_access.enable_k8s_certs
     }
     ip_endpoints_config {
       enabled = var.access_config.ip_access != null

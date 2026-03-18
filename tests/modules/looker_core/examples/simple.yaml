@@ -13,14 +13,6 @@
 # limitations under the License.
 
 values:
-  module.looker.google_iap_brand.looker_brand[0]:
-    application_title: Cloud IAP protected Application
-    project: project-id
-    support_email: support@google.com
-    timeouts: null
-  module.looker.google_iap_client.looker_client[0]:
-    display_name: Looker Core default oauth client.
-    timeouts: null
   module.looker.google_looker_instance.looker:
     admin_settings: []
     consumer_network: null
@@ -40,10 +32,8 @@ values:
     user_metadata: []
 
 counts:
-  google_iap_brand: 1
-  google_iap_client: 1
   google_looker_instance: 1
   modules: 1
-  resources: 3
+  resources: 1
 
 outputs: {}

@@ -1054,17 +1054,28 @@ module "instance" {
   }
   attached_disks = [
     {
-      name              = "disk-1"
-      size              = 10
-      snapshot_schedule = ["boot"]
+      name = "disk-1"
+      size = 10
+      options = {
+        replica_zone = "${var.region}-c"
+      }
+      snapshot_schedule = ["data"]
     }
   ]
   snapshot_schedules = {
     boot = {
       schedule = {
+        hourly = {
+          hours_in_cycle = 1
+          start_time     = "03:00"
+        }
+      }
+    }
+    data = {
+      schedule = {
         daily = {
           days_in_cycle = 1
-          start_time    = "03:00"
+          start_time    = "04:00"
         }
       }
     }

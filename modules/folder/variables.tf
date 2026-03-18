@@ -48,6 +48,16 @@ variable "asset_feeds" {
   }
 }
 
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "assured_workload_config" {
   description = "Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false."
   type = object({
@@ -147,6 +157,7 @@ variable "context" {
     email_addresses   = optional(map(string), {})
     folder_ids        = optional(map(string), {})
     iam_principals    = optional(map(string), {})
+    kms_keys          = optional(map(string), {})
     log_buckets       = optional(map(string), {})
     project_ids       = optional(map(string), {})
     project_numbers   = optional(map(string), {})
@@ -169,6 +180,7 @@ variable "factories_config" {
   type = object({
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
   })
   nullable = false
@@ -183,6 +195,8 @@ variable "firewall_policy" {
   })
   default = null
 }
+
+# keep the following variable as it allows passing in a dynamic value for id
 
 variable "folder_create" {
   description = "Create folder. When set to false, uses id to reference an existing folder."

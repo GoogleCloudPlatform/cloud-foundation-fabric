@@ -5,8 +5,10 @@ billing_account = {
   id = "000000-111111-222222"
 }
 factories_config = {
-  certificate_authorities = "data-simple/certificate-authorities"
-  defaults                = "data-simple/defaults.yaml"
+  paths = {
+    certificate_authorities = "./data-simple/certificate-authorities"
+    defaults                = "./data-simple/defaults.yaml"
+  }
 }
 folder_ids = {
   security = "folders/12345678"

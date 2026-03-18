@@ -5,18 +5,8 @@ billing_account = {
   id = "000000-111111-222222"
 }
 factories_config = {
-  defaults              = "datasets/hub-and-spokes-peerings/defaults.yaml"
-  dns                   = "datasets/hub-and-spokes-peerings/dns/zones"
-  dns-response-policies = "datasets/hub-and-spokes-peerings/dns/response-policies"
-  firewall-policies     = "datasets/hub-and-spokes-peerings/firewall-policies"
-  folders               = "datasets/hub-and-spokes-peerings/folders"
-  interconnect          = "datasets/hub-and-spokes-peerings/interconnect"
-  ncc-hubs              = "datasets/hub-and-spokes-peerings/ncc-hubs"
-  nvas                  = "datasets/hub-and-spokes-peerings/nvas"
-  projects              = "datasets/hub-and-spokes-peerings/projects"
-  vpcs                  = "datasets/hub-and-spokes-peerings/vpcs"
+  dataset = "datasets/hub-and-spokes-peerings"
 }
-
 folder_ids = {
   "networking"      = "folders/12345678"
   "networking/prod" = "folders/23456789"

@@ -15,9 +15,9 @@
 values:
   module.org.google_iam_workforce_pool.default[0]:
     access_restrictions: []
-    description: null
+    description: Workforce pool for testing.
     disabled: null
-    display_name: null
+    display_name: Test Pool
     location: global
     parent: organizations/1122334455
     session_duration: 3600s

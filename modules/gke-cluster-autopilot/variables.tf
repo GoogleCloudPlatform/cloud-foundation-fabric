@@ -17,7 +17,11 @@
 variable "access_config" {
   description = "Control plane endpoint and nodes access configurations."
   type = object({
-    dns_access = optional(bool, true)
+    dns_access = optional(object({
+      allow_external_traffic = optional(bool, true)
+      enable_k8s_tokens      = optional(bool)
+      enable_k8s_certs       = optional(bool)
+    }), {})
     ip_access = optional(object({
       authorized_ranges                              = optional(map(string))
       disable_public_endpoint                        = optional(bool)
@@ -94,9 +98,10 @@ variable "enable_addons" {
 variable "enable_features" {
   description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
-    beta_apis            = optional(list(string))
-    binary_authorization = optional(bool, false)
-    cost_management      = optional(bool, true)
+    beta_apis                         = optional(list(string))
+    binary_authorization              = optional(bool, false)
+    cilium_clusterwide_network_policy = optional(bool, false)
+    cost_management                   = optional(bool, true)
     dns = optional(object({
       additive_vpc_scope_dns_domain = optional(string)
       provider                      = optional(string)
@@ -108,6 +113,7 @@ variable "enable_features" {
       state    = string
       key_name = string
     }))
+    fqdn_network_policy = optional(bool, false)
     gateway_api         = optional(bool, false)
     groups_for_rbac     = optional(string)
     l4_ilb_subsetting   = optional(bool, false)
@@ -212,7 +218,7 @@ variable "maintenance_config" {
   default = {
     daily_window_start_time = "03:00"
     recurring_window        = null
-    maintenance_exclusion   = []
+    maintenance_exclusions  = []
   }
 }
 

@@ -6,6 +6,28 @@
 
 *additional properties: false*
 
+- **asset_feeds**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**billing_project**: *string*
+    - **content_type**: *string*
+      <br>*enum: ['RESOURCE', 'IAM_POLICY', 'ORG_POLICY', 'ACCESS_POLICY', 'OS_INVENTORY', 'RELATIONSHIP']*
+    - **asset_types**: *array*
+      - items: *string*
+    - **asset_names**: *array*
+      - items: *string*
+    - ⁺**feed_output_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**pubsub_destination**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
 - **id**: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
@@ -79,6 +101,17 @@
 - **workforce_identity_config**: *object*
   <br>*additional properties: false*
   - **pool_name**: *string*
+  - **display_name**: *string*
+  - **description**: *string*
+  - **disabled**: *boolean*
+  - **session_duration**: *string*
+  - **access_restrictions**: *object*
+    <br>*additional properties: false*
+    - **allowed_services**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **domain**: *string*
+    - **disable_programmatic_signin**: *boolean*
   - **providers**: *object*
     <br>*additional properties: false*
     - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,6 +151,11 @@ variable "security_profiles" {
         threat_id = string
       })))
     }), {})
+    url_filtering_profile = optional(map(object({
+      action   = string
+      priority = number
+      urls     = optional(list(string), ["*"])
+    })), {})
   }))
   nullable = false
   default = {
@@ -169,6 +174,16 @@ variable "security_profiles" {
   }
   validation {
     condition = alltrue(flatten([
+      for k, v in var.security_profiles : [
+        for lk, lv in coalesce(v.threat_prevention_profile.severity_overrides, {}) : (
+          contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], lv.action)
+        )
+      ]
+    ]))
+    error_message = "Severity override action must be one of ALERT, ALLOW, DEFAULT_ACTION, DENY."
+  }
+  validation {
+    condition = alltrue(flatten([
       for _, v in var.security_profiles : [
         for _, sv in coalesce(v.threat_prevention_profile.threat_overrides, {}) : (
           contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], sv.action)
@@ -176,6 +191,32 @@ variable "security_profiles" {
       ]
     ]))
     error_message = "Incorrect threat override token."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.security_profiles : [
+        for lk, lv in coalesce(v.threat_prevention_profile.threat_overrides, {}) : (
+          contains(["ALERT", "ALLOW", "DEFAULT_ACTION", "DENY"], lv.action)
+        )
+      ]
+    ]))
+    error_message = "Threat override action must be one of ALERT, ALLOW, DEFAULT_ACTION, DENY."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.security_profiles : [
+        for lk, lv in coalesce(v.url_filtering_profile, {}) : length(lv.urls) > 0
+      ]
+    ]))
+    error_message = "URL filtering rules must have at least one URL."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.security_profiles : [
+        for lk, lv in coalesce(v.url_filtering_profile, {}) : contains(["ALLOW", "DENY"], lv.action)
+      ]
+    ]))
+    error_message = "URL filtering rule action must be ALLOW or DENY."
   }
 }
 

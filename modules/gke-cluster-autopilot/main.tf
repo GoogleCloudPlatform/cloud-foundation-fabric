@@ -23,17 +23,19 @@ resource "google_container_cluster" "cluster" {
   node_locations = (
     length(var.node_locations) == 0 ? null : var.node_locations
   )
-  min_master_version       = var.min_master_version
-  network                  = var.vpc_config.network
-  subnetwork               = var.vpc_config.subnetwork
-  resource_labels          = var.labels
-  enable_multi_networking  = var.enable_features.multi_networking
-  enable_l4_ilb_subsetting = var.enable_features.l4_ilb_subsetting
-  enable_tpu               = var.enable_features.tpu
-  initial_node_count       = 1
-  enable_autopilot         = true
-  allow_net_admin          = var.enable_features.allow_net_admin
-  deletion_protection      = var.deletion_protection
+  min_master_version                       = var.min_master_version
+  network                                  = var.vpc_config.network
+  subnetwork                               = var.vpc_config.subnetwork
+  resource_labels                          = var.labels
+  enable_multi_networking                  = var.enable_features.multi_networking
+  enable_l4_ilb_subsetting                 = var.enable_features.l4_ilb_subsetting
+  enable_tpu                               = var.enable_features.tpu
+  initial_node_count                       = 1
+  enable_autopilot                         = true
+  allow_net_admin                          = var.enable_features.allow_net_admin
+  deletion_protection                      = var.deletion_protection
+  enable_cilium_clusterwide_network_policy = var.enable_features.cilium_clusterwide_network_policy
+  enable_fqdn_network_policy               = var.enable_features.fqdn_network_policy
 
   addons_config {
     # HTTP Load Balancing is required to be enabled in Autopilot clusters
@@ -84,7 +86,9 @@ resource "google_container_cluster" "cluster" {
   }
   control_plane_endpoints_config {
     dns_endpoint_config {
-      allow_external_traffic = var.access_config.dns_access == true
+      allow_external_traffic    = var.access_config.dns_access.allow_external_traffic == true
+      enable_k8s_tokens_via_dns = var.access_config.dns_access.enable_k8s_tokens
+      enable_k8s_certs_via_dns  = var.access_config.dns_access.enable_k8s_certs
     }
     ip_endpoints_config {
       enabled = var.access_config.ip_access != null

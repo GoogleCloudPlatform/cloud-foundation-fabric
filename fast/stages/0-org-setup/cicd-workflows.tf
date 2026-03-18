@@ -103,6 +103,7 @@ module "cicd-sa-apply" {
   name     = each.value.service_accounts.apply
   service_account_reuse = {
     use_data_source = false
+    universe        = try(local.project_defaults.overrides.universe, null)
   }
   iam = {
     "roles/iam.workloadIdentityUser" = (
@@ -132,6 +133,7 @@ module "cicd-sa-plan" {
   name     = each.value.service_accounts.plan
   service_account_reuse = {
     use_data_source = false
+    universe        = try(local.project_defaults.overrides.universe, null)
   }
   iam = {
     "roles/iam.workloadIdentityUser" = [

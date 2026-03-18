@@ -105,6 +105,10 @@ variable "projects" {
             with_state                 = optional(string)
           })
         })), {})
+        logging_config = optional(object({
+          log_bucket        = string
+          log_object_prefix = optional(string)
+        }), null)
         retention_policy = optional(object({
           retention_period = string
           is_locked        = optional(bool)
@@ -211,6 +215,10 @@ variable "projects" {
           with_state                 = optional(string)
         })
       })), {})
+      logging_config = optional(object({
+        log_bucket        = string
+        log_object_prefix = optional(string)
+      }), null)
       retention_policy = optional(object({
         retention_period = string
         is_locked        = optional(bool)
@@ -223,6 +231,16 @@ variable "projects" {
       friendly_name  = optional(string)
       location       = optional(string)
     })), {})
+    factories_config = optional(object({
+      custom_roles           = optional(string)
+      observability          = optional(string)
+      org_policies           = optional(string)
+      pam_entitlements       = optional(string)
+      quotas                 = optional(string)
+      scc_mute_configs       = optional(string)
+      scc_sha_custom_modules = optional(string)
+      tags                   = optional(string)
+    }), {})
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
@@ -242,7 +260,8 @@ variable "projects" {
         description = optional(string)
       }))
     })), {})
-    iam_by_principals = optional(map(list(string)), {})
+    iam_by_principals          = optional(map(list(string)), {})
+    iam_by_principals_additive = optional(map(list(string)), {})
     iam_by_principals_conditional = optional(map(object({
       roles = list(string)
       condition = object({

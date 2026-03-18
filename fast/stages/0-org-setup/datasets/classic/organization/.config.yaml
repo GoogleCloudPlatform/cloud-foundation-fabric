@@ -86,11 +86,11 @@ iam_by_principals:
     - roles/compute.xpnAdmin
   $iam_principals:service_accounts/iac-0/iac-networking-ro:
     # uncomment for cooperative VPC-SC configurations
-    # - roles/accesscontextmanager.policyViewer
+    # - roles/accesscontextmanager.policyReader
     - roles/compute.orgFirewallPolicyUser
     - roles/compute.viewer
   # uncomment for cooperative VPC-SC configurations
-  # $iam_principals:service_accounts/iac-0/iac-pw-rw:
+  # $iam_principals:service_accounts/iac-0/iac-pf-rw:
   #   - roles/accesscontextmanager.policyEditor
   # uncomment if you want to use Assured Workloads
   # $iam_principals:service_accounts/iac-0/iac-pf-rw:
@@ -101,7 +101,7 @@ iam_by_principals:
     - roles/cloudasset.viewer
   $iam_principals:service_accounts/iac-0/iac-security-ro:
     # uncomment for cooperative VPC-SC configurations
-    # - roles/accesscontextmanager.policyViewer
+    # - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
   $iam_principals:service_accounts/iac-0/iac-vpcsc-rw:
     - roles/accesscontextmanager.policyAdmin

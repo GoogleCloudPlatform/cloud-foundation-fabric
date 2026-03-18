@@ -28,6 +28,8 @@ locals {
           "Terraform-managed."
         )
         iam                    = try(opts.iam, {})
+        iam_bindings           = try(opts.iam_bindings, {})
+        iam_bindings_additive  = try(opts.iam_bindings_additive, {})
         iam_billing_roles      = try(opts.iam_billing_roles, {})
         iam_organization_roles = try(opts.iam_organization_roles, {})
         iam_sa_roles           = try(opts.iam_sa_roles, {})
@@ -38,6 +40,7 @@ locals {
           try(local.data_defaults.defaults.service_accounts.iam_self_roles, []),
         ))
         iam_storage_roles = try(opts.iam_storage_roles, {})
+        tag_bindings      = try(opts.tag_bindings, {})
         opts              = opts
       }
     ]
@@ -83,6 +86,7 @@ module "service-accounts" {
   display_name = each.value.display_name
   context = merge(local.ctx, {
     project_ids = local.ctx_project_ids
+    tag_values  = local.ctx_tag_values
   })
   iam_project_roles = merge(
     each.value.iam_project_roles,
@@ -90,6 +94,7 @@ module "service-accounts" {
       "$project_ids:${each.value.project_key}" = each.value.iam_self_roles
     }
   )
+  tag_bindings = each.value.tag_bindings
 }
 
 module "service_accounts-iam" {
@@ -119,6 +124,8 @@ module "service_accounts-iam" {
       lookup(local.self_sas_ids, each.value.project_key, {})
     )
   })
-  iam          = each.value.iam
-  iam_sa_roles = each.value.iam_sa_roles
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_sa_roles          = each.value.iam_sa_roles
 }

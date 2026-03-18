@@ -15,16 +15,13 @@
  */
 
 locals {
-  _keyrings_path = try(
-    pathexpand(var.factories_config.keyrings), null
-  )
   _keyrings_files = try(
-    fileset(local._keyrings_path, "**/*.yaml"),
+    fileset(local.paths.keyrings, "**/*.yaml"),
     []
   )
   _keyrings = {
     for f in local._keyrings_files : trimsuffix(basename(f), ".yaml") => yamldecode(file(
-      "${coalesce(local._keyrings_path, "-")}/${f}"
+      "${coalesce(local.paths.keyrings, "-")}/${f}"
     ))
   }
   keyrings = {

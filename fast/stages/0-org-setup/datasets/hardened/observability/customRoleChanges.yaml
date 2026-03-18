@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../../schemas/observability.schema.json
+
 alerts:
   customRoleChanges:
     combiner: OR
@@ -51,7 +53,7 @@ alerts:
       mime_type: text/markdown
 logging_metrics:
   customRoleChanges:
-    bucket_name: log-0/audit-logs
+    bucket_name: $log_buckets:log-0/audit-logs
     description: Custom Role Changes
     filter: |-
       resource.type="iam_role" AND (

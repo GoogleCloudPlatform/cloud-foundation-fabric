@@ -89,6 +89,7 @@ resource "google_billing_budget" "default" {
         : "INCLUDE_ALL_CREDITS"
       )
     )
+    credit_types = try(each.value.filter.credit_types_treatment.include_specified, null)
     labels = each.value.filter.label == null ? null : {
       (each.value.filter.label.key) = each.value.filter.label.value
     }

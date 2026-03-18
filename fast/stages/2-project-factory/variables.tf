@@ -37,13 +37,13 @@ variable "context" {
 variable "factories_config" {
   description = "Path to folder with YAML resource description data files."
   type = object({
-    defaults = optional(string, "data/defaults.yaml")
-    folders  = optional(string, "data/folders")
-    projects = optional(string, "data/projects")
-    budgets = optional(object({
-      billing_account_id = string
-      data               = string
-    }))
+    dataset = optional(string, "datasets/classic")
+    paths = optional(object({
+      defaults = optional(string, "defaults.yaml")
+      folders  = optional(string, "folders")
+      projects = optional(string, "projects")
+      budgets  = optional(string)
+    }), {})
   })
   nullable = false
   default  = {}

@@ -2,10 +2,12 @@ automation = {
   outputs_bucket = "test"
 }
 factories_config = {
-  access_levels    = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/access-levels"
-  egress_policies  = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/egress-policies"
-  ingress_policies = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/ingress-policies"
-  perimeters       = "../../../tests/fast/stages/s1_vpcsc/data/vpc-sc/perimeters"
+  paths = {
+    access_levels    = "./data-simple/access-levels"
+    egress_policies  = "./data-simple/egress-policies"
+    ingress_policies = "./data-simple/ingress-policies"
+    perimeters       = "./data-simple/perimeters"
+  }
 }
 logging = {
   project_number = "1234567890"
