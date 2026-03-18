@@ -28,7 +28,13 @@ locals {
       local.ctx.folder_ids,
       module.factory.folder_ids
     )
-    iam_principals = local.iam_principals
+    iam_principals = merge(
+      local.iam_principals,
+      {
+        for k, v in try(module.organization[0].service_agents, {}) :
+        "service_agents/org/${k}" => v.iam_email
+      }
+    )
     project_ids = merge(
       local.ctx.project_ids,
       module.factory.project_ids
