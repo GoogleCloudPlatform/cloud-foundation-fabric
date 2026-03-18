@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../../../schemas/perimeter.schema.json
+# yaml-language-server: $schema=../../../schemas/ingress-policy.schema.json
 
-status:
+from:
   access_levels:
-    - $access_levels:geo
+    - "*"
+  identities:
+    - $service_agents:security-center-api
+    - $service_agents:csc-hpsa
+    - $service_agents:ktd-hpsa
+to:
+  operations:
+    - service_name: "*"
   resources:
-    - $resource_sets:discovered_projects
-  ingress_policies:
-    - $ingress_policies:fast-org-log-sinks
-    - $ingress_policies:fast-org-scc
-  egress_policies:
-    - $egress_policies:fast-org-scc
-  restricted_services:
-    - $service_sets:restricted_services
+    - "*"

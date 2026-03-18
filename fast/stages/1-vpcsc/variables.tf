@@ -77,6 +77,7 @@ variable "context" {
     identity_sets   = optional(map(list(string)), {})
     project_numbers = optional(map(number), {})
     resource_sets   = optional(map(list(string)), {})
+    service_agents  = optional(map(string), {})
     service_sets    = optional(map(list(string)), {})
     storage_buckets = optional(map(string), {})
   })

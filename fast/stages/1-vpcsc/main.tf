@@ -41,6 +41,13 @@ locals {
       },
       local._ctx.iam_principals
     )
+    service_agents = merge(
+      {
+        for k, v in var.service_agents :
+        k => "serviceAccount:${v}"
+      },
+      local._ctx.service_agents,
+    )
     identity_sets = merge(local._ctx.identity_sets, {
       logging_identities = try(distinct(values(var.logging.writer_identities)), [])
     })

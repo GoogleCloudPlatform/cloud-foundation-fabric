@@ -34,6 +34,9 @@ locals {
     iam_principals_list = {
       for k, v in local._ctx.iam_principals : k => [v]
     }
+    service_agents_list = {
+      for k, v in local._ctx.service_agents : k => [v]
+    }
     project_numbers = {
       for k, v in local._ctx.project_numbers : k => "projects/${v}"
     }

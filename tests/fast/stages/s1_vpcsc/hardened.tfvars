@@ -22,6 +22,13 @@ prefix = "fast"
 resource_discovery = {
   enabled = false
 }
+
+service_agents = {
+  "csc-hpsa" = "service-org-1234567890@gcp-sa-csc-hpsa.iam.gserviceaccount.com"
+  "ktd-hpsa" = "service-org-1234567890@gcp-sa-ktd-hpsa.iam.gserviceaccount.com"
+  "security-center-api" = "service-org-1234567890@security-center-api.iam.gserviceaccount.com"
+}
+
 storage_buckets = {
   "iac-0/iac-outputs" = "test"
 }

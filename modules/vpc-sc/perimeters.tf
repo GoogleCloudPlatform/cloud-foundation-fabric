@@ -89,9 +89,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               identity_type = policy.value.from.identity_type
               identities = policy.value.from.identities == null ? null : flatten([
                 for i in coalesce(policy.value.from.identities, []) : (
-                  startswith(i, "$identity_sets:")
-                  ? lookup(local.ctx.identity_sets, i, [i])
-                  : lookup(local.ctx.iam_principals_list, i, [i])
+                  startswith(i, "$identity_sets:") ? lookup(local.ctx.identity_sets, i, [i]) : (
+                    startswith(i, "$service_agents:") ? lookup(local.ctx.service_agents_list, i, [i]) :
+                    lookup(local.ctx.iam_principals_list, i, [i])
+                  )
                 )
               ])
               source_restriction = (
@@ -173,9 +174,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               identity_type = policy.value.from.identity_type
               identities = policy.value.from.identities == null ? null : flatten([
                 for i in coalesce(policy.value.from.identities, []) : (
-                  startswith(i, "$identity_sets:")
-                  ? lookup(local.ctx.identity_sets, i, [i])
-                  : lookup(local.ctx.iam_principals_list, i, [i])
+                  startswith(i, "$identity_sets:") ? lookup(local.ctx.identity_sets, i, [i]) : (
+                    startswith(i, "$service_agents:") ? lookup(local.ctx.service_agents_list, i, [i]) :
+                    lookup(local.ctx.iam_principals_list, i, [i])
+                  )
                 )
               ])
               dynamic "sources" {
@@ -283,9 +285,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               identity_type = policy.value.from.identity_type
               identities = policy.value.from.identities == null ? null : flatten([
                 for i in coalesce(policy.value.from.identities, []) : (
-                  startswith(i, "$identity_sets:")
-                  ? lookup(local.ctx.identity_sets, i, [i])
-                  : lookup(local.ctx.iam_principals_list, i, [i])
+                  startswith(i, "$identity_sets:") ? lookup(local.ctx.identity_sets, i, [i]) : (
+                    startswith(i, "$service_agents:") ? lookup(local.ctx.service_agents_list, i, [i]) :
+                    lookup(local.ctx.iam_principals_list, i, [i])
+                  )
                 )
               ])
               source_restriction = (
@@ -367,9 +370,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               identity_type = policy.value.from.identity_type
               identities = policy.value.from.identities == null ? null : flatten([
                 for i in coalesce(policy.value.from.identities, []) : (
-                  startswith(i, "$identity_sets:")
-                  ? lookup(local.ctx.identity_sets, i, [i])
-                  : lookup(local.ctx.iam_principals_list, i, [i])
+                  startswith(i, "$identity_sets:") ? lookup(local.ctx.identity_sets, i, [i]) : (
+                    startswith(i, "$service_agents:") ? lookup(local.ctx.service_agents_list, i, [i]) :
+                    lookup(local.ctx.iam_principals_list, i, [i])
+                  )
                 )
               ])
               dynamic "sources" {
