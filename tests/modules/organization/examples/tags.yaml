@@ -51,7 +51,7 @@ values:
       expression: |
         request.time.getHours("Europe/Berlin") <= 9 &&
         request.time.getHours("Europe/Berlin") >= 17
-      description: null 
+      description: null
     members:
     - group:gcp-support@example.org
     role: roles/resourcemanager.tagAdmin
