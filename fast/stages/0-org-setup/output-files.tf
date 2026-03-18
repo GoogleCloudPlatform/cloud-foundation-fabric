@@ -31,7 +31,7 @@ locals {
     iam_principals = merge(
       local.iam_principals,
       {
-        for k, v in try(module.organization[0].service_agents, {}) :
+        for k, v in module.organization[0].service_agents :
         "service_agents/org/${k}" => v.iam_email
       }
     )
