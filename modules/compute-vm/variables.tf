@@ -274,7 +274,7 @@ variable "instance_schedule" {
 variable "instance_type" {
   description = "Instance type."
   type        = string
-  default     = "f1-micro"
+  default     = "e2-micro"
 }
 
 variable "kms_autokeys" {

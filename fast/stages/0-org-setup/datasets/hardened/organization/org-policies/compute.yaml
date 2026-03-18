@@ -118,6 +118,8 @@ compute.trustedImageProjects:
           - "is:projects/gke-node-images"
           - "is:projects/gke-windows-node-images"
           - "is:projects/ubuntu-os-gke-cloud"
+          - "is:projects/rocky-linux-accelerator-cloud"
+          - "is:projects/ubuntu-os-accelerator-images"
 
 compute.vmExternalIpAccess:
   rules:
