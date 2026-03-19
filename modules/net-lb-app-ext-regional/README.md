@@ -25,7 +25,7 @@ The variable space of this module closely mirrors that of  [net-lb-app-ext](../n
     - [Internet NEG creation](#internet-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Serverless NEG creation](#serverless-neg-creation)
-    - [Cross Project Backend Services](#cross-project-backend)
+    - [Cross Project Backend Services](#cross-project-backend-services)
   - [URL Map](#url-map)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
