@@ -54,11 +54,11 @@ duplicates = [
         "modules/net-vpc-firewall/schemas/firewall-rules.schema.json",
     ],
     [
+        "modules/project-factory/schemas/folder.schema.json",
         "fast/stages/0-org-setup/schemas/folder.schema.json",
         "fast/stages/2-networking/schemas/folder.schema.json",
         "fast/stages/2-project-factory/schemas/folder.schema.json",
         "fast/stages/2-security/schemas/folder.schema.json",
-        "modules/project-factory/schemas/folder.schema.json",
     ],
     [
         "fast/stages/0-org-setup/schemas/observability.schema.json",
@@ -181,13 +181,11 @@ for group in duplicates:
     if is_dir:
       dcmp = filecmp.dircmp(first, second)
       if check_dir_diff(dcmp):
-        print(
-            f"[DIFF] Found differences between directories {first} and {second}"
-        )
+        print(f"[DIFF] Found differences between directories {first} {second}")
         has_diff = True
     else:
       if not filecmp.cmp(first, second, shallow=False):
-        print(f"[DIFF] Files are different: {first} and {second}")
+        print(f"[DIFF] Files are different: {first} {second}")
         has_diff = True
 
 if has_diff:

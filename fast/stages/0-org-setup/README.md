@@ -681,7 +681,7 @@ CI/CD support is implemented via two different sets of configurations:
 The default approach is to define a Workload Identity provider in the `iac-0` project, or in an additional project dedicated to this task. This is achieved by adding a `workload_identity_pools` block to the project configuration, like in the following example.
 
 ```yaml
-# projects/iac-0.yaml
+# projects/core/iac-0.yaml
 
 workload_identity_pools:
   default:
@@ -702,6 +702,34 @@ workload_identity_pools:
 ```
 
 The above configuration can be easily extended to support multiple pools and providers, and is not limited to OpenId Connect but can also leverage other provider types. Check the project module or project schema for the full interface.
+
+In the `iac-0` project you can find a sample configuration for 0-org-setup stage service accounts dedicated for CI/CD operations:
+
+```yaml
+# projects/core/iac-0.yaml
+
+service_accounts:
+  # IaC service accounts for this stage
+  iac-org-ro:
+    display_name: IaC service account for org setup (read-only).
+  iac-org-rw:
+    display_name: IaC service account for org setup (read-write).
+  # CI/CD service accounts for this stage
+  iac-org-cicd-ro:
+    display_name: IaC service account for org setup CI/CD (read-only).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-ro:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+  iac-org-cicd-rw:
+    display_name: IaC service account for org setup CI/CD (read-write).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-rw:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+```
+
+You need to extend this configuration to all other stages that you plan to use in your deployment and add permissions to IaC service account dedicated for specific stage.
 
 Once one or more providers have been defined they can be referenced in the CI/CD configuration file. The following example defines a workflow configuration for this stage.
 

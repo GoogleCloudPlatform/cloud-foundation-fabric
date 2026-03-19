@@ -38,6 +38,7 @@ values:
     parent: organizations/1234567890
     timeouts: null
   google_logging_organization_settings.default[0]:
+    kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
     organization: '1234567890'
     storage_location: europe-west8
     timeouts: null

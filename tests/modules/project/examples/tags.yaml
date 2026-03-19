@@ -65,7 +65,12 @@ values:
     short_name: prod
     timeouts: null
   module.project.google_tags_tag_value_iam_binding.bindings["environment/prod:admin"]:
-    condition: []
+    condition:
+    - title: gcp_support
+      expression: |
+        request.time.getHours("Europe/Berlin") <= 9 &&
+        request.time.getHours("Europe/Berlin") >= 17
+      description: null
     members:
     - group:gcp-support@example.org
     role: roles/resourcemanager.tagAdmin

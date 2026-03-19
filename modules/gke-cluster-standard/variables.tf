@@ -17,7 +17,11 @@
 variable "access_config" {
   description = "Control plane endpoint and nodes access configurations."
   type = object({
-    dns_access = optional(bool, true)
+    dns_access = optional(object({
+      allow_external_traffic = optional(bool, true)
+      enable_k8s_tokens      = optional(bool)
+      enable_k8s_certs       = optional(bool)
+    }), {})
     ip_access = optional(object({
       authorized_ranges                              = optional(map(string))
       disable_public_endpoint                        = optional(bool)

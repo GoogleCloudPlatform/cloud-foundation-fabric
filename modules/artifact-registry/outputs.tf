@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ locals {
   url = (
     var.universe == null
     ? join("/", [
-      "${var.location}-${local.format_string}.pkg.dev",
-      var.project_id,
+      "${local.location}-${local.format_string}.pkg.dev",
+      local.project_id,
       var.name
     ])
     : join("/", [
       "${local.format_string}.${var.universe.package_domain}",
       var.universe.prefix,
-      element(split(":", var.project_id), 1),
+      element(split(":", local.project_id), 1),
       var.name
     ])
   )

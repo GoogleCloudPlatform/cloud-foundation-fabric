@@ -78,10 +78,23 @@ variable "tunnels" {
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
     bgp_session_range = string
-    ike_version       = optional(number, 2)
-    peer_ip           = string
-    router            = optional(string)
-    shared_secret     = optional(string)
+    cipher_suite = optional(object({
+      phase1 = optional(object({
+        dh         = optional(list(string))
+        encryption = optional(list(string))
+        integrity  = optional(list(string))
+        prf        = optional(list(string))
+      }))
+      phase2 = optional(object({
+        encryption = optional(list(string))
+        integrity  = optional(list(string))
+        pfs        = optional(list(string))
+      }))
+    }))
+    ike_version   = optional(number, 2)
+    peer_ip       = string
+    router        = optional(string)
+    shared_secret = optional(string)
   }))
   default  = {}
   nullable = false

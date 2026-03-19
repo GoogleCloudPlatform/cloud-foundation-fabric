@@ -106,6 +106,7 @@ variable "attached_disks" {
 variable "boot_disk" {
   description = "Boot disk properties. Initialize params are ignored when source is set."
   type = object({
+    name              = optional(string)
     auto_delete       = optional(bool, true)
     snapshot_schedule = optional(list(string))
     source            = optional(string)
@@ -287,7 +288,7 @@ variable "instance_schedule" {
 variable "instance_type" {
   description = "Instance type."
   type        = string
-  default     = "f1-micro"
+  default     = "e2-micro"
 }
 
 variable "kms_autokeys" {

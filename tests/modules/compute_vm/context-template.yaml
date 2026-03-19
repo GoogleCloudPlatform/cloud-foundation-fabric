@@ -68,7 +68,7 @@ values:
     instance_description: null
     key_revocation_action_type: NONE
     labels: null
-    machine_type: f1-micro
+    machine_type: e2-micro
     metadata: null
     metadata_startup_script: null
     min_cpu_platform: null

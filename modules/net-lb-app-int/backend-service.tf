@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,10 @@ resource "google_compute_region_backend_service" "default" {
   for_each = var.backend_service_configs
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
-  region                          = var.region
+  region                          = local.region
   name                            = coalesce(each.value.name, "${var.name}-${each.key}")
   description                     = each.value.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec

@@ -61,8 +61,8 @@ These modules are used in the examples included in this repository. If you are u
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
-- [VPN dynamic](./net-vpn-dynamic)
 - [VPC peering](./net-vpc-peering)
+- [VPN dynamic](./net-vpn-dynamic)
 - [VPN HA](./net-vpn-ha)
 - [VPN static](./net-vpn-static)
 

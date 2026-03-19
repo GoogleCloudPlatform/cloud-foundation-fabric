@@ -62,6 +62,19 @@ variable "route_priority" {
 variable "tunnels" {
   description = "VPN tunnel configurations."
   type = map(object({
+    cipher_suite = optional(object({
+      phase1 = optional(object({
+        dh         = optional(list(string))
+        encryption = optional(list(string))
+        integrity  = optional(list(string))
+        prf        = optional(list(string))
+      }))
+      phase2 = optional(object({
+        encryption = optional(list(string))
+        integrity  = optional(list(string))
+        pfs        = optional(list(string))
+      }))
+    }))
     ike_version   = optional(number, 2)
     peer_ip       = string
     shared_secret = optional(string)

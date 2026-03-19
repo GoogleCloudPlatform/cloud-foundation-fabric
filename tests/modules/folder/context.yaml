@@ -96,6 +96,9 @@ values:
     condition: []
     member: user:test-user@example.com
     role: organizations/366118655033/roles/myRoleTwo
+  google_logging_folder_settings.default[0]:
+    kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
+    timeouts: null
   google_logging_folder_sink.sink["test-pubsub"]:
     description: test-pubsub (Terraform-managed).
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
@@ -153,9 +156,10 @@ counts:
   google_folder_iam_audit_config: 1
   google_folder_iam_binding: 7
   google_folder_iam_member: 1
+  google_logging_folder_settings: 1
   google_logging_folder_sink: 1
   google_privileged_access_manager_entitlement: 1
   google_pubsub_topic_iam_member: 1
   google_tags_tag_binding: 1
   modules: 0
-  resources: 16
+  resources: 17

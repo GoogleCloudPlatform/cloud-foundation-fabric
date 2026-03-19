@@ -1,6 +1,18 @@
 # Cloud VPN Route-based Module
 
-## Example
+This module makes it easy to deploy a [Classic VPN](https://docs.cloud.google.com/network-connectivity/docs/vpn/concepts/overview#classic-vpn) with static routing.
+
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Classic VPN with single tunnel](#classic-vpn-with-single-tunnel)
+  - [Classic VPN with single tunnel and custom ciphers](#classic-vpn-with-single-tunnel-and-custom-ciphers)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
+
+## Examples
+
+### Classic VPN with single tunnel
 
 ```hcl
 module "addresses" {
@@ -28,10 +40,53 @@ module "vpn" {
     }
   }
 }
-# tftest modules=2 resources=8
+# tftest modules=2 resources=8 inventory=vpn-single-tunnel.yaml
+```
+
+### Classic VPN with single tunnel and custom ciphers
+
+```hcl
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  external_addresses = {
+    vpn = { region = "europe-west1" }
+  }
+}
+
+module "vpn" {
+  source                 = "./fabric/modules/net-vpn-static"
+  project_id             = var.project_id
+  region                 = var.region
+  network                = var.vpc.self_link
+  name                   = "remote"
+  gateway_address_create = false
+  gateway_address        = module.addresses.external_addresses["vpn"].address
+  remote_ranges          = ["10.10.0.0/24"]
+  tunnels = {
+    remote-0 = {
+      cipher_suite = {
+        phase1 = {
+          dh         = ["Group-14"]
+          encryption = ["AES-CBC-256"]
+          integrity  = ["HMAC-SHA2-256-128"]
+          prf        = ["PRF-HMAC-SHA2-256"]
+        }
+        phase2 = {
+          encryption = ["AES-CBC-128"]
+          integrity  = ["HMAC-SHA2-256-128"]
+          pfs        = ["Group-14"]
+        }
+      }
+      peer_ip           = "1.1.1.1"
+      shared_secret     = "mysecret"
+      traffic_selectors = { local = ["0.0.0.0/0"], remote = ["0.0.0.0/0"] }
+    }
+  }
+}
+# tftest modules=2 resources=8 inventory=vpn-single-tunnel-custom-ciphers.yaml
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -44,7 +99,7 @@ module "vpn" {
 | [gateway_address_create](variables.tf#L23) | Create external address assigned to the VPN gateway. Needs to be explicitly set to false to use address in gateway_address variable. | <code>bool</code> |  | <code>true</code> |
 | [remote_ranges](variables.tf#L49) | Remote IP CIDR ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [route_priority](variables.tf#L56) | Route priority, defaults to 1000. | <code>number</code> |  | <code>1000</code> |
-| [tunnels](variables.tf#L62) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  ike_version   &#61; optional&#40;number, 2&#41;&#10;  peer_ip       &#61; string&#10;  shared_secret &#61; optional&#40;string&#41;&#10;  traffic_selectors &#61; object&#40;&#123;&#10;    local  &#61; list&#40;string&#41;&#10;    remote &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L62) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  cipher_suite &#61; optional&#40;object&#40;&#123;&#10;    phase1 &#61; optional&#40;object&#40;&#123;&#10;      dh         &#61; optional&#40;list&#40;string&#41;&#41;&#10;      encryption &#61; optional&#40;list&#40;string&#41;&#41;&#10;      integrity  &#61; optional&#40;list&#40;string&#41;&#41;&#10;      prf        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    phase2 &#61; optional&#40;object&#40;&#123;&#10;      encryption &#61; optional&#40;list&#40;string&#41;&#41;&#10;      integrity  &#61; optional&#40;list&#40;string&#41;&#41;&#10;      pfs        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  ike_version   &#61; optional&#40;number, 2&#41;&#10;  peer_ip       &#61; string&#10;  shared_secret &#61; optional&#40;string&#41;&#10;  traffic_selectors &#61; object&#40;&#123;&#10;    local  &#61; list&#40;string&#41;&#10;    remote &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -59,5 +114,4 @@ module "vpn" {
 | [tunnel_names](outputs.tf#L47) | VPN tunnel names. |  |
 | [tunnel_self_links](outputs.tf#L55) | VPN tunnel self links. |  |
 | [tunnels](outputs.tf#L63) | VPN tunnel resources. |  |
-
 <!-- END TFDOC -->

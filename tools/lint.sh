@@ -31,6 +31,9 @@ python3 tools/check_links.py --no-show-summary $PWD
 echo -- FAST Names --
 python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
 
+echo -- YAML linting --
+yamllint -c .yamllint .
+
 echo -- Python formatting --
 yapf -p -d -r \
      tools/*.py \

@@ -4,6 +4,30 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "asset_search": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "asset_types"
+          ],
+          "properties": {
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "query": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "asset_feeds": {
       "type": "object",
       "additionalProperties": false,
@@ -235,6 +259,73 @@
     },
     "deletion_protection": {
       "type": "boolean"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^(folders/[0-9]+|\\$folder_ids:[a-z0-9_/-]+)$"
+    },
+    "firewall_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "policy"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        }
+      }
+    },
+    "logging": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kms_key_name": {
+          "type": "string"
+        },
+        "storage_location": {
+          "type": "string"
+        },
+        "sinks": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9-_]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "exclusions": {
+                  "type": "object"
+                },
+                "filter": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "default": "logging",
+                  "enum": [
+                    "bigquery",
+                    "logging",
+                    "project",
+                    "pubsub",
+                    "storage"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "factories_config": {
       "type": "object",
@@ -780,27 +871,48 @@
           "enum": [
             "ASSURED_WORKLOADS_FOR_PARTNERS",
             "AU_REGIONS_AND_US_SUPPORT",
+            "AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT",
             "CA_PROTECTED_B",
             "CA_REGIONS_AND_SUPPORT",
+            "CANADA_CONTROLLED_GOODS",
+            "CANADA_DATA_BOUNDARY_AND_SUPPORT",
             "CJIS",
             "COMPLIANCE_REGIME_UNSPECIFIED",
+            "DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS",
+            "DATA_BOUNDARY_FOR_CANADA_PROTECTED_B",
+            "DATA_BOUNDARY_FOR_CJIS",
+            "DATA_BOUNDARY_FOR_FEDRAMP_HIGH",
+            "DATA_BOUNDARY_FOR_FEDRAMP_MODERATE",
+            "DATA_BOUNDARY_FOR_IL2",
+            "DATA_BOUNDARY_FOR_IL4",
+            "DATA_BOUNDARY_FOR_IL5",
+            "DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075",
+            "DATA_BOUNDARY_FOR_ITAR",
+            "EU_DATA_BOUNDARY_AND_SUPPORT",
             "EU_REGIONS_AND_SUPPORT",
             "FEDRAMP_HIGH",
             "FEDRAMP_MODERATE",
-            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
             "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
+            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
             "HIPAA",
             "HITRUST",
             "IL2",
             "IL4",
             "IL5",
             "IRS_1075",
-            "ISR_REGIONS_AND_SUPPORT",
             "ISR_REGIONS",
+            "ISR_REGIONS_AND_SUPPORT",
+            "ISRAEL_DATA_BOUNDARY_AND_SUPPORT",
             "ITAR",
+            "JAPAN_DATA_BOUNDARY",
             "JP_REGIONS_AND_SUPPORT",
+            "KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS",
             "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
             "REGIONAL_CONTROLS",
+            "REGIONAL_DATA_BOUNDARY",
+            "US_DATA_BOUNDARY_AND_SUPPORT",
+            "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES",
+            "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT",
             "US_REGIONAL_ACCESS"
           ]
         },

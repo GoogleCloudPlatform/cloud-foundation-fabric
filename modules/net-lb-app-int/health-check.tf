@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ resource "google_compute_health_check" "default" {
   for_each = var.health_check_configs
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
   name                = coalesce(each.value.name, "${var.name}-${each.key}")

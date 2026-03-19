@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # yamllint disable rule:line-length
+
 values:
   google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
@@ -1259,43 +1260,6 @@ values:
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
     user_project: null
-  module.factory.module.projects["iac-0"].google_logging_metric.metrics["sa-impersonation"]:
-    bucket_name: null
-    bucket_options: []
-    description: null
-    disabled: null
-    filter: 'protoPayload.serviceName="iamcredentials.googleapis.com"
-
-      (protoPayload.methodName="GenerateAccessToken" OR protoPayload.methodName="GenerateIdToken")
-
-      '
-    label_extractors:
-      email_id: EXTRACT(resource.labels.email_id)
-    metric_descriptor:
-    - display_name: Service Account Impersonation
-      labels:
-      - description: ''
-        key: email_id
-        value_type: STRING
-      metric_kind: DELTA
-      unit: '1'
-      value_type: INT64
-    name: sa-impersonation
-    project: ft0-prod-iac-core-0
-    timeouts: null
-    value_extractor: null
-  module.factory.module.projects["iac-0"].google_monitoring_notification_channel.channels["email-security"]:
-    description: null
-    display_name: Security Team Email
-    enabled: true
-    force_delete: false
-    labels:
-      email_address: $email_addresses:gcp-organization-admins
-    project: ft0-prod-iac-core-0
-    sensitive_labels: []
-    timeouts: null
-    type: email
-    user_labels: null
   module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
     dry_run_spec: []
     name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
@@ -2067,6 +2031,8 @@ values:
           - is:projects/gke-node-images
           - is:projects/gke-windows-node-images
           - is:projects/ubuntu-os-gke-cloud
+          - is:projects/rocky-linux-accelerator-cloud
+          - is:projects/ubuntu-os-accelerator-images
           denied_values: null
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
@@ -2968,6 +2934,7 @@ values:
     input: null
     output: null
     triggers_replace: null
+
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 2
@@ -2975,12 +2942,10 @@ counts:
   google_essential_contacts_contact: 1
   google_folder: 10
   google_folder_iam_binding: 44
-  google_logging_metric: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
   google_logging_project_settings: 2
-  google_monitoring_notification_channel: 1
   google_org_policy_custom_constraint: 1
   google_org_policy_policy: 37
   google_organization_iam_audit_config: 1
@@ -3007,5 +2972,18 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 50
-  resources: 327
+  resources: 325
   terraform_data: 4
+
+outputs:
+  iam_principals:
+    domain: domain:example.org
+    gcp-billing-admins: group:gcp-billing-admins@example.org
+    gcp-devops: group:gcp-devops@example.org
+    gcp-network-admins: group:gcp-network-admins@example.org
+    gcp-organization-admins: group:fabric-fast-owners@google.com
+    gcp-secops-admins: group:gcp-secops-admins@example.org
+    gcp-security-admins: group:gcp-security-admins@example.org
+    gcp-support: group:gcp-support@example.org
+  projects: __missing__
+  tfvars: __missing__

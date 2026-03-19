@@ -25,7 +25,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Internet NEG creation](#internet-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Serverless NEG creation](#serverless-neg-creation)
-    - [Cross Project Backend](#cross-project-backend)
+    - [Cross Project Backend Services](#cross-project-backend-services)
   - [URL Map](#url-map)
   - [SSL Certificates](#ssl-certificates)
   - [Backend Authenticated TLS](#backend-authenticated-tls)
@@ -637,9 +637,9 @@ module "glb-0" {
 # tftest modules=1 resources=6 inventory=https-sneg.yaml e2e
 ```
 
-#### Cross Project Backend
+#### Cross Project Backend Services
 
-The module supports Cross Project Backends. This is an example of a referencing to a Backend in another project:
+The module supports Cross Project Backend Services. This is an example of a referencing to a Backend Service in another project:
 
 ```hcl
 module "ralb-0" {
@@ -649,7 +649,7 @@ module "ralb-0" {
 
   backend_service_configs = {
     my_backend = {
-      project_id = "backend_project_id" #Specify the project ID where the backend resides
+      project_id = "backend_project_id" #Specify the project ID where the backend service resides
 
       backends = [
         {
