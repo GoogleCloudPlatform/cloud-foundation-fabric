@@ -1,6 +1,6 @@
 # Refactor compute-vm module variables and add new resource attributes
 
-**authors:** [Ludo](https://github.com/ludoo) \
+**authors:** [Ludo](https://github.com/ludoo) [Wiktor](https://github.com/wiktorn) \
 **date:** Mar 23, 2026
 
 <!-- BEGIN TOC -->
@@ -196,7 +196,7 @@ attached_disks = {
 
 Currently, `compute-vm` has a mix of top-level boolean toggles (`confidential_compute`, `can_ip_forward`, `enable_display`) and a catch-all `options` variable that houses `advanced_machine_features`, scheduling/spot configurations, and operational toggles.
 
-To align with modern Fabric patterns, we will decompose these into logical `*_config` objects and structured variables. **Crucially, any string field that maps to an API enum (e.g., `nic_type`, `provisioning_model`, `maintenance_interval`) will include strict Terraform validation rules.**
+To align with modern Fabric patterns, we will decompose these into logical `*_config` objects and structured variables. **Crucially, almost all string field that maps to an API enum (e.g., `provisioning_model`, `maintenance_interval`) will include strict Terraform validation rules.** `nic_type` will be an exception from this rule as the valid values depend on machine\_type and there might be new types introduced in the future.
 
 #### Proposed Groupings and Type Definitions
 
@@ -446,8 +446,9 @@ Example tests will be adapted and run as part of each task iteration.
 1. **Task 1:** Update `variables.tf` to implement the new disk structures (`boot_disk` and `attached_disks`), polymorphic `source`, and disambiguate disk names.
 2. **Task 2:** Refactor `variables.tf` for feature grouping: rename `instance_type` to `machine_type`, add `scheduling_config`, `lifecycle_config`, `network_performance_tier`, and update `confidential_compute`.
 3. **Task 3:** Add new attributes to `network_interfaces` (`queue_count`, `internal_ipv6_prefix_length`).
-4. **Task 4:** Expand the `group` variable to support the `membership` attribute.
-5. **Task 5:** Update `main.tf` and `outputs.tf` to consume the new variables (standalone VM implementation).
-6. **Task 6:** Update `tags.tf` and `resource-policies.tf` to work with the new `attached_disks` map instead of a list.
-7. **Task 7:** Update `template.tf` to align with the new disk schemas and map the new feature attributes.
-8. **Task 8:** Run integration tests and regenerate documentation (`python3 tools/tfdoc.py` and YAML test files updates).
+4. **Task 4:** Split `template.tf` into `template-zonal.tf` and `template-regional.tf`, extract `instance.tf` from `main.tf` to allow easy comparison of feature coverage.
+5. **Task 5:** Expand the `group` variable to support the `membership` attribute.
+6. **Task 6:** Update `instance.tf` and `outputs.tf` to consume the new variables (standalone VM implementation).
+7. **Task 7:** Update `tags.tf` and `resource-policies.tf` to work with the new `attached_disks` map instead of a list.
+8. **Task 8:** Update `template-zonal.tf` and `template-regional.tf` to align with the new disk schemas and map the new feature attributes.
+9. **Task 9:** Run integration tests and regenerate documentation (`python3 tools/tfdoc.py` and YAML test files updates).
