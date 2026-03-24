@@ -49,9 +49,27 @@ variable "region" {
 variable "router_config" {
   description = "Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router."
   type = object({
-    create    = optional(bool, true)
-    asn       = number
-    name      = optional(string)
+    create = optional(bool, true)
+    asn    = number
+    name   = optional(string)
+    route_policies = optional(map(object({
+      type = string
+      terms = list(object({
+        priority = number
+        match = optional(object({
+          expression  = string
+          title       = optional(string)
+          description = optional(string)
+          location    = optional(string)
+        }))
+        actions = optional(object({
+          expression  = string
+          title       = optional(string)
+          description = optional(string)
+          location    = optional(string)
+        }))
+      }))
+    })), {})
     keepalive = optional(number)
     custom_advertise = optional(object({
       all_subnets = bool
@@ -59,6 +77,18 @@ variable "router_config" {
     }))
   })
   nullable = false
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.router_config.route_policies : [
+        for t in v.terms :
+        t.priority >= 0 && t.priority < 231
+      ]
+      ])) && alltrue([
+      for k, v in var.router_config.route_policies :
+      length(v.terms) == length(distinct([for t in v.terms : t.priority]))
+    ])
+    error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive) and unique within the policy."
+  }
 }
 
 variable "tunnels" {

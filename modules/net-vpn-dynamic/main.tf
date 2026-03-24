@@ -100,6 +100,8 @@ resource "google_compute_router_peer" "bgp_peer" {
   project                   = var.project_id
   name                      = "${var.name}-${each.key}"
   router                    = coalesce(each.value.router, local.router)
+  export_policies           = each.value.bgp_peer.export_policies
+  import_policies           = each.value.bgp_peer.import_policies
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
   advertised_route_priority = each.value.bgp_peer.route_priority
@@ -182,3 +184,41 @@ resource "google_compute_vpn_tunnel" "tunnels" {
 resource "random_id" "secret" {
   byte_length = 8
 }
+
+resource "google_compute_router_route_policy" "default" {
+  for_each = var.router_config.route_policies
+  project  = var.project_id
+  region   = var.region
+  router   = local.router
+  name     = each.key
+  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+
+  dynamic "terms" {
+    for_each = try(each.value.terms, [])
+    content {
+      priority = terms.value.priority
+      match {
+        expression  = terms.value.match.expression
+        title       = try(terms.value.match.title, null)
+        description = try(terms.value.match.description, null)
+        location    = try(terms.value.match.location, null)
+      }
+      actions {
+        expression  = actions.value.expression
+        title       = try(actions.value.title, null)
+        description = try(actions.value.description, null)
+        location    = try(actions.value.location, null)
+      }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = contains(["IMPORT", "EXPORT"], each.value.type)
+      error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
+    }
+  }
+
+  depends_on = [google_compute_router.router]
+}
+
