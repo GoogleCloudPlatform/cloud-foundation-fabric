@@ -92,7 +92,9 @@ variable "tunnels" {
         name = string
         key  = string
       }))
-      route_priority = optional(number, 1000)
+      export_policies = optional(list(string))
+      import_policies = optional(list(string))
+      route_priority  = optional(number, 1000)
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.

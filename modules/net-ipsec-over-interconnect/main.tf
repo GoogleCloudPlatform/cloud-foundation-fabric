@@ -97,6 +97,8 @@ resource "google_compute_router_peer" "default" {
   router                    = local.router
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
+  export_policies           = try(each.value.bgp_peer.export_policies, null)
+  import_policies           = try(each.value.bgp_peer.import_policies, null)
   advertised_route_priority = each.value.bgp_peer.route_priority
   advertise_mode = (
     try(each.value.bgp_peer.custom_advertise, null) != null
@@ -154,4 +156,51 @@ resource "google_compute_vpn_tunnel" "default" {
 
 resource "random_id" "default" {
   byte_length = 8
+}
+
+resource "google_compute_router_route_policy" "default" {
+  for_each = var.router_config.route_policies
+  project  = var.project_id
+  region   = var.region
+  router   = local.router
+  name     = each.key
+  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+
+  dynamic "terms" {
+    for_each = try(each.value.terms, [])
+    content {
+      priority = terms.value.priority
+      match {
+        expression  = terms.value.match.expression
+        title       = try(terms.value.match.title, null)
+        description = try(terms.value.match.description, null)
+        location    = try(terms.value.match.location, null)
+      }
+      actions {
+        expression  = terms.value.actions.expression
+        title       = try(terms.value.actions.title, null)
+        description = try(terms.value.actions.description, null)
+        location    = try(terms.value.actions.location, null)
+      }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = contains(["IMPORT", "EXPORT"], each.value.type)
+      error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
+    }
+    precondition {
+      condition     = length(try(each.value.terms, [])) == length(distinct([for t in try(each.value.terms, []) : t.priority]))
+      error_message = "Route policy term priorities must be unique."
+    }
+    precondition {
+      condition     = alltrue([for t in try(each.value.terms, []) : t.priority >= 0 && t.priority < 231])
+      error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive)."
+    }
+  }
+
+  depends_on = [
+    google_compute_router.default
+  ]
 }
