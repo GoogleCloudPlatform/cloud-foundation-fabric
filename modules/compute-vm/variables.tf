@@ -92,24 +92,28 @@ variable "attached_disks" {
 variable "boot_disk" {
   description = "Boot disk properties. Initialize params are ignored when source is set."
   type = object({
-    name              = optional(string)
     auto_delete       = optional(bool, true)
     snapshot_schedule = optional(list(string))
-    source            = optional(string)
     initialize_params = optional(object({
-      architecture           = optional(string)
-      image                  = optional(string, "projects/debian-cloud/global/images/family/debian-11")
-      provisioned_iops       = optional(number)
-      provisioned_throughput = optional(number) # in MiB/s
-      size                   = optional(number, 10)
-      storage_pool           = optional(string)
-      type                   = optional(string, "pd-balanced")
+      architecture = optional(string)
+      size         = optional(number, 10)
+      type         = optional(string, "pd-balanced")
+      hyperdisk = optional(object({
+        provisioned_iops       = optional(number)
+        provisioned_throughput = optional(number) # in MiB/s
+        storage_pool           = optional(string)
+      }), {})
     }), {})
-    use_independent_disk = optional(bool, false)
+    source = optional(object({
+      image    = optional(string)
+      snapshot = optional(string)
+      attach   = optional(string)
+    }), { image = "projects/debian-cloud/global/images/family/debian-11" })
+    use_independent_disk = optional(object({
+      name = optional(string)
+    }))
   })
-  default = {
-    initialize_params = {}
-  }
+  default  = {}
   nullable = false
   validation {
     condition     = var.boot_disk.source != null || var.boot_disk.initialize_params != null

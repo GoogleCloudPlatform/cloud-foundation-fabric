@@ -452,3 +452,4 @@ Example tests will be adapted and run as part of each task iteration.
 7. **Task 7:** Update `tags.tf` and `resource-policies.tf` to work with the new `attached_disks` map instead of a list.
 8. **Task 8:** Update `template-zonal.tf` and `template-regional.tf` to align with the new disk schemas and map the new feature attributes.
 9. **Task 9:** Run integration tests and regenerate documentation (`python3 tools/tfdoc.py` and YAML test files updates).
+10. **Task 10.** Assess if disk-level encryption key overrides make sense, and if so implement them.

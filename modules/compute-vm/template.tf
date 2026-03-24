@@ -58,15 +58,15 @@ resource "google_compute_instance_template" "default" {
   }
 
   disk {
+    boot                   = true
     architecture           = var.boot_disk.initialize_params.architecture
     auto_delete            = var.boot_disk.auto_delete
-    boot                   = true
     disk_size_gb           = var.boot_disk.initialize_params.size
     disk_type              = var.boot_disk.initialize_params.type
-    provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
-    provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+    source_image           = var.boot_disk.source.image
+    provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
+    provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
-    source_image           = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
       for_each = var.encryption != null ? [""] : []
@@ -112,8 +112,8 @@ resource "google_compute_instance_template" "default" {
         config.value.source_type != "attach" ? config.value.size : null
       )
       mode                   = config.value.options.mode
-      provisioned_iops       = config.value.options.provisioned_iops
-      provisioned_throughput = config.value.options.provisioned_throughput
+      provisioned_iops       = try(config.value.options.provisioned_iops, null)
+      provisioned_throughput = try(config.value.options.provisioned_throughput, null)
       source_image = (
         config.value.source_type == "image" ? config.value.source : null
       )
@@ -285,21 +285,22 @@ resource "google_compute_region_instance_template" "default" {
   }
 
   disk {
+    boot                   = true
     architecture           = var.boot_disk.initialize_params.architecture
     auto_delete            = var.boot_disk.auto_delete
-    boot                   = true
     disk_size_gb           = var.boot_disk.initialize_params.size
     disk_type              = var.boot_disk.initialize_params.type
-    provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
-    provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+    source_image           = var.boot_disk.source.image
+    provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
+    provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
-    source_image           = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
       for_each = var.encryption != null ? [""] : []
       content {
-        kms_key_self_link = try(
-          local.ctx_kms_keys[var.encryption.kms_key_self_link],
+        kms_key_self_link = lookup(
+          local.ctx_kms_keys,
+          var.encryption.kms_key_self_link,
           var.encryption.kms_key_self_link
         )
       }
@@ -338,8 +339,8 @@ resource "google_compute_region_instance_template" "default" {
         config.value.source_type != "attach" ? config.value.size : null
       )
       mode                   = config.value.options.mode
-      provisioned_iops       = config.value.options.provisioned_iops
-      provisioned_throughput = config.value.options.provisioned_throughput
+      provisioned_iops       = try(config.value.options.provisioned_iops, null)
+      provisioned_throughput = try(config.value.options.provisioned_throughput, null)
       source_image = (
         config.value.source_type == "image" ? config.value.source : null
       )

@@ -93,19 +93,23 @@ resource "google_kms_key_handle" "default" {
 }
 
 resource "google_compute_disk" "boot" {
-  count   = !local.template_create && var.boot_disk.use_independent_disk ? 1 : 0
+  count = (
+    !local.template_create && var.boot_disk.use_independent_disk != null ? 1 : 0
+  )
   project = local.project_id
   zone    = local.zone
   # by default, GCP creates boot disks with the same name as instance, the deviation here is kept for backwards
   # compatibility
-  name                   = coalesce(var.boot_disk.name, "${var.name}-boot")
+  name = coalesce(
+    var.boot_disk.use_independent_disk.name, "${var.name}-boot"
+  )
+  image                  = var.boot_disk.source.image
+  architecture           = var.boot_disk.initialize_params.architecture
   type                   = var.boot_disk.initialize_params.type
   size                   = var.boot_disk.initialize_params.size
-  architecture           = var.boot_disk.initialize_params.architecture
-  image                  = var.boot_disk.initialize_params.image
-  provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
-  provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
-  storage_pool           = var.boot_disk.initialize_params.storage_pool
+  provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
+  provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
+  storage_pool           = var.boot_disk.initialize_params.hyperdisk.storage_pool
   labels = merge(var.labels, {
     disk_name = "boot"
     disk_type = var.boot_disk.initialize_params.type
@@ -267,14 +271,17 @@ resource "google_compute_instance" "default" {
 
   boot_disk {
     auto_delete = (
-      var.boot_disk.use_independent_disk
+      var.boot_disk.use_independent_disk != null
       ? false
       : var.boot_disk.auto_delete
     )
     source = (
-      var.boot_disk.use_independent_disk
+      var.boot_disk.use_independent_disk != null
       ? google_compute_disk.boot[0].id
-      : var.boot_disk.source
+      : try(coalesce(
+        var.boot_disk.source.snapshot,
+        var.boot_disk.source.attach
+      ), null)
     )
     disk_encryption_key_raw = (
       var.encryption != null ?
@@ -296,21 +303,23 @@ resource "google_compute_instance" "default" {
       for_each = (
         var.boot_disk.initialize_params == null
         ||
-        var.boot_disk.use_independent_disk
-        ||
-        var.boot_disk.source != null
+        var.boot_disk.use_independent_disk != null
+        || (
+          var.boot_disk.source.snapshot != null &&
+          var.boot_disk.source.attach != null
+        )
         ? []
         : [""]
       )
       content {
         architecture           = var.boot_disk.initialize_params.architecture
-        image                  = var.boot_disk.initialize_params.image
+        image                  = var.boot_disk.source.image
         size                   = var.boot_disk.initialize_params.size
         type                   = var.boot_disk.initialize_params.type
         resource_manager_tags  = var.tag_bindings_immutable
-        provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
-        provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
-        storage_pool           = var.boot_disk.initialize_params.storage_pool
+        provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
+        provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
+        storage_pool           = var.boot_disk.initialize_params.hyperdisk.storage_pool
       }
     }
   }

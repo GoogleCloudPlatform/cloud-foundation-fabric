@@ -272,13 +272,16 @@ module "vm-disk-options-example" {
   }]
   boot_disk = {
     initialize_params = {
-      image                  = "projects/debian-cloud/global/images/family/debian-12"
-      provisioned_iops       = 3000
-      provisioned_throughput = 140
-      type                   = "hyperdisk-balanced"
+      type = "hyperdisk-balanced"
+      hyperdisk = {
+        provisioned_iops       = 3000
+        provisioned_throughput = 140
+      }
+    }
+    source = {
+      image = "projects/debian-cloud/global/images/family/debian-12"
     }
   }
-
   attached_disks = [
     {
       name = "data1"
@@ -341,13 +344,17 @@ module "vm-disk-options-example" {
     }
   ]
   boot_disk = {
-    use_independent_disk = true
+    use_independent_disk = {}
     initialize_params = {
-      image                  = "projects/debian-cloud/global/images/family/debian-12"
-      provisioned_iops       = 3000
-      provisioned_throughput = 140
-      storage_pool           = google_compute_storage_pool.default.id
-      type                   = "hyperdisk-balanced"
+      type = "hyperdisk-balanced"
+      hyperdisk = {
+        provisioned_iops       = 3000
+        provisioned_throughput = 140
+        storage_pool           = google_compute_storage_pool.default.id
+      }
+    }
+    source = {
+      image = "projects/debian-cloud/global/images/family/debian-12"
     }
   }
 
@@ -401,14 +408,17 @@ module "vm-arm" {
   }]
   boot_disk = {
     initialize_params = {
-      image                  = "projects/debian-cloud/global/images/family/debian-12-arm64"
-      architecture           = "ARM64"
-      provisioned_iops       = 3000
-      provisioned_throughput = 140
-      type                   = "hyperdisk-balanced"
+      architecture = "ARM64"
+      type         = "hyperdisk-balanced"
+      hyperdisk = {
+        provisioned_iops       = 3000
+        provisioned_throughput = 140
+      }
+    }
+    source = {
+      image = "projects/debian-cloud/global/images/family/debian-12-arm64"
     }
   }
-
   attached_disks = [
     {
       name = "data1"
@@ -456,8 +466,7 @@ module "simple-vm-example" {
   zone       = "${var.region}-b"
   name       = "test"
   boot_disk = {
-    initialize_params    = {}
-    use_independent_disk = true
+    use_independent_disk = {}
   }
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -558,8 +567,10 @@ module "vm-with-gvnic" {
   name       = "test"
   boot_disk = {
     initialize_params = {
+      type = "pd-ssd"
+    }
+    source = {
       image = google_compute_image.cos-gvnic.self_link
-      type  = "pd-ssd"
     }
   }
   network_interfaces = [{
@@ -699,7 +710,7 @@ module "vm-confidential-example" {
   confidential_compute = true
   instance_type        = "n2d-standard-2"
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/debian-cloud/global/images/family/debian-12"
     }
   }
@@ -718,7 +729,7 @@ module "template-confidential-example" {
   create_template      = {}
   instance_type        = "n2d-standard-2"
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/debian-cloud/global/images/family/debian-12"
     }
   }
@@ -879,7 +890,7 @@ module "cos-test" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -909,7 +920,7 @@ module "cos-test" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -945,7 +956,7 @@ module "instance-group" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -976,7 +987,7 @@ module "instance" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -1019,7 +1030,7 @@ module "instance" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -1047,7 +1058,7 @@ module "instance" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
     snapshot_schedule = ["boot"]
@@ -1169,43 +1180,43 @@ module "sole-tenancy" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L323) | Instance name. | <code>string</code> | ✓ |  |
-| [network_interfaces](variables.tf#L335) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  alias_ips  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  nat        &#61; optional&#40;bool, false&#41;&#10;  nic_type   &#61; optional&#40;string&#41;&#10;  stack_type &#61; optional&#40;string&#41;&#10;  addresses &#61; optional&#40;object&#40;&#123;&#10;    internal &#61; optional&#40;string&#41;&#10;    external &#61; optional&#40;string&#41;&#10;  &#125;&#41;, null&#41;&#10;  network_tier &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L430) | Project id. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L550) | Compute zone. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L327) | Instance name. | <code>string</code> | ✓ |  |
+| [network_interfaces](variables.tf#L339) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  alias_ips  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  nat        &#61; optional&#40;bool, false&#41;&#10;  nic_type   &#61; optional&#40;string&#41;&#10;  stack_type &#61; optional&#40;string&#41;&#10;  addresses &#61; optional&#40;object&#40;&#123;&#10;    internal &#61; optional&#40;string&#41;&#10;    external &#61; optional&#40;string&#41;&#10;  &#125;&#41;, null&#41;&#10;  network_tier &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L434) | Project id. | <code>string</code> | ✓ |  |
+| [zone](variables.tf#L554) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disk_defaults](variables.tf#L17) | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;  auto_delete  &#61; optional&#40;bool, false&#41;&#10;  mode         &#61; string&#10;  replica_zone &#61; string&#10;  type         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  auto_delete  &#61; true&#10;  mode         &#61; &#34;READ_WRITE&#34;&#10;  replica_zone &#61; null&#10;  type         &#61; &#34;pd-balanced&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [attached_disks](variables.tf#L37) | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; optional&#40;string&#41;&#10;  device_name &#61; optional&#40;string&#41;&#10;  size              &#61; string&#10;  snapshot_schedule &#61; optional&#40;list&#40;string&#41;&#41;&#10;  source            &#61; optional&#40;string&#41;&#10;  source_type       &#61; optional&#40;string&#41;&#10;  options &#61; optional&#40;&#10;    object&#40;&#123;&#10;      architecture           &#61; optional&#40;string&#41;&#10;      auto_delete            &#61; optional&#40;bool, false&#41; &#35; applies only to vm templates&#10;      mode                   &#61; optional&#40;string, &#34;READ_WRITE&#34;&#41;&#10;      provisioned_iops       &#61; optional&#40;number&#41;&#10;      provisioned_throughput &#61; optional&#40;number&#41; &#35; in MiB&#47;s&#10;      replica_zone           &#61; optional&#40;string&#41;&#10;      storage_pool           &#61; optional&#40;string&#41;&#10;      type                   &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;    &#125;&#41;,&#10;    &#123;&#10;      auto_delete  &#61; true&#10;      mode         &#61; &#34;READ_WRITE&#34;&#10;      replica_zone &#61; null&#10;      type         &#61; &#34;pd-balanced&#34;&#10;    &#125;&#10;  &#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [boot_disk](variables.tf#L92) | Boot disk properties. Initialize params are ignored when source is set. | <code title="object&#40;&#123;&#10;  name              &#61; optional&#40;string&#41;&#10;  auto_delete       &#61; optional&#40;bool, true&#41;&#10;  snapshot_schedule &#61; optional&#40;list&#40;string&#41;&#41;&#10;  source            &#61; optional&#40;string&#41;&#10;  initialize_params &#61; optional&#40;object&#40;&#123;&#10;    architecture           &#61; optional&#40;string&#41;&#10;    image                  &#61; optional&#40;string, &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34;&#41;&#10;    provisioned_iops       &#61; optional&#40;number&#41;&#10;    provisioned_throughput &#61; optional&#40;number&#41; &#35; in MiB&#47;s&#10;    size                   &#61; optional&#40;number, 10&#41;&#10;    storage_pool           &#61; optional&#40;string&#41;&#10;    type                   &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  use_independent_disk &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  initialize_params &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [can_ip_forward](variables.tf#L135) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
-| [confidential_compute](variables.tf#L141) | Enable Confidential Compute for these instances. | <code>bool</code> |  | <code>false</code> |
-| [context](variables.tf#L147) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  addresses      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  subnets        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [create_template](variables.tf#L164) | Create instance template instead of instances. Defaults to a global template. | <code title="object&#40;&#123;&#10;  regional &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [description](variables.tf#L173) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
-| [enable_display](variables.tf#L179) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
-| [encryption](variables.tf#L185) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;  encrypt_boot            &#61; optional&#40;bool, false&#41;&#10;  disk_encryption_key_raw &#61; optional&#40;string&#41;&#10;  kms_key_self_link       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [gpu](variables.tf#L195) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [group](variables.tf#L230) | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;  named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [hostname](variables.tf#L238) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
-| [iam](variables.tf#L244) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_schedule](variables.tf#L250) | Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null. Set active to null to dtach a policy from vm before destroying. | <code title="object&#40;&#123;&#10;  active          &#61; optional&#40;bool, true&#41;&#10;  description     &#61; optional&#40;string&#41;&#10;  expiration_time &#61; optional&#40;string&#41;&#10;  start_time      &#61; optional&#40;string&#41;&#10;  timezone        &#61; optional&#40;string, &#34;UTC&#34;&#41;&#10;  vm_start        &#61; optional&#40;string&#41;&#10;  vm_stop         &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [instance_type](variables.tf#L274) | Instance type. | <code>string</code> |  | <code>&#34;e2-micro&#34;</code> |
-| [kms_autokeys](variables.tf#L280) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code title="map&#40;object&#40;&#123;&#10;  location               &#61; optional&#40;string&#41;&#10;  resource_type_selector &#61; optional&#40;string, &#34;compute.googleapis.com&#47;Disk&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L298) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [metadata](variables.tf#L304) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [metadata_startup_script](variables.tf#L310) | Instance startup script. Will trigger recreation on change, even after importing. | <code>string</code> |  | <code>null</code> |
-| [min_cpu_platform](variables.tf#L317) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
-| [network_attached_interfaces](variables.tf#L328) | Network interfaces using network attachments. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [network_tag_bindings](variables.tf#L356) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [options](variables.tf#L363) | Instance options. | <code title="object&#40;&#123;&#10;  advanced_machine_features &#61; optional&#40;object&#40;&#123;&#10;    enable_nested_virtualization &#61; optional&#40;bool&#41;&#10;    enable_turbo_mode            &#61; optional&#40;bool&#41;&#10;    enable_uefi_networking       &#61; optional&#40;bool&#41;&#10;    performance_monitoring_unit  &#61; optional&#40;string&#41;&#10;    threads_per_core             &#61; optional&#40;number&#41;&#10;    visible_core_count           &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  allow_stopping_for_update  &#61; optional&#40;bool, true&#41;&#10;  deletion_protection        &#61; optional&#40;bool, false&#41;&#10;  key_revocation_action_type &#61; optional&#40;string&#41;&#10;  graceful_shutdown &#61; optional&#40;object&#40;&#123;&#10;    enabled           &#61; optional&#40;bool, false&#41;&#10;    max_duration_secs &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  max_run_duration &#61; optional&#40;object&#40;&#123;&#10;    nanos   &#61; optional&#40;number&#41;&#10;    seconds &#61; number&#10;  &#125;&#41;&#41;&#10;  node_affinities &#61; optional&#40;map&#40;object&#40;&#123;&#10;    values &#61; list&#40;string&#41;&#10;    in     &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  spot               &#61; optional&#40;bool, false&#41;&#10;  termination_action &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update  &#61; true&#10;  deletion_protection        &#61; false&#10;  spot                       &#61; false&#10;  termination_action         &#61; null&#10;  key_revocation_action_type &#61; &#34;NONE&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_number](variables.tf#L435) | Project number. Used in tag bindings to avoid a permadiff. | <code>string</code> |  | <code>null</code> |
-| [resource_policies](variables.tf#L441) | Resource policies to attach to the instance or template. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [scratch_disks](variables.tf#L448) | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [service_account](variables.tf#L460) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code title="object&#40;&#123;&#10;  auto_create &#61; optional&#40;bool, false&#41;&#10;  email       &#61; optional&#40;string&#41;&#10;  scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [shielded_config](variables.tf#L470) | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; optional&#40;bool, true&#41;&#10;  enable_vtpm                 &#61; optional&#40;bool, true&#41;&#10;  enable_integrity_monitoring &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [snapshot_schedules](variables.tf#L480) | Snapshot schedule resource policies that can be attached to disks. | <code title="map&#40;object&#40;&#123;&#10;  schedule &#61; object&#40;&#123;&#10;    daily &#61; optional&#40;object&#40;&#123;&#10;      days_in_cycle &#61; number&#10;      start_time    &#61; string&#10;    &#125;&#41;&#41;&#10;    hourly &#61; optional&#40;object&#40;&#123;&#10;      hours_in_cycle &#61; number&#10;      start_time     &#61; string&#10;    &#125;&#41;&#41;&#10;    weekly &#61; optional&#40;list&#40;object&#40;&#123;&#10;      day        &#61; string&#10;      start_time &#61; string&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  retention_policy &#61; optional&#40;object&#40;&#123;&#10;    max_retention_days         &#61; number&#10;    on_source_disk_delete_keep &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  snapshot_properties &#61; optional&#40;object&#40;&#123;&#10;    chain_name        &#61; optional&#40;string&#41;&#10;    guest_flush       &#61; optional&#40;bool&#41;&#10;    labels            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    storage_locations &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L523) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings_immutable](variables.tf#L530) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L544) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [boot_disk](variables.tf#L92) | Boot disk properties. Initialize params are ignored when source is set. | <code title="object&#40;&#123;&#10;  auto_delete       &#61; optional&#40;bool, true&#41;&#10;  snapshot_schedule &#61; optional&#40;list&#40;string&#41;&#41;&#10;  initialize_params &#61; optional&#40;object&#40;&#123;&#10;    architecture &#61; optional&#40;string&#41;&#10;    size         &#61; optional&#40;number, 10&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;    hyperdisk &#61; optional&#40;object&#40;&#123;&#10;      provisioned_iops       &#61; optional&#40;number&#41;&#10;      provisioned_throughput &#61; optional&#40;number&#41; &#35; in MiB&#47;s&#10;      storage_pool           &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  source &#61; optional&#40;object&#40;&#123;&#10;    image    &#61; optional&#40;string&#41;&#10;    snapshot &#61; optional&#40;string&#41;&#10;    attach   &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123; image &#61; &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34; &#125;&#41;&#10;  use_independent_disk &#61; optional&#40;object&#40;&#123;&#10;    name &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [can_ip_forward](variables.tf#L139) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
+| [confidential_compute](variables.tf#L145) | Enable Confidential Compute for these instances. | <code>bool</code> |  | <code>false</code> |
+| [context](variables.tf#L151) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  addresses      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  subnets        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [create_template](variables.tf#L168) | Create instance template instead of instances. Defaults to a global template. | <code title="object&#40;&#123;&#10;  regional &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L177) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
+| [enable_display](variables.tf#L183) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
+| [encryption](variables.tf#L189) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;  encrypt_boot            &#61; optional&#40;bool, false&#41;&#10;  disk_encryption_key_raw &#61; optional&#40;string&#41;&#10;  kms_key_self_link       &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [gpu](variables.tf#L199) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code title="object&#40;&#123;&#10;  count &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [group](variables.tf#L234) | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;  named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [hostname](variables.tf#L242) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
+| [iam](variables.tf#L248) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [instance_schedule](variables.tf#L254) | Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null. Set active to null to dtach a policy from vm before destroying. | <code title="object&#40;&#123;&#10;  active          &#61; optional&#40;bool, true&#41;&#10;  description     &#61; optional&#40;string&#41;&#10;  expiration_time &#61; optional&#40;string&#41;&#10;  start_time      &#61; optional&#40;string&#41;&#10;  timezone        &#61; optional&#40;string, &#34;UTC&#34;&#41;&#10;  vm_start        &#61; optional&#40;string&#41;&#10;  vm_stop         &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [instance_type](variables.tf#L278) | Instance type. | <code>string</code> |  | <code>&#34;e2-micro&#34;</code> |
+| [kms_autokeys](variables.tf#L284) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code title="map&#40;object&#40;&#123;&#10;  location               &#61; optional&#40;string&#41;&#10;  resource_type_selector &#61; optional&#40;string, &#34;compute.googleapis.com&#47;Disk&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L302) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [metadata](variables.tf#L308) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [metadata_startup_script](variables.tf#L314) | Instance startup script. Will trigger recreation on change, even after importing. | <code>string</code> |  | <code>null</code> |
+| [min_cpu_platform](variables.tf#L321) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
+| [network_attached_interfaces](variables.tf#L332) | Network interfaces using network attachments. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [network_tag_bindings](variables.tf#L360) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [options](variables.tf#L367) | Instance options. | <code title="object&#40;&#123;&#10;  advanced_machine_features &#61; optional&#40;object&#40;&#123;&#10;    enable_nested_virtualization &#61; optional&#40;bool&#41;&#10;    enable_turbo_mode            &#61; optional&#40;bool&#41;&#10;    enable_uefi_networking       &#61; optional&#40;bool&#41;&#10;    performance_monitoring_unit  &#61; optional&#40;string&#41;&#10;    threads_per_core             &#61; optional&#40;number&#41;&#10;    visible_core_count           &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  allow_stopping_for_update  &#61; optional&#40;bool, true&#41;&#10;  deletion_protection        &#61; optional&#40;bool, false&#41;&#10;  key_revocation_action_type &#61; optional&#40;string&#41;&#10;  graceful_shutdown &#61; optional&#40;object&#40;&#123;&#10;    enabled           &#61; optional&#40;bool, false&#41;&#10;    max_duration_secs &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  max_run_duration &#61; optional&#40;object&#40;&#123;&#10;    nanos   &#61; optional&#40;number&#41;&#10;    seconds &#61; number&#10;  &#125;&#41;&#41;&#10;  node_affinities &#61; optional&#40;map&#40;object&#40;&#123;&#10;    values &#61; list&#40;string&#41;&#10;    in     &#61; optional&#40;bool, true&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  spot               &#61; optional&#40;bool, false&#41;&#10;  termination_action &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update  &#61; true&#10;  deletion_protection        &#61; false&#10;  spot                       &#61; false&#10;  termination_action         &#61; null&#10;  key_revocation_action_type &#61; &#34;NONE&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_number](variables.tf#L439) | Project number. Used in tag bindings to avoid a permadiff. | <code>string</code> |  | <code>null</code> |
+| [resource_policies](variables.tf#L445) | Resource policies to attach to the instance or template. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [scratch_disks](variables.tf#L452) | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_account](variables.tf#L464) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code title="object&#40;&#123;&#10;  auto_create &#61; optional&#40;bool, false&#41;&#10;  email       &#61; optional&#40;string&#41;&#10;  scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [shielded_config](variables.tf#L474) | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; optional&#40;bool, true&#41;&#10;  enable_vtpm                 &#61; optional&#40;bool, true&#41;&#10;  enable_integrity_monitoring &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [snapshot_schedules](variables.tf#L484) | Snapshot schedule resource policies that can be attached to disks. | <code title="map&#40;object&#40;&#123;&#10;  schedule &#61; object&#40;&#123;&#10;    daily &#61; optional&#40;object&#40;&#123;&#10;      days_in_cycle &#61; number&#10;      start_time    &#61; string&#10;    &#125;&#41;&#41;&#10;    hourly &#61; optional&#40;object&#40;&#123;&#10;      hours_in_cycle &#61; number&#10;      start_time     &#61; string&#10;    &#125;&#41;&#41;&#10;    weekly &#61; optional&#40;list&#40;object&#40;&#123;&#10;      day        &#61; string&#10;      start_time &#61; string&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  retention_policy &#61; optional&#40;object&#40;&#123;&#10;    max_retention_days         &#61; number&#10;    on_source_disk_delete_keep &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  snapshot_properties &#61; optional&#40;object&#40;&#123;&#10;    chain_name        &#61; optional&#40;string&#41;&#10;    guest_flush       &#61; optional&#40;bool&#41;&#10;    labels            &#61; optional&#40;map&#40;string&#41;&#41;&#10;    storage_locations &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L527) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings_immutable](variables.tf#L534) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L548) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
