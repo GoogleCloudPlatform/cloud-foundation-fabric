@@ -354,6 +354,42 @@
         }
       }
     },
+    "route_policy_term": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "match",
+        "priority"
+      ],
+      "properties": {
+        "action": {
+          "type": "object",
+          "required": [
+            "expression"
+          ],
+          "properties": {
+            "expression": "string",
+            "title": "string",
+            "description": "string"
+          }
+        },
+        "match": {
+          "type": "object",
+          "required": [
+            "expression"
+          ],
+          "properties": {
+            "expression": "string",
+            "title": "string",
+            "description": "string"
+          }
+        },
+        "priority": {
+          "type": "number"
+        }
+      }
+    },
     "routes": {
       "type": "object",
       "patternProperties": {
@@ -419,6 +455,25 @@
                   "patternProperties": {
                     ".*": {
                       "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "route_policies": {
+              "type": "object",
+              "patternProperties": {
+                "^[a-z0-9-]+$": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "terms": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/route_policy_term"
+                      }
                     }
                   }
                 }
