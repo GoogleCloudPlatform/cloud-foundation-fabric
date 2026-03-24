@@ -135,6 +135,8 @@ resource "google_compute_router_peer" "default" {
   interface                 = google_compute_router_interface.default[0].name
   advertised_route_priority = var.dedicated_interconnect_config.bgp_priority
   advertise_mode            = "CUSTOM"
+  export_policies           = try(var.dedicated_interconnect_config.export_policies, null)
+  import_policies           = try(var.dedicated_interconnect_config.import_policies, null)
 
   dynamic "advertised_ip_ranges" {
     for_each = var.ipsec_gateway_ip_ranges

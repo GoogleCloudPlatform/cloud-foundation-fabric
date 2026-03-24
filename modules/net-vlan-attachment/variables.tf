@@ -36,11 +36,13 @@ variable "dedicated_interconnect_config" {
   description = "Dedicated interconnect configuration."
   type = object({
     # Possible values @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_interconnect_attachment#bandwidth  
-    bandwidth    = optional(string, "BPS_10G")
-    bgp_range    = optional(string)
-    bgp_priority = optional(number)
-    interconnect = string
-    vlan_tag     = string
+    bandwidth       = optional(string, "BPS_10G")
+    bgp_range       = optional(string)
+    bgp_priority    = optional(number)
+    export_policies = optional(list(string))
+    import_policies = optional(list(string))
+    interconnect    = string
+    vlan_tag        = string
   })
   validation {
     condition     = var.dedicated_interconnect_config == null ? true : contains(["BPS_50M", "BPS_100M", "BPS_200M", "BPS_300M", "BPS_400M", "BPS_500M", "BPS_1G", "BPS_2G", "BPS_5G", "BPS_10G", "BPS_20G", "BPS_50G", "BPS_100G", "BPS_400G"], var.dedicated_interconnect_config.bandwidth)
