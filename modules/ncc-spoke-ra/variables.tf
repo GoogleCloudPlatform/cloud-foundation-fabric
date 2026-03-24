@@ -67,10 +67,10 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string)
     }))
-    ip_interface0   = string
-    ip_interface1   = string
-    keepalive       = optional(number)
-    peer_asn        = number
+    ip_interface0 = string
+    ip_interface1 = string
+    keepalive     = optional(number)
+    peer_asn      = number
     route_policies = optional(map(object({
       type = string
       terms = list(object({

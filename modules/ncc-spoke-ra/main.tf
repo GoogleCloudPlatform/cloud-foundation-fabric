@@ -111,7 +111,7 @@ resource "google_compute_router_peer" "peer_0" {
   router_appliance_instance = each.value.vm
   export_policies           = each.value.export_policies
   import_policies           = each.value.import_policies
-  
+
   depends_on = [
     google_network_connectivity_spoke.spoke-ra,
     google_compute_router_route_policy.default
@@ -160,10 +160,10 @@ resource "google_compute_router_route_policy" "default" {
         location    = try(terms.value.match.location, null)
       }
       actions {
-        expression  = actions.value.expression
-        title       = try(actions.value.title, null)
-        description = try(actions.value.description, null)
-        location    = try(actions.value.location, null)
+        expression  = terms.value.actions.expression
+        title       = try(terms.value.actions.title, null)
+        description = try(terms.value.actions.description, null)
+        location    = try(terms.value.actions.location, null)
       }
     }
   }
@@ -172,6 +172,14 @@ resource "google_compute_router_route_policy" "default" {
     precondition {
       condition     = contains(["IMPORT", "EXPORT"], each.value.type)
       error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
+    }
+    precondition {
+      condition     = length(try(each.value.terms, [])) == length(distinct([for t in try(each.value.terms, []) : t.priority]))
+      error_message = "Route policy term priorities must be unique."
+    }
+    precondition {
+      condition     = alltrue([for t in try(each.value.terms, []) : t.priority >= 0 && t.priority < 231])
+      error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive)."
     }
   }
 
