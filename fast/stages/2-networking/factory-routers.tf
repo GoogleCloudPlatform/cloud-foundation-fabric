@@ -33,6 +33,20 @@ locals {
           advertised_groups = try(router_config.custom_advertise.all_subnets, false) ? ["ALL_SUBNETS"] : []
           keepalive         = try(router_config.keepalive, null)
           asn               = try(router_config.asn, null)
+          route_policies    = try(router_config.route_policies, {})
+        })
+      }
+    ]
+  ])...)
+
+  router_route_policies = merge(flatten([
+    for router_key, router_config in local.router_configs : [
+      for policy_key, policy_config in router_config.route_policies : {
+        "${router_key}/${policy_key}" = merge(policy_config, {
+          router_name = replace(router_key, "/", "-")
+          project     = lookup(local.ctx_projects.project_ids, replace(router_config.project_id, "$project_ids:", ""), router_config.project_id)
+          region      = lookup(local.ctx.locations, replace(router_config.region, "$locations:", ""), router_config.region)
+          name        = policy_key
         })
       }
     ]
@@ -71,4 +85,49 @@ resource "google_compute_router" "default" {
     keepalive_interval = each.value.keepalive
     asn                = each.value.asn
   }
+}
+
+resource "google_compute_router_route_policy" "default" {
+  for_each = local.router_route_policies
+  project  = each.value.project
+  region   = each.value.region
+  router   = each.value.router_name
+  name     = each.value.name
+  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+
+  dynamic "terms" {
+    for_each = try(each.value.terms, [])
+    content {
+      priority = terms.value.priority
+      match {
+        expression  = terms.value.match.expression
+        title       = try(terms.value.match.title, null)
+        description = try(terms.value.match.description, null)
+        location    = try(terms.value.match.location, null)
+      }
+      actions {
+        expression  = actions.value.expression
+        title       = try(actions.value.title, null)
+        description = try(actions.value.description, null)
+        location    = try(actions.value.location, null)
+      }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = contains(["IMPORT", "EXPORT"], each.value.type)
+      error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
+    }
+    precondition {
+      condition     = length(try(each.value.terms, [])) == length(distinct([for t in try(each.value.terms, []) : t.priority]))
+      error_message = "Route policy term priorities must be unique."
+    }
+    precondition {
+      condition     = alltrue([for t in try(each.value.terms, []) : t.priority >= 0 && t.priority < 231])
+      error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive)."
+    }
+  }
+
+  depends_on = [google_compute_router.default]
 }
