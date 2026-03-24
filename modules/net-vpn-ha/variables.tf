@@ -78,11 +78,41 @@ variable "router_config" {
       all_subnets = bool
       ip_ranges   = map(string)
     }))
+    route_policies = optional(map(object({
+      type = string
+      terms = list(object({
+        priority = number
+        match = optional(object({
+          expression  = string
+          title       = optional(string)
+          description = optional(string)
+          location    = optional(string)
+        }))
+        actions = optional(object({
+          expression  = string
+          title       = optional(string)
+          description = optional(string)
+          location    = optional(string)
+        }))
+      }))
+    })), {})
     keepalive     = optional(number)
     name          = optional(string)
     override_name = optional(string)
   })
   nullable = false
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.router_config.route_policies : [
+        for t in v.terms :
+        t.priority >= 0 && t.priority < 231
+      ]
+      ])) && alltrue([
+      for k, v in var.router_config.route_policies :
+      length(v.terms) == length(distinct([for t in v.terms : t.priority]))
+    ])
+    error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive) and unique within the policy."
+  }
 }
 
 variable "tunnels" {
@@ -104,6 +134,8 @@ variable "tunnels" {
         name = string
         key  = optional(string)
       }))
+      export_policies = optional(list(string))
+      import_policies = optional(list(string))
       ipv6 = optional(object({
         nexthop_address      = optional(string)
         peer_nexthop_address = optional(string)
