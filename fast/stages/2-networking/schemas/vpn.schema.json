@@ -114,6 +114,18 @@
             },
             "asn": {
               "type": "number"
+            },
+            "import_policies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "export_policies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         },
