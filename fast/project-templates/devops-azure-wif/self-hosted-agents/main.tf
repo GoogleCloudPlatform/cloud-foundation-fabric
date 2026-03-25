@@ -73,7 +73,7 @@ module "instance" {
   project_id    = var.project_id
   zone          = "${var.location}-${var.instance_config.zone}"
   name          = "${var.name}-agent"
-  instance_type = "e2-micro"
+  machine_type = "e2-micro"
   boot_disk = {
     auto_delete = false
     initialize_params = {
