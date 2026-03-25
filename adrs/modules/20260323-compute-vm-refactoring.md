@@ -90,12 +90,12 @@ A validation rule will ensure that if `source` is provided, exactly one of its a
 ```hcl
 variable "boot_disk" {
   type = object({
+    architecture      = optional(string)
     auto_delete       = optional(bool, true)
     snapshot_schedule = optional(list(string))
     initialize_params = optional(object({
-      architecture = optional(string)
-      size         = optional(number, 10)
-      type         = optional(string, "pd-balanced")
+      size = optional(number, 10)
+      type = optional(string, "pd-balanced")
       hyperdisk = optional(object({
         provisioned_iops       = optional(number)
         provisioned_throughput = optional(number) # in MiB/s
@@ -116,12 +116,11 @@ variable "boot_disk" {
 
 variable "attached_disks" {
   type = map(object({
-    auto_delete       = optional(bool, false)
-    device_name       = optional(string)
-    mode              = optional(string, "READ_WRITE")
-    name              = optional(string)
+    auto_delete = optional(bool, true) # applies only to vm templates
+    device_name = optional(string)
+    mode        = optional(string, "READ_WRITE")
+    name        = optional(string)
     initialize_params = optional(object({
-      architecture = optional(string)
       replica_zone = optional(string)
       size         = optional(number, 10)
       type         = optional(string, "pd-balanced")
@@ -228,24 +227,24 @@ The `google_compute_instance.scheduling` block in Terraform handles spot instanc
 variable "scheduling_config" {
   description = "Scheduling configuration for the instance."
   type = object({
-    automatic_restart           = optional(bool) # Defaults to !spot
-    instance_termination_action = optional(string)
-    local_ssd_recovery_timeout  = optional(object({ # NEW
+    automatic_restart    = optional(bool)   # Defaults to !spot
+    maintenance_interval = optional(string) # NEW
+    min_node_cpus        = optional(number) # NEW
+    on_host_maintenance  = optional(string) # Defaults to MIGRATE or TERMINATE based on GPU/Spot
+    provisioning_model   = optional(string) # "SPOT" or "STANDARD"
+    termination_action   = optional(string)
+    local_ssd_recovery_timeout = optional(object({ # NEW
       nanos   = optional(number)
       seconds = number
     }))
-    maintenance_interval        = optional(string) # NEW
     max_run_duration = optional(object({
       nanos   = optional(number)
       seconds = number
     }))
-    min_node_cpus               = optional(number) # NEW
     node_affinities = optional(map(object({
       values = list(string)
       in     = optional(bool, true)
     })), {})
-    on_host_maintenance         = optional(string) # Defaults to MIGRATE or TERMINATE based on GPU/Spot
-    provisioning_model          = optional(string) # "SPOT" or "STANDARD"
   })
   default = {}
 }
@@ -256,7 +255,7 @@ variable "scheduling_config" {
 ```hcl
 scheduling_config = {
   provisioning_model          = "SPOT"
-  instance_termination_action = "STOP"
+  termination_action   = "STOP"
   maintenance_interval        = "PERIODIC"
   node_affinities = {
     "compute.googleapis.com/node-group-name" = {
@@ -328,6 +327,7 @@ variable "network_interfaces" {
     subnetwork                  = string
     alias_ips                   = optional(map(string), {})
     nat                         = optional(bool, false)
+    network_tier                = optional(string)
     nic_type                    = optional(string)
     stack_type                  = optional(string)
     queue_count                 = optional(number) # NEW
@@ -336,7 +336,6 @@ variable "network_interfaces" {
       internal = optional(string)
       external = optional(string)
     }), null)
-    network_tier = optional(string)
   }))
 }
 ```
