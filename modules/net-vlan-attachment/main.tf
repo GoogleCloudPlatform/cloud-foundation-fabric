@@ -172,3 +172,36 @@ resource "google_compute_router_peer" "default" {
 resource "random_id" "secret" {
   byte_length = 12
 }
+
+resource "google_compute_router_route_policy" "default" {
+  for_each = var.router_config.route_policies
+  project  = var.project_id
+  region   = var.region
+  router   = local.router
+  name     = each.key
+  type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
+
+  dynamic "terms" {
+    for_each = try(each.value.terms, [])
+    content {
+      priority = terms.value.priority
+      match {
+        expression  = terms.value.match.expression
+        title       = try(terms.value.match.title, null)
+        description = try(terms.value.match.description, null)
+        location    = try(terms.value.match.location, null)
+      }
+      actions {
+        expression  = terms.value.actions.expression
+        title       = try(terms.value.actions.title, null)
+        description = try(terms.value.actions.description, null)
+        location    = try(terms.value.actions.location, null)
+      }
+    }
+  }
+
+  depends_on = [
+    google_compute_router.encrypted,
+    google_compute_router.unencrypted,
+  ]
+}
