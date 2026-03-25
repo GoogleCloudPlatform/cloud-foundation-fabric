@@ -77,17 +77,31 @@ variable "router_config" {
     }))
   })
   nullable = false
+  
   validation {
     condition = alltrue(flatten([
       for k, v in var.router_config.route_policies : [
         for t in v.terms :
         t.priority >= 0 && t.priority < 231
       ]
-      ])) && alltrue([
+    ]))
+    error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive)."
+  }
+
+  validation {
+    condition = alltrue([
       for k, v in var.router_config.route_policies :
       length(v.terms) == length(distinct([for t in v.terms : t.priority]))
     ])
-    error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive) and unique within the policy."
+    error_message = "Route policy term priority must be unique within the policy."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.router_config.route_policies :
+      contains(["IMPORT", "EXPORT"], v.type)
+    ])
+    error_message = "Route policy type must be IMPORT or EXPORT."
   }
 }
 
