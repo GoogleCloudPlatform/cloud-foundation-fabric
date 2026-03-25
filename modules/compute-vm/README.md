@@ -201,6 +201,7 @@ module "vm-disks-example" {
   }]
   attached_disks = {
     repd = {
+      auto_delete = false
       initialize_params = {
         replica_zone = "${var.region}-c"
       }
@@ -889,9 +890,7 @@ module "cos-test" {
     }
   }
   attached_disks = {
-    disk-0 = {
-      auto_delete = true
-    }
+    disk-0 = {}
   }
   service_account = {
     email = module.iam-service-account.email
@@ -1061,16 +1060,14 @@ module "instance" {
     }
     snapshot_schedule = ["boot"]
   }
-  attached_disks = [
-    {
-      name = "disk-1"
-      size = 10
+  attached_disks = {
+    disk-1 = {
       initialize_params = {
         replica_zone = "${var.region}-c"
       }
       snapshot_schedule = ["data"]
     }
-  ]
+  }
   snapshot_schedules = {
     boot = {
       schedule = {
@@ -1182,7 +1179,7 @@ module "sole-tenancy" {
 | [network_interfaces](variables.tf#L308) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  alias_ips  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  nat        &#61; optional&#40;bool, false&#41;&#10;  nic_type   &#61; optional&#40;string&#41;&#10;  stack_type &#61; optional&#40;string&#41;&#10;  addresses &#61; optional&#40;object&#40;&#123;&#10;    internal &#61; optional&#40;string&#41;&#10;    external &#61; optional&#40;string&#41;&#10;  &#125;&#41;, null&#41;&#10;  network_tier &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L403) | Project id. | <code>string</code> | ✓ |  |
 | [zone](variables.tf#L523) | Compute zone. | <code>string</code> | ✓ |  |
-| [attached_disks](variables.tf#L17) | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code title="map&#40;object&#40;&#123;&#10;  auto_delete &#61; optional&#40;bool, false&#41; &#35; applies only to vm templates&#10;  device_name &#61; optional&#40;string&#41;&#10;  mode &#61; optional&#40;string, &#34;READ_WRITE&#34;&#41;&#10;  name &#61; optional&#40;string&#41;&#10;  initialize_params &#61; optional&#40;object&#40;&#123;&#10;    architecture &#61; optional&#40;string&#41;&#10;    replica_zone &#61; optional&#40;string&#41;&#10;    size         &#61; optional&#40;number, 10&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;    hyperdisk &#61; optional&#40;object&#40;&#123;&#10;      provisioned_iops       &#61; optional&#40;number&#41;&#10;      provisioned_throughput &#61; optional&#40;number&#41; &#35; in MiB&#47;s&#10;      storage_pool           &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  snapshot_schedule &#61; optional&#40;list&#40;string&#41;&#41;&#10;  source &#61; optional&#40;object&#40;&#123;&#10;    attach &#61; optional&#40;string&#41;&#10;    image &#61; optional&#40;string&#41; &#35; not supported yet for repd&#10;    snapshot &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [attached_disks](variables.tf#L17) | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code title="map&#40;object&#40;&#123;&#10;  auto_delete &#61; optional&#40;bool, true&#41; &#35; applies only to vm templates&#10;  device_name &#61; optional&#40;string&#41;&#10;  mode &#61; optional&#40;string, &#34;READ_WRITE&#34;&#41;&#10;  name &#61; optional&#40;string&#41;&#10;  initialize_params &#61; optional&#40;object&#40;&#123;&#10;    architecture &#61; optional&#40;string&#41;&#10;    replica_zone &#61; optional&#40;string&#41;&#10;    size         &#61; optional&#40;number, 10&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;    hyperdisk &#61; optional&#40;object&#40;&#123;&#10;      provisioned_iops       &#61; optional&#40;number&#41;&#10;      provisioned_throughput &#61; optional&#40;number&#41; &#35; in MiB&#47;s&#10;      storage_pool           &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  snapshot_schedule &#61; optional&#40;list&#40;string&#41;&#41;&#10;  source &#61; optional&#40;object&#40;&#123;&#10;    attach &#61; optional&#40;string&#41;&#10;    image &#61; optional&#40;string&#41; &#35; not supported yet for repd&#10;    snapshot &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [boot_disk](variables.tf#L57) | Boot disk properties. Initialize params are ignored when source is set. | <code title="object&#40;&#123;&#10;  auto_delete       &#61; optional&#40;bool, true&#41;&#10;  snapshot_schedule &#61; optional&#40;list&#40;string&#41;&#41;&#10;  initialize_params &#61; optional&#40;object&#40;&#123;&#10;    architecture &#61; optional&#40;string&#41;&#10;    size         &#61; optional&#40;number, 10&#41;&#10;    type         &#61; optional&#40;string, &#34;pd-balanced&#34;&#41;&#10;    hyperdisk &#61; optional&#40;object&#40;&#123;&#10;      provisioned_iops       &#61; optional&#40;number&#41;&#10;      provisioned_throughput &#61; optional&#40;number&#41; &#35; in MiB&#47;s&#10;      storage_pool           &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  source &#61; optional&#40;object&#40;&#123;&#10;    attach &#61; optional&#40;string&#41;&#10;    disk   &#61; optional&#40;string&#41;&#10;    image  &#61; optional&#40;string&#41;&#10;    snapshot &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123; image &#61; &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34; &#125;&#41;&#10;  use_independent_disk &#61; optional&#40;object&#40;&#123;&#10;    name &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [can_ip_forward](variables.tf#L108) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
 | [confidential_compute](variables.tf#L114) | Enable Confidential Compute for these instances. | <code>bool</code> |  | <code>false</code> |

@@ -29,7 +29,7 @@
     - [Resource Policies (Snapshots and Schedules)](#resource-policies-snapshots-and-schedules)
   - [5. Templates (`create_template`) Strategy](#5-templates-create_template-strategy)
     - [Key Refactoring Points for Templates](#key-refactoring-points-for-templates)
-- [Plan](#plan)
+- [TODO](#todo)
 <!-- END TOC -->
 
 ## Status
@@ -75,52 +75,68 @@ To eliminate the confusing `source` (string) and `source_type` (string) variable
 
 ```hcl
 source = optional(object({
+  attach   = optional(string)
+  disk     = optional(string)
   image    = optional(string)
   snapshot = optional(string)
-  attach   = optional(string)
 }))
 ```
 
 **Validation:**
-A validation rule will ensure that if `source` is provided, exactly one of its attributes (`image`, `snapshot`, or `attach`) is non-null. If `source` is omitted entirely (for attached disks), it implies creating a blank disk.
+A validation rule will ensure that if `source` is provided, exactly one of its attributes is non-null. If `source` is omitted entirely (for attached disks), it implies creating a blank disk.
 
 **Updated Variable Structures:**
 
 ```hcl
 variable "boot_disk" {
   type = object({
-    auto_delete = optional(bool, true)
-    device_name = optional(string)
+    auto_delete       = optional(bool, true)
+    snapshot_schedule = optional(list(string))
     initialize_params = optional(object({
-      size                   = optional(number, 10)
-      type                   = optional(string, "pd-balanced")
-      provisioned_iops       = optional(number)
-      provisioned_throughput = optional(number)
+      architecture = optional(string)
+      size         = optional(number, 10)
+      type         = optional(string, "pd-balanced")
+      hyperdisk = optional(object({
+        provisioned_iops       = optional(number)
+        provisioned_throughput = optional(number) # in MiB/s
+        storage_pool           = optional(string)
+      }), {})
     }), {})
     source = optional(object({
+      attach   = optional(string)
+      disk     = optional(string)
       image    = optional(string)
       snapshot = optional(string)
-      attach   = optional(string)
     }), { image = "projects/debian-cloud/global/images/family/debian-11" })
+    use_independent_disk = optional(object({
+      name = optional(string)
+    }))
   })
 }
 
 variable "attached_disks" {
   type = map(object({
-    device_name = optional(string)
-    auto_delete = optional(bool, false)
-    mode        = optional(string, "READ_WRITE")
+    auto_delete       = optional(bool, false)
+    device_name       = optional(string)
+    mode              = optional(string, "READ_WRITE")
+    name              = optional(string)
     initialize_params = optional(object({
-      size                   = optional(number)
-      type                   = optional(string, "pd-balanced")
-      provisioned_iops       = optional(number)
-      provisioned_throughput = optional(number)
+      architecture = optional(string)
+      replica_zone = optional(string)
+      size         = optional(number, 10)
+      type         = optional(string, "pd-balanced")
+      hyperdisk = optional(object({
+        provisioned_iops       = optional(number)
+        provisioned_throughput = optional(number) # in MiB/s
+        storage_pool           = optional(string)
+      }), {})
     }), {})
+    snapshot_schedule = optional(list(string))
     source = optional(object({
+      attach   = optional(string)
       image    = optional(string)
       snapshot = optional(string)
-      attach   = optional(string)
-    }))
+    }), {})
   }))
 }
 ```
@@ -439,20 +455,20 @@ While this pattern is somewhat unusual in the Fabric codebase, we will keep the 
 2. **Attribute Parity:** All newly refactored attributes (`network_performance_tier`, `scheduling_config`, updated `confidential_compute`, and network interface enhancements) will be mapped directly into the respective blocks within both regional and global template resources.
 3. **Tags and Labels:** No architectural change here, but we will ensure that `tag_bindings_immutable` continues to map correctly to `resource_manager_tags`.
 
-## Plan
+## TODO
 
 Example tests will be adapted and run as part of each task iteration.
 
-1. **Task 1:** Update `variables.tf` to implement the new disk structures (`boot_disk` and `attached_disks`), polymorphic `source`, and disambiguate disk names.
-2. **Task 2:** Refactor `variables.tf` for feature grouping: rename `instance_type` to `machine_type`, add `scheduling_config`, `lifecycle_config`, `network_performance_tier`, and update `confidential_compute`.
-3. **Task 3:** Add new attributes to `network_interfaces` (`queue_count`, `internal_ipv6_prefix_length`).
-4. **Task 4:** Split `template.tf` into `template-zonal.tf` and `template-regional.tf`, extract `instance.tf` from `main.tf` to allow easy comparison of feature coverage.
-5. **Task 5:** Expand the `group` variable to support the `membership` attribute.
-6. **Task 6:** Update `instance.tf` and `outputs.tf` to consume the new variables (standalone VM implementation).
-7. **Task 7:** Update `tags.tf` and `resource-policies.tf` to work with the new `attached_disks` map instead of a list.
-8. **Task 8:** Update `template-zonal.tf` and `template-regional.tf` to align with the new disk schemas and map the new feature attributes.
-9. **Task 9:** Run integration tests and regenerate documentation (`python3 tools/tfdoc.py` and YAML test files updates).
-10. **Task 10.** Assess if disk-level encryption key overrides make sense, and if so implement them.
+- [x] **Task 1:** Update `variables.tf` to implement the new disk structures (`boot_disk` and `attached_disks`), polymorphic `source`, and disambiguate disk names.
+- [ ] **Task 2:** Refactor `variables.tf` for feature grouping: rename `instance_type` to `machine_type`, add `scheduling_config`, `lifecycle_config`, `network_performance_tier`, and update `confidential_compute`.
+- [ ] **Task 3:** Add new attributes to `network_interfaces` (`queue_count`, `internal_ipv6_prefix_length`).
+- [ ] **Task 4:** Split `template.tf` into `template-zonal.tf` and `template-regional.tf`, extract `instance.tf` from `main.tf` to allow easy comparison of feature coverage.
+- [ ] **Task 5:** Expand the `group` variable to support the `membership` attribute.
+- [ ] **Task 6:** Update `instance.tf` and `outputs.tf` to consume the new variables (standalone VM implementation).
+- [ ] **Task 7:** Update `tags.tf` and `resource-policies.tf` to work with the new `attached_disks` map instead of a list.
+- [ ] **Task 8:** Update `template-zonal.tf` and `template-regional.tf` to align with the new disk schemas and map the new feature attributes.
+- [ ] **Task 9:** Run integration tests and regenerate documentation (`python3 tools/tfdoc.py` and YAML test files updates).
+- [ ] **Task 10:** Assess if disk-level encryption key overrides make sense, and if so implement them.
 
 ## Addendum: Missing Disk Attributes
 

@@ -114,7 +114,6 @@ values:
       disk_name: disk-1
       disk_type: pd-balanced
       goog-terraform-provisioned: 'true'
-    interface: null
     labels:
       disk_name: disk-1
       disk_type: pd-balanced

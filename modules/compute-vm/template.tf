@@ -97,10 +97,14 @@ resource "google_compute_instance_template" "default" {
   dynamic "disk" {
     for_each = var.attached_disks
     content {
-      architecture          = disk.value.initialize_params.architecture
-      auto_delete           = disk.value.auto_delete
-      device_name           = coalesce(disk.value.device_name, disk.value.name, disk.key)
-      disk_name             = disk.value.source.attach == null ? disk.value.name : null
+      architecture = disk.value.initialize_params.architecture
+      auto_delete  = disk.value.auto_delete
+      device_name  = coalesce(disk.value.device_name, disk.value.name, disk.key)
+      disk_name = (
+        disk.value.source.attach == null
+        ? coalesce(disk.value.name, disk.key)
+        : null
+      )
       mode                  = disk.value.mode
       resource_manager_tags = var.tag_bindings_immutable
       source_image          = disk.value.source.image
@@ -324,10 +328,14 @@ resource "google_compute_region_instance_template" "default" {
   dynamic "disk" {
     for_each = var.attached_disks
     content {
-      architecture          = disk.value.initialize_params.architecture
-      auto_delete           = disk.value.auto_delete
-      device_name           = coalesce(disk.value.device_name, disk.value.name, disk.key)
-      disk_name             = disk.value.source.attach == null ? disk.value.name : null
+      architecture = disk.value.initialize_params.architecture
+      auto_delete  = disk.value.auto_delete
+      device_name  = coalesce(disk.value.device_name, disk.value.name, disk.key)
+      disk_name = (
+        disk.value.source.attach == null
+        ? coalesce(disk.value.name, disk.key)
+        : null
+      )
       mode                  = disk.value.mode
       resource_manager_tags = var.tag_bindings_immutable
       source_image          = disk.value.source.image
