@@ -315,8 +315,10 @@ module "win-template" {
   create_template = {}
   boot_disk = {
     initialize_params = {
-      image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
       size  = 70
+    }
+    source = {
+      image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
     }
   }
   network_interfaces = [{
