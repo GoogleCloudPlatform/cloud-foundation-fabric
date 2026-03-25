@@ -15,10 +15,10 @@
  */
 
 variable "attached_disks" {
-  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
+  description = "Additional disks. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = map(object({
-    auto_delete  = optional(bool, true) # applies only to vm templates
-    device_name  = optional(string)
+    auto_delete = optional(bool, true) # applies only to vm templates
+    device_name = optional(string)
     # auto_delete can only be specified dor READ_WRITE, force null otherwise
     mode = optional(string, "READ_WRITE")
     name = optional(string)

@@ -311,7 +311,7 @@ module "win-template" {
   project_id      = var.project_id
   zone            = "${var.region}-a"
   name            = "win-template"
-  instance_type   = "n2d-standard-2"
+  machine_type    = "n2d-standard-2"
   create_template = {}
   boot_disk = {
     initialize_params = {

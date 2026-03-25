@@ -287,12 +287,12 @@ module "cos-nginx" {
 }
 
 module "nginx-template" {
-  source        = "./fabric/modules/compute-vm"
-  project_id    = var.project_id
-  name          = "nginx-template"
-  zone          = "${var.region}-b"
-  tags          = ["http-server", "ssh"]
-  instance_type = "e2-small"
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  name         = "nginx-template"
+  zone         = "${var.region}-b"
+  tags         = ["http-server", "ssh"]
+  machine_type = "e2-small"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
@@ -339,12 +339,12 @@ module "cos-nginx" {
 }
 
 module "nginx-template" {
-  source        = "./fabric/modules/compute-vm"
-  project_id    = var.project_id
-  name          = "nginx-template"
-  zone          = "${var.region}-b"
-  tags          = ["http-server", "ssh"]
-  instance_type = "e2-small"
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  name         = "nginx-template"
+  zone         = "${var.region}-b"
+  tags         = ["http-server", "ssh"]
+  machine_type = "e2-small"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link

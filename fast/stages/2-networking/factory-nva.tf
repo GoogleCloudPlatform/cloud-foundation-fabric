@@ -47,7 +47,7 @@ locals {
               nva_def.auto_instance_config.image,
               "projects/debian-cloud/global/images/family/debian-12"
             )
-            instance_type = try(
+            machine_type = try(
               nva_def.auto_instance_config.instance_type, "e2-standard-4"
             )
             metadata = coalesce(
@@ -60,7 +60,7 @@ locals {
               }
             )
             attachments          = try(nva_def.auto_instance_config.nics, [])
-            confidential_compute = try(nva_def.auto_instance_config.confidential_compute, false)
+            confidential_compute = try(nva_def.auto_instance_config.confidential_compute, null)
             encryption           = try(nva_def.auto_instance_config.encryption, null)
             options              = try(nva_def.auto_instance_config.options, null)
             shielded_config      = try(nva_def.auto_instance_config.shielded_config, null)
@@ -117,7 +117,7 @@ module "nva-instance" {
   project_id     = each.value.project_id
   name           = "nva-${each.key}"
   zone           = each.value.zone
-  instance_type  = each.value.instance_type
+  machine_type   = each.value.machine_type
   tags           = each.value.tags
   can_ip_forward = true
   network_interfaces = [for k, v in each.value.attachments :

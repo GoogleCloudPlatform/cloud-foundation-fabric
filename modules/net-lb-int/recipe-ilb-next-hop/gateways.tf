@@ -15,12 +15,12 @@
  */
 
 module "gw" {
-  source        = "../../../modules/compute-vm"
-  for_each      = local.zones
-  project_id    = module.project.project_id
-  zone          = each.value
-  name          = "${var.prefix}-gw-${each.key}"
-  instance_type = "f1-micro"
+  source       = "../../../modules/compute-vm"
+  for_each     = local.zones
+  project_id   = module.project.project_id
+  zone         = each.value
+  name         = "${var.prefix}-gw-${each.key}"
+  machine_type = "f1-micro"
   boot_disk = {
     initialize_params = {
       image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
