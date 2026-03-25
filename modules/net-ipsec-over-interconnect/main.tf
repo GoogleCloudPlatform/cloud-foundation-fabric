@@ -185,22 +185,5 @@ resource "google_compute_router_route_policy" "default" {
     }
   }
 
-  lifecycle {
-    precondition {
-      condition     = contains(["IMPORT", "EXPORT"], each.value.type)
-      error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."
-    }
-    precondition {
-      condition     = length(try(each.value.terms, [])) == length(distinct([for t in try(each.value.terms, []) : t.priority]))
-      error_message = "Route policy term priorities must be unique."
-    }
-    precondition {
-      condition     = alltrue([for t in try(each.value.terms, []) : t.priority >= 0 && t.priority < 231])
-      error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive)."
-    }
-  }
-
-  depends_on = [
-    google_compute_router.default
-  ]
+  depends_on = [google_compute_router.default]
 }
