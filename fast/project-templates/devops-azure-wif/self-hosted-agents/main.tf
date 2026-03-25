@@ -68,11 +68,11 @@ module "secret" {
 }
 
 module "instance" {
-  source        = "../../../../modules/compute-vm"
-  count         = local.create_instance ? 1 : 0
-  project_id    = var.project_id
-  zone          = "${var.location}-${var.instance_config.zone}"
-  name          = "${var.name}-agent"
+  source       = "../../../../modules/compute-vm"
+  count        = local.create_instance ? 1 : 0
+  project_id   = var.project_id
+  zone         = "${var.location}-${var.instance_config.zone}"
+  name         = "${var.name}-agent"
   machine_type = "e2-micro"
   boot_disk = {
     auto_delete = false
