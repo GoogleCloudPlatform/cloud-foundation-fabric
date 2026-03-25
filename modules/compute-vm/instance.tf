@@ -198,6 +198,13 @@ resource "google_compute_instance" "default" {
     }
   }
 
+  dynamic "network_performance_config" {
+    for_each = var.network_performance_tier != null ? [""] : []
+    content {
+      total_egress_bandwidth_tier = var.network_performance_tier
+    }
+  }
+
   scheduling {
     automatic_restart = coalesce(
       var.scheduling_config.automatic_restart, var.scheduling_config.provisioning_model != "SPOT"
