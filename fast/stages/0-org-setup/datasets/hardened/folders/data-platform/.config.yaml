@@ -15,10 +15,11 @@
 # yaml-language-server: $schema=../../../../schemas/folder.schema.json
 
 name: Data Platform
-org_policies:
-  custom.iamDisableAdminServiceAccount:
-    rules:
-      - enforce: false
-  custom.iamDisableProjectServiceAccountImpersonationRoles:
-    rules:
-      - enforce: false
+# To enforce once the constraints are provisionned
+# org_policies:
+#   custom.iamDisableAdminServiceAccount:
+#     rules:
+#       - enforce: false
+#   custom.iamDisableProjectServiceAccountImpersonationRoles:
+#     rules:
+#       - enforce: false

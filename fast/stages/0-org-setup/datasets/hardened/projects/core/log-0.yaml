@@ -71,6 +71,7 @@ org_policies:
     rules:
       - allow:
           all: true
-  custom.storageRequireBucketObjectVersionning:
-    rules:
-      - enforce: true
+  # To enforce once the constraints are provisionned
+  # custom.storageRequireBucketObjectVersionning:
+  #   rules:
+  #     - enforce: true

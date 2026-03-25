@@ -772,6 +772,15 @@ module "org" {
               role   = "roles/resourcemanager.tagUser"
               member = "group:app2-team@example.org"
             }
+            delegate_user_app2 = {
+              role   = "roles/resourcemanager.tagAdmin"
+              member = "group:app2-team@example.org"
+              condition = {
+                expression  = "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\"roles/resourcemanager.tagUser\"])"
+                title       = "only_taguser_delegation"
+                description = "Allow the IaC data service account to grant the tagUser role to any principal on projects it manages."
+              }
+            }
           }
         }
         prod = {
@@ -800,7 +809,7 @@ module "org" {
     env-prod = module.org.tag_values["environment/prod"].id
   }
 }
-# tftest modules=1 resources=10 inventory=tags.yaml
+# tftest modules=1 resources=11 inventory=tags.yaml
 ```
 
 You can also define network tags, through a dedicated variable *network_tags*:
