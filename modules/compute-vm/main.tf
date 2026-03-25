@@ -15,8 +15,10 @@
  */
 
 locals {
-  _region     = join("-", slice(split("-", local.zone), 0, 2))
-  advanced_mf = var.options.advanced_machine_features
+  _region = join("-", slice(split("-", local.zone), 0, 2))
+  advanced_mf = anytrue([
+    for k, v in var.machine_features_config : v != null
+  ])
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
@@ -28,10 +30,13 @@ locals {
   })
   ctx_p = "$"
   gpu   = var.gpu != null
-  on_host_maintenance = (
-    var.options.spot || var.confidential_compute || local.gpu
-    ? "TERMINATE"
-    : "MIGRATE"
+  on_host_maintenance = coalesce(
+    var.scheduling_config.on_host_maintenance,
+    (
+      var.scheduling_config.provisioning_model == "SPOT" ||
+      var.confidential_compute != null ||
+      local.gpu
+    ) ? "TERMINATE" : "MIGRATE"
   )
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   region     = lookup(local.ctx.locations, local._region, local._region)
@@ -61,7 +66,9 @@ locals {
     )
   }
   termination_action = (
-    var.options.spot || var.options.max_run_duration != null ? coalesce(var.options.termination_action, "STOP") : null
+    var.scheduling_config.provisioning_model == "SPOT" || var.scheduling_config.max_run_duration != null
+    ? coalesce(var.scheduling_config.termination_action, "STOP")
+    : null
   )
   zone = lookup(local.ctx.locations, var.zone, var.zone)
 }

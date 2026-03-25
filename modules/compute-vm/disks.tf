@@ -37,7 +37,7 @@ resource "google_compute_disk" "boot" {
     var.boot_disk.use_independent_disk.name, "${var.name}-boot"
   )
   image                  = var.boot_disk.source.image
-  architecture           = var.boot_disk.initialize_params.architecture
+  architecture           = var.boot_disk.architecture
   type                   = var.boot_disk.initialize_params.type
   size                   = var.boot_disk.initialize_params.size
   provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
@@ -70,7 +70,7 @@ resource "google_compute_disk" "disks" {
   name                   = coalesce(each.value.name, "${var.name}-${each.key}")
   type                   = each.value.initialize_params.type
   size                   = each.value.initialize_params.size
-  architecture           = each.value.initialize_params.architecture
+  architecture           = var.boot_disk.architecture
   image                  = each.value.source.image
   provisioned_iops       = each.value.initialize_params.hyperdisk.provisioned_iops
   provisioned_throughput = each.value.initialize_params.hyperdisk.provisioned_throughput

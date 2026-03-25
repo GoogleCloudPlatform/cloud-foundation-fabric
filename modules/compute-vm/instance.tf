@@ -23,12 +23,12 @@ resource "google_compute_instance" "default" {
   hostname                   = var.hostname
   description                = var.description
   tags                       = var.tags
-  machine_type               = var.instance_type
+  machine_type               = var.machine_type
   min_cpu_platform           = var.min_cpu_platform
   can_ip_forward             = var.can_ip_forward
-  allow_stopping_for_update  = var.options.allow_stopping_for_update
-  deletion_protection        = var.options.deletion_protection
-  key_revocation_action_type = var.options.key_revocation_action_type
+  allow_stopping_for_update  = var.lifecycle_config.allow_stopping_for_update
+  deletion_protection        = var.lifecycle_config.deletion_protection
+  key_revocation_action_type = var.lifecycle_config.key_revocation_action_type
   enable_display             = var.enable_display
   labels                     = var.labels
   metadata                   = var.metadata
@@ -43,16 +43,16 @@ resource "google_compute_instance" "default" {
   )
 
   dynamic "advanced_machine_features" {
-    for_each = local.advanced_mf != null ? [""] : []
+    for_each = local.advanced_mf ? [""] : []
     content {
-      enable_nested_virtualization = local.advanced_mf.enable_nested_virtualization
-      enable_uefi_networking       = local.advanced_mf.enable_uefi_networking
-      performance_monitoring_unit  = local.advanced_mf.performance_monitoring_unit
-      threads_per_core             = local.advanced_mf.threads_per_core
+      enable_nested_virtualization = var.machine_features_config.enable_nested_virtualization
+      enable_uefi_networking       = var.machine_features_config.enable_uefi_networking
+      performance_monitoring_unit  = var.machine_features_config.performance_monitoring_unit
+      threads_per_core             = var.machine_features_config.threads_per_core
       turbo_mode = (
-        local.advanced_mf.enable_turbo_mode ? "ALL_CORE_MAX" : null
+        var.machine_features_config.enable_turbo_mode == true ? "ALL_CORE_MAX" : null
       )
-      visible_core_count = local.advanced_mf.visible_core_count
+      visible_core_count = var.machine_features_config.visible_core_count
     }
   }
 
@@ -131,7 +131,7 @@ resource "google_compute_instance" "default" {
         : [""]
       )
       content {
-        architecture           = var.boot_disk.initialize_params.architecture
+        architecture           = var.boot_disk.architecture
         image                  = var.boot_disk.source.image
         size                   = var.boot_disk.initialize_params.size
         type                   = var.boot_disk.initialize_params.type
@@ -144,7 +144,7 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "confidential_instance_config" {
-    for_each = var.confidential_compute ? [""] : []
+    for_each = var.confidential_compute != null ? [""] : []
     content {
       enable_confidential_compute = true
     }
@@ -165,8 +165,10 @@ resource "google_compute_instance" "default" {
         config.value.addresses.internal,
         null
       )
-      nic_type   = config.value.nic_type
-      stack_type = config.value.stack_type
+      nic_type                    = config.value.nic_type
+      stack_type                  = config.value.stack_type
+      queue_count                 = config.value.queue_count
+      internal_ipv6_prefix_length = config.value.internal_ipv6_prefix_length
       dynamic "access_config" {
         for_each = config.value.nat || config.value.network_tier != null ? [""] : []
         content {
@@ -197,21 +199,34 @@ resource "google_compute_instance" "default" {
   }
 
   scheduling {
-    automatic_restart           = !var.options.spot
+    automatic_restart = coalesce(
+      var.scheduling_config.automatic_restart, var.scheduling_config.provisioning_model != "SPOT"
+    )
     instance_termination_action = local.termination_action
     on_host_maintenance         = local.on_host_maintenance
-    preemptible                 = var.options.spot
-    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+    preemptible                 = var.scheduling_config.provisioning_model == "SPOT"
+    provisioning_model          = coalesce(var.scheduling_config.provisioning_model, "STANDARD")
+    min_node_cpus               = var.scheduling_config.min_node_cpus
+    maintenance_interval        = var.scheduling_config.maintenance_interval
+
     dynamic "max_run_duration" {
-      for_each = var.options.max_run_duration == null ? [] : [""]
+      for_each = var.scheduling_config.max_run_duration == null ? [] : [""]
       content {
-        nanos   = var.options.max_run_duration.nanos
-        seconds = var.options.max_run_duration.seconds
+        nanos   = var.scheduling_config.max_run_duration.nanos
+        seconds = var.scheduling_config.max_run_duration.seconds
+      }
+    }
+
+    dynamic "local_ssd_recovery_timeout" {
+      for_each = var.scheduling_config.local_ssd_recovery_timeout == null ? [] : [""]
+      content {
+        nanos   = var.scheduling_config.local_ssd_recovery_timeout.nanos
+        seconds = var.scheduling_config.local_ssd_recovery_timeout.seconds
       }
     }
 
     dynamic "node_affinities" {
-      for_each = var.options.node_affinities
+      for_each = var.scheduling_config.node_affinities
       iterator = affinity
       content {
         key      = affinity.key
@@ -221,13 +236,18 @@ resource "google_compute_instance" "default" {
     }
 
     dynamic "graceful_shutdown" {
-      for_each = var.options.graceful_shutdown != null ? [""] : []
+      for_each = var.lifecycle_config.graceful_shutdown != null ? [""] : []
       content {
-        enabled = var.options.graceful_shutdown.enabled
+        enabled = var.lifecycle_config.graceful_shutdown.enabled
         dynamic "max_duration" {
-          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          for_each = (
+            var.lifecycle_config.graceful_shutdown.enabled == true &&
+            var.lifecycle_config.graceful_shutdown.max_duration_secs != null
+            ? [""]
+            : []
+          )
           content {
-            seconds = var.options.graceful_shutdown.max_duration_secs
+            seconds = var.lifecycle_config.graceful_shutdown.max_duration_secs
             nanos   = 0
           }
         }
