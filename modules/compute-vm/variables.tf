@@ -14,76 +14,41 @@
  * limitations under the License.
  */
 
-variable "attached_disk_defaults" {
-  description = "Defaults for attached disks options."
-  type = object({
-    auto_delete  = optional(bool, false)
-    mode         = string
-    replica_zone = string
-    type         = string
-  })
-  default = {
-    auto_delete  = true
-    mode         = "READ_WRITE"
-    replica_zone = null
-    type         = "pd-balanced"
-  }
-  validation {
-    condition     = var.attached_disk_defaults.mode == "READ_WRITE" || !var.attached_disk_defaults.auto_delete
-    error_message = "auto_delete can only be specified on READ_WRITE disks."
-  }
-}
-
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
-  type = list(object({
-    name        = optional(string)
+  type = map(object({
+    auto_delete = optional(bool, false) # applies only to vm templates
     device_name = optional(string)
-    # TODO: size can be null when source_type is attach
-    size              = string
-    snapshot_schedule = optional(list(string))
-    source            = optional(string)
-    source_type       = optional(string)
-    options = optional(
-      object({
-        architecture           = optional(string)
-        auto_delete            = optional(bool, false) # applies only to vm templates
-        mode                   = optional(string, "READ_WRITE")
+    # auto_delete can only be specified dor READ_WRITE, force null otherwise
+    mode = optional(string, "READ_WRITE")
+    name = optional(string)
+    initialize_params = optional(object({
+      architecture = optional(string)
+      replica_zone = optional(string)
+      size         = optional(number, 10)
+      type         = optional(string, "pd-balanced")
+      hyperdisk = optional(object({
         provisioned_iops       = optional(number)
         provisioned_throughput = optional(number) # in MiB/s
-        replica_zone           = optional(string)
         storage_pool           = optional(string)
-        type                   = optional(string, "pd-balanced")
-      }),
-      {
-        auto_delete  = true
-        mode         = "READ_WRITE"
-        replica_zone = null
-        type         = "pd-balanced"
-      }
-    )
+      }), {})
+    }), {})
+    snapshot_schedule = optional(list(string))
+    source = optional(object({
+      attach = optional(string)
+      # disk             = optional(string)
+      image = optional(string) # not supported yet for repd
+      # instant_snapshot = optional(string)
+      snapshot = optional(string)
+    }), {})
   }))
-  default = []
+  default = {}
   validation {
-    condition = length([
-      for d in var.attached_disks : d if(
-        d.source_type == null
-        ||
-        contains(["image", "snapshot", "attach"], coalesce(d.source_type, "1"))
+    condition = alltrue([
+      for d in var.attached_disks : (
+        d.initialize_params.architecture == null ||
+        contains(["ARM64", "X86_64"], d.initialize_params.architecture)
       )
-    ]) == length(var.attached_disks)
-    error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
-  }
-  validation {
-    condition = length([
-      for d in var.attached_disks : d if d.options == null ||
-      d.options.mode == "READ_WRITE" || !d.options.auto_delete
-    ]) == length(var.attached_disks)
-    error_message = "auto_delete can only be specified on READ_WRITE disks."
-  }
-  validation {
-    condition = alltrue([for d in var.attached_disks :
-      (d.options.architecture == null || contains(["ARM64", "X86_64"], d.options.architecture))
     ])
     error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
   }
@@ -105,9 +70,11 @@ variable "boot_disk" {
       }), {})
     }), {})
     source = optional(object({
-      image    = optional(string)
+      attach = optional(string)
+      disk   = optional(string)
+      image  = optional(string)
+      # instant_snapshot = optional(string)
       snapshot = optional(string)
-      attach   = optional(string)
     }), { image = "projects/debian-cloud/global/images/family/debian-11" })
     use_independent_disk = optional(object({
       name = optional(string)
@@ -116,7 +83,9 @@ variable "boot_disk" {
   default  = {}
   nullable = false
   validation {
-    condition     = var.boot_disk.source != null || var.boot_disk.initialize_params != null
+    condition = (
+      var.boot_disk.source != null || var.boot_disk.initialize_params != null
+    )
     error_message = "You can only have one of boot disk source or initialize params."
   }
   validation {

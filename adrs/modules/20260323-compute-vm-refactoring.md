@@ -453,3 +453,43 @@ Example tests will be adapted and run as part of each task iteration.
 8. **Task 8:** Update `template-zonal.tf` and `template-regional.tf` to align with the new disk schemas and map the new feature attributes.
 9. **Task 9:** Run integration tests and regenerate documentation (`python3 tools/tfdoc.py` and YAML test files updates).
 10. **Task 10.** Assess if disk-level encryption key overrides make sense, and if so implement them.
+
+## Addendum: Missing Disk Attributes
+
+Based on a review of the latest `terraform-provider-google` documentation for `google_compute_disk`, `google_compute_region_disk`, and `google_compute_instance` disk attachments, the following attributes are currently missing from the proposed disk type definitions and should be considered for inclusion:
+
+### 1. Metadata and Organization
+
+* **`description`** `(string)`: An optional description of the disk resource.
+- **`labels`** `(map(string))`: Key/value pairs to label the disk.
+- **`params`** / **`resource_manager_tags`** `(map(string))`: Resource manager tags to be bound to the disk.
+- **`licenses`** `(list(string))`: Applicable license URIs to apply to the disk.
+
+### 2. Encryption and Security
+
+* **`disk_encryption_key`** `(object)`: Used to encrypt the disk with a customer-supplied (CSEK) or customer-managed (CMEK) key.
+- **`source_image_encryption_key`** `(object)`: Required to decrypt the source image if it is protected by a CSEK/CMEK.
+- **`source_snapshot_encryption_key`** `(object)`: Required to decrypt the source snapshot if it is protected by a CSEK/CMEK.
+- **`enable_confidential_compute`** `(bool)`: Whether the disk uses confidential compute mode (supported on certain Hyperdisk SKUs).
+- **`disk_encryption_key_raw`** / **`kms_key_self_link`**: Required on the `attached_disk` block of `google_compute_instance` to mount an existing encrypted disk.
+
+### 3. Advanced Disk Features & Hyperdisk
+
+* **`access_mode`** `(string)`: Specifically for Hyperdisks (e.g., `READ_WRITE_SINGLE`, `READ_WRITE_MANY`, `READ_ONLY_SINGLE`).
+- **`multi_writer`** `(bool)`: Indicates whether a persistent disk can be read/write attached to more than one instance.
+- **`physical_block_size_bytes`** `(number)`: Allows specifying physical block size (usually `4096` or `16384`).
+- **`guest_os_features`** `(list(object))`: Features to enable on the guest OS (e.g., `UEFI_COMPATIBLE`, `SECURE_BOOT`, `MULTI_IP_SUBNET`).
+- **`async_primary_disk`** `(object)`: Primary disk configuration for asynchronous disk replication.
+
+### 4. Source Creation Options
+
+* **`source_disk`** `(string)`: Allows creating a new disk by cloning an existing `google_compute_disk` (supported by both zonal and regional disks).
+- **`source_instant_snapshot`** `(string)`: Allows creating a disk from a Google Compute instant snapshot.
+- **`source_storage_object`** `(string)`: Allows creating a disk directly from a GCS URI tarball/vmdk.
+- **`erase_windows_vss_signature`** `(bool)`: Specifies whether the disk restored from a source snapshot should erase the Windows-specific VSS signature.
+- **Note on Regional Disks:** `google_compute_region_disk` does not support initialization directly from an `image`. The `source.image` attribute will only work for zonal disks.
+
+### 5. Disk Lifecycle
+
+* **`create_snapshot_before_destroy`** `(bool)`: If `true`, creates a snapshot of the disk before Terraform destroys it.
+- **`create_snapshot_before_destroy_prefix`** `(string)`: A custom prefix for the snapshot name created prior to destruction.

@@ -140,7 +140,7 @@ resource "google_compute_disk_resource_policy_attachment" "boot" {
   )
   # if independent disk is used for boot disk it will have a different name compared to when created implicitly
   disk = (
-    !local.template_create && var.boot_disk.use_independent_disk != null
+    !local.is_template && var.boot_disk.use_independent_disk != null
     ? google_compute_disk.boot[0].name
     : var.name
   )

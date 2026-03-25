@@ -15,13 +15,13 @@
  */
 
 locals {
-  template_create   = var.create_template != null
+  is_template       = var.create_template != null
   template_regional = try(var.create_template.regional, null) == true
 }
 
 resource "google_compute_instance_template" "default" {
   provider                   = google-beta
-  count                      = local.template_create && !local.template_regional ? 1 : 0
+  count                      = local.is_template && !local.template_regional ? 1 : 0
   project                    = local.project_id
   region                     = local.region
   name_prefix                = "${var.name}-"
@@ -95,36 +95,35 @@ resource "google_compute_instance_template" "default" {
     }
   }
   dynamic "disk" {
-    for_each = local.attached_disks
-    iterator = config
+    for_each = var.attached_disks
     content {
-      architecture = config.value.options.architecture
-      auto_delete  = config.value.options.auto_delete
-      device_name = coalesce(
-        config.value.device_name, config.value.name, config.key
-      )
+      architecture          = disk.value.initialize_params.architecture
+      auto_delete           = disk.value.auto_delete
+      device_name           = coalesce(disk.value.device_name, disk.value.name, disk.key)
+      disk_name             = disk.value.source.attach == null ? disk.value.name : null
+      mode                  = disk.value.mode
+      resource_manager_tags = var.tag_bindings_immutable
+      source_image          = disk.value.source.image
+      source                = disk.value.source.attach
+      type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
-        config.value.source_type != "attach" ? config.value.options.type : null
+        disk.value.source.attach == null
+        ? disk.value.initialize_params.type
+        : null
       )
       disk_size_gb = (
-        config.value.source_type != "attach" ? config.value.size : null
+        disk.value.source.attach == null
+        ? disk.value.initialize_params.size
+        : null
       )
-      mode                   = config.value.options.mode
-      provisioned_iops       = try(config.value.options.provisioned_iops, null)
-      provisioned_throughput = try(config.value.options.provisioned_throughput, null)
-      source_image = (
-        config.value.source_type == "image" ? config.value.source : null
+      provisioned_iops = (
+        disk.value.initialize_params.hyperdisk.provisioned_iops
       )
-      source = (
-        config.value.source_type == "attach" ? config.value.source : null
+      provisioned_throughput = (
+        disk.value.initialize_params.hyperdisk.provisioned_throughput
       )
-      disk_name = (
-        config.value.source_type != "attach" ? config.value.name : null
-      )
-      resource_manager_tags = var.tag_bindings_immutable
-      type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
         content {
@@ -248,7 +247,7 @@ resource "google_compute_instance_template" "default" {
 
 resource "google_compute_region_instance_template" "default" {
   provider                   = google-beta
-  count                      = local.template_create && local.template_regional ? 1 : 0
+  count                      = local.is_template && local.template_regional ? 1 : 0
   project                    = local.project_id
   region                     = local.region
   name_prefix                = "${var.name}-"
@@ -321,42 +320,43 @@ resource "google_compute_region_instance_template" "default" {
       count = guest_accelerator.value.count
     }
   }
+
   dynamic "disk" {
-    for_each = local.attached_disks
-    iterator = config
+    for_each = var.attached_disks
     content {
-      architecture = config.value.options.architecture
-      auto_delete  = config.value.options.auto_delete
-      device_name = coalesce(
-        config.value.device_name, config.value.name, config.key
-      )
+      architecture          = disk.value.initialize_params.architecture
+      auto_delete           = disk.value.auto_delete
+      device_name           = coalesce(disk.value.device_name, disk.value.name, disk.key)
+      disk_name             = disk.value.source.attach == null ? disk.value.name : null
+      mode                  = disk.value.mode
+      resource_manager_tags = var.tag_bindings_immutable
+      source_image          = disk.value.source.image
+      source                = disk.value.source.attach
+      type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
-        config.value.source_type != "attach" ? config.value.options.type : null
+        disk.value.source.attach == null
+        ? disk.value.initialize_params.type
+        : null
       )
       disk_size_gb = (
-        config.value.source_type != "attach" ? config.value.size : null
+        disk.value.source.attach == null
+        ? disk.value.initialize_params.size
+        : null
       )
-      mode                   = config.value.options.mode
-      provisioned_iops       = try(config.value.options.provisioned_iops, null)
-      provisioned_throughput = try(config.value.options.provisioned_throughput, null)
-      source_image = (
-        config.value.source_type == "image" ? config.value.source : null
+      provisioned_iops = (
+        disk.value.initialize_params.hyperdisk.provisioned_iops
       )
-      source = (
-        config.value.source_type == "attach" ? config.value.source : null
+      provisioned_throughput = (
+        disk.value.initialize_params.hyperdisk.provisioned_throughput
       )
-      disk_name = (
-        config.value.source_type != "attach" ? config.value.name : null
-      )
-      resource_manager_tags = var.tag_bindings_immutable
-      type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
         content {
-          kms_key_self_link = try(
-            local.ctx_kms_keys[var.encryption.kms_key_self_link],
+          kms_key_self_link = lookup(
+            local.ctx_kms_keys,
+            var.encryption.kms_key_self_link,
             var.encryption.kms_key_self_link
           )
         }
