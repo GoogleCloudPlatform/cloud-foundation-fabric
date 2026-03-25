@@ -4,9 +4,20 @@ This module allows management of NCC Spokes backed by Router Appliances. Network
 
 The module manages a hub (optionally), a spoke, and the corresponding Cloud Router and BGP sessions to the router appliance(s).
 
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple hub and spoke](#simple-hub-and-spoke)
+  - [Two spokes](#two-spokes)
+  - [Spoke with load-balanced router appliances](#spoke-with-load-balanced-router-appliances)
+  - [Simple hub and spoke with BGP Route Policies](#simple-hub-and-spoke-with-bgp-route-policies)
+- [Variables](#variables)
+- [Outputs](#outputs)
+- [Fixtures](#fixtures)
+<!-- END TOC -->
+
 ## Examples
 
-### Simple hub & spoke
+### Simple hub and spoke
 
 ```hcl
 module "spoke-ra" {
@@ -138,6 +149,68 @@ module "spoke-ra" {
 }
 # tftest modules=5 resources=13 fixtures=fixtures/compute-vm-nva.tf e2e
 ```
+
+### Simple hub and spoke with BGP Route Policies
+
+```hcl
+module "spoke-ra" {
+  source     = "./fabric/modules/ncc-spoke-ra"
+  hub        = { create = true, name = "ncc-hub" }
+  name       = "spoke-ra"
+  project_id = var.project_id
+  region     = var.region
+  router_appliances = [
+    {
+      internal_ip     = module.compute-vm-primary-b.internal_ip
+      vm_self_link    = module.compute-vm-primary-b.self_link
+      import_policies = ["import-policy"]
+      export_policies = ["export-policy"]
+    }
+  ]
+  router_config = {
+    asn           = 65000
+    ip_interface0 = "10.0.16.14"
+    ip_interface1 = "10.0.16.15"
+    peer_asn      = 65001
+    route_policies = {
+      "import-policy" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1', '65000:2'])"
+            }
+            actions = {
+              expression = "med.set(12345)"
+            }
+          }
+        ]
+      },
+      "export-policy" = {
+        type = "EXPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1', '65000:2'])"
+            }
+            actions = {
+              expression = "med.set(12345)"
+            }
+          }
+        ]
+      }
+    }
+  }
+  vpc_config = {
+    network_name     = var.vpc.self_link
+    subnet_self_link = var.subnet.self_link
+  }
+}
+# tftest modules=5 resources=13 fixtures=fixtures/compute-vm-nva.tf e2e
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -147,9 +220,9 @@ module "spoke-ra" {
 | [name](variables.tf#L37) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L42) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L47) | Region where the spoke is located. | <code>string</code> | ✓ |  |
-| [router_appliances](variables.tf#L52) | List of router appliances this spoke is associated with. | <code title="list&#40;object&#40;&#123;&#10;  internal_ip  &#61; string&#10;  vm_self_link &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [router_config](variables.tf#L60) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ip_interface0   &#61; string&#10;  ip_interface1   &#61; string&#10;  keepalive       &#61; optional&#40;number&#41;&#10;  peer_asn        &#61; number&#10;  routes_priority &#61; optional&#40;number, 100&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [vpc_config](variables.tf#L76) | Network and subnetwork for the CR interfaces. | <code title="object&#40;&#123;&#10;  network_name     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [router_appliances](variables.tf#L52) | List of router appliances this spoke is associated with. Import and export policies are applied to the BGP peers connecting the VPC Cloud Router to the NCC router appliances. | <code title="list&#40;object&#40;&#123;&#10;  internal_ip     &#61; string&#10;  vm_self_link    &#61; string&#10;  import_policies &#61; optional&#40;list&#40;string&#41;&#41;&#10;  export_policies &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L62) | Configuration of the Cloud Router. | <code title="object&#40;&#123;&#10;  asn &#61; number&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ip_interface0 &#61; string&#10;  ip_interface1 &#61; string&#10;  keepalive     &#61; optional&#40;number&#41;&#10;  peer_asn      &#61; number&#10;  route_policies &#61; optional&#40;map&#40;object&#40;&#123;&#10;    type &#61; string&#10;    terms &#61; list&#40;object&#40;&#123;&#10;      priority &#61; number&#10;      match &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; optional&#40;string&#41;&#10;        description &#61; optional&#40;string&#41;&#10;        location    &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;      actions &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; optional&#40;string&#41;&#10;        description &#61; optional&#40;string&#41;&#10;        location    &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  routes_priority &#61; optional&#40;number, 100&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L122) | Network and subnetwork for the CR interfaces. | <code title="object&#40;&#123;&#10;  network_name     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [data_transfer](variables.tf#L17) | Site-to-site data transfer feature, available only in some regions. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
