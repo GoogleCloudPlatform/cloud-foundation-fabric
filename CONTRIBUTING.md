@@ -160,9 +160,13 @@ module "project" {
   iam = {
     "roles/viewer" = ["user1:one@example.org"]
   }
-  policy_boolean = {
-    "constraints/compute.disableGuestAttributesAccess" = true
-    "constraints/compute.skipDefaultNetworkCreation" = true
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      rules = [{ enforce = true }]
+    }
+    "compute.skipDefaultNetworkCreation" = {
+      rules = [{ enforce = true }]
+    }
   }
   service_encryption_key_ids = {
     "compute.googleapis.com" = [local.kms.europe-west1.compute]
@@ -217,19 +221,20 @@ Variables should not simply map to the underlying resource attributes, but their
 
 This translates into different practical approaches:
 
-- multiple sets of interfaces that support the same feature which are then internally combined into the same resources (e.g. IAM groups below)
+- multiple sets of interfaces that support the same feature which are then internally combined into the same resources (e.g. IAM by principals below)
 - functional interfaces that don't map 1:1 to resources (e.g. project service identities below)
+- slight deviations from exact resource attribute names when an alternative name is more intuitive, shorter, or better aggregates functionality for the user
 - crossing the project boundary to configure resources which support key logical functionality (e.g shared VPC below)
 
-The most pervasive example of the first practical approach above is IAM: given its importance we implement both a role-based interface and a group-based interface, which is less verbose and makes it easy to understand at a glance the roles assigned to a specific group. Both interfaces provide data that is then internally combined to drive the same IAM binding resource, and are available for authoritative and additive roles.
+The most pervasive example of the first practical approach above is IAM: given its importance we implement both a role-based interface and a principal-based interface, which is less verbose and makes it easy to understand at a glance the roles assigned to a specific principal. Both interfaces provide data that is then internally combined to drive the same IAM binding resource, and are available for authoritative and additive roles.
 
 ```hcl
 module "project" {
   source          = "./modules/project"
   name            = "project-example"
-  group_iam = {
-    "roles/editor" = [
-      "group:foo@example.com"
+  iam_by_principals = {
+    "group:foo@example.com" = [
+      "roles/editor"
     ]
   }
   iam = {
@@ -340,23 +345,26 @@ module "simple-vm-example" {
 
 Where this results in objects with too many attributes, we usually group attributes into logical blocks, as in this example where VM `attached_disks` separates initialization parameters and source parameters.
 
+To simplify the variable space and allow users to declare only the values they want to change, we leverage Terraform's **`optional()` function with defaults** extensively. This reduces verbosity, aggregates attributes in logical units, and provides sane defaults directly at the variable definition level without needing complex `coalesce()` or `try()` logic in the module itself:
+
 ```hcl
-module "simple-vm-example" {
-  source     = "./modules/compute-vm"
-  project_id = var.project_id
-  zone       = "europe-west1-b"
-  name       = "test"
-  attached_disks = {
-    data = {
-      initialize_params = {
-        # size = 10 (this is the default)
-      }
-    }
-  }
+variable "boot_disk" {
+  description = "Boot disk properties."
+  type = object({
+    architecture      = optional(string)
+    auto_delete       = optional(bool, true)
+    initialize_params = optional(object({
+      size = optional(number, 10)
+      type = optional(string, "pd-balanced")
+    }), {})
+  })
+  default = {}
 }
 ```
 
-When defining multiple items, we use maps instead of lists to ensure stable keys in the Terraform state. In the following example we define multiple attached disks using a map.
+When defining multiple items, we use maps instead of lists. This ensures stable keys in the Terraform state (avoiding index shifts), allows reusing the structure via keys without hitting the "dynamic values in `for_each`" issue, and keeps stable ordering.
+
+When this map pattern is combined with `optional()` defaults, consumers only need to provide the specific attributes they explicitly want to override for each item.
 
 ```hcl
 module "simple-vm-example" {
@@ -366,9 +374,7 @@ module "simple-vm-example" {
   name       = "test"
   attached_disks = {
     data1 = {
-      initialize_params = {
-        # size = 10 (this is the default)
-      }
+      # initialize_params size defaults to 10
     }
     data2 = {
       initialize_params = {
@@ -388,18 +394,18 @@ As an example, users can safely reference the project module's `project_id` outp
 ```hcl
 output "project_id" {
   description = "Project id."
-  value       = "${local.prefix}${var.name}"
+  value       = local.project_id
   depends_on = [
     google_project.project,
     data.google_project.project,
-    google_project_organization_policy.boolean,
-    google_project_organization_policy.list,
+    google_org_policy_policy.default,
     google_project_service.project_services,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
-    google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_kms_crypto_key_iam_binding.service_identity_cmek,
+    google_project_service_identity.default,
+    google_project_iam_binding.service_agents
   ]
 }
 ```
@@ -428,9 +434,50 @@ module "project" {
 }
 ```
 
+#### Use factories and JSON schemas for scale and validation
+
+To support managing resources at scale (such as creating multiple projects, IAM bindings, or VPC subnets from external configuration), we implement "factories" using variables that accept paths to YAML data files.
+
+To enforce the interface of these factories and ensure the YAML data structure matches the expected variable types, we use JSON schemas. These schemas are typically stored in a `schemas/` folder within the module or stage.
+
+When authoring YAML factory configuration, we include a modeline to enable IDE validation and allow our `check_yaml_schema.py` tool to automatically validate them in CI/CD:
+
+```yaml
+# yaml-language-server: $schema=../schemas/project.schema.json
+billing_account: 012345-67890A-BCDEF0
+labels:
+  environment: dev
+```
+
+#### Context-based interpolation
+
+When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name). 
+
+To solve this, a **context-based interpolation** system is implemented. A `context` object variable is introduced containing maps of known resource IDs (like `project_ids`, `folder_ids`, `iam_principals`), and a `$` prefix convention is used in the YAML strings to instruct the module to look up the actual ID at plan time.
+
+Crucially, this context is not just for static values coming from outside the module. It is also used for **internal module cross-referencing** between resources for quantities that are only known after apply (e.g., referencing a newly created service account's email within the same factory run).
+
+This system provides a major benefit: it makes the YAML configuration files **highly portable across installations and environments**. By using mnemonic keys instead of hardcoded IDs, the exact same YAML dataset can be deployed to a dev organization and a prod organization simply by providing a different `context` map to the module.
+
+```yaml
+# Instead of hardcoding the folder ID: parent: folders/1234567890
+parent: $folder_ids:teams/team-a
+
+iam:
+  # Instead of hardcoding the SA email: "roles/owner": ["serviceAccount:my-sa@my-project.iam.gserviceaccount.com"]
+  "roles/owner":
+    - $iam_principals:service_accounts/my-project/rw
+```
+
 ### FAST stage design
 
 Due to their increased complexity and larger scope, FAST stages have some additional design considerations. Please refer to the [FAST documentation](./fast/) for additional context.
+
+#### YAML datasets and the 'translation machine'
+
+A key architectural shift in FAST is the extensive use of YAML datasets. Rather than hardcoding infrastructure topologies in `tfvars` or Terraform code, FAST leverages YAML files (like `data/folders.yaml`, `data/projects.yaml`) to define the *intent* or desired state of the infrastructure (e.g., folder hierarchies, project allocations).
+
+In this paradigm, the FAST stages act as a "translation machine". The stages parse the YAML data using Terraform's `for_each` and local blocks, validate the data (via JSON schemas, as mentioned earlier), and translate that high-level intent into the corresponding Terraform modules and resources. This allows for entirely different architectures to be implemented simply by replacing the YAML dataset, without touching the underlying stage code.
 
 #### Standalone usage
 
@@ -511,11 +558,38 @@ locals {
 }
 ```
 
-#### Use alphabetical order for outputs and variables
+For complex or long **ternary operators**, wrap the expression in parentheses and break lines to align the `?` and `:` tokens clearly:
+
+```hcl
+locals {
+  parent_id = (
+    var.parent == null || startswith(coalesce(var.parent, "-"), "$")
+    ? var.parent
+    : split("/", var.parent)[1]
+  )
+}
+```
+
+For **function calls** with many arguments or complex expressions, split them across multiple lines to ensure legibility, typically breaking after the opening parenthesis and before the closing one:
+
+```hcl
+locals {
+  ctx_kms_keys = merge(local.ctx.kms_keys, {
+    for k, v in google_kms_key_handle.default :
+    "$kms_keys:autokeys/${k}" => v.kms_key
+  })
+}
+```
+
+#### Alphabetical ordering and local variables conventions
 
 We enforce alphabetical ordering for outputs and variables and have a check that prevents PRs using the wrong order to be merged. We also tend to prefer alphabetical ordering in locals when there's no implied logical grouping (e.g. for successive data transformations).
 
-Additionally, we adopt a convention similar to the one used in Python for private class members, so that locals only referenced from inside the same locals block are prefixed by `_`, as in the example shown in the next section.
+For `locals`, we enforce a clear separation of scope:
+- **Module-level locals:** Used to define values that will be referenced directly by resources or outputs (e.g., `svpc_host_config`).
+- **Block-level "private" locals:** Prefixed with an underscore (`_`), these are intermediate values only referenced from inside the same locals block to compute the final module-level locals (e.g., `_svpc_service_iam`).
+
+This convention, similar to Python's private class members, improves legibility by hiding intermediate data transformations, as shown in the example in the next section.
 
 ```hcl
 locals {
@@ -553,32 +627,21 @@ This is an example from the `project` module. Notice how we're breaking two of t
 
 ```hcl
 locals {
-  _group_iam_roles = distinct(flatten(values(var.group_iam)))
-  _group_iam = {
-    for r in local._group_iam_roles : r => [
-      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+  # get the set of IAM by principals roles
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  # recompose the principals under each role
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
     ]
   }
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
-  _iam_additive_member_pairs = flatten([
-    for member, roles in var.iam_additive_members : [
-      for role in roles : { role = role, member = member }
-    ]
-  ])
   iam = {
-    for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
     role => concat(
       try(var.iam[role], []),
-      try(local._group_iam[role], [])
+      try(local._iam_principals[role], [])
     )
-  }
-  iam_additive = {
-    for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
-    "${pair.role}-${pair.member}" => pair
   }
 }
 ```
@@ -642,9 +705,11 @@ The linting workflow tests:
 - that the correct copyright boilerplate is present in all files, using `tools/check_boilerplate.py`
 - that all Terraform code is linted via `terraform fmt`
 - that Terraform variables and outputs are sorted alphabetically
+- that `tflint` runs successfully without warnings, via `tools/tflint-fast.py`
 - that all README files have up to date outputs, variables, and files (where relevant) tables, via `tools/check_documentation.py`
 - that all links in README files are syntactically correct and valid if internal, via `tools/check_links.py`
 - that resource names used in FAST stages stay within a length limit, via `tools/check_names.py`
+- that YAML data files in factories conform to their respective JSON schemas, via `tools/check_yaml_schema.py`
 - that all Python code has been formatted with the correct `yapf` style
 
 You can run those checks individually on your code to address any error before sending a PR, all you need to do is run the same command used in the workflow file from within your virtual environment. To run documentation tests for example if you changed the `project` module:
@@ -1369,7 +1434,7 @@ As a last cleanup for the CHANGELOG.md file, run
 
 ```bash
 git pull
-./tools/changelog.py --write --token $TOKEN --release Unreleased --release vXX.Y.Z
+./tools/changelog.py --write --token $TOKEN --release-to vXX.Y.Z
 git diff
 ```
 
