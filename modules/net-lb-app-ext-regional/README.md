@@ -25,7 +25,7 @@ The variable space of this module closely mirrors that of  [net-lb-app-ext](../n
     - [Internet NEG creation](#internet-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Serverless NEG creation](#serverless-neg-creation)
-    - [Cross Project Backend](#cross-project-backend)
+    - [Cross Project Backend Services](#cross-project-backend-services)
   - [URL Map](#url-map)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
@@ -339,18 +339,20 @@ This example shows how to use the module with a manage instance group as backend
 
 ```hcl
 module "win-template" {
-  source        = "./fabric/modules/compute-vm"
-  project_id    = var.project_id
-  zone          = "${var.region}-a"
-  name          = "win-template"
-  instance_type = "n2d-standard-2"
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  zone         = "${var.region}-a"
+  name         = "win-template"
+  machine_type = "n2d-standard-2"
   create_template = {
     regional = false
   }
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
-      size  = 70
+    }
+    initialize_params = {
+      size = 70
     }
   }
   network_interfaces = [{
@@ -522,7 +524,7 @@ module "ralb-0" {
         endpoints = {
           e-0 = {
             ip_address = "192.0.2.5"
-            port = 443
+            port       = 443
           }
         }
       }
@@ -598,9 +600,9 @@ module "ralb-0" {
 # tftest modules=1 resources=5 e2e
 ```
 
-#### Cross Project Backend
+#### Cross Project Backend Services
 
-The module supports Cross Project Backends. This is an example of a referencing to a Backend in another project:
+The module supports Cross Project Backend Services. This is an example of a referencing to a Backend Service in another project:
 
 ```hcl
 module "ralb-0" {
@@ -612,7 +614,7 @@ module "ralb-0" {
 
   backend_service_configs = {
     my_backend = {
-      project_id = "backend_project_id" #Specify the project ID where the backend resides
+      project_id = "backend_project_id" #Specify the project ID where the backend service resides
 
       backends = [
         {

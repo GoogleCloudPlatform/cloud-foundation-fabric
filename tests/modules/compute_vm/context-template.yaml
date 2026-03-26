@@ -39,7 +39,7 @@ values:
       resource_manager_tags: null
       resource_policies: null
       source: null
-      source_image: projects/debian-cloud/global/images/family/debian-11
+      source_image: debian-cloud/debian-13
       source_image_encryption_key: []
       source_snapshot: null
       source_snapshot_encryption_key: []
@@ -68,7 +68,7 @@ values:
     instance_description: null
     key_revocation_action_type: NONE
     labels: null
-    machine_type: f1-micro
+    machine_type: e2-micro
     metadata: null
     metadata_startup_script: null
     min_cpu_platform: null
