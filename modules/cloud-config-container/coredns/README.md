@@ -45,8 +45,8 @@ module "vm" {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
     initialize_params = {
-      type  = "pd-ssd"
-      size  = 10
+      type = "pd-ssd"
+      size = 10
     }
   }
   tags = ["dns", "ssh"]

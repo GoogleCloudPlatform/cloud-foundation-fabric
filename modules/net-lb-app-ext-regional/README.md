@@ -352,7 +352,7 @@ module "win-template" {
       image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
     }
     initialize_params = {
-      size  = 70
+      size = 70
     }
   }
   network_interfaces = [{

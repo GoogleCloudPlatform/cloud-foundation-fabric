@@ -19,7 +19,8 @@ variable "attached_disks" {
   type = map(object({
     auto_delete = optional(bool, true) # applies only to vm templates
     device_name = optional(string)
-    # auto_delete can only be specified dor READ_WRITE, force null otherwise
+    force_attach = optional(bool)
+    # auto_delete can only be specified for READ_WRITE, force null otherwise
     mode = optional(string, "READ_WRITE")
     name = optional(string)
     initialize_params = optional(object({
@@ -41,7 +42,15 @@ variable "attached_disks" {
       snapshot = optional(string)
     }), {})
   }))
-  default = {}
+  nullable = false
+  default  = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.attached_disks :
+      contains(["READ_WRITE", "READ_ONLY"], v.mode)
+    ])
+    error_message = "Allowed values for 'mode' are 'READ_WRITE', 'READ_ONLY'."
+  }
 }
 
 variable "boot_disk" {
@@ -49,6 +58,7 @@ variable "boot_disk" {
   type = object({
     architecture      = optional(string)
     auto_delete       = optional(bool, true)
+    force_attach      = optional(bool)
     snapshot_schedule = optional(list(string))
     initialize_params = optional(object({
       size = optional(number, 10)
@@ -65,7 +75,7 @@ variable "boot_disk" {
       image  = optional(string)
       # instant_snapshot = optional(string)
       snapshot = optional(string)
-    }), { image = "projects/debian-cloud/global/images/family/debian-11" })
+    }), { image = "debian-cloud/debian-13" })
     use_independent_disk = optional(object({
       name = optional(string)
     }))
@@ -111,7 +121,7 @@ variable "confidential_compute" {
   type        = string
   default     = null
   validation {
-    condition     = var.confidential_compute == null || contains(["SEV", "SEV_SNP"], coalesce(var.confidential_compute, "-"))
+    condition     = var.confidential_compute == null || contains(["SEV", "SEV_SNP"], var.confidential_compute)
     error_message = "Allowed values are 'SEV' or 'SEV_SNP'."
   }
 }

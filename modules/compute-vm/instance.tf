@@ -63,7 +63,8 @@ resource "google_compute_instance" "default" {
       device_name = coalesce(
         disk.value.device_name, disk.value.name, disk.key
       )
-      mode = disk.value.mode
+      force_attach = disk.value.force_attach
+      mode         = disk.value.mode
       source = (
         disk.value.source.attach != null
         ? disk.value.source.attach
@@ -79,7 +80,8 @@ resource "google_compute_instance" "default" {
       device_name = coalesce(
         disk.value.device_name, disk.value.name, disk.key
       )
-      mode = disk.value.mode
+      force_attach = disk.value.force_attach
+      mode         = disk.value.mode
       source = (
         disk.value.source.attach != null
         ? disk.value.source.attach
@@ -94,6 +96,7 @@ resource "google_compute_instance" "default" {
       ? false
       : var.boot_disk.auto_delete
     )
+    force_attach = var.boot_disk.force_attach
     source = (
       var.boot_disk.use_independent_disk != null
       ? google_compute_disk.boot[0].id
