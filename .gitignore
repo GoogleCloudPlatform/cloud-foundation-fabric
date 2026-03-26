@@ -32,3 +32,9 @@ fast/**/globals.auto.tfvars.json
 cloud_sql_proxy
 env/
 
+# Go Tooling / Compilation Binaries
+*.exe
+*.test
+*.prof
+tools/tfdoc
+
