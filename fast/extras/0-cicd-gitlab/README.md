@@ -70,7 +70,7 @@ group with source ref:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
@@ -86,7 +86,7 @@ repository:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
@@ -106,11 +106,11 @@ deploy key in the modules project, and as secrets in the stage repositories:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
-  group      = "shared"
+  group = "shared"
   key_config = {
     create_key     = true
     create_secrets = true
@@ -127,11 +127,11 @@ and new repositories need to be created and their corresponding secret set:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
-  group      = "shared"
+  group = "shared"
   key_config = {
     create_secrets = true
     keypair_path   = "~/modules-repository-key"
