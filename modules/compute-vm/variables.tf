@@ -17,8 +17,8 @@
 variable "attached_disks" {
   description = "Additional disks. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = map(object({
-    auto_delete = optional(bool, true) # applies only to vm templates
-    device_name = optional(string)
+    auto_delete  = optional(bool, true) # applies only to vm templates
+    device_name  = optional(string)
     force_attach = optional(bool)
     # auto_delete can only be specified for READ_WRITE, force null otherwise
     mode = optional(string, "READ_WRITE")
