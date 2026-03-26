@@ -45,7 +45,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -88,7 +88,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -139,7 +139,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -191,7 +191,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -242,7 +242,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -298,7 +298,7 @@ module "nginx-template" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -350,7 +350,7 @@ module "nginx-template" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }

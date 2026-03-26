@@ -53,7 +53,7 @@ module "instances" {
   name         = each.key
   machine_type = var.instances_config.machine_type
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }

@@ -57,7 +57,7 @@ module "instances" {
   name         = each.key
   machine_type = each.value.type
   boot_disk = {
-    initialize_params = {
+    source = {
       image = each.value.image
     }
   }

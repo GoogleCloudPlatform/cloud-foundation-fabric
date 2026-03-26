@@ -129,14 +129,18 @@ module "nva-instance" {
     }
   ]
   boot_disk = {
+    source = {
+      image = each.value.image
+    }
     initialize_params = {
-      image                  = each.value.image
-      google-logging-enabled = true
-      type                   = "pd-ssd"
-      size                   = 10 # TODO: make configurable?
+      type = "pd-ssd"
+      size = 10 # TODO: make configurable?
     }
   }
-  metadata             = each.value.metadata
+  metadata = merge(
+    each.value.metadata,
+    { google-logging-enabled = true }
+  )
   encryption           = each.value.encryption
   shielded_config      = each.value.shielded_config
   confidential_compute = each.value.confidential_compute

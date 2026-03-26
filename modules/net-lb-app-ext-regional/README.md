@@ -348,8 +348,10 @@ module "win-template" {
     regional = false
   }
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
+    }
+    initialize_params = {
       size  = 70
     }
   }

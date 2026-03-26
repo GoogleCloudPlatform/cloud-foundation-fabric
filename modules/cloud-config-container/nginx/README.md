@@ -41,8 +41,10 @@ module "vm-nginx-tls" {
     google-logging-enabled = true
   }
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
+    }
+    initialize_params = {
       type  = "pd-ssd"
       size  = 10
     }

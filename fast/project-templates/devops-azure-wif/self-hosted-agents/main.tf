@@ -76,8 +76,10 @@ module "instance" {
   machine_type = "e2-micro"
   boot_disk = {
     auto_delete = false
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-117-lts"
+    }
+    initialize_params = {
       size  = 10
     }
   }

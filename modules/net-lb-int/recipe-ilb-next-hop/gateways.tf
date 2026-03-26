@@ -22,8 +22,10 @@ module "gw" {
   name         = "${var.prefix}-gw-${each.key}"
   machine_type = "f1-micro"
   boot_disk = {
+    source = {
+      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts"
+    }
     initialize_params = {
-      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       type  = "pd-ssd",
       size  = 10
     }
