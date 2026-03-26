@@ -80,7 +80,7 @@ module "instance" {
       image = "projects/cos-cloud/global/images/family/cos-117-lts"
     }
     initialize_params = {
-      size  = 10
+      size = 10
     }
   }
   network_interfaces = [{

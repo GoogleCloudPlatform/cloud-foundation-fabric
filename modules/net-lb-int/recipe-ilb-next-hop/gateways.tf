@@ -26,8 +26,8 @@ module "gw" {
       image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts"
     }
     initialize_params = {
-      type  = "pd-ssd",
-      size  = 10
+      type = "pd-ssd",
+      size = 10
     }
   }
   network_interfaces = [
