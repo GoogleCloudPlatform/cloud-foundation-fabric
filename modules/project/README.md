@@ -57,7 +57,7 @@ This module implements the creation and management of one GCP project including 
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -91,7 +91,7 @@ The `iam` variable is based on role keys and is typically used for service accou
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -118,7 +118,7 @@ The `iam_by_principals` variable uses [principals](https://cloud.google.com/iam/
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -151,7 +151,7 @@ The `iam_by_principals_conditional` variable allows defining IAM bindings keyed 
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -173,7 +173,7 @@ module "project" {
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -222,7 +222,7 @@ The `iam_bindings_additive` variable allows setting individual role/principal bi
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -275,7 +275,7 @@ Consider the code below:
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -391,7 +391,7 @@ This example shows a simple configuration with a host project, and a service pro
 
 ```hcl
 module "host-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "host"
   parent          = var.folder_id
@@ -402,7 +402,7 @@ module "host-project" {
 }
 
 module "service-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "service"
   parent          = var.folder_id
@@ -433,7 +433,7 @@ This example shows a similar configuration, with the simpler way of defining IAM
 
 ```hcl
 module "host-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "host"
   parent          = var.folder_id
@@ -444,7 +444,7 @@ module "host-project" {
 }
 
 module "service-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "service"
   parent          = var.folder_id
@@ -470,7 +470,7 @@ Note that this configuration grants the role at project level which results in t
 
 ```hcl
 module "host-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "host"
   parent          = var.folder_id
@@ -481,7 +481,7 @@ module "host-project" {
 }
 
 module "service-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "service"
   parent          = var.folder_id
@@ -515,7 +515,7 @@ In specific cases it might make sense to selectively grant the `compute.networkU
 
 ```hcl
 module "host-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "host"
   parent          = var.folder_id
@@ -526,7 +526,7 @@ module "host-project" {
 }
 
 module "service-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "service"
   parent          = var.folder_id
@@ -553,7 +553,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -647,7 +647,7 @@ The example below deploys a few organization policies split between two YAML fil
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -752,7 +752,7 @@ module "bucket" {
 }
 
 module "destination-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "dest-prj"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -763,7 +763,7 @@ module "destination-project" {
 }
 
 module "project-host" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -816,7 +816,7 @@ This example shows how to set a non-authoritative access log configuration:
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -854,7 +854,7 @@ module "bucket" {
 }
 
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   prefix          = var.prefix
   parent          = var.folder_id
@@ -882,7 +882,7 @@ This module streamlines the process of granting KMS encryption/decryption permis
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -977,7 +977,7 @@ module "project" {
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1007,7 +1007,7 @@ Custom modules defined via the variable are merged with those coming from the fa
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1038,7 +1038,7 @@ cloudkmKeyRotationPeriod:
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1062,7 +1062,7 @@ Mute configs defined via the variable are merged with those coming from the fact
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1088,7 +1088,7 @@ Refer to the [Creating and managing tags](https://cloud.google.com/resource-mana
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1156,7 +1156,7 @@ You can also define network tags through the dedicated `network_tags` variable:
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1190,7 +1190,7 @@ If you want to create a Tag Key with `GCE_FIREWALL` purpose that is valid for th
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1232,7 +1232,7 @@ The example below deploys a `workloads` tag key and its values from a YAML file.
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1437,7 +1437,7 @@ For KMS Autokey to be used the [project needs to be enabled](https://docs.cloud.
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -1469,7 +1469,7 @@ curl -X GET \
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -1499,7 +1499,7 @@ Quotas can be also specified via a factory in a similar way to organization poli
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -1586,7 +1586,7 @@ This module also allows managing project membership in VPC Service Controls peri
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1605,7 +1605,7 @@ Dry run configuration is also supported.
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1627,7 +1627,7 @@ This module allows to configure the default network tier for a project.
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1646,7 +1646,7 @@ The Cloud Asset Search feature allows you to search for resources within the pro
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1677,7 +1677,7 @@ module "pubsub" {
 }
 
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1708,7 +1708,7 @@ BigQuery reservations are primarily used to manage and allocate dedicated comput
 
 ```hcl
 module "project-bq-billing" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project-billing"
   parent          = var.folder_id
@@ -1731,7 +1731,7 @@ module "project-bq-billing" {
 }
 
 module "project-bq-data" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project-data"
   parent          = var.folder_id
@@ -1754,7 +1754,7 @@ The `default_service_accounts` contains the emails of the default service accoun
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1781,7 +1781,7 @@ The first use case is the most common one, and is what the module defaults to wh
 
 ```hcl
 module "create-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id
@@ -1973,7 +1973,7 @@ module "kms" {
 }
 
 module "host-project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "host"
   parent          = var.folder_id
@@ -2019,7 +2019,7 @@ Alerting policies, log-based metrics, and notification channels are managed by t
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -2078,7 +2078,7 @@ Observability variables are exposed through a factory enabled by setting `var.fa
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id
@@ -2165,7 +2165,7 @@ Auto-population of provider attributes and issuer are supported for OIDC provide
 
 ```hcl
 module "project" {
-  source  =  "./fabric/modules/project"
+  source          = "./fabric/modules/project"
   name            = "project"
   billing_account = var.billing_account_id
   parent          = var.folder_id

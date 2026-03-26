@@ -524,7 +524,7 @@ module "ralb-0" {
         endpoints = {
           e-0 = {
             ip_address = "192.0.2.5"
-            port = 443
+            port       = 443
           }
         }
       }
