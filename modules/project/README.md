@@ -934,7 +934,7 @@ For composer v3:
 
 ```
 module "project" {
-  source          = "./fabric/modules/project"
+  source  =  "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -952,7 +952,7 @@ For composer v2:
 
 ```
 module "project" {
-  source          = "./fabric/modules/project"
+  source  =  "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   prefix          = var.prefix
@@ -1569,7 +1569,7 @@ Note that entitlements defined via `pam_entitlements` take precedence over those
 
 ```hcl
 module "project" {
-  source          = "./fabric/modules/project"
+  source  =  "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "project"
   parent          = var.folder_id

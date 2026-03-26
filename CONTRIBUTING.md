@@ -327,8 +327,10 @@ module "simple-vm-example" {
   zone       = "europe-west1-b"
   name       = "test"
   boot_disk  = {
-    initialize_params = {
+    source = {
       image = "projects/debian-cloud/global/images/family/cos-97-lts"
+    }
+    initialize_params = {
       type = "pd-balanced"
       size = 10
     }
@@ -336,7 +338,7 @@ module "simple-vm-example" {
 }
 ```
 
-Where this results in objects with too many attributes, we usually split attributes between required and optional by adding a second level, as in this example where VM `attached_disks[].options` contains less used attributes and can be set to null if not needed.
+Where this results in objects with too many attributes, we usually group attributes into logical blocks, as in this example where VM `attached_disks` separates initialization parameters and source parameters.
 
 ```hcl
 module "simple-vm-example" {
@@ -344,13 +346,17 @@ module "simple-vm-example" {
   project_id = var.project_id
   zone       = "europe-west1-b"
   name       = "test"
-  attached_disks = [
-    { name="data", size=10, source=null, source_type=null, options=null }
-  ]
+  attached_disks = {
+    data = {
+      initialize_params = {
+        # size = 10 (this is the default)
+      }
+    }
+  }
 }
 ```
 
-Whenever options are not passed like in the example above, we typically infer their values from a defaults variable which can be customized when using defaults across several items. In the following example instead of specifying regional PD options for both disks, we set their options to `null` and change the defaults used for all disks.
+When defining multiple items, we use maps instead of lists to ensure stable keys in the Terraform state. In the following example we define multiple attached disks using a map.
 
 ```hcl
 module "simple-vm-example" {
@@ -358,16 +364,18 @@ module "simple-vm-example" {
   project_id = var.project_id
   zone       = "europe-west1-b"
   name       = "test"
-  attached_disk_defaults = {
-    auto_delete = false
-    mode = "READ_WRITE"
-    replica_zone = "europe-west1-c"
-    type = "pd-balanced"
+  attached_disks = {
+    data1 = {
+      initialize_params = {
+        # size = 10 (this is the default)
+      }
+    }
+    data2 = {
+      initialize_params = {
+        size = 20
+      }
+    }
   }
-  attached_disks = [
-    { name="data1", size=10, source=null, source_type=null, options=null },
-    { name="data2", size=10, source=null, source_type=null, options=null }
-  ]
 }
 ```
 
