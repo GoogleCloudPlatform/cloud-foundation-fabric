@@ -71,8 +71,12 @@ module "folder-1" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  logging_settings        = lookup(each.value, "logging", null)
-  context                 = local.ctx
+  logging_settings = anytrue([
+    try(each.value.logging.storage_location, null) != null,
+    try(each.value.logging.disable_default_sink, null) != null,
+    try(each.value.logging.kms_key_name, null) != null,
+  ]) ? lookup(each.value, "logging", null) : null
+  context = local.ctx
 }
 
 module "folder-1-iam" {
@@ -134,7 +138,11 @@ module "folder-2" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  logging_settings        = lookup(each.value, "logging", null)
+  logging_settings = anytrue([
+    try(each.value.logging.storage_location, null) != null,
+    try(each.value.logging.disable_default_sink, null) != null,
+    try(each.value.logging.kms_key_name, null) != null,
+  ]) ? lookup(each.value, "logging", null) : null
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
@@ -205,7 +213,11 @@ module "folder-3" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  logging_settings        = lookup(each.value, "logging", null)
+  logging_settings = anytrue([
+    try(each.value.logging.storage_location, null) != null,
+    try(each.value.logging.disable_default_sink, null) != null,
+    try(each.value.logging.kms_key_name, null) != null,
+  ]) ? lookup(each.value, "logging", null) : null
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
@@ -276,7 +288,11 @@ module "folder-4" {
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
   tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
-  logging_settings        = lookup(each.value, "logging", null)
+  logging_settings = anytrue([
+    try(each.value.logging.storage_location, null) != null,
+    try(each.value.logging.disable_default_sink, null) != null,
+    try(each.value.logging.kms_key_name, null) != null,
+  ]) ? lookup(each.value, "logging", null) : null
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
