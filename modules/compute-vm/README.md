@@ -965,6 +965,25 @@ module "instance-group" {
 # tftest inventory=group.yaml e2e
 ```
 
+You can also use the `group` variable to add the instance to an existing unmanaged instance group by providing the group's self link or ID in the `membership` field.
+
+```hcl
+module "instance-group-membership" {
+  source     = "./fabric/modules/compute-vm"
+  project_id = var.project_id
+  zone       = "${var.region}-b"
+  name       = "ilb-test-member"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  group = {
+    membership = "my-existing-group-id"
+  }
+}
+# tftest inventory=group-membership.yaml
+```
+
 ### Instance Schedule and Resource Policies
 
 One instance start and stop schedule can be defined via the `instance_schedule` variable. Note that this requires [additional permissions on Compute Engine Service Agent](https://cloud.google.com/compute/docs/instances/schedule-instance-start-stop#service_agent_required_roles). Already defined resource policies can be set via the `resource_policies` variable.

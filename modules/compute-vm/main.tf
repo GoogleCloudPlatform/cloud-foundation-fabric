@@ -98,7 +98,7 @@ resource "google_compute_instance_iam_binding" "default" {
 }
 
 resource "google_compute_instance_group" "unmanaged" {
-  count   = var.group != null && !local.is_template ? 1 : 0
+  count   = try(var.group.membership, null) == null && var.group != null && !local.is_template ? 1 : 0
   project = local.project_id
   network = (
     length(var.network_interfaces) > 0
@@ -117,6 +117,14 @@ resource "google_compute_instance_group" "unmanaged" {
       port = config.value
     }
   }
+}
+
+resource "google_compute_instance_group_membership" "unmanaged" {
+  count          = try(var.group.membership, null) != null && !local.is_template ? 1 : 0
+  project        = local.project_id
+  zone           = local.zone
+  instance       = google_compute_instance.default[0].self_link
+  instance_group = var.group.membership
 }
 
 resource "google_service_account" "service_account" {
