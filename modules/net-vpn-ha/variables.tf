@@ -101,7 +101,7 @@ variable "router_config" {
     override_name = optional(string)
   })
   nullable = false
-  
+
   validation {
     condition = alltrue(flatten([
       for k, v in var.router_config.route_policies : [

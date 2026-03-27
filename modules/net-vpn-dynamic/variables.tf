@@ -77,7 +77,7 @@ variable "router_config" {
     }))
   })
   nullable = false
-  
+
   validation {
     condition = alltrue(flatten([
       for k, v in var.router_config.route_policies : [
