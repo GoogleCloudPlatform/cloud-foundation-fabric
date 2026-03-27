@@ -200,6 +200,68 @@ In the default dataset, DNS is centralized in the `net-core-0` (hub) project. It
 
 The spoke VPCs have their own private zones for subdomains (e.g., `dev.test.`) and use the hub for all other DNS lookups.
 
+#### Delegated Public Zones
+
+The factory also supports delegating public zones, which is useful for scenarios where a parent public zone is managed in one project, and you want to delegate a subdomain to a different project.
+
+To configure this, you first define the parent public zone. Then, for the delegated zone, you specify `delegation_config` pointing to the parent zone. This automatically creates the necessary `NS` (and `DS` records if you are using DNSSEC) records in the parent zone.
+
+Here's an example of how to set this up:
+
+```yaml
+# Parent public zone (e.g., in dns/zones/net-core-0/pub-gcp-example-com.yaml)
+#
+# yaml-language-server: $schema=../../../../../schemas/dns.schema.json
+
+project_id: $project_ids:net-core-0
+domain: gcp.example.com.
+public:
+  enable_logging: false
+  dnssec_config:
+    state: "on"
+    non_existence: "nsec3"
+    key_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+    zone_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+recordsets:
+  "A localhost":
+    records: ["127.0.0.1"]
+delegations:
+  - net-dev-0/pub-dev-gcp-example-com
+```
+
+```yaml
+# Delegated child zone (e.g., in dns/zones/net-dev-0/pub-dev-gcp-example-com.yaml)
+#
+# yaml-language-server: $schema=../../../../../schemas/dns.schema.json
+
+project_id: $project_ids:net-dev-0
+domain: dev.gcp.example.com.
+public:
+  enable_logging: false
+  dnssec_config:
+    state: "on"
+    non_existence: "nsec3"
+    key_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+    zone_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+recordsets:
+  "A localhost":
+    records: ["127.0.0.1"]
+
+```
+
+In this example:
+- A public zone for `gcp.example.com.` is created in the `net-core-0` project.
+- A separate public zone for `dev.gcp.example.com.` is created in the `net-dev-0` project.
+- The `delegation_config` in the parent zone tells the factory to find the child zone named `pub-dev-gcp-example-com` in the `net-dev-0` project and create the necessary `NS` and `DS` records to make the delegation effective.
+
 ### Firewall Policies
 
 This stage supports both VPC-level firewall rules and hierarchical firewall policies.
