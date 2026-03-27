@@ -115,19 +115,19 @@ clusters = {
       }
       private_nodes = true
     }
-    enable_features =  {
+    enable_features = {
       binary_authorization = true
       groups_for_rbac      = "gke-security-groups@example.com"
       intranode_visibility = true
       rbac_binding_config = {
-        enable_insecure_binding_system_unauthenticated: false
-        enable_insecure_binding_system_authenticated: false
+        enable_insecure_binding_system_unauthenticated : false
+        enable_insecure_binding_system_authenticated : false
       }
-      shielded_nodes       = true
+      shielded_nodes = true
       upgrade_notifications = {
         event_types = ["SECURITY_BULLETIN_EVENT", "UPGRADE_AVAILABLE_EVENT", "UPGRADE_INFO_EVENT", "UPGRADE_EVENT"]
       }
-      workload_identity    = true
+      workload_identity = true
     }
     vpc_config = {
       subnetwork             = "projects/ldj-dev-net-spoke-0/regions/europe-west8/subnetworks/gke"
@@ -141,7 +141,7 @@ clusters = {
 nodepools = {
   test-00 = {
     00 = {
-      node_count  = { initial = 1 }
+      node_count = { initial = 1 }
       node_config = {
         sandbox_config_gvisor = true
       }

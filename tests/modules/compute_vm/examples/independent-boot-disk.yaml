@@ -16,7 +16,7 @@ values:
   module.simple-vm-example.google_compute_disk.boot[0]:
     description: null
     disk_encryption_key: []
-    image: projects/debian-cloud/global/images/family/debian-11
+    image: debian-cloud/debian-13
     labels:
       disk_name: boot
       disk_type: pd-balanced

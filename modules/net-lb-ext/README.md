@@ -159,9 +159,11 @@ module "instance-group" {
   }]
   boot_disk = {
     initialize_params = {
+      type = "pd-ssd"
+      size = 10
+    }
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
-      type  = "pd-ssd"
-      size  = 10
     }
   }
   tags = ["http-server", "ssh"]
@@ -196,6 +198,7 @@ module "nlb" {
 ```
 
 ## Deploying changes to load balancer configurations
+
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 <!-- BEGIN TFDOC -->
 ## Variables

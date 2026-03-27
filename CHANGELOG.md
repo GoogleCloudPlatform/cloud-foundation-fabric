@@ -3,7 +3,53 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-02-12 09:53:27+00:00 to: None since: v53.0.0 -->
+## [Unreleased] <!-- from: 2026-03-05 11:16:15+00:00 to: None since: v54.0.0 -->
+
+## [54.1.0] - 2026-03-26
+
+### BREAKING CHANGES
+
+- `modules/compute-vm`: the module interface has been refactored, underlying resources will keep their state id, but callers will need to update and align module attributes. [[#3805](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3805)]
+- `modules/agent-engine`: Update `class_methods` variable from `optional(list(string), [])` to `optional(string)`. [[#3808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3808)]
+- `modules/compute-vm`: changed default instance type from `f1-micro` to `e2-micro` [[#3798](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3798)]
+- `fast/stages/2-networking`: Renamed the Cloud Router that manages the OnPrem VPN to "hybrid-connectivity-router". This will trigger a destroy/create sequence for all the resources related to that CR, including VPN tunnels. The VPN Gateway is not affected, so the tunnels will eventually be created with the same IP Address. [[#3789](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3789)]
+
+### DOCUMENTATION
+
+- [[#3814](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3814)] Update the CONTRIBUTING guide ([ludoo](https://github.com/ludoo)) <!-- 2026-03-26 15:50:42+00:00 -->
+
+### FAST
+
+- [[#3813](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3813)] Bump requests from 2.32.4 to 2.33.0 in /fast/project-templates/secops-anonymization-pipeline/source ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-03-26 15:13:55+00:00 -->
+- [[#3805](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3805)] Compute VM module refactor ([ludoo](https://github.com/ludoo)) <!-- 2026-03-26 11:31:40+00:00 -->
+- [[#3800](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3800)] Fix network "hub-and-spokes-vpns" dataset ([SamuPert](https://github.com/SamuPert)) <!-- 2026-03-18 10:18:55+00:00 -->
+- [[#3795](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3795)] Hardened datasets minor fixes ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-03-18 08:54:14+00:00 -->
+- [[#3797](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3797)] Add information about CI/CD setup for other stages ([wiktorn](https://github.com/wiktorn)) <!-- 2026-03-17 10:51:24+00:00 -->
+- [[#3794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3794)] feat: Add new compliance regime options for Assured Workloads ([SamuPert](https://github.com/SamuPert)) <!-- 2026-03-16 17:59:25+00:00 -->
+- [[#3789](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3789)] net-vlan-attachments in 2-networking ([sruffilli](https://github.com/sruffilli)) <!-- 2026-03-16 14:03:14+00:00 -->
+
+### MODULES
+
+- [[#3812](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3812)] fix(secure-source-manager-instance): when importing a repo do not force default_branch ([lopezvit](https://github.com/lopezvit)) <!-- 2026-03-26 13:13:33+00:00 -->
+- [[#3805](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3805)] Compute VM module refactor ([ludoo](https://github.com/ludoo)) <!-- 2026-03-26 11:31:40+00:00 -->
+- [[#3811](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3811)] Fix Logging folder settings folder ([joshmyers](https://github.com/joshmyers)) <!-- 2026-03-26 05:56:09+00:00 -->
+- [[#3808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3808)] [#3806] Fix Agent Engine class methods: update variable to optional(string) ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-03-25 10:02:20+00:00 -->
+- [[#3804](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3804)] Clarify documentation wrt. backend service vs backend ([rosmo](https://github.com/rosmo)) <!-- 2026-03-19 13:50:40+00:00 -->
+- [[#3762](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3762)] Ignored condition attribute in IAM tag bindings within the organisation/project modules ([jnahelou](https://github.com/jnahelou)) <!-- 2026-03-18 17:12:46+00:00 -->
+- [[#3799](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3799)] Alloydb module: enable 1-72 vcpu for C4A ([AndreaMontemaggiore1](https://github.com/AndreaMontemaggiore1)) <!-- 2026-03-18 13:35:36+00:00 -->
+- [[#3798](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3798)] Use e2-micro instead of f1-micro as default for compute-vm ([wiktorn](https://github.com/wiktorn)) <!-- 2026-03-17 13:46:52+00:00 -->
+- [[#3790](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3790)] Add support for cipher suite configuration on net-vpn-* modules ([davidferguson-telana](https://github.com/davidferguson-telana)) <!-- 2026-03-17 08:39:07+00:00 -->
+- [[#3794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3794)] feat: Add new compliance regime options for Assured Workloads ([SamuPert](https://github.com/SamuPert)) <!-- 2026-03-16 17:59:25+00:00 -->
+- [[#3789](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3789)] net-vlan-attachments in 2-networking ([sruffilli](https://github.com/sruffilli)) <!-- 2026-03-16 14:03:14+00:00 -->
+- [[#3792](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3792)] Allow compute-vm disks to have custom names ([singhal0306](https://github.com/singhal0306)) <!-- 2026-03-16 11:22:35+00:00 -->
+- [[#3787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3787)] Add context support to vlan-attachments ([sruffilli](https://github.com/sruffilli)) <!-- 2026-03-13 07:12:05+00:00 -->
+- [[#3786](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3786)] Fix Cloud SQL E2E test ([wiktorn](https://github.com/wiktorn)) <!-- 2026-03-12 10:10:25+00:00 -->
+- [[#3784](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3784)] Add context support to artifact-registry, net-lb-app-int, cloudsql modules ([ludoo](https://github.com/ludoo)) <!-- 2026-03-11 11:35:09+00:00 -->
+- [[#3783](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3783)] Fix typo in example ([nmcguirt](https://github.com/nmcguirt)) <!-- 2026-03-06 10:47:48+00:00 -->
+
+### TOOLS
+
+- [[#3805](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3805)] Compute VM module refactor ([ludoo](https://github.com/ludoo)) <!-- 2026-03-26 11:31:40+00:00 -->
 
 ## [54.0.0] - 2026-03-05
 
@@ -2337,7 +2383,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...HEAD
+[54.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...v54.0.0
 [54.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...v53.1.0
 [53.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.1.0...v53.0.0
 [53.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.0.0...v52.1.0

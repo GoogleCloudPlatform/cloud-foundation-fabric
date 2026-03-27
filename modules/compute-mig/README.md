@@ -45,7 +45,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -88,7 +88,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -139,7 +139,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -191,7 +191,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -242,7 +242,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
@@ -287,27 +287,28 @@ module "cos-nginx" {
 }
 
 module "nginx-template" {
-  source        = "./fabric/modules/compute-vm"
-  project_id    = var.project_id
-  name          = "nginx-template"
-  zone          = "${var.region}-b"
-  tags          = ["http-server", "ssh"]
-  instance_type = "e2-small"
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  name         = "nginx-template"
+  zone         = "${var.region}-b"
+  tags         = ["http-server", "ssh"]
+  machine_type = "e2-small"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  attached_disks = [{
-    source_type = "attach"
-    name        = "data-1"
-    size        = 10
-    source      = google_compute_disk.test-disk.name
-  }]
+  attached_disks = {
+    data-1 = {
+      source = {
+        attach = google_compute_disk.test-disk.name
+      }
+    }
+  }
   create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
@@ -338,27 +339,28 @@ module "cos-nginx" {
 }
 
 module "nginx-template" {
-  source        = "./fabric/modules/compute-vm"
-  project_id    = var.project_id
-  name          = "nginx-template"
-  zone          = "${var.region}-b"
-  tags          = ["http-server", "ssh"]
-  instance_type = "e2-small"
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  name         = "nginx-template"
+  zone         = "${var.region}-b"
+  tags         = ["http-server", "ssh"]
+  machine_type = "e2-small"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
-  attached_disks = [{
-    source_type = "attach"
-    name        = "data-1"
-    size        = 10
-    source      = google_compute_disk.test-disk.name
-  }]
+  attached_disks = {
+    data-1 = {
+      source = {
+        attach = google_compute_disk.test-disk.name
+      }
+    }
+  }
   create_template = {}
   metadata = {
     user-data = module.cos-nginx.cloud_config
@@ -413,7 +415,7 @@ module "nginx-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
