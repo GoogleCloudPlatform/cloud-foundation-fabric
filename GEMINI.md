@@ -212,3 +212,9 @@ Modify one existing README example (do not add a new one) to demonstrate context
     *   **Ternary Operators & Functions:** Wrap complex ternary operators in parentheses and break lines to align `?` and `:`. Split function calls with many arguments across multiple lines.
     *   **Locals Separation:** Use module-level locals for values referenced directly by resources/outputs. Use block-level "private" locals prefixed with an underscore (`_`) for intermediate transformations.
     *   **Complex Transformations:** Move complex data transformations in `for` or `for_each` loops to `locals` to keep resource blocks clean.
+
+## Preferred Workflow
+
+- Always break down complex requests into small, iterative tasks.
+- For each task, propose the necessary edits and explicitly wait for user confirmation or discussion before proceeding.
+- Always use the `replace` tool to both perform and cleanly display the proposed text modifications. Do not silently overwrite files or use shell commands for text edits.
