@@ -93,19 +93,20 @@ resource "google_cloudfunctions2_function" "function" {
     }
   }
   service_config {
-    all_traffic_on_latest_revision = true
-    available_cpu                  = var.function_config.cpu
-    available_memory               = "${var.function_config.memory_mb}M"
-    binary_authorization_policy    = var.function_config.binary_authorization_policy
-    environment_variables          = var.environment_variables
-    ingress_settings               = var.ingress_settings
-    max_instance_count             = var.function_config.instance_count
-    min_instance_count             = 0
-    service_account_email          = local.service_account_email
-    timeout_seconds                = var.function_config.timeout_seconds
-    vpc_connector                  = local.vpc_connector
-    vpc_connector_egress_settings  = var.vpc_connector.egress_settings
-    direct_vpc_egress              = try(var.direct_vpc_egress.mode, null)
+    all_traffic_on_latest_revision   = true
+    available_cpu                    = var.function_config.cpu
+    available_memory                 = "${var.function_config.memory_mb}M"
+    binary_authorization_policy      = var.function_config.binary_authorization_policy
+    environment_variables            = var.environment_variables
+    ingress_settings                 = var.ingress_settings
+    max_instance_count               = var.function_config.instance_count
+    max_instance_request_concurrency = var.function_config.max_instance_request_concurrency
+    min_instance_count               = 0
+    service_account_email            = local.service_account_email
+    timeout_seconds                  = var.function_config.timeout_seconds
+    vpc_connector                    = local.vpc_connector
+    vpc_connector_egress_settings    = var.vpc_connector.egress_settings
+    direct_vpc_egress                = try(var.direct_vpc_egress.mode, null)
 
     dynamic "direct_vpc_network_interface" {
       for_each = var.direct_vpc_egress == null ? [] : [""]
