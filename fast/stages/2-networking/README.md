@@ -12,6 +12,7 @@
   - [Networking projects](#networking-projects)
   - [VPCs](#vpcs)
   - [DNS](#dns)
+    - [Delegated Public Zones](#delegated-public-zones)
   - [Firewall Policies](#firewall-policies)
   - [Cloud NAT and Routers](#cloud-nat-and-routers)
   - [VPC Connectivity](#vpc-connectivity)
