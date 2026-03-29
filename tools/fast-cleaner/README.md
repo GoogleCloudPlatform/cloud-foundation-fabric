@@ -37,20 +37,20 @@ This will create a `fast-cleaner` executable in the current directory.
 
 The tool requires a `--target` parameter, which can be either an Organization or a Folder ID.
 
-**By default, the tool runs in `--dry-run=true` mode.** It will discover all resources, print the execution plan, and exit without making any destructive changes.
+**By default, the tool runs in live mode.** It will discover all resources, print the execution plan, and pause to require you to type `yes` before making any destructive changes.
 
 ### Example: Dry Run (Safe)
 
+To run a simulation without executing the deletions, you can explicitly pass `--dry-run`.
+
 ```bash
-./fast-cleaner --target=organizations/1234567890
+./fast-cleaner --target=organizations/1234567890 --dry-run
 ```
 
 ### Example: Live Deletion (Destructive)
 
-To actually execute the deletions, you must explicitly pass `--dry-run=false`. The tool will still pause and require you to type `yes` before proceeding.
-
 ```bash
-./fast-cleaner --target=organizations/1234567890 --dry-run=false
+./fast-cleaner --target=organizations/1234567890
 ```
 
 ### Example: Quiet Mode

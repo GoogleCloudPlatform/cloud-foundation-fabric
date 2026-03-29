@@ -20,7 +20,7 @@ func main() {
 	var quiet bool
 
 	flag.StringVar(&target, "target", "", "The target root for cleanup (e.g., organizations/12345 or folders/12345)")
-	flag.BoolVar(&dryRun, "dry-run", true, "Simulate operations without making changes (defaults to true)")
+	flag.BoolVar(&dryRun, "dry-run", false, "Simulate operations without making changes")
 	flag.BoolVar(&quiet, "q", false, "Quiet output (suppresses running operations during discovery)")
 	flag.Parse()
 
