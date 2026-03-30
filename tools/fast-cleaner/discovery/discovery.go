@@ -20,6 +20,11 @@ type ResourceNode struct {
 	FirewallPolicies     []api.FirewallPolicy
 	OrgPolicies          []api.Policy
 	Sinks                []api.LogSink
+
+	// Access Context Manager
+	AccessPolicies    []api.AccessPolicy
+	ServicePerimeters []api.ServicePerimeter
+	AccessLevels      []api.AccessLevel
 }
 
 // Tree contains the hierarchical structure and flat lists for easy processing.
@@ -29,6 +34,33 @@ type Tree struct {
 	Projects  []*ResourceNode
 	TagKeys   []api.TagKey
 	TagValues map[string][]api.TagValue
+}
+
+func discoverACM(client *api.Client, node *ResourceNode, verbose bool) {
+	if verbose {
+		fmt.Printf("  [Discovery] Fetching ACM policies for %s...\n", node.Name)
+	}
+	policies, err := client.ListAccessPolicies(node.Name)
+	if err == nil && len(policies) > 0 {
+		node.AccessPolicies = policies
+		for _, p := range policies {
+			if verbose {
+				fmt.Printf("  [Discovery] Fetching ACM service perimeters for %s...\n", p.Name)
+			}
+			perimeters, err := client.ListServicePerimeters(p.Name)
+			if err == nil {
+				node.ServicePerimeters = append(node.ServicePerimeters, perimeters...)
+			}
+
+			if verbose {
+				fmt.Printf("  [Discovery] Fetching ACM access levels for %s...\n", p.Name)
+			}
+			levels, err := client.ListAccessLevels(p.Name)
+			if err == nil {
+				node.AccessLevels = append(node.AccessLevels, levels...)
+			}
+		}
+	}
 }
 
 // Discover maps the entire resource hierarchy starting from a parent.
@@ -93,6 +125,8 @@ func Discover(client *api.Client, rootName string, verbose bool) (*Tree, error) 
 	if policies, err := client.ListFirewallPolicies(rootName); err == nil {
 		rootNode.FirewallPolicies = policies
 	}
+
+	discoverACM(client, rootNode, verbose)
 
 	err = walk(client, rootNode, tree, verbose)
 	if err != nil {
@@ -220,6 +254,8 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 		} else {
 			return fmt.Errorf("failed getting sinks for folder %s: %w", f.Name, err)
 		}
+
+		discoverACM(client, folderNode, verbose)
 
 		node.Children = append(node.Children, folderNode)
 

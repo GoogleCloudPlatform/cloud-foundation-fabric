@@ -129,12 +129,11 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 		fmt.Printf("  %d. %s (ID: %s) [%s]%s%s\n", i+1, p.Name, raw.ProjectId, raw.DisplayName, tagsInfo, liensInfo)
 	}
 
-	totalFolderTags, totalFolderFw, totalFolderFwPol, totalFolderPol, totalFolderSinks := 0, 0, 0, 0, 0
+	totalFolderTags, totalFolderFw, totalFolderFwPol, totalFolderPol, totalFolderSinks, totalFolderACM := 0, 0, 0, 0, 0, 0
 	fmt.Printf("\nFound %d Active Folders (Post-Order / Bottom-Up)\n", len(tree.Folders))
 	for i, f := range tree.Folders {
 		raw := f.Raw.(*api.Folder)
-		tagsInfo, fwInfo, fwPolInfo, polInfo := "", "", "", ""
-
+		tagsInfo, fwInfo, fwPolInfo, polInfo, acmInfo := "", "", "", "", ""
 		if len(f.TagBindings) > 0 {
 			tagsInfo = fmt.Sprintf(" 🏷️[%d]", len(f.TagBindings))
 			totalFolderTags += len(f.TagBindings)
@@ -164,7 +163,13 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 			totalFolderSinks += sinkCount
 		}
 
-		fmt.Printf("  %d. %s [%s]%s%s%s%s%s\n", i+1, f.Name, raw.DisplayName, tagsInfo, fwInfo, fwPolInfo, polInfo, sinkInfo)
+		acmCount := len(f.AccessPolicies) + len(f.ServicePerimeters) + len(f.AccessLevels)
+		if acmCount > 0 {
+			acmInfo = fmt.Sprintf(" 🛂[%d]", acmCount)
+			totalFolderACM += acmCount
+		}
+
+		fmt.Printf("  %d. %s [%s]%s%s%s%s%s%s\n", i+1, f.Name, raw.DisplayName, tagsInfo, fwInfo, fwPolInfo, polInfo, sinkInfo, acmInfo)
 	}
 	fmt.Printf("------------------------------------------\n")
 
@@ -182,6 +187,7 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 	}
 	rootFwPolCount := len(tree.Root.FirewallPolicies)
 	rootFwAssocCount := len(tree.Root.FirewallAssociations)
+	rootACMCount := len(tree.Root.AccessPolicies) + len(tree.Root.ServicePerimeters) + len(tree.Root.AccessLevels)
 
 	fmt.Printf("\n--- Execution Plan ---\n")
 	fmt.Printf("Will delete:\n")
@@ -202,8 +208,10 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 	if totalFolderPol > 0 {
 		fmt.Printf("  - %d 📜 Org Policies\n", totalFolderPol)
 	}
+	if (totalFolderACM + rootACMCount) > 0 {
+		fmt.Printf("  - %d 🛂 ACM Resources\n", totalFolderACM+rootACMCount)
+	}
 	fmt.Printf("----------------------\n")
-
 	if dryRun {
 		fmt.Printf("\n[DRY RUN] Plan complete. Exiting without making changes.\n")
 		os.Exit(0)
@@ -225,11 +233,15 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 }
 
 func executeCleanup(client *api.Client, tree *discovery.Tree) {
-	fmt.Printf("\n[Step 1] Removing Firewall Policy Associations...\n")
-	if err := execution.RemoveFirewallAssociations(client, tree); err != nil {
+	fmt.Printf("\n[Step 1] Removing ACM Resources...\n")
+	if err := execution.DeleteACMResources(client, tree); err != nil {
 		log.Printf("ERROR: %v\n", err)
 	}
 
+	fmt.Printf("\n[Step 1.2] Removing Firewall Policy Associations...\n")
+	if err := execution.RemoveFirewallAssociations(client, tree); err != nil {
+		log.Printf("ERROR: %v\n", err)
+	}
 	fmt.Printf("\n[Step 1.5] Deleting Firewall Policies...\n")
 	if err := execution.DeleteFirewallPolicies(client, tree); err != nil {
 		log.Printf("ERROR: %v\n", err)
