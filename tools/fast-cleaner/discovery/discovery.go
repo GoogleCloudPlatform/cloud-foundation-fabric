@@ -28,6 +28,9 @@ type ResourceNode struct {
 
 	// Privileged Access Manager
 	PamEntitlements []api.PamEntitlement
+
+	// Org Policy Custom Constraints
+	CustomConstraints []api.CustomConstraint
 }
 
 // Tree contains the hierarchical structure and flat lists for easy processing.
@@ -73,6 +76,16 @@ func discoverPAM(client *api.Client, node *ResourceNode, verbose bool) {
 	entitlements, err := client.ListPamEntitlements(node.Name)
 	if err == nil && len(entitlements) > 0 {
 		node.PamEntitlements = entitlements
+	}
+}
+
+func discoverCustomConstraints(client *api.Client, node *ResourceNode, verbose bool) {
+	if verbose {
+		fmt.Printf("  [Discovery] Fetching Custom Constraints for %s...\n", node.Name)
+	}
+	constraints, err := client.ListCustomConstraints(node.Name)
+	if err == nil && len(constraints) > 0 {
+		node.CustomConstraints = constraints
 	}
 }
 
@@ -141,6 +154,7 @@ func Discover(client *api.Client, rootName string, verbose bool) (*Tree, error) 
 
 	discoverACM(client, rootNode, verbose)
 	discoverPAM(client, rootNode, verbose)
+	discoverCustomConstraints(client, rootNode, verbose)
 
 	err = walk(client, rootNode, tree, verbose)
 	if err != nil {
@@ -273,6 +287,7 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 
 		discoverACM(client, folderNode, verbose)
 		discoverPAM(client, folderNode, verbose)
+		discoverCustomConstraints(client, folderNode, verbose)
 
 		node.Children = append(node.Children, folderNode)
 

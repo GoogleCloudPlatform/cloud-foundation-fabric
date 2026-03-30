@@ -133,11 +133,11 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 		fmt.Printf("  %d. %s (ID: %s) [%s]%s%s%s\n", i+1, p.Name, raw.ProjectId, raw.DisplayName, tagsInfo, liensInfo, pamInfo)
 	}
 
-	totalFolderTags, totalFolderFw, totalFolderFwPol, totalFolderPol, totalFolderSinks, totalFolderACM, totalFolderPam := 0, 0, 0, 0, 0, 0, 0
+	totalFolderTags, totalFolderFw, totalFolderFwPol, totalFolderPol, totalFolderSinks, totalFolderACM, totalFolderPam, totalFolderCC := 0, 0, 0, 0, 0, 0, 0, 0
 	fmt.Printf("\nFound %d Active Folders (Post-Order / Bottom-Up)\n", len(tree.Folders))
 	for i, f := range tree.Folders {
 		raw := f.Raw.(*api.Folder)
-		tagsInfo, fwInfo, fwPolInfo, polInfo, acmInfo, pamInfo := "", "", "", "", "", ""
+		tagsInfo, fwInfo, fwPolInfo, polInfo, acmInfo, pamInfo, ccInfo := "", "", "", "", "", "", ""
 		if len(f.TagBindings) > 0 {
 			tagsInfo = fmt.Sprintf(" 🏷️[%d]", len(f.TagBindings))
 			totalFolderTags += len(f.TagBindings)
@@ -178,7 +178,12 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 			totalFolderPam += len(f.PamEntitlements)
 		}
 
-		fmt.Printf("  %d. %s [%s]%s%s%s%s%s%s%s\n", i+1, f.Name, raw.DisplayName, tagsInfo, fwInfo, fwPolInfo, polInfo, sinkInfo, acmInfo, pamInfo)
+		if len(f.CustomConstraints) > 0 {
+			ccInfo = fmt.Sprintf(" 🚧[%d]", len(f.CustomConstraints))
+			totalFolderCC += len(f.CustomConstraints)
+		}
+
+		fmt.Printf("  %d. %s [%s]%s%s%s%s%s%s%s%s\n", i+1, f.Name, raw.DisplayName, tagsInfo, fwInfo, fwPolInfo, polInfo, sinkInfo, acmInfo, pamInfo, ccInfo)
 	}
 	fmt.Printf("------------------------------------------\n")
 
@@ -198,6 +203,7 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 	rootFwAssocCount := len(tree.Root.FirewallAssociations)
 	rootACMCount := len(tree.Root.AccessPolicies) + len(tree.Root.ServicePerimeters) + len(tree.Root.AccessLevels)
 	rootPamCount := len(tree.Root.PamEntitlements)
+	rootCCCount := len(tree.Root.CustomConstraints)
 
 	fmt.Printf("\n--- Execution Plan ---\n")
 	fmt.Printf("Will delete:\n")
@@ -223,6 +229,9 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 	}
 	if (totalProjPam + totalFolderPam + rootPamCount) > 0 {
 		fmt.Printf("  - %d 🎟️ PAM Entitlements\n", totalProjPam+totalFolderPam+rootPamCount)
+	}
+	if (totalFolderCC + rootCCCount) > 0 {
+		fmt.Printf("  - %d 🚧 Custom Constraints\n", totalFolderCC+rootCCCount)
 	}
 	fmt.Printf("----------------------\n")
 	if dryRun {
@@ -282,6 +291,11 @@ func executeCleanup(client *api.Client, tree *discovery.Tree) {
 
 	fmt.Printf("\n[Step 5] Removing Folder Org Policies...\n")
 	if err := execution.RemoveFolderOrgPolicies(client, tree); err != nil {
+		log.Printf("ERROR: %v\n", err)
+	}
+
+	fmt.Printf("\n[Step 5.5] Removing Custom Constraints...\n")
+	if err := execution.DeleteCustomConstraints(client, tree); err != nil {
 		log.Printf("ERROR: %v\n", err)
 	}
 
