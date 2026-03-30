@@ -70,3 +70,60 @@ func (c *Client) RemoveFirewallPolicyAssociation(firewallPolicyId string, name s
 
 	return nil
 }
+
+// FirewallPolicy represents a hierarchical firewall policy.
+type FirewallPolicy struct {
+	Id        string `json:"id"`
+	Name      string `json:"name"`
+	ShortName string `json:"shortName"`
+}
+
+type ListFirewallPoliciesResponse struct {
+	Items []FirewallPolicy `json:"items"`
+}
+
+// ListFirewallPolicies returns all firewall policies parented by a target (e.g. folders/12345)
+func (c *Client) ListFirewallPolicies(parentId string) ([]FirewallPolicy, error) {
+	query := url.Values{}
+	query.Set("parentId", parentId)
+
+	reqURL := fmt.Sprintf("%s/locations/global/firewallPolicies?%s", computeBaseURL, query.Encode())
+	resp, err := c.Get(reqURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get firewall policies: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		if resp.StatusCode == 403 {
+			return nil, nil
+		}
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API error listing firewall policies for %s: %s - %s", parentId, resp.Status, string(body))
+	}
+
+	var listResp ListFirewallPoliciesResponse
+	if err := json.NewDecoder(resp.Body).Decode(&listResp); err != nil {
+		return nil, fmt.Errorf("failed to decode firewall policies response: %w", err)
+	}
+
+	return listResp.Items, nil
+}
+
+// DeleteFirewallPolicy deletes a specific firewall policy.
+func (c *Client) DeleteFirewallPolicy(policyId string) error {
+	reqURL := fmt.Sprintf("%s/locations/global/firewallPolicies/%s", computeBaseURL, policyId)
+
+	resp, err := c.Delete(reqURL)
+	if err != nil {
+		return fmt.Errorf("failed to delete firewall policy %s: %w", policyId, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 && resp.StatusCode != 202 && resp.StatusCode != 204 {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API error deleting firewall policy %s: %s - %s", policyId, resp.Status, string(body))
+	}
+
+	return nil
+}

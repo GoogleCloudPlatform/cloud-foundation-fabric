@@ -15,20 +15,29 @@ import (
 )
 
 func main() {
-	var target string
 	var dryRun bool
 	var quiet bool
 
-	flag.StringVar(&target, "target", "", "The target root for cleanup (e.g., organizations/12345 or folders/12345)")
 	flag.BoolVar(&dryRun, "dry-run", false, "Simulate operations without making changes")
 	flag.BoolVar(&quiet, "q", false, "Quiet output (suppresses running operations during discovery)")
+	
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [flags] <target>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "\nArguments:\n")
+		fmt.Fprintf(os.Stderr, "  <target>   The target root for cleanup (e.g., organizations/12345 or folders/12345)\n")
+		fmt.Fprintf(os.Stderr, "\nFlags:\n")
+		flag.PrintDefaults()
+	}
+	
 	flag.Parse()
 
-	if target == "" {
-		fmt.Println("Error: --target is required. Provide a valid parent like 'organizations/12345' or 'folders/12345'")
+	if flag.NArg() < 1 {
+		fmt.Println("Error: target argument is required.")
 		flag.Usage()
 		os.Exit(1)
 	}
+
+	target := flag.Arg(0)
 
 	if !strings.HasPrefix(target, "organizations/") && !strings.HasPrefix(target, "folders/") {
 		fmt.Printf("Error: invalid target format '%s'. Must start with 'organizations/' or 'folders/'\n", target)
@@ -120,11 +129,11 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 		fmt.Printf("  %d. %s (ID: %s) [%s]%s%s\n", i+1, p.Name, raw.ProjectId, raw.DisplayName, tagsInfo, liensInfo)
 	}
 	
-	totalFolderTags, totalFolderFw, totalFolderPol, totalFolderSinks := 0, 0, 0, 0
+	totalFolderTags, totalFolderFw, totalFolderFwPol, totalFolderPol, totalFolderSinks := 0, 0, 0, 0, 0
 	fmt.Printf("\nFound %d Active Folders (Post-Order / Bottom-Up)\n", len(tree.Folders))
 	for i, f := range tree.Folders {
 		raw := f.Raw.(*api.Folder)
-		tagsInfo, fwInfo, polInfo := "", "", ""
+		tagsInfo, fwInfo, fwPolInfo, polInfo := "", "", "", ""
 		
 		if len(f.TagBindings) > 0 {
 			tagsInfo = fmt.Sprintf(" 🏷️[%d]", len(f.TagBindings))
@@ -133,6 +142,10 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 		if len(f.FirewallAssociations) > 0 {
 			fwInfo = fmt.Sprintf(" 🛡️[%d]", len(f.FirewallAssociations))
 			totalFolderFw += len(f.FirewallAssociations)
+		}
+		if len(f.FirewallPolicies) > 0 {
+			fwPolInfo = fmt.Sprintf(" 🧱[%d]", len(f.FirewallPolicies))
+			totalFolderFwPol += len(f.FirewallPolicies)
 		}
 		if len(f.OrgPolicies) > 0 {
 			polInfo = fmt.Sprintf(" 📜[%d]", len(f.OrgPolicies))
@@ -151,7 +164,7 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 			totalFolderSinks += sinkCount
 		}
 		
-		fmt.Printf("  %d. %s [%s]%s%s%s%s\n", i+1, f.Name, raw.DisplayName, tagsInfo, fwInfo, polInfo, sinkInfo)
+		fmt.Printf("  %d. %s [%s]%s%s%s%s%s\n", i+1, f.Name, raw.DisplayName, tagsInfo, fwInfo, fwPolInfo, polInfo, sinkInfo)
 	}
 	fmt.Printf("------------------------------------------\n")
 
@@ -167,6 +180,7 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 			rootSinkCount++
 		}
 	}
+	rootFwPolCount := len(tree.Root.FirewallPolicies)
 
 	fmt.Printf("\n--- Execution Plan ---\n")
 	fmt.Printf("Will delete:\n")
@@ -175,6 +189,9 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 	fmt.Printf("  - %d 🏷️ Tag Bindings\n", totalProjTags + totalFolderTags)
 	fmt.Printf("  - %d 🔒 Liens\n", totalProjLiens)
 	fmt.Printf("  - %d 🛡️ Firewall Associations\n", totalFolderFw)
+	if (totalFolderFwPol + rootFwPolCount) > 0 {
+		fmt.Printf("  - %d 🧱 Firewall Policies\n", totalFolderFwPol + rootFwPolCount)
+	}
 	if (totalFolderSinks + rootSinkCount) > 0 {
 		fmt.Printf("  - %d 📥 Log Sinks\n", totalFolderSinks + rootSinkCount)
 	}
@@ -209,6 +226,11 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 func executeCleanup(client *api.Client, tree *discovery.Tree) {
 	fmt.Printf("\n[Step 1] Removing Firewall Policy Associations...\n")
 	if err := execution.RemoveFirewallAssociations(client, tree); err != nil {
+		log.Printf("ERROR: %v\n", err)
+	}
+
+	fmt.Printf("\n[Step 1.5] Deleting Firewall Policies...\n")
+	if err := execution.DeleteFirewallPolicies(client, tree); err != nil {
 		log.Printf("ERROR: %v\n", err)
 	}
 

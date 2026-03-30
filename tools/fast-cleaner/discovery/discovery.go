@@ -17,6 +17,7 @@ type ResourceNode struct {
 	TagBindings             []api.TagBinding
 	Liens                   []api.Lien
 	FirewallAssociations    []api.FirewallPolicyAssociation
+	FirewallPolicies        []api.FirewallPolicy
 	OrgPolicies             []api.Policy
 	Sinks                   []api.LogSink
 }
@@ -75,6 +76,14 @@ func Discover(client *api.Client, rootName string, verbose bool) (*Tree, error) 
 	}
 	if sinks, err := client.ListSinks(rootName); err == nil {
 		rootNode.Sinks = sinks
+	}
+
+	// Fetch Firewall Policies for the root
+	if verbose {
+		fmt.Printf("  [Discovery] Fetching firewall policies defined on %s...\n", rootName)
+	}
+	if policies, err := client.ListFirewallPolicies(rootName); err == nil {
+		rootNode.FirewallPolicies = policies
 	}
 
 	err = walk(client, rootNode, tree, verbose)
@@ -182,6 +191,16 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 			folderNode.OrgPolicies = policies
 		} else {
 			return fmt.Errorf("failed getting org policies for folder %s: %w", f.Name, err)
+		}
+
+		// Discover Firewall Policies for Folder
+		if verbose {
+			fmt.Printf("  [Discovery] Fetching firewall policies for folder %s...\n", f.Name)
+		}
+		if policies, err := client.ListFirewallPolicies(f.Name); err == nil {
+			folderNode.FirewallPolicies = policies
+		} else {
+			return fmt.Errorf("failed getting firewall policies for folder %s: %w", f.Name, err)
 		}
 
 		// Discover Sinks for Folder

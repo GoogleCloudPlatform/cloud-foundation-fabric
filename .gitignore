@@ -32,3 +32,6 @@ fast/**/globals.auto.tfvars.json
 cloud_sql_proxy
 env/
 
+
+# fast-cleaner binary
+tools/fast-cleaner/fast-cleaner
