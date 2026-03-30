@@ -67,18 +67,18 @@ func (c *Client) DeleteTagBinding(name string) error {
 	// The name comes back from ListTagBindings as:
 	// tagBindings/%2F%2Fcloudresourcemanager.googleapis.com%2Ffolders%2F123/tagValues/456
 	// We must ensure the %2F%2F part is NOT unescaped by the HTTP client before it reaches GCP.
-	
+
 	reqURL := fmt.Sprintf("%s/%s", crmBaseURL, name)
-	
+
 	req, err := http.NewRequest(http.MethodDelete, reqURL, nil)
 	if err != nil {
 		return err
 	}
-	
-	// Force the Opaque URL directly on the request object so the Go HTTP client 
+
+	// Force the Opaque URL directly on the request object so the Go HTTP client
 	// doesn't unescape the %2F before sending it over the wire.
 	req.URL.Opaque = fmt.Sprintf("//cloudresourcemanager.googleapis.com/v3/%s", name)
-	
+
 	resp, err := c.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to delete tag binding %s: %w", name, err)

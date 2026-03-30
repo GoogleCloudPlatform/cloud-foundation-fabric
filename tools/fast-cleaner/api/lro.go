@@ -27,7 +27,7 @@ func (c *Client) WaitForOperation(opName string) error {
 		if err != nil {
 			return fmt.Errorf("failed to poll operation %s: %w", opName, err)
 		}
-		
+
 		if resp.StatusCode != 200 {
 			body, _ := io.ReadAll(resp.Body)
 			resp.Body.Close()

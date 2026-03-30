@@ -5,9 +5,68 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"time"
 )
 
 const computeBaseURL = "https://compute.googleapis.com/compute/v1"
+
+// ComputeOperation represents a long-running compute API operation
+type ComputeOperation struct {
+	SelfLink string `json:"selfLink"`
+	Status   string `json:"status"`
+	Error    *struct {
+		Errors []struct {
+			Message string `json:"message"`
+		} `json:"errors"`
+	} `json:"error"`
+}
+
+func (c *Client) waitForComputeOperation(respBody []byte) error {
+	if c.dryRun || len(respBody) == 0 {
+		return nil
+	}
+
+	var op ComputeOperation
+	if err := json.Unmarshal(respBody, &op); err != nil {
+		// Not an operation object or empty response, assume done
+		return nil
+	}
+
+	if op.SelfLink == "" {
+		return nil
+	}
+
+	for op.Status != "DONE" {
+		var newOp ComputeOperation
+		time.Sleep(2 * time.Second)
+
+		resp, err := c.Get(op.SelfLink)
+		if err != nil {
+			return fmt.Errorf("failed to poll operation: %w", err)
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			return fmt.Errorf("failed to read operation response: %w", err)
+		}
+
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("API error polling operation: %s - %s", resp.Status, string(body))
+		}
+
+		if err := json.Unmarshal(body, &newOp); err != nil {
+			return fmt.Errorf("failed to decode operation response: %w", err)
+		}
+		op = newOp
+	}
+
+	if op.Error != nil && len(op.Error.Errors) > 0 {
+		return fmt.Errorf("operation failed: %s", op.Error.Errors[0].Message)
+	}
+
+	return nil
+}
 
 // FirewallPolicyAssociation represents a binding of a firewall policy to a resource.
 type FirewallPolicyAssociation struct {
@@ -55,7 +114,7 @@ func (c *Client) RemoveFirewallPolicyAssociation(firewallPolicyId string, name s
 	query.Set("name", name)
 
 	reqURL := fmt.Sprintf("%s/locations/global/firewallPolicies/%s/removeAssociation?%s", computeBaseURL, firewallPolicyId, query.Encode())
-	
+
 	// removeAssociation is a POST operation
 	resp, err := c.Post(reqURL, "application/json", nil)
 	if err != nil {
@@ -63,9 +122,13 @@ func (c *Client) RemoveFirewallPolicyAssociation(firewallPolicyId string, name s
 	}
 	defer resp.Body.Close()
 
+	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 && resp.StatusCode != 202 && resp.StatusCode != 204 {
-		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("API error removing firewall policy association %s: %s - %s", name, resp.Status, string(body))
+	}
+
+	if err := c.waitForComputeOperation(body); err != nil {
+		return fmt.Errorf("wait for operation failed for removing firewall policy association %s: %w", name, err)
 	}
 
 	return nil
@@ -120,9 +183,13 @@ func (c *Client) DeleteFirewallPolicy(policyId string) error {
 	}
 	defer resp.Body.Close()
 
+	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != 200 && resp.StatusCode != 202 && resp.StatusCode != 204 {
-		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("API error deleting firewall policy %s: %s - %s", policyId, resp.Status, string(body))
+	}
+
+	if err := c.waitForComputeOperation(body); err != nil {
+		return fmt.Errorf("wait for operation failed for deleting firewall policy %s: %w", policyId, err)
 	}
 
 	return nil

@@ -148,7 +148,7 @@ func (c *Client) DeleteFolder(name string) error {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("API error deleting folder %s: %s - %s", name, resp.Status, string(body))
 	}
-	
+
 	// If it's a dry run, we don't have a real operation to wait on
 	if c.dryRun {
 		return nil

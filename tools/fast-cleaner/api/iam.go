@@ -48,7 +48,7 @@ func (c *Client) GetIamPolicy(resource string) (*IamPolicy, error) {
 // SetIamPolicy replaces the IAM policy for an organization or folder.
 func (c *Client) SetIamPolicy(resource string, policy *IamPolicy) error {
 	reqURL := fmt.Sprintf("%s/%s:setIamPolicy", crmBaseURL, resource)
-	
+
 	body, err := json.Marshal(map[string]interface{}{"policy": policy})
 	if err != nil {
 		return err
