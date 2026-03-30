@@ -16,11 +16,14 @@ type Operation struct {
 	} `json:"error"`
 }
 
-// WaitForOperation polls a GCP Long Running Operation until it is Done or an Error occurs.
+// WaitForOperation polls a Cloud Resource Manager Long Running Operation until it is Done or an Error occurs.
 func (c *Client) WaitForOperation(opName string) error {
-	// opName comes back from the API as e.g. "operations/rm.12345"
-	// We need to query https://cloudresourcemanager.googleapis.com/v3/operations/rm.12345
-	reqURL := fmt.Sprintf("%s/%s", crmBaseURL, opName)
+	return c.WaitForGenericOperation(crmBaseURL, opName, 1*time.Second)
+}
+
+// WaitForGenericOperation polls any standard GCP Long Running Operation.
+func (c *Client) WaitForGenericOperation(baseURL string, opName string, pollDelay time.Duration) error {
+	reqURL := fmt.Sprintf("%s/%s", baseURL, opName)
 
 	for i := 0; i < 30; i++ { // wait up to 30 seconds
 		resp, err := c.Get(reqURL)
@@ -48,7 +51,7 @@ func (c *Client) WaitForOperation(opName string) error {
 			return nil
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(pollDelay)
 	}
 
 	return fmt.Errorf("operation %s timed out", opName)

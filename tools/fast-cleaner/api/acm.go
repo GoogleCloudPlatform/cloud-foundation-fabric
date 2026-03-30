@@ -42,38 +42,7 @@ type ListServicePerimetersResponse struct {
 }
 
 func (c *Client) WaitForAcmOperation(opName string) error {
-	reqURL := fmt.Sprintf("%s/%s", acmBaseURL, opName)
-
-	for i := 0; i < 30; i++ {
-		resp, err := c.Get(reqURL)
-		if err != nil {
-			return fmt.Errorf("failed to poll ACM operation %s: %w", opName, err)
-		}
-
-		if resp.StatusCode != 200 {
-			body, _ := io.ReadAll(resp.Body)
-			resp.Body.Close()
-			return fmt.Errorf("API error polling ACM operation %s: %s - %s", opName, resp.Status, string(body))
-		}
-
-		var op Operation
-		if err := json.NewDecoder(resp.Body).Decode(&op); err != nil {
-			resp.Body.Close()
-			return fmt.Errorf("failed to decode ACM operation %s: %w", opName, err)
-		}
-		resp.Body.Close()
-
-		if op.Done {
-			if op.Error != nil {
-				return fmt.Errorf("ACM operation failed with code %d: %s", op.Error.Code, op.Error.Message)
-			}
-			return nil
-		}
-
-		time.Sleep(2 * time.Second)
-	}
-
-	return fmt.Errorf("ACM operation %s timed out", opName)
+	return c.WaitForGenericOperation(acmBaseURL, opName, 2*time.Second)
 }
 
 // ListAccessPolicies lists policies for a given parent (e.g. organizations/123 or folders/123)

@@ -77,36 +77,5 @@ func (c *Client) DeletePamEntitlement(name string) error {
 }
 
 func (c *Client) WaitForPamOperation(opName string) error {
-	reqURL := fmt.Sprintf("%s/%s", pamBaseURL, opName)
-
-	for i := 0; i < 30; i++ {
-		resp, err := c.Get(reqURL)
-		if err != nil {
-			return fmt.Errorf("failed to poll PAM operation %s: %w", opName, err)
-		}
-
-		if resp.StatusCode != 200 {
-			body, _ := io.ReadAll(resp.Body)
-			resp.Body.Close()
-			return fmt.Errorf("API error polling PAM operation %s: %s - %s", opName, resp.Status, string(body))
-		}
-
-		var op Operation
-		if err := json.NewDecoder(resp.Body).Decode(&op); err != nil {
-			resp.Body.Close()
-			return fmt.Errorf("failed to decode PAM operation %s: %w", opName, err)
-		}
-		resp.Body.Close()
-
-		if op.Done {
-			if op.Error != nil {
-				return fmt.Errorf("PAM operation failed with code %d: %s", op.Error.Code, op.Error.Message)
-			}
-			return nil
-		}
-
-		time.Sleep(2 * time.Second)
-	}
-
-	return fmt.Errorf("PAM operation %s timed out", opName)
+	return c.WaitForGenericOperation(pamBaseURL, opName, 2*time.Second)
 }
