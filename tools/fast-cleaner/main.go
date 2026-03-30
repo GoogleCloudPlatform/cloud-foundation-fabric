@@ -20,7 +20,7 @@ func main() {
 
 	flag.BoolVar(&dryRun, "dry-run", false, "Simulate operations without making changes")
 	flag.BoolVar(&quiet, "q", false, "Quiet output (suppresses running operations during discovery)")
-	
+
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [flags] <target>\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\nArguments:\n")
@@ -28,7 +28,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "\nFlags:\n")
 		flag.PrintDefaults()
 	}
-	
+
 	flag.Parse()
 
 	if flag.NArg() < 1 {
@@ -66,7 +66,7 @@ func main() {
 
 	// Phase 3: Execution
 	fmt.Printf("\n[Phase 3] Starting Execution phase...\n")
-	
+
 	// Interactive IAM Cleanup (Only for Organizations and Folders)
 	if !dryRun {
 		fmt.Printf("\n--- IAM Cleanup ---\n")
@@ -74,7 +74,7 @@ func main() {
 		reader := bufio.NewReader(os.Stdin)
 		iamConf, _ := reader.ReadString('\n')
 		iamConf = strings.TrimSpace(strings.ToLower(iamConf))
-		
+
 		if iamConf == "y" || iamConf == "yes" {
 			policy, err := client.GetIamPolicy(target)
 			if err != nil {
@@ -93,7 +93,7 @@ func main() {
 	}
 
 	executeCleanup(client, tree)
-	
+
 	fmt.Printf("\nCleanup operations completed.\n")
 }
 
@@ -111,13 +111,13 @@ func printInitialization(target string, dryRun bool) {
 
 func printPlan(tree *discovery.Tree, dryRun bool) {
 	fmt.Printf("\n--- Discovery Summary (Execution Plan) ---\n")
-	
+
 	totalProjTags, totalProjLiens := 0, 0
 	fmt.Printf("Found %d Active Projects\n", len(tree.Projects))
 	for i, p := range tree.Projects {
 		raw := p.Raw.(*api.Project)
 		tagsInfo, liensInfo := "", ""
-		
+
 		if len(p.TagBindings) > 0 {
 			tagsInfo = fmt.Sprintf(" 🏷️[%d]", len(p.TagBindings))
 			totalProjTags += len(p.TagBindings)
@@ -128,13 +128,13 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 		}
 		fmt.Printf("  %d. %s (ID: %s) [%s]%s%s\n", i+1, p.Name, raw.ProjectId, raw.DisplayName, tagsInfo, liensInfo)
 	}
-	
+
 	totalFolderTags, totalFolderFw, totalFolderFwPol, totalFolderPol, totalFolderSinks := 0, 0, 0, 0, 0
 	fmt.Printf("\nFound %d Active Folders (Post-Order / Bottom-Up)\n", len(tree.Folders))
 	for i, f := range tree.Folders {
 		raw := f.Raw.(*api.Folder)
 		tagsInfo, fwInfo, fwPolInfo, polInfo := "", "", "", ""
-		
+
 		if len(f.TagBindings) > 0 {
 			tagsInfo = fmt.Sprintf(" 🏷️[%d]", len(f.TagBindings))
 			totalFolderTags += len(f.TagBindings)
@@ -151,7 +151,7 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 			polInfo = fmt.Sprintf(" 📜[%d]", len(f.OrgPolicies))
 			totalFolderPol += len(f.OrgPolicies)
 		}
-		
+
 		sinkCount := 0
 		for _, s := range f.Sinks {
 			if s.Name != "_Default" && s.Name != "_Required" {
@@ -163,7 +163,7 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 			sinkInfo = fmt.Sprintf(" 📥[%d]", sinkCount)
 			totalFolderSinks += sinkCount
 		}
-		
+
 		fmt.Printf("  %d. %s [%s]%s%s%s%s%s\n", i+1, f.Name, raw.DisplayName, tagsInfo, fwInfo, fwPolInfo, polInfo, sinkInfo)
 	}
 	fmt.Printf("------------------------------------------\n")
@@ -181,19 +181,20 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 		}
 	}
 	rootFwPolCount := len(tree.Root.FirewallPolicies)
+	rootFwAssocCount := len(tree.Root.FirewallAssociations)
 
 	fmt.Printf("\n--- Execution Plan ---\n")
 	fmt.Printf("Will delete:\n")
 	fmt.Printf("  - %d Projects\n", len(tree.Projects))
 	fmt.Printf("  - %d Folders\n", len(tree.Folders))
-	fmt.Printf("  - %d 🏷️ Tag Bindings\n", totalProjTags + totalFolderTags)
+	fmt.Printf("  - %d 🏷️ Tag Bindings\n", totalProjTags+totalFolderTags)
 	fmt.Printf("  - %d 🔒 Liens\n", totalProjLiens)
-	fmt.Printf("  - %d 🛡️ Firewall Associations\n", totalFolderFw)
+	fmt.Printf("  - %d 🛡️ Firewall Associations\n", totalFolderFw+rootFwAssocCount)
 	if (totalFolderFwPol + rootFwPolCount) > 0 {
-		fmt.Printf("  - %d 🧱 Firewall Policies\n", totalFolderFwPol + rootFwPolCount)
+		fmt.Printf("  - %d 🧱 Firewall Policies\n", totalFolderFwPol+rootFwPolCount)
 	}
 	if (totalFolderSinks + rootSinkCount) > 0 {
-		fmt.Printf("  - %d 📥 Log Sinks\n", totalFolderSinks + rootSinkCount)
+		fmt.Printf("  - %d 📥 Log Sinks\n", totalFolderSinks+rootSinkCount)
 	}
 	if len(tree.TagKeys) > 0 {
 		fmt.Printf("  - %d 🔑 Tag Keys (with %d Tag Values)\n", len(tree.TagKeys), totalTagValues)
@@ -212,11 +213,11 @@ func printPlan(tree *discovery.Tree, dryRun bool) {
 	fmt.Printf("\n!!! WARNING: LIVE MODE !!!\n")
 	fmt.Printf("You are about to PERMANENTLY DELETE the above resources.\n")
 	fmt.Printf("\nAre you sure you want to proceed? Type 'yes' or 'no': ")
-	
+
 	reader := bufio.NewReader(os.Stdin)
 	confirmation, _ := reader.ReadString('\n')
 	confirmation = strings.TrimSpace(strings.ToLower(confirmation))
-	
+
 	if confirmation != "yes" {
 		fmt.Printf("Aborted by user.\n")
 		os.Exit(0)
@@ -346,5 +347,3 @@ func promptForIamCleanup(policy *api.IamPolicy, reader *bufio.Reader) *api.IamPo
 
 	return updatedPolicy
 }
-
-

@@ -8,26 +8,26 @@ import (
 
 // ResourceNode represents a node in the GCP resource hierarchy (Org, Folder, or Project)
 type ResourceNode struct {
-	Name                    string
-	Type                    string // "organization", "folder", "project"
-	Raw                     interface{} // *api.Folder or *api.Project
-	Children                []*ResourceNode
-	
+	Name     string
+	Type     string      // "organization", "folder", "project"
+	Raw      interface{} // *api.Folder or *api.Project
+	Children []*ResourceNode
+
 	// Discovered dependencies that must be deleted first
-	TagBindings             []api.TagBinding
-	Liens                   []api.Lien
-	FirewallAssociations    []api.FirewallPolicyAssociation
-	FirewallPolicies        []api.FirewallPolicy
-	OrgPolicies             []api.Policy
-	Sinks                   []api.LogSink
+	TagBindings          []api.TagBinding
+	Liens                []api.Lien
+	FirewallAssociations []api.FirewallPolicyAssociation
+	FirewallPolicies     []api.FirewallPolicy
+	OrgPolicies          []api.Policy
+	Sinks                []api.LogSink
 }
 
 // Tree contains the hierarchical structure and flat lists for easy processing.
 type Tree struct {
-	Root     *ResourceNode
-	Folders  []*ResourceNode // Stored in post-order (bottom-up) for safe deletion
-	Projects []*ResourceNode
-	TagKeys  []api.TagKey
+	Root      *ResourceNode
+	Folders   []*ResourceNode // Stored in post-order (bottom-up) for safe deletion
+	Projects  []*ResourceNode
+	TagKeys   []api.TagKey
 	TagValues map[string][]api.TagValue
 }
 
@@ -48,7 +48,7 @@ func Discover(client *api.Client, rootName string, verbose bool) (*Tree, error) 
 	}
 
 	tree := &Tree{
-		Root: rootNode,
+		Root:      rootNode,
 		TagValues: make(map[string][]api.TagValue),
 	}
 
@@ -76,6 +76,14 @@ func Discover(client *api.Client, rootName string, verbose bool) (*Tree, error) 
 	}
 	if sinks, err := client.ListSinks(rootName); err == nil {
 		rootNode.Sinks = sinks
+	}
+
+	// Fetch Firewall Policy Associations for the root
+	if verbose {
+		fmt.Printf("  [Discovery] Fetching firewall associations for %s...\n", rootName)
+	}
+	if fwAssoc, err := client.ListFirewallPolicyAssociations(rootName); err == nil {
+		rootNode.FirewallAssociations = fwAssoc
 	}
 
 	// Fetch Firewall Policies for the root
@@ -110,13 +118,13 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 		if p.State != "ACTIVE" {
 			continue
 		}
-		
+
 		projNode := &ResourceNode{
 			Name: p.Name,
 			Type: "project",
 			Raw:  &p,
 		}
-		
+
 		// Discover Tag Bindings for Project
 		tagParent := fmt.Sprintf("//cloudresourcemanager.googleapis.com/%s", p.Name)
 		if verbose {
@@ -155,7 +163,7 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 		if f.State != "ACTIVE" {
 			continue
 		}
-		
+
 		folderNode := &ResourceNode{
 			Name: f.Name,
 			Type: "folder",
@@ -182,7 +190,7 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 		} else {
 			return fmt.Errorf("failed getting firewall assocs for folder %s: %w", f.Name, err)
 		}
-		
+
 		// Discover Org Policies for Folder
 		if verbose {
 			fmt.Printf("  [Discovery] Fetching org policies for folder %s...\n", f.Name)
