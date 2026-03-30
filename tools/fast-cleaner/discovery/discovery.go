@@ -25,6 +25,9 @@ type ResourceNode struct {
 	AccessPolicies    []api.AccessPolicy
 	ServicePerimeters []api.ServicePerimeter
 	AccessLevels      []api.AccessLevel
+
+	// Privileged Access Manager
+	PamEntitlements []api.PamEntitlement
 }
 
 // Tree contains the hierarchical structure and flat lists for easy processing.
@@ -60,6 +63,16 @@ func discoverACM(client *api.Client, node *ResourceNode, verbose bool) {
 				node.AccessLevels = append(node.AccessLevels, levels...)
 			}
 		}
+	}
+}
+
+func discoverPAM(client *api.Client, node *ResourceNode, verbose bool) {
+	if verbose {
+		fmt.Printf("  [Discovery] Fetching PAM entitlements for %s...\n", node.Name)
+	}
+	entitlements, err := client.ListPamEntitlements(node.Name)
+	if err == nil && len(entitlements) > 0 {
+		node.PamEntitlements = entitlements
 	}
 }
 
@@ -127,6 +140,7 @@ func Discover(client *api.Client, rootName string, verbose bool) (*Tree, error) 
 	}
 
 	discoverACM(client, rootNode, verbose)
+	discoverPAM(client, rootNode, verbose)
 
 	err = walk(client, rootNode, tree, verbose)
 	if err != nil {
@@ -179,6 +193,8 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 		} else {
 			return fmt.Errorf("failed getting liens for project %s: %w", p.Name, err)
 		}
+
+		discoverPAM(client, projNode, verbose)
 
 		node.Children = append(node.Children, projNode)
 		tree.Projects = append(tree.Projects, projNode)
@@ -256,6 +272,7 @@ func walk(client *api.Client, node *ResourceNode, tree *Tree, verbose bool) erro
 		}
 
 		discoverACM(client, folderNode, verbose)
+		discoverPAM(client, folderNode, verbose)
 
 		node.Children = append(node.Children, folderNode)
 
