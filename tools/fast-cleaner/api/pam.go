@@ -46,7 +46,7 @@ func (c *Client) ListPamEntitlements(parent string) ([]PamEntitlement, error) {
 
 // DeletePamEntitlement deletes a specific PAM entitlement.
 func (c *Client) DeletePamEntitlement(name string) error {
-	reqURL := fmt.Sprintf("%s/%s", pamBaseURL, name)
+	reqURL := fmt.Sprintf("%s/%s?force=true", pamBaseURL, name)
 	resp, err := c.Delete(reqURL)
 	if err != nil {
 		return fmt.Errorf("failed to delete PAM entitlement %s: %w", name, err)
