@@ -1,6 +1,7 @@
-______________________________________________________________________
-
-## name: fast-0-org-setup-prereqs description: Guides the user step-by-step through the prerequisites for the FAST 0-org-setup stage, supporting both Standard GCP and Google Cloud Dedicated (GCD) environments. Use when a user asks to prepare or run prerequisites for 0-org-setup or bootstrap the FAST landing zone.
+---
+name: fast-0-org-setup-prereqs
+description: Guides the user step-by-step through the prerequisites for the FAST 0-org-setup stage, supporting both Standard GCP and Google Cloud Dedicated (GCD) environments. Use when a user asks to prepare or run prerequisites for 0-org-setup or bootstrap the FAST landing zone.
+---
 
 # FAST 0-org-setup Prerequisites Guide
 
@@ -22,20 +23,7 @@ When triggered, guide the user through the following sequence strictly in order.
 
 1. Ask the user to clarify their target environment: **Standard GCP** or **Google Cloud Dedicated (GCD)**.
 2. Ask how they prefer to run commands: Should you (Gemini CLI) run them automatically, or should you output them for manual execution?
-3. Gather baseline information required for `0-org-setup`:
-   - Organization ID
-   - Billing Account ID (Mandatory for subsequent stages, even if not required for the GCD temporary project)
-   - Admin Principal (e.g., the group email like `group:gcp-organization-admins@example.com`)
-4. Determine the user's access level to the provided Billing Account ID. Ask which of the following three scenarios applies to them:
-   - **Scenario 1 (Billing Administrator):** The user has `roles/billing.admin`.
-     - *Action:* Use the billing account for projects. Ask for confirmation to keep the billing admin roles in the billing account YAML. Ask for confirmation to keep the billing user roles in the billing account YAML.
-     - *Action:* Ask the user if absolute control of the billing account should be implemented in FAST by switching the billing roles to authoritative. **Outline the risks:** Authoritative bindings will remove any existing IAM bindings on the billing account not defined in FAST, potentially locking out existing users or systems.
-   - **Scenario 2 (Billing User):** The user has `roles/billing.user` but NOT admin rights.
-     - *Action:* Use the billing account for projects. Either disable the billing YAML via the `factories_config` variable or comment it out, since the user cannot control IAM on the account.
-     - *Action:* **Explain to the user:** The service accounts for IaC (and therefore the provider switch and subsequent stages, except for VPC-SC) will not be operative until the correct billing permissions have been assigned to them outside of FAST.
-   - **Scenario 3 (No Access):** The user has absolutely no rights on the billing account.
-     - *Action:* **Clearly state:** This scenario is mostly used for development purposes, is strongly discouraged, and requires advanced Terraform skills and FAST knowledge to proceed.
-5. *If GCD is selected*, ask the user if they are working in one of the known universes: **S3NS (France)** or **Berlin (Germany)**.
+3. *If GCD is selected*, ask the user if they are working in one of the known universes: **S3NS (France)** or **Berlin (Germany)**.
    - *If S3NS:* Pre-fill the following values:
      - Universe Web Domain: `cloud.s3nscloud.fr`
      - Universe API Domain: `s3nsapis.fr`
@@ -53,12 +41,15 @@ When triggered, guide the user through the following sequence strictly in order.
 
 ### Step 2: Authentication
 
-1. *Standard GCP:* Provide or execute the command:
+1. Ask the user if they are already authenticated with Google Cloud using the correct principal.
+   - *If yes:* Proceed directly to Step 3.
+   - *If no:* Proceed with the authentication steps below.
+2. *Standard GCP:* Provide or execute the command:
    ```bash
    gcloud auth login
    gcloud auth application-default login
    ```
-2. *GCD:* Automate or guide the user through WIF login. Ask for the workforce pool audience string first, then generate the configuration:
+3. *GCD:* Automate or guide the user through WIF login. Ask for the workforce pool audience string first, then generate the configuration:
    ```bash
    # (Use the gathered GCD variables to fill placeholders)
    gcloud config configurations create <UNIVERSE_NAME>
@@ -74,29 +65,9 @@ When triggered, guide the user through the following sequence strictly in order.
    gcloud auth login --login-config=/tmp/wif-login-config-<UNIVERSE_NAME>.json --no-launch-browser
    gcloud auth application-default login --login-config=/tmp/wif-login-config-<UNIVERSE_NAME>.json
    ```
+4. Explicitly ask the user to confirm they have successfully authenticated before moving to the next step.
 
-### Step 3: Bootstrap Project Setup
-
-1. Explain that a temporary bootstrap project is required to track API quota before organization policies are fully established.
-2. Ask the user if they already have a suitable project they can use for this purpose.
-   - *If yes:* Ask them to provide the Project ID.
-   - *If no:* Ask the user to use the Cloud Console to create a temporary project (must be linked to the billing account). Ask them to provide the new Project ID once created.
-3. Once provided, set the default project and enable the required baseline APIs:
-   ```bash
-   gcloud config set project <TEMP_PROJECT_ID>
-
-   gcloud services enable \
-     bigquery.googleapis.com \
-     cloudbilling.googleapis.com \
-     cloudresourcemanager.googleapis.com \
-     essentialcontacts.googleapis.com \
-     iam.googleapis.com \
-     logging.googleapis.com \
-     orgpolicy.googleapis.com \
-     serviceusage.googleapis.com
-   ```
-
-### Step 4: IAM Role Assignments
+### Step 3: Admin Principal Definition
 
 1. Explain the concept of the **Admin Principal**. This is the identity (or group of identities) that will be granted the necessary FAST roles to deploy the foundation and manage critical organization-level configurations and policies thereafter.
 2. Determine the Admin Principal approach by asking the user to choose between two options:
@@ -108,7 +79,48 @@ When triggered, guide the user through the following sequence strictly in order.
      - *Action:* Explain that this flow uses a single user as the sole GCP Org Admin, but more can be added later.
      - *Action:* Run (or ask the user to run) `gcloud config list account --format="value(core.account)"` to retrieve their current authenticated principal.
      - *Action:* Show the user their current principal and explicitly ask them to confirm this is the identity they want to use as the Admin Principal.
-3. Grant the following roles to the chosen Admin Principal at the Organization level:
+
+### Step 4: Baseline Information Gathering
+
+1. Gather baseline information required for `0-org-setup`:
+   - Organization ID
+   - Billing Account ID (Mandatory for subsequent stages, even if not required for the GCD temporary project)
+   *Action:* When prompting the user for the Organization ID and Billing Account ID, explicitly instruct them in the prompt/question that they can leave the field blank (or type "list") to have you automatically run the relevant `gcloud` command (`gcloud organizations list` or `gcloud beta billing accounts list`). Also, instruct them that they can type a keyword to filter the list.
+   *Action:* If the user leaves the field blank or types "list", run the `gcloud` command without filters. If the user types a keyword that is not a valid Organization ID (numeric) or Billing Account ID (e.g., `012345-6789AB-CDEF01`), run the `gcloud` command and use that keyword to filter the results using a **case-insensitive** regex match. Ensure the regex pattern is enclosed in single quotes within the filter argument (e.g., `--filter="displayName~'(?i)KEYWORD'"`). Do NOT use `*` wildcards in the filter.
+   *Action:* If the filtered `gcloud` command returns no results, inform the user and use the `ask_user` tool to ask if they want to provide a different keyword or fetch all items (run without a filter).
+   *Action:* Once you have results (filtered or unfiltered), sort them alphabetically by the display name, and then output the sorted results as a clearly formatted numbered list in the chat. Then, use the `ask_user` tool (type: text) to ask the user to enter the number corresponding to their selection.
+2. Determine the **Admin Principal's** access level to the provided Billing Account ID. Ask which of the following three scenarios applies to the Admin Principal (not necessarily the current user):
+   - **Scenario 1 (Billing Administrator):** The Admin Principal has `roles/billing.admin`.
+     - *Action:* Use the billing account for projects. Ask for confirmation to keep the billing admin roles in the billing account YAML. Ask for confirmation to keep the billing user roles in the billing account YAML.
+     - *Action:* Ask the user if absolute control of the billing account should be implemented in FAST by switching the billing roles to authoritative. **Outline the risks:** Authoritative bindings will remove any existing IAM bindings on the billing account not defined in FAST, potentially locking out existing users or systems.
+   - **Scenario 2 (Billing User):** The Admin Principal has `roles/billing.user` but NOT admin rights.
+     - *Action:* Use the billing account for projects. Either disable the billing YAML via the `factories_config` variable or comment it out, since the Admin Principal cannot control IAM on the account.
+     - *Action:* **Explain to the user:** The service accounts for IaC (and therefore the provider switch and subsequent stages, except for VPC-SC) will not be operative until the correct billing permissions have been assigned to them outside of FAST.
+   - **Scenario 3 (No Access):** The Admin Principal has absolutely no rights on the billing account.
+     - *Action:* **Clearly state:** This scenario is mostly used for development purposes, is strongly discouraged, and requires advanced Terraform skills and FAST knowledge to proceed.
+
+### Step 5: Bootstrap Project Setup
+
+1. Explain that a temporary bootstrap project is required to track API quota before organization policies are fully established.
+2. Ask the user if they already have a suitable project they can use for this purpose.
+   - *If yes:* Ask if this project is already configured as the active project in `gcloud`. If the user does not know, run `gcloud config list project --format="value(core.project)"` to check for them.
+     - If it is already configured, fetch the Project ID using `gcloud config list project --format="value(core.project)"`.
+     - If it is not configured, ask the user to provide the Project ID.
+   - *If no:* Ask the user to use the Cloud Console to create a temporary project (must be linked to the billing account). Ask them to provide the new Project ID once created.
+3. Once the Project ID is provided or fetched, ensure it is set as the default project. If it is not already set, run:
+   ```bash
+   gcloud config set project <TEMP_PROJECT_ID>
+   ```
+4. Enable the required baseline APIs on the project:
+   - The required APIs are: `bigquery.googleapis.com`, `cloudbilling.googleapis.com`, `cloudresourcemanager.googleapis.com`, `essentialcontacts.googleapis.com`, `iam.googleapis.com`, `logging.googleapis.com`, `orgpolicy.googleapis.com`, `serviceusage.googleapis.com`.
+   - *If the project was pre-existing:* Ask the user if they want you to check which services are already enabled.
+     - *If yes:* Run `gcloud services list --enabled --format="value(config.name)"` to get the current list. Compute the delta between the enabled services and the required list. Only run `gcloud services enable <MISSING_APIS>` for the ones that are missing.
+     - *If no:* Run the full `gcloud services enable` command for all required APIs.
+   - *If the project is new:* Run the full `gcloud services enable` command for all required APIs.
+
+### Step 6: IAM Role Assignments
+
+1. Grant the following roles to the chosen Admin Principal at the Organization level:
    ```bash
    # Roles to assign:
    # roles/billing.admin
@@ -128,7 +140,7 @@ When triggered, guide the user through the following sequence strictly in order.
    done
    ```
 
-### Step 5: Configuration Generation
+### Step 6: Configuration Generation
 
 1. **Explain Datasets and Contexts:** Briefly explain to the user that FAST uses "datasets" (collections of YAML files that describe the actual landing zone design and configuration) to drive its deployment. The `defaults.yaml` file within a dataset acts as the central configuration hub for the stage. It defines global settings (like the Organization ID and Billing Account) and sets up "contexts" (static mappings of values like principals or locations) that can be referenced symbolically throughout the rest of the YAML files.
 2. **Select the Dataset:** Ask the user to select the dataset they want to use for their landing zone design.
@@ -145,7 +157,7 @@ When triggered, guide the user through the following sequence strictly in order.
 8. *If GCD*, also:
    - Create a temporary `providers.tf` file containing the specific `universe_domain` configuration.
 
-### Step 6: Organization Policy Import Check
+### Step 7: Organization Policy Import Check
 
 1. Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
 2. Execute (or provide) the command to list current policies.
@@ -154,7 +166,7 @@ When triggered, guide the user through the following sequence strictly in order.
    ```
 3. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, use the `replace` or `write_file` tool to append them to the `org_policies_imports` list variable in the `0-org-setup.auto.tfvars` file. Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
 
-### Step 7: Wrap-up & Apply
+### Step 8: Wrap-up & Apply
 
 1. Remind the user that the prerequisite phase is complete.
 2. Instruct them to run `terraform init` and `terraform apply`.
