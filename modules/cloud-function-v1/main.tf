@@ -118,6 +118,6 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
   role           = lookup(local.ctx.custom_roles, each.key, each.key)
   members        = [for member in each.value : lookup(local.ctx.iam_principals, member, member)]
   lifecycle {
-    replace_triggered_by = [google_cloudfunctions_function.function]
+    replace_triggered_by = [google_cloudfunctions_function.function.id]
   }
 }
