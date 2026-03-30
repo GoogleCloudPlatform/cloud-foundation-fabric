@@ -165,7 +165,7 @@ resource "google_cloudfunctions2_function_iam_binding" "binding" {
   role           = lookup(local.ctx.custom_roles, each.key, each.key)
   members        = [for member in each.value : lookup(local.ctx.iam_principals, member, member)]
   lifecycle {
-    replace_triggered_by = [google_cloudfunctions2_function.function]
+    replace_triggered_by = [google_cloudfunctions2_function.function.id]
   }
 }
 
@@ -189,7 +189,7 @@ resource "google_cloud_run_service_iam_binding" "invoker" {
   role     = "roles/run.invoker"
   members  = [for member in local.run_invoker_members : lookup(local.ctx.iam_principals, member, member)]
   lifecycle {
-    replace_triggered_by = [google_cloudfunctions2_function.function]
+    replace_triggered_by = [google_cloudfunctions2_function.function.id]
   }
 }
 
@@ -206,7 +206,7 @@ resource "google_cloud_run_service_iam_member" "invoker" {
   role     = "roles/run.invoker"
   member   = "serviceAccount:${local.trigger_sa_email}"
   lifecycle {
-    replace_triggered_by = [google_cloudfunctions2_function.function]
+    replace_triggered_by = [google_cloudfunctions2_function.function.id]
   }
 }
 
