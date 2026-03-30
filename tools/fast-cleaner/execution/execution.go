@@ -208,8 +208,13 @@ func DeleteFolders(client *api.Client, tree *discovery.Tree) error {
 // DeleteTagDefinitions deletes the discovered TagValues and TagKeys.
 func DeleteTagDefinitions(client *api.Client, tree *discovery.Tree) error {
 	var hasError bool
-	// 1. Delete all values first
-	for keyName, values := range tree.TagValues {
+
+	// Iterate over TagKeys so we don't skip keys that failed value discovery
+	for _, key := range tree.TagKeys {
+		keyName := key.Name
+		values := tree.TagValues[keyName]
+
+		// 1. Delete all values first
 		for _, v := range values {
 			fmt.Printf("  - Deleting tag value %s (%s)...\n", v.Name, v.ShortName)
 			if err := client.DeleteTagValue(v.Name); err != nil {
@@ -227,6 +232,7 @@ func DeleteTagDefinitions(client *api.Client, tree *discovery.Tree) error {
 			hasError = true
 		}
 	}
+
 	if hasError {
 		return fmt.Errorf("one or more tag definitions failed to delete")
 	}

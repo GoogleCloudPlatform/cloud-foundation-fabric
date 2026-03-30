@@ -124,6 +124,20 @@ func (c *Client) DeleteTagValue(name string) error {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("API error deleting tag value %s: %s - %s", name, resp.Status, string(body))
 	}
+
+	if c.dryRun {
+		return nil
+	}
+
+	if resp.StatusCode == 200 || resp.StatusCode == 202 {
+		var op Operation
+		if err := json.NewDecoder(resp.Body).Decode(&op); err == nil && op.Name != "" {
+			if err := c.WaitForOperation(op.Name); err != nil {
+				return fmt.Errorf("error waiting for tag value deletion %s: %w", name, err)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -140,5 +154,19 @@ func (c *Client) DeleteTagKey(name string) error {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("API error deleting tag key %s: %s - %s", name, resp.Status, string(body))
 	}
+
+	if c.dryRun {
+		return nil
+	}
+
+	if resp.StatusCode == 200 || resp.StatusCode == 202 {
+		var op Operation
+		if err := json.NewDecoder(resp.Body).Decode(&op); err == nil && op.Name != "" {
+			if err := c.WaitForOperation(op.Name); err != nil {
+				return fmt.Errorf("error waiting for tag key deletion %s: %w", name, err)
+			}
+		}
+	}
+
 	return nil
 }
