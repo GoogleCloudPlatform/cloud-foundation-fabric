@@ -86,8 +86,7 @@ variable "private_cluster_config" {
     enable_private_endpoint = optional(bool, false)
     allowed_projects        = optional(list(string))
   })
-  nullable = false
-  default  = {}
+  default = null
 }
 
 variable "project_id" {
