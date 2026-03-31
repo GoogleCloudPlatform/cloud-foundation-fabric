@@ -13,7 +13,6 @@
 # limitations under the License.
 
 values:
-
   google_compute_router.interconnect-router:
     bgp:
     - advertise_mode: CUSTOM
@@ -35,13 +34,12 @@ values:
     project: myproject
     region: europe-west8
     timeouts: null
-
   module.example-va.google_compute_interconnect_attachment.default:
     admin_enabled: true
     bandwidth: BPS_10G
-    candidate_cloud_router_ip_address: null
+    candidate_cloud_router_ip_address: 169.254.0.1/29
     candidate_cloud_router_ipv6_address: null
-    candidate_customer_router_ip_address: null
+    candidate_customer_router_ip_address: 169.254.0.2/29
     candidate_customer_router_ipv6_address: null
     candidate_subnets:
     - 169.254.0.0/29
@@ -65,7 +63,6 @@ values:
     timeouts: null
     type: DEDICATED
     vlan_tag8021q: 12345
-
   module.example-va.google_compute_router_interface.default[0]:
     name: vlan-attachment-intf
     private_ip_address: null
@@ -75,7 +72,6 @@ values:
     subnetwork: null
     timeouts: null
     vpn_tunnel: null
-
   module.example-va.google_compute_router_peer.default[0]:
     advertise_mode: DEFAULT
     advertised_groups: null
@@ -106,7 +102,6 @@ values:
     timeouts: null
     zero_advertised_route_priority: null
     zero_custom_learned_route_priority: false
-
   module.example-va.random_id.secret:
     byte_length: 12
     keepers: null

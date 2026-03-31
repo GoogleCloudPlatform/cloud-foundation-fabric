@@ -56,7 +56,9 @@ resource "google_compute_interconnect_attachment" "default" {
   bandwidth                = try(var.dedicated_interconnect_config.bandwidth, null)
   mtu                      = local.ipsec_enabled ? null : var.mtu
   candidate_subnets        = try(var.dedicated_interconnect_config.bgp_range, null) != null ? [var.dedicated_interconnect_config.bgp_range] : null
-  vlan_tag8021q            = try(var.dedicated_interconnect_config.vlan_tag, null)
+  vlan_tag8021q                        = try(var.dedicated_interconnect_config.vlan_tag, null)
+  candidate_cloud_router_ip_address    = try(var.dedicated_interconnect_config.candidate_cloud_router_ip_address, null)
+  candidate_customer_router_ip_address = try(var.dedicated_interconnect_config.candidate_customer_router_ip_address, null)
   admin_enabled            = var.admin_enabled
   encryption               = local.ipsec_enabled ? "IPSEC" : null
   type                     = var.dedicated_interconnect_config == null ? "PARTNER" : "DEDICATED"

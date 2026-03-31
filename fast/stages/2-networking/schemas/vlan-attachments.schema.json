@@ -51,6 +51,12 @@
         },
         "vlan_tag": {
           "type": "string"
+        },
+        "candidate_cloud_router_ip_address": {
+          "type": "string"
+        },
+        "candidate_customer_router_ip_address": {
+          "type": "string"
         }
       }
     },
