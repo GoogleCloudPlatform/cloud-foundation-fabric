@@ -16,6 +16,8 @@
 - **peering**: *reference([peering_zone](#refs-peering_zone))*
 - **forwarding**: *reference([forwarding_zone](#refs-forwarding_zone))*
 - **public**: *reference([public_zone](#refs-public_zone))*
+- **delegations**: *array*
+  - items: *string*
 
 ## Definitions
 
