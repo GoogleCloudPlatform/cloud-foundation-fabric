@@ -1,3 +1,17 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 values:
   google_compute_ha_vpn_gateway.default["hub/to-onprem"]:
     description: null
@@ -7,7 +21,6 @@ values:
     labels: null
     name: hub-to-onprem
     network: hub-0
-    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     stack_type: IPV4_ONLY
@@ -25,7 +38,6 @@ values:
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: hub-hybrid-connectivity-router
-    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     timeouts: null
@@ -305,7 +317,6 @@ values:
     labels: null
     mtu: '1500'
     name: to-onprem-vlan-0
-    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     router: hub-hybrid-connectivity-router
@@ -371,7 +382,6 @@ values:
     labels: null
     mtu: '1500'
     name: to-onprem-vlan-1
-    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     router: hub-hybrid-connectivity-router
@@ -429,7 +439,6 @@ values:
     name: hub-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
-    params: []
     project: fast-prod-net-core-0
     routing_mode: GLOBAL
     timeouts: null
@@ -442,7 +451,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -456,7 +464,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -470,7 +477,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -483,7 +489,6 @@ values:
     log_config: []
     name: hub-default
     network: hub-0
-    params: []
     private_ip_google_access: true
     project: fast-prod-net-core-0
     region: europe-west1
@@ -501,7 +506,6 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
-    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -516,7 +520,6 @@ values:
       ipv6_address: null
     labels: null
     name: hub-to-onprem-default
-    params: []
     project: fast-prod-net-core-0
     redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
     terraform_labels:
@@ -598,7 +601,6 @@ values:
     ike_version: 2
     labels: null
     name: hub-to-onprem-remote-0
-    params: []
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: fast-prod-net-core-0
@@ -620,7 +622,6 @@ values:
     ike_version: 2
     labels: null
     name: hub-to-onprem-remote-1
-    params: []
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: fast-prod-net-core-0

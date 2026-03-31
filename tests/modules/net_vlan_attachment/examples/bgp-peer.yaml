@@ -30,7 +30,6 @@ values:
     md5_authentication_keys: []
     name: interconnect-router
     network: mynet
-    params: []
     project: myproject
     region: europe-west8
     timeouts: null
@@ -53,7 +52,6 @@ values:
     labels: null
     mtu: '1500'
     name: vlan-attachment
-    params: []
     project: myproject
     region: europe-west8
     router: interconnect-router

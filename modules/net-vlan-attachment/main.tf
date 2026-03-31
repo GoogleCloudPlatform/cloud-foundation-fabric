@@ -47,23 +47,23 @@ resource "google_compute_address" "default" {
 }
 
 resource "google_compute_interconnect_attachment" "default" {
-  project                  = local.project_id
-  region                   = local.region
-  router                   = local.router
-  name                     = var.name
-  description              = var.description
-  interconnect             = try(var.dedicated_interconnect_config.interconnect, null)
-  bandwidth                = try(var.dedicated_interconnect_config.bandwidth, null)
-  mtu                      = local.ipsec_enabled ? null : var.mtu
-  candidate_subnets        = try(var.dedicated_interconnect_config.bgp_range, null) != null ? [var.dedicated_interconnect_config.bgp_range] : null
+  project                              = local.project_id
+  region                               = local.region
+  router                               = local.router
+  name                                 = var.name
+  description                          = var.description
+  interconnect                         = try(var.dedicated_interconnect_config.interconnect, null)
+  bandwidth                            = try(var.dedicated_interconnect_config.bandwidth, null)
+  mtu                                  = local.ipsec_enabled ? null : var.mtu
+  candidate_subnets                    = try(var.dedicated_interconnect_config.bgp_range, null) != null ? [var.dedicated_interconnect_config.bgp_range] : null
   vlan_tag8021q                        = try(var.dedicated_interconnect_config.vlan_tag, null)
   candidate_cloud_router_ip_address    = try(var.dedicated_interconnect_config.candidate_cloud_router_ip_address, null)
   candidate_customer_router_ip_address = try(var.dedicated_interconnect_config.candidate_customer_router_ip_address, null)
-  admin_enabled            = var.admin_enabled
-  encryption               = local.ipsec_enabled ? "IPSEC" : null
-  type                     = var.dedicated_interconnect_config == null ? "PARTNER" : "DEDICATED"
-  edge_availability_domain = try(var.partner_interconnect_config.edge_availability_domain, null)
-  ipsec_internal_addresses = local.ipsec_enabled ? [google_compute_address.default[0].self_link] : null
+  admin_enabled                        = var.admin_enabled
+  encryption                           = local.ipsec_enabled ? "IPSEC" : null
+  type                                 = var.dedicated_interconnect_config == null ? "PARTNER" : "DEDICATED"
+  edge_availability_domain             = try(var.partner_interconnect_config.edge_availability_domain, null)
+  ipsec_internal_addresses             = local.ipsec_enabled ? [google_compute_address.default[0].self_link] : null
 }
 
 resource "google_compute_router" "encrypted" {
