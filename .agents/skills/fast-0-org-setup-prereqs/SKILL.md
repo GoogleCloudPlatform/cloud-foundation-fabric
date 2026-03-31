@@ -72,9 +72,10 @@ When triggered, guide the user through the following sequence strictly in order.
 1. Explain the concept of the **Admin Principal**. This is the identity (or group of identities) that will be granted the necessary FAST roles to deploy the foundation and manage critical organization-level configurations and policies thereafter.
 2. Determine the Admin Principal approach by asking the user to choose between two options:
    - **Approach A (Preferred): Use a pre-created Group.**
-     - *Action:* Explain that using a group (e.g., `group:gcp-organization-admins@example.com`) is the standard and preferred way.
+     - *Action:* Explain that using a group (e.g., `group:gcp-organization-admins@example.com`) is the standard and preferred way. **Crucially, clarify that the group provided MUST be a group that the user's current authenticated identity belongs to**, otherwise they will lock themselves out.
      - *Action:* Ask the user to provide the group email address.
      - *Action:* Explicitly ask the user to confirm that their current identity (the one they just authenticated with) is already a member of this group.
+     - *Action:* If the user answers "No" to the membership confirmation, **DO NOT PROCEED**. Inform the user that proceeding will lock them out. Ask them to either authenticate with an identity that *is* a member of the group (and restart the authentication step), or provide a different group that their current identity belongs to.
    - **Approach B (Fallback): Use a Single User.**
      - *Action:* Explain that this flow uses a single user as the sole GCP Org Admin, but more can be added later.
      - *Action:* Run (or ask the user to run) `gcloud config list account --format="value(core.account)"` to retrieve their current authenticated principal.
@@ -104,7 +105,7 @@ When triggered, guide the user through the following sequence strictly in order.
 1. Explain that a temporary bootstrap project is required to track API quota before organization policies are fully established.
 2. Ask the user if they already have a suitable project they can use for this purpose.
    - *If yes:* Ask if this project is already configured as the active project in `gcloud`. If the user does not know, run `gcloud config list project --format="value(core.project)"` to check for them.
-     - If it is already configured, fetch the Project ID using `gcloud config list project --format="value(core.project)"`.
+     - If it is already configured, fetch the Project ID using `gcloud config list project --format="value(core.project)"`. Explicitly ask the user to confirm if this fetched Project ID is the one they want to use. **Only if they answer "No" to this confirmation**, ask them to provide the correct Project ID.
      - If it is not configured, ask the user to provide the Project ID.
    - *If no:* Ask the user to use the Cloud Console to create a temporary project (must be linked to the billing account). Ask them to provide the new Project ID once created.
 3. Once the Project ID is provided or fetched, ensure it is set as the default project. If it is not already set, run:
@@ -140,24 +141,34 @@ When triggered, guide the user through the following sequence strictly in order.
    done
    ```
 
-### Step 6: Configuration Generation
+### Step 7: Configuration Generation
 
 1. **Explain Datasets and Contexts:** Briefly explain to the user that FAST uses "datasets" (collections of YAML files that describe the actual landing zone design and configuration) to drive its deployment. The `defaults.yaml` file within a dataset acts as the central configuration hub for the stage. It defines global settings (like the Organization ID and Billing Account) and sets up "contexts" (static mappings of values like principals or locations) that can be referenced symbolically throughout the rest of the YAML files.
 2. **Select the Dataset:** Ask the user to select the dataset they want to use for their landing zone design.
    - *If GCD:* Explicitly state that the `classic-gcd` dataset must be used for GCD installations.
-   - *If Standard GCP:* Offer the available datasets (e.g., `classic`, `hardened`, or any custom datasets present in the `datasets/` folder) and ask them to choose one.
-3. Scaffold or update the `defaults.yaml` file within the chosen dataset (e.g., `datasets/classic/defaults.yaml` or `datasets/classic-gcd/defaults.yaml`).
-   - Populate `global.billing_account`, `global.organization.id`, `context.iam_principals.gcp-organization-admins` (using the Admin Principal determined in Step 4), and `locations`.
+   - *If Standard GCP:* Offer the available datasets and ask them to choose one. **Crucially, only search for available datasets within the `fast/stages/0-org-setup/datasets/` directory.** Do not search across the entire repository or other FAST stages.
+3. **Determine Locations:** FAST uses a set of locations for different services, not a single primary region.
+   - *If GCD:* The region is fixed based on the universe selected in Step 1. Set the `logging` location to `global` and all other required locations to the Universe Region. Do not ask the user to choose; simply show them the configured locations.
+   - *If Standard GCP:* Check the `fast/stages/0-org-setup/schemas/defaults.schema.json` to identify the required location keys (e.g., `bq`, `gcs`, `logging`, `pubsub`). Ask the user to provide the desired region for each of these services.
+4. **Determine Local Path:** Explain to the user that FAST generates provider configurations and other files that need to be stored outside the repository. This is defined by the `output_files.local_path` setting. Propose a default path based on the chosen prefix (e.g., `~/fast-config/<prefix>`) and ask the user to confirm or provide a different path. Once confirmed, create this directory using `mkdir -p <LOCAL_PATH>`.
+5. Scaffold or update the `defaults.yaml` file within the chosen dataset (e.g., `datasets/classic/defaults.yaml` or `datasets/classic-gcd/defaults.yaml`).
+   - Populate `global.billing_account`, `global.organization.id`, and `context.iam_principals.gcp-organization-admins` (using the Admin Principal determined in Step 4).
+   - Populate the service-specific locations gathered in the previous step into the `context.locations` block and map them appropriately in `projects.defaults.locations`.
+   - Populate `output_files.local_path` with the confirmed path.
    - *If GCD*, ensure the `overrides.universe` block is present with `domain`, `prefix`, and specific identity overrides.
-4. **Ask for Additional Context:** Ask the user if there are any other static values (like additional IAM principals, custom roles, or specific locations) they want to bring in from outside to be referenced in the YAML files. If yes, add them to the `context` block in `defaults.yaml`.
-5. **Create `0-org-setup.auto.tfvars`:** Explain that Terraform variables for this stage are conventionally stored in `0-org-setup.auto.tfvars`. Create this file (or update it if it exists).
-   - Set the `factories_config` variable to point to the dataset chosen in Step 5.2 (e.g., `factories_config = { dataset = "datasets/classic" }`).
-6. Use the `replace` tool to edit the files.
-7. Run YAML validation: `yamllint -c .yamllint --no-warnings <file>`.
-8. *If GCD*, also:
-   - Create a temporary `providers.tf` file containing the specific `universe_domain` configuration.
+6. **Ask for Additional Context:** Ask the user if there are any other static values (like additional IAM principals or custom roles) they want to bring in from outside to be referenced in the YAML files. If yes, add them to the `context` block in `defaults.yaml`.
+7. Use the `replace` tool to edit the `defaults.yaml` file.
+8. Run YAML validation: `yamllint -c .yamllint --no-warnings <file>`.
+9. **Create and Link Configuration Files:**
+   - Create the `data/0-org-setup/` directory inside the confirmed `local_path` (`mkdir -p <LOCAL_PATH>/data/0-org-setup/`).
+   - Move the modified `defaults.yaml` from the dataset folder to `<LOCAL_PATH>/data/0-org-setup/defaults.yaml`.
+   - Create `0-org-setup.auto.tfvars` inside the `local_path` (`<LOCAL_PATH>/0-org-setup.auto.tfvars`).
+   - In `0-org-setup.auto.tfvars`, set the `factories_config` variable. The `dataset` should point to the original dataset folder (e.g., `"datasets/classic"`), but the `paths.defaults` must point to the absolute path of the moved defaults file: `paths = { defaults = "<LOCAL_PATH>/data/0-org-setup/defaults.yaml" }`.
+   - Create a symbolic link from the stage folder to the tfvars file: `ln -s <LOCAL_PATH>/0-org-setup.auto.tfvars fast/stages/0-org-setup/0-org-setup.auto.tfvars`.
+10. *If GCD*, also:
+    - Create a temporary `providers.tf` file containing the specific `universe_domain` configuration.
 
-### Step 7: Organization Policy Import Check
+### Step 8: Organization Policy Import Check
 
 1. Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
 2. Execute (or provide) the command to list current policies.
@@ -166,7 +177,7 @@ When triggered, guide the user through the following sequence strictly in order.
    ```
 3. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, use the `replace` or `write_file` tool to append them to the `org_policies_imports` list variable in the `0-org-setup.auto.tfvars` file. Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
 
-### Step 8: Wrap-up & Apply
+### Step 9: Wrap-up & Apply
 
 1. Remind the user that the prerequisite phase is complete.
 2. Instruct them to run `terraform init` and `terraform apply`.
