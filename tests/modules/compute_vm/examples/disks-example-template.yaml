@@ -29,7 +29,7 @@ values:
         resource_manager_tags: null
         resource_policies: null
         source: null
-        source_image: projects/debian-cloud/global/images/family/debian-11
+        source_image: debian-cloud/debian-13
         source_image_encryption_key: []
         source_snapshot: null
         source_snapshot_encryption_key: []

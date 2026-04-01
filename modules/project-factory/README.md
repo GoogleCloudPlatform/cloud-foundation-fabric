@@ -375,7 +375,7 @@ context = {
     "test/prod" = "folders/1234567890"
   }
   iam_principals = {
-    mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
+    mysa = "serviceAccount:test@test-project.iam.gserviceaccount.com"
   }
   project_ids = {
     vpc-host = "test-vpc-host"

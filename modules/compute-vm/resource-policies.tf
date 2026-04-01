@@ -21,23 +21,21 @@ locals {
     google_compute_resource_policy.schedule[0].id
   ]
   disk_zonal_schedule_attachments = flatten([
-    for disk_key, disk_data in local.attached_disks_zonal :
-    disk_data.snapshot_schedule != null ? [
-      for schedule in disk_data.snapshot_schedule : {
-        disk_key          = disk_key
-        source_type       = disk_data.source_type
-        source            = disk_data.source
+    for k, v in local.attached_disks_zonal :
+    v.snapshot_schedule != null ? [
+      for schedule in v.snapshot_schedule : {
+        disk_key          = k
+        source            = v.source
         snapshot_schedule = schedule
       }
     ] : []
   ])
   disk_regional_schedule_attachments = flatten([
-    for disk_key, disk_data in try(local.attached_disks_regional, []) :
-    disk_data.snapshot_schedule != null ? [
-      for schedule in disk_data.snapshot_schedule : {
-        disk_key          = disk_key
-        source_type       = disk_data.source_type
-        source            = disk_data.source
+    for k, v in try(local.attached_disks_regional, []) :
+    v.snapshot_schedule != null ? [
+      for schedule in v.snapshot_schedule : {
+        disk_key          = k
+        source            = v.source
         snapshot_schedule = schedule
       }
     ] : []
@@ -140,7 +138,7 @@ resource "google_compute_disk_resource_policy_attachment" "boot" {
   )
   # if independent disk is used for boot disk it will have a different name compared to when created implicitly
   disk = (
-    !local.template_create && var.boot_disk.use_independent_disk
+    !local.is_template && var.boot_disk.use_independent_disk != null
     ? google_compute_disk.boot[0].name
     : var.name
   )
@@ -160,8 +158,8 @@ resource "google_compute_disk_resource_policy_attachment" "attached" {
     each.value.snapshot_schedule
   )
   disk = (
-    each.value.source_type == "attach"
-    ? each.value.source
+    each.value.source.attach != null
+    ? each.value.source.attach
     : google_compute_disk.disks[each.value.disk_key].name
   )
   depends_on = [
@@ -182,8 +180,8 @@ resource "google_compute_region_disk_resource_policy_attachment" "attached" {
     each.value.snapshot_schedule
   )
   disk = (
-    each.value.source_type == "attach"
-    ? each.value.source
+    each.value.source.attach != null
+    ? each.value.source.attach
     : google_compute_region_disk.disks[each.value.disk_key].name
   )
   depends_on = [

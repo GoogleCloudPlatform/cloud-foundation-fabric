@@ -4,6 +4,11 @@ automation = {
 factories_config = {
   dataset = "datasets/hardened"
 }
+iam_principals = {
+  "service_agents/org/csc-hpsa"            = "serviceAccount:service-org-1234567890@gcp-sa-csc-hpsa.iam.gserviceaccount.com"
+  "service_agents/org/ktd-hpsa"            = "serviceAccount:service-org-1234567890@gcp-sa-ktd-hpsa.iam.gserviceaccount.com"
+  "service_agents/org/security-center-api" = "serviceAccount:service-org-1234567890@security-center-api.iam.gserviceaccount.com"
+}
 logging = {
   project_number = "1234567890"
   writer_identities = {

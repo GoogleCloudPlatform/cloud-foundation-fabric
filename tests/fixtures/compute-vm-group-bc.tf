@@ -23,7 +23,7 @@ module "compute-vm-group-b" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "cos-cloud/cos-stable"
     }
   }
@@ -40,7 +40,7 @@ module "compute-vm-group-c" {
     subnetwork = var.subnet.self_link
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "cos-cloud/cos-stable"
     }
   }

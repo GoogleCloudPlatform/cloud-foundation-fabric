@@ -83,7 +83,26 @@ values:
     perimeter_type: PERIMETER_TYPE_REGULAR
     spec: []
     status:
-    - egress_policies: []
+    - egress_policies:
+      - egress_from:
+        - identities:
+          - serviceAccount:service-org-1234567890@gcp-sa-csc-hpsa.iam.gserviceaccount.com
+          - serviceAccount:service-org-1234567890@gcp-sa-ktd-hpsa.iam.gserviceaccount.com
+          - serviceAccount:service-org-1234567890@security-center-api.iam.gserviceaccount.com
+          identity_type: null
+          source_restriction: SOURCE_RESTRICTION_ENABLED
+          sources:
+          - access_level: '*'
+            resource: null
+        egress_to:
+        - external_resources: null
+          operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - '*'
+          roles: []
+        title: fast-org-scc
       ingress_policies:
       - ingress_from:
         - identities:
@@ -101,6 +120,23 @@ values:
           - projects/1234567890
           roles: []
         title: fast-org-log-sinks
+      - ingress_from:
+        - identities:
+          - serviceAccount:service-org-1234567890@gcp-sa-csc-hpsa.iam.gserviceaccount.com
+          - serviceAccount:service-org-1234567890@gcp-sa-ktd-hpsa.iam.gserviceaccount.com
+          - serviceAccount:service-org-1234567890@security-center-api.iam.gserviceaccount.com
+          identity_type: null
+          sources:
+          - access_level: '*'
+            resource: null
+        ingress_to:
+        - operations:
+          - method_selectors: []
+            service_name: '*'
+          resources:
+          - '*'
+          roles: []
+        title: fast-org-scc
       resources: null
       restricted_services:
       - accessapproval.googleapis.com

@@ -93,7 +93,7 @@ module "spanner_instance" {
   source     = "./fabric/modules/spanner-instance"
   project_id = var.project_id
   instance = {
-    name         = "my-instance"
+    name = "my-instance"
   }
   instance_create = false
   databases = {

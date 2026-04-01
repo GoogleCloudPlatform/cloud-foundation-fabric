@@ -47,7 +47,7 @@ locals {
               nva_def.auto_instance_config.image,
               "projects/debian-cloud/global/images/family/debian-12"
             )
-            instance_type = try(
+            machine_type = try(
               nva_def.auto_instance_config.instance_type, "e2-standard-4"
             )
             metadata = coalesce(
@@ -60,7 +60,7 @@ locals {
               }
             )
             attachments          = try(nva_def.auto_instance_config.nics, [])
-            confidential_compute = try(nva_def.auto_instance_config.confidential_compute, false)
+            confidential_compute = try(nva_def.auto_instance_config.confidential_compute, null)
             encryption           = try(nva_def.auto_instance_config.encryption, null)
             options              = try(nva_def.auto_instance_config.options, null)
             shielded_config      = try(nva_def.auto_instance_config.shielded_config, null)
@@ -117,7 +117,7 @@ module "nva-instance" {
   project_id     = each.value.project_id
   name           = "nva-${each.key}"
   zone           = each.value.zone
-  instance_type  = each.value.instance_type
+  machine_type   = each.value.machine_type
   tags           = each.value.tags
   can_ip_forward = true
   network_interfaces = [for k, v in each.value.attachments :
@@ -129,14 +129,18 @@ module "nva-instance" {
     }
   ]
   boot_disk = {
+    source = {
+      image = each.value.image
+    }
     initialize_params = {
-      image                  = each.value.image
-      google-logging-enabled = true
-      type                   = "pd-ssd"
-      size                   = 10 # TODO: make configurable?
+      type = "pd-ssd"
+      size = 10 # TODO: make configurable?
     }
   }
-  metadata             = each.value.metadata
+  metadata = merge(
+    each.value.metadata,
+    { google-logging-enabled = true }
+  )
   encryption           = each.value.encryption
   shielded_config      = each.value.shielded_config
   confidential_compute = each.value.confidential_compute
