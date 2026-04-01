@@ -14,110 +14,88 @@
  * limitations under the License.
  */
 
-variable "attached_disk_defaults" {
-  description = "Defaults for attached disks options."
-  type = object({
-    auto_delete  = optional(bool, false)
-    mode         = string
-    replica_zone = string
-    type         = string
-  })
-  default = {
-    auto_delete  = true
-    mode         = "READ_WRITE"
-    replica_zone = null
-    type         = "pd-balanced"
-  }
-  validation {
-    condition     = var.attached_disk_defaults.mode == "READ_WRITE" || !var.attached_disk_defaults.auto_delete
-    error_message = "auto_delete can only be specified on READ_WRITE disks."
-  }
-}
-
 variable "attached_disks" {
-  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
-  type = list(object({
-    name        = optional(string)
-    device_name = optional(string)
-    # TODO: size can be null when source_type is attach
-    size              = string
-    snapshot_schedule = optional(list(string))
-    source            = optional(string)
-    source_type       = optional(string)
-    options = optional(
-      object({
-        architecture           = optional(string)
-        auto_delete            = optional(bool, false) # applies only to vm templates
-        mode                   = optional(string, "READ_WRITE")
+  description = "Additional disks. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
+  type = map(object({
+    auto_delete  = optional(bool, true) # applies only to vm templates
+    device_name  = optional(string)
+    force_attach = optional(bool)
+    # auto_delete can only be specified for READ_WRITE, force null otherwise
+    mode = optional(string, "READ_WRITE")
+    name = optional(string)
+    initialize_params = optional(object({
+      replica_zone = optional(string)
+      size         = optional(number, 10)
+      type         = optional(string, "pd-balanced")
+      hyperdisk = optional(object({
         provisioned_iops       = optional(number)
         provisioned_throughput = optional(number) # in MiB/s
-        replica_zone           = optional(string)
         storage_pool           = optional(string)
-        type                   = optional(string, "pd-balanced")
-      }),
-      {
-        auto_delete  = true
-        mode         = "READ_WRITE"
-        replica_zone = null
-        type         = "pd-balanced"
-      }
-    )
+      }), {})
+    }), {})
+    snapshot_schedule = optional(list(string))
+    source = optional(object({
+      attach = optional(string)
+      # disk             = optional(string)
+      image = optional(string) # not supported yet for repd
+      # instant_snapshot = optional(string)
+      snapshot = optional(string)
+    }), {})
   }))
-  default = []
+  nullable = false
+  default  = {}
   validation {
-    condition = length([
-      for d in var.attached_disks : d if(
-        d.source_type == null
-        ||
-        contains(["image", "snapshot", "attach"], coalesce(d.source_type, "1"))
-      )
-    ]) == length(var.attached_disks)
-    error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
-  }
-  validation {
-    condition = length([
-      for d in var.attached_disks : d if d.options == null ||
-      d.options.mode == "READ_WRITE" || !d.options.auto_delete
-    ]) == length(var.attached_disks)
-    error_message = "auto_delete can only be specified on READ_WRITE disks."
-  }
-  validation {
-    condition = alltrue([for d in var.attached_disks :
-      (d.options.architecture == null || contains(["ARM64", "X86_64"], d.options.architecture))
+    condition = alltrue([
+      for k, v in var.attached_disks :
+      contains(["READ_WRITE", "READ_ONLY"], v.mode)
     ])
-    error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
+    error_message = "Allowed values for 'mode' are 'READ_WRITE', 'READ_ONLY'."
   }
 }
 
 variable "boot_disk" {
-  description = "Boot disk properties. Initialize params are ignored when source is set."
+  description = "Boot disk properties."
   type = object({
-    name              = optional(string)
+    architecture      = optional(string)
     auto_delete       = optional(bool, true)
+    force_attach      = optional(bool)
     snapshot_schedule = optional(list(string))
-    source            = optional(string)
     initialize_params = optional(object({
-      architecture           = optional(string)
-      image                  = optional(string, "projects/debian-cloud/global/images/family/debian-11")
-      provisioned_iops       = optional(number)
-      provisioned_throughput = optional(number) # in MiB/s
-      size                   = optional(number, 10)
-      storage_pool           = optional(string)
-      type                   = optional(string, "pd-balanced")
+      size = optional(number, 10)
+      type = optional(string, "pd-balanced")
+      hyperdisk = optional(object({
+        provisioned_iops       = optional(number)
+        provisioned_throughput = optional(number) # in MiB/s
+        storage_pool           = optional(string)
+      }), {})
     }), {})
-    use_independent_disk = optional(bool, false)
+    source = optional(object({
+      attach = optional(string)
+      disk   = optional(string)
+      image  = optional(string)
+      # instant_snapshot = optional(string)
+      snapshot = optional(string)
+    }), { image = "debian-cloud/debian-13" })
+    use_independent_disk = optional(object({
+      name = optional(string)
+    }))
   })
-  default = {
-    initialize_params = {}
-  }
+  default  = {}
   nullable = false
   validation {
-    condition     = var.boot_disk.source != null || var.boot_disk.initialize_params != null
-    error_message = "You can only have one of boot disk source or initialize params."
+    condition = (
+      var.boot_disk.initialize_params == null ||
+      (
+        var.boot_disk.source.attach == null &&
+        var.boot_disk.source.snapshot == null &&
+        var.boot_disk.source.disk == null
+      )
+    )
+    error_message = "Initialize params cannot be used when attaching an existing disk or creating from a snapshot."
   }
   validation {
     condition = (
-      var.boot_disk.use_independent_disk != true
+      var.boot_disk.use_independent_disk == null
       ||
       var.boot_disk.initialize_params != null
     )
@@ -125,8 +103,8 @@ variable "boot_disk" {
   }
   validation {
     condition = (
-      var.boot_disk.initialize_params.architecture == null ||
-      contains(["ARM64", "X86_64"], var.boot_disk.initialize_params.architecture)
+      var.boot_disk.architecture == null ||
+      contains(["ARM64", "X86_64"], var.boot_disk.architecture)
     )
     error_message = "Architecture can be null, 'X86_64' or 'ARM64'."
   }
@@ -139,9 +117,13 @@ variable "can_ip_forward" {
 }
 
 variable "confidential_compute" {
-  description = "Enable Confidential Compute for these instances."
-  type        = bool
-  default     = false
+  description = "Confidential Compute configuration. Set to 'SEV' or 'SEV_SNP' to enable."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.confidential_compute == null || contains(["SEV", "SEV_SNP"], var.confidential_compute)
+    error_message = "Allowed values are 'SEV' or 'SEV_SNP'."
+  }
 }
 
 variable "context" {
@@ -184,6 +166,7 @@ variable "enable_display" {
 
 variable "encryption" {
   description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk."
+  # TODO: Add validation to enforce exclusivity of kms_key_self_link and disk_encryption_key_raw
   type = object({
     encrypt_boot            = optional(bool, false)
     disk_encryption_key_raw = optional(string)
@@ -228,9 +211,10 @@ variable "gpu" {
 }
 
 variable "group" {
-  description = "Define this variable to create an instance group for instances. Disabled for template use."
+  description = "Instance group configuration. Set 'named_ports' to create a new unmanaged instance group, or provide an existing group self_link/id in 'membership' to join one."
   type = object({
-    named_ports = map(number)
+    membership  = optional(string) # ID of an existing unmanaged group to join
+    named_ports = optional(map(number), {})
   })
   default = null
 }
@@ -248,7 +232,7 @@ variable "iam" {
 }
 
 variable "instance_schedule" {
-  description = "Assign or create and assign an instance schedule policy. Either resource policy id or create_config must be specified if not null. Set active to null to dtach a policy from vm before destroying."
+  description = "Assign or create and assign an instance schedule policy. Set active to null to detach a policy from vm before destroying."
   type = object({
     active          = optional(bool, true)
     description     = optional(string)
@@ -269,12 +253,6 @@ variable "instance_schedule" {
     )
     error_message = "An instance schedule must contain at least one schedule."
   }
-}
-
-variable "instance_type" {
-  description = "Instance type."
-  type        = string
-  default     = "e2-micro"
 }
 
 variable "kms_autokeys" {
@@ -299,6 +277,58 @@ variable "labels" {
   description = "Instance labels."
   type        = map(string)
   default     = {}
+}
+
+variable "lifecycle_config" {
+  description = "Instance lifecycle and operational configurations."
+  type = object({
+    allow_stopping_for_update  = optional(bool, true)
+    deletion_protection        = optional(bool, false)
+    key_revocation_action_type = optional(string, "NONE")
+    graceful_shutdown = optional(object({
+      enabled           = optional(bool, false)
+      max_duration_secs = optional(number)
+    }))
+  })
+  default = {}
+  validation {
+    condition = (
+      var.lifecycle_config.key_revocation_action_type == null || contains(
+        ["NONE", "STOP"], var.lifecycle_config.key_revocation_action_type
+      )
+    )
+    error_message = "Allowed values for key_revocation_action_type are 'NONE' or 'STOP'."
+  }
+}
+
+variable "machine_features_config" {
+  description = "Machine-level configuration."
+  type = object({
+    enable_nested_virtualization = optional(bool)
+    enable_turbo_mode            = optional(bool)
+    enable_uefi_networking       = optional(bool)
+    performance_monitoring_unit  = optional(string)
+    threads_per_core             = optional(number)
+    visible_core_count           = optional(number)
+  })
+  nullable = false
+  default  = {}
+  validation {
+    condition = (
+      try(var.machine_features_config.performance_monitoring_unit, null) == null ||
+      contains(
+        ["ARCHITECTURAL", "ENHANCED", "STANDARD"],
+        coalesce(try(var.machine_features_config.performance_monitoring_unit, null), "-")
+      )
+    )
+    error_message = "Allowed values for performance_monitoring_unit are ARCHITECTURAL', 'ENHANCED', 'STANDARD' and null."
+  }
+}
+
+variable "machine_type" {
+  description = "Machine type."
+  type        = string
+  default     = "e2-micro"
 }
 
 variable "metadata" {
@@ -335,21 +365,33 @@ variable "network_attached_interfaces" {
 variable "network_interfaces" {
   description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
   type = list(object({
-    network    = string
-    subnetwork = string
-    alias_ips  = optional(map(string), {})
-    nat        = optional(bool, false)
-    nic_type   = optional(string)
-    stack_type = optional(string)
+    network                     = string
+    subnetwork                  = string
+    alias_ips                   = optional(map(string), {})
+    nat                         = optional(bool, false)
+    network_tier                = optional(string)
+    nic_type                    = optional(string)
+    stack_type                  = optional(string)
+    queue_count                 = optional(number) # NEW
+    internal_ipv6_prefix_length = optional(number) # NEW
     addresses = optional(object({
       internal = optional(string)
       external = optional(string)
     }), null)
-    network_tier = optional(string)
   }))
   validation {
     condition     = alltrue([for v in var.network_interfaces : contains(["STANDARD", "PREMIUM"], coalesce(v.network_tier, "PREMIUM"))])
     error_message = "Allowed values for network tier are: 'STANDARD' or 'PREMIUM'"
+  }
+}
+
+variable "network_performance_tier" {
+  description = "Network performance total egress bandwidth tier."
+  type        = string
+  default     = null
+  validation {
+    condition     = var.network_performance_tier == null || contains(["DEFAULT", "TIER_1"], coalesce(var.network_performance_tier, "-"))
+    error_message = "Allowed values are 'DEFAULT' or 'TIER_1'."
   }
 }
 
@@ -358,73 +400,6 @@ variable "network_tag_bindings" {
   type        = map(string)
   nullable    = false
   default     = {}
-}
-
-variable "options" {
-  description = "Instance options."
-  type = object({
-    advanced_machine_features = optional(object({
-      enable_nested_virtualization = optional(bool)
-      enable_turbo_mode            = optional(bool)
-      enable_uefi_networking       = optional(bool)
-      performance_monitoring_unit  = optional(string)
-      threads_per_core             = optional(number)
-      visible_core_count           = optional(number)
-    }))
-    allow_stopping_for_update  = optional(bool, true)
-    deletion_protection        = optional(bool, false)
-    key_revocation_action_type = optional(string)
-    graceful_shutdown = optional(object({
-      enabled           = optional(bool, false)
-      max_duration_secs = optional(number)
-    }))
-    max_run_duration = optional(object({
-      nanos   = optional(number)
-      seconds = number
-    }))
-    node_affinities = optional(map(object({
-      values = list(string)
-      in     = optional(bool, true)
-    })), {})
-    spot               = optional(bool, false)
-    termination_action = optional(string)
-  })
-  default = {
-    allow_stopping_for_update  = true
-    deletion_protection        = false
-    spot                       = false
-    termination_action         = null
-    key_revocation_action_type = "NONE"
-  }
-  validation {
-    condition = (
-      var.options.termination_action == null
-      ||
-      contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1"))
-    )
-    error_message = "Allowed values for options.termination_action are 'STOP', 'DELETE' and null."
-  }
-  validation {
-    condition = (
-      try(var.options.advanced_machine_features.performance_monitoring_unit, null) == null
-      ||
-      contains(["ARCHITECTURAL", "ENHANCED", "STANDARD"], coalesce(
-        try(
-          var.options.advanced_machine_features.performance_monitoring_unit, null
-        ), "-"
-        )
-      )
-    )
-    error_message = "Allowed values for options.advanced_machine_features.performance_monitoring_unit are ARCHITECTURAL', 'ENHANCED', 'STANDARD' and null."
-  }
-  validation {
-    condition = (
-      var.options.key_revocation_action_type == null
-      ||
-      contains(["NONE", "STOP"], var.options.key_revocation_action_type)
-    )
-    error_message = "Allowed values for options.key_revocation_action_type are 'NONE' or 'STOP'."
-  }
 }
 
 variable "project_id" {
@@ -445,6 +420,41 @@ variable "resource_policies" {
   default     = null
 }
 
+variable "scheduling_config" {
+  description = "Scheduling configuration for the instance."
+  type = object({
+    automatic_restart    = optional(bool)   # Defaults to !spot
+    maintenance_interval = optional(string) # NEW
+    min_node_cpus        = optional(number) # NEW
+    on_host_maintenance  = optional(string) # Defaults to MIGRATE or TERMINATE based on GPU/Spot
+    provisioning_model   = optional(string) # "SPOT" or "STANDARD"
+    termination_action   = optional(string)
+    local_ssd_recovery_timeout = optional(object({ # NEW
+      nanos   = optional(number)
+      seconds = number
+    }))
+    max_run_duration = optional(object({
+      nanos   = optional(number)
+      seconds = number
+    }))
+    node_affinities = optional(map(object({
+      values = list(string)
+      in     = optional(bool, true)
+    })), {})
+  })
+  nullable = false
+  default  = {}
+  validation {
+    condition = (
+      var.scheduling_config.termination_action == null || contains(
+        ["STOP", "DELETE"], coalesce(var.scheduling_config.termination_action, "1"
+        )
+      )
+    )
+    error_message = "Allowed values for termination_action are 'STOP', 'DELETE' and null."
+  }
+}
+
 variable "scratch_disks" {
   description = "Scratch disks configuration."
   type = object({
@@ -457,6 +467,7 @@ variable "scratch_disks" {
   }
 }
 
+
 variable "service_account" {
   description = "Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account."
   type = object({
@@ -466,6 +477,7 @@ variable "service_account" {
   })
   default = {}
 }
+
 
 variable "shielded_config" {
   description = "Shielded VM configuration of the instances."

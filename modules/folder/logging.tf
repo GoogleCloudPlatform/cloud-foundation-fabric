@@ -58,7 +58,7 @@ locals {
 
 resource "google_logging_folder_settings" "default" {
   count                = var.logging_settings != null ? 1 : 0
-  folder               = local.folder_id
+  folder               = local.folder_number
   disable_default_sink = var.logging_settings.disable_default_sink
   kms_key_name = (
     var.logging_settings.kms_key_name == null

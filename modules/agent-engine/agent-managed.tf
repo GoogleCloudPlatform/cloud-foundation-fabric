@@ -36,9 +36,9 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
   spec {
     agent_framework = var.agent_engine_config.agent_framework
     class_methods = (
-      length(var.agent_engine_config.class_methods) > 0
-      ? jsonencode(var.agent_engine_config.class_methods)
-      : null
+      var.agent_engine_config.class_methods == null
+      ? null
+      : var.agent_engine_config.class_methods
     )
     service_account = local.service_account_email
 
