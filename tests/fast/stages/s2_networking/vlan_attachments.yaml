@@ -159,7 +159,6 @@ values:
     name: versions/2-networking-version.txt
     retention: []
     source: fast_version.txt
-    source_md5hash: 5968647fc2c3283267661e50470b6fff
     temporary_hold: null
     timeouts: null
   module.projects.module.projects-iam["net-core-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
