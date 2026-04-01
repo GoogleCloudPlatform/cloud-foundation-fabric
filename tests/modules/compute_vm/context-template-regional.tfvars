@@ -1,8 +1,6 @@
-attached_disks = [{
-  name = "data-0"
-  size = 10
-  }
-]
+attached_disks = {
+  data-0 = {}
+}
 context = {
   addresses = {
     ext-test-0 = "35.10.10.10"

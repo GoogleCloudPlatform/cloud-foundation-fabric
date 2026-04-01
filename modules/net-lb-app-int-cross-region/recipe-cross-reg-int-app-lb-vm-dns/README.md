@@ -107,7 +107,7 @@ vpc_config = {
   instances_config = {
     # both attributes are optional
     machine_type = "e2-small"
-    zones = ["b", "c"]
+    zones        = ["b", "c"]
   }
 }
 # tftest modules=5 resources=15
@@ -131,8 +131,8 @@ vpc_config = {
       "projects/my-project/global/networks/test",
       "projects/my-other-project/global/networks/test"
     ]
-    domain          = "foo.example."
-    hostname        = "lb-test"
+    domain   = "foo.example."
+    hostname = "lb-test"
   }
 }
 # tftest modules=5 resources=15

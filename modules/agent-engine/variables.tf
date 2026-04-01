@@ -19,7 +19,7 @@ variable "agent_engine_config" {
   type = object({
     # Add validation once API stabilizes
     agent_framework       = string
-    class_methods         = optional(list(any), [])
+    class_methods         = optional(string)
     container_concurrency = optional(number)
     environment_variables = optional(map(string), {})
     max_instances         = optional(number)

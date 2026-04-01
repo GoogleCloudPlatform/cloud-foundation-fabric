@@ -50,14 +50,14 @@ module "service-accounts" {
 }
 
 module "instances" {
-  source        = "../../../modules/compute-vm"
-  for_each      = { for k in local.instances : k.name => k }
-  project_id    = each.value.project_id
-  zone          = each.value.zone
-  name          = each.key
-  instance_type = each.value.type
+  source       = "../../../modules/compute-vm"
+  for_each     = { for k in local.instances : k.name => k }
+  project_id   = each.value.project_id
+  zone         = each.value.zone
+  name         = each.key
+  machine_type = each.value.type
   boot_disk = {
-    initialize_params = {
+    source = {
       image = each.value.image
     }
   }

@@ -169,7 +169,7 @@ status:
   # perimeter definition here
 ```
 
- If the dry-run and enforced configurations are different, define both explicitly in separate `spec` and `status` blocks, and set the `use_explicit_dry_run_spec` to `false`.
+ If the dry-run and enforced configurations are different, define both explicitly in separate `spec` and `status` blocks, and set the `use_explicit_dry_run_spec` to `true`.
 
 ## Context expansion
 

@@ -177,6 +177,25 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
         item[context].append(data)
 
 
+def _extract_title(element):
+  'Extract and format text from marko elements.'
+  if isinstance(element, str):
+    return element
+  if hasattr(element, 'children'):
+    if isinstance(element.children, str):
+      if element.get_type() == 'CodeSpan':
+        return f'`{element.children}`'
+      return element.children
+    elif isinstance(element.children, list):
+      inner = ''.join(_extract_title(c) for c in element.children)
+      if element.get_type() == 'StrongEmphasis':
+        return f'**{inner}**'
+      elif element.get_type() == 'Emphasis':
+        return f'*{inner}*'
+      return inner
+  return ''
+
+
 def create_toc(readme, skip=['contents']):
   'Create a Markdown table of contents a for README.'
   doc = marko.parse(readme)
@@ -184,7 +203,7 @@ def create_toc(readme, skip=['contents']):
   headings = [x for x in doc.children if x.get_type() == 'Heading']
   skip = skip or []
   for h in headings[1:]:
-    title = h.children[0].children
+    title = _extract_title(h)
     slug = title.lower().strip()
     slug = re.sub(r'[^\w\s-]', '', slug)
     slug = re.sub(r'[-\s]+', '-', slug)

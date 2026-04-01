@@ -210,7 +210,7 @@ The caller must have `cloudasset.assets.searchAllResources` permission to perfor
 module "vpc-sc" {
   source                  = "./fabric/modules/vpc-sc"
   project_id_search_scope = var.org_id
-  access_policy = "12345678"
+  access_policy           = "12345678"
   ingress_policies = {
     i1 = {
       from = {

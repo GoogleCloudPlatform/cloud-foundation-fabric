@@ -339,18 +339,20 @@ This example shows how to use the module with a manage instance group as backend
 
 ```hcl
 module "win-template" {
-  source        = "./fabric/modules/compute-vm"
-  project_id    = var.project_id
-  zone          = "${var.region}-a"
-  name          = "win-template"
-  instance_type = "n2d-standard-2"
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  zone         = "${var.region}-a"
+  name         = "win-template"
+  machine_type = "n2d-standard-2"
   create_template = {
     regional = false
   }
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/windows-cloud/global/images/windows-server-2019-dc-v20221214"
-      size  = 70
+    }
+    initialize_params = {
+      size = 70
     }
   }
   network_interfaces = [{
@@ -522,7 +524,7 @@ module "ralb-0" {
         endpoints = {
           e-0 = {
             ip_address = "192.0.2.5"
-            port = 443
+            port       = 443
           }
         }
       }

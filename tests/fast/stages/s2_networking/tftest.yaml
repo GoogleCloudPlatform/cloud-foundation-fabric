@@ -17,6 +17,11 @@ module: fast/stages/2-networking
 tests:
   # peering is renamed to simple so as to trigger tflint
   simple:
+  dns_delegations:
+    inventory:
+      - dns_delegations.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s2_networking/data-testdns-delegation
   ncc:
   nva:
   vlan_attachments:

@@ -46,14 +46,14 @@ module "instance-sa" {
 }
 
 module "instances" {
-  source        = "../../compute-vm"
-  for_each      = local.instances
-  project_id    = var.project_id
-  zone          = each.value.zone
-  name          = each.key
-  instance_type = var.instances_config.machine_type
+  source       = "../../compute-vm"
+  for_each     = local.instances
+  project_id   = var.project_id
+  zone         = each.value.zone
+  name         = each.key
+  machine_type = var.instances_config.machine_type
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
