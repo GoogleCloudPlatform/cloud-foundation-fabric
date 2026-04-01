@@ -12,8 +12,8 @@ description: Guides the user step-by-step through the prerequisites for the FAST
    - You (Gemini CLI) can execute the command automatically using the `run_shell_command` tool.
    - You can output the command for the user to copy/paste and execute manually.
      Users can switch between these preferences at any time.
-3. **File Modifications:** Always use the `replace` tool (or `write_file` for new files) to manipulate files instead of opaque shell commands (like `sed` or `echo`). Show proposed edits and ask for confirmation before applying them.
-4. **YAML Validation:** Whenever generating or modifying YAML files, use YAML validation if the tool is available. The project has `yamllint` configured (`.yamllint`). You can run `yamllint -c .yamllint --no-warnings <file>`. If it's missing, offer to install it (`pip install yamllint`) or advise the user.
+3. **File Modifications:** Always use the `replace` tool or `write_file` for new files (e.g., when creating the `0-org-setup.auto.tfvars` file or editing `defaults.yaml`) to manipulate files. **Never** use opaque shell commands (like `sed`, `echo >>`, or `cat <<EOF >>`). Show proposed edits and ask for confirmation before applying them so the user can see what we're doing.
+4. **YAML Validation:** Whenever generating or modifying YAML files, use YAML validation if the tool is available. The project has `yamllint` configured (`.yamllint`). You can run `yamllint -c .yamllint --no-warnings <file>`. If the command is not available, ask the user if they prefer to a) install it outside of the session and come back, b) have the agent install it (`pip install yamllint`), or c) skip validation.
 
 ## Step-by-Step Workflow
 
@@ -42,7 +42,9 @@ When triggered, guide the user through the following sequence strictly in order.
 ### Step 2: Authentication
 
 1. Ask the user if they are already authenticated with Google Cloud using the correct principal.
-   - *If yes:* Proceed directly to Step 3.
+   - *If yes:* Run (or ask the user to run) `gcloud config list account --format="value(core.account)"` to retrieve the current authenticated principal. Show this principal to the user and explicitly ask them to confirm if this is the correct identity they want to use.
+     - *If they confirm:* Proceed directly to Step 3.
+     - *If they do not confirm:* Proceed with the authentication steps below.
    - *If no:* Proceed with the authentication steps below.
 2. *Standard GCP:* Provide or execute the command:
    ```bash
@@ -92,10 +94,11 @@ When triggered, guide the user through the following sequence strictly in order.
    *Action:* Once you have results (filtered or unfiltered), sort them alphabetically by the display name, and then output the sorted results as a clearly formatted numbered list in the chat. Then, use the `ask_user` tool (type: text) to ask the user to enter the number corresponding to their selection.
 2. Determine the **Admin Principal's** access level to the provided Billing Account ID. Ask which of the following three scenarios applies to the Admin Principal (not necessarily the current user):
    - **Scenario 1 (Billing Administrator):** The Admin Principal has `roles/billing.admin`.
-     - *Action:* Use the billing account for projects. Ask for confirmation to keep the billing admin roles in the billing account YAML. Ask for confirmation to keep the billing user roles in the billing account YAML.
-     - *Action:* Ask the user if absolute control of the billing account should be implemented in FAST by switching the billing roles to authoritative. **Outline the risks:** Authoritative bindings will remove any existing IAM bindings on the billing account not defined in FAST, potentially locking out existing users or systems.
+     - *Action:* Ask a follow-up question: "Is your billing account managed by the same organization where we are installing FAST, or outside of it? (You can check this in the Google Cloud Console by going to Billing -> using the organization picker on top -> checking if the account is listed under this organization)."
+     - *If Inside the Org:* Note that `roles/billing.admin` WILL be assigned at the Organization level in Step 6. Instruct the user that we will deactivate the billing factories path for now, but if account-level IAM also needs to be managed via FAST later, they can reactivate the path and use the billing YAML to do it.
+     - *If Outside the Org:* Note that `roles/billing.admin` WILL NOT be assigned at the Organization level in Step 6.
    - **Scenario 2 (Billing User):** The Admin Principal has `roles/billing.user` but NOT admin rights.
-     - *Action:* Use the billing account for projects. Either disable the billing YAML via the `factories_config` variable or comment it out, since the Admin Principal cannot control IAM on the account.
+     - *Action:* Note that `roles/billing.admin` WILL NOT be assigned at the Organization level in Step 6. Either disable the billing YAML via the `factories_config` variable or comment it out, since the Admin Principal cannot control IAM on the account.
      - *Action:* **Explain to the user:** The service accounts for IaC (and therefore the provider switch and subsequent stages, except for VPC-SC) will not be operative until the correct billing permissions have been assigned to them outside of FAST.
    - **Scenario 3 (No Access):** The Admin Principal has absolutely no rights on the billing account.
      - *Action:* **Clearly state:** This scenario is mostly used for development purposes, is strongly discouraged, and requires advanced Terraform skills and FAST knowledge to proceed.
@@ -121,10 +124,10 @@ When triggered, guide the user through the following sequence strictly in order.
 
 ### Step 6: IAM Role Assignments
 
-1. Grant the following roles to the chosen Admin Principal at the Organization level:
+1. Grant the following roles to the chosen Admin Principal at the Organization level. **CRITICAL:** Only include `roles/billing.admin` in this list if the user selected Scenario 1 (Billing Administrator) AND confirmed the billing account is managed Inside the Organization in Step 4.
    ```bash
    # Roles to assign:
-   # roles/billing.admin
+   # [roles/billing.admin] <-- CONDITIONAL (See above)
    # roles/logging.admin
    # roles/iam.organizationRoleAdmin
    # roles/orgpolicy.policyAdmin
@@ -143,30 +146,32 @@ When triggered, guide the user through the following sequence strictly in order.
 
 ### Step 7: Configuration Generation
 
-1. **Explain Datasets and Contexts:** Briefly explain to the user that FAST uses "datasets" (collections of YAML files that describe the actual landing zone design and configuration) to drive its deployment. The `defaults.yaml` file within a dataset acts as the central configuration hub for the stage. It defines global settings (like the Organization ID and Billing Account) and sets up "contexts" (static mappings of values like principals or locations) that can be referenced symbolically throughout the rest of the YAML files.
+1. **Explain Datasets:** Briefly explain to the user that FAST uses "datasets" (collections of YAML files) that fully describe the design, architecture, resources, and policies applied.
 2. **Select the Dataset:** Ask the user to select the dataset they want to use for their landing zone design.
    - *If GCD:* Explicitly state that the `classic-gcd` dataset must be used for GCD installations.
-   - *If Standard GCP:* Offer the available datasets and ask them to choose one. **Crucially, only search for available datasets within the `fast/stages/0-org-setup/datasets/` directory.** Do not search across the entire repository or other FAST stages.
-3. **Determine Locations:** FAST uses a set of locations for different services, not a single primary region.
+   - *If Standard GCP:* Offer the available datasets and ask them to choose one. **Crucially, only search for available datasets within the `fast/stages/0-org-setup/datasets/` directory.** Do not search across the entire repository or other FAST stages. Provide a one-line description below each dataset when presenting the options (e.g., "classic: The standard FAST landing zone architecture", "hardened: A more restrictive, hardened landing zone architecture").
+3. **Explain Defaults Configuration:** Explain to the user that we are starting the configuration of the `defaults.yaml` file, which drives the static configuration of the dataset by providing the Org ID, Billing ID, user-specified locations, and any static values they need to bring in from the outside (like additional IAM principals used in the YAML files to assign IAM roles).
+4. **Determine Locations:** FAST uses a set of locations for different services.
    - *If GCD:* The region is fixed based on the universe selected in Step 1. Set the `logging` location to `global` and all other required locations to the Universe Region. Do not ask the user to choose; simply show them the configured locations.
-   - *If Standard GCP:* Check the `fast/stages/0-org-setup/schemas/defaults.schema.json` to identify the required location keys (e.g., `bq`, `gcs`, `logging`, `pubsub`). Ask the user to provide the desired region for each of these services.
-4. **Determine Local Path:** Explain to the user that FAST generates provider configurations and other files that need to be stored outside the repository. This is defined by the `output_files.local_path` setting. Propose a default path based on the chosen prefix (e.g., `~/fast-config/<prefix>`) and ask the user to confirm or provide a different path. Once confirmed, create this directory using `mkdir -p <LOCAL_PATH>`.
-5. Scaffold or update the `defaults.yaml` file within the chosen dataset (e.g., `datasets/classic/defaults.yaml` or `datasets/classic-gcd/defaults.yaml`).
+   - *If Standard GCP:* Check the `fast/stages/0-org-setup/schemas/defaults.schema.json` to identify the required location keys (e.g., `bq`, `gcs`, `logging`, `pubsub`). First, ask the user to provide a "base location" (e.g., `europe-west1`), explaining that submitting without answering will confirm the default value. Even if the user confirms the base location, you must then ask if they need to override the location for any individual services.
+5. **Determine Local Path:** Explain to the user that FAST generates provider configurations and other files that need to be stored outside the repository. This is defined by the `output_files.local_path` setting. Propose a default path based on the chosen prefix (e.g., `~/fast-config/<prefix>`) and ask the user to confirm or provide a different path. Once confirmed, create this directory using `mkdir -p <LOCAL_PATH>`.
+6. **Ask for Additional Context:** Ask the user if there are any other static values they want to bring in from outside to be referenced in the YAML files. Show them the available context keys (excluding `condition_vars`). Provide examples showing that prefixes are mandatory for IAM principals (e.g., `user:foo@example.com`, `group:bar@example.com`). For GCD, also show a `principalSet:` example. **Do not use shell commands like `echo` or `cat` to show this list; output it directly in your chat message or the `ask_user` prompt.**
+7. **Create Local Directories and Copy Defaults:**
+   - Create the `data/0-org-setup/` directory inside the confirmed `local_path` (`mkdir -p <LOCAL_PATH>/data/0-org-setup/`).
+   - **Copy** (do not move) the `defaults.yaml` from the chosen dataset folder to `<LOCAL_PATH>/data/0-org-setup/defaults.yaml` using `cp`.
+8. **Edit the Copied Defaults File:** Use the `replace` tool to edit the *copied* `<LOCAL_PATH>/data/0-org-setup/defaults.yaml` file.
    - Populate `global.billing_account`, `global.organization.id`, and `context.iam_principals.gcp-organization-admins` (using the Admin Principal determined in Step 4).
    - Populate the service-specific locations gathered in the previous step into the `context.locations` block and map them appropriately in `projects.defaults.locations`.
    - Populate `output_files.local_path` with the confirmed path.
+   - If additional context was provided, add it to the `context` block.
    - *If GCD*, ensure the `overrides.universe` block is present with `domain`, `prefix`, and specific identity overrides.
-6. **Ask for Additional Context:** Ask the user if there are any other static values (like additional IAM principals or custom roles) they want to bring in from outside to be referenced in the YAML files. If yes, add them to the `context` block in `defaults.yaml`.
-7. Use the `replace` tool to edit the `defaults.yaml` file.
-8. Run YAML validation: `yamllint -c .yamllint --no-warnings <file>`.
-9. **Create and Link Configuration Files:**
-   - Create the `data/0-org-setup/` directory inside the confirmed `local_path` (`mkdir -p <LOCAL_PATH>/data/0-org-setup/`).
-   - Move the modified `defaults.yaml` from the dataset folder to `<LOCAL_PATH>/data/0-org-setup/defaults.yaml`.
-   - Create `0-org-setup.auto.tfvars` inside the `local_path` (`<LOCAL_PATH>/0-org-setup.auto.tfvars`).
-   - In `0-org-setup.auto.tfvars`, set the `factories_config` variable. The `dataset` should point to the original dataset folder (e.g., `"datasets/classic"`), but the `paths.defaults` must point to the absolute path of the moved defaults file: `paths = { defaults = "<LOCAL_PATH>/data/0-org-setup/defaults.yaml" }`.
-   - Create a symbolic link from the stage folder to the tfvars file: `ln -s <LOCAL_PATH>/0-org-setup.auto.tfvars fast/stages/0-org-setup/0-org-setup.auto.tfvars`.
-10. *If GCD*, also:
-    - Create a temporary `providers.tf` file containing the specific `universe_domain` configuration.
+9. Run YAML validation: `yamllint -c .yamllint --no-warnings <LOCAL_PATH>/data/0-org-setup/defaults.yaml`. Handle missing tool errors as described in the Core Principles.
+10. **Create and Link Configuration Files:**
+    - Use `write_file` to create `0-org-setup.auto.tfvars` inside the `local_path` (`<LOCAL_PATH>/0-org-setup.auto.tfvars`).
+    - In `0-org-setup.auto.tfvars`, set the `factories_config` variable. The `dataset` should point to the original dataset folder (e.g., `"datasets/classic"`), but the `paths.defaults` must point to the absolute path of the copied defaults file.
+    - Create a symbolic link from the stage folder to the tfvars file: `ln -s <LOCAL_PATH>/0-org-setup.auto.tfvars fast/stages/0-org-setup/0-org-setup.auto.tfvars`.
+11. *If GCD*, also:
+    - Create a temporary `providers.tf` file containing the specific `universe_domain` configuration using `write_file`.
 
 ### Step 8: Organization Policy Import Check
 
@@ -175,7 +180,7 @@ When triggered, guide the user through the following sequence strictly in order.
    ```bash
    gcloud org-policies list --organization="<ORG_ID>" --format="value(constraint)"
    ```
-3. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, use the `replace` or `write_file` tool to append them to the `org_policies_imports` list variable in the `0-org-setup.auto.tfvars` file. Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
+3. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
 
 ### Step 9: Wrap-up & Apply
 
