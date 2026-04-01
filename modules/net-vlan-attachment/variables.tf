@@ -21,7 +21,7 @@ variable "admin_enabled" {
 }
 
 variable "bgp_peer" {
-  description = "BGP peer configuration for the VLAN attachment (aligns with net-vpn-ha schema, plus BFD override)."
+  description = "BGP peer configuration for the VLAN attachment."
   type = object({
     custom_advertise = optional(object({
       all_subnets = bool
