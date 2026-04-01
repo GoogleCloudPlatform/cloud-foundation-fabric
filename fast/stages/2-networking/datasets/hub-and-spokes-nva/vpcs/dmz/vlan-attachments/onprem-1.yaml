@@ -19,6 +19,11 @@ region: $locations:primary
 router_config:
   create: false
   name: $routers:dmz/hybrid-connectivity-router
+bgp_peer:
+  custom_advertise:
+    all_subnets: true
+    ip_ranges:
+      "10.0.0.0/8": "internal"
 peer_asn: "64513"
 dedicated_interconnect_config:
   bandwidth: BPS_10G

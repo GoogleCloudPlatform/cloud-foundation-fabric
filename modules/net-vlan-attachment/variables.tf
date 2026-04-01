@@ -20,6 +20,31 @@ variable "admin_enabled" {
   default     = true
 }
 
+variable "bgp_peer" {
+  description = "BGP peer configuration for the VLAN attachment."
+  type = object({
+    custom_advertise = optional(object({
+      all_subnets = bool
+      ip_ranges   = map(string)
+    }))
+    custom_learned_ip_ranges = optional(object({
+      route_priority = optional(number, 1000)
+      ip_ranges      = map(string)
+    }))
+    bfd = optional(object({
+      min_receive_interval        = optional(number)
+      min_transmit_interval       = optional(number)
+      multiplier                  = optional(number)
+      session_initialization_mode = optional(string, "ACTIVE")
+    }))
+    md5_authentication_key = optional(object({
+      name = string
+      key  = optional(string)
+    }))
+  })
+  default = null
+}
+
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
@@ -36,11 +61,13 @@ variable "dedicated_interconnect_config" {
   description = "Dedicated interconnect configuration."
   type = object({
     # Possible values @ https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_interconnect_attachment#bandwidth  
-    bandwidth    = optional(string, "BPS_10G")
-    bgp_range    = optional(string)
-    bgp_priority = optional(number)
-    interconnect = string
-    vlan_tag     = string
+    bandwidth                            = optional(string, "BPS_10G")
+    bgp_range                            = optional(string)
+    bgp_priority                         = optional(number)
+    candidate_cloud_router_ip_address    = optional(string)
+    candidate_customer_router_ip_address = optional(string)
+    interconnect                         = string
+    vlan_tag                             = string
   })
   validation {
     condition     = var.dedicated_interconnect_config == null ? true : contains(["BPS_50M", "BPS_100M", "BPS_200M", "BPS_300M", "BPS_400M", "BPS_500M", "BPS_1G", "BPS_2G", "BPS_5G", "BPS_10G", "BPS_20G", "BPS_50G", "BPS_100G", "BPS_400G"], var.dedicated_interconnect_config.bandwidth)
@@ -108,12 +135,6 @@ variable "router_config" {
   type = object({
     create = optional(bool, true)
     asn    = optional(number, 65001)
-    bfd = optional(object({
-      min_receive_interval        = optional(number)
-      min_transmit_interval       = optional(number)
-      multiplier                  = optional(number)
-      session_initialization_mode = optional(string, "ACTIVE")
-    }))
     custom_advertise = optional(object({
       all_subnets = bool
       ip_ranges   = map(string)
