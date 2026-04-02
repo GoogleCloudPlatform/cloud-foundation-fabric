@@ -63,6 +63,12 @@ locals {
       }
     ]...) : k => v
   })
+  per_project_service_agents = {
+    for k, v in module.projects : k => {
+      for kk, vv in v.service_agents :
+      "service_agents/_self_/${kk}" => vv.iam_email
+    }
+  }
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }

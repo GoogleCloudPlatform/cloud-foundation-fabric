@@ -281,6 +281,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$folder_ids:my_folder`
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
+- `$iam_principals:service_agents/_self_/my_api`
 - `$iam_principals:service_agents/my_project/my_api`
 - `$iam_principalsets:service_accounts/all`
 - `$kms_keys:my_key`
@@ -633,18 +634,22 @@ iam:
 service_accounts:
   app-0-be:
     display_name: "Backend instances."
+    # assign roles on different projects
     iam_project_roles:
       $project_ids:dev-spoke-0:
         - roles/compute.networkUser
+    # assign roles on this project projects
     iam_self_roles:
       - roles/logging.logWriter
       - roles/monitoring.metricWriter
     tag_bindings:
       context: $tag_values:context/project-factory
-    # this is just for illustrative/test purposes
+    # assign roles on this service account
     iam:
       roles/iam.serviceAccountUser:
         - $iam_principals:service_accounts/_self_/app-0-fe
+        - $iam_principals:service_agents/_self_/compute
+        - $iam_principals:service_agents/dev-tb-app0-0/compute
     iam_bindings_additive:
       test:
         role: roles/iam.serviceAccountUser
