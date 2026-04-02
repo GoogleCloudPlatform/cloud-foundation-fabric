@@ -173,6 +173,7 @@ module "projects-iam" {
     kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
     iam_principals = merge(
       local.ctx_iam_principals,
+      lookup(local.per_project_service_agents, each.key, {}),
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
     )
