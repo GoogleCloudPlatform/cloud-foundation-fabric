@@ -68,6 +68,7 @@ variable "backend_service_configs" {
       }))
     }))
     iap_config = optional(object({
+      enabled                     = optional(bool, true)
       oauth2_client_id            = optional(string)
       oauth2_client_secret        = optional(string)
       oauth2_client_secret_sha256 = optional(string)

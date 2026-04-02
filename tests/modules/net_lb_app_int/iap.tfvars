@@ -22,6 +22,12 @@ vpc_config = {
   subnetwork = "projects/my-project/regions/europe-west1/subnetworks/default"
 }
 backend_service_configs = {
+  disabled = {
+    backends = [{ group = "group-0" }]
+    iap_config = {
+      enabled = false
+    }
+  }
   google-managed = {
     backends   = [{ group = "group-1" }]
     iap_config = {}

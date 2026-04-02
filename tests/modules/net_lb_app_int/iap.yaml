@@ -12,9 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  google_compute_region_backend_service.default["disabled"]:
+    iap:
+      - enabled: false
+  google_compute_region_backend_service.default["google-managed"]:
+    iap:
+      - enabled: true
 counts:
   google_compute_forwarding_rule: 1
   google_compute_health_check: 1
-  google_compute_region_backend_service: 3
+  google_compute_region_backend_service: 4
   google_compute_region_target_http_proxy: 1
   google_compute_region_url_map: 1
