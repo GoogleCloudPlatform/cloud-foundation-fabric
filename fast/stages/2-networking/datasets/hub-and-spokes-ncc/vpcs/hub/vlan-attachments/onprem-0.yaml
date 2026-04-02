@@ -21,6 +21,11 @@ router_config:
   name: $routers:hub/hybrid-connectivity-router
 ncc_spoke_config:
   hub: $ncc_hubs:hub
+bgp_peer:
+  custom_advertise:
+    all_subnets: true
+    ip_ranges:
+      "10.0.0.0/8": "internal"
 peer_asn: "64513"
 dedicated_interconnect_config:
   bandwidth: BPS_10G

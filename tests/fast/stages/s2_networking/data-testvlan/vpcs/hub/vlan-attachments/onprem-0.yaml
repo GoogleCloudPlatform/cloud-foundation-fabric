@@ -21,8 +21,16 @@ router_config:
   name: $routers:hub/hybrid-connectivity-router
 ncc_spoke_config:
   hub: $ncc_hubs:hub
+bgp_peer:
+  custom_advertise:
+    all_subnets: true
+    ip_ranges:
+      "10.0.0.0/8": "internal"
 peer_asn: "64513"
 dedicated_interconnect_config:
   bandwidth: BPS_10G
   interconnect: "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/my-interconnect-0"
   vlan_tag: "123"
+  bgp_range: "169.254.0.0/29"
+  candidate_cloud_router_ip_address: "169.254.0.1/29"
+  candidate_customer_router_ip_address: "169.254.0.2/29"

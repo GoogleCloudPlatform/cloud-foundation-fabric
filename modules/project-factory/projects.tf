@@ -63,6 +63,12 @@ locals {
       }
     ]...) : k => v
   })
+  per_project_service_agents = {
+    for k, v in module.projects : k => {
+      for kk, vv in v.service_agents :
+      "service_agents/_self_/${kk}" => vv.iam_email
+    }
+  }
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
@@ -128,14 +134,11 @@ module "projects" {
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
-  lien_reason        = try(each.value.lien_reason, null)
-  log_scopes         = try(each.value.log_scopes, null)
-  logging_exclusions = try(each.value.logging_exclusions, {})
-  logging_metrics    = try(each.value.logging_metrics, null)
-  logging_sinks      = try(each.value.logging_sinks, {})
-  metric_scopes = distinct(concat(
-    each.value.metric_scopes, var.data_merges.metric_scopes
-  ))
+  lien_reason           = try(each.value.lien_reason, null)
+  log_scopes            = try(each.value.log_scopes, null)
+  logging_exclusions    = try(each.value.logging_exclusions, {})
+  logging_metrics       = try(each.value.logging_metrics, null)
+  logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
   org_policies          = each.value.org_policies
   quotas                = each.value.quotas
@@ -170,6 +173,7 @@ module "projects-iam" {
     kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
     iam_principals = merge(
       local.ctx_iam_principals,
+      lookup(local.per_project_service_agents, each.key, {}),
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
     )
@@ -191,7 +195,10 @@ module "projects-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   logging_data_access           = lookup(each.value, "logging_data_access", {})
-  pam_entitlements              = try(each.value.pam_entitlements, {})
+  metric_scopes = distinct(concat(
+    each.value.metric_scopes, var.data_merges.metric_scopes
+  ))
+  pam_entitlements = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false
     grant_default_roles   = false

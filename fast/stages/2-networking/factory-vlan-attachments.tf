@@ -73,6 +73,7 @@ module "vlan-attachments" {
   for_each = local.vlan_attachments
 
   admin_enabled                 = try(each.value.admin_enabled, true)
+  bgp_peer                      = try(each.value.bgp_peer, null)
   dedicated_interconnect_config = try(each.value.dedicated_interconnect_config, null)
   description                   = try(each.value.description, "Terraform managed.")
   ipsec_gateway_ip_ranges       = try(each.value.ipsec_gateway_ip_ranges, {})

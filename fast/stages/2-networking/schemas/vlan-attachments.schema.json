@@ -51,6 +51,12 @@
         },
         "vlan_tag": {
           "type": "string"
+        },
+        "candidate_cloud_router_ip_address": {
+          "type": "string"
+        },
+        "candidate_customer_router_ip_address": {
+          "type": "string"
         }
       }
     },
@@ -104,6 +110,52 @@
         "asn": {
           "type": "number"
         },
+        "keepalive": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "bgp_peer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "custom_advertise": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "all_subnets",
+            "ip_ranges"
+          ],
+          "properties": {
+            "all_subnets": {
+              "type": "boolean"
+            },
+            "ip_ranges": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "custom_learned_ip_ranges": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "route_priority": {
+              "type": "number"
+            },
+            "ip_ranges": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
         "bfd": {
           "type": "object",
           "additionalProperties": false,
@@ -126,25 +178,6 @@
             }
           }
         },
-        "custom_advertise": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "all_subnets",
-            "ip_ranges"
-          ],
-          "properties": {
-            "all_subnets": {
-              "type": "boolean"
-            },
-            "ip_ranges": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          }
-        },
         "md5_authentication_key": {
           "type": "object",
           "additionalProperties": false,
@@ -159,12 +192,6 @@
               "type": "string"
             }
           }
-        },
-        "keepalive": {
-          "type": "number"
-        },
-        "name": {
-          "type": "string"
         }
       }
     },

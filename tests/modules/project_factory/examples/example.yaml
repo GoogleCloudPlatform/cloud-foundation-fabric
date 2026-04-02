@@ -934,8 +934,6 @@ values:
     timeouts: null
   ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
   : condition: []
-    members:
-    - serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     role: roles/iam.serviceAccountUser
   ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
   : condition: []
