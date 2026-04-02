@@ -296,8 +296,10 @@ variable "labels" {
 variable "lifecycle_config" {
   description = "Instance lifecycle and operational configurations."
   type = object({
-    allow_stopping_for_update  = optional(bool, true)
-    deletion_protection        = optional(bool, false)
+    allow_stopping_for_update = optional(bool, true)
+    deletion_protection       = optional(bool, false)
+    # Keep this nullable by default to avoid forcing replacements on callers that
+    # never configured key revocation before the v54 module upgrade.
     key_revocation_action_type = optional(string)
     graceful_shutdown = optional(object({
       enabled           = optional(bool, false)
