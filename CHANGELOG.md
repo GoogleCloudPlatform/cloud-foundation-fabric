@@ -3,7 +3,39 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-03-05 11:16:15+00:00 to: None since: v54.0.0 -->
+## [Unreleased] <!-- from: 2026-03-26 16:14:37+00:00 to: None since: v54.1.0 -->
+
+## [54.2.0] - 2026-03-26
+
+### BREAKING CHANGES
+
+- `fast/modules/net-vlan-attachment`: `var.router_config.bfd` has been moved to `var.bgp_peer.bfd` [[#3827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3827)]
+- `modules/workstation-cluster`: private config is no longer implicitly enabled, check a plan diff before applying using this version. [[#3821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3821)]
+
+### DOCUMENTATION
+
+- [[#3820](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3820)] Refactor agent documentation and establish core guidelines ([ludoo](https://github.com/ludoo)) <!-- 2026-03-28 07:26:00+00:00 -->
+
+### FAST
+
+- [[#3827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3827)] Add support for attachment-level BGP sessions and candidate_*_router_ip_address ([sruffilli](https://github.com/sruffilli)) <!-- 2026-04-01 12:21:18+00:00 -->
+- [[#3818](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3818)] feat(2-networking): add NS And DS record dynamically from sub-zones records ([lopezvit](https://github.com/lopezvit)) <!-- 2026-03-31 08:54:54+00:00 -->
+
+### MODULES
+
+- [[#3830](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3830)] Add support for service agents to project factory service accounts IAM ([ludoo](https://github.com/ludoo)) <!-- 2026-04-02 08:31:40+00:00 -->
+- [[#3827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3827)] Add support for attachment-level BGP sessions and candidate_*_router_ip_address ([sruffilli](https://github.com/sruffilli)) <!-- 2026-04-01 12:21:18+00:00 -->
+- [[#3828](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3828)] Support project_id context for metric_scopes ([ludoo](https://github.com/ludoo)) <!-- 2026-04-01 11:47:38+00:00 -->
+- [[#3825](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3825)] reprovision IAM only on function replacement ([wiktorn](https://github.com/wiktorn)) <!-- 2026-03-30 14:18:15+00:00 -->
+- [[#3822](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3822)] Add support for max_instance_request_concurrency in cloud-functions-v2 module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-30 07:47:26+00:00 -->
+- [[#3821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3821)] Allow private_cluster_config to be null in workstation-cluster module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-30 07:24:58+00:00 -->
+- [[#3823](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3823)] Bump path-to-regexp from 8.3.0 to 8.4.0 in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-03-28 18:12:12+00:00 -->
+- [[#3817](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3817)] bugfix: Fix Apigee organization properties assignments ([SamuPert](https://github.com/SamuPert)) <!-- 2026-03-28 07:23:01+00:00 -->
+- [[#3816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3816)] Implement group membership in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-27 07:56:08+00:00 -->
+
+### TOOLS
+
+- [[#3826](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3826)] Bump tftest version ([ludoo](https://github.com/ludoo)) <!-- 2026-03-31 08:35:05+00:00 -->
 
 ## [54.1.0] - 2026-03-26
 
@@ -2383,7 +2415,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...HEAD
+[54.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...v54.1.0
 [54.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...v54.0.0
 [54.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...v53.1.0
 [53.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.1.0...v53.0.0
