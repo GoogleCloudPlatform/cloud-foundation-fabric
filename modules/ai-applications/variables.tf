@@ -19,7 +19,6 @@ variable "chat_agent_dlp_security_configs" {
   type = object({
     deidentify_template = optional(object({
       deidentify_config = optional(object({
-
         info_type_transformations = optional(object({
           transformations = list(object({
             info_types = optional(list(object({
@@ -238,7 +237,8 @@ variable "chat_agent_dlp_security_configs" {
       template_id = optional(string)
     }))
   })
-
+  nullable = false
+  default  = {}
   validation {
     condition = try(var.chat_agent_dlp_security_configs.inspect_template.min_likelihood == null ? true : contains(
       ["VERY_UNLIKELY", "UNLIKELY", "POSSIBLE", "LIKELY", "VERY_LIKELY"],
@@ -246,7 +246,6 @@ variable "chat_agent_dlp_security_configs" {
     ), true)
     error_message = "inspect_template.min_likelihood must be one of [VERY_UNLIKELY, UNLIKELY, POSSIBLE, LIKELY, VERY_LIKELY]."
   }
-
   validation {
     condition = alltrue([
       for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {}) : v.likelihood == null ? true : contains(
@@ -256,7 +255,6 @@ variable "chat_agent_dlp_security_configs" {
     ])
     error_message = "inspect_template.custom_info_types.*.likelihood must be one of [VERY_UNLIKELY, UNLIKELY, POSSIBLE, LIKELY, VERY_LIKELY]."
   }
-
   validation {
     condition = alltrue([
       for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.rule_sets, {}) : try(v.rules.exclusion_rule.matching_type == null ? true : contains(
@@ -266,7 +264,6 @@ variable "chat_agent_dlp_security_configs" {
     ])
     error_message = "inspect_template.rule_sets.*.rules.exclusion_rule.matching_type must be one of [MATCHING_TYPE_FULL_MATCH, MATCHING_TYPE_PARTIAL_MATCH, MATCHING_TYPE_INVERSE_MATCH]."
   }
-
   validation {
     condition = alltrue([
       for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {}) : v.exclusion_type == null ? true : contains(
@@ -276,7 +273,6 @@ variable "chat_agent_dlp_security_configs" {
     ])
     error_message = "inspect_template.custom_info_types.*.exclusion_type must be EXCLUSION_TYPE_EXCLUDE."
   }
-
   validation {
     condition = alltrue([
       for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.info_types, {}) : v.sensitivity_score == null ? true : contains(
@@ -302,6 +298,8 @@ variable "chat_engine_agents_security_settings" {
       enable_audio_export  = optional(bool)
     }))
   }))
+  nullable = false
+  default  = {}
   validation {
     condition = alltrue([
       for k, v in var.chat_engine_agents_security_settings : v.redaction_strategy == null ? true : contains(
@@ -320,8 +318,6 @@ variable "chat_engine_agents_security_settings" {
     ])
     error_message = "chat_engine_agents_security_settings.*.redaction_scope must be REDACT_DISK_STORAGE."
   }
-  default  = {}
-  nullable = false
 }
 
 variable "data_stores_configs" {
