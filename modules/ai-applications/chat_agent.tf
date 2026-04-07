@@ -15,215 +15,68 @@
  */
 
 resource "google_dialogflow_cx_agent" "default" {
-  for_each = ({
-    for k, v in var.engines_configs
-    : k => v if(
-      v.chat_engine_config != null
-      && v.chat_engine_config.agent_config.id == null
-    )
-  })
-  display_name                   = "${var.name}-${each.key}"
-  project                        = var.project_id
-  description                    = each.value.chat_engine_config.agent_config.description
-  default_language_code          = each.value.chat_engine_config.agent_config.default_language_code
-  time_zone                      = each.value.chat_engine_config.agent_config.time_zone
-  supported_language_codes       = each.value.chat_engine_config.agent_config.supported_language_codes
-  avatar_uri                     = each.value.chat_engine_config.agent_config.avatar_uri
-  enable_spell_correction        = each.value.chat_engine_config.agent_config.enable_spell_correction
-  start_playbook                 = each.value.chat_engine_config.agent_config.start_playbook
-  enable_multi_language_training = each.value.chat_engine_config.agent_config.enable_multi_language_training
-  locked                         = each.value.chat_engine_config.agent_config.locked
-  delete_chat_engine_on_destroy  = each.value.chat_engine_config.agent_config.delete_chat_engine_on_destroy
+  count = (
+    var.engines_configs.chat_engine_config != null
+    && try(var.engines_configs.chat_engine_config.agent_config.id, null) == null
+    ? 1 : 0
+  )
+  display_name             = var.name
+  project                  = var.project_id
+  description              = var.engines_configs.chat_engine_config.agent_config.description
+  default_language_code    = coalesce(var.engines_configs.chat_engine_config.agent_config.default_language_code, "en")
+  time_zone                = coalesce(var.engines_configs.chat_engine_config.agent_config.time_zone, "America/Los_Angeles")
+  supported_language_codes = var.engines_configs.chat_engine_config.agent_config.supported_language_codes
+  avatar_uri               = var.engines_configs.chat_engine_config.agent_config.avatar_uri
   location = coalesce(
-    try(each.value.chat_engine_config.agent_config.location, null),
-    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
+    try(var.engines_configs.chat_engine_config.agent_config.location, null),
+    try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].location, null),
     var.location
   )
   security_settings = try(
-    each.value.chat_engine_config.agent_config.security_settings.id,
-    google_dialogflow_cx_security_settings.default[0].id
+    coalesce(
+      try(var.engines_configs.chat_engine_config.agent_config.security_settings_config.id, null),
+      try(google_dialogflow_cx_security_settings.default[0].id, null)
+    ),
+    null
   )
-
-  dynamic "advanced_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.advanced_settings == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-
-      dynamic "audio_export_gcs_destination" {
-        for_each = (
-          each.value.chat_engine_config.agent_config.advanced_settings.audio_export_gcs_destination_uri == null
-          ? {} : { 1 = 1 }
-        )
-
-        content {
-          uri = each.value.chat_engine_config.agent_config.advanced_settings.audio_export_gcs_destination_uri
-        }
-      }
-
-      dynamic "speech_settings" {
-        for_each = (
-          each.value.chat_engine_config.agent_config.advanced_settings.speech_settings == null
-          ? {} : { 1 = 1 }
-        )
-
-        content {
-          endpointer_sensitivity        = each.value.chat_engine_config.agent_config.advanced_settings.speech_settings.endpointer_sensitivity
-          no_speech_timeout             = each.value.chat_engine_config.agent_config.advanced_settings.speech_settings.no_speech_timeout
-          use_timeout_based_endpointing = each.value.chat_engine_config.agent_config.advanced_settings.speech_settings.use_timeout_based_endpointing
-          models                        = each.value.chat_engine_config.agent_config.advanced_settings.speech_settings.models
-        }
-      }
-
-      dynamic "dtmf_settings" {
-        for_each = (
-          each.value.chat_engine_config.agent_config.advanced_settings.dtmf_settings == null
-          ? {} : { 1 = 1 }
-        )
-
-        content {
-          enabled      = true
-          max_digits   = each.value.chat_engine_config.agent_config.advanced_settings.dtmf_settings.max_digits
-          finish_digit = each.value.chat_engine_config.agent_config.advanced_settings.dtmf_settings.finish_digit
-        }
-      }
-
-      dynamic "logging_settings" {
-        for_each = each.value.chat_engine_config.agent_config.advanced_settings.logging_settings == null ? {} : { 1 = 1 }
-
-        content {
-          enable_stackdriver_logging     = each.value.chat_engine_config.agent_config.advanced_settings.enable_stackdriver_logging
-          enable_interaction_logging     = each.value.chat_engine_config.agent_config.advanced_settings.enable_interaction_logging
-          enable_consent_based_redaction = each.value.chat_engine_config.agent_config.advanced_settings.enable_consent_based_redaction
-        }
-      }
-    }
-  }
-
-  dynamic "speech_to_text_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.enable_speech_adaptation == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-      enable_speech_adaptation = true
-    }
-  }
-
-  dynamic "git_integration_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.git_config == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-      github_settings {
-        display_name = coalesce(
-          each.value.chat_engine_config.agent_config.git_config.display_name,
-          var.name
-        )
-        repository_uri  = each.value.chat_engine_config.agent_config.repository_uri
-        tracking_branch = each.value.chat_engine_config.agent_config.tracking_branch
-        access_token    = each.value.chat_engine_config.agent_config.access_token
-        branches        = each.value.chat_engine_config.agent_config.branches
-      }
-    }
-  }
-
-  dynamic "text_to_speech_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.synthesize_speech_configs == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-      synthesize_speech_configs = each.value.chat_engine_config.agent_config.synthesize_speech_configs
-    }
-  }
-
-  dynamic "gen_app_builder_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.gen_app_builder_engine_id == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-      engine = each.value.chat_engine_config.agent_config.gen_app_builder_engine_id
-    }
-  }
-
-  dynamic "answer_feedback_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.enable_answer_feedback == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-      enable_answer_feedback = each.value.chat_engine_config.agent_config.enable_answer_feedback
-    }
-  }
-
-  dynamic "personalization_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.default_end_user_metadata == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-      default_end_user_metadata = each.value.chat_engine_config.agent_config.default_end_user_metadata
-    }
-  }
-
-  dynamic "client_certificate_settings" {
-    for_each = (
-      each.value.chat_engine_config.agent_config.client_certificate_settings == null
-      ? {} : { 1 = 1 }
-    )
-
-    content {
-      ssl_certificate = each.value.chat_engine_config.agent_config.client_certificate_settings.ssl_certificate
-      private_key     = each.value.chat_engine_config.agent_config.client_certificate_settings.private_key
-      passphrase      = each.value.chat_engine_config.agent_config.client_certificate_settings.passphrase
-    }
-  }
 }
 
 resource "google_dialogflow_cx_security_settings" "default" {
-  count = length({
-    for k, v in var.engines_configs
-    : k => v if(
-      v.chat_engine_config != null
-      && v.chat_engine_config.agent_config != null
-      && v.chat_engine_config.agent_config.security_settings_id == null
-    )
-  }) > 0 ? 1 : 0
-  display_name        = each.key
-  location            = coalesce(each.value.location, var.location)
-  redaction_strategy  = each.value.redaction_strategy
-  redaction_scope     = each.value.redaction_scope
-  inspect_template    = try(google_data_loss_prevention_inspect_template.default[0].id, null)
-  deidentify_template = try(google_data_loss_prevention_deidentify_template.default[0].id, null)
-  purge_data_types    = each.value.purge_data_types
-  retention_strategy  = each.value.retention_strategy
+  count = (
+    try(var.engines_configs.chat_engine_config.agent_config.security_settings_config.id == null)
+    && try(var.engines_configs.chat_engine_config.agent_config.security_settings_config.create, false)
+    ? 1 : 0
+  )
+  display_name          = var.name
+  project               = var.project_id
+  location              = coalesce(var.chat_agent_security_configs.location, var.location)
+  redaction_strategy    = var.chat_agent_security_configs.redaction_strategy
+  redaction_scope       = var.chat_agent_security_configs.redaction_scope
+  inspect_template      = try(google_data_loss_prevention_inspect_template.default[0].id, null)
+  deidentify_template   = try(google_data_loss_prevention_deidentify_template.default[0].id, null)
+  purge_data_types      = var.chat_agent_security_configs.purge_data_types
+  retention_window_days = var.chat_agent_security_configs.retention_window_days
 
   dynamic "audio_export_settings" {
-    for_each = each.value.audio_export_settings == null ? {} : { 1 = 1 }
+    for_each = (
+      var.chat_agent_security_configs.audio_export_settings == null
+      ? {} : { 1 = 1 }
+    )
 
     content {
-      gcs_bucket             = google_storage_bucket.bucket.id
-      audio_export_pattern   = each.value.audio_export_settings.audio_export_pattern
-      enable_audio_redaction = each.value.audio_export_settings.enable_audio_redaction
-      audio_format           = each.value.audio_export_settings.audio_format
+      gcs_bucket = (
+        google_storage_bucket.bucket.id
+      )
+      audio_export_pattern   = var.chat_agent_security_configs.audio_export_settings.audio_export_pattern
+      enable_audio_redaction = var.chat_agent_security_configs.audio_export_settings.enable_audio_redaction
+      audio_format           = var.chat_agent_security_configs.audio_export_settings.audio_format
     }
   }
 
   dynamic "insights_export_settings" {
     for_each = (
-      each.value.enable_insights_export == null
-      || each.value.enable_insights_export == false
+      var.chat_agent_security_configs.enable_insights_export == null
+      || var.chat_agent_security_configs.enable_insights_export == false
       ? {} : { 1 = 1 }
     )
 
@@ -233,38 +86,54 @@ resource "google_dialogflow_cx_security_settings" "default" {
   }
 }
 
-resource "google_data_loss_prevention_inspect_template" "default" {
-  count = length({
-    for k, v in var.engines_configs
-    : k => v if(
-      v.chat_engine_config != null
-      && v.chat_engine_config.agent_config != null
-      && v.chat_engine_config.agent_config.security_settings.id == null
-    )
-  }) > 0 ? 1 : 0
+module "audio_export_settings_bucket" {
+  count = (
+    var.chat_agent_security_configs.audio_export_settings == null
+    || try(var.chat_agent_security_configs.audio_export_settings.id, null) != null
+  ) ? 0 : 1
+  source     = "../gcs"
+  project_id = var.project_id
+  prefix     = var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.prefix
+  name = try(
+    var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.prefix,
+    var.name
+  )
+  location = coalesce(
+    try(var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.location),
+    var.location
+  )
+  versioning = var.chat_agent_security_configs.audio_export_settings.gcs_bucket_config.versioning
+}
 
-  template_id  = try(var.chat_agent_dlp_security_configs.inspect_template.template_id, null)
+resource "google_data_loss_prevention_inspect_template" "default" {
+  count = (
+    try(var.engines_configs.chat_engine_config.agent_config.security_settings_config.dlp_inspect_template, null) == null
+    ? 0 : 1
+  )
+  template_id  = var.chat_agent_security_configs.dlp_inspect_template.template_id
   display_name = var.name
-  description  = try(var.chat_agent_dlp_security_configs.inspect_template.description, null)
+  description  = var.chat_agent_security_configs.dlp_inspect_template.description
   parent = coalesce(
-    try(var.chat_agent_dlp_security_configs.inspect_template.parent, null),
+    var.chat_agent_security_configs.dlp_inspect_template.parent,
     "projects/${var.project_id}"
   )
 
   inspect_config {
-    exclude_info_types = try(var.chat_agent_dlp_security_configs.inspect_template.exclude_info_types, null)
-    include_quote      = try(var.chat_agent_dlp_security_configs.inspect_template.include_quote, null)
-    min_likelihood     = try(var.chat_agent_dlp_security_configs.inspect_template.min_likelihood, null)
-    content_options    = try(var.chat_agent_dlp_security_configs.inspect_template.content_options, null)
+    exclude_info_types = var.chat_agent_security_configs.dlp_inspect_template.exclude_info_types
+    include_quote      = var.chat_agent_security_configs.dlp_inspect_template.include_quote
+    min_likelihood     = var.chat_agent_security_configs.dlp_inspect_template.min_likelihood
+    content_options    = var.chat_agent_security_configs.dlp_inspect_template.content_options
 
     dynamic "info_types" {
-      for_each = try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {})
+      for_each = try(var.chat_agent_security_configs.dlp_inspect_template.custom_info_types, {})
 
       content {
         name    = info_types.key
         version = info_types.value.version
+
         dynamic "sensitivity_score" {
           for_each = info_types.value.sensitivity_score == null ? [] : [1]
+
           content {
             score = info_types.value.sensitivity_score
           }
@@ -273,22 +142,32 @@ resource "google_data_loss_prevention_inspect_template" "default" {
     }
 
     dynamic "custom_info_types" {
-      for_each = try(var.chat_agent_dlp_security_configs.inspect_template.info_types, {})
+      for_each = (
+        try(var.chat_agent_security_configs.dlp_inspect_template.info_types,
+        {})
+      )
       iterator = info_types
 
       content {
         exclusion_type = info_types.value.exclusion_type
         likelihood     = info_types.value.likelihood
+
         dynamic "surrogate_type" {
-          for_each = info_types.value.surrogate_type != null ? [1] : []
+          for_each = info_types.value.surrogate_type == null ? {} : { 1 = 1 }
+
           content {}
         }
 
         info_type {
           name    = info_types.key
           version = info_types.value.version
+
           dynamic "sensitivity_score" {
-            for_each = info_types.value.sensitivity_score == null ? [] : [1]
+            for_each = (
+              info_types.value.sensitivity_score == null
+              ? {} : { 1 = 1 }
+            )
+
             content {
               score = info_types.value.sensitivity_score
             }
@@ -351,7 +230,10 @@ resource "google_data_loss_prevention_inspect_template" "default" {
     }
 
     dynamic "limits" {
-      for_each = var.chat_agent_dlp_security_configs.inspect_template.limits != null ? [var.chat_agent_dlp_security_configs.inspect_template.limits] : []
+      for_each = (
+        var.chat_agent_security_configs.dlp_inspect_template.limits == null
+        ? [] : [var.chat_agent_security_configs.dlp_inspect_template.limits]
+      )
 
       content {
         max_findings_per_item    = limits.value.max_findings_per_item
@@ -366,8 +248,13 @@ resource "google_data_loss_prevention_inspect_template" "default" {
             info_type {
               name    = max_findings_per_info_type.key
               version = max_findings_per_info_type.value.version
+
               dynamic "sensitivity_score" {
-                for_each = max_findings_per_info_type.value.sensitivity_score == null ? [] : [1]
+                for_each = (
+                  max_findings_per_info_type.value.sensitivity_score == null
+                  ? {} : { 1 = 1 }
+                )
+
                 content {
                   score = max_findings_per_info_type.value.sensitivity_score
                 }
@@ -379,7 +266,9 @@ resource "google_data_loss_prevention_inspect_template" "default" {
     }
 
     dynamic "rule_set" {
-      for_each = var.chat_agent_dlp_security_configs.inspect_template.rule_sets
+      for_each = (
+        var.chat_agent_security_configs.dlp_inspect_template.rule_sets
+      )
 
       content {
         dynamic "info_types" {
@@ -388,8 +277,13 @@ resource "google_data_loss_prevention_inspect_template" "default" {
           content {
             name    = info_types.key
             version = info_types.value.version
+
             dynamic "sensitivity_score" {
-              for_each = info_types.value.sensitivity_score == null ? [] : [1]
+              for_each = (
+                info_types.value.sensitivity_score == null
+                ? {} : { 1 = 1 }
+              )
+
               content {
                 score = info_types.value.sensitivity_score
               }
@@ -415,13 +309,21 @@ resource "google_data_loss_prevention_inspect_template" "default" {
 
                 content {
                   dynamic "cloud_storage_path" {
-                    for_each = rule_set.value.rules.exclusion_rule.dictionary.cloud_storage_path != null ? [1] : []
+                    for_each = (
+                      rule_set.value.rules.exclusion_rule.dictionary.cloud_storage_path == null
+                      ? {} : { 1 = 1 }
+                    )
+
                     content {
                       path = rule_set.value.rules.exclusion_rule.dictionary.cloud_storage_path
                     }
                   }
                   dynamic "word_list" {
-                    for_each = rule_set.value.rules.exclusion_rule.dictionary.words_list != null ? [1] : []
+                    for_each = (
+                      rule_set.value.rules.exclusion_rule.dictionary.words_list == null
+                      ? {} : { 1 = 1 }
+                    )
+
                     content {
                       words = rule_set.value.rules.exclusion_rule.dictionary.words_list
                     }
@@ -475,7 +377,12 @@ resource "google_data_loss_prevention_inspect_template" "default" {
               }
 
               dynamic "likelihood_adjustment" {
-                for_each = rule_set.value.rules.hotword_rule.likelihood_adjustment != null ? [rule_set.value.rules.hotword_rule.likelihood_adjustment] : [{ fixed_likelihood = "VERY_LIKELY" }]
+                for_each = (
+                  rule_set.value.rules.hotword_rule.likelihood_adjustment == null
+                  ? [{ fixed_likelihood = "VERY_LIKELY" }]
+                  : [rule_set.value.rules.hotword_rule.likelihood_adjustment]
+                )
+
                 content {
                   fixed_likelihood    = likelihood_adjustment.value.fixed_likelihood
                   relative_likelihood = likelihood_adjustment.value.relative_likelihood
@@ -490,55 +397,83 @@ resource "google_data_loss_prevention_inspect_template" "default" {
 }
 
 resource "google_data_loss_prevention_deidentify_template" "default" {
-  count = length({
-    for k, v in var.engines_configs
-    : k => v if(
-      v.chat_engine_config != null
-      && v.chat_engine_config.agent_config != null
-      && v.chat_engine_config.agent_config.security_settings.id == null
-    )
-  }) > 0 ? 1 : 0
-
-  parent       = coalesce(var.chat_agent_dlp_security_configs.deidentify_template.parent, "projects/${var.project_id}")
-  display_name = coalesce(var.chat_agent_dlp_security_configs.deidentify_template.display_name, "Deidentify template")
-  description  = var.chat_agent_dlp_security_configs.deidentify_template.description
-  template_id  = var.chat_agent_dlp_security_configs.deidentify_template.template_id
+  count = (
+    try(var.engines_configs.chat_engine_config.agent_config.security_settings_config.dlp_deidentify_template, null) == null
+    ? 0 : 1
+  )
+  parent = coalesce(
+    var.chat_agent_security_configs.dlp_deidentify_template.parent,
+    "projects/${var.project_id}"
+  )
+  display_name = var.name
+  description  = var.chat_agent_security_configs.dlp_deidentify_template.description
+  template_id  = var.chat_agent_security_configs.dlp_deidentify_template.template_id
 
   dynamic "deidentify_config" {
-    for_each = var.chat_agent_dlp_security_configs.deidentify_template.deidentify_config != null ? [var.chat_agent_dlp_security_configs.deidentify_template.deidentify_config] : []
+    for_each = (
+      var.chat_agent_security_configs.dlp_deidentify_template == null
+      ? [] : [var.chat_agent_security_configs.dlp_deidentify_template]
+    )
+
     content {
       dynamic "image_transformations" {
-        for_each = deidentify_config.value.image_transformations != null ? [deidentify_config.value.image_transformations] : []
+        for_each = (
+          deidentify_config.value.image_transformations == null
+          ? [] : [deidentify_config.value.image_transformations]
+        )
+
         content {
           dynamic "transforms" {
             for_each = image_transformations.value.transforms
+
             content {
               dynamic "all_info_types" {
-                for_each = transforms.value.all_info_types == true ? [1] : []
+                for_each = transforms.value.all_info_types ? { 1 = 1 } : {}
+
                 content {}
               }
+
               dynamic "all_text" {
-                for_each = transforms.value.all_text == true ? [1] : []
+                for_each = (
+                  transforms.value.all_text ? { 1 = 1 } : {}
+                )
+
                 content {}
               }
+
               dynamic "redaction_color" {
-                for_each = transforms.value.redaction_color != null ? [transforms.value.redaction_color] : []
+                for_each = (
+                  transforms.value.redaction_color == null
+                  ? [] : [transforms.value.redaction_color]
+                )
+
                 content {
                   blue  = redaction_color.value.blue
                   green = redaction_color.value.green
                   red   = redaction_color.value.red
                 }
               }
+
               dynamic "selected_info_types" {
-                for_each = transforms.value.selected_info_types != null ? [transforms.value.selected_info_types] : []
+                for_each = (
+                  transforms.value.selected_info_types == null
+                  ? [] : [transforms.value.selected_info_types]
+                )
+
                 content {
                   dynamic "info_types" {
                     for_each = selected_info_types.value.info_types
+
                     content {
                       name    = info_types.value.name
                       version = info_types.value.version
+
                       dynamic "sensitivity_score" {
-                        for_each = info_types.value.sensitivity_score == null ? [] : [1]
+                        for_each = (
+                          info_types.value.sensitivity_score == null
+                          ? {} : { 1 = 1 }
+                        )
+
                         content {
                           score = info_types.value.sensitivity_score
                         }
@@ -551,33 +486,55 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
           }
         }
       }
+
       dynamic "info_type_transformations" {
-        for_each = deidentify_config.value.info_type_transformations != null ? [deidentify_config.value.info_type_transformations] : []
+        for_each = (
+          deidentify_config.value.info_type_transformations == null
+          ? [] : [deidentify_config.value.info_type_transformations]
+        )
+
         content {
           dynamic "transformations" {
             for_each = info_type_transformations.value.transformations
+
             content {
               dynamic "info_types" {
-                for_each = transformations.value.info_types != null ? transformations.value.info_types : []
+                for_each = (
+                  transformations.value.info_types == null
+                  ? [] : transformations.value.info_types
+                )
+
                 content {
                   name    = info_types.value.name
                   version = info_types.value.version
+
                   dynamic "sensitivity_score" {
-                    for_each = info_types.value.sensitivity_score == null ? [] : [1]
+                    for_each = (
+                      info_types.value.sensitivity_score == null
+                      ? [] : [1]
+                    )
+
                     content {
                       score = info_types.value.sensitivity_score
                     }
                   }
                 }
               }
+
               dynamic "primitive_transformation" {
                 for_each = [transformations.value.primitive_transformation]
+
                 content {
                   dynamic "replace_config" {
-                    for_each = primitive_transformation.value.replace_config != null ? [primitive_transformation.value.replace_config] : []
+                    for_each = (
+                      primitive_transformation.value.replace_config == null
+                      ? [] : [primitive_transformation.value.replace_config]
+                    )
+
                     content {
                       dynamic "new_value" {
                         for_each = [replace_config.value.new_value]
+
                         content {
                           integer_value     = new_value.value.integer_value
                           float_value       = new_value.value.float_value
@@ -585,8 +542,13 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
                           boolean_value     = new_value.value.boolean_value
                           timestamp_value   = new_value.value.timestamp_value
                           day_of_week_value = new_value.value.day_of_week_value
+
                           dynamic "time_value" {
-                            for_each = new_value.value.time_value != null ? [new_value.value.time_value] : []
+                            for_each = (
+                              new_value.value.time_value == null
+                              ? [] : [new_value.value.time_value]
+                            )
+
                             content {
                               hours   = time_value.value.hours
                               minutes = time_value.value.minutes
@@ -594,12 +556,17 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
                               nanos   = time_value.value.nanos
                             }
                           }
+
                           dynamic "date_value" {
-                            for_each = new_value.value.date_value != null ? [new_value.value.date_value] : []
+                            for_each = (
+                              new_value.value.date_value == null
+                              ? [] : [new_value.value.date_value]
+                            )
+
                             content {
-                              year  = date_value.value.year
-                              month = date_value.value.month
                               day   = date_value.value.day
+                              month = date_value.value.month
+                              year  = date_value.value.year
                             }
                           }
                         }
@@ -608,13 +575,22 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
                   }
 
                   dynamic "character_mask_config" {
-                    for_each = primitive_transformation.value.character_mask_config != null ? [primitive_transformation.value.character_mask_config] : []
+                    for_each = (
+                      primitive_transformation.value.character_mask_config == null
+                      ? [] : [primitive_transformation.value.character_mask_config]
+                    )
+
                     content {
                       masking_character = character_mask_config.value.masking_character
                       number_to_mask    = character_mask_config.value.number_to_mask
                       reverse_order     = character_mask_config.value.reverse_order
+
                       dynamic "characters_to_ignore" {
-                        for_each = character_mask_config.value.characters_to_ignore != null ? [character_mask_config.value.characters_to_ignore] : []
+                        for_each = (
+                          character_mask_config.value.characters_to_ignore == null
+                          ? [] : [character_mask_config.value.characters_to_ignore]
+                        )
+
                         content {
                           characters_to_skip          = characters_to_ignore.value.characters_to_skip
                           common_characters_to_ignore = characters_to_ignore.value.common_characters_to_ignore
@@ -622,26 +598,49 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
                       }
                     }
                   }
+
                   dynamic "crypto_deterministic_config" {
-                    for_each = primitive_transformation.value.crypto_deterministic_config != null ? [primitive_transformation.value.crypto_deterministic_config] : []
+                    for_each = (
+                      primitive_transformation.value.crypto_deterministic_config == null
+                      ? [] : [primitive_transformation.value.crypto_deterministic_config]
+                    )
+
                     content {
                       dynamic "crypto_key" {
-                        for_each = crypto_deterministic_config.value.crypto_key != null ? [crypto_deterministic_config.value.crypto_key] : []
+                        for_each = (
+                          crypto_deterministic_config.value.crypto_key == null
+                          ? [] : [crypto_deterministic_config.value.crypto_key]
+                        )
+
                         content {
                           dynamic "transient" {
-                            for_each = crypto_key.value.transient != null ? [crypto_key.value.transient] : []
+                            for_each = (
+                              crypto_key.value.transient == null
+                              ? [] : [crypto_key.value.transient]
+                            )
+
                             content {
                               name = transient.value.name
                             }
                           }
+
                           dynamic "unwrapped" {
-                            for_each = crypto_key.value.unwrapped != null ? [crypto_key.value.unwrapped] : []
+                            for_each = (
+                              crypto_key.value.unwrapped == null
+                              ? [] : [crypto_key.value.unwrapped]
+                            )
+
                             content {
                               key = unwrapped.value.key
                             }
                           }
+
                           dynamic "kms_wrapped" {
-                            for_each = crypto_key.value.kms_wrapped != null ? [crypto_key.value.kms_wrapped] : []
+                            for_each = (
+                              crypto_key.value.kms_wrapped == null
+                              ? [] : [crypto_key.value.kms_wrapped]
+                            )
+
                             content {
                               wrapped_key     = kms_wrapped.value.wrapped_key
                               crypto_key_name = kms_wrapped.value.crypto_key_name
@@ -649,21 +648,36 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
                           }
                         }
                       }
+
                       dynamic "surrogate_info_type" {
-                        for_each = crypto_deterministic_config.value.surrogate_info_type != null ? [crypto_deterministic_config.value.surrogate_info_type] : []
+                        for_each = (
+                          crypto_deterministic_config.value.surrogate_info_type == null
+                          ? [] : [crypto_deterministic_config.value.surrogate_info_type]
+                        )
+
                         content {
                           name    = surrogate_info_type.value.name
                           version = surrogate_info_type.value.version
+
                           dynamic "sensitivity_score" {
-                            for_each = surrogate_info_type.value.sensitivity_score == null ? [] : [1]
+                            for_each = (
+                              surrogate_info_type.value.sensitivity_score == null
+                              ? {} : { 1 = 1 }
+                            )
+
                             content {
                               score = surrogate_info_type.value.sensitivity_score
                             }
                           }
                         }
                       }
+
                       dynamic "context" {
-                        for_each = crypto_deterministic_config.value.context != null ? [crypto_deterministic_config.value.context] : []
+                        for_each = (
+                          crypto_deterministic_config.value.context == null
+                          ? [] : [crypto_deterministic_config.value.context]
+                        )
+
                         content {
                           name = context.value.name
                         }

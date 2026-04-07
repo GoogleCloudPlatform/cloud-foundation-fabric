@@ -14,136 +14,148 @@
  * limitations under the License.
  */
 
-variable "chat_agent_dlp_security_configs" {
+variable "chat_agent_security_configs" {
   description = "The DLP security configurations for (Dialogflow CX) chat agents."
   type = object({
-    deidentify_template = optional(object({
-      deidentify_config = optional(object({
-        info_type_transformations = optional(object({
-          transformations = list(object({
-            info_types = optional(list(object({
-              name              = string
-              version           = optional(string)
-              sensitivity_score = optional(string)
-            })))
-            primitive_transformation = any
-          }))
-        })),
-        record_transformations = optional(object({
-          field_transformations = optional(list(object({
-            fields = list(object({ name = string }))
-            condition = optional(object({
-              expressions = optional(object({
-                logical_operator = optional(string)
-                conditions = list(object({
-                  field    = object({ name = string })
-                  operator = string
-                  value = optional(object({
-                    integer_value   = optional(number)
-                    float_value     = optional(number)
-                    string_value    = optional(string)
-                    boolean_value   = optional(bool)
-                    timestamp_value = optional(string)
-                  }))
-                }))
-              }))
-            }))
-            primitive_transformation = optional(object({
-              replace_config = optional(object({
-                new_value = object({
+    audio_export_settings = optional(object({
+      # AUDIO_FORMAT_UNSPECIFIED, MULAW, MP3, OGG
+      audio_format = string
+      gcs_bucket_config = object({
+        # specify an id to use an existing GCS bucket
+        id         = optional(string)
+        prefix     = string
+        location   = optional(string)
+        name       = optional(string)
+        versioning = optional(bool, true)
+      })
+      audio_export_pattern   = string
+      enable_audio_redaction = optional(bool, false)
+    }))
+    dlp_deidentify_template = optional(object({
+      description  = optional(string, "Terraform managed.")
+      display_name = optional(string)
+      info_type_transformations = optional(object({
+        transformations = list(object({
+          info_types = optional(list(object({
+            name              = string
+            version           = optional(string)
+            sensitivity_score = optional(string)
+          })))
+          primitive_transformation = any
+        }))
+      }))
+      parent = optional(string)
+      record_transformations = optional(object({
+        field_transformations = optional(list(object({
+          fields = list(object({ name = string }))
+          condition = optional(object({
+            expressions = optional(object({
+              logical_operator = optional(string)
+              conditions = list(object({
+                field    = object({ name = string })
+                operator = string
+                value = optional(object({
                   integer_value   = optional(number)
                   float_value     = optional(number)
                   string_value    = optional(string)
                   boolean_value   = optional(bool)
                   timestamp_value = optional(string)
-                  time_value = optional(object({
-                    hours   = optional(number)
-                    minutes = optional(number)
-                    seconds = optional(number)
-                    nanos   = optional(number)
-                  }))
-                  date_value = optional(object({
-                    year  = optional(number)
-                    month = optional(number)
-                    day   = optional(number)
-                  }))
-                  day_of_week_value = optional(string)
-                })
-              }))
-              character_mask_config = optional(object({
-                masking_character = optional(string)
-                number_to_mask    = optional(number)
-                reverse_order     = optional(bool)
-                characters_to_ignore = optional(object({
-                  characters_to_skip          = optional(string)
-                  common_characters_to_ignore = optional(string)
-                }))
-              }))
-              crypto_replace_ffx_fpe_config = optional(object({
-                crypto_key = optional(object({
-                  transient   = optional(object({ name = string }))
-                  unwrapped   = optional(object({ key = string }))
-                  kms_wrapped = optional(object({ wrapped_key = string, crypto_key_name = string }))
-                }))
-                context = optional(object({ name = optional(string) }))
-                surrogate_info_type = optional(object({
-                  name              = optional(string)
-                  version           = optional(string)
-                  sensitivity_score = optional(string)
-                }))
-                common_alphabet = optional(string)
-                custom_alphabet = optional(string)
-                radix           = optional(number)
-              }))
-              # I'll use 'any' for the rest of primitive transformations here to keep it within reason,
-              # as they are less common in field transformations compared to masking/redaction/replacement.
-              # Actually, let's just include them as 'any' to save space but allow them.
-              crypto_deterministic_config = optional(any)
-              replace_dictionary_config   = optional(any)
-              date_shift_config           = optional(any)
-              fixed_size_bucketing_config = optional(any)
-              bucketing_config            = optional(any)
-              time_part_config            = optional(any)
-              redact_config               = optional(bool)
-              crypto_hash_config          = optional(any)
-            }))
-            info_type_transformations = optional(object({
-              transformations = list(object({
-                info_types = optional(list(object({
-                  name              = string
-                  version           = optional(string)
-                  sensitivity_score = optional(string)
-                })))
-                primitive_transformation = optional(any)
-              }))
-            }))
-          })))
-          record_suppressions = optional(list(object({
-            condition = optional(object({
-              expressions = optional(object({
-                logical_operator = optional(string)
-                conditions = list(object({
-                  field    = object({ name = string })
-                  operator = string
-                  value = optional(object({
-                    integer_value   = optional(number)
-                    float_value     = optional(number)
-                    string_value    = optional(string)
-                    boolean_value   = optional(bool)
-                    timestamp_value = optional(string)
-                  }))
                 }))
               }))
             }))
-          })))
-        }))
+          }))
+          primitive_transformation = optional(object({
+            replace_config = optional(object({
+              new_value = object({
+                integer_value   = optional(number)
+                float_value     = optional(number)
+                string_value    = optional(string)
+                boolean_value   = optional(bool)
+                timestamp_value = optional(string)
+                time_value = optional(object({
+                  hours   = optional(number)
+                  minutes = optional(number)
+                  seconds = optional(number)
+                  nanos   = optional(number)
+                }))
+                date_value = optional(object({
+                  year  = optional(number)
+                  month = optional(number)
+                  day   = optional(number)
+                }))
+                day_of_week_value = optional(string)
+              })
+            }))
+            character_mask_config = optional(object({
+              masking_character = optional(string)
+              number_to_mask    = optional(number)
+              reverse_order     = optional(bool)
+              characters_to_ignore = optional(object({
+                characters_to_skip          = optional(string)
+                common_characters_to_ignore = optional(string)
+              }))
+            }))
+            crypto_replace_ffx_fpe_config = optional(object({
+              crypto_key = optional(object({
+                transient   = optional(object({ name = string }))
+                unwrapped   = optional(object({ key = string }))
+                kms_wrapped = optional(object({ wrapped_key = string, crypto_key_name = string }))
+              }))
+              context = optional(object({ name = optional(string) }))
+              surrogate_info_type = optional(object({
+                name              = optional(string)
+                version           = optional(string)
+                sensitivity_score = optional(string)
+              }))
+              common_alphabet = optional(string)
+              custom_alphabet = optional(string)
+              radix           = optional(number)
+            }))
+            # I'll use 'any' for the rest of primitive transformations here to keep it within reason,
+            # as they are less common in field transformations compared to masking/redaction/replacement.
+            # Actually, let's just include them as 'any' to save space but allow them.
+            crypto_deterministic_config = optional(any)
+            replace_dictionary_config   = optional(any)
+            date_shift_config           = optional(any)
+            fixed_size_bucketing_config = optional(any)
+            bucketing_config            = optional(any)
+            time_part_config            = optional(any)
+            redact_config               = optional(bool)
+            crypto_hash_config          = optional(any)
+          }))
+          info_type_transformations = optional(object({
+            transformations = list(object({
+              info_types = optional(list(object({
+                name              = string
+                version           = optional(string)
+                sensitivity_score = optional(string)
+              })))
+              primitive_transformation = optional(any)
+            }))
+          }))
+        })))
+        record_suppressions = optional(list(object({
+          condition = optional(object({
+            expressions = optional(object({
+              logical_operator = optional(string)
+              conditions = list(object({
+                field    = object({ name = string })
+                operator = string
+                value = optional(object({
+                  integer_value   = optional(number)
+                  float_value     = optional(number)
+                  string_value    = optional(string)
+                  boolean_value   = optional(bool)
+                  timestamp_value = optional(string)
+                }))
+              }))
+            }))
+          }))
+        })))
       }))
-      description  = optional(string, "Terraform managed.")
-      display_name = optional(string)
-      parent       = optional(string)
-      template_id  = optional(string)
+      template_id = optional(string)
     }))
-    inspect_template = optional(object({
+    dlp_inspect_template = optional(object({
       # ["CONTENT_TEXT", "CONTENT_IMA GE"]
       content_options = optional(list(string), [])
       custom_info_types = optional(map(object({
@@ -236,19 +248,25 @@ variable "chat_agent_dlp_security_configs" {
       # Auto-generated if null.
       template_id = optional(string)
     }))
+    enable_insights_export = optional(bool, false)
+    location               = optional(string)
+    purge_data_types       = optional(list(string))
+    redaction_scope        = optional(string)
+    redaction_strategy     = optional(string)
+    retention_window_days  = optional(number)
   })
   nullable = false
   default  = {}
   validation {
-    condition = try(var.chat_agent_dlp_security_configs.inspect_template.min_likelihood == null ? true : contains(
+    condition = try(var.chat_agent_security_configs.dlp_inspect_template.min_likelihood == null ? true : contains(
       ["VERY_UNLIKELY", "UNLIKELY", "POSSIBLE", "LIKELY", "VERY_LIKELY"],
-      var.chat_agent_dlp_security_configs.inspect_template.min_likelihood
+      var.chat_agent_security_configs.dlp_inspect_template.min_likelihood
     ), true)
     error_message = "inspect_template.min_likelihood must be one of [VERY_UNLIKELY, UNLIKELY, POSSIBLE, LIKELY, VERY_LIKELY]."
   }
   validation {
     condition = alltrue([
-      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {}) : v.likelihood == null ? true : contains(
+      for k, v in try(var.chat_agent_security_configs.dlp_inspect_template.custom_info_types, {}) : v.likelihood == null ? true : contains(
         ["VERY_UNLIKELY", "UNLIKELY", "POSSIBLE", "LIKELY", "VERY_LIKELY"],
         v.likelihood
       )
@@ -257,7 +275,7 @@ variable "chat_agent_dlp_security_configs" {
   }
   validation {
     condition = alltrue([
-      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.rule_sets, {}) : try(v.rules.exclusion_rule.matching_type == null ? true : contains(
+      for k, v in try(var.chat_agent_security_configs.dlp_inspect_template.rule_sets, {}) : try(v.rules.exclusion_rule.matching_type == null ? true : contains(
         ["MATCHING_TYPE_FULL_MATCH", "MATCHING_TYPE_PARTIAL_MATCH", "MATCHING_TYPE_INVERSE_MATCH"],
         v.rules.exclusion_rule.matching_type
       ), true)
@@ -266,7 +284,7 @@ variable "chat_agent_dlp_security_configs" {
   }
   validation {
     condition = alltrue([
-      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {}) : v.exclusion_type == null ? true : contains(
+      for k, v in try(var.chat_agent_security_configs.dlp_inspect_template.custom_info_types, {}) : v.exclusion_type == null ? true : contains(
         ["EXCLUSION_TYPE_EXCLUDE"],
         v.exclusion_type
       )
@@ -275,48 +293,12 @@ variable "chat_agent_dlp_security_configs" {
   }
   validation {
     condition = alltrue([
-      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.info_types, {}) : v.sensitivity_score == null ? true : contains(
+      for k, v in try(var.chat_agent_security_configs.dlp_inspect_template.info_types, {}) : v.sensitivity_score == null ? true : contains(
         ["SENSITIVITY_LOW", "SENSITIVITY_MODERATE", "SENSITIVITY_HIGH"],
         v.sensitivity_score
       )
     ])
     error_message = "inspect_template.info_types.*.sensitivity_score must be one of [SENSITIVITY_LOW, SENSITIVITY_MODERATE, SENSITIVITY_HIGH]."
-  }
-}
-
-variable "chat_engine_agents_security_settings" {
-  description = "The security settings for (Dialogflow CX) chat agents."
-  type = map(object({
-    location           = optional(string)
-    redaction_strategy = optional(string)
-    redaction_scope    = optional(string)
-    purge_data_types   = optional(list(string))
-    retention_strategy = optional(string)
-    audio_export_settings = optional(object({
-      audio_export_pattern = optional(string)
-      audio_format         = optional(string)
-      enable_audio_export  = optional(bool)
-    }))
-  }))
-  nullable = false
-  default  = {}
-  validation {
-    condition = alltrue([
-      for k, v in var.chat_engine_agents_security_settings : v.redaction_strategy == null ? true : contains(
-        ["REDACT_WITH_SERVICE"],
-        v.redaction_strategy
-      )
-    ])
-    error_message = "chat_engine_agents_security_settings.*.redaction_strategy must be REDACT_WITH_SERVICE."
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.chat_engine_agents_security_settings : v.redaction_scope == null ? true : contains(
-        ["REDACT_DISK_STORAGE"],
-        v.redaction_scope
-      )
-    ])
-    error_message = "chat_engine_agents_security_settings.*.redaction_scope must be REDACT_DISK_STORAGE."
   }
 }
 
@@ -426,21 +408,22 @@ variable "data_stores_configs" {
 }
 
 variable "engines_configs" {
-  description = "The ai-applications engines configurations."
-  type = map(object({
-    data_store_ids = list(string)
-    collection_id  = optional(string, "default_collection")
+  description = "The AI applications engines configurations."
+  type = object({
     chat_engine_config = optional(object({
       agent_config = optional(object({
         avatar_uri            = optional(string)
         default_language_code = optional(string)
         description           = optional(string, "Terraform managed.")
-        # Id of an existing agent. It excludes all other options in agent_config
+        # Id of an existing agent. The agent will be created otherwise.
         id = optional(string)
         # This overrides the engine location,
         # the datastores location and var.location
-        location                 = optional(string)
-        security_settings_id     = optional(string)
+        location = optional(string)
+        security_settings_config = optional(object({
+          create = optional(bool, false)
+          id     = optional(string)
+        }))
         supported_language_codes = optional(list(string))
         time_zone                = optional(string)
       }), {})
@@ -448,6 +431,8 @@ variable "engines_configs" {
       business           = optional(string)
       company_name       = optional(string)
     }))
+    collection_id  = optional(string, "default_collection")
+    data_store_ids = optional(list(string), [])
     # If industry_vertical and location are not given,
     # they are derived from the first datastore attached
     # to the engines
@@ -458,26 +443,32 @@ variable "engines_configs" {
       search_add_ons = optional(list(string), [])
       search_tier    = optional(string)
     }))
-  }))
+  })
   nullable = false
   default  = {}
   validation {
-    condition = alltrue(flatten([
-      for k, v in var.engines_configs : [
-        for ao in try(v.search_engine_config.search_add_ons, []) : contains(["SEARCH_ADD_ON_LLM"], ao)
-      ]
-    ]))
+    condition = (
+      var.engines_configs.chat_engine_config == null
+      && var.engines_configs.search_engine_config == null
+      ? true
+      : length(var.engines_configs.data_store_ids) > 0 ? true : false
+    )
+    error_message = "You must specify at least one data store id for each engine."
+  }
+  validation {
+    condition = alltrue([
+      for ao in try(var.engines_configs.search_engine_config.search_add_ons, [])
+      : contains(["SEARCH_ADD_ON_LLM"], ao)
+    ])
     error_message = "Elements in engines_configs.search_engine_config.search_add_ons must be one or more of [SEARCH_ADD_ON_LLM]."
   }
   validation {
     condition = alltrue([
-      for k, v in var.engines_configs : try(
-        v.search_engine_config.search_tier == null ? true : contains(
-          ["SEARCH_TIER_ENTERPRISE", "SEARCH_TIER_STANDARD"],
-          v.search_engine_config.search_tier
-        ),
-        true
-      )
+      try(var.engines_configs.search_engine_config.search_tier, null) == null
+      ? true : contains(
+        ["SEARCH_TIER_ENTERPRISE", "SEARCH_TIER_STANDARD"],
+        var.engines_configs.search_engine_config.search_tier
+      ), true
     ])
     error_message = "engines_configs.search_engine_config.search_tier must be one of [SEARCH_TIER_ENTERPRISE, SEARCH_TIER_STANDARD]."
   }
