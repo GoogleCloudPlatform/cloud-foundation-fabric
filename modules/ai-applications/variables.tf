@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-variable "chat_agent_configs" {
-  description = "The chat agent (Dialogflow CX) configurations."
-  type = map(object({
-    avatar_uri            = optional(string)
-    default_language_code = optional(string)
-    description           = optional(string, "Terraform managed.")
-    # This overrides the engine location,
-    # the datastores location and var.location
-    location                 = optional(string)
-    supported_language_codes = optional(list(string))
-    time_zone                = optional(string)
-  }))
-}
-
 variable "chat_agent_dlp_security_configs" {
   description = "The DLP security configurations for (Dialogflow CX) chat agents."
   type = object({
