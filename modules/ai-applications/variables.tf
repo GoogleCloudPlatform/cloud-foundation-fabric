@@ -440,13 +440,13 @@ variable "engines_configs" {
         # This overrides the engine location,
         # the datastores location and var.location
         location                 = optional(string)
+        security_settings_id     = optional(string)
         supported_language_codes = optional(list(string))
         time_zone                = optional(string)
       }), {})
-      allow_cross_region       = optional(bool, true)
-      business                 = optional(string)
-      company_name             = optional(string)
-      dialogflow_agent_to_link = optional(string)
+      allow_cross_region = optional(bool, true)
+      business           = optional(string)
+      company_name       = optional(string)
     }))
     # If industry_vertical and location are not given,
     # they are derived from the first datastore attached

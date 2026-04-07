@@ -40,8 +40,8 @@ resource "google_dialogflow_cx_agent" "default" {
     var.location
   )
   security_settings = try(
-    google_dialogflow_cx_security_settings.default[each.value.chat_engine_config.agent_config.default].id,
-    each.value.chat_engine_config.agent_config.security_settings
+    each.value.chat_engine_config.agent_config.security_settings.id,
+    google_dialogflow_cx_security_settings.default[0].id
   )
 
   dynamic "advanced_settings" {
@@ -192,7 +192,14 @@ resource "google_dialogflow_cx_agent" "default" {
 }
 
 resource "google_dialogflow_cx_security_settings" "default" {
-  for_each            = var.chat_engine_agents_security_settings
+  count = length({
+    for k, v in var.engines_configs
+    : k => v if(
+      v.chat_engine_config != null
+      && v.chat_engine_config.agent_config != null
+      && v.chat_engine_config.agent_config.security_settings_id == null
+    )
+  }) > 0 ? 1 : 0
   display_name        = each.key
   location            = coalesce(each.value.location, var.location)
   redaction_strategy  = each.value.redaction_strategy
@@ -227,7 +234,14 @@ resource "google_dialogflow_cx_security_settings" "default" {
 }
 
 resource "google_data_loss_prevention_inspect_template" "default" {
-  count = var.chat_agent_dlp_security_configs.inspect_template != null ? 1 : 0
+  count = length({
+    for k, v in var.engines_configs
+    : k => v if(
+      v.chat_engine_config != null
+      && v.chat_engine_config.agent_config != null
+      && v.chat_engine_config.agent_config.security_settings.id == null
+    )
+  }) > 0 ? 1 : 0
 
   template_id  = try(var.chat_agent_dlp_security_configs.inspect_template.template_id, null)
   display_name = var.name
@@ -476,7 +490,14 @@ resource "google_data_loss_prevention_inspect_template" "default" {
 }
 
 resource "google_data_loss_prevention_deidentify_template" "default" {
-  count = var.chat_agent_dlp_security_configs.deidentify_template != null ? 1 : 0
+  count = length({
+    for k, v in var.engines_configs
+    : k => v if(
+      v.chat_engine_config != null
+      && v.chat_engine_config.agent_config != null
+      && v.chat_engine_config.agent_config.security_settings.id == null
+    )
+  }) > 0 ? 1 : 0
 
   parent       = coalesce(var.chat_agent_dlp_security_configs.deidentify_template.parent, "projects/${var.project_id}")
   display_name = coalesce(var.chat_agent_dlp_security_configs.deidentify_template.display_name, "Deidentify template")

@@ -23,7 +23,7 @@ This module handles the creation of [AI Applications](https://cloud.google.com/g
 This module uses these APIs
 
 - `discoveryengine.googleapis.com`
-- `dialogflow.googleapis` (if you create a chat engine)
+- `dialogflow.googleapis.com` (if you create a chat engine)
 
 ## Quota Project
 
