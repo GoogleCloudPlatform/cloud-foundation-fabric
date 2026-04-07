@@ -101,7 +101,7 @@ resource "google_cloudfunctions2_function" "function" {
     ingress_settings                 = var.ingress_settings
     max_instance_count               = var.function_config.instance_count
     max_instance_request_concurrency = var.function_config.max_instance_request_concurrency
-    min_instance_count               = 0
+    min_instance_count               = var.function_config.min_instance_count
     service_account_email            = local.service_account_email
     timeout_seconds                  = var.function_config.timeout_seconds
     vpc_connector                    = local.vpc_connector
