@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,24 +109,153 @@ variable "data_stores_configs" {
   }
 }
 
+variable "chat_agent_configs" {
+  description = "The chat agent (Dialogflow CX) configurations."
+  type = map(object({
+    avatar_uri            = optional(string)
+    default_language_code = optional(string)
+    description           = optional(string, "Terraform managed.")
+    # This overrides the engine location,
+    # the datastores location and var.location
+    location                 = optional(string)
+    supported_language_codes = optional(list(string))
+    time_zone                = optional(string)
+  }))
+}
+
+variable "chat_agent_dlp_security_configs" {
+  description = "The DLP security configurations for (Dialogflow CX) chat agents."
+  type = object({
+    deidentify_template = optional(object({
+      deidentify_config = optional(object({
+
+      }))
+      description  = optional(string, "Terraform managed.")
+      display_name = optional(string)
+      parent       = optional(string)
+      template_id  = optional(string)
+    }))
+    inspect_template = optional(object({
+      # ["CONTENT_TEXT", "CONTENT_IMA GE"]
+      content_options = optional(list(string), [])
+      custom_info_types = optional(map(object({
+        dictionary = optional(object({
+          cloud_storage_path = optional(string)
+          words_list         = optional(list(string))
+        }))
+        # null or EXCLUSION_TYPE_EXCLUDE
+        exclusion_type = optional(string)
+        # SENSITIVITY_LOW, SENSITIVITY_MODERATE, SENSITIVITY_HIGH
+        # VERY_UNLIKELY, UNLIKELY, POSSIBLE, LIKELY, VERY_LIKELY
+        likelihood = optional(string, "VERY_LIKELY")
+        regex = optional(object({
+          # https://github.com/google/re2/wiki/Syntax
+          pattern       = string
+          group_indexes = optional(list(integer))
+        }))
+        sensitivity_score = optional(string)
+        stored_type_name  = optional(string)
+        surrogate_type    = optional(string)
+        version           = optional(string)
+      })))
+      description        = optional(string, "Terraform managed.")
+      exclude_info_types = optional(bool, false)
+      include_quote      = optional(bool, false)
+      # name is the key
+      # https://cloud.google.com/dlp/docs/infotypes-reference
+      info_types = optional(map(object({
+        # SENSITIVITY_LOW, SENSITIVITY_MODERATE, SENSITIVITY_HIGH
+        sensitivity_score = optional(string, "SENSITIVITY_MODERATE")
+        version           = optional(string)
+      })), {})
+      limits = optional(object({
+        max_findings_per_item    = optional(number, 2000)
+        max_findings_per_request = optional(number, 2000)
+        # key is the name of the info type
+        # https://cloud.google.com/dlp/docs/infotypes-reference
+        max_findings_per_info_type = optional(map(object({
+          max_findings = optional(number, 2000)
+          # SENSITIVITY_LOW, SENSITIVITY_MODERATE, SENSITIVITY_HIGH
+          sensitivity_score = optional(string, "SENSITIVITY_MODERATE")
+          version           = optional(string)
+        })))
+      }))
+      # VERY_UNLIKELY, UNLIKELY, POSSIBLE, LIKELY, VERY_LIKELY
+      min_likelihood = optional(string, "POSSIBLE")
+      name           = optional(string)
+      parent         = optional(string)
+      rule_sets = optional(list(object({
+        # name is the key
+        # https://cloud.google.com/dlp/docs/infotypes-reference
+        info_types = map(object({
+          version = optional(string)
+          # SENSITIVITY_LOW, SENSITIVITY_MODERATE, SENSITIVITY_HIGH
+          sensitivity_score = optional(string, "SENSITIVITY_MODERATE")
+        }))
+        rules = object({
+          exclusion_rule = optional(object({
+            # MATCHING_TYPE_FULL_MATCH, MATCHING_TYPE_PARTIAL_MATCH, MATCHING_TYPE_INVERSE_MATCH
+            # https://cloud.google.com/dlp/docs/reference/rest/v2/InspectConfig#MatchingType
+            matching_type = string
+            dictionary = optional(object({
+              cloud_storage_path = optional(string)
+              words_list         = optional(list(string))
+            }))
+            regex = optional(object({
+              # https://github.com/google/re2/wiki/Syntax
+              pattern       = string
+              group_indexes = optional(list(integer))
+            }))
+          }))
+          hotward_rule = optional(object({
+            hotword_regex = object({
+              pattern       = string
+              group_indexes = optional(list(integer))
+            })
+            proximity = object({
+              # Either window_before or window_after must be specified
+              window_after  = optional(number)
+              window_before = optional(number)
+            })
+          }))
+        })
+      })), [])
+      # [a-zA-Z\d-_]+. The maximum length is 100 characters.
+      # Auto-generated if null.
+      tempalte_id = optional(string)
+    }))
+  })
+}
+
 variable "engines_configs" {
   description = "The ai-applications engines configurations."
   type = map(object({
     data_store_ids = list(string)
     collection_id  = optional(string, "default_collection")
     chat_engine_config = optional(object({
-      allow_cross_region       = optional(bool, null)
+      agent_config = optional(object({
+        avatar_uri            = optional(string)
+        default_language_code = optional(string)
+        description           = optional(string, "Terraform managed.")
+        # Id of an existing agent. It excludes all other options in agent_config
+        id = optional(string)
+        # This overrides the engine location,
+        # the datastores location and var.location
+        location                 = optional(string)
+        supported_language_codes = optional(list(string))
+        time_zone                = optional(string)
+      }), {})
+      allow_cross_region       = optional(bool, true)
       business                 = optional(string)
       company_name             = optional(string)
-      default_language_code    = optional(string)
       dialogflow_agent_to_link = optional(string)
-      time_zone                = optional(string)
     }))
     # If industry_vertical and location are not given,
     # they are derived from the first datastore attached
     # to the engines
     industry_vertical = optional(string)
-    location          = optional(string)
+    # This can override var.location and the datastores location
+    location = optional(string)
     search_engine_config = optional(object({
       search_add_ons = optional(list(string), [])
       search_tier    = optional(string)

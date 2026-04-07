@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,19 +41,11 @@ resource "google_discovery_engine_chat_engine" "default" {
   )
 
   chat_engine_config {
-    allow_cross_region       = each.value.chat_engine_config.allow_cross_region
-    dialogflow_agent_to_link = each.value.chat_engine_config.dialogflow_agent_to_link
-
-    agent_creation_config {
-      business              = each.value.chat_engine_config.business
-      default_language_code = each.value.chat_engine_config.default_language_code
-      time_zone             = each.value.chat_engine_config.time_zone
-      location = coalesce(
-        try(each.value.location, null),
-        try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
-        var.location
-      )
-    }
+    allow_cross_region = each.value.chat_engine_config.allow_cross_region
+    dialogflow_agent_to_link = coalesce(
+      each.value.chat_engine_config.agent_config.id,
+      google_dialogflow_cx_agent.agents[each.key].id
+    )
   }
 
   dynamic "common_config" {

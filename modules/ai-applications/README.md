@@ -20,7 +20,10 @@ This module handles the creation of [AI Applications](https://cloud.google.com/g
 
 ## APIs
 
-This module uses the API `discoveryengine.googleapis.com`
+This module uses these APIs
+
+- `discoveryengine.googleapis.com`
+- `dialogflow.googleapis` (if you create a chat engine)
 
 ## Quota Project
 
@@ -35,7 +38,8 @@ export USER_PROJECT_OVERRIDE=true
 
 ### Chat Engine
 
-This is a minimal example to create a Chat Engine agent.
+This is a minimal example to create a Chat Engine (Dialogflow CX) agent.
+By default, this uses the location `global` for engines, agents and data stores.
 
 ```hcl
 module "ai-applications" {
@@ -54,6 +58,95 @@ module "ai-applications" {
         company_name          = "Google"
         default_language_code = "en"
         time_zone             = "America/Los_Angeles"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3
+```
+
+You can change this location for all components.
+
+```hcl
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
+  name       = "my-chat-app"
+  project_id = var.project_id
+  location   = "eu"
+  data_stores_configs = {
+    data-store-1 = {
+      solution_types = ["SOLUTION_TYPE_CHAT"]
+    }
+  }
+  engines_configs = {
+    my-chat-engine = {
+      data_store_ids = ["data-store-1"]
+      chat_engine_config = {
+        company_name          = "Google"
+        default_language_code = "en"
+        time_zone             = "America/Los_Angeles"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3
+```
+
+You may need to create an (Dialogflow CX) agent in a specific region.
+While the agent can be created within a specific region, the engine and the data stores still need to be created in multi-regional locations. Refer to [this table](https://docs.cloud.google.com/dialogflow/cx/docs/concept/region#avail) for the compatibility matrix.
+In this case, you need to specify different locations for each component.
+
+```hcl
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
+  name       = "my-chat-app"
+  project_id = var.project_id
+  data_stores_configs = {
+    data-store-1 = {
+      solution_types = ["SOLUTION_TYPE_CHAT"]
+      location       = "eu"
+    }
+  }
+  engines_configs = {
+    my-chat-engine = {
+      location       = "eu"
+      data_store_ids = ["data-store-1"]
+      chat_engine_config = {
+        company_name          = "Google"
+        default_language_code = "en"
+        time_zone             = "America/Los_Angeles"
+        agent_config = {
+          location = "europe-west1"
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3
+```
+
+Instead of creating a new agent, you can reference an existing agent.
+
+```hcl
+module "ai-applications" {
+  source     = "./fabric/modules/ai-applications"
+  name       = "my-chat-app"
+  project_id = var.project_id
+  data_stores_configs = {
+    data-store-1 = {
+      solution_types = ["SOLUTION_TYPE_CHAT"]
+    }
+  }
+  engines_configs = {
+    my-chat-engine = {
+      data_store_ids = ["data-store-1"]
+      chat_engine_config = {
+        company_name          = "Google"
+        default_language_code = "en"
+        time_zone             = "America/Los_Angeles"
+        agent_config = {
+          id = "projects/my-project/locations/global/agents/my-agent"
+        }
       }
     }
   }
@@ -87,7 +180,7 @@ module "ai-applications" {
 
 ### Deploy your service into a region
 
-By default services are deployed globally. You optionally specify a region where to deploy them.
+By default services are deployed globally. You can specify a region where to deploy them.
 
 ```hcl
 module "ai-applications" {
@@ -234,11 +327,11 @@ module "ai-applications" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L159) | The name of the resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L165) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L169) | The name of the resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L175) | The ID of the project where the data stores and the agents will be created. | <code>string</code> | ✓ |  |
 | [data_stores_configs](variables.tf#L17) | The ai-applications datastore configurations. | <code title="map&#40;object&#40;&#123;&#10;  advanced_site_search_config &#61; optional&#40;object&#40;&#123;&#10;    disable_initial_index     &#61; optional&#40;bool&#41;&#10;    disable_automatic_refresh &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  content_config              &#61; optional&#40;string, &#34;NO_CONTENT&#34;&#41;&#10;  create_advanced_site_search &#61; optional&#40;bool&#41;&#10;  display_name                &#61; optional&#40;string&#41;&#10;  document_processing_config &#61; optional&#40;object&#40;&#123;&#10;    chunking_config &#61; optional&#40;object&#40;&#123;&#10;      layout_based_chunking_config &#61; optional&#40;object&#40;&#123;&#10;        chunk_size                &#61; optional&#40;number&#41;&#10;        include_ancestor_headings &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    default_parsing_config &#61; optional&#40;object&#40;&#123;&#10;      digital_parsing_config &#61; optional&#40;bool&#41;&#10;      layout_parsing_config  &#61; optional&#40;bool&#41;&#10;      ocr_parsing_config &#61; optional&#40;object&#40;&#123;&#10;        use_native_text &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    parsing_config_overrides &#61; optional&#40;map&#40;object&#40;&#123;&#10;      digital_parsing_config &#61; optional&#40;bool&#41;&#10;      layout_parsing_config  &#61; optional&#40;bool&#41;&#10;      ocr_parsing_config &#61; optional&#40;object&#40;&#123;&#10;        use_native_text &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  industry_vertical            &#61; optional&#40;string, &#34;GENERIC&#34;&#41;&#10;  json_schema                  &#61; optional&#40;string&#41;&#10;  location                     &#61; optional&#40;string&#41;&#10;  skip_default_schema_creation &#61; optional&#40;bool&#41;&#10;  solution_types               &#61; optional&#40;list&#40;string&#41;&#41;&#10;  sites_search_config &#61; optional&#40;object&#40;&#123;&#10;    sitemap_uri &#61; optional&#40;string&#41;&#10;    target_sites &#61; map&#40;object&#40;&#123;&#10;      provided_uri_pattern &#61; string&#10;      exact_match          &#61; optional&#40;bool, false&#41;&#10;      type                 &#61; optional&#40;string, &#34;INCLUDE&#34;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [engines_configs](variables.tf#L112) | The ai-applications engines configurations. | <code title="map&#40;object&#40;&#123;&#10;  data_store_ids &#61; list&#40;string&#41;&#10;  collection_id  &#61; optional&#40;string, &#34;default_collection&#34;&#41;&#10;  chat_engine_config &#61; optional&#40;object&#40;&#123;&#10;    allow_cross_region       &#61; optional&#40;bool, null&#41;&#10;    business                 &#61; optional&#40;string&#41;&#10;    company_name             &#61; optional&#40;string&#41;&#10;    default_language_code    &#61; optional&#40;string&#41;&#10;    dialogflow_agent_to_link &#61; optional&#40;string&#41;&#10;    time_zone                &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  industry_vertical &#61; optional&#40;string&#41;&#10;  location          &#61; optional&#40;string&#41;&#10;  search_engine_config &#61; optional&#40;object&#40;&#123;&#10;    search_add_ons &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    search_tier    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L153) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [engines_configs](variables.tf#L112) | The ai-applications engines configurations. | <code title="map&#40;object&#40;&#123;&#10;  data_store_ids &#61; list&#40;string&#41;&#10;  collection_id  &#61; optional&#40;string, &#34;default_collection&#34;&#41;&#10;  chat_engine_config &#61; optional&#40;object&#40;&#123;&#10;    agent_config &#61; optional&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;      id &#61; optional&#40;string&#41;&#10;      location                 &#61; optional&#40;string&#41;&#10;      supported_language_codes &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    allow_cross_region       &#61; optional&#40;bool, true&#41;&#10;    business                 &#61; optional&#40;string&#41;&#10;    company_name             &#61; optional&#40;string&#41;&#10;    default_language_code    &#61; optional&#40;string&#41;&#10;    dialogflow_agent_to_link &#61; optional&#40;string&#41;&#10;    time_zone                &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  industry_vertical &#61; optional&#40;string&#41;&#10;  location &#61; optional&#40;string&#41;&#10;  search_engine_config &#61; optional&#40;object&#40;&#123;&#10;    search_add_ons &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    search_tier    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L163) | Location where the data stores and agents will be created. | <code>string</code> |  | <code>&#34;global&#34;</code> |
 
 ## Outputs
 
