@@ -252,6 +252,54 @@ variable "chat_agent_dlp_security_configs" {
       template_id = optional(string)
     }))
   })
+
+  validation {
+    condition = try(var.chat_agent_dlp_security_configs.inspect_template.min_likelihood == null ? true : contains(
+      ["VERY_UNLIKELY", "UNLIKELY", "POSSIBLE", "LIKELY", "VERY_LIKELY"],
+      var.chat_agent_dlp_security_configs.inspect_template.min_likelihood
+    ), true)
+    error_message = "inspect_template.min_likelihood must be one of [VERY_UNLIKELY, UNLIKELY, POSSIBLE, LIKELY, VERY_LIKELY]."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {}) : v.likelihood == null ? true : contains(
+        ["VERY_UNLIKELY", "UNLIKELY", "POSSIBLE", "LIKELY", "VERY_LIKELY"],
+        v.likelihood
+      )
+    ])
+    error_message = "inspect_template.custom_info_types.*.likelihood must be one of [VERY_UNLIKELY, UNLIKELY, POSSIBLE, LIKELY, VERY_LIKELY]."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.rule_sets, {}) : try(v.rules.exclusion_rule.matching_type == null ? true : contains(
+        ["MATCHING_TYPE_FULL_MATCH", "MATCHING_TYPE_PARTIAL_MATCH", "MATCHING_TYPE_INVERSE_MATCH"],
+        v.rules.exclusion_rule.matching_type
+      ), true)
+    ])
+    error_message = "inspect_template.rule_sets.*.rules.exclusion_rule.matching_type must be one of [MATCHING_TYPE_FULL_MATCH, MATCHING_TYPE_PARTIAL_MATCH, MATCHING_TYPE_INVERSE_MATCH]."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {}) : v.exclusion_type == null ? true : contains(
+        ["EXCLUSION_TYPE_EXCLUDE"],
+        v.exclusion_type
+      )
+    ])
+    error_message = "inspect_template.custom_info_types.*.exclusion_type must be EXCLUSION_TYPE_EXCLUDE."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in try(var.chat_agent_dlp_security_configs.inspect_template.info_types, {}) : v.sensitivity_score == null ? true : contains(
+        ["SENSITIVITY_LOW", "SENSITIVITY_MODERATE", "SENSITIVITY_HIGH"],
+        v.sensitivity_score
+      )
+    ])
+    error_message = "inspect_template.info_types.*.sensitivity_score must be one of [SENSITIVITY_LOW, SENSITIVITY_MODERATE, SENSITIVITY_HIGH]."
+  }
 }
 
 variable "chat_engine_agents_security_settings" {
@@ -268,6 +316,24 @@ variable "chat_engine_agents_security_settings" {
       enable_audio_export  = optional(bool)
     }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.chat_engine_agents_security_settings : v.redaction_strategy == null ? true : contains(
+        ["REDACT_WITH_SERVICE"],
+        v.redaction_strategy
+      )
+    ])
+    error_message = "chat_engine_agents_security_settings.*.redaction_strategy must be REDACT_WITH_SERVICE."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.chat_engine_agents_security_settings : v.redaction_scope == null ? true : contains(
+        ["REDACT_DISK_STORAGE"],
+        v.redaction_scope
+      )
+    ])
+    error_message = "chat_engine_agents_security_settings.*.redaction_scope must be REDACT_DISK_STORAGE."
+  }
   default  = {}
   nullable = false
 }
@@ -322,48 +388,58 @@ variable "data_stores_configs" {
   nullable = false
   default  = {}
   validation {
-    condition = try(contains(
-      ["CONTENT_REQUIRED", "NO_CONTENT", "PUBLIC_WEBSITE"],
-      var.data_stores_configs.content_config
-    ), true)
-    error_message = "data_store_configs.content_config must be one or more of [CONTENT_REQUIRED, NO_CONTENT, PUBLIC_WEBSITE]."
-  }
-  validation {
-    condition = try(contains(
-      ["GENERIC", "HEALTHCARE_FHIR", "MEDIA"],
-      var.data_stores_configs.industry_vertical
-    ), true)
-    error_message = "data_store_configs.industry_vertical must be one or more of [GENERIC, HEALTHCARE_FHIR, MEDIA]."
+    condition = alltrue([
+      for k, v in var.data_stores_configs : contains(
+        ["CONTENT_REQUIRED", "NO_CONTENT", "PUBLIC_WEBSITE"],
+        v.content_config
+      )
+    ])
+    error_message = "data_store_configs.content_config must be one of [CONTENT_REQUIRED, NO_CONTENT, PUBLIC_WEBSITE]."
   }
   validation {
     condition = alltrue([
-      for st in try(var.data_stores_configs.solution_types, [])
-      : contains([
-        "SOLUTION_TYPE_CHAT",
-        "SOLUTION_TYPE_GENERATIVE_CHAT",
-        "SOLUTION_TYPE_RECOMMENDATION",
-        "SOLUTION_TYPE_SEARCH"
-      ], st)
+      for k, v in var.data_stores_configs : contains(
+        ["GENERIC", "HEALTHCARE_FHIR", "MEDIA"],
+        v.industry_vertical
+      )
     ])
+    error_message = "data_store_configs.industry_vertical must be one of [GENERIC, HEALTHCARE_FHIR, MEDIA]."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.data_stores_configs : [
+        for st in try(v.solution_types, []) : contains([
+          "SOLUTION_TYPE_CHAT",
+          "SOLUTION_TYPE_GENERATIVE_CHAT",
+          "SOLUTION_TYPE_RECOMMENDATION",
+          "SOLUTION_TYPE_SEARCH"
+        ], st)
+      ]
+    ]))
     error_message = "data_store_configs.solution_types must be one or more of [SOLUTION_TYPE_CHAT, SOLUTION_TYPE_GENERATIVE_CHAT, SOLUTION_TYPE_RECOMMENDATION, SOLUTION_TYPE_SEARCH]."
   }
   validation {
-    condition = alltrue([
-      for k, _ in try(var.data_stores_configs.document_processing_config.parsing_config_overrides, {})
-      : contains([
-        "docx",
-        "html",
-        "pdf"
-      ], k)
-    ])
+    condition = alltrue(flatten([
+      for k, v in var.data_stores_configs : [
+        for po_k, po_v in try(v.document_processing_config.parsing_config_overrides, {}) : contains([
+          "docx",
+          "html",
+          "pdf"
+        ], po_k)
+      ]
+    ]))
     error_message = "keys in var.data_stores_configs.document_processing_config.parsing_config_overrides must be one of [docx, html, pdf]."
   }
   validation {
-    condition = try(contains(
-      ["EXCLUDE", "INCLUDE"],
-      var.data_stores_configs.target_site_config
-    ), true)
-    error_message = "data_store_configs.target_site_config must be one or more of [EXCLUDE, INCLUDE]."
+    condition = alltrue(flatten([
+      for k, v in var.data_stores_configs : [
+        for ts_k, ts_v in try(v.sites_search_config.target_sites, {}) : contains([
+          "EXCLUDE",
+          "INCLUDE"
+        ], ts_v.type)
+      ]
+    ]))
+    error_message = "data_store_configs.sites_search_config.target_sites.*.type must be one of [EXCLUDE, INCLUDE]."
   }
 }
 
@@ -404,17 +480,23 @@ variable "engines_configs" {
   nullable = false
   default  = {}
   validation {
-    condition = alltrue([
-      for ao in try(var.engines_configs.search_engine_config.search_add_ons, [])
-      : contains(["SEARCH_ADD_ON_LLM"], ao)
-    ])
+    condition = alltrue(flatten([
+      for k, v in var.engines_configs : [
+        for ao in try(v.search_engine_config.search_add_ons, []) : contains(["SEARCH_ADD_ON_LLM"], ao)
+      ]
+    ]))
     error_message = "Elements in engines_configs.search_engine_config.search_add_ons must be one or more of [SEARCH_ADD_ON_LLM]."
   }
   validation {
-    condition = try(contains(
-      ["SEARCH_TIER_ENTERPRISE", "SEARCH_TIER_STANDARD"],
-      var.engines_configs.search_engine_config.search_tier
-    ), true)
+    condition = alltrue([
+      for k, v in var.engines_configs : try(
+        v.search_engine_config.search_tier == null ? true : contains(
+          ["SEARCH_TIER_ENTERPRISE", "SEARCH_TIER_STANDARD"],
+          v.search_engine_config.search_tier
+        ),
+        true
+      )
+    ])
     error_message = "engines_configs.search_engine_config.search_tier must be one of [SEARCH_TIER_ENTERPRISE, SEARCH_TIER_STANDARD]."
   }
 }
