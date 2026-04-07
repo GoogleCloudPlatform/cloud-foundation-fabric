@@ -156,7 +156,7 @@ variable "chat_agent_security_configs" {
       template_id = optional(string)
     }))
     dlp_inspect_template = optional(object({
-      # ["CONTENT_TEXT", "CONTENT_IMA GE"]
+      # ["CONTENT_TEXT", "CONTENT_IMAGE"]
       content_options = optional(list(string), [])
       custom_info_types = optional(map(object({
         dictionary = optional(object({
