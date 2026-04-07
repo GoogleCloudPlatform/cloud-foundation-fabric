@@ -44,7 +44,7 @@ resource "google_discovery_engine_chat_engine" "default" {
     allow_cross_region = each.value.chat_engine_config.allow_cross_region
     dialogflow_agent_to_link = coalesce(
       each.value.chat_engine_config.agent_config.id,
-      google_dialogflow_cx_agent.agents[each.key].id
+      google_dialogflow_cx_agent.default[each.key].id
     )
   }
 

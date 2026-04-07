@@ -40,7 +40,7 @@ resource "google_dialogflow_cx_agent" "default" {
     var.location
   )
   security_settings = try(
-    google_dialogflow_cx_security_settings.security_settings[each.value.chat_engine_config.agent_config.default].id,
+    google_dialogflow_cx_security_settings.default[each.value.chat_engine_config.agent_config.default].id,
     each.value.chat_engine_config.agent_config.security_settings
   )
 
@@ -194,15 +194,15 @@ resource "google_dialogflow_cx_agent" "default" {
 resource "google_dialogflow_cx_security_settings" "default" {
   for_each            = var.chat_engine_agents_security_settings
   display_name        = each.key
-  location            = coalesce(each.location, var.location)
-  redaction_strategy  = each.value.redirection_strategy
+  location            = coalesce(each.value.location, var.location)
+  redaction_strategy  = each.value.redaction_strategy
   redaction_scope     = each.value.redaction_scope
-  inspect_template    = google_data_loss_prevention_inspect_template.default.id
-  deidentify_template = google_data_loss_prevention_deidentify_template.default.id
+  inspect_template    = try(google_data_loss_prevention_inspect_template.default[0].id, null)
+  deidentify_template = try(google_data_loss_prevention_deidentify_template.default[0].id, null)
   purge_data_types    = each.value.purge_data_types
   retention_strategy  = each.value.retention_strategy
 
-  audio_export_settings {
+  dynamic "audio_export_settings" {
     for_each = each.value.audio_export_settings == null ? {} : { 1 = 1 }
 
     content {
@@ -227,43 +227,58 @@ resource "google_dialogflow_cx_security_settings" "default" {
 }
 
 resource "google_data_loss_prevention_inspect_template" "default" {
-  template_id    = var.chat_agent_dlp_security_configs.inspect_template.template_id
-  display_name   = coalesce(var.chat_agent_dlp_security_configs.name, var.name)
-  description    = var.chat_agent_dlp_security_configs.inspect_template.description
-  min_likelihood = var.chat_agent_dlp_security_configs.inspect_template.min_likelihood
+  count = var.chat_agent_dlp_security_configs.inspect_template != null ? 1 : 0
+
+  template_id  = try(var.chat_agent_dlp_security_configs.inspect_template.template_id, null)
+  display_name = var.name
+  description  = try(var.chat_agent_dlp_security_configs.inspect_template.description, null)
   parent = coalesce(
-    var.chat_agent_dlp_security_configs.inspect_template.parent,
+    try(var.chat_agent_dlp_security_configs.inspect_template.parent, null),
     "projects/${var.project_id}"
   )
 
   inspect_config {
-    exclude_info_types = var.chat_agent_dlp_security_configs.inspect_template.exclude_info_types
-    include_quote      = var.chat_agent_dlp_security_configs.inspect_template.include_quote
-    min_likelihood     = var.chat_agent_dlp_security_configs.inspect_template.min_likelihood
-    content_options    = var.chat_agent_dlp_security_configs.inspect_template.content_options
+    exclude_info_types = try(var.chat_agent_dlp_security_configs.inspect_template.exclude_info_types, null)
+    include_quote      = try(var.chat_agent_dlp_security_configs.inspect_template.include_quote, null)
+    min_likelihood     = try(var.chat_agent_dlp_security_configs.inspect_template.min_likelihood, null)
+    content_options    = try(var.chat_agent_dlp_security_configs.inspect_template.content_options, null)
 
     dynamic "info_types" {
-      for_each = var.chat_agent_dlp_security_configs.inspect_template.custom_info_types
+      for_each = try(var.chat_agent_dlp_security_configs.inspect_template.custom_info_types, {})
 
       content {
-        name             = info_types.key
-        sensitiviy_score = info_types.value.sensitiviy_score
-        version          = info_types.value.version
+        name    = info_types.key
+        version = info_types.value.version
+        dynamic "sensitivity_score" {
+          for_each = info_types.value.sensitivity_score == null ? [] : [1]
+          content {
+            score = info_types.value.sensitivity_score
+          }
+        }
       }
     }
 
     dynamic "custom_info_types" {
-      for_each = var.chat_agent_dlp_security_configs.inspect_template.info_types
+      for_each = try(var.chat_agent_dlp_security_configs.inspect_template.info_types, {})
+      iterator = info_types
 
       content {
         exclusion_type = info_types.value.exclusion_type
         likelihood     = info_types.value.likelihood
-        surrogate_type = info_types.value.surrogate_type
+        dynamic "surrogate_type" {
+          for_each = info_types.value.surrogate_type != null ? [1] : []
+          content {}
+        }
 
         info_type {
-          name             = info_types.key
-          sensitiviy_score = info_types.value.sensitiviy_score
-          version          = info_types.value.version
+          name    = info_types.key
+          version = info_types.value.version
+          dynamic "sensitivity_score" {
+            for_each = info_types.value.sensitivity_score == null ? [] : [1]
+            content {
+              score = info_types.value.sensitivity_score
+            }
+          }
         }
 
         dynamic "regex" {
@@ -322,10 +337,10 @@ resource "google_data_loss_prevention_inspect_template" "default" {
     }
 
     dynamic "limits" {
-      for_each = var.chat_agent_dlp_security_configs.inspect_template.limits
+      for_each = var.chat_agent_dlp_security_configs.inspect_template.limits != null ? [var.chat_agent_dlp_security_configs.inspect_template.limits] : []
 
       content {
-        max_findings_per_item    = limits.max_findings_per_item
+        max_findings_per_item    = limits.value.max_findings_per_item
         max_findings_per_request = limits.value.max_findings_per_request
 
         dynamic "max_findings_per_info_type" {
@@ -335,9 +350,14 @@ resource "google_data_loss_prevention_inspect_template" "default" {
             max_findings = max_findings_per_info_type.value.max_findings
 
             info_type {
-              name             = max_findings_per_info_type.key
-              sensitiviy_score = max_findings_per_info_type.value.sensitiviy_score
-              version          = max_findings_per_info_type.value.version
+              name    = max_findings_per_info_type.key
+              version = max_findings_per_info_type.value.version
+              dynamic "sensitivity_score" {
+                for_each = max_findings_per_info_type.value.sensitivity_score == null ? [] : [1]
+                content {
+                  score = max_findings_per_info_type.value.sensitivity_score
+                }
+              }
             }
           }
         }
@@ -345,50 +365,65 @@ resource "google_data_loss_prevention_inspect_template" "default" {
     }
 
     dynamic "rule_set" {
-      for_each = toset(var.chat_agent_dlp_security_configs.rule_sets)
+      for_each = var.chat_agent_dlp_security_configs.inspect_template.rule_sets
 
       content {
         dynamic "info_types" {
           for_each = rule_set.value.info_types
 
           content {
-            name             = info_types.key
-            sensitiviy_score = info_types.value.sensitiviy_score
-            version          = info_types.value.version
+            name    = info_types.key
+            version = info_types.value.version
+            dynamic "sensitivity_score" {
+              for_each = info_types.value.sensitivity_score == null ? [] : [1]
+              content {
+                score = info_types.value.sensitivity_score
+              }
+            }
           }
         }
 
         rules {
           dynamic "exclusion_rule" {
             for_each = (
-              info_types.value.rules.exclusion_rule == null
+              rule_set.value.rules.exclusion_rule == null
               ? {} : { 1 = 1 }
             )
 
             content {
-              matching_type = info_types.value.rules.exclusion_rule.matching_type
+              matching_type = rule_set.value.rules.exclusion_rule.matching_type
 
               dynamic "dictionary" {
                 for_each = (
-                  info_types.value.rules.exclusion_rule.dictionary == null
+                  rule_set.value.rules.exclusion_rule.dictionary == null
                   ? {} : { 1 = 1 }
                 )
 
                 content {
-                  cloud_storage_path = info_types.value.rules.exclusion_rule.dictionary.cloud_storage_path
-                  words_list         = info_types.value.rules.exclusion_rule.dictionary.words_list
+                  dynamic "cloud_storage_path" {
+                    for_each = rule_set.value.rules.exclusion_rule.dictionary.cloud_storage_path != null ? [1] : []
+                    content {
+                      path = rule_set.value.rules.exclusion_rule.dictionary.cloud_storage_path
+                    }
+                  }
+                  dynamic "word_list" {
+                    for_each = rule_set.value.rules.exclusion_rule.dictionary.words_list != null ? [1] : []
+                    content {
+                      words = rule_set.value.rules.exclusion_rule.dictionary.words_list
+                    }
+                  }
                 }
               }
 
               dynamic "regex" {
                 for_each = (
-                  info_types.value.rules.exclusion_rule.regex == null
+                  rule_set.value.rules.exclusion_rule.regex == null
                   ? {} : { 1 = 1 }
                 )
 
                 content {
-                  pattern       = info_types.value.rules.exclusion_rule.regex.pattern
-                  group_indexes = info_types.value.rules.exclusion_rule.regex.group_indexes
+                  pattern       = rule_set.value.rules.exclusion_rule.regex.pattern
+                  group_indexes = rule_set.value.rules.exclusion_rule.regex.group_indexes
                 }
               }
             }
@@ -396,32 +431,40 @@ resource "google_data_loss_prevention_inspect_template" "default" {
 
           dynamic "hotword_rule" {
             for_each = (
-              info_types.value.rules.hotword == null
+              rule_set.value.rules.hotword_rule == null
               ? {} : { 1 = 1 }
             )
 
             content {
               dynamic "hotword_regex" {
                 for_each = (
-                  info_types.value.rules.hotword.hotword_regex == null
+                  rule_set.value.rules.hotword_rule.hotword_regex == null
                   ? {} : { 1 = 1 }
                 )
 
                 content {
-                  pattern       = info_types.value.rules.hotword.hotword_regex.pattern
-                  group_indexes = info_types.value.rules.hotword.hotword_regex.group_indexes
+                  pattern       = rule_set.value.rules.hotword_rule.hotword_regex.pattern
+                  group_indexes = rule_set.value.rules.hotword_rule.hotword_regex.group_indexes
                 }
               }
 
               dynamic "proximity" {
                 for_each = (
-                  info_types.value.rules.hotword.proximity == null
+                  rule_set.value.rules.hotword_rule.proximity == null
                   ? {} : { 1 = 1 }
                 )
 
                 content {
-                  window_after  = info_types.value.rules.hotword.proximity.window_after
-                  window_before = info_types.value.rules.hotword.proximity.window_before
+                  window_after  = rule_set.value.rules.hotword_rule.proximity.window_after
+                  window_before = rule_set.value.rules.hotword_rule.proximity.window_before
+                }
+              }
+
+              dynamic "likelihood_adjustment" {
+                for_each = rule_set.value.rules.hotword_rule.likelihood_adjustment != null ? [rule_set.value.rules.hotword_rule.likelihood_adjustment] : [{ fixed_likelihood = "VERY_LIKELY" }]
+                content {
+                  fixed_likelihood    = likelihood_adjustment.value.fixed_likelihood
+                  relative_likelihood = likelihood_adjustment.value.relative_likelihood
                 }
               }
             }
@@ -433,24 +476,181 @@ resource "google_data_loss_prevention_inspect_template" "default" {
 }
 
 resource "google_data_loss_prevention_deidentify_template" "default" {
-  parent = coalesce(
-    var.chat_agent_dlp_security_configs.deidentify_template.parent,
-    "projects/${var.project_id}"
-  )
-  display_name = each.key
+  count = var.chat_agent_dlp_security_configs.deidentify_template != null ? 1 : 0
 
-  deidentify_config {
+  parent       = coalesce(var.chat_agent_dlp_security_configs.deidentify_template.parent, "projects/${var.project_id}")
+  display_name = coalesce(var.chat_agent_dlp_security_configs.deidentify_template.display_name, "Deidentify template")
+  description  = var.chat_agent_dlp_security_configs.deidentify_template.description
+  template_id  = var.chat_agent_dlp_security_configs.deidentify_template.template_id
 
-    info_type_transformations {
+  dynamic "deidentify_config" {
+    for_each = var.chat_agent_dlp_security_configs.deidentify_template.deidentify_config != null ? [var.chat_agent_dlp_security_configs.deidentify_template.deidentify_config] : []
+    content {
+      dynamic "image_transformations" {
+        for_each = deidentify_config.value.image_transformations != null ? [deidentify_config.value.image_transformations] : []
+        content {
+          dynamic "transforms" {
+            for_each = image_transformations.value.transforms
+            content {
+              dynamic "all_info_types" {
+                for_each = transforms.value.all_info_types == true ? [1] : []
+                content {}
+              }
+              dynamic "all_text" {
+                for_each = transforms.value.all_text == true ? [1] : []
+                content {}
+              }
+              dynamic "redaction_color" {
+                for_each = transforms.value.redaction_color != null ? [transforms.value.redaction_color] : []
+                content {
+                  blue  = redaction_color.value.blue
+                  green = redaction_color.value.green
+                  red   = redaction_color.value.red
+                }
+              }
+              dynamic "selected_info_types" {
+                for_each = transforms.value.selected_info_types != null ? [transforms.value.selected_info_types] : []
+                content {
+                  dynamic "info_types" {
+                    for_each = selected_info_types.value.info_types
+                    content {
+                      name    = info_types.value.name
+                      version = info_types.value.version
+                      dynamic "sensitivity_score" {
+                        for_each = info_types.value.sensitivity_score == null ? [] : [1]
+                        content {
+                          score = info_types.value.sensitivity_score
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      dynamic "info_type_transformations" {
+        for_each = deidentify_config.value.info_type_transformations != null ? [deidentify_config.value.info_type_transformations] : []
+        content {
+          dynamic "transformations" {
+            for_each = info_type_transformations.value.transformations
+            content {
+              dynamic "info_types" {
+                for_each = transformations.value.info_types != null ? transformations.value.info_types : []
+                content {
+                  name    = info_types.value.name
+                  version = info_types.value.version
+                  dynamic "sensitivity_score" {
+                    for_each = info_types.value.sensitivity_score == null ? [] : [1]
+                    content {
+                      score = info_types.value.sensitivity_score
+                    }
+                  }
+                }
+              }
+              dynamic "primitive_transformation" {
+                for_each = [transformations.value.primitive_transformation]
+                content {
+                  dynamic "replace_config" {
+                    for_each = primitive_transformation.value.replace_config != null ? [primitive_transformation.value.replace_config] : []
+                    content {
+                      dynamic "new_value" {
+                        for_each = [replace_config.value.new_value]
+                        content {
+                          integer_value     = new_value.value.integer_value
+                          float_value       = new_value.value.float_value
+                          string_value      = new_value.value.string_value
+                          boolean_value     = new_value.value.boolean_value
+                          timestamp_value   = new_value.value.timestamp_value
+                          day_of_week_value = new_value.value.day_of_week_value
+                          dynamic "time_value" {
+                            for_each = new_value.value.time_value != null ? [new_value.value.time_value] : []
+                            content {
+                              hours   = time_value.value.hours
+                              minutes = time_value.value.minutes
+                              seconds = time_value.value.seconds
+                              nanos   = time_value.value.nanos
+                            }
+                          }
+                          dynamic "date_value" {
+                            for_each = new_value.value.date_value != null ? [new_value.value.date_value] : []
+                            content {
+                              year  = date_value.value.year
+                              month = date_value.value.month
+                              day   = date_value.value.day
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
 
-      transformations {
-
-        primitive_transformation {
-
-          replace_config {
-
-            new_value {
-              string_value = "[REDACTED]"
+                  dynamic "character_mask_config" {
+                    for_each = primitive_transformation.value.character_mask_config != null ? [primitive_transformation.value.character_mask_config] : []
+                    content {
+                      masking_character = character_mask_config.value.masking_character
+                      number_to_mask    = character_mask_config.value.number_to_mask
+                      reverse_order     = character_mask_config.value.reverse_order
+                      dynamic "characters_to_ignore" {
+                        for_each = character_mask_config.value.characters_to_ignore != null ? [character_mask_config.value.characters_to_ignore] : []
+                        content {
+                          characters_to_skip          = characters_to_ignore.value.characters_to_skip
+                          common_characters_to_ignore = characters_to_ignore.value.common_characters_to_ignore
+                        }
+                      }
+                    }
+                  }
+                  dynamic "crypto_deterministic_config" {
+                    for_each = primitive_transformation.value.crypto_deterministic_config != null ? [primitive_transformation.value.crypto_deterministic_config] : []
+                    content {
+                      dynamic "crypto_key" {
+                        for_each = crypto_deterministic_config.value.crypto_key != null ? [crypto_deterministic_config.value.crypto_key] : []
+                        content {
+                          dynamic "transient" {
+                            for_each = crypto_key.value.transient != null ? [crypto_key.value.transient] : []
+                            content {
+                              name = transient.value.name
+                            }
+                          }
+                          dynamic "unwrapped" {
+                            for_each = crypto_key.value.unwrapped != null ? [crypto_key.value.unwrapped] : []
+                            content {
+                              key = unwrapped.value.key
+                            }
+                          }
+                          dynamic "kms_wrapped" {
+                            for_each = crypto_key.value.kms_wrapped != null ? [crypto_key.value.kms_wrapped] : []
+                            content {
+                              wrapped_key     = kms_wrapped.value.wrapped_key
+                              crypto_key_name = kms_wrapped.value.crypto_key_name
+                            }
+                          }
+                        }
+                      }
+                      dynamic "surrogate_info_type" {
+                        for_each = crypto_deterministic_config.value.surrogate_info_type != null ? [crypto_deterministic_config.value.surrogate_info_type] : []
+                        content {
+                          name    = surrogate_info_type.value.name
+                          version = surrogate_info_type.value.version
+                          dynamic "sensitivity_score" {
+                            for_each = surrogate_info_type.value.sensitivity_score == null ? [] : [1]
+                            content {
+                              score = surrogate_info_type.value.sensitivity_score
+                            }
+                          }
+                        }
+                      }
+                      dynamic "context" {
+                        for_each = crypto_deterministic_config.value.context != null ? [crypto_deterministic_config.value.context] : []
+                        content {
+                          name = context.value.name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -458,4 +658,3 @@ resource "google_data_loss_prevention_deidentify_template" "default" {
     }
   }
 }
-
