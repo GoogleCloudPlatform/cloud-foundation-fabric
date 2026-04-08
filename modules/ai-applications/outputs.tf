@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-output "chat_engine_ids" {
-  description = "The ids of the chat engines created."
-  value = {
-    for k, v in google_discovery_engine_chat_engine.default
-    : k => v.id
-  }
+output "chat_agent_id" {
+  description = "The id of the (Dialogflow CX) chat agent."
+  value       = try(google_dialogflow_cx_agent.default[0].id, null)
 }
 
-output "chat_engines" {
-  description = "The chat engines created."
-  value       = google_discovery_engine_chat_engine.default
+output "chat_agent" {
+  description = "The (Dialogflow CX) chat agent object."
+  value       = try(google_dialogflow_cx_agent.default[0], null)
+}
+
+output "chat_engine_id" {
+  description = "The id of the chat engine."
+  value       = try(google_discovery_engine_chat_engine.default[0].id, null)
+}
+
+output "chat_engine" {
+  description = "The chat engine object."
+  value       = try(google_discovery_engine_chat_engine.default[0], null)
 }
 
 output "data_store_ids" {
@@ -40,15 +47,12 @@ output "data_stores" {
   value       = google_discovery_engine_data_store.default
 }
 
-output "search_engine_ids" {
-  description = "The ids of the search engines created."
-  value = {
-    for k, v in google_discovery_engine_search_engine.default
-    : k => v.id
-  }
+output "search_engine_id" {
+  description = "The id of the search engine."
+  value       = try(google_discovery_engine_search_engine.default[0].id, null)
 }
 
-output "search_engines" {
-  description = "The search engines created."
-  value       = google_discovery_engine_search_engine.default
+output "search_engine" {
+  description = "The search engines object."
+  value       = try(google_discovery_engine_search_engine.default[0], null)
 }
