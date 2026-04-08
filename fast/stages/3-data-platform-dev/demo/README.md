@@ -170,12 +170,12 @@ gcloud composer environments describe $COMPOSER_ENV_NAME \
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [authorized_dataset_on_curated](variables.tf#L16) | Authorized Dataset. | <code>string</code> | ✓ |  |  |
-| [composer_config](variables.tf#L21) | Composer environment configuration. | <code title="object&#40;&#123;&#10;  environment_name &#61; string&#10;  project_id       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [composer_config](variables.tf#L21) | Composer environment configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [dp_processing_service_account](variables.tf#L30) | Service account for data processing via Composer impersonation. | <code>string</code> | ✓ |  |  |
 | [impersonate_service_account](variables.tf#L47) | Service account to impersonate for Google Cloud providers. | <code>string</code> | ✓ |  |  |
 | [prefix](variables.tf#L60) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |  |
 | [project_id](variables.tf#L69) | Project ID to deploy resources. | <code>string</code> | ✓ |  |  |
-| [encryption_keys](variables.tf#L36) | Default encryption keys for services, in service => { region => key id } format. Overridable on a per-object basis. | <code title="object&#40;&#123;&#10;  bigquery &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  composer &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [encryption_keys](variables.tf#L36) | Default encryption keys for services, in service => { region => key id } format. Overridable on a per-object basis. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [location](variables.tf#L53) | Default location used when no location is specified. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |  |
 
 ## Outputs
