@@ -49,7 +49,6 @@ values:
     - autoscaling_profile: BALANCED
       default_compute_class_enabled: null
       enabled: true
-      resource_limits: []
     control_plane_endpoints_config:
     - dns_endpoint_config:
       - allow_external_traffic: true
@@ -88,6 +87,7 @@ values:
     maintenance_policy:
     - daily_maintenance_window:
       - start_time: 03:00
+      disruption_budget: []
       maintenance_exclusion: []
       recurring_window: []
     master_auth:
@@ -133,6 +133,9 @@ values:
       taint: []
     node_pool_auto_config:
     - linux_node_config:
+      - node_kernel_module_loading: []
+      network_tags: []
+      node_kubelet_config:
       - {}
       resource_manager_tags: null
     node_pool_defaults:
@@ -149,6 +152,7 @@ values:
     resource_labels: null
     resource_usage_export_config: []
     secret_manager_config: []
+    secret_sync_config: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -349,6 +353,7 @@ values:
     timeouts: null
   module.vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
     delete_default_routes_on_create: false
     description: Terraform-managed.
     enable_ula_internal_ipv6: null
@@ -414,10 +419,11 @@ values:
     project: gkehub-test
     region: europe-west1
     reserved_internal_range: null
+    resolve_subnet_mask: null
     role: null
     send_secondary_ip_range_if_empty: true
     timeouts: null
-
+    
 counts:
   google_compute_network: 1
   google_compute_route: 3
