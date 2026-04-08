@@ -1,0 +1,35 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yamllint disable rule:line-length
+
+custom.gkeEnableAutoUpgrade:
+  resource_types:
+    - container.googleapis.com/NodePool
+  method_types:
+    - CREATE
+  condition: resource.management.autoUpgrade == true
+  action_type: ALLOW
+  display_name: Enable node auto-upgrade
+  description: All node pools must have node auto-upgrade enabled.
+custom.dataprocNoMoreThan10Workers:
+  resource_types:
+    - dataproc.googleapis.com/Cluster
+  method_types:
+    - CREATE
+    - UPDATE
+  condition: resource.config.workerConfig.numInstances + resource.config.secondaryWorkerConfig.numInstances > 10
+  action_type: DENY
+  display_name: Total number of worker instances cannot be larger than 10
+  description: Cluster cannot have more than 10 workers, including primary and secondary workers.

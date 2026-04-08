@@ -23,8 +23,12 @@ tests:
   iam_by_principals_conditional:
   no_parent:
   no_prefix:
-  org_policies_boolean:
-  org_policies_list:
+  org_policies:
+  org_policies_factory:
+    inventory:
+      - org_policies.yaml
+    extra_dirs:
+      - ../../tests/modules/project/factory
   parent_folder:
   parent_org:
   prefix:

@@ -324,7 +324,7 @@
           <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
   - **logging_config**: *object*
     <br>*additional properties: false*
-    - **log_bucket**: *string*
+    - ⁺**log_bucket**: *string*
     - **log_object_prefix**: *string*
   - **location**: *string*
   - **managed_folders**: *object*
@@ -346,6 +346,8 @@
   - **soft_delete_retention**: *number*
   - **enable_object_retention**: *boolean*
   - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
+  - **custom_placement_config**: *array*
+    - items: *string*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*

@@ -20,6 +20,7 @@
     - **exclude_all**: *boolean*
     - **include_specified**: *array*
       - items: *string*
+        <br>*enum: ['COMMITTED_USAGE_DISCOUNT', 'COMMITTED_USAGE_DISCOUNT_DOLLAR_BASE', 'DISCOUNT', 'FREE_TIER', 'PROMOTION', 'RESELLER_MARGIN', 'SUBSCRIPTION_BENEFIT', 'SUSTAINED_USAGE_DISCOUNT']*
   - **label**: *object*
     <br>*additional properties: false*
     - **key**: *string*

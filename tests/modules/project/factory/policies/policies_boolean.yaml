@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/folder
+# yamllint disable rule:line-length
 
-tests:
-  context:
-  iam_by_principals_additive:
-  iam_by_principals_conditional:
-  org_policies:
-  org_policies_factory:
-    inventory:
-      - org_policies.yaml
-    extra_dirs:
-      - ../../tests/modules/folder/factory
+iam.disableServiceAccountKeyCreation:
+  rules:
+    - enforce: true
+iam.disableServiceAccountKeyUpload:
+  rules:
+    - condition:
+        expression: resource.matchTagId(aa, bb)
+        title: condition
+        description: test condition
+        location: xxx
+      enforce: true
+    - enforce: false

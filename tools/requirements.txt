@@ -1,6 +1,5 @@
 click
 cloudpickle
-deepdiff
 ghapi
 iso8601
 marko

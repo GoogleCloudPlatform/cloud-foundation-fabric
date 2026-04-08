@@ -153,13 +153,14 @@
     <br>*additional properties: false*
     - **forecast_horizon**: *string*
   - **trigger**: *reference([trigger](#refs-trigger))*
-- **aggregations**<a name="refs-aggregations"></a>: *object*
-  <br>*additional properties: false*
-  - **per_series_aligner**: *string*
-  - **group_by_fields**: *array*
-    - items: *string*
-  - **cross_series_reducer**: *string*
-  - **alignment_period**: *string*
+- **aggregations**<a name="refs-aggregations"></a>: *array*
+  - items: *object*
+    <br>*additional properties: false*
+    - **per_series_aligner**: *string*
+    - **group_by_fields**: *array*
+      - items: *string*
+    - **cross_series_reducer**: *string*
+    - **alignment_period**: *string*
 - **trigger**<a name="refs-trigger"></a>: *object*
   <br>*additional properties: false*
   - **count**: *number*

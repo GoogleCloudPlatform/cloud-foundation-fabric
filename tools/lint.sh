@@ -25,6 +25,9 @@ terraform fmt -recursive -check -diff $PWD
 echo -- READMEs --
 python3 tools/check_documentation.py --no-show-summary modules fast blueprints
 
+echo -- Schema docs --
+python3 tools/check_schema_docs.py --no-show-summary modules fast blueprints
+
 echo -- Links --
 python3 tools/check_links.py --no-show-summary $PWD
 
