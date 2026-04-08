@@ -336,12 +336,12 @@ module "ai-applications" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [chat_agent](outputs.tf#L22) | The (Dialogflow CX) chat agent object. |  |
-| [chat_agent_id](outputs.tf#L17) | The id of the (Dialogflow CX) chat agent. |  |
-| [chat_engine](outputs.tf#L32) | The chat engine object. |  |
-| [chat_engine_id](outputs.tf#L27) | The id of the chat engine. |  |
+| [chat_agent](outputs.tf#L17) | The (Dialogflow CX) chat agent object. |  |
+| [chat_agent_id](outputs.tf#L22) | The id of the (Dialogflow CX) chat agent. |  |
+| [chat_engine](outputs.tf#L27) | The chat engine object. |  |
+| [chat_engine_id](outputs.tf#L32) | The id of the chat engine. |  |
 | [data_store_ids](outputs.tf#L37) | The ids of the data stores created. |  |
 | [data_stores](outputs.tf#L45) | The data stores resources created. |  |
-| [search_engine](outputs.tf#L55) | The search engines object. |  |
-| [search_engine_id](outputs.tf#L50) | The id of the search engine. |  |
+| [search_engine](outputs.tf#L50) | The search engines object. |  |
+| [search_engine_id](outputs.tf#L55) | The id of the search engine. |  |
 <!-- END TFDOC -->
