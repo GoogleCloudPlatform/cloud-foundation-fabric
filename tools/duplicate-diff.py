@@ -21,6 +21,12 @@ import os
 
 # List of folders and files that are expected to have same content
 duplicates = [
+    # factory policies
+    [
+        "tests/modules/folder/factory/policies",
+        "tests/modules/organization/factory/policies",
+        "tests/modules/project/factory/policies",
+    ],
     # schemas
     [
         "fast/stages/1-vpcsc/schemas/access-level.schema.json",
