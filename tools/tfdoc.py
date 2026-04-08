@@ -559,7 +559,8 @@ def main(module_paths=None, exclude_file=None, files=False, replace=True,
       readme_path = os.path.join(module_path, 'README.md')
     readme = get_readme(readme_path)
     if not toc_only:
-      doc = create_tfref(module_path, files, show_extra, exclude_file, readme, hover)
+      doc = create_tfref(module_path, files, show_extra, exclude_file, readme,
+                         hover)
       readme = render_tfref(readme, doc.content)
     toc = create_toc(readme, toc_skip)
     readme = render_toc(readme, toc)
