@@ -1,4 +1,25 @@
+parent = "organizations/12345678"
+name   = "folder-a"
 org_policies = {
+  "iam.disableServiceAccountKeyCreation" = {
+    rules = [{ enforce = true }]
+  }
+  "iam.disableServiceAccountKeyUpload" = {
+    rules = [
+      {
+        condition = {
+          expression  = "resource.matchTagId(aa, bb)"
+          title       = "condition"
+          description = "test condition"
+          location    = "xxx"
+        }
+        enforce = true
+      },
+      {
+        enforce = false
+      }
+    ]
+  }
   "compute.vmExternalIpAccess" = {
     rules = [{ deny = { all = true } }]
   }
@@ -9,7 +30,6 @@ org_policies = {
         values = ["C0xxxxxxx", "C0yyyyyyy"]
       }
     }]
-
   }
   "compute.restrictLoadBalancerCreationForTypes" = {
     rules = [

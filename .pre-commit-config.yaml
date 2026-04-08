@@ -31,7 +31,6 @@ repos:
     language: python
     additional_dependencies:
     - click
-    - deepdiff
     - ghapi
     - iso8601
     - marko
@@ -49,7 +48,6 @@ repos:
     entry: tools/check_boilerplate.py
     additional_dependencies:
     - click
-    - deepdiff
     - ghapi
     - iso8601
     - marko
@@ -66,7 +64,6 @@ repos:
     language: python
     additional_dependencies:
     - click
-    - deepdiff
     - ghapi
     - iso8601
     - marko
@@ -89,7 +86,6 @@ repos:
     language: python
     additional_dependencies:
     - click
-    - deepdiff
     - ghapi
     - iso8601
     - marko
@@ -105,7 +101,6 @@ repos:
     language: python
     additional_dependencies:
     - click
-    - deepdiff
     - ghapi
     - iso8601
     - marko
@@ -116,12 +111,19 @@ repos:
     pass_filenames: false
     files: ^(fast|modules)
     entry: tools/check_yaml_schema.py modules fast
+  - id: check-schema-docs
+    name: Check Markdown generated from JSON schemas
+    language: python
+    additional_dependencies:
+    - click
+    pass_filenames: false
+    files: ^(fast|modules).*schema\.json$
+    entry: tools/check_schema_docs.py --no-show-summary modules fast
   - id: check-links
     name: Check links in markdown files
     language: python
     additional_dependencies:
     - click
-    - deepdiff
     - ghapi
     - iso8601
     - marko
