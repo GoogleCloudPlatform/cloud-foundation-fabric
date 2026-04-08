@@ -346,6 +346,8 @@
   - **soft_delete_retention**: *number*
   - **enable_object_retention**: *boolean*
   - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
+  - **custom_placement_config**: *array*
+    - items: *string*
 - **buckets**<a name="refs-buckets"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*
