@@ -13,6 +13,41 @@
 # limitations under the License.
 
 values:
+  google_org_policy_policy.default["iam.disableServiceAccountKeyCreation"]:
+    name: organizations/1234567890/policies/iam.disableServiceAccountKeyCreation
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+    timeouts: null
+  google_org_policy_policy.default["iam.disableServiceAccountKeyUpload"]:
+    name: organizations/1234567890/policies/iam.disableServiceAccountKeyUpload
+    parent: organizations/1234567890
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition:
+        - description: test condition
+          expression: resource.matchTagId(aa, bb)
+          location: xxx
+          title: condition
+        deny_all: null
+        enforce: 'TRUE'
+        values: []
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        values: []
+    timeouts: null
   google_org_policy_policy.default["compute.restrictLoadBalancerCreationForTypes"]:
     name: organizations/1234567890/policies/compute.restrictLoadBalancerCreationForTypes
     parent: organizations/1234567890
@@ -80,6 +115,26 @@ values:
           - C0yyyyyyy
           denied_values: null
     timeouts: null
-
+  google_org_policy_custom_constraint.constraint["custom.dataprocNoMoreThan10Workers"]:
+    action_type: DENY
+    condition: resource.config.workerConfig.numInstances + resource.config.secondaryWorkerConfig.numInstances
+      > 10
+    method_types:
+    - CREATE
+    - UPDATE
+    name: custom.dataprocNoMoreThan10Workers
+    parent: organizations/1234567890
+    resource_types:
+    - dataproc.googleapis.com/Cluster
+  google_org_policy_custom_constraint.constraint["custom.gkeEnableAutoUpgrade"]:
+    action_type: ALLOW
+    condition: resource.management.autoUpgrade == true
+    method_types:
+    - CREATE
+    name: custom.gkeEnableAutoUpgrade
+    parent: organizations/1234567890
+    resource_types:
+    - container.googleapis.com/NodePool
 counts:
-  google_org_policy_policy: 3
+  google_org_policy_policy: 5
+  google_org_policy_custom_constraint: 2
