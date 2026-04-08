@@ -20,7 +20,7 @@ Once deployed do the following to see that it works:
 |---|---|:---:|:---:|:---:|
 | [project_id](variables.tf#L27) | Identifier of the project. | <code>string</code> | ✓ |  |
 | [regions](variables.tf#L32) | List of regions to deploy the proxy in. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code title="object&#40;&#123;&#10;  name             &#61; string&#10;  number           &#61; number&#10;  services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
