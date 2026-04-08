@@ -136,12 +136,7 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
 
       content {
         inline_source {
-          source_archive = filebase64(
-            coalesce(
-              var.agent_engine_config.source_path_override,
-              var.deployment_files.source_config.source_path
-            )
-          )
+          source_archive = filebase64(var.deployment_files.source_config.source_path)
         }
 
         python_spec {

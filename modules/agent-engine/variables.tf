@@ -33,7 +33,6 @@ variable "agent_engine_config" {
       secret_id = string
       version   = optional(string, "latest")
     })), {})
-    source_path_override = optional(string)
   })
   nullable = false
 }
