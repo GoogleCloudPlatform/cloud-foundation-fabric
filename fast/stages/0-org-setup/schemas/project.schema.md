@@ -324,7 +324,7 @@
           <br>*enum: ['LIVE', 'ARCHIVED', 'ANY']*
   - **logging_config**: *object*
     <br>*additional properties: false*
-    - **log_bucket**: *string*
+    - ⁺**log_bucket**: *string*
     - **log_object_prefix**: *string*
   - **location**: *string*
   - **managed_folders**: *object*
