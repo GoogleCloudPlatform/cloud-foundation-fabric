@@ -15,6 +15,8 @@
   - **bgp_priority**: *number*
   - ⁺**interconnect**: *string*
   - ⁺**vlan_tag**: *string*
+  - **candidate_cloud_router_ip_address**: *string*
+  - **candidate_customer_router_ip_address**: *string*
 - **description**: *string*
 - **ipsec_gateway_ip_ranges**: *object*
   <br>*additional properties: string*
