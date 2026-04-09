@@ -911,60 +911,60 @@ Auto-population of provider attributes is supported via the `attribute_mapping_t
 module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
-  workforce_identity_config = {
-    # optional, defaults to 'default'
-    pool_name    = "test-pool"
-    display_name = "Test Pool"
-    description  = "Workforce pool for testing."
-    providers = {
-      saml-basic = {
-        attribute_mapping_template = "azuread"
-        identity_provider = {
-          saml = {
-            idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
-          }
-        }
-      }
-      saml-full = {
-        attribute_mapping = {
-          "google.subject" = "assertion.sub"
-        }
-        identity_provider = {
-          saml = {
-            idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
-          }
-        }
-        oauth2_client_config = {
-          extra_attributes = {
-            issuer_uri      = "https://login.microsoftonline.com/abcdef/v2.0"
-            client_id       = "client-id"
-            client_secret   = "client-secret"
-            attributes_type = "AZURE_AD_GROUPS_ID"
-            query_filter    = "mail:gcp"
-          }
-        }
-      }
-      oidc-full = {
-        attribute_mapping = {
-          "google.subject" = "assertion.sub"
-        }
-        identity_provider = {
-          oidc = {
-            issuer_uri    = "https://sts.windows.net/abcd01234/"
-            client_id     = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
-            client_secret = "client-secret"
-            web_sso_config = {
-              response_type             = "CODE"
-              assertion_claims_behavior = "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS"
+  workforce_identity_pools = {
+    "test-pool" = {
+      display_name = "Test Pool"
+      description  = "Workforce pool for testing."
+      providers = {
+        saml-basic = {
+          attribute_mapping_template = "azuread"
+          identity_provider = {
+            saml = {
+              idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
             }
           }
         }
-        oauth2_client_config = {
-          extra_attributes = {
-            issuer_uri      = "https://login.microsoftonline.com/abcd01234/v2.0"
-            client_id       = "client-id"
-            client_secret   = "client-secret"
-            attributes_type = "AZURE_AD_GROUPS_MAIL"
+        saml-full = {
+          attribute_mapping = {
+            "google.subject" = "assertion.sub"
+          }
+          identity_provider = {
+            saml = {
+              idp_metadata_xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>..."
+            }
+          }
+          oauth2_client_config = {
+            extra_attributes = {
+              issuer_uri      = "https://login.microsoftonline.com/abcdef/v2.0"
+              client_id       = "client-id"
+              client_secret   = "client-secret"
+              attributes_type = "AZURE_AD_GROUPS_ID"
+              query_filter    = "mail:gcp"
+            }
+          }
+        }
+        oidc-full = {
+          attribute_mapping = {
+            "google.subject" = "assertion.sub"
+          }
+          identity_provider = {
+            oidc = {
+              issuer_uri    = "https://sts.windows.net/abcd01234/"
+              client_id     = "https://analysis.windows.net/powerbi/connector/GoogleBigQuery"
+              client_secret = "client-secret"
+              web_sso_config = {
+                response_type             = "CODE"
+                assertion_claims_behavior = "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS"
+              }
+            }
+          }
+          oauth2_client_config = {
+            extra_attributes = {
+              issuer_uri      = "https://login.microsoftonline.com/abcd01234/v2.0"
+              client_id       = "client-id"
+              client_secret   = "client-secret"
+              attributes_type = "AZURE_AD_GROUPS_MAIL"
+            }
           }
         }
       }
@@ -1033,7 +1033,7 @@ module "org" {
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L161) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [workforce_identity_config](variables-identity-providers.tf#L17) | Workforce Identity Federation pool and providers. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [workforce_identity_pools](variables-identity-providers.tf#L17) | Workforce Identity Federation pools and providers. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
