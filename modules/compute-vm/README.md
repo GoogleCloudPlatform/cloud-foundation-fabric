@@ -18,7 +18,9 @@ In both modes, an optional service account can be created and assigned to either
     - [Custom service account, auto created](#custom-service-account-auto-created)
     - [No service account](#no-service-account)
   - [Disk management](#disk-management)
+    - [Disambiguating Disk "Names"](#disambiguating-disk-names)
     - [Disk sources](#disk-sources)
+    - [Disk Ordering](#disk-ordering)
     - [Disk types and options](#disk-types-and-options)
     - [Boot disk as an independent resource](#boot-disk-as-an-independent-resource)
   - [Network interfaces](#network-interfaces)
@@ -149,6 +151,14 @@ module "vm-managed-sa-example2" {
 
 ### Disk management
 
+#### Disambiguating Disk "Names"
+
+Disks in GCP and Terraform have several identifiers which often cause confusion. This module explicitly disambiguates them as follows:
+
+1. **Map Key (The Identifier):** In the `attached_disks` map, the key itself will act as the primary logical identifier for the disk within the module's Terraform state.
+2. **Device Name (`device_name`):** This is the name exposed to the Guest OS (e.g., visible in `/dev/disk/by-id/google-<device_name>`). The module defaults the `device_name` to the **Map Key**. Users can override it explicitly if needed, but the map key provides a safe, predictable default.
+3. **Resource Name (`name`):** This is the actual name of the `google_compute_disk` resource created in the GCP API. To ensure uniqueness across a project, the module defaults the resource name to `${var.name}-${each.key}` (the VM name hyphenated with the Map Key). An explicit `name` attribute can be provided to override this (e.g., when attaching an existing disk or requiring a specific naming convention).
+
 #### Disk sources
 
 Attached disks can be created and optionally initialized from a pre-existing source, or attached to VMs when pre-existing. The `source` attribute of the `attached_disks` variable allows several modes of operation:
@@ -157,6 +167,18 @@ Attached disks can be created and optionally initialized from a pre-existing sou
 - `source.snapshot` can be used with instances only, set to the snapshot name or self link
 - `source.attach` can be used for both instances and templates to attach an existing disk, set to the name (for zonal disks) or self link (for regional disks) of the existing disk to attach; no disk will be created
 - `source = null` can be used where an empty disk is needed
+
+> **Note:** When using `source.attach`, the value must be a statically known string (e.g., a self-link or ID of an existing disk). You cannot pass a dynamic reference (like `google_compute_disk.my_disk.id`) to a disk being created in the same Terraform apply cycle. This is an intentional design choice to maintain stable `for_each` keys. If you need to create a disk alongside the VM, let the module manage its creation by defining `initialize_params` instead.
+
+#### Disk Ordering
+
+When attaching multiple disks to a VM, Terraform processes them using a `dynamic` block based on the `attached_disks` map. By default, Terraform iterates over map keys in alphabetical order. This alphabetical order dictates the sequence in which disks are attached, which in turn influences the default `device_name` exposed to the guest OS (if not explicitly overridden).
+
+If you add a new disk to the `attached_disks` map with a key that comes alphabetically *before* existing disks, it will shift the attachment order of all subsequent disks. This shift can cause Terraform to recreate or modify existing attachments, potentially requiring the VM to be restarted or remounted.
+
+To explicitly control the attachment order and prevent unintended shifts when adding new disks, you can use the optional `position` attribute within each disk's configuration. The module uses the `position` value as the sorting key. If `position` is omitted, it falls back to using the map key itself. 
+
+By setting a `position` value that sorts alphabetically *after* the existing disks, you can safely append a newly added disk to the end of the attachment list, regardless of its actual map key.
 
 This is an example of attaching a pre-existing regional PD to a new instance:
 
@@ -241,8 +263,9 @@ module "vm-disk-options-example" {
         image = "image-1"
       }
     }
-    data2 = {
-      mode = "READ_ONLY"
+    data0 = {
+      position = "data2"
+      mode     = "READ_ONLY"
       initialize_params = {
         size = 20
         type = "pd-ssd"
@@ -1190,45 +1213,45 @@ module "sole-tenancy" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L353) | Instance name. | <code>string</code> | ✓ |  |
-| [network_interfaces](variables.tf#L365) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L405) | Project id. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L562) | Compute zone. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L354) | Instance name. | <code>string</code> | ✓ |  |
+| [network_interfaces](variables.tf#L366) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L406) | Project id. | <code>string</code> | ✓ |  |
+| [zone](variables.tf#L563) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disks](variables.tf#L17) | Additional disks. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [boot_disk](variables.tf#L56) | Boot disk properties. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [can_ip_forward](variables.tf#L113) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
-| [confidential_compute](variables.tf#L119) | Confidential Compute configuration. Set to 'SEV' or 'SEV_SNP' to enable. | <code>string</code> |  | <code>null</code> |
-| [context](variables.tf#L129) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [create_template](variables.tf#L146) | Create instance template instead of instances. Defaults to a global template. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [description](variables.tf#L155) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
-| [enable_display](variables.tf#L161) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
-| [encryption](variables.tf#L167) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [gpu](variables.tf#L178) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [group](variables.tf#L213) | Instance group configuration. Set 'named_ports' to create a new unmanaged instance group, or provide an existing group self_link/id in 'membership' to join one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [hostname](variables.tf#L222) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
-| [iam](variables.tf#L228) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_schedule](variables.tf#L234) | Assign or create and assign an instance schedule policy. Set active to null to detach a policy from vm before destroying. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [kms_autokeys](variables.tf#L258) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L276) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [lifecycle_config](variables.tf#L282) | Instance lifecycle and operational configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [machine_features_config](variables.tf#L304) | Machine-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [machine_type](variables.tf#L328) | Machine type. | <code>string</code> |  | <code>&#34;e2-micro&#34;</code> |
-| [metadata](variables.tf#L334) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [metadata_startup_script](variables.tf#L340) | Instance startup script. Will trigger recreation on change, even after importing. | <code>string</code> |  | <code>null</code> |
-| [min_cpu_platform](variables.tf#L347) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
-| [network_attached_interfaces](variables.tf#L358) | Network interfaces using network attachments. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [network_performance_tier](variables.tf#L388) | Network performance total egress bandwidth tier. | <code>string</code> |  | <code>null</code> |
-| [network_tag_bindings](variables.tf#L398) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_number](variables.tf#L410) | Project number. Used in tag bindings to avoid a permadiff. | <code>string</code> |  | <code>null</code> |
-| [resource_policies](variables.tf#L416) | Resource policies to attach to the instance or template. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [scheduling_config](variables.tf#L423) | Scheduling configuration for the instance. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [scratch_disks](variables.tf#L458) | Scratch disks configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [service_account](variables.tf#L471) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [shielded_config](variables.tf#L482) | Shielded VM configuration of the instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [snapshot_schedules](variables.tf#L492) | Snapshot schedule resource policies that can be attached to disks. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L535) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings_immutable](variables.tf#L542) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L556) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [boot_disk](variables.tf#L57) | Boot disk properties. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [can_ip_forward](variables.tf#L114) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
+| [confidential_compute](variables.tf#L120) | Confidential Compute configuration. Set to 'SEV' or 'SEV_SNP' to enable. | <code>string</code> |  | <code>null</code> |
+| [context](variables.tf#L130) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [create_template](variables.tf#L147) | Create instance template instead of instances. Defaults to a global template. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L156) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
+| [enable_display](variables.tf#L162) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
+| [encryption](variables.tf#L168) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [gpu](variables.tf#L179) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [group](variables.tf#L214) | Instance group configuration. Set 'named_ports' to create a new unmanaged instance group, or provide an existing group self_link/id in 'membership' to join one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [hostname](variables.tf#L223) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
+| [iam](variables.tf#L229) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [instance_schedule](variables.tf#L235) | Assign or create and assign an instance schedule policy. Set active to null to detach a policy from vm before destroying. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [kms_autokeys](variables.tf#L259) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L277) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [lifecycle_config](variables.tf#L283) | Instance lifecycle and operational configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [machine_features_config](variables.tf#L305) | Machine-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [machine_type](variables.tf#L329) | Machine type. | <code>string</code> |  | <code>&#34;e2-micro&#34;</code> |
+| [metadata](variables.tf#L335) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [metadata_startup_script](variables.tf#L341) | Instance startup script. Will trigger recreation on change, even after importing. | <code>string</code> |  | <code>null</code> |
+| [min_cpu_platform](variables.tf#L348) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
+| [network_attached_interfaces](variables.tf#L359) | Network interfaces using network attachments. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [network_performance_tier](variables.tf#L389) | Network performance total egress bandwidth tier. | <code>string</code> |  | <code>null</code> |
+| [network_tag_bindings](variables.tf#L399) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_number](variables.tf#L411) | Project number. Used in tag bindings to avoid a permadiff. | <code>string</code> |  | <code>null</code> |
+| [resource_policies](variables.tf#L417) | Resource policies to attach to the instance or template. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [scheduling_config](variables.tf#L424) | Scheduling configuration for the instance. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [scratch_disks](variables.tf#L459) | Scratch disks configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [service_account](variables.tf#L472) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [shielded_config](variables.tf#L483) | Shielded VM configuration of the instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [snapshot_schedules](variables.tf#L493) | Snapshot schedule resource policies that can be attached to disks. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L536) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings_immutable](variables.tf#L543) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L557) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

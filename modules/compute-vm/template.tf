@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,38 +95,39 @@ resource "google_compute_instance_template" "default" {
     }
   }
   dynamic "disk" {
-    for_each = var.attached_disks
+    for_each = local.attached_disks_ordered
+    iterator = disk_iter
     content {
       architecture = var.boot_disk.architecture
-      auto_delete  = disk.value.mode == "READ_ONLY" ? null : disk.value.auto_delete
-      device_name  = coalesce(disk.value.device_name, disk.value.name, disk.key)
+      auto_delete  = var.attached_disks[disk_iter.value.key].mode == "READ_ONLY" ? null : var.attached_disks[disk_iter.value.key].auto_delete
+      device_name  = coalesce(var.attached_disks[disk_iter.value.key].device_name, var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
       disk_name = (
-        disk.value.source.attach == null
-        ? coalesce(disk.value.name, disk.key)
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? coalesce(var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
         : null
       )
-      mode                  = disk.value.mode
+      mode                  = var.attached_disks[disk_iter.value.key].mode
       resource_manager_tags = var.tag_bindings_immutable
-      source_image          = disk.value.source.image
-      source                = disk.value.source.attach
+      source_image          = var.attached_disks[disk_iter.value.key].source.image
+      source                = var.attached_disks[disk_iter.value.key].source.attach
       type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
-        disk.value.source.attach == null
-        ? disk.value.initialize_params.type
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.type
         : null
       )
       disk_size_gb = (
-        disk.value.source.attach == null
-        ? disk.value.initialize_params.size
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.size
         : null
       )
       provisioned_iops = (
-        disk.value.initialize_params.hyperdisk.provisioned_iops
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_iops
       )
       provisioned_throughput = (
-        disk.value.initialize_params.hyperdisk.provisioned_throughput
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_throughput
       )
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
@@ -353,38 +354,39 @@ resource "google_compute_region_instance_template" "default" {
   }
 
   dynamic "disk" {
-    for_each = var.attached_disks
+    for_each = local.attached_disks_ordered
+    iterator = disk_iter
     content {
       architecture = var.boot_disk.architecture
-      auto_delete  = disk.value.mode == "READ_ONLY" ? null : disk.value.auto_delete
-      device_name  = coalesce(disk.value.device_name, disk.value.name, disk.key)
+      auto_delete  = var.attached_disks[disk_iter.value.key].mode == "READ_ONLY" ? null : var.attached_disks[disk_iter.value.key].auto_delete
+      device_name  = coalesce(var.attached_disks[disk_iter.value.key].device_name, var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
       disk_name = (
-        disk.value.source.attach == null
-        ? coalesce(disk.value.name, disk.key)
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? coalesce(var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
         : null
       )
-      mode                  = disk.value.mode
+      mode                  = var.attached_disks[disk_iter.value.key].mode
       resource_manager_tags = var.tag_bindings_immutable
-      source_image          = disk.value.source.image
-      source                = disk.value.source.attach
+      source_image          = var.attached_disks[disk_iter.value.key].source.image
+      source                = var.attached_disks[disk_iter.value.key].source.attach
       type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
-        disk.value.source.attach == null
-        ? disk.value.initialize_params.type
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.type
         : null
       )
       disk_size_gb = (
-        disk.value.source.attach == null
-        ? disk.value.initialize_params.size
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.size
         : null
       )
       provisioned_iops = (
-        disk.value.initialize_params.hyperdisk.provisioned_iops
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_iops
       )
       provisioned_throughput = (
-        disk.value.initialize_params.hyperdisk.provisioned_throughput
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_throughput
       )
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
