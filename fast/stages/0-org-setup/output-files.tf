@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,18 @@ locals {
       local.org_tag_values
     )
   })
+  of_logging_sinks = {
+    # Include project_id in the destination if supported (omitted for
+    # "storage" sinks).
+    for k, v in module.organization-iam[0].logging_sinks :
+    k => merge(
+      v,
+      (
+        ? { project_id = split("/", v.destination)[2] }
+        : {}
+      )
+    )
+  }
   of_outputs_bucket = (
     local.output_files.storage_bucket == null
     ? null
@@ -98,16 +110,12 @@ locals {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
-      custom_roles   = local.of_ctx.custom_roles
-      folder_ids     = local.of_ctx.folder_ids
-      iam_principals = local.of_ctx.iam_principals
-      logging = {
-        writer_identities = module.organization-iam[0].sink_writer_identities
-        project_number    = module.factory.project_numbers["log-0"]
-      }
-      project_ids     = local.of_ctx.project_ids,
-      project_numbers = module.factory.project_numbers
-      # project_numbers = module.factory.project_numbers
+      custom_roles                 = local.of_ctx.custom_roles
+      folder_ids                   = local.of_ctx.folder_ids
+      iam_principals               = local.of_ctx.iam_principals
+      logging_sinks                = local.of_logging_sinks
+      project_ids                  = local.of_ctx.project_ids,
+      project_numbers              = module.factory.project_numbers
       service_accounts             = module.factory.service_account_emails
       storage_buckets              = module.factory.storage_buckets
       tag_values                   = local.of_ctx.tag_values
