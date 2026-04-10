@@ -47,12 +47,14 @@ values:
     name: versions/1-vpcsc-version.txt
     retention: []
     source: fast_version.txt
+    source_md5hash: f20ea48e4666fcbce129cff9fa658d16
     temporary_hold: null
     timeouts: null
   local_file.tfvars["1"]:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
+    filename: /Users/jccb/fast-config/fast-test-00/tfvars/1-vpcsc.auto.tfvars.json
     sensitive_content: null
     source: null
   module.vpc-sc.google_access_context_manager_access_level.basic["geo"]:
@@ -105,9 +107,7 @@ values:
         title: fast-org-scc
       ingress_policies:
       - ingress_from:
-        - identities:
-          - serviceAccount:o1234567890-1234567890@gcp-sa-logging.iam.gserviceaccount.com
-          - serviceAccount:service-org-1234567890@gcp-sa-logging.iam.gserviceaccount.com
+        - identities: null
           identity_type: null
           sources:
           - access_level: '*'
@@ -116,8 +116,7 @@ values:
         - operations:
           - method_selectors: []
             service_name: '*'
-          resources:
-          - projects/1234567890
+          resources: null
           roles: []
         title: fast-org-log-sinks
       - ingress_from:
@@ -229,6 +228,7 @@ values:
     timeouts: null
     title: default
     use_explicit_dry_run_spec: false
+
 counts:
   google_access_context_manager_access_level: 1
   google_access_context_manager_access_policy: 1
