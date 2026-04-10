@@ -1,19 +1,3 @@
-# Copyright 2026 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# yamllint disable rule:line-length
-
 values:
   google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
@@ -45,6 +29,7 @@ values:
     name: providers/0-org-setup-providers.tf
     retention: []
     source: null
+    source_md5hash: 2a0bbb00e4b7f1454a50ac7f26c23c05
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["0-org-setup-ro"]:
@@ -77,6 +62,7 @@ values:
     name: providers/0-org-setup-ro-providers.tf
     retention: []
     source: null
+    source_md5hash: 2a0bbb00e4b7f1454a50ac7f26c23c05
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["1-vpcsc"]:
@@ -110,6 +96,7 @@ values:
     name: providers/1-vpcsc-providers.tf
     retention: []
     source: null
+    source_md5hash: d2df90abc46524d941227a1dec12dd86
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-networking"]:
@@ -143,6 +130,7 @@ values:
     name: providers/2-networking-providers.tf
     retention: []
     source: null
+    source_md5hash: a724885c3dcc9850116aca1ef4d4fc5a
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-project-factory"]:
@@ -176,6 +164,7 @@ values:
     name: providers/2-project-factory-providers.tf
     retention: []
     source: null
+    source_md5hash: 165844578c46bc04c4581139c8b8b8d4
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.providers["2-security"]:
@@ -209,6 +198,7 @@ values:
     name: providers/2-security-providers.tf
     retention: []
     source: null
+    source_md5hash: 5969d3e40a61a42d849a81417a6a84eb
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["globals"]:
@@ -228,6 +218,7 @@ values:
     name: tfvars/0-globals.auto.tfvars.json
     retention: []
     source: null
+    source_md5hash: cdbf79d3eff8bced040e5deccf39d765
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.tfvars["org-setup"]:
@@ -264,6 +255,7 @@ values:
     name: versions/0-org-setup-version.txt
     retention: []
     source: fast_version.txt
+    source_md5hash: f20ea48e4666fcbce129cff9fa658d16
     temporary_hold: null
     timeouts: null
   google_storage_bucket_object.workflows["org-setup"]:
@@ -377,6 +369,7 @@ values:
     name: workflows/org-setup.yaml
     retention: []
     source: null
+    source_md5hash: e5dc153b195e936b1c81bc33db1935c7
     temporary_hold: null
     timeouts: null
   local_file.providers["0-org-setup"]:
@@ -974,12 +967,6 @@ values:
   module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/viewer"]:
     condition: []
     role: roles/viewer
-  module.factory.module.folder-1["data-platform"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Data Platform
-    parent: organizations/1234567890
-    tags: null
-    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
@@ -1000,27 +987,6 @@ values:
     timeouts: null
   module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"]:
     timeouts: null
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
-    condition: []
-    role: roles/compute.xpnAdmin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
-    condition: []
-    role: roles/logging.admin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/owner"]:
-    condition: []
-    role: roles/owner
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
-  : condition: []
-    role: roles/resourcemanager.folderAdmin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]
-  : condition: []
-    role: roles/resourcemanager.folderViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]
-  : condition: []
-    role: roles/resourcemanager.projectCreator
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
-    condition: []
-    role: roles/viewer
   ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
     role: organizations/1234567890/roles/projectIamViewer
@@ -1031,20 +997,6 @@ values:
         \  'organizations/1234567890/roles/serviceProjectNetworkAdmin'\n])\n"
       title: Data platform dev delegated IAM grant.
     role: roles/resourcemanager.projectIamAdmin
-  module.factory.module.folder-2["data-platform/dev"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Development
-    tags: null
-    timeouts: null
-  module.factory.module.folder-2["data-platform/dev"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
-  module.factory.module.folder-2["data-platform/prod"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Production
-    tags: null
-    timeouts: null
-  module.factory.module.folder-2["data-platform/prod"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-2["networking/dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
@@ -2905,8 +2857,8 @@ counts:
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
   google_essential_contacts_contact: 1
-  google_folder: 10
-  google_folder_iam_binding: 44
+  google_folder: 7
+  google_folder_iam_binding: 37
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
@@ -2931,13 +2883,13 @@ counts:
   google_storage_managed_folder: 4
   google_storage_managed_folder_iam_binding: 8
   google_storage_project_service_account: 3
-  google_tags_tag_binding: 7
+  google_tags_tag_binding: 5
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 48
-  resources: 320
+  modules: 44
+  resources: 308
   terraform_data: 4
 
 outputs:
@@ -2952,3 +2904,4 @@ outputs:
     gcp-support: group:gcp-support@example.org
   projects: __missing__
   tfvars: __missing__
+
