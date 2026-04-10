@@ -98,8 +98,11 @@ moved {
 }
 
 module "vpc-factory" {
-  source           = "../../../modules/net-vpc-factory"
-  factories_config = local.paths
+  source = "../../../modules/net-vpc-factory"
+  factories_config = {
+    basepath = var.factories_config.dataset
+    paths    = var.factories_config.paths
+  }
   context = {
     project_ids = local.ctx_projects.project_ids
     locations   = local.ctx.locations

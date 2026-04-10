@@ -15,34 +15,42 @@
  */
 
 locals {
-  _vpcs_path = try(
-    pathexpand(var.factories_config.vpcs), null
-  )
   _vpcs_files = try(
-    fileset(local._vpcs_path, "**/.config.yaml"),
+    fileset(local.paths.vpcs, "**/.config.yaml"),
     []
   )
   _defaults = try(
-    yamldecode(file(var.factories_config.defaults)), {}
+    yamldecode(file(local.paths.defaults)), {}
   )
   context = {
-    locations        = merge(var.context.locations, try(local._defaults.context.locations, {}))
-    project_ids      = merge(var.context.project_ids, try(local._defaults.context.project_ids, {}))
+    locations = merge(
+      var.context.locations, try(local._defaults.context.locations, {})
+    )
+    project_ids = merge(
+      var.context.project_ids, try(local._defaults.context.project_ids, {})
+    )
     cidr_ranges_sets = try(local._defaults.context.cidr_ranges_sets, {})
     iam_principals   = try(local._defaults.context.iam_principals, {})
   }
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(
-      yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")),
+      yamldecode(file("${coalesce(local.paths.vpcs, "-")}/${f}")),
       {
         factory_dirname  = dirname(f)
-        factory_basepath = "${local._vpcs_path}/${dirname(f)}"
+        factory_basepath = "${local.paths.vpcs}/${dirname(f)}"
       }
     )
     if f != "defaults.yaml"
   ]
   _vpcs = {
     for v in local._vpcs_preprocess : v.factory_dirname => v
+  }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
   }
   vpcs = {
     for k, v in local._vpcs : k => merge(
