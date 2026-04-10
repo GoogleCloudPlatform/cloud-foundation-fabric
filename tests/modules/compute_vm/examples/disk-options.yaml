@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 # limitations under the License.
 
 values:
-  module.vm-disk-options-example.google_compute_disk.disks["data2"]:
-    name: test-data2
+  module.vm-disk-options-example.google_compute_disk.disks["data0"]:
+    name: test-data0
     project: project-id
     size: 20
     snapshot: snapshot-2
@@ -22,13 +22,13 @@ values:
     zone: europe-west8-b
   module.vm-disk-options-example.google_compute_instance.default[0]:
     attached_disk:
-    - device_name: data2
-      disk_encryption_key_raw: null
-      mode: READ_ONLY
-      source: test-data2
     - device_name: data1
       disk_encryption_key_raw: null
       mode: READ_WRITE
+    - device_name: data0
+      disk_encryption_key_raw: null
+      mode: READ_ONLY
+      source: test-data0
     boot_disk:
     - auto_delete: true
       disk_encryption_key_raw: null
