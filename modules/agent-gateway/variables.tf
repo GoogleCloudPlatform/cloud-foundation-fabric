@@ -17,6 +17,7 @@
 variable "access_path" {
   description = "The direction the gateway applies to: ingress (CLIENT_TO_AGENT) or egress (AGENT_TO_ANYWHERE) (if var.is_google_managed = false)."
   type        = string
+  default     = null
 
   validation {
     condition = (
@@ -30,17 +31,28 @@ variable "access_path" {
   validation {
     condition = (
       var.access_path != null
-      && (
+      && !(
         lower(var.access_path) == "egress"
         || lower(var.access_path) == "ingress"
         || var.access_path == "CLIENT_TO_AGENT"
         || var.access_path == "AGENT_TO_ANYWHERE"
       )
-      ? true : false
+      ? false : true
     )
 
     error_message = "access_path can be one of the following: ingress (or CLIENT_TO_AGENT), egress (or AGENT_TO_ANYWHERE)."
   }
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    locations               = optional(map(string), {})
+    project_ids             = optional(map(string), {})
+    psc_network_attachments = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "description" {
@@ -91,17 +103,14 @@ variable "protocols" {
   default     = ["MCP"]
 
   validation {
-    condition = (
-      length(var.protocols) > 0
-      && var.protocols != ["MCP"]
-      ? true : false
-    )
-    error_message = "var.protocols can be one of the following: [], [\"MCP\"]"
+    condition     = length(var.protocols) == 0 || (length(var.protocols) == 1 && var.protocols[0] == "MCP")
+    error_message = "var.protocols can be one of the following: [], [\"MCP\"]."
   }
 }
 
 variable "proxy_uri" {
   description = "The uri of a compatible self-managed proxy (if var.is_google_managed = false)."
+  type        = string
   default     = null
 
   validation {
@@ -121,7 +130,7 @@ variable "region" {
 }
 
 variable "registries" {
-  description = "A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}"
+  description = "A list of Agent Registries containing the agents, MCP servers and tools governed by the Agent Gateway. Note: Currently limited to project-scoped registries Must be of format //agentregistry.googleapis.com/{version}/projects/{{project}}/locations/{{location}}."
   type        = list(string)
   default     = null
 }
