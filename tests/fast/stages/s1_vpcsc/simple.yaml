@@ -122,7 +122,9 @@ values:
         title: test
       ingress_policies:
       - ingress_from:
-        - identities: null
+        - identities:
+          - serviceAccount:o1234567890-1234567890@gcp-sa-logging.iam.gserviceaccount.com
+          - serviceAccount:service-org-1234567890@gcp-sa-logging.iam.gserviceaccount.com
           identity_type: null
           sources:
           - access_level: '*'
@@ -131,7 +133,8 @@ values:
         - operations:
           - method_selectors: []
             service_name: '*'
-          resources: null
+          resources:
+          - projects/1122334455
           roles: []
         title: fast-org-log-sinks
       - ingress_from:

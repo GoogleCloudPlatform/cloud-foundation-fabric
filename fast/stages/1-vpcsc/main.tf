@@ -57,7 +57,9 @@ locals {
         discovered_projects = local.discovered_projects
         logging_project = distinct(compact([
           for _, v in var.logging_sinks :
-          "projects/${local._project_id_to_num[v.project_id]}"
+          try(v.project_id, null) != null
+          ? "projects/${lookup(local._project_id_to_num, v.project_id, v.project_id)}"
+          : null
         ]))
         org_setup_projects = [
           for k, v in var.project_numbers : "projects/${v}"
