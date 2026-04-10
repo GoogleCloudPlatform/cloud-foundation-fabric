@@ -8,19 +8,20 @@ Note that this module assumes that some options are the same for both the primar
 > [!WARNING]
 > If you use the `users` field, you terraform state will contain each user's password in plain text.
 
-<!-- TOC -->
-* [AlloyDB module](#alloydb-module)
-  * [Examples](#examples)
-    * [Simple example](#simple-example)
-    * [Read pool](#read-pool)
-    * [Cross region replication](#cross-region-replication)
-    * [PSC instance](#psc-instance)
-    * [Custom flags and users definition](#custom-flags-and-users-definition)
-    * [CMEK encryption](#cmek-encryption)
-  * [Variables](#variables)
-  * [Outputs](#outputs)
-  * [Fixtures](#fixtures)
-<!-- TOC -->
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple example](#simple-example)
+  - [Read pool](#read-pool)
+  - [Read pool with advanced query insights](#read-pool-with-advanced-query-insights)
+  - [Cross region replication](#cross-region-replication)
+  - [Cross region replication with primary and secondary cluster read pool](#cross-region-replication-with-primary-and-secondary-cluster-read-pool)
+  - [PSC instance](#psc-instance)
+  - [Custom flags and users definition](#custom-flags-and-users-definition)
+  - [CMEK encryption](#cmek-encryption)
+- [Tag bindings](#tag-bindings)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Examples
 
