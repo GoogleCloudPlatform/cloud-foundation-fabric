@@ -66,6 +66,14 @@ output "logging_identities" {
   }
 }
 
+output "logging_sinks" {
+  description = "Logging sink resources."
+  value = {
+    for name, sink in google_logging_organization_sink.sink :
+    name => sink
+  }
+}
+
 output "network_tag_keys" {
   description = "Tag key resources."
   value = {

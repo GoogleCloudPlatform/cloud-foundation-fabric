@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,12 @@ locals {
     for k, v in local.ctx.storage_buckets : "$storage_buckets:${k}" => v
   }
   # fail if we have no valid defaults
-  _defaults = yamldecode(file(local.paths.defaults))
+  _defaults        = yamldecode(file(local.paths.defaults))
+  _project_numbers = merge(var.project_numbers, local._ctx.project_numbers)
+  _project_id_to_num = {
+    for k, v in var.project_ids :
+    v => local._project_numbers[k]
+  }
   discovered_projects = var.resource_discovery.enabled != true ? [] : [
     for v in module.vpc-sc-discovery[0].project_numbers :
     "projects/${v}"
@@ -42,13 +47,20 @@ locals {
       local._ctx.iam_principals
     )
     identity_sets = merge(local._ctx.identity_sets, {
-      logging_identities = try(distinct(values(var.logging.writer_identities)), [])
+      logging_identities = distinct([
+        for _, v in var.logging_sinks : v.writer_identity
+      ])
     })
-    project_numbers = merge(var.project_numbers, local._ctx.project_numbers)
+    project_numbers = local._project_numbers
     resource_sets = merge(
       {
         discovered_projects = local.discovered_projects
-        logging_project     = try(["projects/${var.logging.project_number}"], [])
+        logging_project = distinct(compact([
+          for _, v in var.logging_sinks :
+          try(v.project_id, null) != null
+          ? "projects/${lookup(local._project_id_to_num, v.project_id, v.project_id)}"
+          : null
+        ]))
         org_setup_projects = [
           for k, v in var.project_numbers : "projects/${v}"
         ]
