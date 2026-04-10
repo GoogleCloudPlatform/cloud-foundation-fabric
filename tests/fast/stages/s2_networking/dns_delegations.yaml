@@ -20,12 +20,12 @@ counts:
   google_dns_managed_zone: 4
   google_dns_record_set: 3
   google_project: 1
-  google_project_iam_member: 7
-  google_project_service: 9
-  google_project_service_identity: 7
+  google_project_iam_member: 8
+  google_project_service: 10
+  google_project_service_identity: 8
   google_storage_bucket_object: 2
   modules: 9
-  resources: 42
+  resources: 46
   terraform_data: 2
 values:
   module.dns-delegations["net-core-0/pub-parent"].google_dns_record_set.dns_record_set["NS child.example.com."]:
