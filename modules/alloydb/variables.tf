@@ -312,7 +312,7 @@ variable "project_number" {
 }
 
 variable "query_insights_config" {
-  description = "Query insights config."
+  description = "Query insights config. Mutually exclusive with observability_config. It will be ignored if observability_config is enabled."
   type = object({
     query_string_length     = optional(number, 1024)
     record_application_tags = optional(bool, true)
@@ -320,6 +320,22 @@ variable "query_insights_config" {
     query_plans_per_minute  = optional(number, 5)
   })
   default = {}
+}
+
+variable "observability_config" {
+  description = "Advanced query insights config for AlloyDB. Mutually exclusive with query_insights_config."
+  type = object({
+    enabled                 = optional(bool, false)
+    preserve_comments       = optional(bool, false)
+    track_wait_events       = optional(bool, true)
+    max_query_string_length = optional(number, 10240)
+    record_application_tags = optional(bool, false)
+    query_plans_per_minute  = optional(number, 20)
+    track_active_queries    = optional(bool, false)
+    # track_client_address          = optional(bool, false) # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+    assistive_experiences_enabled = optional(bool, false)
+  })
+  default = null
 }
 
 variable "read_pool" {
@@ -348,6 +364,17 @@ variable "read_pool" {
       record_client_address   = optional(bool, true)
       query_plans_per_minute  = optional(number, 5)
     }))
+    observability_config = optional(object({
+      enabled                 = optional(bool, false)
+      preserve_comments       = optional(bool, false)
+      track_wait_events       = optional(bool, true)
+      max_query_string_length = optional(number, 10240)
+      record_application_tags = optional(bool, false)
+      query_plans_per_minute  = optional(number, 20)
+      track_active_queries    = optional(bool, false)
+      # track_client_address          = optional(bool, false) # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+      assistive_experiences_enabled = optional(bool, false)
+    }), null)
   }))
   nullable = false
   default  = {}
