@@ -15,6 +15,7 @@
  */
 
 resource "google_vertex_ai_reasoning_engine" "managed" {
+  provider     = google-beta
   count        = var.managed ? 1 : 0
   display_name = var.name
   project      = local.project_id
@@ -143,6 +144,71 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
           entrypoint_object = var.deployment_files.source_config.entrypoint_object
           requirements_file = var.deployment_files.source_config.requirements_path
           version           = var.agent_engine_config.python_version
+        }
+      }
+    }
+  }
+
+  dynamic "context_spec" {
+    for_each = var.memory_bank_config != null ? { 1 = 1 } : {}
+
+    content {
+      memory_bank_config {
+        disable_memory_revisions = var.memory_bank_config.disable_memory_revisions
+
+        dynamic "generation_config" {
+          for_each = (
+            var.memory_bank_config.generation_config != null ? { 1 = 1 } : {}
+          )
+          content {
+            model = lookup(
+              local.ctx.models,
+              var.memory_bank_config.generation_config.model,
+              var.memory_bank_config.generation_config.model
+            )
+          }
+        }
+
+        dynamic "similarity_search_config" {
+          for_each = (
+            var.memory_bank_config.similarity_search_config != null ? { 1 = 1 } : {}
+          )
+          content {
+            embedding_model = lookup(
+              local.ctx.models,
+              var.memory_bank_config.similarity_search_config.embedding_model,
+              var.memory_bank_config.similarity_search_config.embedding_model
+            )
+          }
+        }
+
+        dynamic "ttl_config" {
+          for_each = (
+            var.memory_bank_config.ttl_config != null ? { 1 = 1 } : {}
+          )
+          content {
+            default_ttl                 = var.memory_bank_config.ttl_config.default_ttl
+            memory_revision_default_ttl = var.memory_bank_config.ttl_config.memory_revision_default_ttl
+
+            dynamic "granular_ttl_config" {
+              for_each = (
+                var.memory_bank_config.ttl_config.granular_ttl_config != null
+                ? { 1 = 1 }
+                : {}
+              )
+              content {
+                create_ttl = (
+                  var.memory_bank_config.ttl_config.granular_ttl_config.create_ttl
+                )
+                generate_created_ttl = (
+                  var.memory_bank_config.ttl_config.granular_ttl_config.generate_created_ttl
+                )
+                generate_updated_ttl = (
+                  var.memory_bank_config.ttl_config.granular_ttl_config.generate_updated_ttl
+                )
+              }
+            }
+          }
         }
       }
     }

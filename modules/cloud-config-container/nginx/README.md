@@ -54,25 +54,23 @@ module "vm-nginx-tls" {
 # tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [cloud_config](variables.tf#L17) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
 | [config_variables](variables.tf#L23) | Additional variables used to render the cloud-config and Nginx templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
-| [file_defaults](variables.tf#L29) | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  owner       &#61; &#34;root&#34;&#10;  permissions &#61; &#34;0644&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [files](variables.tf#L41) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [file_defaults](variables.tf#L29) | Default owner and permissions for files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [files](variables.tf#L41) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [image](variables.tf#L51) | Nginx container image. | <code>string</code> |  | <code>&#34;nginxdemos&#47;hello:plain-text&#34;</code> |
 | [nginx_config](variables.tf#L57) | Nginx configuration path, if null container default will be used. | <code>string</code> |  | <code>null</code> |
 | [runcmd_post](variables.tf#L63) | Extra commands to run after starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [runcmd_pre](variables.tf#L69) | Extra commands to run before starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [users](variables.tf#L75) | List of additional usernames to be created. | <code title="list&#40;object&#40;&#123;&#10;  username &#61; string,&#10;  uid      &#61; number,&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [users](variables.tf#L75) | List of additional usernames to be created. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#8230;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [cloud_config](outputs.tf#L17) | Rendered cloud-config file to be passed as user-data instance metadata. |  |
-
 <!-- END TFDOC -->
