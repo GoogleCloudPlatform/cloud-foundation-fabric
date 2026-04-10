@@ -4,21 +4,6 @@ If you want to destroy a previous FAST deployment in your organization, follow t
 
 Destruction must be done in reverse order, from stage 3 to stage 0
 
-## Stage 3 (GKE)
-
-Terraform refuses to delete non-empty GCS buckets and BigQuery datasets, so they need to be removed manually from the state.
-
-```bash
-cd $FAST_PWD/3-gke-multitenant/dev/
-
-# remove BQ dataset manually
-for x in $(terraform state list | grep google_bigquery_dataset); do
-  terraform state rm "$x";
-done
-
-terraform destroy
-```
-
 ## Stage 3 (Data Platform)
 
 Terraform refuses to delete non-empty GCS buckets and BigQuery datasets, so they need to be removed manually from the state.
