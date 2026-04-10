@@ -54,7 +54,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /Users/jccb/fast-config/fast-test-00/tfvars/1-vpcsc.auto.tfvars.json
     sensitive_content: null
     source: null
   module.vpc-sc.google_access_context_manager_access_level.basic["geo"]:
