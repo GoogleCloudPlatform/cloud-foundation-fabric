@@ -57,35 +57,20 @@ resource "google_compute_instance" "default" {
   }
 
   dynamic "attached_disk" {
-    for_each = local.attached_disks_zonal
+    for_each = local.attached_disks_ordered
     iterator = disk
     content {
       device_name = coalesce(
-        disk.value.device_name, disk.value.name, disk.key
+        var.attached_disks[disk.value.key].device_name,
+        var.attached_disks[disk.value.key].name,
+        disk.value.key
       )
-      force_attach = disk.value.force_attach
-      mode         = disk.value.mode
+      force_attach = var.attached_disks[disk.value.key].force_attach
+      mode         = var.attached_disks[disk.value.key].mode
       source = (
-        disk.value.source.attach != null
-        ? disk.value.source.attach
-        : google_compute_disk.disks[disk.key].name
-      )
-    }
-  }
-
-  dynamic "attached_disk" {
-    for_each = local.attached_disks_regional
-    iterator = disk
-    content {
-      device_name = coalesce(
-        disk.value.device_name, disk.value.name, disk.key
-      )
-      force_attach = disk.value.force_attach
-      mode         = disk.value.mode
-      source = (
-        disk.value.source.attach != null
-        ? disk.value.source.attach
-        : google_compute_region_disk.disks[disk.key].id
+        var.attached_disks[disk.value.key].source.attach != null
+        ? var.attached_disks[disk.value.key].source.attach
+        : disk.value.is_regional ? google_compute_region_disk.disks[disk.value.key].id : google_compute_disk.disks[disk.value.key].name
       )
     }
   }
