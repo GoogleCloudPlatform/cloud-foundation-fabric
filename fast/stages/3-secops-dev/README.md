@@ -40,9 +40,9 @@ If this stage is deployed within a FAST-based GCP organization, we recommend exe
 
 This stage needs specific automation resources, and permissions granted on those that allow control of selective IAM roles on specific networking and security resources.
 
-Network permissions are needed to associate data domain or product projects to Shared VPC hosts and grant network permissions to data platform managed service accounts. They are mandatory when deploying Composer.
+Network permissions are needed to associate projects to Shared VPC hosts and grant network Network User role on managed service accounts.
 
-Security permissions are only needed when using CMEK encryption, to grant the relevant IAM roles to data platform service agents on the encryption keys used.
+Security permissions are only needed when using CMEK encryption, to grant the relevant IAM roles to service agents on the encryption keys used.
 
 ## Customizations
 

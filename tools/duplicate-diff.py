@@ -33,10 +33,6 @@ duplicates = [
         "modules/vpc-sc/schemas/access-level.schema.json",
     ],
     [
-        "fast/stages/3-data-platform-dev/schemas/aspect-type.schema.json",
-        "modules/dataplex-aspect-types/schemas/aspect-type.schema.json",
-    ],
-    [
         "fast/stages/2-project-factory/schemas/budget.schema.json",
         "fast/stages/0-org-setup/schemas/budget.schema.json",
         "modules/billing-account/schemas/budget.schema.json",
