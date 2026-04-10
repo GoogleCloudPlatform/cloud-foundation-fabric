@@ -82,6 +82,8 @@
       - **exempted_members**: *array*
         - items: *string*
 - **deletion_protection**: *boolean*
+- **id**: *string*
+  <br>*pattern: ^(folders/[0-9]+|\$folder_ids:[a-z0-9_/-]+)$*
 - **firewall_policy**: *object*
   <br>*additional properties: false*
   - ⁺**name**: *string*

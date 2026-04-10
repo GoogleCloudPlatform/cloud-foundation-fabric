@@ -3,7 +3,39 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-03-26 16:14:37+00:00 to: None since: v54.1.0 -->
+## [Unreleased] <!-- from: 2026-04-02 13:15:40+00:00 to: None since: v54.2.0 -->
+
+## [54.2.0] - 2026-04-09
+
+### BREAKING CHANGES
+
+- `terraform-google-provider` & `terraform-google-provider-beta`: version updated to 7.27 to incorporate updates from provider to enable the Memory Bank configuration [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)]
+- `modules/agent-engine`: This module utilizes the latest `google-beta` provider in place of the `google` provider to support Memory Bank configurations for agents deployment. This change may cause resource recreation for existing deployments. Exercise caution while using this version. [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)]
+- `modules/ai-applications`: Updates the outputs of the module, according to its latest implementation. [[#3841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3841)]
+- `modules/ai-applications`: supports the creation of regional Dialogflow CX deployments and full-capability agents. [[#3834](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3834)]
+
+### FAST
+
+- [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)] Add memory bank to `modules/agent-engine` ([heyanand](https://github.com/heyanand)) <!-- 2026-04-08 17:09:27+00:00 -->
+- [[#3842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3842)] Add toggle to tfdoc to remove type hints ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 11:08:18+00:00 -->
+- [[#3843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3843)] Enforce schema docs in linting ([ludoo](https://github.com/ludoo)) <!-- 2026-04-08 10:20:50+00:00 -->
+- [[#3839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3839)] Add support for bucket custom_placement_config to project-factory ([lyricnz](https://github.com/lyricnz)) <!-- 2026-04-08 06:32:24+00:00 -->
+
+### MODULES
+
+- [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)] Add memory bank to `modules/agent-engine` ([heyanand](https://github.com/heyanand)) <!-- 2026-04-08 17:09:27+00:00 -->
+- [[#3842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3842)] Add toggle to tfdoc to remove type hints ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 11:08:18+00:00 -->
+- [[#3843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3843)] Enforce schema docs in linting ([ludoo](https://github.com/ludoo)) <!-- 2026-04-08 10:20:50+00:00 -->
+- [[#3841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3841)] Update outputs of AI Applications module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-08 08:10:09+00:00 -->
+- [[#3834](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3834)] Update ai-applications module to support dialogflow-cx (fully capability and regional) agents ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-08 07:09:38+00:00 -->
+- [[#3839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3839)] Add support for bucket custom_placement_config to project-factory ([lyricnz](https://github.com/lyricnz)) <!-- 2026-04-08 06:32:24+00:00 -->
+
+### TOOLS
+
+- [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)] Add memory bank to `modules/agent-engine` ([heyanand](https://github.com/heyanand)) <!-- 2026-04-08 17:09:27+00:00 -->
+- [[#3842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3842)] Add toggle to tfdoc to remove type hints ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 11:08:18+00:00 -->
+- [[#3843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3843)] Enforce schema docs in linting ([ludoo](https://github.com/ludoo)) <!-- 2026-04-08 10:20:50+00:00 -->
+- [[#3836](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3836)] Remove hcl2 python dependency ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 06:14:16+00:00 -->
 
 ## [54.2.0] - 2026-03-26
 
@@ -2415,7 +2447,7 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.3.0...HEAD
 [54.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...v54.1.0
 [54.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...v54.0.0
 [54.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...v53.1.0
