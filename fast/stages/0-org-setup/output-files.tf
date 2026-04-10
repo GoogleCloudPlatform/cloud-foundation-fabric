@@ -52,6 +52,7 @@ locals {
     k => merge(
       v,
       (
+        strcontains(v.destination, "projects/")
         ? { project_id = split("/", v.destination)[2] }
         : {}
       )
