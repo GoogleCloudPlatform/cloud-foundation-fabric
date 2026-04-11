@@ -155,7 +155,7 @@ resource "google_pubsub_subscription_iam_binding" "bindings" {
 resource "google_pubsub_subscription_iam_member" "members" {
   for_each     = local.subscription_iam_bindings_additive
   project      = local.project_id
-  subscription = google_pubsub_subscription.default[each.value.subscription].name
+  subscription = google_pubsub_subscription.default[each.value.subscription].id
   role         = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member = lookup(
     local.ctx.iam_principals, each.value.member, each.value.member
