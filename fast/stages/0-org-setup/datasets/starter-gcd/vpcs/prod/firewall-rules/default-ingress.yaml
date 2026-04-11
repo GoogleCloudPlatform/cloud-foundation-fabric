@@ -24,7 +24,7 @@ ingress:
       - protocol: all
         ports: []
 
-  ingress-default-allow-healtchecks:
+  ingress-default-allow-healthchecks:
     description: Allow GCP Healthcheck Ranges.
     source_ranges:
       - 35.191.0.0/16
