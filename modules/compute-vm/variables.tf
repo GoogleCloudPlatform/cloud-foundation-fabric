@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ variable "attached_disks" {
     auto_delete  = optional(bool, true) # applies only to vm templates
     device_name  = optional(string)
     force_attach = optional(bool)
+    position     = optional(string)
     # auto_delete can only be specified for READ_WRITE, force null otherwise
     mode = optional(string, "READ_WRITE")
     name = optional(string)
