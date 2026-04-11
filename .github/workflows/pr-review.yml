@@ -87,7 +87,7 @@ jobs:
           script: |
             const fs = require('fs');
             const reviewContent = fs.readFileSync('review_output.md', 'utf8');
-            const output = `### Gemini PR Review 🤖\n\n${reviewContent}`;
+            const output = `### Automated PR Review 🤖\n\n${reviewContent}`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,

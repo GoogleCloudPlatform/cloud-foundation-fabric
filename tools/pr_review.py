@@ -32,7 +32,7 @@ def main():
       description="Run Gemini PR Review via Vertex AI")
   parser.add_argument("--project", required=True, help="GCP Project ID")
   parser.add_argument("--location", default="us-central1", help="GCP Region")
-  parser.add_argument("--model", default="gemini-2.5-pro",
+  parser.add_argument("--model", default="gemini-3.1-pro-preview",
                       help="Gemini model name")
   parser.add_argument("--diff-file", required=True,
                       help="Path to the PR diff file")
