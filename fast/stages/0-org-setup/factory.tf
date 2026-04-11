@@ -78,8 +78,8 @@ module "vpcs" {
   data_overrides = local.vpc_defaults.overrides
   factories_config = {
     basepath = var.factories_config.dataset
-    paths    = {
-      var.factories_config.paths.vpcs
+    paths = {
+      vpcs = var.factories_config.paths.vpcs
     }
   }
 }
