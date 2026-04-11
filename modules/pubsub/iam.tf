@@ -70,9 +70,6 @@ resource "google_pubsub_topic_iam_binding" "authoritative" {
   members = [
     for v in each.value : lookup(local.ctx.iam_principals, v, v)
   ]
-  lifecycle {
-    replace_triggered_by = [google_pubsub_topic.default.id]
-  }
 }
 
 resource "google_pubsub_topic_iam_binding" "bindings" {
@@ -89,9 +86,6 @@ resource "google_pubsub_topic_iam_binding" "bindings" {
       title       = each.value.condition.title
       description = each.value.condition.description
     }
-  }
-  lifecycle {
-    replace_triggered_by = [google_pubsub_topic.default.id]
   }
 }
 
@@ -110,9 +104,6 @@ resource "google_pubsub_topic_iam_member" "bindings" {
       description = each.value.condition.description
     }
   }
-  lifecycle {
-    replace_triggered_by = [google_pubsub_topic.default.id]
-  }
 }
 
 resource "google_pubsub_subscription_iam_binding" "authoritative" {
@@ -126,9 +117,6 @@ resource "google_pubsub_subscription_iam_binding" "authoritative" {
   members = [
     for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
   ]
-  lifecycle {
-    replace_triggered_by = [google_pubsub_subscription.default[each.value.subscription].id]
-  }
 }
 
 resource "google_pubsub_subscription_iam_binding" "bindings" {
@@ -147,9 +135,6 @@ resource "google_pubsub_subscription_iam_binding" "bindings" {
       description = each.value.condition.description
     }
   }
-  lifecycle {
-    replace_triggered_by = [google_pubsub_subscription.default[each.value.subscription].id]
-  }
 }
 
 resource "google_pubsub_subscription_iam_member" "members" {
@@ -167,8 +152,5 @@ resource "google_pubsub_subscription_iam_member" "members" {
       title       = each.value.condition.title
       description = each.value.condition.description
     }
-  }
-  lifecycle {
-    replace_triggered_by = [google_pubsub_subscription.default[each.value.subscription].id]
   }
 }
