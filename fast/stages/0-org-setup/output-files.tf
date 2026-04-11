@@ -119,7 +119,16 @@ locals {
       project_numbers              = module.factory.project_numbers
       service_accounts             = module.factory.service_account_emails
       storage_buckets              = module.factory.storage_buckets
+      subnet_ips = {
+        for k, v in module.vpcs.vpcs : k => v.subnet_ips
+      }
+      subnet_self_links = {
+        for k, v in module.vpcs.vpcs : k => v.subnet_ids
+      }
       tag_values                   = local.of_ctx.tag_values
+      vpc_self_links = {
+        for k, v in module.vpcs.vpcs : k => v.id
+      }
       workload_identity_providers  = local.workload_identity_providers
       workforce_identity_providers = module.organization[0].workforce_identity_providers
     }

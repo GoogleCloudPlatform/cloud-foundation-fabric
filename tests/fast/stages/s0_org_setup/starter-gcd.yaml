@@ -1358,5 +1358,12 @@ outputs:
     gcp-security-admins: group:gcp-security-admins@example.org
     gcp-support: group:gcp-support@example.org
   projects: __missing__
+  subnet_ips:
+    dev:
+      <UNIVERSE_REGION>/default: 10.0.0.0/24
+    prod:
+      <UNIVERSE_REGION>/default: 10.0.0.0/24
+  subnet_self_links: __missing__
   tfvars: __missing__
+  vpc_self_links: __missing__
 

@@ -915,7 +915,7 @@ Define values for the `var.environments` variable in a tfvars file.
 |---|---|:---:|:---:|:---:|
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L60) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [org_policies_imports](variables.tf#L61) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
@@ -923,5 +923,8 @@ Define values for the `var.environments` variable in a tfvars file.
 |---|---|:---:|
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
 | [projects](outputs.tf#L22) | Attributes for managed projects. |  |
-| [tfvars](outputs.tf#L27) | Stage tfvars. | ✓ |
+| [subnet_ips](outputs.tf#L27) | Map of subnet address ranges keyed by VPC and subnet name. |  |
+| [subnet_self_links](outputs.tf#L34) | Map of subnet self links keyed by VPC and subnet name. |  |
+| [tfvars](outputs.tf#L41) | Stage tfvars. | ✓ |
+| [vpc_self_links](outputs.tf#L47) | Map of VPC self links keyed by VPC name. |  |
 <!-- END TFDOC -->
