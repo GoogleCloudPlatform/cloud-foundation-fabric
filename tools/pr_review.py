@@ -87,7 +87,7 @@ Review the provided git diff. Provide a concise, constructive review.
 """
 
   model = GenerativeModel(
-      model_name=args.model,
+      model_name=f"publishers/google/models/{args.model}",
       system_instruction=system_instruction,
   )
 
