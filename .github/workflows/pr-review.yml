@@ -50,7 +50,7 @@ jobs:
         name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - id: install-deps
         name: Install Dependencies
@@ -91,7 +91,9 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const output = `### Gemini PR Review 🤖\n\n${{ steps.run-review.outputs.REVIEW_CONTENT }}`;
+            const fs = require('fs');
+            const reviewContent = fs.readFileSync('review_output.md', 'utf8');
+            const output = `### Gemini PR Review 🤖\n\n${reviewContent}`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
