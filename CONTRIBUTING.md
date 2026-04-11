@@ -1081,6 +1081,26 @@ tests:
 
 A good example of tests showing different ways of leveraging our framework is in the [`tests/modules/organization`](./tests/modules/organization) folder.
 
+### Debugging Terraform Context & Locals
+
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`. 
+
+**ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
+
+```hcl
+resource "terraform_data" "debug_dump" {
+  lifecycle {
+    precondition {
+      # The condition is intentionally designed to fail to trigger the error_message
+      condition     = local.target_variable == null 
+      error_message = yamlencode(local.target_variable)
+    }
+  }
+}
+```
+
+Run the specific `pytest` plan test. The test will fail, and the captured output will contain the fully evaluated YAML representation of your target variable, making context resolution issues immediately obvious.
+
 #### Generating the inventory for `tftest`-based tests
 
 Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests. Currently the process relies on an additional tool (`tools/plan_summary.py`) but but we have plans to unify both cases in the future.

@@ -1215,7 +1215,7 @@ values:
     project: ft0-dev-net-shared-0
     tags: null
     timeouts: null
-  module.vpcs.module.vpcs["dev"].google_compute_subnetwork.subnetwork["<UNIVERSE_REGION>/default"]:
+  module.vpcs.module.vpcs["dev"].google_compute_subnetwork.subnetwork["u-germany-northeast1/default"]:
     description: Default primary-region subnet for dev
     ip_cidr_range: 10.0.0.0/24
     ip_collection: null
@@ -1226,7 +1226,7 @@ values:
     params: []
     private_ip_google_access: true
     project: ft0-dev-net-shared-0
-    region: <UNIVERSE_REGION>
+    region: u-germany-northeast1
     reserved_internal_range: null
     resolve_subnet_mask: null
     role: null
@@ -1287,7 +1287,7 @@ values:
     project: ft0-prod-net-shared-0
     tags: null
     timeouts: null
-  module.vpcs.module.vpcs["prod"].google_compute_subnetwork.subnetwork["<UNIVERSE_REGION>/default"]:
+  module.vpcs.module.vpcs["prod"].google_compute_subnetwork.subnetwork["u-germany-northeast1/default"]:
     description: Default primary-region subnet for prod
     ip_cidr_range: 10.0.0.0/24
     ip_collection: null
@@ -1298,7 +1298,7 @@ values:
     params: []
     private_ip_google_access: true
     project: ft0-prod-net-shared-0
-    region: <UNIVERSE_REGION>
+    region: u-germany-northeast1
     reserved_internal_range: null
     resolve_subnet_mask: null
     role: null
@@ -1360,9 +1360,9 @@ outputs:
   projects: __missing__
   subnet_ips:
     dev:
-      <UNIVERSE_REGION>/default: 10.0.0.0/24
+      u-germany-northeast1/default: 10.0.0.0/24
     prod:
-      <UNIVERSE_REGION>/default: 10.0.0.0/24
+      u-germany-northeast1/default: 10.0.0.0/24
   subnet_self_links: __missing__
   tfvars: __missing__
   vpc_self_links: __missing__

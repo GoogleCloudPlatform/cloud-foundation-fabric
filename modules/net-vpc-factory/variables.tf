@@ -101,8 +101,7 @@ variable "factories_config" {
   type = object({
     basepath = string
     paths = optional(object({
-      defaults = optional(string, "defaults.yaml")
-      vpcs     = optional(string, "vpcs")
+      vpcs = optional(string, "vpcs")
     }), {})
   })
   nullable = false

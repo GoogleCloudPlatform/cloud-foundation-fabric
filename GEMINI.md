@@ -224,6 +224,26 @@ Modify one existing README example (do not add a new one) to demonstrate context
     *   **Locals Separation:** Use module-level locals for values referenced directly by resources/outputs. Use block-level "private" locals prefixed with an underscore (`_`) for intermediate transformations.
     *   **Complex Transformations:** Move complex data transformations in `for` or `for_each` loops to `locals` to keep resource blocks clean.
 
+## Debugging Terraform Context & Locals
+
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`. 
+
+**ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
+
+```hcl
+resource "terraform_data" "debug_dump" {
+  lifecycle {
+    precondition {
+      # The condition is intentionally designed to fail to trigger the error_message
+      condition     = local.target_variable == null 
+      error_message = yamlencode(local.target_variable)
+    }
+  }
+}
+```
+
+Run the specific `pytest` plan test. The test will fail, and the captured output will contain the fully evaluated YAML representation of your target variable, making context resolution issues immediately obvious.
+
 ## File Modification Rules
 - **CRITICAL:** NEVER use shell redirection (`cat << EOF`, `echo "..." >`, `>>`, `tee`) to create, overwrite, or append to files.
 - For creating files, ALWAYS use the native `write_file` tool.
@@ -231,3 +251,4 @@ Modify one existing README example (do not add a new one) to demonstrate context
 - **EXCEPTION (Pattern/Bulk Edits):** You MAY use shell commands (like `sed -i`, `perl -pi`, or `find ... xargs sed`) ONLY for regex-based or pattern-based replacements, particularly across multiple files, where the exact-match `replace` tool is not feasible.
 - **Ambiguity & Paths:** When encountering unfamiliar or unexpected repository structures, paths, or tool executions, always pause and offer the user the choice to either explain or authorize further independent investigation, rather than making assumptions or guessing paths.
 
+To run specific FAST stage tests, use the syntax `pytest tests/fast/stages/s<stage_num>_<stage_name>/tftest.yaml::<test_name>`. For example: `pytest tests/fast/stages/s0_org_setup/tftest.yaml::starter-gcd`.
