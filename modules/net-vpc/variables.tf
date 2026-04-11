@@ -94,7 +94,6 @@ variable "firewall_policy_enforcement_order" {
   type        = string
   nullable    = false
   default     = "AFTER_CLASSIC_FIREWALL"
-
   validation {
     condition     = var.firewall_policy_enforcement_order == "BEFORE_CLASSIC_FIREWALL" || var.firewall_policy_enforcement_order == "AFTER_CLASSIC_FIREWALL"
     error_message = "Enforcement order must be BEFORE_CLASSIC_FIREWALL or AFTER_CLASSIC_FIREWALL."

@@ -68,3 +68,18 @@ module "factory" {
     paths    = var.factories_config.paths
   }
 }
+
+module "vpcs" {
+  source = "../../../modules/net-vpc-factory"
+  context = merge(local.ctx, {
+    project_ids = local.of_ctx.project_ids
+  })
+  data_defaults  = local.vpc_defaults.defaults
+  data_overrides = local.vpc_defaults.overrides
+  factories_config = {
+    basepath = var.factories_config.dataset
+    paths    = {
+      var.factories_config.paths.vpcs
+    }
+  }
+}

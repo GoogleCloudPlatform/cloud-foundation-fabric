@@ -23,14 +23,20 @@ locals {
     yamldecode(file(local.paths.defaults)), {}
   )
   context = {
+    cidr_ranges_sets = merge(
+      var.context.cidr_ranges_sets,
+      try(local._defaults.context.cidr_ranges_sets, {})
+    )
+    iam_principals = merge(
+      var.context.iam_principals,
+      try(local._defaults.context.iam_principals, {})
+    )
     locations = merge(
       var.context.locations, try(local._defaults.context.locations, {})
     )
     project_ids = merge(
       var.context.project_ids, try(local._defaults.context.project_ids, {})
     )
-    cidr_ranges_sets = try(local._defaults.context.cidr_ranges_sets, {})
-    iam_principals   = try(local._defaults.context.iam_principals, {})
   }
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(

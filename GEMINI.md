@@ -229,4 +229,5 @@ Modify one existing README example (do not add a new one) to demonstrate context
 - For creating files, ALWAYS use the native `write_file` tool.
 - For targeted edits or appending to a single file, ALWAYS use the native `replace` tool. (To append, match the last few lines of the file and replace them with the same lines plus your new content).
 - **EXCEPTION (Pattern/Bulk Edits):** You MAY use shell commands (like `sed -i`, `perl -pi`, or `find ... xargs sed`) ONLY for regex-based or pattern-based replacements, particularly across multiple files, where the exact-match `replace` tool is not feasible.
+- **Ambiguity & Paths:** When encountering unfamiliar or unexpected repository structures, paths, or tool executions, always pause and offer the user the choice to either explain or authorize further independent investigation, rather than making assumptions or guessing paths.
 
