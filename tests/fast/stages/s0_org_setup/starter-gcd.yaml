@@ -192,7 +192,7 @@ values:
     external_dataset_reference: []
     friendly_name: Billing export
     labels: null
-    location: europe-west1
+    location: u-germany-northeast1
     max_time_travel_hours: '168'
     project: ft0-prod-iac-core-0
     resource_tags: null
@@ -213,7 +213,7 @@ values:
     ip_filter: []
     labels: null
     lifecycle_rule: []
-    location: EUROPE-WEST1
+    location: U-GERMANY-NORTHEAST1
     logging: []
     name: ft0-prod-iac-core-0-iac-org-state
     project: ft0-prod-iac-core-0
@@ -250,7 +250,7 @@ values:
     ip_filter: []
     labels: null
     lifecycle_rule: []
-    location: EUROPE-WEST1
+    location: U-GERMANY-NORTHEAST1
     logging: []
     name: ft0-prod-iac-core-0-iac-outputs
     project: ft0-prod-iac-core-0
@@ -289,7 +289,7 @@ values:
     cmek_settings: []
     enable_analytics: true
     index_configs: []
-    location: europe-west1
+    location: u-germany-northeast1
     locked: null
     project: ft0-prod-iac-core-0
     retention_days: 31

@@ -42,4 +42,4 @@ context:
   iam_principals:
     gcp-organization-admins: group:fabric-fast-owners@google.com
   locations:
-    primary: europe-west1
+    primary: u-germany-northeast1
