@@ -31,7 +31,7 @@ locals {
         "attribute.workflow"         = "assertion.workflow"
         "attribute.job_workflow_ref" = "assertion.job_workflow_ref"
         "attribute.event_name"       = "assertion.event_name"
-        "attribute.pr_review_sub"    = "\"event:\" + assertion.event_name + \":workflow_ref:\" + assertion.job_workflow_ref"
+        "attribute.pr_review_sub"    = "\"event:\" + assertion.event_name + \":workflow:\" + assertion.workflow"
       }
       issuer_uri = "https://token.actions.githubusercontent.com"
     }
