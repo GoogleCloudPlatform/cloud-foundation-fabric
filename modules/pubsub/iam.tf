@@ -65,7 +65,7 @@ locals {
 resource "google_pubsub_topic_iam_binding" "authoritative" {
   for_each = local.iam
   project  = local.project_id
-  topic    = google_pubsub_topic.default.name
+  topic    = google_pubsub_topic.default.id
   role     = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
     for v in each.value : lookup(local.ctx.iam_principals, v, v)
