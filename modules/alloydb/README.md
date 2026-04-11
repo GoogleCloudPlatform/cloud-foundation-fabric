@@ -83,6 +83,7 @@ One node read pool instance is always zonal, two or more nodes make the instance
 module "alloydb" {
   source         = "./fabric/modules/alloydb"
   project_id     = var.project_id
+  project_number = var.project_number
   cluster_name   = "db"
   location       = var.region
   instance_name  = "db"
