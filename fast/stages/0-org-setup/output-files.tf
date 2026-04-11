@@ -111,21 +111,21 @@ locals {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
-      custom_roles                 = local.of_ctx.custom_roles
-      folder_ids                   = local.of_ctx.folder_ids
-      iam_principals               = local.of_ctx.iam_principals
-      logging_sinks                = local.of_logging_sinks
-      project_ids                  = local.of_ctx.project_ids,
-      project_numbers              = module.factory.project_numbers
-      service_accounts             = module.factory.service_account_emails
-      storage_buckets              = module.factory.storage_buckets
+      custom_roles     = local.of_ctx.custom_roles
+      folder_ids       = local.of_ctx.folder_ids
+      iam_principals   = local.of_ctx.iam_principals
+      logging_sinks    = local.of_logging_sinks
+      project_ids      = local.of_ctx.project_ids,
+      project_numbers  = module.factory.project_numbers
+      service_accounts = module.factory.service_account_emails
+      storage_buckets  = module.factory.storage_buckets
       subnet_ips = {
         for k, v in module.vpcs.vpcs : k => v.subnet_ips
       }
       subnet_self_links = {
         for k, v in module.vpcs.vpcs : k => v.subnet_ids
       }
-      tag_values                   = local.of_ctx.tag_values
+      tag_values = local.of_ctx.tag_values
       vpc_self_links = {
         for k, v in module.vpcs.vpcs : k => v.id
       }
