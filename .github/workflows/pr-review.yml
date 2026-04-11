@@ -42,8 +42,8 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           # yamllint disable-line rule:line-length
-          workload_identity_provider: 'projects/214136148368/locations/global/workloadIdentityPools/fabric/providers/pr-review'
-          service_account: 'pr-reviewer@ldj-prod-fabric-vertex-0.iam.gserviceaccount.com'
+          workload_identity_provider: ${{ vars.REVIEWS_WIF_PROVIDER }}
+          service_account: ${{ vars.REVIEWS_WIF_SA }}
           access_token_lifetime: 900s
 
       - id: setup-python
@@ -72,11 +72,13 @@ jobs:
 
       - id: run-review
         name: Run Gemini PR Review
+        env:
+          VERTEX_PROJECT: ${{ vars.REVIEWS_VERTEX_PROJECT }}
         run: |
           # The script prints the review to stdout, which we capture into a file
 
           python3 tools/pr_review.py \
-            --project "ldj-prod-fabric-vertex-0" \
+            --project "$VERTEX_PROJECT" \
             --diff-file pr.diff > review_output.md
       - id: pr-comment
         name: Post comment to Pull Request
