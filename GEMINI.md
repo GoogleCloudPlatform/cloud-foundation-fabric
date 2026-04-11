@@ -224,3 +224,9 @@ Modify one existing README example (do not add a new one) to demonstrate context
     *   **Locals Separation:** Use module-level locals for values referenced directly by resources/outputs. Use block-level "private" locals prefixed with an underscore (`_`) for intermediate transformations.
     *   **Complex Transformations:** Move complex data transformations in `for` or `for_each` loops to `locals` to keep resource blocks clean.
 
+## File Modification Rules
+- **CRITICAL:** NEVER use shell redirection (`cat << EOF`, `echo "..." >`, `>>`, `tee`) to create, overwrite, or append to files.
+- For creating files, ALWAYS use the native `write_file` tool.
+- For targeted edits or appending to a single file, ALWAYS use the native `replace` tool. (To append, match the last few lines of the file and replace them with the same lines plus your new content).
+- **EXCEPTION (Pattern/Bulk Edits):** You MAY use shell commands (like `sed -i`, `perl -pi`, or `find ... xargs sed`) ONLY for regex-based or pattern-based replacements, particularly across multiple files, where the exact-match `replace` tool is not feasible.
+

@@ -28,6 +28,10 @@ locals {
         "attribute.repository_owner" = "assertion.repository_owner"
         "attribute.ref"              = "assertion.ref"
         "attribute.fast_sub"         = "\"repo:\" + assertion.repository + \":ref:\" + assertion.ref"
+        "attribute.workflow"         = "assertion.workflow"
+        "attribute.job_workflow_ref" = "assertion.job_workflow_ref"
+        "attribute.event_name"       = "assertion.event_name"
+        "attribute.pr_review_sub"    = "\"event:\" + assertion.event_name + \":workflow_ref:\" + assertion.job_workflow_ref"
       }
       issuer_uri = "https://token.actions.githubusercontent.com"
     }
