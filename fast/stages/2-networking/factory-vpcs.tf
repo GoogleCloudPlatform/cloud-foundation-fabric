@@ -35,7 +35,8 @@ locals {
   }
   vpcs = {
     for k, v in local._vpcs : k => merge(
-      local.vpc_defaults, v,
+      local.vpc_defaults.defaults,
+      v,
       {
         project_id                        = v.project_id
         description                       = try(v.description, "Terraform managed")
@@ -71,7 +72,8 @@ locals {
         factories_config = try(v.factories_config, {})
         peering_config   = try(v.peering_config, {})
         vpn_config       = try(v.vpn_config, {})
-      }
+      },
+      local.vpc_defaults.overrides
     )
   }
   ctx_vpcs = {
@@ -98,7 +100,9 @@ moved {
 }
 
 module "vpc-factory" {
-  source = "../../../modules/net-vpc-factory"
+  source         = "../../../modules/net-vpc-factory"
+  data_defaults  = local.vpc_defaults.defaults
+  data_overrides = local.vpc_defaults.overrides
   factories_config = {
     basepath = var.factories_config.dataset
     paths    = var.factories_config.paths
