@@ -65,16 +65,19 @@ locals {
 resource "google_pubsub_topic_iam_binding" "authoritative" {
   for_each = local.iam
   project  = local.project_id
-  topic    = google_pubsub_topic.default.name
+  topic    = google_pubsub_topic.default.id
   role     = lookup(local.ctx.custom_roles, each.key, each.key)
   members = [
     for v in each.value : lookup(local.ctx.iam_principals, v, v)
   ]
+  lifecycle {
+    replace_triggered_by = [google_pubsub_topic.default.id]
+  }
 }
 
 resource "google_pubsub_topic_iam_binding" "bindings" {
   for_each = var.iam_bindings
-  topic    = google_pubsub_topic.default.name
+  topic    = google_pubsub_topic.default.id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
@@ -87,11 +90,14 @@ resource "google_pubsub_topic_iam_binding" "bindings" {
       description = each.value.condition.description
     }
   }
+  lifecycle {
+    replace_triggered_by = [google_pubsub_topic.default.id]
+  }
 }
 
 resource "google_pubsub_topic_iam_member" "bindings" {
   for_each = var.iam_bindings_additive
-  topic    = google_pubsub_topic.default.name
+  topic    = google_pubsub_topic.default.id
   role     = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member = lookup(
     local.ctx.iam_principals, each.value.member, each.value.member
@@ -103,6 +109,9 @@ resource "google_pubsub_topic_iam_member" "bindings" {
       title       = each.value.condition.title
       description = each.value.condition.description
     }
+  }
+  lifecycle {
+    replace_triggered_by = [google_pubsub_topic.default.id]
   }
 }
 
@@ -112,17 +121,20 @@ resource "google_pubsub_subscription_iam_binding" "authoritative" {
     "${binding.subscription}.${binding.role}" => binding
   }
   project      = local.project_id
-  subscription = google_pubsub_subscription.default[each.value.subscription].name
+  subscription = google_pubsub_subscription.default[each.value.subscription].id
   role         = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
   ]
+  lifecycle {
+    replace_triggered_by = [google_pubsub_subscription.default[each.value.subscription].id]
+  }
 }
 
 resource "google_pubsub_subscription_iam_binding" "bindings" {
   for_each     = local.subscription_iam_bindings
   project      = local.project_id
-  subscription = google_pubsub_subscription.default[each.value.subscription].name
+  subscription = google_pubsub_subscription.default[each.value.subscription].id
   role         = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   members = [
     for v in each.value.members : lookup(local.ctx.iam_principals, v, v)
@@ -135,12 +147,15 @@ resource "google_pubsub_subscription_iam_binding" "bindings" {
       description = each.value.condition.description
     }
   }
+  lifecycle {
+    replace_triggered_by = [google_pubsub_subscription.default[each.value.subscription].id]
+  }
 }
 
 resource "google_pubsub_subscription_iam_member" "members" {
   for_each     = local.subscription_iam_bindings_additive
   project      = local.project_id
-  subscription = google_pubsub_subscription.default[each.value.subscription].name
+  subscription = google_pubsub_subscription.default[each.value.subscription].id
   role         = lookup(local.ctx.custom_roles, each.value.role, each.value.role)
   member = lookup(
     local.ctx.iam_principals, each.value.member, each.value.member
@@ -152,5 +167,8 @@ resource "google_pubsub_subscription_iam_member" "members" {
       title       = each.value.condition.title
       description = each.value.condition.description
     }
+  }
+  lifecycle {
+    replace_triggered_by = [google_pubsub_subscription.default[each.value.subscription].id]
   }
 }
