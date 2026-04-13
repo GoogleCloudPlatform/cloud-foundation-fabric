@@ -8464,5 +8464,8 @@ outputs:
     gcp-security-admins: group:gcp-security-admins@example.org
     gcp-support: group:gcp-support@example.org
   projects: __missing__
+  subnet_ips: {}
+  subnet_self_links: {}
   tfvars: __missing__
+  vpc_self_links: {}
 

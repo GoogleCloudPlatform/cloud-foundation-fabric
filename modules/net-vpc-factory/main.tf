@@ -15,23 +15,11 @@
  */
 
 locals {
+  ctx = var.context
   _vpcs_files = try(
     fileset(local.paths.vpcs, "**/.config.yaml"),
     []
   )
-  _defaults = try(
-    yamldecode(file(local.paths.defaults)), {}
-  )
-  context = {
-    locations = merge(
-      var.context.locations, try(local._defaults.context.locations, {})
-    )
-    project_ids = merge(
-      var.context.project_ids, try(local._defaults.context.project_ids, {})
-    )
-    cidr_ranges_sets = try(local._defaults.context.cidr_ranges_sets, {})
-    iam_principals   = try(local._defaults.context.iam_principals, {})
-  }
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(
       yamldecode(file("${coalesce(local.paths.vpcs, "-")}/${f}")),
@@ -54,7 +42,6 @@ locals {
   }
   vpcs = {
     for k, v in local._vpcs : k => merge(
-      try(local._defaults.vpcs, {}),
       { for k, v in var.data_defaults : k => v if v != null },
       v,
       { for k, v in var.data_overrides : k => v if v != null },
@@ -81,6 +68,7 @@ locals {
 module "vpcs" {
   source                            = "../net-vpc"
   for_each                          = local.vpcs
+  context                           = local.ctx
   project_id                        = try(each.value.project_id, null)
   name                              = try(each.value.name, null)
   auto_create_subnetworks           = try(each.value.auto_create_subnetworks, null)
@@ -95,7 +83,6 @@ module "vpcs" {
   network_attachments               = try(each.value.network_attachments, {})
   psa_configs                       = try(each.value.psa_configs, [])
   routing_mode                      = try(each.value.routing_mode, "GLOBAL")
-  context                           = local.context
 }
 
 module "firewall" {
@@ -103,12 +90,10 @@ module "firewall" {
   for_each = {
     for k, v in local.vpcs : k => v if v.firewall_factory_config != null
   }
+  context              = local.ctx
   project_id           = each.value.project_id
   network              = each.value.name
   factories_config     = each.value.firewall_factory_config
   default_rules_config = { disabled = true }
-  context = {
-    project_ids = local.context.project_ids
-  }
-  depends_on = [module.vpcs]
+  depends_on           = [module.vpcs]
 }

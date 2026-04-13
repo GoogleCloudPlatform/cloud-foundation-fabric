@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,24 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=../schemas/defaults.schema.json
+# yaml-language-server: $schema=../../../../../schemas/subnet.schema.json
 
-context:
-  cidr_ranges_sets:
-    healthchecks:
-      - 35.191.0.0/16
-      - 130.211.0.0/22
-      - 209.85.152.0/22
-      - 209.85.204.0/22
-    rfc1918:
-      - 10.0.0.0/8
-      - 172.16.0.0/12
-      - 192.168.0.0/16
-  locations:
-    primary: europe-west1
-    secondary: europe-west3
-  iam_principals: {}
-vpcs:
-  auto_create_subnetworks: false
-  delete_default_route_on_create: true
-  mtu: 1500
+name: default
+region: $locations:primary
+ip_cidr_range: 10.0.0.0/24
+description: Default primary-region subnet for prod
