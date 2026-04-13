@@ -144,11 +144,11 @@ module "vpn-dynamic" {
 | [gateway](outputs.tf#L22) | VPN gateway resource. |  |
 | [id](outputs.tf#L27) | Fully qualified VPN gateway id. |  |
 | [name](outputs.tf#L32) | VPN gateway name. |  |
-| [random_secret](outputs.tf#L37) | Generated secret. |  |
-| [router](outputs.tf#L43) | Router resource (only if auto-created). |  |
-| [router_name](outputs.tf#L48) | Router name. |  |
-| [self_link](outputs.tf#L53) | VPN gateway self link. |  |
-| [tunnel_names](outputs.tf#L58) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L66) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L74) | VPN tunnel resources. |  |
+| [random_secret](outputs.tf#L37) | Generated secret. | ✓ |
+| [router](outputs.tf#L44) | Router resource (only if auto-created). |  |
+| [router_name](outputs.tf#L49) | Router name. |  |
+| [self_link](outputs.tf#L54) | VPN gateway self link. |  |
+| [tunnel_names](outputs.tf#L59) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L67) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L75) | VPN tunnel resources. |  |
 <!-- END TFDOC -->
