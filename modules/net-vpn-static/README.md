@@ -109,9 +109,9 @@ module "vpn" {
 | [gateway](outputs.tf#L22) | VPN gateway resource. |  |
 | [id](outputs.tf#L27) | Fully qualified VPN gateway id. |  |
 | [name](outputs.tf#L32) | VPN gateway name. |  |
-| [random_secret](outputs.tf#L37) | Generated secret. |  |
-| [self_link](outputs.tf#L42) | VPN gateway self link. |  |
-| [tunnel_names](outputs.tf#L47) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L55) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L63) | VPN tunnel resources. |  |
+| [random_secret](outputs.tf#L37) | Generated secret. | ✓ |
+| [self_link](outputs.tf#L43) | VPN gateway self link. |  |
+| [tunnel_names](outputs.tf#L48) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L56) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L64) | VPN tunnel resources. |  |
 <!-- END TFDOC -->
