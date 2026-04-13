@@ -1055,6 +1055,7 @@ module "org" {
 | [sink_writer_identities](outputs.tf#L125) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L133) | Tag key resources. |  |
 | [tag_values](outputs.tf#L142) | Tag value resources. |  |
-| [workforce_identity_provider_names](outputs.tf#L150) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L157) | Workforce Identity provider attributes. |  |
+| [workforce_identity_pool_ids](outputs.tf#L150) | Workforce identity provider ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L157) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L164) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->
