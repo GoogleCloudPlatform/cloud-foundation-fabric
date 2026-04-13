@@ -8,19 +8,20 @@ Note that this module assumes that some options are the same for both the primar
 > [!WARNING]
 > If you use the `users` field, you terraform state will contain each user's password in plain text.
 
-<!-- TOC -->
-* [AlloyDB module](#alloydb-module)
-  * [Examples](#examples)
-    * [Simple example](#simple-example)
-    * [Read pool](#read-pool)
-    * [Cross region replication](#cross-region-replication)
-    * [PSC instance](#psc-instance)
-    * [Custom flags and users definition](#custom-flags-and-users-definition)
-    * [CMEK encryption](#cmek-encryption)
-  * [Variables](#variables)
-  * [Outputs](#outputs)
-  * [Fixtures](#fixtures)
-<!-- TOC -->
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple example](#simple-example)
+  - [Read pool](#read-pool)
+  - [Read pool with advanced query insights](#read-pool-with-advanced-query-insights)
+  - [Cross region replication](#cross-region-replication)
+  - [Cross region replication with primary and secondary cluster read pool](#cross-region-replication-with-primary-and-secondary-cluster-read-pool)
+  - [PSC instance](#psc-instance)
+  - [Custom flags and users definition](#custom-flags-and-users-definition)
+  - [CMEK encryption](#cmek-encryption)
+- [Tag bindings](#tag-bindings)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Examples
 
@@ -101,6 +102,84 @@ module "alloydb" {
   deletion_protection = false
 }
 # tftest modules=1 resources=4 inventory=read_pool.yaml e2e
+```
+
+### Read pool with advanced query insights
+
+This example demonstrates how to configure an AlloyDB cluster with a read pool and enable [advanced query insights](https://docs.cloud.google.com/alloydb/docs/advanced-query-insights-overview) for both the primary instance and the read pool instance.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  name            = "alloydb"
+  prefix          = var.prefix
+  services = [
+    "servicenetworking.googleapis.com",
+    "alloydb.googleapis.com",
+    "geminicloudassist.googleapis.com"
+  ]
+}
+
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
+  # need only one - psa_config or subnets_psc
+  psa_configs = [{
+    ranges = { alloydb = "10.60.0.0/16" }
+  }]
+  subnets_psc = [{
+    ip_cidr_range = "10.0.3.0/24"
+    name          = "psc"
+    region        = var.region
+  }]
+}
+
+module "alloydb" {
+  source         = "./fabric/modules/alloydb"
+  project_id     = module.project.project_id
+  project_number = var.project_number
+  cluster_name   = "db"
+  instance_name  = "db"
+  location       = var.region
+  network_config = {
+    psa_config = {
+      network = module.vpc.id
+    }
+  }
+
+  read_pool = {
+    "regional-read-pool" = {
+      node_count = 2
+      observability_config = {
+        enabled                       = true
+        preserve_comments             = true
+        track_wait_events             = true
+        max_query_string_length       = 20480
+        record_application_tags       = true
+        query_plans_per_minute        = 30
+        track_active_queries          = true
+        assistive_experiences_enabled = true
+      }
+    }
+  }
+
+  observability_config = {
+    enabled                       = true
+    preserve_comments             = true
+    track_wait_events             = true
+    max_query_string_length       = 20480
+    record_application_tags       = true
+    query_plans_per_minute        = 30
+    track_active_queries          = true
+    assistive_experiences_enabled = true
+  }
+
+  deletion_protection = false
+}
+# tftest modules=3 resources=19 inventory=read_pool_with_advanced_query_insights.yaml e2e
 ```
 
 ### Cross region replication
@@ -347,7 +426,7 @@ module "alloydb" {
 | [instance_name](variables.tf#L211) | Name of primary instance. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L223) | Region or zone of the cluster and instance. | <code>string</code> | ✓ |  |
 | [network_config](variables.tf#L268) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L303) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L319) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
 | [annotations](variables.tf#L17) | Map FLAG_NAME=>VALUE for annotations which allow client tools to store small amount of arbitrary data. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [automated_backup_configuration](variables.tf#L23) | Automated backup settings for cluster. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [availability_type](variables.tf#L61) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;REGIONAL&#34;</code> |
@@ -366,14 +445,15 @@ module "alloydb" {
 | [labels](variables.tf#L217) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [machine_config](variables.tf#L229) | AlloyDB machine config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [maintenance_config](variables.tf#L243) | Set maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L293) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [project_number](variables.tf#L308) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
-| [query_insights_config](variables.tf#L314) | Query insights config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [read_pool](variables.tf#L325) | Map of read pool instances to create in the primary cluster. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [skip_await_major_version_upgrade](variables.tf#L370) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
-| [subscription_type](variables.tf#L376) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
-| [tag_bindings](variables.tf#L382) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [users](variables.tf#L389) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [observability_config](variables.tf#L293) | Advanced query insights config for AlloyDB. Mutually exclusive with query_insights_config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L309) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [project_number](variables.tf#L324) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
+| [query_insights_config](variables.tf#L330) | Query insights config. Mutually exclusive with observability_config. It will be ignored if observability_config is enabled. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [read_pool](variables.tf#L341) | Map of read pool instances to create in the primary cluster. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [skip_await_major_version_upgrade](variables.tf#L397) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
+| [subscription_type](variables.tf#L403) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
+| [tag_bindings](variables.tf#L409) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [users](variables.tf#L416) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
