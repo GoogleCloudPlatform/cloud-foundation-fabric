@@ -1045,17 +1045,18 @@ module "org" {
 | [custom_roles](outputs.tf#L34) | Map of custom roles resources created in the organization. |  |
 | [id](outputs.tf#L39) | Fully qualified organization id. |  |
 | [logging_identities](outputs.tf#L57) | Principals used for logging sinks. |  |
-| [network_tag_keys](outputs.tf#L69) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L78) | Tag value resources. |  |
-| [organization_id](outputs.tf#L88) | Organization id dependent on module resources. |  |
-| [organization_policies_ids](outputs.tf#L105) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L110) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
-| [scc_mute_configs](outputs.tf#L115) | SCC mute configurations. |  |
-| [service_agents](outputs.tf#L120) | Identities of all organization-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L125) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L133) | Tag key resources. |  |
-| [tag_values](outputs.tf#L142) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L150) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L157) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L164) | Workforce Identity provider attributes. |  |
+| [logging_sinks](outputs.tf#L69) | Logging sink resources. |  |
+| [network_tag_keys](outputs.tf#L77) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L86) | Tag value resources. |  |
+| [organization_id](outputs.tf#L96) | Organization id dependent on module resources. |  |
+| [organization_policies_ids](outputs.tf#L113) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L118) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
+| [scc_mute_configs](outputs.tf#L123) | SCC mute configurations. |  |
+| [service_agents](outputs.tf#L128) | Identities of all organization-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L133) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L141) | Tag key resources. |  |
+| [tag_values](outputs.tf#L150) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L158) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L165) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L172) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->

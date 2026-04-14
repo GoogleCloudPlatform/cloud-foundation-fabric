@@ -4,9 +4,9 @@ This module implements the creation of VPCs, subnets, and firewall rules via YAM
 
 It supports:
 
--   **VPCs** and **Subnets** leveraging the [net-vpc](../net-vpc/) module.
--   **Firewall rules** leveraging the [net-vpc-firewall](../net-vpc-firewall/) module.
--   **Context-based interpolation** for referring to resources dynamically (e.g., project IDs, IAM principals, Locations).
+- **VPCs** and **Subnets** leveraging the [net-vpc](../net-vpc/) module.
+- **Firewall rules** leveraging the [net-vpc-firewall](../net-vpc-firewall/) module.
+- **Context-based interpolation** for referring to resources dynamically (e.g., project IDs, IAM principals, Locations).
 
 The factory is implemented as a thin data translation layer over the underlying modules, ensuring transparency and ease of debugging.
 
@@ -49,9 +49,9 @@ routing_mode: GLOBAL
 
 In addition to the YAML-based VPC configurations, the factory accepts three additional sets of inputs via Terraform variables to control defaults:
 
--   `data_defaults`: defaults for specific VPC attributes, used if not present in YAML.
--   `data_overrides`: overrides that take precedence over YAML values.
--   `factories_config.defaults`: path to a YAML file containing global context and VPC defaults.
+- `data_defaults`: defaults for specific VPC attributes, used if not present in YAML.
+- `data_overrides`: overrides that take precedence over YAML values.
+- `factories_config.paths.defaults`: path to a YAML file containing global context and VPC defaults (defaults to `defaults.yaml` in the path set by `factories_config.basepath`)
 
 ```hcl
 module "net-vpc-factory" {
@@ -60,7 +60,7 @@ module "net-vpc-factory" {
     routing_mode = "REGIONAL"
   }
   factories_config = {
-    vpcs = "data/vpcs"
+    basepath = "data"
   }
 }
 ```
@@ -124,15 +124,14 @@ module "net-vpc-factory" {
 
 Other contexts can be defined freely. Common uses include:
 
--   `$locations:` for GCP regions.
--   `$iam_principals:` for IAM principals.
+- `$locations:` for GCP regions.
+- `$iam_principals:` for IAM principals.
 
 ## Example
 
 ```hcl
 module "net-vpc-factory" {
   source = "./fabric/modules/net-vpc-factory"
-
   context = {
     project_ids = {
       net-project = "my-host-project-id"
@@ -141,22 +140,22 @@ module "net-vpc-factory" {
       primary = "europe-west1"
     }
   }
-
   factories_config = {
-    vpcs = "data/vpcs"
+    basepath = "data"
   }
 }
 # tftest files=vpc,fw,subnet modules=3 inventory=example.yaml
 ```
 
-**data/vpcs/shared-vpc/.config.yaml**
 ```yaml
+# data/vpcs/shared-vpc/.config.yaml
 project_id: $project_ids:net-project
 name: data-vpc-0
 # tftest-file id=vpc path=data/vpcs/data-vpc-0/.config.yaml schema=vpc-factory.schema.json
 ```
-**data/vpcs/data-vpc-0/subnets/primary-subnet.yaml**
+
 ```yaml
+# data/vpcs/data-vpc-0/subnets/primary-subnet.yaml
 name: primary-subnet
 region: $locations:primary
 ip_cidr_range: 10.10.0.0/24
@@ -164,8 +163,8 @@ description: Primary subnet for data-vpc-0
 # tftest-file id=subnet path=data/vpcs/data-vpc-0/subnets/primary-subnet.yaml schema=subnet.schema.json
 ```
 
-**data/vpcs/data-vpc-0/firewall-rules/allow-iap.yaml**
 ```yaml
+# data/vpcs/data-vpc-0/firewall-rules/allow-iap.yaml
 ingress:
   allow-iap:
     description: Allow IAP for SSH
@@ -182,10 +181,10 @@ ingress:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
+| [factories_config](variables.tf#L99) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_defaults](variables.tf#L27) | Optional default values used when corresponding vpc data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_overrides](variables.tf#L62) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L97) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_defaults](variables.tf#L29) | Optional default values used when corresponding vpc data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L64) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

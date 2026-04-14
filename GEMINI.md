@@ -11,7 +11,8 @@ Cloud Foundation Fabric is a comprehensive suite of Terraform modules and end-to
 
 ### 1. Modules (`/modules`)
 
-*   **Philosophy:** Lean, composable, and close to the underlying provider resources.
+*   **Philosophy:** Lean, composable, and close to the underlying provider resources. Modules are designed to be containers for all aspects related to usage of a resource type (e.g., folder, project, vpc, etc.). This includes IAM, sub-resources (e.g. subnets and routes for a network), and org policies where applicable.
+*   **Boundary:** Unrelated resources (like a dataset for a project) should never be part of the same module, except in the two "aggregation modules" (`project-factory` and `net-vpc-factory`). Never break this boundary as a first approach.
 *   **Structure:**
     *   Standardized interfaces: IAM, logging, organization policies, etc.
     *   Self-contained: Dependency injection via context variables is preferred over complex remote state lookups within modules.
@@ -25,7 +26,7 @@ Cloud Foundation Fabric is a comprehensive suite of Terraform modules and end-to
 
 *   **Purpose:** Rapidly set up a secure, scalable GCP organization.
 *   **Architecture:** Divided into sequential "stages" (0-org-setup, 1-vpcsc, 2-security, 2-networking, etc.).
-*   **Factories:** Extensively uses YAML-based datasets and module factory patterns to drive configuration at scale, acting as a "translation machine" that expresses different architectural designs without changing the underlying stage code.
+*   **Factories:** Extensively uses YAML-based datasets and module factory patterns to drive configuration at scale, acting as a "translation machine" that expresses different architectural designs without changing the underlying stage code. Factories are generally implemented in the underlying modules, not in FAST stages, *unless* the stage needs to iterate over standard modules or resources (e.g., `dns` zones, `net-firewall-policy`, `ncc_hubs`).
 
 ### 3. Tools (`/tools`)
 
@@ -64,6 +65,8 @@ python3 tools/check_documentation.py modules/<module-name>
 
 # Regenerate README variables/outputs tables when check fails
 # Note: tfdoc uses special HTML comments (<!-- BEGIN TFDOC -->) in READMEs. Do not manually edit these sections.
+# You can configure tfdoc via HTML comments in the README (e.g., <!-- TFDOC OPTS files:1 show_extra:1 -->).
+# To add a file description to the generated table, use a comment in the .tf file: # tfdoc:file:description My description.
 python3 tools/tfdoc.py --replace modules/<module-name>
 
 # YAML linting
@@ -71,6 +74,10 @@ yamllint -c .yamllint --no-warnings <yaml-files>
 
 # License/boilerplate check
 python3 tools/check_boilerplate.py --scan-files <files>
+
+# Schema changes
+# A schema change should be reflected in all the other places that use the same schema.
+# These are documented in and can be checked via tools/duplicate-diff.py.
 ```
 
 **Common gotcha — unsorted variables (`[SV]` error):** `check_documentation.py` requires variables in `variables.tf` to be in strict alphabetical order. When adding a new variable, insert it at the correct alphabetical position, not at the top of the file.
@@ -89,7 +96,9 @@ module "my-module" {
 # tftest modules=1 resources=2 inventory=my-inventory.yaml
 ```
 
-*   **Inventory files (`YAML`):** Used to assert specific values, resource counts, or outputs from the terraform plan against an expected dataset.
+*   **Inventory files (`YAML`):** Used to assert specific values, resource counts, or outputs from the terraform plan against an expected dataset. **DO NOT hand-code inventory files from scratch.** Extract only the necessary bits relevant to the test scenario from the generated output.
+*   **External Files:** If a README test requires external files (e.g., for factories), mock them using the `# tftest-file id=myid path=path/to/file.yaml` directive in a separate YAML block, and add `files=myid` to the `tftest` directive.
+*   **FAST Stages & `tftest.yaml`:** FAST stages often lack README examples. For these, use `tftest`-based tests by creating `tfvars` and `yaml` inventory pairs in `tests/fast/...` and tying them together with a `tftest.yaml` file.
 *   **Legacy Tests:** Python-based tests using `pytest` and `tftest` are supported but example-based tests should be used whenever possible.
 
 ```bash
@@ -183,6 +192,8 @@ ip_address = (
 )
 ```
 
+**5. YAML Interpolation:** In factory YAML files, use the `$` prefix convention to reference the lookup map keys (e.g., `parent: $folder_ids:teams/team-a`).
+
 ### Tests
 
 Add a `context` test alongside existing module tests:
@@ -213,8 +224,31 @@ Modify one existing README example (do not add a new one) to demonstrate context
     *   **Locals Separation:** Use module-level locals for values referenced directly by resources/outputs. Use block-level "private" locals prefixed with an underscore (`_`) for intermediate transformations.
     *   **Complex Transformations:** Move complex data transformations in `for` or `for_each` loops to `locals` to keep resource blocks clean.
 
-## Preferred Workflow
+## Debugging Terraform Context & Locals
 
-- Always break down complex requests into small, iterative tasks.
-- For each task, propose the necessary edits and explicitly wait for user confirmation or discussion before proceeding.
-- Always use the `replace` tool to both perform and cleanly display the proposed text modifications. Do not silently overwrite files or use shell commands for text edits.
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`. 
+
+**ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
+
+```hcl
+resource "terraform_data" "debug_dump" {
+  lifecycle {
+    precondition {
+      # The condition is intentionally designed to fail to trigger the error_message
+      condition     = local.target_variable == null 
+      error_message = yamlencode(local.target_variable)
+    }
+  }
+}
+```
+
+Run the specific `pytest` plan test. The test will fail, and the captured output will contain the fully evaluated YAML representation of your target variable, making context resolution issues immediately obvious.
+
+## File Modification Rules
+- **CRITICAL:** NEVER use shell redirection (`cat << EOF`, `echo "..." >`, `>>`, `tee`) to create, overwrite, or append to files.
+- For creating files, ALWAYS use the native `write_file` tool.
+- For targeted edits or appending to a single file, ALWAYS use the native `replace` tool. (To append, match the last few lines of the file and replace them with the same lines plus your new content).
+- **EXCEPTION (Pattern/Bulk Edits):** You MAY use shell commands (like `sed -i`, `perl -pi`, or `find ... xargs sed`) ONLY for regex-based or pattern-based replacements, particularly across multiple files, where the exact-match `replace` tool is not feasible.
+- **Ambiguity & Paths:** When encountering unfamiliar or unexpected repository structures, paths, or tool executions, always pause and offer the user the choice to either explain or authorize further independent investigation, rather than making assumptions or guessing paths.
+
+To run specific FAST stage tests, use the syntax `pytest tests/fast/stages/s<stage_num>_<stage_name>/tftest.yaml::<test_name>`. For example: `pytest tests/fast/stages/s0_org_setup/tftest.yaml::starter-gcd`.

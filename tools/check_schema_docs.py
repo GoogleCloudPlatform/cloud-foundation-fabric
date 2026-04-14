@@ -42,6 +42,7 @@ class State(enum.IntEnum):
   OK = enum.auto()
   FAIL_STALE_DOC = enum.auto()
   FAIL_MISSING_DOC = enum.auto()
+  FAIL_ORPHAN_DOC = enum.auto()
 
   @property
   def failed(self):
@@ -54,12 +55,16 @@ class State(enum.IntEnum):
         State.OK: '✓ ',
         State.FAIL_STALE_DOC: '✗D',
         State.FAIL_MISSING_DOC: '✗M',
+        State.FAIL_ORPHAN_DOC: '✗O',
     }[self.value]
 
 
 def _check_dir(dir_name):
   'Invoke schema_docs on folder, using the relevant options.'
   dir_path = BASEDIR / dir_name
+  existing_docs = set(
+      p for p in dir_path.glob('**/*.schema.md') if '.terraform' not in str(p))
+
   for schema_path in sorted(dir_path.glob('**/*.schema.json')):
     if '.terraform' in str(schema_path):
       continue
@@ -67,6 +72,7 @@ def _check_dir(dir_name):
     diff = None
     schema_rel = str(schema_path.relative_to(BASEDIR))
     doc_path = schema_path.with_suffix('.md')
+    existing_docs.discard(doc_path)
 
     try:
       schema = json.load(schema_path.open())
@@ -97,6 +103,11 @@ def _check_dir(dir_name):
         diff = ''.join([header] + [x for x in ndiff if x[0] != ' '])
 
     yield schema_rel, state, diff
+
+  for doc_path in sorted(existing_docs):
+    doc_rel = str(doc_path.relative_to(BASEDIR))
+    diff = f'----- {doc_rel} orphan doc -----\nFile {doc_rel} does not have a matching schema.'
+    yield doc_rel, State.FAIL_ORPHAN_DOC, diff
 
 
 @click.command()

@@ -456,7 +456,7 @@ Some references that might be useful in setting up this stage:
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [organization](variables-fast.tf#L35) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
+| [organization](variables-fast.tf#L48) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-org-setup</code> |
 | [access_levels](variables.tf#L17) | Access level definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [access_policy](variables.tf#L67) | Access policy id (used for tenant-level VPC-SC configurations). | <code>number</code> |  | <code>null</code> |  |
 | [context](variables.tf#L73) | External context used in replacements. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
@@ -464,13 +464,14 @@ Some references that might be useful in setting up this stage:
 | [factories_config](variables.tf#L130) | Paths to folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [iam_principals](variables-fast.tf#L17) | Org-level IAM principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [ingress_policies](variables.tf#L147) | Ingress policy definitions that can be referenced in perimeters. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [logging](variables-fast.tf#L25) | Log writer identities for organization / folders. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
+| [logging_sinks](variables-fast.tf#L25) | Log sinks for the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [perimeters](variables.tf#L189) | Perimeter definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [project_numbers](variables-fast.tf#L46) | Project numbers. | <code>map&#40;number&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [project_ids](variables-fast.tf#L59) | Project IDs. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [project_numbers](variables-fast.tf#L67) | Project numbers. | <code>map&#40;number&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [resource_discovery](variables.tf#L223) | Automatic discovery of perimeter projects. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [root_node](variables-fast.tf#L54) | Root node for the hierarchy, if running in tenant mode. | <code>string</code> |  | <code>null</code> | <code>0-org-setup</code> |
-| [service_accounts](variables-fast.tf#L68) | Org-level service accounts. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [storage_buckets](variables-fast.tf#L76) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [root_node](variables-fast.tf#L75) | Root node for the hierarchy, if running in tenant mode. | <code>string</code> |  | <code>null</code> | <code>0-org-setup</code> |
+| [service_accounts](variables-fast.tf#L89) | Org-level service accounts. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [storage_buckets](variables-fast.tf#L97) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 
 ## Outputs
 

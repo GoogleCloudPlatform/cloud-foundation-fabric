@@ -249,11 +249,17 @@ values:
     project: fast-prod-net-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
-  module.projects.module.projects["net-core-0"].google_project_service.project_services["stackdriver.googleapis.com"]:
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["logging.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-prod-net-core-0
-    service: stackdriver.googleapis.com
+    service: logging.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: monitoring.googleapis.com
     timeouts: null
   module.projects.module.projects["net-core-0"].google_project_service.project_services["vpcaccess.googleapis.com"]:
     disable_dependent_services: false
@@ -663,13 +669,13 @@ counts:
   google_network_connectivity_hub: 1
   google_network_connectivity_spoke: 3
   google_project: 1
-  google_project_iam_member: 7
-  google_project_service: 9
-  google_project_service_identity: 7
+  google_project_iam_member: 8
+  google_project_service: 10
+  google_project_service_identity: 8
   google_storage_bucket_object: 2
   modules: 9
   random_id: 5
-  resources: 60
+  resources: 64
   terraform_data: 2
 
 outputs:
