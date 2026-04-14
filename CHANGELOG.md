@@ -3,7 +3,44 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-04-09 12:37:26+00:00 to: None since: v54.3.0 -->
+## [Unreleased] <!-- from: 2026-03-05 11:16:15+00:00 to: None since: v54.0.0 -->
+
+## [55.0.0] - 2026-04-14
+
+### BREAKING CHANGES
+
+- `fast/stages/3-data-platform-dev`: The Data Platform stage has been dreprecated and removed. [[#3851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3851)]
+- `fast/stages/3-gcve-dev`: The GKE stage has been dreprecated and removed. [[#3850](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3850)]
+- `fast/stages/3-gke-dev`: The GCVE stage has been dreprecated and removed. [[#3850](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3850)]
+
+### FAST
+
+- [[#3860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3860)] Add net-vpc-factory and starter-gcd dataset to 0-org-setup, fix context in net-vpc-factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-13 07:42:03+00:00 -->
+- [[#3858](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3858)] Decouple logging sinks in FAST stages 0 and 1 ([juliocc](https://github.com/juliocc)) <!-- 2026-04-10 22:14:16+00:00 -->
+- [[#3855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3855)] Align vpc factory module `factories_config` variable to project factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 17:21:21+00:00 -->
+- [[#3854](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3854)] Remove leftover datasets for data platform ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 15:41:55+00:00 -->
+- [[#3852](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3852)] Update boilerplate and project services in 2-networking ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 15:20:22+00:00 -->
+- [[#3851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3851)] Remove the FAST data platform stage ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 08:19:20+00:00 -->
+- [[#3850](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3850)] Remove GKE and GCVE stages ([juliocc](https://github.com/juliocc)) <!-- 2026-04-10 07:51:21+00:00 -->
+- [[#3802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3802)] Add support of organizational based service agents in VPC-SC stage ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-03-18 09:08:08+00:00 -->
+
+### MODULES
+
+- [[#3860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3860)] Add net-vpc-factory and starter-gcd dataset to 0-org-setup, fix context in net-vpc-factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-13 07:42:03+00:00 -->
+- [[#3859](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3859)] Automated PR Review ([ludoo](https://github.com/ludoo)) <!-- 2026-04-11 12:26:05+00:00 -->
+- [[#3858](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3858)] Decouple logging sinks in FAST stages 0 and 1 ([juliocc](https://github.com/juliocc)) <!-- 2026-04-10 22:14:16+00:00 -->
+- [[#3857](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3857)] streamline GEMINI file, drop agents rules ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 20:28:40+00:00 -->
+- [[#3855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3855)] Align vpc factory module `factories_config` variable to project factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 17:21:21+00:00 -->
+- [[#3852](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3852)] Update boilerplate and project services in 2-networking ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 15:20:22+00:00 -->
+- [[#3853](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3853)] Tools: add orphan doc detection to check_schema_docs.py ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 14:41:04+00:00 -->
+- [[#3802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3802)] Add support of organizational based service agents in VPC-SC stage ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-03-18 09:08:08+00:00 -->
+
+### TOOLS
+
+- [[#3860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3860)] Add net-vpc-factory and starter-gcd dataset to 0-org-setup, fix context in net-vpc-factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-13 07:42:03+00:00 -->
+- [[#3859](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3859)] Automated PR Review ([ludoo](https://github.com/ludoo)) <!-- 2026-04-11 12:26:05+00:00 -->
+- [[#3853](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3853)] Tools: add orphan doc detection to check_schema_docs.py ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 14:41:04+00:00 -->
+- [[#3851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3851)] Remove the FAST data platform stage ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 08:19:20+00:00 -->
 
 ## [54.4.0] - 2026-04-14
 
@@ -2469,7 +2506,7 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.4.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.0.0...HEAD
 [54.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.4.0...v54.3.0
 [54.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.3.0...v54.2.0
 [54.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...v54.1.0
