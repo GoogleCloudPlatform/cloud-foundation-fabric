@@ -75,6 +75,13 @@ variable "context" {
   nullable = false
 }
 
+variable "data_api_access" {
+  description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
+  type        = string
+  default     = "DISALLOW_DATA_API"
+  nullable    = false
+}
+
 variable "data_cache" {
   description = "Enable data cache. Only used for Enterprise MYSQL and PostgreSQL."
   type        = bool
@@ -323,11 +330,4 @@ variable "users" {
   }))
   default  = {}
   nullable = false
-}
-
-variable "data_api_access" {
-  description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
-  type        = string
-  default     = "DISALLOW_DATA_API"
-  nullable    = false
 }

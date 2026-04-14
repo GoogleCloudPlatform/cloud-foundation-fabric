@@ -77,6 +77,7 @@ module "db" {
   tier                          = "db-g1-small"
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
+  data_api_access               = "ALLOW_DATA_API"
 }
 # tftest modules=3 resources=16 inventory=simple.yaml isolated e2e
 ```
@@ -413,40 +414,40 @@ module "db" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [database_version](variables.tf#L85) | Database type and version to create. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L201) | Name of primary instance. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L206) | Network configuration for the instance. Only one between private_network and psc_config can be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L249) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L254) | Region of the primary instance. | <code>string</code> | ✓ |  |
-| [tier](variables.tf#L306) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
+| [database_version](variables.tf#L92) | Database type and version to create. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L208) | Name of primary instance. | <code>string</code> | ✓ |  |
+| [network_config](variables.tf#L213) | Network configuration for the instance. Only one between private_network and psc_config can be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L256) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L261) | Region of the primary instance. | <code>string</code> | ✓ |  |
+| [tier](variables.tf#L313) | The machine type to use for the instances. | <code>string</code> | ✓ |  |
 | [activation_policy](variables.tf#L17) | This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS. | <code>string</code> |  | <code>&#34;ALWAYS&#34;</code> |
 | [availability_type](variables.tf#L28) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;ZONAL&#34;</code> |
 | [backup_configuration](variables.tf#L34) | Backup settings for primary instance. Set to null to leave existing GCP backup settings unmanaged. When set, all fields are managed by Terraform including disabling backups when enabled=false. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [collation](variables.tf#L54) | The name of server instance collation. | <code>string</code> |  | <code>null</code> |
 | [connector_enforcement](variables.tf#L60) | Specifies if connections must use Cloud SQL connectors. | <code>string</code> |  | <code>null</code> |
 | [context](variables.tf#L66) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_cache](variables.tf#L78) | Enable data cache. Only used for Enterprise MYSQL and PostgreSQL. | <code>bool</code> |  | <code>false</code> |
-| [databases](variables.tf#L90) | Databases to create once the primary instance is created. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [disk_autoresize_limit](variables.tf#L96) | The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. | <code>number</code> |  | <code>0</code> |
-| [disk_size](variables.tf#L102) | Disk size in GB. Set to null to enable autoresize. | <code>number</code> |  | <code>null</code> |
-| [disk_type](variables.tf#L108) | The type of data disk: `PD_SSD` or `PD_HDD`. | <code>string</code> |  | <code>&#34;PD_SSD&#34;</code> |
-| [edition](variables.tf#L114) | The edition of the instance, can be ENTERPRISE or ENTERPRISE_PLUS. | <code>string</code> |  | <code>&#34;ENTERPRISE&#34;</code> |
-| [encryption_key_name](variables.tf#L120) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
-| [flags](variables.tf#L126) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [gcp_deletion_protection](variables.tf#L132) | Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform). | <code>bool</code> |  | <code>true</code> |
-| [insights_config](variables.tf#L139) | Query Insights configuration. Defaults to null which disables Query Insights. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [labels](variables.tf#L150) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [maintenance_config](variables.tf#L156) | Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [managed_connection_pooling_config](variables.tf#L191) | Configuration for Managed Connection Pooling. NOTE: This feature is only available for PostgreSQL on Enterprise Plus edition instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [password_validation_policy](variables.tf#L225) | Password validation policy configuration for instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L239) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [replicas](variables.tf#L259) | Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE} for additional read replicas. Set to null to disable replica creation. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [root_password](variables.tf#L270) | Root password of the Cloud SQL instance, or flag to create a random password. Required for MS SQL Server. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ssl](variables.tf#L284) | Setting to enable SSL, set config and certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [terraform_deletion_protection](variables.tf#L299) | Prevent terraform from deleting instances. | <code>bool</code> |  | <code>true</code> |
-| [time_zone](variables.tf#L311) | The time_zone to be used by the database engine (supported only for SQL Server), in SQL Server timezone format. | <code>string</code> |  | <code>null</code> |
-| [users](variables.tf#L317) | Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything after the first `@` (if present) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_api_access](variables.tf#L328) | Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`. | <code>string</code> |  | <code>&#34;DISALLOW_DATA_API&#34;</code> |
+| [data_api_access](variables.tf#L78) | Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`. | <code>string</code> |  | <code>&#34;DISALLOW_DATA_API&#34;</code> |
+| [data_cache](variables.tf#L85) | Enable data cache. Only used for Enterprise MYSQL and PostgreSQL. | <code>bool</code> |  | <code>false</code> |
+| [databases](variables.tf#L97) | Databases to create once the primary instance is created. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [disk_autoresize_limit](variables.tf#L103) | The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. | <code>number</code> |  | <code>0</code> |
+| [disk_size](variables.tf#L109) | Disk size in GB. Set to null to enable autoresize. | <code>number</code> |  | <code>null</code> |
+| [disk_type](variables.tf#L115) | The type of data disk: `PD_SSD` or `PD_HDD`. | <code>string</code> |  | <code>&#34;PD_SSD&#34;</code> |
+| [edition](variables.tf#L121) | The edition of the instance, can be ENTERPRISE or ENTERPRISE_PLUS. | <code>string</code> |  | <code>&#34;ENTERPRISE&#34;</code> |
+| [encryption_key_name](variables.tf#L127) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
+| [flags](variables.tf#L133) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [gcp_deletion_protection](variables.tf#L139) | Set Google's deletion protection attribute which applies across all surfaces (UI, API, & Terraform). | <code>bool</code> |  | <code>true</code> |
+| [insights_config](variables.tf#L146) | Query Insights configuration. Defaults to null which disables Query Insights. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L157) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [maintenance_config](variables.tf#L163) | Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [managed_connection_pooling_config](variables.tf#L198) | Configuration for Managed Connection Pooling. NOTE: This feature is only available for PostgreSQL on Enterprise Plus edition instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [password_validation_policy](variables.tf#L232) | Password validation policy configuration for instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L246) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [replicas](variables.tf#L266) | Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE} for additional read replicas. Set to null to disable replica creation. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [root_password](variables.tf#L277) | Root password of the Cloud SQL instance, or flag to create a random password. Required for MS SQL Server. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ssl](variables.tf#L291) | Setting to enable SSL, set config and certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [terraform_deletion_protection](variables.tf#L306) | Prevent terraform from deleting instances. | <code>bool</code> |  | <code>true</code> |
+| [time_zone](variables.tf#L318) | The time_zone to be used by the database engine (supported only for SQL Server), in SQL Server timezone format. | <code>string</code> |  | <code>null</code> |
+| [users](variables.tf#L324) | Map of users to create in the primary instance (and replicated to other replicas). For MySQL, anything after the first `@` (if present) will be used as the user's host. Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'BUILT_IN', 'CLOUD_IAM_USER' or 'CLOUD_IAM_SERVICE_ACCOUNT'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
