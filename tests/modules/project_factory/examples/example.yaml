@@ -811,7 +811,6 @@ values:
     - group:team-a-admins@example.org
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.subscriber
-    topic: app-0-topic-a
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
   : bigquery_config: []
     cloud_storage_config: []
@@ -833,7 +832,6 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    topic: app-0-topic-b
   module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_topic.default:
     effective_labels:
       goog-terraform-provisioned: 'true'
