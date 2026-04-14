@@ -95,3 +95,20 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+      - id: remove-label
+        name: Remove automated-review label
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'automated-review'
+              });
+            } catch (error) {
+              console.log('Error removing label', error);
+            }
