@@ -80,6 +80,10 @@ variable "data_api_access" {
   type        = string
   default     = "DISALLOW_DATA_API"
   nullable    = false
+  validation {
+    condition     = contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
+    error_message = "The data_api_access must be one of 'ALLOW_DATA_API' or 'DISALLOW_DATA_API'."
+  }
 }
 
 variable "data_cache" {
