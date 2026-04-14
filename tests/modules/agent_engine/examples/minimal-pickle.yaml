@@ -79,7 +79,6 @@ values:
     name: dependencies.tar.gz
     retention: []
     source: assets/src/dependencies.tar.gz
-    source_md5hash: 49a4c43e6bef605c2fa6ddabac48ba6a
     temporary_hold: null
     timeouts: null
   module.agent_engine.google_storage_bucket_object.pickle[0]:
@@ -98,7 +97,6 @@ values:
     name: pickle.pkl
     retention: []
     source: assets/src/pickle.pkl
-    source_md5hash: 493cf9bf3e59e39913e61916549f95a5
     temporary_hold: null
     timeouts: null
   module.agent_engine.google_storage_bucket_object.requirements[0]:
@@ -117,7 +115,6 @@ values:
     name: requirements.txt
     retention: []
     source: assets/src/requirements.txt
-    source_md5hash: 0acf2b14e855722af60e03e8fa8b04ff
     temporary_hold: null
     timeouts: null
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:

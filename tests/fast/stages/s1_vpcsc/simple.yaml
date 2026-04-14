@@ -47,7 +47,6 @@ values:
     name: versions/1-vpcsc-version.txt
     retention: []
     source: fast_version.txt
-    source_md5hash: f20ea48e4666fcbce129cff9fa658d16
     temporary_hold: null
     timeouts: null
   local_file.tfvars["1"]:
