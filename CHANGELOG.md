@@ -3,9 +3,31 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-04-02 13:15:40+00:00 to: None since: v54.2.0 -->
+## [Unreleased] <!-- from: 2026-04-09 12:37:26+00:00 to: None since: v54.3.0 -->
 
-## [54.2.0] - 2026-04-09
+## [54.4.0] - 2026-04-14
+
+### BREAKING CHANGES
+
+- `fast/stages/0-org-setup`: Workforce Identity Federation configuration syntax have changed. [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)]
+- `modules/organization`: Workforce Identity Federation configuration syntax have changed. [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)]
+- `modules/compute-vm`: Disk attachment ordering is now evaluated globally across *both* zonal and regional disks, existing deployments mixing zonal and regional disks might see a planned shift in attachment order, which can be easily mitigated by applying the new `position` attribute to maintain the previous sequence. [[#3848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3848)]
+
+### FAST
+
+- [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)] Add support for creating multiple workforce identity pools ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-04-14 06:55:19+00:00 -->
+- [[#3832](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3832)] use ephemeral google_client_config in secops provider ([davidspielmann](https://github.com/davidspielmann)) <!-- 2026-04-10 06:34:52+00:00 -->
+
+### MODULES
+
+- [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)] Add support for creating multiple workforce identity pools ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-04-14 06:55:19+00:00 -->
+- [[#3864](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3864)] fix: mark VPN module secret outputs as sensitive ([davidspielmann](https://github.com/davidspielmann)) <!-- 2026-04-13 16:05:06+00:00 -->
+- [[#3862](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3862)] [pubsub] updating .name to .id to fix IAM replacement ([wiktorn](https://github.com/wiktorn)) <!-- 2026-04-13 12:47:38+00:00 -->
+- [[#3856](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3856)] feat(alloydb): add support for advanced query insights (observability_config) ([SamuPert](https://github.com/SamuPert)) <!-- 2026-04-11 11:57:38+00:00 -->
+- [[#3849](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3849)] fix(bigquery-dataset): refresh_interval_ms should be a number ([joshmyers](https://github.com/joshmyers)) <!-- 2026-04-10 06:11:13+00:00 -->
+- [[#3848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3848)] Add position attribute to compute-vm module attached disks to control ordering ([ludoo](https://github.com/ludoo)) <!-- 2026-04-09 19:34:16+00:00 -->
+
+## [54.3.0] - 2026-04-09
 
 ### BREAKING CHANGES
 
@@ -2447,7 +2469,9 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.3.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.4.0...HEAD
+[54.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.4.0...v54.3.0
+[54.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.3.0...v54.2.0
 [54.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...v54.1.0
 [54.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...v54.0.0
 [54.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...v53.1.0
