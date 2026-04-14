@@ -15,7 +15,7 @@
 name: "Automated PR Review"
 # yamllint disable-line rule:truthy
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - synchronize
@@ -60,12 +60,12 @@ jobs:
       - id: generate-diff
         name: Generate PR Diff
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          # Fetch the target branch to ensure we have the base commit to compare against
-          git fetch origin "$BASE_REF":"$BASE_REF"
+          # Fetch the pull request head
+          git fetch origin pull/$PR_NUMBER/head
 
           # Generate the diff between the PR base and the PR head
           git diff "$BASE_SHA"..."$HEAD_SHA" > pr.diff
