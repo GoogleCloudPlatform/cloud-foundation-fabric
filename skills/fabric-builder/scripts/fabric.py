@@ -67,15 +67,15 @@ def cache_set(url, data):
     (CACHE_DIR / key).write_text(json.dumps({"ts": time.time(), "data": data}))
     logging.info(f"Cached data for {url} (key: {key})")
   except Exception as e:
-    print(f"Warning: could not write to cache: {e}", file=sys.stderr)
+    logging.warning(f"Could not write to cache: {e}")
 
 
 def cache_clear():
   if CACHE_DIR.is_dir():
     shutil.rmtree(CACHE_DIR)
-    print("Cache cleared")
+    logging.info("Cache cleared")
   else:
-    print("No cache to clear")
+    logging.info("No cache to clear")
 
 
 def fetch(url, is_json=False, headers=None):
@@ -109,7 +109,7 @@ def fetch_url(url):
     return fetch(url)
   except urllib.error.HTTPError as e:
     if e.code == 404:
-      print(f"File not found: {url}", file=sys.stderr)
+      logging.warning(f"File not found: {url}")
       return None
     sys.exit(f"HTTP Error ({e.code}) fetching {url}")
   except Exception as e:
@@ -131,27 +131,49 @@ def latest_release():
     print(r.get('tag_name'))
 
 
-def fetch_module(module, readme, variables, outputs):
+def fetch_module(module, fetch_type):
   entries = api_get(f"contents/modules/{module}")
   if not entries:
-    print(f"Module '{module}' not found or empty.", file=sys.stderr)
+    logging.error(f"Module '{module}' not found or empty.")
     return
 
   files = [e["name"] for e in entries if e["type"] == "file"]
 
-  want = []
-  if readme:
-    want += [f for f in files if f == "README.md"]
-  if variables:
-    want += [
-        f for f in files if f.startswith("variables") and f.endswith(".tf")
+  if fetch_type == "readme":
+    want = [f for f in files if f == "README.md"]
+  elif fetch_type == "variables":
+    want = [f for f in files if f.startswith("variables") and f.endswith(".tf")]
+  elif fetch_type == "outputs":
+    want = [f for f in files if f.startswith("output") and f.endswith(".tf")]
+  elif fetch_type == "schemas":
+    # Check if schemas directory exists
+    has_schemas = any(
+        e["name"] == "schemas" and e["type"] == "dir" for e in entries)
+    if not has_schemas:
+      logging.warning(f"No schemas directory found in module '{module}'.")
+      return
+
+    schema_entries = api_get(f"contents/modules/{module}/schemas")
+    if not schema_entries:
+      logging.error(f"Could not list schemas for module '{module}'.")
+      return
+
+    schema_files = [
+        e["name"]
+        for e in schema_entries
+        if e["type"] == "file" and e["name"].endswith(".schema.json")
     ]
-  if outputs:
-    want += [f for f in files if f.startswith("output") and f.endswith(".tf")]
+    if not schema_files:
+      logging.warning(f"No schema files found in module '{module}/schemas'.")
+      return
+
+    want = [f"schemas/{f}" for f in schema_files]
+  else:
+    want = []
 
   if not want:
-    print("Nothing selected, use --readme/--variables/--outputs",
-          file=sys.stderr)
+    logging.warning(
+        f"No files found for type '{fetch_type}' in module '{module}'.")
     return
 
   for f in want:
@@ -184,17 +206,19 @@ def main():
                  help="enable verbose logging")
 
   fm = sp.add_parser("fetch", help="fetch module files to stdout")
-  fm.add_argument("module", help="module name (e.g. alloydb)")
-  fm.add_argument(
-      "--readme",
-      action="store_true",
-      default=True,
-      help="fetch README (default)",
-  )
-  fm.add_argument("--no-readme", action="store_false", dest="readme")
-  fm.add_argument("--variables", action="store_true",
-                  help="fetch variables*.tf")
-  fm.add_argument("--outputs", action="store_true", help="fetch output*.tf")
+  fsp = fm.add_subparsers(dest="fetch_cmd", required=True)
+
+  f_readme = fsp.add_parser("readme", help="fetch README.md")
+  f_readme.add_argument("module", help="module name")
+
+  f_vars = fsp.add_parser("variables", help="fetch variables*.tf")
+  f_vars.add_argument("module", help="module name")
+
+  f_outputs = fsp.add_parser("outputs", help="fetch output*.tf")
+  f_outputs.add_argument("module", help="module name")
+
+  f_schemas = fsp.add_parser("schemas", help="fetch JSON schemas")
+  f_schemas.add_argument("module", help="module name")
 
   args = p.parse_args()
 
@@ -213,7 +237,7 @@ def main():
   elif args.cmd == "release":
     latest_release()
   elif args.cmd == "fetch":
-    fetch_module(args.module, args.readme, args.variables, args.outputs)
+    fetch_module(args.module, args.fetch_cmd)
   else:
     p.print_help()
 
