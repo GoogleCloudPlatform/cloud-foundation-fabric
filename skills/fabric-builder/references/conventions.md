@@ -7,7 +7,7 @@ When generating Terraform code that consumes Cloud Foundation Fabric modules, yo
 - **Flat Structure:** Avoid creating wrapper modules or nested module calls (modules calling other modules). Consume CFF modules directly in your root module.
 
 ## 2. Naming Conventions
-- **Use `prefix`:** For modules that support it (e.g., `project`, `gcs`), using a `prefix` variable is recommended but not mandatory. Suggest using random suffixes for uniqueness in resource names unless the user explicitly requests specific names.
+- **Use `prefix`:** For modules that support it (e.g., `project`, `gcs`), using a `prefix` variable is recommended but not mandatory.
 - **Deterministic Naming:** Prefer using structured, deterministic tokens rather than random strings.
 
 ## 3. Dependency Management
