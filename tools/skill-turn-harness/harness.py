@@ -435,18 +435,22 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
 
 def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
                            skill_src: str = None, gemini_cmd: str = 'gemini -y',
-                           keep_workspace: bool = False):
+                           keep_workspace: bool = False,
+                           cli_agent_model: str = None,
+                           cli_evaluator_model: str = None):
   '''Executes the test playbook and evaluates the agent's responses.
 
-    Args:
-      playbook_path: The file path to the YAML playbook.
-      log_dir: The directory where logs and failed JSON dumps should be written.
-      skill_src: Optional path to a local unpacked skill to link before testing.
-      gemini_cmd: Command and arguments to invoke the CLI.
-      keep_workspace: Preserve the temporary workspace directory.
+  Args:
+    playbook_path: The file path to the YAML playbook.
+    log_dir: The directory where logs and failed JSON dumps should be written.
+    skill_src: Optional path to a local unpacked skill to link before testing.
+    gemini_cmd: Command and arguments to invoke the CLI.
+    keep_workspace: Preserve the temporary workspace directory.
+    cli_agent_model: Override for the agent model.
+    cli_evaluator_model: Override for the evaluator model.
 
-    Returns:
-      True if the playbook passes completely, False if any step fails.
+  Returns:
+    True if the playbook passes completely, False if any step fails.
   '''
   os.makedirs(log_dir, exist_ok=True)
   with open(playbook_path, 'r') as f:
@@ -455,7 +459,15 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   validate_playbook(playbook)
 
   playbook_timeout = playbook.get('timeout', 60)
+
+  # Determine models (CLI override > Playbook > Default)
+  agent_model = cli_agent_model or playbook.get('agent_model')
+  evaluator_model = cli_evaluator_model or playbook.get('evaluator_model',
+                                                        'gemini-2.5-flash')
+
   gemini_cmd_list = gemini_cmd.split()
+  if agent_model:
+    gemini_cmd_list.extend(['--model', agent_model])
 
   playbook_name = playbook.get('name', 'Unknown Playbook')
   playbook_steps = playbook.get('steps', [])
@@ -524,7 +536,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
             Evaluate if the agent fulfilled the objective.
             '''
       eval_response = evaluator_client.models.generate_content(
-          model='gemini-2.5-flash',
+          model=evaluator_model,
           contents=eval_prompt,
           config=types.GenerateContentConfig(
               response_mime_type='application/json',
@@ -666,7 +678,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       """
 
       eval_response = evaluator_client.models.generate_content(
-          model='gemini-2.5-flash',
+          model=evaluator_model,
           contents=eval_prompt,
           config=types.GenerateContentConfig(
               response_mime_type='application/json',
@@ -770,7 +782,21 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     is_flag=True,
     help='Preserve the temporary workspace directory after execution.',
 )
-def main(playbook, log_dir, skill_src, env_file, gemini_cmd, keep_workspace):
+@click.option(
+    '--agent-model',
+    type=str,
+    default=None,
+    help='Override the model the Gemini CLI uses (e.g., gemini-2.5-pro).',
+)
+@click.option(
+    '--evaluator-model',
+    type=str,
+    default=None,
+    help=
+    'Override the model the test harness uses to grade (e.g., gemini-2.5-flash).',
+)
+def main(playbook, log_dir, skill_src, env_file, gemini_cmd, keep_workspace,
+         agent_model, evaluator_model):
   '''Hybrid Python/CLI Test Harness.
 
   Executes a YAML playbook against the Gemini CLI and evaluates the
@@ -780,7 +806,7 @@ def main(playbook, log_dir, skill_src, env_file, gemini_cmd, keep_workspace):
     load_env_file(env_file)
 
   run_hybrid_tuning_loop(playbook, log_dir, skill_src, gemini_cmd,
-                         keep_workspace)
+                         keep_workspace, agent_model, evaluator_model)
 
 
 if __name__ == '__main__':
