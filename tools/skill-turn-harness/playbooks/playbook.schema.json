@@ -8,14 +8,14 @@
     },
     "env": {
       "type": "array",
-      "description": "A list of environment variable names required by this playbook. These will be substituted in the steps.",
+      "description": "A list of environment variable names required by this playbook. These will be substituted in the steps and persona context.",
       "items": {
         "type": "string"
       }
     },
     "steps": {
       "type": "array",
-      "description": "The sequence of interactions between the user and the agent.",
+      "description": "The deterministic sequence of interactions between the user and the agent.",
       "items": {
         "type": "object",
         "properties": {
@@ -34,11 +34,76 @@
         ],
         "additionalProperties": false
       }
+    },
+    "persona": {
+      "type": "object",
+      "description": "Configuration for the autonomous LLM-simulated user.",
+      "properties": {
+        "context": {
+          "type": "string",
+          "description": "Freeform instructions and knowledge base for the simulated user. Variables are interpolated."
+        },
+        "max_turns": {
+          "type": "integer",
+          "description": "The maximum number of conversation turns allowed in autonomous mode before forcing a failure.",
+          "default": 10,
+          "minimum": 1
+        },
+        "success_criteria": {
+          "type": "object",
+          "description": "The conditions that must be met for the autonomous flow to be considered complete and successful.",
+          "properties": {
+            "llm_checks": {
+              "type": "array",
+              "description": "Semantic checks evaluated by the LLM (e.g., 'The agent printed a final configuration summary').",
+              "items": {
+                "type": "string"
+              }
+            },
+            "flow_contains": {
+              "type": "array",
+              "description": "Literal strings that must appear somewhere in the combined CLI stdout.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "files_exist": {
+              "type": "array",
+              "description": "A list of file paths (relative to the workspace) that must exist.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "files_contain": {
+              "type": "object",
+              "description": "A mapping of file paths to strings that must be found within them.",
+              "patternProperties": {
+                ".*": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context",
+        "success_criteria"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
-    "name",
-    "steps"
+    "name"
+  ],
+  "anyOf": [
+    {
+      "required": ["steps"]
+    },
+    {
+      "required": ["persona"]
+    }
   ],
   "additionalProperties": false
 }
