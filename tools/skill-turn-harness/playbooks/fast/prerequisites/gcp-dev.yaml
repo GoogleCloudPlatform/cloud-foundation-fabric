@@ -1,5 +1,8 @@
-# yaml-language-server: $schema=playbook.schema.json
-
+# yaml-language-server: $schema=../../playbook.schema.json
+env:
+  - BILLING_KEYWORD
+  - GROUP
+  - ORG_KEYWORD
 name: "FAST 0-org-setup Prereqs - Standard GCP Developer Flow"
 steps:
   - user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
@@ -20,14 +23,20 @@ steps:
   - user_input: "Approach A, please."
     expected_outcome: "The agent should explain that the group must contain the current authenticated identity, ask for the group email address, and explicitly ask the user to confirm that their current identity is already a member of this group."
 
-  - user_input: "The group is foo-owners@example.com, and yes, I confirm I am a member."
-    expected_outcome: "The agent should acknowledge the group and ask the user for their Organization ID and Billing Account ID, mentioning that they can type 'list' to fetch them automatically."
+  - user_input: "The group is ${GROUP}, and yes, I confirm I am a member."
+    expected_outcome: "The agent should acknowledge the group and ask the user for their Organization ID, mentioning that they can type 'list' or a keyword to fetch it automatically."
 
-  - user_input: "list"
-    expected_outcome: "The agent should run `gcloud organizations list` and `gcloud beta billing accounts list`, present the sorted results as numbered lists, and ask the user to enter the numbers corresponding to their selections."
+  - user_input: "${ORG_KEYWORD}"
+    expected_outcome: "The agent should run `gcloud organizations list` filtered by the keyword, present the sorted results as a numbered list, and ask the user to enter the number corresponding to their selection."
 
-  - user_input: "1 for Org, 1 for Billing"
-    expected_outcome: "The agent should acknowledge the selections and ask the user to determine the Admin Principal's access level to the provided Billing Account ID (Scenario 1, 2, or 3)."
+  - user_input: "1"
+    expected_outcome: "The agent should acknowledge the Organization selection and ask the user for their Billing Account ID, mentioning that they can type 'list' or a keyword to fetch it automatically."
+
+  - user_input: "${BILLING_KEYWORD}"
+    expected_outcome: "The agent should run `gcloud beta billing accounts list` filtered by the keyword, present the sorted results as a numbered list, and ask the user to enter the number corresponding to their selection."
+
+  - user_input: "1"
+    expected_outcome: "The agent should acknowledge the Billing Account selection and ask the user to determine the Admin Principal's access level to the provided Billing Account ID (Scenario 1, 2, or 3)."
 
   - user_input: "Scenario 2 (Billing User)"
     expected_outcome: "The agent should note that `roles/billing.admin` will not be assigned, explain that IaC service accounts will not be operative until billing permissions are assigned outside of FAST, and ask if the user already has a suitable project for the bootstrap project."
