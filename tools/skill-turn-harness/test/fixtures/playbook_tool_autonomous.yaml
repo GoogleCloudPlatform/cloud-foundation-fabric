@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../playbooks/playbook.schema.json
+name: "Tool Call Test Autonomous"
+timeout: 30
+persona:
+  initial_user_input: "Hi, please activate the tool-test-skill and create the file as instructed."
+  context: |
+    You are a user asking the agent to create a file.
+    Wait for the agent to confirm the file has been created.
+  max_turns: 3
+  success_criteria:
+    llm_checks:
+      - "The agent confirmed the file was created."
+    tool_calls_contain:
+      write_file:
+        - "output.txt"
+        - "Hello World"
+    files_exist:
+      - "output.txt"

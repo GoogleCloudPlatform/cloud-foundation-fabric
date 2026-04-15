@@ -16,6 +16,8 @@ import shutil
 import click
 import re
 import jsonschema
+import glob
+import json
 from datetime import datetime
 from pydantic import BaseModel
 from dataclasses import dataclass, asdict
@@ -49,17 +51,21 @@ def validate_playbook(playbook: dict):
   Args:
     playbook: The loaded playbook dictionary.
   '''
-  schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'playbooks', 'playbook.schema.json')
+  schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             'playbooks', 'playbook.schema.json')
   if os.path.exists(schema_path):
     with open(schema_path, 'r') as f:
       schema = json.load(f)
     try:
       jsonschema.validate(instance=playbook, schema=schema)
     except jsonschema.exceptions.ValidationError as e:
-      print(f"❌ [VALIDATION ERROR] Playbook is invalid: {e.message}", file=sys.stderr)
+      print(f"❌ [VALIDATION ERROR] Playbook is invalid: {e.message}",
+            file=sys.stderr)
       sys.exit(1)
   else:
-    print(f"⚠️ [WARNING] Schema file not found at {schema_path}. Skipping validation.")
+    print(
+        f"⚠️ [WARNING] Schema file not found at {schema_path}. Skipping validation."
+    )
 
 
 @dataclass
@@ -98,8 +104,8 @@ if 'GEMINI_API_KEY' not in os.environ:
 evaluator_client = genai.Client()
 
 
-def invoke_skill_cli(user_input: str, is_first_step: bool,
-                     workspace_dir: str, gemini_cmd_list: list, timeout: int) -> str:
+def invoke_skill_cli(user_input: str, is_first_step: bool, workspace_dir: str,
+                     gemini_cmd_list: list, timeout: int) -> str:
   '''Invokes the Gemini CLI using a subprocess.
 
     Args:
@@ -118,8 +124,8 @@ def invoke_skill_cli(user_input: str, is_first_step: bool,
   command.extend(['-p', user_input])
   try:
     # Run inside the isolated workspace_dir so it maps to a unique project ID in projects.json
-    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout,
-                            cwd=workspace_dir)
+    result = subprocess.run(command, capture_output=True, text=True,
+                            timeout=timeout, cwd=workspace_dir)
     if result.returncode != 0:
       print(f'⚠️ [CLI ERROR]: {result.stderr}', file=sys.stderr)
       return f'SYSTEM_ERROR: {result.stderr}'
@@ -205,8 +211,7 @@ def dump_failed_log(log_dir: str, log_prefix: str, interaction_log: list):
       log_prefix: The prefix string generated for this playbook run.
       interaction_log: The list of step data dictionaries recorded so far.
     '''
-  failed_json_path = os.path.join(
-      log_dir, f'{log_prefix}_failed.json')
+  failed_json_path = os.path.join(log_dir, f'{log_prefix}_failed.json')
   with open(failed_json_path, 'w') as f:
     json.dump(interaction_log, f, indent=2)
 
@@ -264,7 +269,139 @@ def parse_and_validate_env(playbook: dict) -> Dict[str, str]:
   return env_context
 
 
-def perform_deterministic_checks(success_criteria: dict, workspace_dir: str, full_stdout: str) -> bool:
+def check_flow_contains(flow_contains: list, full_stdout: str) -> bool:
+  '''Checks if literal strings are present in the combined stdout.
+
+    Args:
+      flow_contains: A list of literal strings to search for.
+      full_stdout: The combined stdout of all CLI invocations.
+
+    Returns:
+      True if all strings are found, False otherwise.
+    '''
+  passed = True
+  for literal in flow_contains:
+    if literal not in full_stdout:
+      print(
+          f"❌ [CHECK FAILED]: Expected literal '{literal}' not found in output flow."
+      )
+      passed = False
+  return passed
+
+
+def check_files_exist(files_exist: list, workspace_dir: str) -> bool:
+  '''Checks if specified files exist within the workspace.
+
+    Args:
+      files_exist: A list of relative file paths.
+      workspace_dir: The temporary workspace directory path.
+
+    Returns:
+      True if all files exist, False otherwise.
+    '''
+  passed = True
+  for file_path in files_exist:
+    full_path = os.path.join(workspace_dir, file_path)
+    if not os.path.exists(full_path):
+      print(f"❌ [CHECK FAILED]: Expected file '{file_path}' does not exist.")
+      passed = False
+  return passed
+
+
+def check_files_contain(files_contain: dict, workspace_dir: str) -> bool:
+  '''Checks if specified files contain expected literal strings.
+
+    Args:
+      files_contain: A dictionary mapping relative file paths to expected strings.
+      workspace_dir: The temporary workspace directory path.
+
+    Returns:
+      True if all files contain their expected strings, False otherwise.
+    '''
+  passed = True
+  for file_path, expected_content in files_contain.items():
+    full_path = os.path.join(workspace_dir, file_path)
+    if not os.path.exists(full_path):
+      print(
+          f"❌ [CHECK FAILED]: Expected file '{file_path}' does not exist for content check."
+      )
+      passed = False
+    else:
+      with open(full_path, 'r') as f:
+        content = f.read()
+        if expected_content not in content:
+          print(
+              f"❌ [CHECK FAILED]: Expected content '{expected_content}' not found in '{file_path}'."
+          )
+          passed = False
+  return passed
+
+
+def check_tool_calls_contain(tool_calls_criteria: dict,
+                             workspace_dir: str) -> bool:
+  '''Checks if the agent's tool calls contain expected literal strings in their arguments.
+
+    Args:
+      tool_calls_criteria: A dictionary mapping tool names to lists of expected strings.
+      workspace_dir: The temporary workspace directory path.
+
+    Returns:
+      True if all tool calls contain their expected strings, False otherwise.
+    '''
+  if not tool_calls_criteria:
+    return True
+
+  passed = True
+  workspace_name = os.path.basename(workspace_dir)
+  slugified_name = re.sub(r'[^a-zA-Z0-9]+', '-',
+                          workspace_name).strip('-').lower()
+
+  session_files = glob.glob(
+      os.path.expanduser(
+          f'~/.gemini/tmp/{slugified_name}/chats/session-*.json'))
+  if not session_files:
+    print(
+        "❌ [CHECK FAILED]: Expected session JSON file not found in workspace for tool validation."
+    )
+    return False
+
+  try:
+    with open(session_files[0], 'r') as f:
+      session_data = json.load(f)
+
+    extracted_calls: Dict[str, str] = {}
+    for m in session_data.get('messages', []):
+      for tc in m.get('toolCalls', []):
+        name = tc.get('name')
+        args_str = json.dumps(tc.get('args', {}))
+        if name not in extracted_calls:
+          extracted_calls[name] = ""
+        extracted_calls[name] += args_str + "\n"
+
+    for tool_name, expected_strings in tool_calls_criteria.items():
+      if tool_name not in extracted_calls:
+        print(
+            f"❌ [CHECK FAILED]: Expected tool '{tool_name}' was never called.")
+        passed = False
+        continue
+
+      tool_args_str = extracted_calls[tool_name]
+      for expected_str in expected_strings:
+        if expected_str not in tool_args_str:
+          print(
+              f"❌ [CHECK FAILED]: Expected string '{expected_str}' not found in arguments of tool '{tool_name}'."
+          )
+          passed = False
+
+  except Exception as e:
+    print(f"❌ [CHECK FAILED]: Failed to parse session JSON: {e}")
+    passed = False
+
+  return passed
+
+
+def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
+                                 full_stdout: str) -> bool:
   '''Evaluates the deterministic checks defined in the persona success_criteria.
 
   Args:
@@ -277,32 +414,21 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str, ful
   '''
   passed = True
 
-  # 1. flow_contains
-  for literal in success_criteria.get('flow_contains', []):
-    if literal not in full_stdout:
-      print(f"❌ [CHECK FAILED]: Expected literal '{literal}' not found in output flow.")
-      passed = False
+  if not check_flow_contains(success_criteria.get('flow_contains', []),
+                             full_stdout):
+    passed = False
 
-  # 2. files_exist
-  for file_path in success_criteria.get('files_exist', []):
-    full_path = os.path.join(workspace_dir, file_path)
-    if not os.path.exists(full_path):
-      print(f"❌ [CHECK FAILED]: Expected file '{file_path}' does not exist.")
-      passed = False
+  if not check_tool_calls_contain(
+      success_criteria.get('tool_calls_contain', {}), workspace_dir):
+    passed = False
 
-  # 3. files_contain
-  files_contain = success_criteria.get('files_contain', {})
-  for file_path, expected_content in files_contain.items():
-    full_path = os.path.join(workspace_dir, file_path)
-    if not os.path.exists(full_path):
-      print(f"❌ [CHECK FAILED]: Expected file '{file_path}' does not exist for content check.")
-      passed = False
-    else:
-      with open(full_path, 'r') as f:
-        content = f.read()
-        if expected_content not in content:
-          print(f"❌ [CHECK FAILED]: Expected content '{expected_content}' not found in '{file_path}'.")
-          passed = False
+  if not check_files_exist(success_criteria.get('files_exist', []),
+                           workspace_dir):
+    passed = False
+
+  if not check_files_contain(success_criteria.get('files_contain', {}),
+                             workspace_dir):
+    passed = False
 
   return passed
 
@@ -345,6 +471,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
                    check=True, capture_output=True)
 
   workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
+  open(os.path.join(workspace_dir, '.project_root'), 'w').close()
   print(f'--- Tuning: {playbook_name} | Workspace: {workspace_dir} ---')
   interaction_log = []
   log_prefix = generate_log_prefix(playbook_path)
@@ -362,18 +489,26 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       raw_user_input = step_dict['user_input']
       raw_expected_outcome = step_dict['expected_outcome']
 
-      subbed_user_input = string.Template(raw_user_input).safe_substitute(env_context)
-      subbed_expected_outcome = string.Template(raw_expected_outcome).safe_substitute(env_context)
+      subbed_user_input = string.Template(raw_user_input).safe_substitute(
+          env_context)
+      subbed_expected_outcome = string.Template(
+          raw_expected_outcome).safe_substitute(env_context)
 
       step = StepData(step_index=step_index, user_input=subbed_user_input,
                       expected_outcome=subbed_expected_outcome)
-      
+
       print(f'\n[Step {step.step_index + 1}] Input: {step.user_input}')
-      step.skill_response = invoke_skill_cli(step.user_input, len(conversation_history) == 0, workspace_dir, gemini_cmd_list, playbook_timeout)
+      step.skill_response = invoke_skill_cli(step.user_input,
+                                             len(conversation_history) == 0,
+                                             workspace_dir, gemini_cmd_list,
+                                             playbook_timeout)
       full_stdout += step.skill_response + "\n"
       print(f'[Step {step.step_index + 1}] Output: {step.skill_response}')
-      
-      conversation_history.append({"user": step.user_input, "agent": step.skill_response})
+
+      conversation_history.append({
+          "user": step.user_input,
+          "agent": step.skill_response
+      })
 
       if step.skill_response.startswith('SYSTEM_ERROR'):
         print(f'❌ [FAILURE Step {step.step_index + 1}]: System Error.')
@@ -403,37 +538,61 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
       if not step.parsed_eval['passed']:
         if persona:
-          print(f'⚠️ [WARNING Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}')
+          print(
+              f'⚠️ [WARNING Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}'
+          )
           print('🔄 Scripted step failed. Falling back to autonomous persona...')
           fallback_to_persona = True
           break
         else:
-          print(f'❌ [FAILURE Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}')
+          print(
+              f'❌ [FAILURE Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}'
+          )
           dump_failed_log(log_dir, log_prefix, interaction_log)
           return False
       else:
-        print(f'✅ [PASS Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}')
-      
+        print(
+            f'✅ [PASS Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}'
+        )
+
       step_index += 1
 
     # If steps succeeded completely and no persona exists, we're done.
     if not persona and not fallback_to_persona:
-      print(f'\n✅ [SUCCESS] Scripted Playbook \'{playbook_name}\' completed successfully.')
+      print(
+          f'\n✅ [SUCCESS] Scripted Playbook \'{playbook_name}\' completed successfully.'
+      )
       print(f'📄 Markdown log saved to: {md_log_path}')
       return True
 
     # --- PHASE 2: AUTONOMOUS PERSONA ---
     print("\n--- Entering Autonomous Persona Mode ---")
-    persona_context = string.Template(persona['context']).safe_substitute(env_context)
-    
+    persona_context = string.Template(
+        persona['context']).safe_substitute(env_context)
+
     # Interpolate success criteria string values
     success_criteria = persona.get('success_criteria', {})
     interpolated_success_criteria = {
-        'llm_checks': [string.Template(c).safe_substitute(env_context) for c in success_criteria.get('llm_checks', [])],
-        'flow_contains': [string.Template(c).safe_substitute(env_context) for c in success_criteria.get('flow_contains', [])],
-        'files_exist': [string.Template(c).safe_substitute(env_context) for c in success_criteria.get('files_exist', [])],
+        'llm_checks': [
+            string.Template(c).safe_substitute(env_context)
+            for c in success_criteria.get('llm_checks', [])
+        ],
+        'flow_contains': [
+            string.Template(c).safe_substitute(env_context)
+            for c in success_criteria.get('flow_contains', [])
+        ],
+        'files_exist': [
+            string.Template(c).safe_substitute(env_context)
+            for c in success_criteria.get('files_exist', [])
+        ],
+        'tool_calls_contain': {
+            k: [
+                string.Template(item).safe_substitute(env_context) for item in v
+            ] for k, v in success_criteria.get('tool_calls_contain', {}).items()
+        },
         'files_contain': {
-            string.Template(k).safe_substitute(env_context): string.Template(v).safe_substitute(env_context)
+            string.Template(k).safe_substitute(env_context):
+                string.Template(v).safe_substitute(env_context)
             for k, v in success_criteria.get('files_contain', {}).items()
         }
     }
@@ -442,16 +601,20 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     next_input = None
     if len(conversation_history) == 0:
       # Pure autonomous start
-      next_input = string.Template(persona['initial_user_input']).safe_substitute(env_context)
+      next_input = string.Template(
+          persona['initial_user_input']).safe_substitute(env_context)
 
     max_turns = persona.get('max_turns', 10)
-    
+
     for turn in range(max_turns):
       turn_display = turn + step_index + 1
 
       if next_input:
         print(f'\n[Autonomous Turn {turn_display}] Input: {next_input}')
-        agent_response = invoke_skill_cli(next_input, len(conversation_history) == 0, workspace_dir, gemini_cmd_list, playbook_timeout)
+        agent_response = invoke_skill_cli(next_input,
+                                          len(conversation_history) == 0,
+                                          workspace_dir, gemini_cmd_list,
+                                          playbook_timeout)
         full_stdout += agent_response + "\n"
         print(f'[Autonomous Turn {turn_display}] Output: {agent_response}')
 
@@ -460,16 +623,29 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
           dump_failed_log(log_dir, log_prefix, interaction_log)
           return False
 
-        conversation_history.append({"user": next_input, "agent": agent_response})
+        conversation_history.append({
+            "user": next_input,
+            "agent": agent_response
+        })
         # Log to markdown for autonomous turns (reusing StepData for structure)
-        step_log = StepData(step_index=turn_display-1, user_input=next_input, expected_outcome="Autonomous Persona Turn", skill_response=agent_response)
+        step_log = StepData(step_index=turn_display - 1, user_input=next_input,
+                            expected_outcome="Autonomous Persona Turn",
+                            skill_response=agent_response)
         interaction_log.append(asdict(step_log))
         with open(md_log_path, 'a') as md_file:
-            md_file.write(f'## Autonomous Turn {turn_display}\n\n**User:**\n\n{next_input}\n\n**Agent:**\n\n{agent_response}\n\n---\n\n')
+          md_file.write(
+              f'## Autonomous Turn {turn_display}\n\n**User:**\n\n{next_input}\n\n**Agent:**\n\n{agent_response}\n\n---\n\n'
+          )
 
       # Evaluate state and generate next input
-      llm_checks = "\n".join([f"- {check}" for check in interpolated_success_criteria.get('llm_checks', [])])
-      history_text = "\n".join([f"USER: {h['user']}\nAGENT: {h['agent']}\n" for h in conversation_history])
+      llm_checks = "\n".join([
+          f"- {check}"
+          for check in interpolated_success_criteria.get('llm_checks', [])
+      ])
+      history_text = "\n".join([
+          f"USER: {h['user']}\nAGENT: {h['agent']}\n"
+          for h in conversation_history
+      ])
 
       eval_prompt = f"""
       You are simulating a user interacting with an AI agent.
@@ -499,7 +675,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
           ),
       )
       parsed_eval = json.loads(eval_response.text)
-      
+
       if not parsed_eval['agent_followed_skill_rules']:
         print(f"❌ [AUTONOMOUS FAIL]: {parsed_eval['reasoning']}")
         dump_failed_log(log_dir, log_prefix, interaction_log)
@@ -508,12 +684,17 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       if parsed_eval['test_completed_successfully']:
         print(f"✅ [AUTONOMOUS SEMANTIC SUCCESS]: {parsed_eval['reasoning']}")
         print("🔍 Performing deterministic checks...")
-        
-        if perform_deterministic_checks(interpolated_success_criteria, workspace_dir, full_stdout):
+
+        if perform_deterministic_checks(interpolated_success_criteria,
+                                        workspace_dir, full_stdout):
           if fallback_to_persona:
-             print(f"\n✅ [PASS WITH WARNINGS] Playbook '{playbook_name}' completed via autonomous recovery.")
+            print(
+                f"\n✅ [PASS WITH WARNINGS] Playbook '{playbook_name}' completed via autonomous recovery."
+            )
           else:
-             print(f"\n✅ [SUCCESS] Autonomous Playbook '{playbook_name}' completed successfully.")
+            print(
+                f"\n✅ [SUCCESS] Autonomous Playbook '{playbook_name}' completed successfully."
+            )
           print(f'📄 Markdown log saved to: {md_log_path}')
           return True
         else:
@@ -523,7 +704,9 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
       next_input = parsed_eval['next_user_input']
 
-    print(f"❌ [AUTONOMOUS FAIL]: Reached max turns ({max_turns}) without completing the goal.")
+    print(
+        f"❌ [AUTONOMOUS FAIL]: Reached max turns ({max_turns}) without completing the goal."
+    )
     dump_failed_log(log_dir, log_prefix, interaction_log)
     return False
 
@@ -532,12 +715,24 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     dump_failed_log(log_dir, log_prefix, interaction_log)
     return False
   finally:
+    # Locate and copy the session json to the logs directory
+    workspace_name = os.path.basename(workspace_dir)
+    slugified_name = re.sub(r'[^a-zA-Z0-9]+', '-',
+                            workspace_name).strip('-').lower()
+    session_files = glob.glob(
+        os.path.expanduser(
+            f'~/.gemini/tmp/{slugified_name}/chats/session-*.json'))
+    if session_files:
+      session_log_path = os.path.join(log_dir, f'{log_prefix}_session.json')
+      shutil.copy2(session_files[0], session_log_path)
+      print(f'📄 Session JSON saved to: {session_log_path}')
+
     if not keep_workspace:
       # Cleanup the temporary workspace
       shutil.rmtree(workspace_dir)
     else:
       print(f'📁 Workspace preserved at: {workspace_dir}')
-      
+
     if skill_name:
       print(f'🧹 Unlinking local skill: {skill_name}')
       subprocess.run(['gemini', 'skills', 'uninstall', skill_name], check=False,
@@ -584,9 +779,9 @@ def main(playbook, log_dir, skill_src, env_file, gemini_cmd, keep_workspace):
   if env_file:
     load_env_file(env_file)
 
-  run_hybrid_tuning_loop(playbook, log_dir, skill_src, gemini_cmd, keep_workspace)
+  run_hybrid_tuning_loop(playbook, log_dir, skill_src, gemini_cmd,
+                         keep_workspace)
 
 
 if __name__ == '__main__':
   main()
-

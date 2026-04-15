@@ -92,6 +92,18 @@
                   "type": "string"
                 }
               }
+            },
+            "tool_calls_contain": {
+              "type": "object",
+              "description": "A mapping of tool names to a list of strings that must be found within their arguments.",
+              "patternProperties": {
+                ".*": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           },
           "additionalProperties": false

@@ -77,7 +77,8 @@ def test_markdown_logging(tmp_path):
 
 def test_dump_failed_log(tmp_path):
   interaction_log = [{'step': 1, 'error': 'test'}]
-  harness.dump_failed_log(str(tmp_path), 'test-playbook-prefix', interaction_log)
+  harness.dump_failed_log(str(tmp_path), 'test-playbook-prefix',
+                          interaction_log)
   failed_file = tmp_path / 'test-playbook-prefix_failed.json'
   assert failed_file.exists()
   data = json.loads(failed_file.read_text())
@@ -97,8 +98,8 @@ def test_invoke_skill_cli_success(mock_run):
   mock_run.return_value = mock_result
   response = harness.invoke_skill_cli('hello', is_first_step=True,
                                       workspace_dir='/tmp',
-                                      gemini_cmd_list=['gemini', '-y'],
-                                      timeout=60)
+                                      gemini_cmd_list=['gemini',
+                                                       '-y'], timeout=60)
   # Check command construction
   mock_run.assert_called_once()
   args = mock_run.call_args[0][0]
@@ -112,8 +113,8 @@ def test_invoke_skill_cli_timeout(mock_run):
   mock_run.side_effect = subprocess.TimeoutExpired(cmd='gemini', timeout=60)
   response = harness.invoke_skill_cli('hello', is_first_step=False,
                                       workspace_dir='/tmp',
-                                      gemini_cmd_list=['gemini', '-y'],
-                                      timeout=60)
+                                      gemini_cmd_list=['gemini',
+                                                       '-y'], timeout=60)
   assert response == 'SYSTEM_ERROR: Timeout'
 
 
@@ -167,7 +168,26 @@ def test_e2e_autonomous_tuning_loop(tmp_path):
   log_files = list(tmp_path.glob('*_log.md'))
   assert len(log_files) == 1
   content = log_files[0].read_text()
-  
+
   # Check that the autonomous turns were logged
   assert '## Autonomous Turn 1' in content
   assert 'dummy-secret-12345' in content
+
+
+@pytest.mark.e2e
+def test_e2e_tool_calls_contain(tmp_path):
+  '''
+  Runs an autonomous evaluation loop to verify tool_calls_contain deterministic checks.
+  '''
+  fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
+  skill_dir = os.path.join(fixtures_dir, 'tool-test-skill')
+  playbook_path = os.path.join(fixtures_dir, 'playbook_tool_autonomous.yaml')
+
+  result = harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
+                                          skill_src=skill_dir)
+
+  assert result is True
+  # Verify that the session JSON was saved
+  session_files = list(tmp_path.glob('*_session.json'))
+  assert len(session_files) == 1
+  assert session_files[0].exists()

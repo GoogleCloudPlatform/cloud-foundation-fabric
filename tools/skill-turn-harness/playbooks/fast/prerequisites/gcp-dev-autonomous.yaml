@@ -20,15 +20,16 @@ persona:
     You approve the IAM role assignments.
     You want to use the 'classic' dataset.
     Your base location is europe-west1, with no overrides.
-    Your local path for output files is ~/dev/tf-playground/skills-tests/fast/prerequisites/flow-0.
+    Your local path for output files is custom-fast-config.
     You do not have any additional static context values.
     Do not volunteer information unless explicitly asked. Answer only the question asked by the agent.
   max_turns: 30
   success_criteria:
     llm_checks:
       - "The agent completed the prerequisite phase and provided wrap-up instructions."
-    flow_contains:
-      - "gcloud organizations add-iam-policy-binding"
+    tool_calls_contain:
+      run_shell_command:
+        - "gcloud organizations add-iam-policy-binding"
     files_exist:
-      - "/home/ludomagno/dev/tf-playground/skills-tests/fast/prerequisites/flow-0/0-org-setup.auto.tfvars"
-      - "/home/ludomagno/dev/tf-playground/skills-tests/fast/prerequisites/flow-0/data/0-org-setup/defaults.yaml"
+      - "custom-fast-config/0-org-setup.auto.tfvars"
+      - "custom-fast-config/data/0-org-setup/defaults.yaml"
