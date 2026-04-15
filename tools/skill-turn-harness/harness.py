@@ -15,6 +15,7 @@ import os
 import shutil
 import click
 import re
+import jsonschema
 from datetime import datetime
 from pydantic import BaseModel
 from dataclasses import dataclass, asdict
@@ -40,6 +41,25 @@ def load_env_file(env_file_path: str):
       if '=' in line:
         key, value = line.split('=', 1)
         os.environ[key.strip()] = value.strip()
+
+
+def validate_playbook(playbook: dict):
+  '''Validates a playbook dictionary against the JSON schema.
+
+  Args:
+    playbook: The loaded playbook dictionary.
+  '''
+  schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'playbooks', 'playbook.schema.json')
+  if os.path.exists(schema_path):
+    with open(schema_path, 'r') as f:
+      schema = json.load(f)
+    try:
+      jsonschema.validate(instance=playbook, schema=schema)
+    except jsonschema.exceptions.ValidationError as e:
+      print(f"❌ [VALIDATION ERROR] Playbook is invalid: {e.message}", file=sys.stderr)
+      sys.exit(1)
+  else:
+    print(f"⚠️ [WARNING] Schema file not found at {schema_path}. Skipping validation.")
 
 
 @dataclass
@@ -79,25 +99,26 @@ evaluator_client = genai.Client()
 
 
 def invoke_skill_cli(user_input: str, is_first_step: bool,
-                     workspace_dir: str) -> str:
+                     workspace_dir: str, gemini_cmd_list: list, timeout: int) -> str:
   '''Invokes the Gemini CLI using a subprocess.
 
     Args:
       user_input: The simulated text input from the user.
       is_first_step: True if this is the first step in a playbook, False otherwise.
       workspace_dir: The isolated temporary directory to run the CLI within.
+      gemini_cmd_list: The base command list (e.g. ['gemini', '-y']).
+      timeout: The subprocess timeout in seconds.
 
     Returns:
       The stdout of the CLI response, or a SYSTEM_ERROR string on failure.
     '''
-  # Use -y to allow tool usage (like activate_skill) without prompt
-  command = ['gemini', '-y']
+  command = gemini_cmd_list.copy()
   if not is_first_step:
     command.extend(['--resume', 'latest'])
   command.extend(['-p', user_input])
   try:
     # Run inside the isolated workspace_dir so it maps to a unique project ID in projects.json
-    result = subprocess.run(command, capture_output=True, text=True, timeout=60,
+    result = subprocess.run(command, capture_output=True, text=True, timeout=timeout,
                             cwd=workspace_dir)
     if result.returncode != 0:
       print(f'⚠️ [CLI ERROR]: {result.stderr}', file=sys.stderr)
@@ -111,7 +132,7 @@ def invoke_skill_cli(user_input: str, is_first_step: bool,
     ]
     return '\n'.join(clean_lines).strip()
   except subprocess.TimeoutExpired:
-    print('⚠️ [CLI TIMEOUT]', file=sys.stderr)
+    print(f'⚠️ [CLI TIMEOUT] ({timeout}s)', file=sys.stderr)
     return 'SYSTEM_ERROR: Timeout'
 
 
@@ -287,13 +308,16 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str, ful
 
 
 def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
-                           skill_src: str = None):
+                           skill_src: str = None, gemini_cmd: str = 'gemini -y',
+                           keep_workspace: bool = False):
   '''Executes the test playbook and evaluates the agent's responses.
 
     Args:
       playbook_path: The file path to the YAML playbook.
       log_dir: The directory where logs and failed JSON dumps should be written.
       skill_src: Optional path to a local unpacked skill to link before testing.
+      gemini_cmd: Command and arguments to invoke the CLI.
+      keep_workspace: Preserve the temporary workspace directory.
 
     Returns:
       True if the playbook passes completely, False if any step fails.
@@ -301,6 +325,12 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   os.makedirs(log_dir, exist_ok=True)
   with open(playbook_path, 'r') as f:
     playbook = yaml.safe_load(f)
+
+  validate_playbook(playbook)
+
+  playbook_timeout = playbook.get('timeout', 60)
+  gemini_cmd_list = gemini_cmd.split()
+
   playbook_name = playbook.get('name', 'Unknown Playbook')
   playbook_steps = playbook.get('steps', [])
   persona = playbook.get('persona')
@@ -339,7 +369,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
                       expected_outcome=subbed_expected_outcome)
       
       print(f'\n[Step {step.step_index + 1}] Input: {step.user_input}')
-      step.skill_response = invoke_skill_cli(step.user_input, len(conversation_history) == 0, workspace_dir)
+      step.skill_response = invoke_skill_cli(step.user_input, len(conversation_history) == 0, workspace_dir, gemini_cmd_list, playbook_timeout)
       full_stdout += step.skill_response + "\n"
       print(f'[Step {step.step_index + 1}] Output: {step.skill_response}')
       
@@ -421,7 +451,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
       if next_input:
         print(f'\n[Autonomous Turn {turn_display}] Input: {next_input}')
-        agent_response = invoke_skill_cli(next_input, len(conversation_history) == 0, workspace_dir)
+        agent_response = invoke_skill_cli(next_input, len(conversation_history) == 0, workspace_dir, gemini_cmd_list, playbook_timeout)
         full_stdout += agent_response + "\n"
         print(f'[Autonomous Turn {turn_display}] Output: {agent_response}')
 
@@ -502,8 +532,12 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     dump_failed_log(log_dir, log_prefix, interaction_log)
     return False
   finally:
-    # Cleanup the temporary workspace
-    shutil.rmtree(workspace_dir)
+    if not keep_workspace:
+      # Cleanup the temporary workspace
+      shutil.rmtree(workspace_dir)
+    else:
+      print(f'📁 Workspace preserved at: {workspace_dir}')
+      
     if skill_name:
       print(f'🧹 Unlinking local skill: {skill_name}')
       subprocess.run(['gemini', 'skills', 'uninstall', skill_name], check=False,
@@ -530,7 +564,18 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     default=None,
     help='Path to a .env file containing secrets to substitute in the playbook.',
 )
-def main(playbook, log_dir, skill_src, env_file):
+@click.option(
+    '--gemini-cmd',
+    type=str,
+    default='gemini -y',
+    help='Command and initial arguments to invoke the CLI.',
+)
+@click.option(
+    '--keep-workspace',
+    is_flag=True,
+    help='Preserve the temporary workspace directory after execution.',
+)
+def main(playbook, log_dir, skill_src, env_file, gemini_cmd, keep_workspace):
   '''Hybrid Python/CLI Test Harness.
 
   Executes a YAML playbook against the Gemini CLI and evaluates the
@@ -539,8 +584,9 @@ def main(playbook, log_dir, skill_src, env_file):
   if env_file:
     load_env_file(env_file)
 
-  run_hybrid_tuning_loop(playbook, log_dir, skill_src)
+  run_hybrid_tuning_loop(playbook, log_dir, skill_src, gemini_cmd, keep_workspace)
 
 
 if __name__ == '__main__':
   main()
+

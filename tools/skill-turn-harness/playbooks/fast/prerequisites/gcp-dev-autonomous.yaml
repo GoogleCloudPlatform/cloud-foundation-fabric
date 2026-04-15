@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../playbook.schema.json
+name: "FAST 0-org-setup Prereqs - Standard GCP Developer Flow (Autonomous)"
+timeout: 300
+env:
+  - GROUP
+persona:
+  initial_user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
+  context: >
+    You are a GCP developer setting up FAST.
+    Your target environment is Standard GCP.
+    You prefer the agent to execute commands automatically.
+    You are already authenticated with Google Cloud and your current identity is correct.
+    You want to use a Group for the Admin Principal (Approach A).
+    The group email is ${GROUP}. You confirm you are a member of this group.
+    When asked for Organization ID, provide the keyword "fast-test" to search. When the list is presented, select the option that corresponds to "01".
+    When asked for Billing Account ID, provide the keyword "fast" to search. When the list is presented, select the option for the "TI billing account".
+    Your access level to the billing account is Scenario 2 (Billing User).
+    You have a pre-existing project to use as the bootstrap project, and it is already set as the active project in gcloud. Confirm it is the correct project.
+    When asked about checking services, you want the agent to check which services are enabled.
+    You approve the IAM role assignments.
+    You want to use the 'classic' dataset.
+    Your base location is europe-west1, with no overrides.
+    Your local path for output files is ~/dev/tf-playground/skills-tests/fast/prerequisites/flow-0.
+    You do not have any additional static context values.
+    Do not volunteer information unless explicitly asked. Answer only the question asked by the agent.
+  max_turns: 30
+  success_criteria:
+    llm_checks:
+      - "The agent completed the prerequisite phase and provided wrap-up instructions."
+    flow_contains:
+      - "gcloud organizations add-iam-policy-binding"
+    files_exist:
+      - "/home/ludomagno/dev/tf-playground/skills-tests/fast/prerequisites/flow-0/0-org-setup.auto.tfvars"
+      - "/home/ludomagno/dev/tf-playground/skills-tests/fast/prerequisites/flow-0/data/0-org-setup/defaults.yaml"

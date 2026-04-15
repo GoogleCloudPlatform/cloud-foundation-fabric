@@ -6,6 +6,12 @@
       "type": "string",
       "description": "The name of the playbook."
     },
+    "timeout": {
+      "type": "integer",
+      "description": "Timeout in seconds for each CLI invocation.",
+      "default": 60,
+      "minimum": 1
+    },
     "env": {
       "type": "array",
       "description": "A list of environment variable names required by this playbook. These will be substituted in the steps and persona context.",
@@ -39,6 +45,10 @@
       "type": "object",
       "description": "Configuration for the autonomous LLM-simulated user.",
       "properties": {
+        "initial_user_input": {
+          "type": "string",
+          "description": "The first input to send to the agent when starting in pure autonomous mode. Variables are interpolated."
+        },
         "context": {
           "type": "string",
           "description": "Freeform instructions and knowledge base for the simulated user. Variables are interpolated."
@@ -105,5 +115,17 @@
       "required": ["persona"]
     }
   ],
+  "if": {
+    "not": {
+      "required": ["steps"]
+    }
+  },
+  "then": {
+    "properties": {
+      "persona": {
+        "required": ["context", "success_criteria", "initial_user_input"]
+      }
+    }
+  },
   "additionalProperties": false
 }

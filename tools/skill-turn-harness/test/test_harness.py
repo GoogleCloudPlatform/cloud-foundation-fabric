@@ -96,7 +96,9 @@ def test_invoke_skill_cli_success(mock_run):
       'Warning: YOLO mode is enabled\nLoading extension: foo\nActual response')
   mock_run.return_value = mock_result
   response = harness.invoke_skill_cli('hello', is_first_step=True,
-                                      workspace_dir='/tmp')
+                                      workspace_dir='/tmp',
+                                      gemini_cmd_list=['gemini', '-y'],
+                                      timeout=60)
   # Check command construction
   mock_run.assert_called_once()
   args = mock_run.call_args[0][0]
@@ -109,7 +111,9 @@ def test_invoke_skill_cli_success(mock_run):
 def test_invoke_skill_cli_timeout(mock_run):
   mock_run.side_effect = subprocess.TimeoutExpired(cmd='gemini', timeout=60)
   response = harness.invoke_skill_cli('hello', is_first_step=False,
-                                      workspace_dir='/tmp')
+                                      workspace_dir='/tmp',
+                                      gemini_cmd_list=['gemini', '-y'],
+                                      timeout=60)
   assert response == 'SYSTEM_ERROR: Timeout'
 
 
