@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''Hybrid Python/CLI Test Harness for Gemini Skills.
 
 This module provides a testing framework that executes Gemini CLI skills in an
