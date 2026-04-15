@@ -14,6 +14,7 @@ This project provides a robust, hybrid test harness for developing and evaluatin
 - [Testing Local Skills (Inner Dev Loop)](#testing-local-skills-inner-dev-loop)
 - [Writing Playbooks](#writing-playbooks)
 - [Running the Pytest Suite](#running-the-pytest-suite)
+- [Future Enhancements: Autonomous "Pond" Testing](#future-enhancements-autonomous-pond-testing-simulated-user)
 
 The architecture relies on three main components:
 
@@ -134,7 +135,7 @@ While the current strict `steps` based playbook is excellent for **Unit/Regressi
 
 ### Concept: The "Pond" Architecture
 
-Instead of providing a rigid list of sequential steps, the playbook acts as a declarative **Persona** with a "Pond" of knowledge:
+Instead of providing a rigid list of sequential steps, the playbook acts as a declarative **Persona** with a "Pond" of knowledge and explicit success criteria to evaluate when the task is complete:
 
 ```yaml
 name: "FAST Setup PoC - Autonomous"
@@ -145,15 +146,21 @@ knowledge_base:
 rules_for_simulated_user:
   - "Do not provide information until the agent explicitly asks for it."
   - "If the agent asks for something not in your knowledge base, say you don't know."
+final_state_checks:
+  - "The agent printed a final configuration summary containing the correct project_id and region."
+  - "The agent did not attempt to execute any commands during the configuration."
 ```
 
 ### How it will work:
-1. **Primary Agent (CLI)** asks a question.
+1. **Primary Agent (CLI)** asks a question or performs an action.
 2. **Secondary Agent (Evaluator / Simulated User)** receives the CLI output, the conversation history, and the "Pond" (knowledge base).
-3. The Secondary Agent makes a single LLM call to evaluate the state *and* generate the next input dynamically (fishing the right data from the pond).
-4. The generated input is fed back into the CLI.
+3. The Secondary Agent makes a single LLM call to evaluate the current state:
+   - Is the `goal` complete based on the `final_state_checks`? If yes, pass the test.
+   - Did the agent break any rules or hallucinate? If yes, fail the test.
+   - If the task is ongoing, generate the `next_user_input` dynamically by fishing the right data from the pond.
+4. If not complete, the generated input is fed back into the CLI.
 
 ### Implementation Plan
 - Add a `--mode autonomous` flag to `harness.py` to switch between deterministic script execution and the autonomous persona mode.
-- Update the Pydantic evaluation schema to return both an evaluation of the previous turn and the `next_user_input`.
-- Update the playbook schema to support `goal`, `knowledge_base`, and `rules_for_simulated_user` as an alternative to `steps`.
+- Update the Pydantic evaluation schema to return `test_completed_successfully`, `agent_followed_skill_rules`, and `next_user_input`.
+- Update the playbook schema to support `goal`, `knowledge_base`, `rules_for_simulated_user`, and `final_state_checks` as an alternative to `steps`.
