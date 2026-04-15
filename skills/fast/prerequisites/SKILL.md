@@ -18,22 +18,22 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 Guide the user through the following sequence strictly in order. **Before starting a phase, read its corresponding reference document to get the exact instructions, commands, and logic.**
 
 ### Phase 1: Environment & Authentication
-*Reference: [phase1-env-and-auth.md](references/phase1-env-and-auth.md)*
+*Reference: [Environment & Authentication](references/phase1-env-and-auth.md)*
 - **Step 1:** Environment Assessment & Initialization (Standard vs GCD)
 - **Step 2:** Authentication
 
 ### Phase 2: Admin Principal & Baseline Info
-*Reference: [phase2-admin-and-baseline.md](references/phase2-admin-and-baseline.md)*
+*Reference: [Admin Principal & Baseline Info](references/phase2-admin-and-baseline.md)*
 - **Step 3:** Admin Principal Definition (Group vs Single User)
 - **Step 4:** Baseline Information Gathering (Org ID, Billing ID, Billing Access Scenarios)
 
 ### Phase 3: Bootstrap Project & IAM
-*Reference: [phase3-bootstrap-and-iam.md](references/phase3-bootstrap-and-iam.md)*
+*Reference: [Bootstrap Project & IAM](references/phase3-bootstrap-and-iam.md)*
 - **Step 5:** Bootstrap Project Setup (Creation and API enablement)
 - **Step 6:** IAM Role Assignments
 
 ### Phase 4: Configuration & Wrap-up
-*Reference: [phase4-config-and-wrapup.md](references/phase4-config-and-wrapup.md)*
+*Reference: [Configuration & Wrap-up](references/phase4-config-and-wrapup.md)*
 - **Step 7:** Configuration Generation (Datasets, defaults.yaml, local paths)
 - **Step 8:** Organization Policy Import Check
 - **Step 9:** Wrap-up & Apply
