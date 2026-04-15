@@ -14,6 +14,8 @@ import tempfile
 import os
 import shutil
 import click
+import re
+from datetime import datetime
 from pydantic import BaseModel
 from dataclasses import dataclass, asdict
 import string
@@ -150,16 +152,33 @@ def log_step_to_markdown(
       md_file.write('---\n\n')
 
 
-def dump_failed_log(log_dir: str, playbook_name: str, interaction_log: list):
+def generate_log_prefix(playbook_path: str) -> str:
+  '''Generates a slugified prefix for log files using the parent directory and filename.
+
+  Args:
+    playbook_path: The file path to the YAML playbook.
+
+  Returns:
+    A slugified string with a timestamp.
+  '''
+  dir_name = os.path.basename(os.path.dirname(playbook_path))
+  file_name = os.path.splitext(os.path.basename(playbook_path))[0]
+  combined = f'{dir_name}_{file_name}' if dir_name else file_name
+  slug = re.sub(r'[^a-zA-Z0-9]+', '-', combined).strip('-').lower()
+  timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+  return f'{slug}-{timestamp}'
+
+
+def dump_failed_log(log_dir: str, log_prefix: str, interaction_log: list):
   '''Dumps the full interaction log to a JSON file upon failure.
 
     Args:
       log_dir: The directory where the failed log should be saved.
-      playbook_name: The name of the playbook.
+      log_prefix: The prefix string generated for this playbook run.
       interaction_log: The list of step data dictionaries recorded so far.
     '''
   failed_json_path = os.path.join(
-      log_dir, f'{playbook_name.replace(" ", "_")}_failed.json')
+      log_dir, f'{log_prefix}_failed.json')
   with open(failed_json_path, 'w') as f:
     json.dump(interaction_log, f, indent=2)
 
@@ -248,9 +267,9 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
   print(f'--- Tuning: {playbook_name} | Workspace: {workspace_dir} ---')
   interaction_log = []
+  log_prefix = generate_log_prefix(playbook_path)
   # Initialize Markdown log
-  md_log_path = os.path.join(log_dir,
-                             f'{playbook_name.replace(" ", "_")}_log.md')
+  md_log_path = os.path.join(log_dir, f'{log_prefix}_log.md')
   init_markdown_log(md_log_path, playbook_name)
   try:
     for step_index, step_dict in enumerate(playbook_steps):
@@ -298,7 +317,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         print(
             f'❌ [FAILURE Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}'
         )
-        dump_failed_log(log_dir, playbook_name, interaction_log)
+        dump_failed_log(log_dir, log_prefix, interaction_log)
         return False
       else:
         print(
@@ -307,6 +326,10 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     print(f'\n✅ [SUCCESS] Playbook \'{playbook_name}\' completed successfully.')
     print(f'📄 Markdown log saved to: {md_log_path}')
     return True
+  except KeyboardInterrupt:
+    print('\n🛑 [INTERRUPTED] Shutting down cleanly...')
+    dump_failed_log(log_dir, log_prefix, interaction_log)
+    return False
   finally:
     # Cleanup the temporary workspace
     shutil.rmtree(workspace_dir)

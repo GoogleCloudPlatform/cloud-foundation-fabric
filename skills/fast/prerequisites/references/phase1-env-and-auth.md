@@ -2,8 +2,8 @@
 
 ### Step 1: Environment Assessment & Initialization
 
-1. Ask the user to clarify their target environment: **Standard GCP** or **Google Cloud Dedicated (GCD)**.
-2. Ask how they prefer to run commands: Should you (Gemini CLI) run them automatically, or should you output them for manual execution? **Remember this preference for the rest of the workflow.**
+1. Ask the user to clarify their target environment: **Standard GCP** or **Google Cloud Dedicated (GCD)**. **Wait for their response.**
+2. Once the environment is confirmed, ask how they prefer to run commands: Should you (Gemini CLI) run them automatically, or should you output them for manual execution? **Remember this preference for the rest of the workflow. Wait for their response.**
 3. *If GCD is selected*, ask the user if they are working in one of the known universes: **S3NS (France)** or **Berlin (Germany)**.
    - *If S3NS:* Pre-fill the following values:
      - Universe Web Domain: `cloud.s3nscloud.fr`

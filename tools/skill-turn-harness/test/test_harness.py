@@ -77,8 +77,8 @@ def test_markdown_logging(tmp_path):
 
 def test_dump_failed_log(tmp_path):
   interaction_log = [{'step': 1, 'error': 'test'}]
-  harness.dump_failed_log(str(tmp_path), 'Test Playbook', interaction_log)
-  failed_file = tmp_path / 'Test_Playbook_failed.json'
+  harness.dump_failed_log(str(tmp_path), 'test-playbook-prefix', interaction_log)
+  failed_file = tmp_path / 'test-playbook-prefix_failed.json'
   assert failed_file.exists()
   data = json.loads(failed_file.read_text())
   assert len(data) == 1
@@ -134,7 +134,9 @@ def test_e2e_hybrid_tuning_loop(tmp_path):
                                           skill_src=skill_dir)
   assert result is True
   # Verify the log file was created in the temporary directory
-  log_file = tmp_path / 'FAST_Setup_PoC_with_Env_log.md'
+  log_files = list(tmp_path.glob('*_log.md'))
+  assert len(log_files) == 1
+  log_file = log_files[0]
   assert log_file.exists()
   content = log_file.read_text()
   assert '✅ PASS' in content
