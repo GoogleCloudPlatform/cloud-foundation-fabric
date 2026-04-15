@@ -88,7 +88,7 @@ def fetch(url, is_json=False, headers=None):
   with urllib.request.urlopen(req, timeout=30) as r:
     raw_data = r.read()
     data = json.loads(raw_data) if is_json else raw_data.decode("utf-8")
-  
+
   cache_set(url, data)
   return data
 
@@ -96,11 +96,8 @@ def fetch(url, is_json=False, headers=None):
 def api_get(path):
   url = f"{API}/{path}"
   try:
-    return fetch(
-        url,
-        is_json=True,
-        headers={"Accept": "application/vnd.github.v3+json"}
-    )
+    return fetch(url, is_json=True,
+                 headers={"Accept": "application/vnd.github.v3+json"})
   except urllib.error.HTTPError as e:
     sys.exit(f"API Error ({e.code}): {e.reason}")
   except Exception as e:
