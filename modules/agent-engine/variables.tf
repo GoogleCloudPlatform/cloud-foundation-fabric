@@ -56,6 +56,7 @@ variable "context" {
     iam_principals = optional(map(string), {})
     locations      = optional(map(string), {})
     kms_keys       = optional(map(string), {})
+    models         = optional(map(string), {})
     project_ids    = optional(map(string), {})
   })
   nullable = false
@@ -117,6 +118,29 @@ variable "managed" {
   type        = bool
   nullable    = false
   default     = true
+}
+
+variable "memory_bank_config" {
+  description = "Configuration for the memory bank."
+  type = object({
+    disable_memory_revisions = optional(bool)
+    generation_config = optional(object({
+      model = string
+    }))
+    similarity_search_config = optional(object({
+      embedding_model = string
+    }))
+    ttl_config = optional(object({
+      default_ttl                 = optional(string)
+      memory_revision_default_ttl = optional(string)
+      granular_ttl_config = optional(object({
+        create_ttl           = optional(string)
+        generate_created_ttl = optional(string)
+        generate_updated_ttl = optional(string)
+      }))
+    }))
+  })
+  default = null
 }
 
 variable "name" {

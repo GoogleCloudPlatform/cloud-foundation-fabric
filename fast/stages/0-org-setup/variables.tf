@@ -17,6 +17,7 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    cidr_ranges_sets            = optional(map(list(string)), {})
     custom_roles                = optional(map(string), {})
     email_addresses             = optional(map(string), {})
     folder_ids                  = optional(map(string), {})
@@ -50,6 +51,7 @@ variable "factories_config" {
       organization      = optional(string, "organization")
       project_templates = optional(string, "templates")
       projects          = optional(string, "projects")
+      vpcs              = optional(string, "vpcs")
     }), {})
   })
   nullable = false

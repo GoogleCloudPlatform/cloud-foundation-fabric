@@ -169,15 +169,14 @@ fi
 ### GCP Infrastructure Scale-up
 
 Another customization area is on the GCP infrastructure side, where the simple instance code in this example can be easily changed to an instance template, and then wrapped into a Managed Instance Group to provide autohealing, easier scaling, or even autoscaling. This is very easy to do by leveraging the examples in the [`compute-vm`](../../../../modules/compute-vm/) and [`compute-mig`](../../../../modules/compute-mig/) modules.
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [agent_config](variables.tf#L17) | Agent configuration. | <code title="object&#40;&#123;&#10;  agent_name &#61; optional&#40;string, &#34;Test Agent on GCP&#34;&#41;&#10;  instance   &#61; string&#10;  pool_name  &#61; string&#10;  token &#61; object&#40;&#123;&#10;    file    &#61; string&#10;    version &#61; optional&#40;number, 1&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [agent_config](variables.tf#L17) | Agent configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L58) | Project id where resources will be created. | <code>string</code> | ✓ |  |
-| [instance_config](variables.tf#L30) | Instance configuration. | <code title="object&#40;&#123;&#10;  docker_image    &#61; string&#10;  service_account &#61; string&#10;  zone            &#61; optional&#40;string, &#34;b&#34;&#41;&#10;  vpc_config &#61; object&#40;&#123;&#10;    network    &#61; string&#10;    subnetwork &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [instance_config](variables.tf#L30) | Instance configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [location](variables.tf#L45) | Location used for regional resources. | <code>string</code> |  | <code>&#34;europe-west8&#34;</code> |
 | [name](variables.tf#L51) | Prefix used for resource names. | <code>string</code> |  | <code>&#34;azd&#34;</code> |
 
@@ -190,7 +189,6 @@ Another customization area is on the GCP infrastructure side, where the simple i
 | [ssh_command](outputs.tf#L27) | Command to SSH to the agent instance. |  |
 | [vpcsc_command](outputs.tf#L35) | Command to allow egress to remotes from inside a perimeter. |  |
 <!-- END TFDOC -->
-
 ## Test
 
 ```hcl

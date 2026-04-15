@@ -61,6 +61,10 @@ locals {
     defaults  = try(local._defaults.projects.defaults, {})
     overrides = try(local._defaults.projects.overrides, {})
   }
+  vpc_defaults = {
+    defaults  = try(local._defaults.vpcs.defaults, {})
+    overrides = try(local._defaults.vpcs.overrides, {})
+  }
   workload_identity_pools = merge([
     for k, v in module.factory.projects : {
       for wk, wv in v.workload_identity_pools :

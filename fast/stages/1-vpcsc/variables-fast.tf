@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,27 @@ variable "iam_principals" {
   default     = {}
 }
 
-variable "logging" {
+variable "logging_sinks" {
   # tfdoc:variable:source 0-org-setup
-  description = "Log writer identities for organization / folders."
-  type = object({
-    writer_identities = map(string)
-    project_number    = optional(string)
-  })
-  default = null
+  description = "Log sinks for the organization."
+  type = map(object({
+    project_id      = optional(string)
+    writer_identity = string
+    ## other available fields:
+    # bigquery_options   = list(string)
+    # description        = string
+    # disabled           = bool
+    # destination        = string
+    # exclusions         = list(string)
+    # filter             = string
+    # id                 = string
+    # include_children   = bool
+    # intercept_children = bool
+    # name               = string
+    # org_id             = string
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "organization" {
@@ -41,6 +54,14 @@ variable "organization" {
     customer_id = string
   })
   nullable = false
+}
+
+variable "project_ids" {
+  # tfdoc:variable:source 0-org-setup
+  description = "Project IDs."
+  type        = map(string)
+  nullable    = false
+  default     = {}
 }
 
 variable "project_numbers" {

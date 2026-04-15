@@ -5,6 +5,129 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] <!-- from: 2026-03-05 11:16:15+00:00 to: None since: v54.0.0 -->
 
+## [55.0.0] - 2026-04-14
+
+### BREAKING CHANGES
+
+- `fast/stages/3-data-platform-dev`: The Data Platform stage has been dreprecated and removed. [[#3851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3851)]
+- `fast/stages/3-gcve-dev`: The GKE stage has been dreprecated and removed. [[#3850](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3850)]
+- `fast/stages/3-gke-dev`: The GCVE stage has been dreprecated and removed. [[#3850](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3850)]
+
+### FAST
+
+- [[#3860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3860)] Add net-vpc-factory and starter-gcd dataset to 0-org-setup, fix context in net-vpc-factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-13 07:42:03+00:00 -->
+- [[#3858](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3858)] Decouple logging sinks in FAST stages 0 and 1 ([juliocc](https://github.com/juliocc)) <!-- 2026-04-10 22:14:16+00:00 -->
+- [[#3855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3855)] Align vpc factory module `factories_config` variable to project factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 17:21:21+00:00 -->
+- [[#3854](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3854)] Remove leftover datasets for data platform ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 15:41:55+00:00 -->
+- [[#3852](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3852)] Update boilerplate and project services in 2-networking ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 15:20:22+00:00 -->
+- [[#3851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3851)] Remove the FAST data platform stage ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 08:19:20+00:00 -->
+- [[#3850](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3850)] Remove GKE and GCVE stages ([juliocc](https://github.com/juliocc)) <!-- 2026-04-10 07:51:21+00:00 -->
+- [[#3802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3802)] Add support of organizational based service agents in VPC-SC stage ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-03-18 09:08:08+00:00 -->
+
+### MODULES
+
+- [[#3860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3860)] Add net-vpc-factory and starter-gcd dataset to 0-org-setup, fix context in net-vpc-factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-13 07:42:03+00:00 -->
+- [[#3859](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3859)] Automated PR Review ([ludoo](https://github.com/ludoo)) <!-- 2026-04-11 12:26:05+00:00 -->
+- [[#3858](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3858)] Decouple logging sinks in FAST stages 0 and 1 ([juliocc](https://github.com/juliocc)) <!-- 2026-04-10 22:14:16+00:00 -->
+- [[#3857](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3857)] streamline GEMINI file, drop agents rules ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 20:28:40+00:00 -->
+- [[#3855](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3855)] Align vpc factory module `factories_config` variable to project factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 17:21:21+00:00 -->
+- [[#3852](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3852)] Update boilerplate and project services in 2-networking ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 15:20:22+00:00 -->
+- [[#3853](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3853)] Tools: add orphan doc detection to check_schema_docs.py ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 14:41:04+00:00 -->
+- [[#3802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3802)] Add support of organizational based service agents in VPC-SC stage ([vannicktrinquier](https://github.com/vannicktrinquier)) <!-- 2026-03-18 09:08:08+00:00 -->
+
+### TOOLS
+
+- [[#3860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3860)] Add net-vpc-factory and starter-gcd dataset to 0-org-setup, fix context in net-vpc-factory ([ludoo](https://github.com/ludoo)) <!-- 2026-04-13 07:42:03+00:00 -->
+- [[#3859](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3859)] Automated PR Review ([ludoo](https://github.com/ludoo)) <!-- 2026-04-11 12:26:05+00:00 -->
+- [[#3853](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3853)] Tools: add orphan doc detection to check_schema_docs.py ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 14:41:04+00:00 -->
+- [[#3851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3851)] Remove the FAST data platform stage ([ludoo](https://github.com/ludoo)) <!-- 2026-04-10 08:19:20+00:00 -->
+
+## [54.4.0] - 2026-04-14
+
+### BREAKING CHANGES
+
+- `fast/stages/0-org-setup`: Workforce Identity Federation configuration syntax have changed. [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)]
+- `modules/organization`: Workforce Identity Federation configuration syntax have changed. [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)]
+- `modules/compute-vm`: Disk attachment ordering is now evaluated globally across *both* zonal and regional disks, existing deployments mixing zonal and regional disks might see a planned shift in attachment order, which can be easily mitigated by applying the new `position` attribute to maintain the previous sequence. [[#3848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3848)]
+
+### FAST
+
+- [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)] Add support for creating multiple workforce identity pools ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-04-14 06:55:19+00:00 -->
+- [[#3832](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3832)] use ephemeral google_client_config in secops provider ([davidspielmann](https://github.com/davidspielmann)) <!-- 2026-04-10 06:34:52+00:00 -->
+
+### MODULES
+
+- [[#3846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3846)] Add support for creating multiple workforce identity pools ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-04-14 06:55:19+00:00 -->
+- [[#3864](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3864)] fix: mark VPN module secret outputs as sensitive ([davidspielmann](https://github.com/davidspielmann)) <!-- 2026-04-13 16:05:06+00:00 -->
+- [[#3862](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3862)] [pubsub] updating .name to .id to fix IAM replacement ([wiktorn](https://github.com/wiktorn)) <!-- 2026-04-13 12:47:38+00:00 -->
+- [[#3856](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3856)] feat(alloydb): add support for advanced query insights (observability_config) ([SamuPert](https://github.com/SamuPert)) <!-- 2026-04-11 11:57:38+00:00 -->
+- [[#3849](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3849)] fix(bigquery-dataset): refresh_interval_ms should be a number ([joshmyers](https://github.com/joshmyers)) <!-- 2026-04-10 06:11:13+00:00 -->
+- [[#3848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3848)] Add position attribute to compute-vm module attached disks to control ordering ([ludoo](https://github.com/ludoo)) <!-- 2026-04-09 19:34:16+00:00 -->
+
+## [54.3.0] - 2026-04-09
+
+### BREAKING CHANGES
+
+- `terraform-google-provider` & `terraform-google-provider-beta`: version updated to 7.27 to incorporate updates from provider to enable the Memory Bank configuration [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)]
+- `modules/agent-engine`: This module utilizes the latest `google-beta` provider in place of the `google` provider to support Memory Bank configurations for agents deployment. This change may cause resource recreation for existing deployments. Exercise caution while using this version. [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)]
+- `modules/ai-applications`: Updates the outputs of the module, according to its latest implementation. [[#3841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3841)]
+- `modules/ai-applications`: supports the creation of regional Dialogflow CX deployments and full-capability agents. [[#3834](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3834)]
+
+### FAST
+
+- [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)] Add memory bank to `modules/agent-engine` ([heyanand](https://github.com/heyanand)) <!-- 2026-04-08 17:09:27+00:00 -->
+- [[#3842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3842)] Add toggle to tfdoc to remove type hints ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 11:08:18+00:00 -->
+- [[#3843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3843)] Enforce schema docs in linting ([ludoo](https://github.com/ludoo)) <!-- 2026-04-08 10:20:50+00:00 -->
+- [[#3839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3839)] Add support for bucket custom_placement_config to project-factory ([lyricnz](https://github.com/lyricnz)) <!-- 2026-04-08 06:32:24+00:00 -->
+
+### MODULES
+
+- [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)] Add memory bank to `modules/agent-engine` ([heyanand](https://github.com/heyanand)) <!-- 2026-04-08 17:09:27+00:00 -->
+- [[#3842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3842)] Add toggle to tfdoc to remove type hints ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 11:08:18+00:00 -->
+- [[#3843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3843)] Enforce schema docs in linting ([ludoo](https://github.com/ludoo)) <!-- 2026-04-08 10:20:50+00:00 -->
+- [[#3841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3841)] Update outputs of AI Applications module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-08 08:10:09+00:00 -->
+- [[#3834](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3834)] Update ai-applications module to support dialogflow-cx (fully capability and regional) agents ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-08 07:09:38+00:00 -->
+- [[#3839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3839)] Add support for bucket custom_placement_config to project-factory ([lyricnz](https://github.com/lyricnz)) <!-- 2026-04-08 06:32:24+00:00 -->
+
+### TOOLS
+
+- [[#3844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3844)] Add memory bank to `modules/agent-engine` ([heyanand](https://github.com/heyanand)) <!-- 2026-04-08 17:09:27+00:00 -->
+- [[#3842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3842)] Add toggle to tfdoc to remove type hints ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 11:08:18+00:00 -->
+- [[#3843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3843)] Enforce schema docs in linting ([ludoo](https://github.com/ludoo)) <!-- 2026-04-08 10:20:50+00:00 -->
+- [[#3836](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3836)] Remove hcl2 python dependency ([juliocc](https://github.com/juliocc)) <!-- 2026-04-08 06:14:16+00:00 -->
+
+## [54.2.0] - 2026-03-26
+
+### BREAKING CHANGES
+
+- `fast/modules/net-vlan-attachment`: `var.router_config.bfd` has been moved to `var.bgp_peer.bfd` [[#3827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3827)]
+- `modules/workstation-cluster`: private config is no longer implicitly enabled, check a plan diff before applying using this version. [[#3821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3821)]
+
+### DOCUMENTATION
+
+- [[#3820](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3820)] Refactor agent documentation and establish core guidelines ([ludoo](https://github.com/ludoo)) <!-- 2026-03-28 07:26:00+00:00 -->
+
+### FAST
+
+- [[#3827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3827)] Add support for attachment-level BGP sessions and candidate_*_router_ip_address ([sruffilli](https://github.com/sruffilli)) <!-- 2026-04-01 12:21:18+00:00 -->
+- [[#3818](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3818)] feat(2-networking): add NS And DS record dynamically from sub-zones records ([lopezvit](https://github.com/lopezvit)) <!-- 2026-03-31 08:54:54+00:00 -->
+
+### MODULES
+
+- [[#3830](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3830)] Add support for service agents to project factory service accounts IAM ([ludoo](https://github.com/ludoo)) <!-- 2026-04-02 08:31:40+00:00 -->
+- [[#3827](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3827)] Add support for attachment-level BGP sessions and candidate_*_router_ip_address ([sruffilli](https://github.com/sruffilli)) <!-- 2026-04-01 12:21:18+00:00 -->
+- [[#3828](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3828)] Support project_id context for metric_scopes ([ludoo](https://github.com/ludoo)) <!-- 2026-04-01 11:47:38+00:00 -->
+- [[#3825](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3825)] reprovision IAM only on function replacement ([wiktorn](https://github.com/wiktorn)) <!-- 2026-03-30 14:18:15+00:00 -->
+- [[#3822](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3822)] Add support for max_instance_request_concurrency in cloud-functions-v2 module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-30 07:47:26+00:00 -->
+- [[#3821](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3821)] Allow private_cluster_config to be null in workstation-cluster module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-30 07:24:58+00:00 -->
+- [[#3823](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3823)] Bump path-to-regexp from 8.3.0 to 8.4.0 in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-03-28 18:12:12+00:00 -->
+- [[#3817](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3817)] bugfix: Fix Apigee organization properties assignments ([SamuPert](https://github.com/SamuPert)) <!-- 2026-03-28 07:23:01+00:00 -->
+- [[#3816](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3816)] Implement group membership in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-03-27 07:56:08+00:00 -->
+
+### TOOLS
+
+- [[#3826](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3826)] Bump tftest version ([ludoo](https://github.com/ludoo)) <!-- 2026-03-31 08:35:05+00:00 -->
+
 ## [54.1.0] - 2026-03-26
 
 ### BREAKING CHANGES
@@ -2383,7 +2506,10 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.0.0...HEAD
+[54.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.4.0...v54.3.0
+[54.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.3.0...v54.2.0
+[54.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...v54.1.0
 [54.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.1.0...v54.0.0
 [54.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.0.0...v53.1.0
 [53.1.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v53.1.0...v53.0.0

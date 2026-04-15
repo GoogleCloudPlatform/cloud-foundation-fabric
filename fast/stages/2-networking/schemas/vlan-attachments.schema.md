@@ -15,6 +15,8 @@
   - **bgp_priority**: *number*
   - ⁺**interconnect**: *string*
   - ⁺**vlan_tag**: *string*
+  - **candidate_cloud_router_ip_address**: *string*
+  - **candidate_customer_router_ip_address**: *string*
 - **description**: *string*
 - **ipsec_gateway_ip_ranges**: *object*
   <br>*additional properties: string*
@@ -31,6 +33,20 @@
   <br>*additional properties: false*
   - **create**: *boolean*
   - **asn**: *number*
+  - **keepalive**: *number*
+  - **name**: *string*
+- **bgp_peer**: *object*
+  <br>*additional properties: false*
+  - **custom_advertise**: *object*
+    <br>*additional properties: false*
+    - ⁺**all_subnets**: *boolean*
+    - ⁺**ip_ranges**: *object*
+      <br>*additional properties: string*
+  - **custom_learned_ip_ranges**: *object*
+    <br>*additional properties: false*
+    - **route_priority**: *number*
+    - **ip_ranges**: *object*
+      <br>*additional properties: string*
   - **bfd**: *object*
     <br>*additional properties: false*
     - **min_receive_interval**: *number*
@@ -38,17 +54,10 @@
     - **multiplier**: *number*
     - **session_initialization_mode**: *string*
       <br>*enum: ['ACTIVE', 'PASSIVE']*
-  - **custom_advertise**: *object*
-    <br>*additional properties: false*
-    - ⁺**all_subnets**: *boolean*
-    - ⁺**ip_ranges**: *object*
-      <br>*additional properties: string*
   - **md5_authentication_key**: *object*
     <br>*additional properties: false*
     - ⁺**name**: *string*
     - **key**: *string*
-  - **keepalive**: *number*
-  - **name**: *string*
 - **vpn_gateways_ip_range**: *string*
 - **ncc_spoke_config**: *reference([ncc_spoke_config](#refs-ncc_spoke_config))*
 

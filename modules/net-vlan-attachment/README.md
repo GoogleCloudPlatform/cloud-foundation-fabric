@@ -80,6 +80,14 @@ module "example-va" {
   router_config = {
     create = false
     name   = google_compute_router.interconnect-router.name
+  }
+  bgp_peer = {
+    custom_learned_ip_ranges = {
+      route_priority = 100
+      ip_ranges = {
+        "10.0.0.0/24" = "test advertisement"
+      }
+    }
     bfd = {
       min_receive_interval        = 1000
       min_transmit_interval       = 1000
@@ -92,14 +100,15 @@ module "example-va" {
     }
   }
   dedicated_interconnect_config = {
-    bandwidth    = "BPS_10G"
-    bgp_range    = "169.254.0.0/29"
-    interconnect = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
-    vlan_tag     = 12345
+    bandwidth                            = "BPS_10G"
+    bgp_range                            = "169.254.0.0/29"
+    candidate_cloud_router_ip_address    = "169.254.0.1/29"
+    candidate_customer_router_ip_address = "169.254.0.2/29"
+    interconnect                         = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
+    vlan_tag                             = 12345
   }
 }
-
-# tftest modules=1 resources=5
+# tftest modules=1 resources=5 inventory=bgp-peer.yaml
 ```
 
 If you don't specify the MD5 key, the module will generate a random 12 characters key for you.
@@ -646,20 +655,21 @@ module "example-va-b" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [description](variables.tf#L52) | VLAN attachment description. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L69) | The common resources name, used after resource type prefix and suffix. | <code>string</code> | ✓ |  |
-| [network](variables.tf#L74) | The VPC name to which resources are associated to. | <code>string</code> | ✓ |  |
-| [peer_asn](variables.tf#L91) | The on-premises underlay router ASN. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L96) | The project id where resources are created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L101) | The region where resources are created. | <code>string</code> | ✓ |  |
-| [router_config](variables.tf#L106) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code title="object&#40;&#123;&#10;  create &#61; optional&#40;bool, true&#41;&#10;  asn    &#61; optional&#40;number, 65001&#41;&#10;  bfd &#61; optional&#40;object&#40;&#123;&#10;    min_receive_interval        &#61; optional&#40;number&#41;&#10;    min_transmit_interval       &#61; optional&#40;number&#41;&#10;    multiplier                  &#61; optional&#40;number&#41;&#10;    session_initialization_mode &#61; optional&#40;string, &#34;ACTIVE&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  custom_advertise &#61; optional&#40;object&#40;&#123;&#10;    all_subnets &#61; bool&#10;    ip_ranges   &#61; map&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  md5_authentication_key &#61; optional&#40;object&#40;&#123;&#10;    name &#61; string&#10;    key  &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  keepalive &#61; optional&#40;number&#41;&#10;  name      &#61; optional&#40;string, &#34;router&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [description](variables.tf#L79) | VLAN attachment description. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L96) | The common resources name, used after resource type prefix and suffix. | <code>string</code> | ✓ |  |
+| [network](variables.tf#L101) | The VPC name to which resources are associated to. | <code>string</code> | ✓ |  |
+| [peer_asn](variables.tf#L118) | The on-premises underlay router ASN. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L123) | The project id where resources are created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L128) | The region where resources are created. | <code>string</code> | ✓ |  |
+| [router_config](variables.tf#L133) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [admin_enabled](variables.tf#L17) | Whether the VLAN attachment is enabled. | <code>bool</code> |  | <code>true</code> |
-| [context](variables.tf#L23) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  locations   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  routers     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [dedicated_interconnect_config](variables.tf#L35) | Dedicated interconnect configuration. | <code title="object&#40;&#123;&#10;  bandwidth    &#61; optional&#40;string, &#34;BPS_10G&#34;&#41;&#10;  bgp_range    &#61; optional&#40;string&#41;&#10;  bgp_priority &#61; optional&#40;number&#41;&#10;  interconnect &#61; string&#10;  vlan_tag     &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [ipsec_gateway_ip_ranges](variables.tf#L57) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [mtu](variables.tf#L63) | The MTU associated to the VLAN attachment (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
-| [partner_interconnect_config](variables.tf#L79) | Partner interconnect configuration. | <code title="object&#40;&#123;&#10;  edge_availability_domain &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpn_gateways_ip_range](variables.tf#L131) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
+| [bgp_peer](variables.tf#L23) | BGP peer configuration for the VLAN attachment. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [context](variables.tf#L48) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [dedicated_interconnect_config](variables.tf#L60) | Dedicated interconnect configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [ipsec_gateway_ip_ranges](variables.tf#L84) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [mtu](variables.tf#L90) | The MTU associated to the VLAN attachment (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
+| [partner_interconnect_config](variables.tf#L106) | Partner interconnect configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpn_gateways_ip_range](variables.tf#L152) | The IP range (cidr notation) to be used for the GCP VPN gateways. If null IPSec over Interconnect is not enabled. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

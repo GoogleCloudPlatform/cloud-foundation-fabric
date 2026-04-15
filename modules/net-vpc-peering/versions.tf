@@ -12,24 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v54.1.0
+# Fabric release: v55.0.0
 
 terraform {
   required_version = ">= 1.12.2"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 7.17.0, < 8.0.0" # tftest
+      version = ">= 7.27.0, < 8.0.0" # tftest
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 7.17.0, < 8.0.0" # tftest
+      version = ">= 7.27.0, < 8.0.0" # tftest
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-vpc-peering:v54.1.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-vpc-peering:v55.0.0-tf"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-vpc-peering:v54.1.0-tf"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/net-vpc-peering:v55.0.0-tf"
   }
 }
