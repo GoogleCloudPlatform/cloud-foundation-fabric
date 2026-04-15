@@ -56,7 +56,7 @@ python3 harness.py playbooks/my-playbook.yaml
 
 ⚠️ **Security Warning regarding Logs:**
 If your playbooks require secrets (like API keys or passwords) via the `env` array, the harness will substitute them before executing the CLI. Because the harness traces all inputs and outputs for debugging, **these substituted secrets will be written in plain text** to your `logs/` directory.
-Always ensure your `logs/` directory is added to your `.gitignore` to prevent leaking secrets into your repository.
+A default `.gitignore` is provided in the `logs/` directory to prevent committing these files, but care should still be taken to avoid leaking secrets into your repository.
 
 ### Expected Output
 
