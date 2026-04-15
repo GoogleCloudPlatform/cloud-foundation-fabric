@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import argparse
+import datetime
 import os
 import sys
 
@@ -71,8 +72,10 @@ def main():
     sys.exit(1)
 
   # Construct the System Instruction
+  today_date = datetime.date.today().strftime("%A, %B %d, %Y")
   system_instruction = f"""You are an expert Google Cloud and Terraform code reviewer.
 Your task is to review a Pull Request diff for the Cloud Foundation Fabric repository.
+Today's date is {today_date}.
 
 You MUST strictly enforce the repository's architecture, conventions, and style guidelines.
 Here are the repository guidelines you must follow:

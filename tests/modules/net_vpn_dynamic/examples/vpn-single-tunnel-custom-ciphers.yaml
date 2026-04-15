@@ -43,7 +43,7 @@ values:
     enable_display: false
     hostname: null
     instance_encryption_key: []
-    key_revocation_action_type: NONE
+    key_revocation_action_type: null
     labels: null
     machine_type: e2-micro
     metadata: null
