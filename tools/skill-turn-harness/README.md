@@ -125,3 +125,35 @@ To run the full End-to-End (E2E) test (which dynamically links the fixture skill
 ```bash
 python3 -m pytest test/test_harness.py -m "e2e" -v
 ```
+
+## Future Enhancements: Autonomous "Pond" Testing (Simulated User)
+
+**TODO:** Implement an autonomous testing mode to complement the deterministic script-based approach.
+
+While the current strict `steps` based playbook is excellent for **Unit/Regression Testing** (ensuring the exact state machine of a skill hasn't broken), an autonomous approach provides robust **E2E / Fuzz Testing** by handling the messy reality of natural language and conversational drift.
+
+### Concept: The "Pond" Architecture
+
+Instead of providing a rigid list of sequential steps, the playbook acts as a declarative **Persona** with a "Pond" of knowledge:
+
+```yaml
+name: "FAST Setup PoC - Autonomous"
+goal: "Successfully configure FAST."
+knowledge_base:
+  project_id: "my-super-project-123"
+  region: "europe-west1"
+rules_for_simulated_user:
+  - "Do not provide information until the agent explicitly asks for it."
+  - "If the agent asks for something not in your knowledge base, say you don't know."
+```
+
+### How it will work:
+1. **Primary Agent (CLI)** asks a question.
+2. **Secondary Agent (Evaluator / Simulated User)** receives the CLI output, the conversation history, and the "Pond" (knowledge base).
+3. The Secondary Agent makes a single LLM call to evaluate the state *and* generate the next input dynamically (fishing the right data from the pond).
+4. The generated input is fed back into the CLI.
+
+### Implementation Plan
+- Add a `--mode autonomous` flag to `harness.py` to switch between deterministic script execution and the autonomous persona mode.
+- Update the Pydantic evaluation schema to return both an evaluation of the previous turn and the `next_user_input`.
+- Update the playbook schema to support `goal`, `knowledge_base`, and `rules_for_simulated_user` as an alternative to `steps`.
