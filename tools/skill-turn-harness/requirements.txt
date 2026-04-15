@@ -1,0 +1,4 @@
+google-genai
+pydantic
+pyyaml
+click

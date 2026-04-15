@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../playbooks/playbook.schema.json
+name: "FAST Setup PoC with Env"
+env:
+  - MY_SECRET_ID
+steps:
+  - user_input: "Hi, please activate the fast-setup-poc skill and let's configure FAST."
+    expected_outcome: "The agent should greet the user, confirm it is the FAST Setup Wizard, and ask for the Google Cloud Project ID."
+
+  - user_input: "${MY_SECRET_ID}"
+    expected_outcome: "The agent should acknowledge the Project ID and ask for the preferred Region."
+
+  - user_input: "europe-west1"
+    expected_outcome: "The agent should acknowledge the Region and ask for the Billing Account ID."
+
+  - user_input: "012345-6789AB-CDEF01"
+    expected_outcome: "The agent should acknowledge the Billing Account ID and provide a final summary of the configuration containing all three pieces of information."

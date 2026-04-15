@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the playbook."
+    },
+    "env": {
+      "type": "array",
+      "description": "A list of environment variable names required by this playbook. These will be substituted in the steps.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "The sequence of interactions between the user and the agent.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_input": {
+            "type": "string",
+            "description": "The simulated input provided by the user."
+          },
+          "expected_outcome": {
+            "type": "string",
+            "description": "The expected response or behavior from the agent to evaluate against."
+          }
+        },
+        "required": [
+          "user_input",
+          "expected_outcome"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "name",
+    "steps"
+  ],
+  "additionalProperties": false
+}

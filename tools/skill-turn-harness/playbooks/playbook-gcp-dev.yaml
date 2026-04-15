@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=playbook.schema.json
+
+name: "FAST 0-org-setup Prereqs - Standard GCP Developer Flow"
+steps:
+  - user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
+    expected_outcome: "The agent should greet the user, confirm it is the FAST 0-org-setup Prerequisites Guide, and ask the user to clarify their target environment: Standard GCP or Google Cloud Dedicated (GCD)."
+
+  - user_input: "Standard GCP"
+    expected_outcome: "The agent should acknowledge the environment choice and ask how the user prefers to run commands: automatically by the agent or manually by the user."
+
+  - user_input: "Automatically"
+    expected_outcome: "The agent should acknowledge the execution preference and ask if the user is already authenticated with Google Cloud using the correct principal."
+
+  - user_input: "Yes, I am already authenticated."
+    expected_outcome: "The agent should run `gcloud config list account --format=\"value(core.account)\"`, show the retrieved principal to the user, and explicitly ask them to confirm if this is the correct identity they want to use."
+
+  - user_input: "Yes, that is the correct identity."
+    expected_outcome: "The agent should explain the concept of the Admin Principal and ask the user to choose between Approach A (Use a pre-created Group) and Approach B (Use a Single User)."
+
+  - user_input: "Approach A, please."
+    expected_outcome: "The agent should explain that the group must contain the current authenticated identity, ask for the group email address, and explicitly ask the user to confirm that their current identity is already a member of this group."
+
+  - user_input: "The group is foo-owners@example.com, and yes, I confirm I am a member."
+    expected_outcome: "The agent should acknowledge the group and ask the user for their Organization ID and Billing Account ID, mentioning that they can type 'list' to fetch them automatically."
+
+  - user_input: "list"
+    expected_outcome: "The agent should run `gcloud organizations list` and `gcloud beta billing accounts list`, present the sorted results as numbered lists, and ask the user to enter the numbers corresponding to their selections."
+
+  - user_input: "1 for Org, 1 for Billing"
+    expected_outcome: "The agent should acknowledge the selections and ask the user to determine the Admin Principal's access level to the provided Billing Account ID (Scenario 1, 2, or 3)."
+
+  - user_input: "Scenario 2 (Billing User)"
+    expected_outcome: "The agent should note that `roles/billing.admin` will not be assigned, explain that IaC service accounts will not be operative until billing permissions are assigned outside of FAST, and ask if the user already has a suitable project for the bootstrap project."
+
+  - user_input: "Yes, I have a pre-existing project."
+    expected_outcome: "The agent should ask if this project is already configured as the active project in `gcloud`."
+
+  - user_input: "Yes, it is."
+    expected_outcome: "The agent should fetch the Project ID using `gcloud config list project`, explicitly ask the user to confirm if this is the correct Project ID, and ask if the user wants the agent to check which services are already enabled."
+
+  - user_input: "Yes, that's the correct project. Yes, please check which services are enabled."
+    expected_outcome: "The agent should run `gcloud services list --enabled`, compute the delta against the required APIs, enable any missing APIs, and then proceed to Step 6 (IAM Role Assignments), outputting the roles that will be assigned (excluding billing.admin)."
+
+  - user_input: "Looks good, go ahead and assign the roles."
+    expected_outcome: "The agent should execute the `gcloud organizations add-iam-policy-binding` commands for the required roles and then proceed to Step 7, explaining Datasets and asking the user to select one from `fast/stages/0-org-setup/datasets/`."
+
+  - user_input: "I'll use the classic dataset."
+    expected_outcome: "The agent should explain the Defaults Configuration, ask the user to provide a base location, and ask if they need to override the location for any individual services."
+
+  - user_input: "europe-west1, no overrides."
+    expected_outcome: "The agent should propose a default local path for output files and ask the user to confirm or provide a different path."
+
+  - user_input: "~/custom-fast-config"
+    expected_outcome: "The agent should ask if there are any other static values to bring in from outside (showing available context keys)."
+
+  - user_input: "No additional context."
+    expected_outcome: "The agent should create the local directories, copy `defaults.yaml`, edit it with the gathered information, run `yamllint`, create `0-org-setup.auto.tfvars`, create the symlink, and then proceed to Step 8 (Organization Policy Import Check), executing the command to list current policies."
+
+  - user_input: "Okay."
+    expected_outcome: "The agent should capture any existing policies, update `0-org-setup.auto.tfvars` if necessary, and proceed to Step 9 (Wrap-up & Apply), providing the final instructions for `terraform init/apply` and project cleanup."
