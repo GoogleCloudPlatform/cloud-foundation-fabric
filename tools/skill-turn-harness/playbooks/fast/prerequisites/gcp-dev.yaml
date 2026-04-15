@@ -6,64 +6,67 @@ env:
 name: "FAST 0-org-setup Prereqs - Standard GCP Developer Flow"
 steps:
   - user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
-    expected_outcome: "The agent should greet the user, confirm it is the FAST 0-org-setup Prerequisites Guide, and ask the user to clarify their target environment: Standard GCP or Google Cloud Dedicated (GCD)."
+    expected_outcome: "The agent should confirm the guide's activation and ask the user about their target environment (e.g., Standard GCP vs GCD)."
 
   - user_input: "Standard GCP"
-    expected_outcome: "The agent should acknowledge the environment choice and ask how the user prefers to run commands: automatically by the agent or manually by the user."
+    expected_outcome: "The agent should acknowledge the environment and ask for the user's preference on how to execute commands (e.g., automatically vs manually)."
 
   - user_input: "Automatically"
-    expected_outcome: "The agent should acknowledge the execution preference and ask if the user is already authenticated with Google Cloud using the correct principal."
+    expected_outcome: "The agent should acknowledge the execution preference and ask about the user's current Google Cloud authentication status."
 
   - user_input: "Yes, I am already authenticated."
-    expected_outcome: "The agent should run `gcloud config list account --format=\"value(core.account)\"`, show the retrieved principal to the user, and explicitly ask them to confirm if this is the correct identity they want to use."
+    expected_outcome: "The agent should verify the current authenticated principal (e.g., using gcloud) and ask the user to confirm if it is the correct identity."
 
   - user_input: "Yes, that is the correct identity."
-    expected_outcome: "The agent should explain the concept of the Admin Principal and ask the user to choose between Approach A (Use a pre-created Group) and Approach B (Use a Single User)."
+    expected_outcome: "The agent should move to the Admin Principal step and ask the user to choose an approach (e.g., Group vs Single User)."
 
   - user_input: "Approach A, please."
-    expected_outcome: "The agent should explain that the group must contain the current authenticated identity, ask for the group email address, and explicitly ask the user to confirm that their current identity is already a member of this group."
+    expected_outcome: "The agent should ask for the group email address."
 
-  - user_input: "The group is ${GROUP}, and yes, I confirm I am a member."
-    expected_outcome: "The agent should acknowledge the group and ask the user for their Organization ID, mentioning that they can type 'list' or a keyword to fetch it automatically."
+  - user_input: "The group is ${GROUP}."
+    expected_outcome: "The agent should explicitly ask the user to confirm that their current identity is already a member of this group."
+
+  - user_input: "Yes, I confirm I am a member."
+    expected_outcome: "The agent should ask the user to provide their Organization ID, offering to list them automatically."
 
   - user_input: "${ORG_KEYWORD}"
-    expected_outcome: "The agent should run `gcloud organizations list` filtered by the keyword, present the sorted results as a numbered list, and ask the user to enter the number corresponding to their selection."
+    expected_outcome: "The agent should list the matching organizations and ask the user to select one."
 
   - user_input: "1"
-    expected_outcome: "The agent should acknowledge the Organization selection and ask the user for their Billing Account ID, mentioning that they can type 'list' or a keyword to fetch it automatically."
+    expected_outcome: "The agent should acknowledge the selected Organization and ask the user to provide their Billing Account ID, offering to list them automatically."
 
   - user_input: "${BILLING_KEYWORD}"
-    expected_outcome: "The agent should run `gcloud beta billing accounts list` filtered by the keyword, present the sorted results as a numbered list, and ask the user to enter the number corresponding to their selection."
+    expected_outcome: "The agent should list the matching billing accounts and ask the user to select one."
 
   - user_input: "1"
-    expected_outcome: "The agent should acknowledge the Billing Account selection and ask the user to determine the Admin Principal's access level to the provided Billing Account ID (Scenario 1, 2, or 3)."
+    expected_outcome: "The agent should ask the user about their access level to the selected Billing Account (e.g., scenarios 1, 2, or 3)."
 
   - user_input: "Scenario 2 (Billing User)"
-    expected_outcome: "The agent should note that `roles/billing.admin` will not be assigned, explain that IaC service accounts will not be operative until billing permissions are assigned outside of FAST, and ask if the user already has a suitable project for the bootstrap project."
+    expected_outcome: "The agent should note the limitations of this access level (no billing.admin role assigned) and ask if the user has a pre-existing project to use as the bootstrap project."
 
   - user_input: "Yes, I have a pre-existing project."
-    expected_outcome: "The agent should ask if this project is already configured as the active project in `gcloud`."
+    expected_outcome: "The agent should ask if the pre-existing project is already set as the active project in gcloud."
 
   - user_input: "Yes, it is."
-    expected_outcome: "The agent should fetch the Project ID using `gcloud config list project`, explicitly ask the user to confirm if this is the correct Project ID, and ask if the user wants the agent to check which services are already enabled."
+    expected_outcome: "The agent should fetch the current active Project ID, ask for confirmation, and offer to check/enable required APIs."
 
   - user_input: "Yes, that's the correct project. Yes, please check which services are enabled."
-    expected_outcome: "The agent should run `gcloud services list --enabled`, compute the delta against the required APIs, enable any missing APIs, and then proceed to Step 6 (IAM Role Assignments), outputting the roles that will be assigned (excluding billing.admin)."
+    expected_outcome: "The agent should check and enable necessary APIs, then propose the IAM role assignments to be made."
 
   - user_input: "Looks good, go ahead and assign the roles."
-    expected_outcome: "The agent should execute the `gcloud organizations add-iam-policy-binding` commands for the required roles and then proceed to Step 7, explaining Datasets and asking the user to select one from `fast/stages/0-org-setup/datasets/`."
+    expected_outcome: "The agent should execute the IAM role assignments and then ask the user to select a configuration Dataset."
 
   - user_input: "I'll use the classic dataset."
-    expected_outcome: "The agent should explain the Defaults Configuration, ask the user to provide a base location, and ask if they need to override the location for any individual services."
+    expected_outcome: "The agent should ask the user for a base location for the resources and if there are any overrides."
 
   - user_input: "europe-west1, no overrides."
-    expected_outcome: "The agent should propose a default local path for output files and ask the user to confirm or provide a different path."
+    expected_outcome: "The agent should propose a local path for the output files and ask for confirmation."
 
   - user_input: "~/custom-fast-config"
-    expected_outcome: "The agent should ask if there are any other static values to bring in from outside (showing available context keys)."
+    expected_outcome: "The agent should ask if the user wants to provide any additional static context values."
 
   - user_input: "No additional context."
-    expected_outcome: "The agent should create the local directories, copy `defaults.yaml`, edit it with the gathered information, run `yamllint`, create `0-org-setup.auto.tfvars`, create the symlink, and then proceed to Step 8 (Organization Policy Import Check), executing the command to list current policies."
+    expected_outcome: "The agent should scaffold the local files (copying defaults, creating tfvars), validate them (e.g., yamllint), and then initiate the Organization Policy Import Check."
 
   - user_input: "Okay."
-    expected_outcome: "The agent should capture any existing policies, update `0-org-setup.auto.tfvars` if necessary, and proceed to Step 9 (Wrap-up & Apply), providing the final instructions for `terraform init/apply` and project cleanup."
+    expected_outcome: "The agent should process any existing org policies and provide the final wrap-up instructions for applying the Terraform."
