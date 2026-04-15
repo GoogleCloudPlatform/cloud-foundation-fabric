@@ -434,7 +434,8 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
 
 
 def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
-                           skill_src: str = None, gemini_cmd: str = 'gemini -y',
+                           skill_src: str = None,
+                           gemini_cmd: str = 'gemini',
                            keep_workspace: bool = False,
                            cli_agent_model: str = None,
                            cli_evaluator_model: str = None):
@@ -466,6 +467,9 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
                                                         'gemini-2.5-flash')
 
   gemini_cmd_list = gemini_cmd.split()
+  if '-y' not in gemini_cmd_list and '--yolo' not in gemini_cmd_list:
+    gemini_cmd_list.append('-y')
+
   if agent_model:
     gemini_cmd_list.extend(['--model', agent_model])
 
@@ -774,7 +778,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 @click.option(
     '--gemini-cmd',
     type=str,
-    default='gemini -y',
+    default='gemini',
     help='Command and initial arguments to invoke the CLI.',
 )
 @click.option(
