@@ -12,6 +12,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+counts:
+  google_compute_external_vpn_gateway: 1
+  google_compute_ha_vpn_gateway: 1
+  google_compute_interconnect_attachment: 2
+  google_compute_interconnect_attachment_group: 1
+  google_compute_network: 1
+  google_compute_route: 4
+  google_compute_router: 1
+  google_compute_router_interface: 4
+  google_compute_router_peer: 4
+  google_compute_shared_vpc_host_project: 1
+  google_compute_subnetwork: 1
+  google_compute_vpn_tunnel: 2
+  google_network_connectivity_group: 1
+  google_network_connectivity_hub: 1
+  google_network_connectivity_spoke: 3
+  google_project: 1
+  google_project_iam_member: 8
+  google_project_service: 10
+  google_project_service_identity: 8
+  google_storage_bucket_object: 2
+  modules: 9
+  random_id: 5
+  resources: 65
+  terraform_data: 2
+outputs:
+  host_project_ids:
+    net-core-0: fast-prod-net-core-0
+  host_project_numbers: __missing__
+  subnet_ips:
+    hub:
+      europe-west1/hub-default: 10.71.0.0/24
+  subnet_proxy_only_self_links:
+    hub: {}
+  subnet_psc_self_links:
+    hub: {}
+  subnet_self_links: __missing__
+  vpc_self_links: __missing__
 values:
   google_compute_ha_vpn_gateway.default["hub/to-onprem"]:
     description: null
@@ -26,6 +64,17 @@ values:
     stack_type: IPV4_ONLY
     terraform_labels:
       goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_compute_interconnect_attachment_group.default["hub-test-group"]:
+    attachments:
+    - name: to-onprem-vlan-0
+    - name: to-onprem-vlan-1
+    description: Terraform-managed.
+    intent:
+    - availability_sla: PRODUCTION_NON_CRITICAL
+    interconnect_group: null
+    name: test-group
+    project: fast-prod-net-core-0
     timeouts: null
   google_compute_router.default["hub/hybrid-connectivity-router"]:
     bgp:
@@ -231,6 +280,18 @@ values:
     project: fast-prod-net-core-0
     service: iap.googleapis.com
     timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: fast-prod-net-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
   module.projects.module.projects["net-core-0"].google_project_service.project_services["networkmanagement.googleapis.com"]:
     disable_dependent_services: false
     disable_on_destroy: false
@@ -248,18 +309,6 @@ values:
     disable_on_destroy: false
     project: fast-prod-net-core-0
     service: servicenetworking.googleapis.com
-    timeouts: null
-  module.projects.module.projects["net-core-0"].google_project_service.project_services["logging.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-net-core-0
-    service: logging.googleapis.com
-    timeouts: null
-  module.projects.module.projects["net-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
-    disable_dependent_services: false
-    disable_on_destroy: false
-    project: fast-prod-net-core-0
-    service: monitoring.googleapis.com
     timeouts: null
   module.projects.module.projects["net-core-0"].google_project_service.project_services["vpcaccess.googleapis.com"]:
     disable_dependent_services: false
@@ -652,43 +701,3 @@ values:
     byte_length: 8
     keepers: null
     prefix: null
-
-counts:
-  google_compute_external_vpn_gateway: 1
-  google_compute_ha_vpn_gateway: 1
-  google_compute_interconnect_attachment: 2
-  google_compute_network: 1
-  google_compute_route: 4
-  google_compute_router: 1
-  google_compute_router_interface: 4
-  google_compute_router_peer: 4
-  google_compute_shared_vpc_host_project: 1
-  google_compute_subnetwork: 1
-  google_compute_vpn_tunnel: 2
-  google_network_connectivity_group: 1
-  google_network_connectivity_hub: 1
-  google_network_connectivity_spoke: 3
-  google_project: 1
-  google_project_iam_member: 8
-  google_project_service: 10
-  google_project_service_identity: 8
-  google_storage_bucket_object: 2
-  modules: 9
-  random_id: 5
-  resources: 64
-  terraform_data: 2
-
-outputs:
-  host_project_ids:
-    net-core-0: fast-prod-net-core-0
-  host_project_numbers: __missing__
-  subnet_ips:
-    hub:
-      europe-west1/hub-default: 10.71.0.0/24
-  subnet_proxy_only_self_links:
-    hub: {}
-  subnet_psc_self_links:
-    hub: {}
-  subnet_self_links: __missing__
-  vpc_self_links: __missing__
-
