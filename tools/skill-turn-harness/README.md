@@ -14,7 +14,7 @@ This project provides a robust, hybrid test harness for developing and evaluatin
 - [Testing Local Skills (Inner Dev Loop)](#testing-local-skills-inner-dev-loop)
 - [Writing Playbooks](#writing-playbooks)
 - [Running the Pytest Suite](#running-the-pytest-suite)
-- [Future Enhancements: Autonomous "Pond" Testing](#future-enhancements-autonomous-pond-testing-simulated-user)
+- [Writing Playbooks: Three Modes of Testing](#writing-playbooks-three-modes-of-testing)
 
 The architecture relies on three main components:
 
@@ -127,40 +127,47 @@ To run the full End-to-End (E2E) test (which dynamically links the fixture skill
 python3 -m pytest test/test_harness.py -m "e2e" -v
 ```
 
-## Future Enhancements: Autonomous "Pond" Testing (Simulated User)
+## Writing Playbooks: Three Modes of Testing
 
-**TODO:** Implement an autonomous testing mode to complement the deterministic script-based approach.
+The harness supports three modes of execution depending on how you structure your YAML playbook. The mode is inferred automatically based on the presence of the `steps` and/or `persona` keys.
 
-While the current strict `steps` based playbook is excellent for **Unit/Regression Testing** (ensuring the exact state machine of a skill hasn't broken), an autonomous approach provides robust **E2E / Fuzz Testing** by handling the messy reality of natural language and conversational drift.
+### 1. Scripted Mode (Unit / Regression)
+**Best for:** Ensuring the exact, rigid state machine of a skill hasn't broken.
 
-### Concept: The "Pond" Architecture
+You define a strict, sequential list of `steps`. The harness feeds the `user_input` and checks if the agent's response satisfies the `expected_outcome` via an LLM evaluation.
 
-Instead of providing a rigid list of sequential steps, the playbook acts as a declarative **Persona** with a "Pond" of knowledge and explicit success criteria to evaluate when the task is complete:
+```yaml
+name: "FAST Setup PoC - Scripted"
+steps:
+  - user_input: "Hi, let's configure FAST."
+    expected_outcome: "The agent should greet the user and ask for the Project ID."
+  - user_input: "my-super-project-123"
+    expected_outcome: "The agent should acknowledge the Project ID and ask for the preferred Region."
+```
+
+### 2. Autonomous "Pond" Mode (E2E / Fuzz Testing)
+**Best for:** Testing how the skill handles the messy reality of natural language and conversational drift.
+
+Instead of providing a rigid script, you define a declarative **Persona** with a "Pond" of knowledge and explicit `success_criteria`. A secondary LLM agent acts as the simulated user, dynamically reading the CLI's outputs, fishing data from the "pond," and generating the next input until the success criteria are met or the `max_turns` limit is reached.
 
 ```yaml
 name: "FAST Setup PoC - Autonomous"
-goal: "Successfully configure FAST."
-knowledge_base:
-  project_id: "my-super-project-123"
-  region: "europe-west1"
-rules_for_simulated_user:
-  - "Do not provide information until the agent explicitly asks for it."
-  - "If the agent asks for something not in your knowledge base, say you don't know."
-final_state_checks:
-  - "The agent printed a final configuration summary containing the correct project_id and region."
-  - "The agent did not attempt to execute any commands during the configuration."
+persona:
+  initial_user_input: "Hi, let's configure FAST."
+  context: >
+    You are a GCP developer. Your Project ID is my-project-123 and region is europe-west1.
+    Do not volunteer information until the agent explicitly asks for it.
+  max_turns: 10
+  success_criteria:
+    llm_checks:
+      - "The agent provided a final configuration summary containing the correct project_id and region."
+    flow_contains:
+      - "my-project-123"
+    files_exist:
+      - "0-org-setup.auto.tfvars"
 ```
 
-### How it will work:
-1. **Primary Agent (CLI)** asks a question or performs an action.
-2. **Secondary Agent (Evaluator / Simulated User)** receives the CLI output, the conversation history, and the "Pond" (knowledge base).
-3. The Secondary Agent makes a single LLM call to evaluate the current state:
-   - Is the `goal` complete based on the `final_state_checks`? If yes, pass the test.
-   - Did the agent break any rules or hallucinate? If yes, fail the test.
-   - If the task is ongoing, generate the `next_user_input` dynamically by fishing the right data from the pond.
-4. If not complete, the generated input is fed back into the CLI.
+### 3. Hybrid Fallback Mode
+**Best for:** Testing happy-path compliance while ensuring the agent can recover from unexpected deviations.
 
-### Implementation Plan
-- Add a `--mode autonomous` flag to `harness.py` to switch between deterministic script execution and the autonomous persona mode.
-- Update the Pydantic evaluation schema to return `test_completed_successfully`, `agent_followed_skill_rules`, and `next_user_input`.
-- Update the playbook schema to support `goal`, `knowledge_base`, `rules_for_simulated_user`, and `final_state_checks` as an alternative to `steps`.
+If a playbook defines **both** `steps` and a `persona`, the harness runs in Hybrid mode. It attempts to execute the rigid `steps` first. If the skill deviates or fails a step evaluation, instead of failing the test outright, the harness **falls back** to the autonomous persona. The simulated user takes over the conversation history and attempts to guide the agent back on track to meet the `success_criteria`. If successful, the test returns a `PASS WITH WARNINGS`.
