@@ -15,16 +15,18 @@ This skill generates idiomatic Terraform code using Cloud Foundation Fabric (CFF
 
 ## Important Guidance
 
-- **Conventions & Best Practices:** You MUST read [conventions.md](references/conventions.md) before writing any Terraform code. It contains critical rules for CFF such as variable ordering, naming, and module boundaries.
-- **Fetching Modules:** Do not invent module inputs or outputs. Use the `fetch_module.py` script to pull exact details (README, variables, examples) for a specific module from GitHub before using it.
-  - To list available modules: `python3 scripts/fetch_module.py`
-  - To fetch details for a module (README): `python3 scripts/fetch_module.py <module_name>`
-  - To fetch variables files: `python3 scripts/fetch_module.py <module_name> --variables`
-  - To fetch outputs files: `python3 scripts/fetch_module.py <module_name> --outputs`
-  - To fetch the latest release version: `python3 scripts/fetch_module.py --latest-release`
+- **Conventions & Best Practices:** Consult [conventions.md](references/conventions.md) for guidelines on how to consume Fabric modules and write high-quality, idiomatic Terraform code.
+- **Fetching Modules:** Do not invent module inputs or outputs. Use the `fabric.py` script to pull exact details (README, variables, examples) for a specific module from GitHub before using it.
+  - To list available modules: `python3 scripts/fabric.py modules`
+  - To fetch details for a module (README): `python3 scripts/fabric.py fetch <module_name>`
+  - To fetch variables files: `python3 scripts/fabric.py fetch <module_name> --variables`
+  - To fetch outputs files: `python3 scripts/fabric.py fetch <module_name> --outputs`
+  - To fetch the latest release version: `python3 scripts/fabric.py release`
 
 ## Guidelines for Output
 
-- **Use Fabric Modules:** Rely on CFF modules instead of raw `google_` resources whenever possible. Unrelated resources should generally not be in the same module unless using a factory.
-- **Example-based Learning:** Always refer to the module's README (fetched via script) for correct usage examples.
-- **Module Source:** When generating module calls, use a GitHub source. It should look something like this: `source = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref={VERSION}&depth=1"`. Update ref using the latest release version fetched using `fetch_module.py --latest-release`
+- **Root Module Output:** Your output must be a complete Terraform root module that calls the appropriate CFF modules to fulfill the user's requirements.
+- **Use Fabric Modules:** Rely on CFF modules instead of raw `google_` resources whenever possible. 
+- **Example-based Learning:** Always refer to the module's README (fetched via `scripts/fabric.py`) for correct usage examples.
+- **Module Source:** When generating module calls, use a GitHub source. It should look like this: `source = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref={VERSION}&depth=1"`.
+- **Formatting & Validation:** Ensure the generated code is properly formatted. If possible, run `terraform fmt`, `terraform validate`, and `terraform plan` to check your work.
