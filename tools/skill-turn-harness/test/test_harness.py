@@ -143,3 +143,27 @@ def test_e2e_hybrid_tuning_loop(tmp_path):
   # Verify substitution happened securely
   assert 'dummy-secret-12345' in content
   assert '${MY_SECRET_ID}' not in content
+
+
+@pytest.mark.e2e
+def test_e2e_autonomous_tuning_loop(tmp_path):
+  '''
+  Runs the autonomous evaluation loop against the basic FAST Setup PoC skill.
+  '''
+  fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
+  skill_dir = os.path.join(fixtures_dir, 'my-test-skill')
+  playbook_path = os.path.join(fixtures_dir, 'playbook_autonomous.yaml')
+  env_file_path = os.path.join(fixtures_dir, '.env.test')
+
+  harness.load_env_file(env_file_path)
+
+  result = harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
+                                          skill_src=skill_dir)
+  assert result is True
+  log_files = list(tmp_path.glob('*_log.md'))
+  assert len(log_files) == 1
+  content = log_files[0].read_text()
+  
+  # Check that the autonomous turns were logged
+  assert '## Autonomous Turn 1' in content
+  assert 'dummy-secret-12345' in content

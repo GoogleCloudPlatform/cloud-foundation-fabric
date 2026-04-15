@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../playbooks/playbook.schema.json
+name: "FAST Setup PoC - Autonomous"
+env:
+  - MY_SECRET_ID
+persona:
+  initial_user_input: "Hi, please activate the fast-setup-poc skill and let's configure FAST."
+  context: >
+    You are a GCP developer setting up FAST. 
+    Your Project ID is ${MY_SECRET_ID} and your region is europe-west1.
+    Your Billing Account ID is 012345-6789AB-CDEF01.
+    Do not volunteer information unless explicitly asked.
+    If the agent asks for something not in your knowledge base, say you don't know.
+  max_turns: 8
+  success_criteria:
+    llm_checks:
+      - "The agent provided a final summary containing the correct project ID (${MY_SECRET_ID}), region (europe-west1), and billing account."
+    flow_contains:
+      - "012345-6789AB-CDEF01"
