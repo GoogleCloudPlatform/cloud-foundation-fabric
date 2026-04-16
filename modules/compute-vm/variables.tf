@@ -285,7 +285,7 @@ variable "lifecycle_config" {
   type = object({
     allow_stopping_for_update  = optional(bool, true)
     deletion_protection        = optional(bool, false)
-    key_revocation_action_type = optional(string, "NONE")
+    key_revocation_action_type = optional(string)
     graceful_shutdown = optional(object({
       enabled           = optional(bool, false)
       max_duration_secs = optional(number)
