@@ -22,6 +22,7 @@ variable "agent_engine_config" {
     class_methods         = optional(string)
     container_concurrency = optional(number)
     environment_variables = optional(map(string), {})
+    identity_type         = optional(string, "AGENT_IDENTITY")
     max_instances         = optional(number)
     min_instances         = optional(number)
     python_version        = optional(string, "3.13")
@@ -36,6 +37,14 @@ variable "agent_engine_config" {
   })
   nullable = false
   default  = {}
+
+  validation {
+    condition = (
+      var.agent_engine_config.identity_type == "AGENT_IDENTITY"
+      || var.agent_engine_config.identity_type == "SERVICE_ACCOUNT"
+    )
+    error_message = "var.agent_engine_config.identity_type must be either AGENT_IDENTITY or SERVICE_ACCOUNT."
+  }
 }
 
 variable "bucket_config" {
