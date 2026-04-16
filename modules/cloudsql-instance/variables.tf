@@ -79,9 +79,9 @@ variable "data_api_access" {
   description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
   type        = string
   default     = "DISALLOW_DATA_API"
-  nullable    = false
+  nullable    = true
   validation {
-    condition     = contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
+    condition     = var.data_api_access == null || contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
     error_message = "The data_api_access must be one of 'ALLOW_DATA_API' or 'DISALLOW_DATA_API'."
   }
 }
