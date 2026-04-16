@@ -306,5 +306,3 @@ module "addresses" {
 - [cloudsql-instance.tf](../../tests/fixtures/cloudsql-instance.tf)
 - [net-vpc-ipv6.tf](../../tests/fixtures/net-vpc-ipv6.tf)
 <!-- END TFDOC -->
--vpc-ipv6.tf)
-<!-- END TFDOC -->
