@@ -18,6 +18,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Example](#example)
 - [IAM](#iam)
   - [Conditional IAM by Principals](#conditional-iam-by-principals)
+- [Service Agents](#service-agents)
 - [Organization Policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
   - [Organization Policy Custom Constraints](#organization-policy-custom-constraints)
@@ -166,6 +167,25 @@ module "org" {
 # tftest modules=1 resources=2 inventory=iam-bpc.yaml
 ```
 
+## Service Agents
+
+The module allows managing service agents at the organization level. Service agent creation is triggered by adding them to the `service_agents_config.services` variable.
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  service_agents_config = {
+    services = [
+      "osconfig.googleapis.com",
+      "privilegedaccessmanager.googleapis.com",
+      "progressiverollout.googleapis.com"
+    ]
+  }
+}
+# tftest skip
+```
+
 ## Organization Policies
 
 ### Organization Policy Factory
@@ -269,19 +289,22 @@ custom.dataprocNoMoreThan10Workers:
 
 Note that using PAM entitlements requires specific roles to be granted to the users and groups that will be using them. For more information, see the [official documentation](https://cloud.google.com/iam/docs/pam-permissions-and-setup#before-you-begin).
 
-Additionally, the Privileged Access Manager Service Agent must be created and granted the `roles/privilegedaccessmanager.organizationServiceAgent` role. The service agent is not created automatically, and you can find the `gcloud` command to create it in the `service_agents` output of this module. For more information on service agents, see the [official documentation](https://cloud.google.com/iam/docs/service-agents).
+Additionally, the Privileged Access Manager Service Agent must be created and granted the `roles/privilegedaccessmanager.organizationServiceAgent` role. The service agent can be created automatically by adding `privilegedaccessmanager.googleapis.com` to the `services` list in the `service_agents_config` variable.
 
-The following example shows how to grant the required role to the PAM service agent:
+The following example shows how to create the service agent and grant the required role:
 
 ```hcl
 module "organization" {
   source          = "./fabric/modules/organization"
-  organization_id = var.org_id
+  organization_id = var.organization_id
   factories_config = {
     pam_entitlements = "factory/"
   }
+  service_agents_config = {
+    services = ["privilegedaccessmanager.googleapis.com"]
+  }
   iam = {
-    "roles/privilegedaccessmanager.serviceAgent" = [
+    "roles/privilegedaccessmanager.organizationServiceAgent" = [
       module.organization.service_agents.pam.iam_email
     ]
   }
@@ -991,7 +1014,7 @@ module "org" {
 | [pam.tf](./pam.tf) | None | <code>google_privileged_access_manager_entitlement</code> |
 | [scc-mute-configs.tf](./scc-mute-configs.tf) | Organization-level SCC mute configurations. | <code>google_scc_v2_organization_mute_config</code> |
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Organization-level Custom modules with Security Health Analytics. | <code>google_scc_management_organization_security_health_analytics_custom_module</code> |
-| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. |  |
+| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_organization_service_identity</code> |
 | [tags.tf](./tags.tf) | Manages GCP Secure Tags, keys, values, and IAM. | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_key_iam_member</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> · <code>google_tags_tag_value_iam_member</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-identity-providers.tf](./variables-identity-providers.tf) | None |  |
@@ -1030,6 +1053,7 @@ module "org" {
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_config](variables.tf#L182) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L161) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1053,10 +1077,10 @@ module "org" {
 | [scc_custom_sha_modules_ids](outputs.tf#L118) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
 | [scc_mute_configs](outputs.tf#L123) | SCC mute configurations. |  |
 | [service_agents](outputs.tf#L128) | Identities of all organization-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L133) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L141) | Tag key resources. |  |
-| [tag_values](outputs.tf#L150) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L158) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L165) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L172) | Workforce Identity provider attributes. |  |
+| [sink_writer_identities](outputs.tf#L136) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L144) | Tag key resources. |  |
+| [tag_values](outputs.tf#L153) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L161) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L168) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L175) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->
