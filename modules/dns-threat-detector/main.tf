@@ -29,8 +29,11 @@ locals {
 }
 
 resource "google_network_security_dns_threat_detector" "default" {
-  provider          = google-beta
-  project           = local.project_id
-  name              = local.name
-  excluded_networks = local.excluded_networks
+  provider                 = google-beta
+  project                  = local.project_id
+  name                     = local.name
+  excluded_networks        = local.excluded_networks
+  threat_detector_provider = var.threat_detector_provider
+  labels                   = var.labels
+  location                 = var.location
 }

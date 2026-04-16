@@ -32,6 +32,19 @@ variable "excluded_networks" {
   nullable    = false
 }
 
+variable "labels" {
+  description = "Set of label tags associated with the DNS Threat Detector."
+  type        = map(string)
+  default     = {}
+  nullable    = false
+}
+
+variable "location" {
+  description = "The location of the DNS Threat Detector. Currently only global is supported."
+  type        = string
+  default     = null
+}
+
 variable "name" {
   description = "Name of the DNS Threat Detector."
   type        = string
@@ -46,4 +59,10 @@ variable "prefix" {
 variable "project_id" {
   description = "ID of the project where the resource stays."
   type        = string
+}
+
+variable "threat_detector_provider" {
+  description = "DNS Threat Detection provider. Only supported value is INFOBLOX."
+  type        = string
+  default     = null
 }

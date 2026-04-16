@@ -236,6 +236,9 @@ module "dns_threat_detector" {
     for s in try(each.value.dns_threat_detector.excluded_networks, []) :
     lookup(local.ctx.networks, s, s)
   ]
-  context = local.ctx
+  labels                   = try(each.value.dns_threat_detector.labels, {})
+  location                 = try(each.value.dns_threat_detector.location, null)
+  threat_detector_provider = try(each.value.dns_threat_detector.threat_detector_provider, null)
+  context                  = local.ctx
 }
 
