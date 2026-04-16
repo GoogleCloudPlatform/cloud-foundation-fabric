@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yaml-language-server: $schema=https://cdn.jsdelivr.net/gh/GoogleCloudPlatform/cloud-foundation-fabric@fast-dev/modules/project-factory/schemas/project.schema.json
+# yaml-language-server: $schema=https://cdn.jsdelivr.net/gh/GoogleCloudPlatform/cloud-foundation-fabric@master/modules/project-factory/schemas/project.schema.json
 
 # TODO: set a parent folder if needed
 # parent: $folder_ids:shared
