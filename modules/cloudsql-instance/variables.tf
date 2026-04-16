@@ -75,6 +75,17 @@ variable "context" {
   nullable = false
 }
 
+variable "data_api_access" {
+  description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
+  type        = string
+  default     = null
+  nullable    = true
+  validation {
+    condition     = var.data_api_access == null || contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
+    error_message = "The data_api_access must be one of 'ALLOW_DATA_API' or 'DISALLOW_DATA_API'."
+  }
+}
+
 variable "data_cache" {
   description = "Enable data cache. Only used for Enterprise MYSQL and PostgreSQL."
   type        = bool
