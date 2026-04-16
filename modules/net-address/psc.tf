@@ -18,7 +18,7 @@ locals {
   network_attachments = {
     for k, v in var.network_attachments : k => merge(v, {
       region = lookup(
-        local.ctx,
+        local.ctx.locations,
         regex("regions/([^/]+)", v.subnet_self_link)[0],
         regex("regions/([^/]+)", v.subnet_self_link)[0]
       )
