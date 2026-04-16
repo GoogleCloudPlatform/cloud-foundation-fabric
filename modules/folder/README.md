@@ -9,6 +9,7 @@ This module allows the creation and management of folders, including support for
 - [Assured Workload Folder](#assured-workload-folder)
 - [Privileged Access Manager (PAM) Entitlements](#privileged-access-manager-pam-entitlements)
   - [Privileged Access Manager (PAM) Entitlements Factory](#privileged-access-manager-pam-entitlements-factory)
+- [Service Agents](#service-agents)
 - [Organization policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
 - [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
@@ -135,7 +136,7 @@ module "folder" {
 
 Note that using PAM entitlements requires specific roles to be granted to the users and groups that will be using them. For more information, see the [official documentation](https://cloud.google.com/iam/docs/pam-permissions-and-setup#before-you-begin).
 
-Additionally, the Privileged Access Manager Service Agent must be created and granted the `roles/privilegedaccessmanager.folderServiceAgent` role. The service agent is not created automatically, and you can find the `gcloud` command to create it in the `service_agents` output of this module. For more information on service agents, see the [official documentation](https://cloud.google.com/iam/docs/service-agents). Refer to the [organization module's documentation](../organization/README.md#privileged-access-manager-pam-entitlements) for an example on how to grant the required role.
+Additionally, the Privileged Access Manager Service Agent must be created and granted the `roles/privilegedaccessmanager.folderServiceAgent` role. The service agent can be created automatically by adding `privilegedaccessmanager.googleapis.com` to the `services` list in the `service_agents_config` variable. Refer to the [organization module's documentation](../organization/README.md#privileged-access-manager-pam-entitlements) for an example on how to grant the required role.
 
 ```hcl
 module "folder" {
@@ -177,6 +178,26 @@ module "folder" {
     pam_entitlements = "configs/pam-entitlements/"
   }
 }
+```
+
+## Service Agents
+
+The module allows managing service agents at the folder level. Service agent creation is triggered by adding them to the `service_agents_config.services` variable.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  service_agents_config = {
+    services = [
+      "osconfig.googleapis.com",
+      "privilegedaccessmanager.googleapis.com",
+      "progressiverollout.googleapis.com"
+    ]
+  }
+}
+# tftest inventory=agents.yaml
 ```
 
 ## Organization policies
@@ -720,7 +741,7 @@ module "folder" {
 | [pam.tf](./pam.tf) | None | <code>google_privileged_access_manager_entitlement</code> |
 | [scc-mute-configs.tf](./scc-mute-configs.tf) | Folder-level SCC mute configurations. | <code>google_scc_v2_folder_mute_config</code> |
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Folder-level Custom modules with Security Health Analytics. | <code>google_scc_management_folder_security_health_analytics_custom_module</code> |
-| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. |  |
+| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_folder_service_identity</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
@@ -760,7 +781,8 @@ module "folder" {
 | [parent](variables.tf#L272) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L27) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L286) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [service_agents_config](variables.tf#L286) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L296) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -774,5 +796,5 @@ module "folder" {
 | [organization_policies_ids](outputs.tf#L54) | Map of ORGANIZATION_POLICIES => ID in the folder. |  |
 | [scc_custom_sha_modules_ids](outputs.tf#L59) | Map of SCC CUSTOM SHA MODULES => ID in the folder. |  |
 | [service_agents](outputs.tf#L64) | Identities of all folder-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L69) | Writer identities created for each sink. |  |
+| [sink_writer_identities](outputs.tf#L72) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

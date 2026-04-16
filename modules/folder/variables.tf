@@ -283,6 +283,16 @@ variable "parent" {
   }
 }
 
+variable "service_agents_config" {
+  description = "Service agents configuration."
+  type = object({
+    services      = optional(list(string), [])
+    create_agents = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "tag_bindings" {
   description = "Tag bindings for this folder, in key => tag value id format."
   type        = map(string)
