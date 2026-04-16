@@ -149,6 +149,15 @@
   - items: *string*
 - **name**: *string*
 - **descriptive_name**: *string*
+- **dns_threat_detector**: *object*
+  <br>*additional properties: false*
+  - ⁺**enabled**: *boolean*
+  - **excluded_networks**: *array*
+    - items: *string*
+  - **labels**: *object*
+  - **location**: *string*
+  - **threat_detector_provider**: *string*
+    <br>*enum: ['INFOBLOX']*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*
