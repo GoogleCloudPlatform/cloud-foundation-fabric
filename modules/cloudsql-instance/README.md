@@ -426,7 +426,7 @@ module "db" {
 | [collation](variables.tf#L54) | The name of server instance collation. | <code>string</code> |  | <code>null</code> |
 | [connector_enforcement](variables.tf#L60) | Specifies if connections must use Cloud SQL connectors. | <code>string</code> |  | <code>null</code> |
 | [context](variables.tf#L66) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_api_access](variables.tf#L78) | Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`. | <code>string</code> |  | <code>&#34;DISALLOW_DATA_API&#34;</code> |
+| [data_api_access](variables.tf#L78) | Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`. | <code>string</code> |  | <code>null</code> |
 | [data_cache](variables.tf#L89) | Enable data cache. Only used for Enterprise MYSQL and PostgreSQL. | <code>bool</code> |  | <code>false</code> |
 | [databases](variables.tf#L101) | Databases to create once the primary instance is created. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [disk_autoresize_limit](variables.tf#L107) | The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. | <code>number</code> |  | <code>0</code> |
