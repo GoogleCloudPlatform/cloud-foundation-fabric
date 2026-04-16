@@ -13,26 +13,25 @@
 # limitations under the License.
 
 values:
-  module.folder.google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Folder name
-    parent: folders/1122334455
-    tags: null
-    timeouts: null
-  module.folder.google_folder_service_identity.default["osconfig"]:
+  module.org.google_organization_service_identity.default["osconfig"]:
+    organization: '1122334455'
     service: osconfig.googleapis.com
     timeouts: null
-  module.folder.google_folder_service_identity.default["osconfig-rollout"]:
+  module.org.google_organization_service_identity.default["osconfig-rollout"]:
+    organization: '1122334455'
     service: osconfig.googleapis.com
     timeouts: null
-  module.folder.google_folder_service_identity.default["pam"]:
+  module.org.google_organization_service_identity.default["pam"]:
+    organization: '1122334455'
     service: privilegedaccessmanager.googleapis.com
     timeouts: null
-  module.folder.google_folder_service_identity.default["progrollout"]:
+  module.org.google_organization_service_identity.default["progrollout"]:
+    organization: '1122334455'
     service: progressiverollout.googleapis.com
     timeouts: null
 
 counts:
-  google_organization_service_identity: 4
+  google_folder: 1
+  google_folder_service_identity: 4
   modules: 1
-  resources: 4
+  resources: 5

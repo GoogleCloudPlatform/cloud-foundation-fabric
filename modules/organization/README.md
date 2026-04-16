@@ -183,7 +183,7 @@ module "org" {
     ]
   }
 }
-# tftest skip
+# tftest inventory=agents.yaml
 ```
 
 ## Organization Policies
