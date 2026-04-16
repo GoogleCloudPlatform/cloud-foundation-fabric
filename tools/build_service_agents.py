@@ -248,9 +248,12 @@ def main(mode, e2e=False):
 
     agents.append(agent)
 
-  # make sure all names and aliases are different:  
+  # make sure all names and aliases are different:
   names = set(agent.name for agent in agents)
-  duplicate_names = [name for name, count in Counter(agent.name for agent in agents).items() if count > 1]
+  duplicate_names = [
+      name for name, count in Counter(agent.name for agent in agents).items()
+      if count > 1
+  ]
   assert len(names) == len(agents), f"duplicate names found: {duplicate_names}"
   aliases = set(chain.from_iterable(agent.aliases for agent in agents))
   assert aliases.isdisjoint(names)
