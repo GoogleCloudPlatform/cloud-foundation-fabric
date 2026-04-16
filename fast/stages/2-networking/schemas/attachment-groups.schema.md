@@ -18,7 +18,7 @@
   - **`^[a-zA-Z0-9-_]+$`**: *object*
     <br>*additional properties: false*
     - ⁺**name**: *string*
-    - **attachment**: *string*
+    - ⁺**attachment**: *string*
 
 ## Definitions
 

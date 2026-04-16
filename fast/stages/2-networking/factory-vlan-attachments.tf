@@ -94,11 +94,13 @@ locals {
   )
   _attachment_groups_preprocess = {
     for k, v in local._attachment_groups_files : k => merge(
+      {
+        project_id = local.vpcs[v.vpc_key].project_id
+      },
       try(yamldecode(file(v.path)), {}),
       {
-        key        = k
-        vpc_key    = v.vpc_key
-        project_id = local.vpcs[v.vpc_key].project_id
+        key     = k
+        vpc_key = v.vpc_key
       }
     )
   }
@@ -111,6 +113,10 @@ locals {
 
   ctx_attachment_groups = {
     for k, v in local.attachment_groups : "${v.vpc_key}/${v.name}" => k
+  }
+
+  ctx_vlan_attachments = {
+    for k, v in local.vlan_attachments : "${v.vpc_key}/${try(v.name, k)}" => k
   }
 
   # Gathers all members for each attachment group. Membership can be defined
@@ -128,13 +134,13 @@ locals {
         if try(
           lookup(local.ctx_attachment_groups, replace(a_config.attachment_group, "$attachment_groups:", ""), a_config.attachment_group),
           null
-        ) == g_key || try(a_config.attachment_group, null) == g_config.name
+        ) == g_key || (try(a_config.attachment_group, null) == g_config.name && a_config.vpc_key == g_config.vpc_key)
       ],
       [
         for a in values(try(g_config.attachments, {})) : {
           name = a.name
           attachment = try(
-            module.vlan-attachments[replace(a.attachment, "$vlan_attachments:", "")].id,
+            module.vlan-attachments[lookup(local.ctx_vlan_attachments, replace(a.attachment, "$vlan_attachments:", ""), a.attachment)].id,
             a.attachment
           )
         }

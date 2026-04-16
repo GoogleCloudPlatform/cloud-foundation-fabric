@@ -38,7 +38,8 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "name"
+            "name",
+            "attachment"
           ],
           "properties": {
             "name": {
