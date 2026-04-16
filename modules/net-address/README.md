@@ -11,6 +11,7 @@ This module allows reserving Compute Engine external, global, and internal addre
   - [PSC addresses](#psc-addresses)
   - [IPSec Interconnect addresses](#ipsec-interconnect-addresses)
   - [PSC Network Attachments](#psc-network-attachments)
+  - [Use contexts](#use-contexts)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -224,6 +225,52 @@ module "addresses" {
   }
 }
 # tftest modules=1 resources=1 inventory=network-attachments.yaml
+```
+
+### Use contexts
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = "$project_ids:my-prj"
+  context = {
+    locations = {
+      primary-region   = "us-central1"
+      secondary-region = "europe-west1"
+    }
+    networks = {
+      shared-vpc = "projects/prj-host/global/networks/shared-vpc"
+    }
+    project_ids = {
+      my-prj = "my-project-1"
+    }
+    subnets = {
+      subnet-primary   = "projects/prj-host/regions/us-central1/subnetworks/sub-1"
+      subnet-secondary = "projects/prj-host/regions/europe-west1/subnetworks/sub-2"
+    }
+  }
+  internal_addresses = {
+    ilb-1 = {
+      purpose    = "SHARED_LOADBALANCER_VIP"
+      region     = "$locations:primary-region"
+      subnetwork = "$subnets:subnet-primary"
+    }
+    ilb-2 = {
+      address    = "10.0.16.102"
+      region     = "$locations:secondary-region"
+      subnetwork = "$subnets:subnet-secondary"
+    }
+  }
+  psc_addresses = {
+    one = {
+      address = "10.0.0.32"
+      network = "$networks:shared-vpc"
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=context.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
