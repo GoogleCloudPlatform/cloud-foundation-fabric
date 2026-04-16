@@ -128,8 +128,8 @@ def test_e2e_hybrid_tuning_loop(tmp_path):
     Uses tmp_path for log_dir so we don't pollute the actual workspace logs.
     '''
   fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
-  skill_dir = os.path.join(fixtures_dir, 'my-test-skill')
-  playbook_path = os.path.join(fixtures_dir, 'playbook_env.yaml')
+  skill_dir = os.path.join(fixtures_dir, 'mock-conversation-skill')
+  playbook_path = os.path.join(fixtures_dir, 'playbook_scripted_env_substitution.yaml')
   env_file_path = os.path.join(fixtures_dir, '.env.test')
 
   # Load env to prime the os.environ
@@ -156,8 +156,8 @@ def test_e2e_autonomous_tuning_loop(tmp_path):
   Runs the autonomous evaluation loop against the basic FAST Setup PoC skill.
   '''
   fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
-  skill_dir = os.path.join(fixtures_dir, 'my-test-skill')
-  playbook_path = os.path.join(fixtures_dir, 'playbook_autonomous.yaml')
+  skill_dir = os.path.join(fixtures_dir, 'mock-conversation-skill')
+  playbook_path = os.path.join(fixtures_dir, 'playbook_autonomous_conversation.yaml')
   env_file_path = os.path.join(fixtures_dir, '.env.test')
 
   harness.load_env_file(env_file_path)
@@ -180,8 +180,8 @@ def test_e2e_tool_calls_contain(tmp_path):
   Runs an autonomous evaluation loop to verify tool_calls_contain deterministic checks.
   '''
   fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
-  skill_dir = os.path.join(fixtures_dir, 'tool-test-skill')
-  playbook_path = os.path.join(fixtures_dir, 'playbook_tool_autonomous.yaml')
+  skill_dir = os.path.join(fixtures_dir, 'mock-tool-use-skill')
+  playbook_path = os.path.join(fixtures_dir, 'playbook_autonomous_tool_use.yaml')
 
   result = harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
                                           skill_src=skill_dir)
@@ -191,3 +191,36 @@ def test_e2e_tool_calls_contain(tmp_path):
   session_files = list(tmp_path.glob('*_session.json'))
   assert len(session_files) == 1
   assert session_files[0].exists()
+
+
+@pytest.mark.e2e
+def test_e2e_working_dir(tmp_path):
+  '''
+  Runs an evaluation loop to verify working_dir functionality.
+  '''
+  fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
+  skill_dir = os.path.join(fixtures_dir, 'mock-tool-use-skill')
+  
+  # Create a specific subdirectory in tmp_path
+  workdir_target = tmp_path / "workdir_target"
+  workdir_target.mkdir()
+  
+  # Dynamically create a playbook YAML file
+  playbook_content = f"""# yaml-language-server: $schema=../../playbooks/playbook.schema.json
+name: "Tool Test with Workdir"
+working_dir: "{workdir_target.resolve()}"
+steps:
+  - user_input: "Hi, please activate tool-test-skill and create the file output.txt."
+    expected_outcome: "The agent confirms it has created the file."
+"""
+  playbook_path = tmp_path / "playbook_workdir.yaml"
+  playbook_path.write_text(playbook_content)
+
+  result = harness.run_hybrid_tuning_loop(str(playbook_path), log_dir=str(tmp_path),
+                                          skill_src=skill_dir)
+
+  assert result is True
+  # Verify that output.txt was created INSIDE workdir_target
+  output_file = workdir_target / "output.txt"
+  assert output_file.exists()
+  assert output_file.read_text().strip() == "Hello World"

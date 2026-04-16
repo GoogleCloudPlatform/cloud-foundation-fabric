@@ -14,6 +14,10 @@
       "type": "string",
       "description": "The model the test harness uses to grade the test and simulate the user (e.g., gemini-2.5-flash)."
     },
+    "working_dir": {
+      "type": "string",
+      "description": "The directory where the Gemini CLI should be executed. If omitted, a temporary isolated workspace is created."
+    },
     "timeout": {
       "type": "integer",
       "description": "Timeout in seconds for each CLI invocation.",

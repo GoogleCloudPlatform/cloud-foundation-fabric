@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../playbook.schema.json
 name: "FAST 0-org-setup Prereqs - Standard GCP Developer Flow (Autonomous)"
 timeout: 300
+working_dir: "."
 env:
   - GROUP
 persona:
@@ -26,7 +27,7 @@ persona:
   max_turns: 30
   success_criteria:
     llm_checks:
-      - "The agent completed the prerequisite phase and provided wrap-up instructions."
+      - "The agent explicitly provided the final wrap-up instructions containing the commands 'terraform init' and 'terraform apply'."
     tool_calls_contain:
       run_shell_command:
         - "gcloud organizations add-iam-policy-binding"

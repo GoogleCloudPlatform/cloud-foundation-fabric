@@ -22,6 +22,7 @@
 ### Step 6: IAM Role Assignments
 
 1. Grant the following roles to the chosen Admin Principal at the Organization level. **CRITICAL:** Only include `roles/billing.admin` in this list if the user selected Scenario 1 (Billing Administrator) AND confirmed the billing account is managed Inside the Organization in Step 4.
+   **CRITICAL EXECUTION RULE:** Do NOT create temporary bash scripts (e.g., `assign_roles.sh`) to execute this loop. You MUST execute the `for` loop inline directly using the `run_shell_command` tool, or output the exact inline loop for the user to copy/paste.
    ```bash
    # Roles to assign:
    # [roles/billing.admin] <-- CONDITIONAL (See above)

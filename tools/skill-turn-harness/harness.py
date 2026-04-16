@@ -6,25 +6,29 @@ isolated subprocess and evaluates the interactions using the Gemini API and
 structured Pydantic schemas.
 '''
 
-import subprocess
-import json
-import sys
-import yaml
-import tempfile
-import os
-import shutil
-import click
-import re
-import jsonschema
+# Standard library imports
 import glob
 import json
-from datetime import datetime
-from pydantic import BaseModel
-from dataclasses import dataclass, asdict
+import os
+import re
+import shutil
 import string
+import subprocess
+import sys
+import tempfile
+
+from dataclasses import dataclass, asdict
+from datetime import datetime
 from typing import Optional, Dict
+
+# Third-party imports
+import click
+import jsonschema
+import yaml
+
 from google import genai
 from google.genai import types
+from pydantic import BaseModel
 
 
 def load_env_file(env_file_path: str):
@@ -365,6 +369,7 @@ def check_tool_calls_contain(tool_calls_criteria: dict,
     )
     return False
 
+  session_files.sort(key=os.path.getmtime, reverse=True)
   try:
     with open(session_files[0], 'r') as f:
       session_data = json.load(f)
@@ -434,8 +439,7 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
 
 
 def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
-                           skill_src: str = None,
-                           gemini_cmd: str = 'gemini',
+                           skill_src: str = None, gemini_cmd: str = 'gemini',
                            keep_workspace: bool = False,
                            cli_agent_model: str = None,
                            cli_evaluator_model: str = None):
@@ -486,8 +490,13 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     subprocess.run(['gemini', 'skills', 'link', skill_src, '--consent'],
                    check=True, capture_output=True)
 
-  workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
-  open(os.path.join(workspace_dir, '.project_root'), 'w').close()
+  working_dir = playbook.get('working_dir')
+  is_working_dir = bool(working_dir)
+  if working_dir:
+    workspace_dir = os.path.abspath(working_dir)
+  else:
+    workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
+    open(os.path.join(workspace_dir, '.project_root'), 'w').close()
   print(f'--- Tuning: {playbook_name} | Workspace: {workspace_dir} ---')
   interaction_log = []
   log_prefix = generate_log_prefix(playbook_path)
@@ -739,13 +748,16 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         os.path.expanduser(
             f'~/.gemini/tmp/{slugified_name}/chats/session-*.json'))
     if session_files:
+      session_files.sort(key=os.path.getmtime, reverse=True)
       session_log_path = os.path.join(log_dir, f'{log_prefix}_session.json')
       shutil.copy2(session_files[0], session_log_path)
       print(f'📄 Session JSON saved to: {session_log_path}')
 
-    if not keep_workspace:
+    if not keep_workspace and not is_working_dir:
       # Cleanup the temporary workspace
       shutil.rmtree(workspace_dir)
+    elif is_working_dir:
+      print(f'📁 Working directory preserved: {workspace_dir}')
     else:
       print(f'📁 Workspace preserved at: {workspace_dir}')
 
