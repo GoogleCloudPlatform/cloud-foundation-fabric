@@ -31,7 +31,6 @@ values:
     timeouts: null
 
 counts:
-  google_folder: 1
-  google_folder_service_identity: 4
+  google_organization_service_identity: 4
   modules: 1
-  resources: 5
+  resources: 4
