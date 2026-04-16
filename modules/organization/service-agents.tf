@@ -35,8 +35,8 @@ locals {
 }
 
 resource "google_organization_service_identity" "default" {
-  provider = google-beta
-  for_each = var.service_agents_config.create_agents ? local.service_agents : {}
-  organization  = local.organization_id_numeric
-  service  = each.value.api
+  provider     = google-beta
+  for_each     = var.service_agents_config.create_agents ? local.service_agents : {}
+  organization = local.organization_id_numeric
+  service      = each.value.api
 }
