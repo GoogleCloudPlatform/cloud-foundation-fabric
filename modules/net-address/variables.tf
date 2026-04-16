@@ -93,10 +93,10 @@ variable "ipsec_interconnect_addresses" {
 variable "network_attachments" {
   description = "PSC network attachments, names as keys."
   type = map(object({
+    region                = string
     subnet_self_link      = string
     automatic_connection  = optional(bool, false)
     description           = optional(string, "Terraform-managed.")
-    network               = optional(string)
     producer_accept_lists = optional(list(string))
     producer_reject_lists = optional(list(string))
   }))

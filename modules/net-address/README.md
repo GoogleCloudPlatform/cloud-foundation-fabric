@@ -217,6 +217,7 @@ module "addresses" {
   project_id = var.project_id
   network_attachments = {
     gce-0 = {
+      region = "europe-west8"
       subnet_self_link = (
         "projects/net-host/regions/europe-west8/subnetworks/gce"
       )
@@ -304,4 +305,6 @@ module "addresses" {
 
 - [cloudsql-instance.tf](../../tests/fixtures/cloudsql-instance.tf)
 - [net-vpc-ipv6.tf](../../tests/fixtures/net-vpc-ipv6.tf)
+<!-- END TFDOC -->
+-vpc-ipv6.tf)
 <!-- END TFDOC -->

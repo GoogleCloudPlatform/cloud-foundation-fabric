@@ -87,9 +87,11 @@ resource "google_compute_global_forwarding_rule" "psc_consumer" {
     for name, psc in local.global_psc
     : name => psc if psc.service_attachment != null
   }
-  name                  = coalesce(each.value.name, each.key)
-  project               = local.project_id
-  network               = each.value.network
+  name    = coalesce(each.value.name, each.key)
+  project = local.project_id
+  network = lookup(
+    local.ctx.networks, each.value.network, each.value.network
+  )
   ip_address            = google_compute_global_address.psc[each.key].self_link
   load_balancing_scheme = ""
   target                = each.value.service_attachment.psc_service_attachment_link

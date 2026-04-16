@@ -75,25 +75,29 @@ resource "google_compute_address" "internal" {
 }
 
 resource "google_compute_global_address" "psa" {
-  for_each      = var.psa_addresses
-  project       = local.project_id
-  name          = coalesce(each.value.name, each.key)
-  description   = each.value.description
-  address       = each.value.address
-  address_type  = "INTERNAL"
-  network       = each.value.network
+  for_each     = var.psa_addresses
+  project      = local.project_id
+  name         = coalesce(each.value.name, each.key)
+  description  = each.value.description
+  address      = each.value.address
+  address_type = "INTERNAL"
+  network = lookup(
+    local.ctx.networks, each.value.network, each.value.network
+  )
   prefix_length = each.value.prefix_length
   purpose       = "VPC_PEERING"
 }
 
 resource "google_compute_address" "ipsec_interconnect" {
-  for_each      = var.ipsec_interconnect_addresses
-  project       = local.project_id
-  name          = coalesce(each.value.name, each.key)
-  description   = each.value.description
-  address       = each.value.address
-  address_type  = "INTERNAL"
-  network       = each.value.network
+  for_each     = var.ipsec_interconnect_addresses
+  project      = local.project_id
+  name         = coalesce(each.value.name, each.key)
+  description  = each.value.description
+  address      = each.value.address
+  address_type = "INTERNAL"
+  network = lookup(
+    local.ctx.networks, each.value.network, each.value.network
+  )
   prefix_length = each.value.prefix_length
   purpose       = "IPSEC_INTERCONNECT"
   region = lookup(
