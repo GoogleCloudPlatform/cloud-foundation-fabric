@@ -231,6 +231,10 @@ variable "projects" {
       friendly_name  = optional(string)
       location       = optional(string)
     })), {})
+    dns_threat_detector = optional(object({
+      enabled           = bool
+      excluded_networks = optional(list(string), [])
+    }))
     factories_config = optional(object({
       custom_roles           = optional(string)
       observability          = optional(string)

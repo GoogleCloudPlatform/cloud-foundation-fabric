@@ -222,3 +222,20 @@ module "projects-iam" {
     module.projects
   ]
 }
+
+module "dns_threat_detector" {
+  source = "../dns-threat-detector"
+  for_each = {
+    for k, v in local.projects_input : k => v
+    if try(v.dns_threat_detector.enabled, false)
+  }
+  project_id = module.projects[each.key].project_id
+  name       = each.value.name
+  prefix     = each.value.prefix
+  excluded_networks = [
+    for s in try(each.value.dns_threat_detector.excluded_networks, []) :
+    lookup(local.ctx.networks, s, s)
+  ]
+  context = local.ctx
+}
+
