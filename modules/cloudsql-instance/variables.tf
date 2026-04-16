@@ -78,7 +78,7 @@ variable "context" {
 variable "data_api_access" {
   description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
   type        = string
-  default     = "DISALLOW_DATA_API"
+  default     = null
   nullable    = true
   validation {
     condition     = var.data_api_access == null || contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
