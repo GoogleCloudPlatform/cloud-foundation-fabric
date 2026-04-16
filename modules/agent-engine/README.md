@@ -191,6 +191,7 @@ module "agent_engine" {
 
   agent_engine_config = {
     agent_framework = "google-adk"
+    identity_type   = "SERVICE_ACCOUNT"
   }
 
   service_account_config = {
@@ -217,6 +218,7 @@ module "agent_engine" {
 
   agent_engine_config = {
     agent_framework = "google-adk"
+    identity_type   = "SERVICE_ACCOUNT"
   }
 
   service_account_config = {
