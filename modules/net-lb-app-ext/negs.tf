@@ -65,7 +65,7 @@ locals {
 
 resource "google_compute_global_network_endpoint_group" "default" {
   for_each = local.neg_global
-  project  = var.project_id
+  project  = local.project_id
   name     = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
   # default_port = each.value.default_port
@@ -91,18 +91,18 @@ resource "google_compute_global_network_endpoint" "default" {
 
 resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
-  project  = var.project_id
+  project  = local.project_id
   zone     = each.value.zone
   name     = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
   # default_port = each.value.default_port
   description           = coalesce(each.value.description, var.description)
   network_endpoint_type = each.value.type
-  network               = each.value.network
+  network               = try(local.ctx.networks[each.value.network], each.value.network)
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : each.value.subnetwork
+    : try(local.ctx.subnets[each.value.subnetwork], each.value.subnetwork)
   )
 }
 
@@ -122,7 +122,7 @@ resource "google_compute_network_endpoint" "default" {
 
 resource "google_compute_region_network_endpoint_group" "psc" {
   for_each              = local.neg_regional_psc
-  project               = var.project_id
+  project               = local.project_id
   region                = each.value.psc.region
   name                  = "${var.name}-${each.key}"
   description           = coalesce(each.value.description, var.description)
@@ -141,7 +141,7 @@ resource "google_compute_region_network_endpoint_group" "serverless" {
   for_each = local.neg_regional_serverless
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
   region = try(
