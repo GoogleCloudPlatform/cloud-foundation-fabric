@@ -223,22 +223,21 @@ module "projects-iam" {
   ]
 }
 
-module "dns_threat_detector" {
-  source = "../dns-threat-detector"
+resource "google_network_security_dns_threat_detector" "dns_threat_detector" {
+  provider = google-beta
   for_each = {
     for k, v in local.projects_input : k => v
     if try(v.dns_threat_detector.enabled, false)
   }
-  project_id = module.projects[each.key].project_id
-  name       = each.value.name
-  prefix     = each.value.prefix
+  project = module.projects[each.key].project_id
+  name    = each.value.prefix == null ? each.value.name : "${each.value.prefix}-${each.value.name}"
   excluded_networks = [
     for s in try(each.value.dns_threat_detector.excluded_networks, []) :
     lookup(local.ctx.networks, s, s)
   ]
+  threat_detector_provider = try(each.value.dns_threat_detector.threat_detector_provider, null)
   labels                   = try(each.value.dns_threat_detector.labels, {})
   location                 = try(each.value.dns_threat_detector.location, null)
-  threat_detector_provider = try(each.value.dns_threat_detector.threat_detector_provider, null)
-  context                  = local.ctx
 }
+
 
