@@ -30,4 +30,3 @@ forwarding_rules_config = {
     ports = [80]
   }
 }
-

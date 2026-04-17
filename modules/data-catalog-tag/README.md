@@ -128,11 +128,11 @@ parent: projects/project-data-product/datasets/exposure
 location: europe-west1
 template: projects/project-datagov/locations/europe-west1/tagTemplates/test
 fields:
-  owner_email: 
+  owner_email:
     string_value: example@example.com
-  num: 
+  num:
     double_value: 5
-  pii: 
+  pii:
     enum_value: NONE
 ```
 <!-- BEGIN TFDOC -->

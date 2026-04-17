@@ -46,4 +46,3 @@ output "name" {
   description = "The name of the cluster."
   value       = google_dataproc_cluster.cluster.name
 }
-

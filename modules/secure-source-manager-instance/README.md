@@ -194,7 +194,7 @@ module "ssm_instance" {
     }
   }
 }
-# tftest modules=1 resources=3 inventory=branch-protection-rules.yaml 
+# tftest modules=1 resources=3 inventory=branch-protection-rules.yaml
 ```
 
 ### Initial Configuration
