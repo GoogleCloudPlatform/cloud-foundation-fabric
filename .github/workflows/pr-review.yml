@@ -1,0 +1,114 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: "Automated PR Review"
+# yamllint disable-line rule:truthy
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - labeled
+
+jobs:
+  pr-review:
+    # Run only if the PR has the 'automated-review' label
+    if: contains(github.event.pull_request.labels.*.name, 'automated-review')
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for diffing
+
+      - id: gcp-auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          # yamllint disable-line rule:line-length
+          workload_identity_provider: ${{ vars.REVIEWS_WIF_PROVIDER }}
+          service_account: ${{ vars.REVIEWS_WIF_SA }}
+          access_token_lifetime: 900s
+
+      - id: setup-python
+        name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - id: install-deps
+        name: Install Dependencies
+        run: |
+          pip install google-cloud-aiplatform
+
+      - id: generate-diff
+        name: Generate PR Diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Fetch the pull request head
+          git fetch origin pull/$PR_NUMBER/head
+
+          # Generate the diff between the PR base and the PR head
+          git diff "$BASE_SHA"..."$HEAD_SHA" > pr.diff
+
+      - id: run-review
+        name: Run Gemini PR Review
+        env:
+          VERTEX_PROJECT: ${{ vars.REVIEWS_VERTEX_PROJECT }}
+        run: |
+          # The script prints the review to stdout, which we capture into a file
+
+          python3 tools/pr_review.py \
+            --project "$VERTEX_PROJECT" \
+            --diff-file pr.diff > review_output.md
+      - id: pr-comment
+        name: Post comment to Pull Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reviewContent = fs.readFileSync('review_output.md', 'utf8');
+            const output = `### Automated PR Review 🤖\n\n${reviewContent}`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - id: remove-label
+        name: Remove automated-review label
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'automated-review'
+              });
+            } catch (error) {
+              console.log('Error removing label', error);
+            }

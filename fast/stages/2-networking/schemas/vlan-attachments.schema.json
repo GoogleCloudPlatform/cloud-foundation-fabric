@@ -1,0 +1,236 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/fast/stages/2-networking/schemas/vlan-attachments.schema.json",
+  "title": "VLAN Attachments schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "peer_asn",
+    "router_config"
+  ],
+  "properties": {
+    "admin_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "dedicated_interconnect_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interconnect",
+        "vlan_tag"
+      ],
+      "properties": {
+        "bandwidth": {
+          "type": "string",
+          "enum": [
+            "BPS_50M",
+            "BPS_100M",
+            "BPS_200M",
+            "BPS_300M",
+            "BPS_400M",
+            "BPS_500M",
+            "BPS_1G",
+            "BPS_2G",
+            "BPS_5G",
+            "BPS_10G",
+            "BPS_20G",
+            "BPS_50G",
+            "BPS_100G",
+            "BPS_400G"
+          ]
+        },
+        "bgp_range": {
+          "type": "string"
+        },
+        "bgp_priority": {
+          "type": "number"
+        },
+        "interconnect": {
+          "type": "string"
+        },
+        "vlan_tag": {
+          "type": "string"
+        },
+        "candidate_cloud_router_ip_address": {
+          "type": "string"
+        },
+        "candidate_customer_router_ip_address": {
+          "type": "string"
+        }
+      }
+    },
+    "description": {
+      "type": "string"
+    },
+    "ipsec_gateway_ip_ranges": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "mtu": {
+      "type": "number",
+      "default": 1500
+    },
+    "name": {
+      "type": "string"
+    },
+    "partner_interconnect_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge_availability_domain"
+      ],
+      "properties": {
+        "edge_availability_domain": {
+          "type": "string",
+          "enum": [
+            "AVAILABILITY_DOMAIN_1",
+            "AVAILABILITY_DOMAIN_2",
+            "AVAILABILITY_DOMAIN_ANY"
+          ]
+        }
+      }
+    },
+    "peer_asn": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "router_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create": {
+          "type": "boolean",
+          "default": true
+        },
+        "asn": {
+          "type": "number"
+        },
+        "keepalive": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "bgp_peer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "custom_advertise": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "all_subnets",
+            "ip_ranges"
+          ],
+          "properties": {
+            "all_subnets": {
+              "type": "boolean"
+            },
+            "ip_ranges": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "custom_learned_ip_ranges": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "route_priority": {
+              "type": "number"
+            },
+            "ip_ranges": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "bfd": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min_receive_interval": {
+              "type": "number"
+            },
+            "min_transmit_interval": {
+              "type": "number"
+            },
+            "multiplier": {
+              "type": "number"
+            },
+            "session_initialization_mode": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "PASSIVE"
+              ]
+            }
+          }
+        },
+        "md5_authentication_key": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "key": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "vpn_gateways_ip_range": {
+      "type": "string"
+    },
+    "ncc_spoke_config": {
+      "$ref": "#/$defs/ncc_spoke_config"
+    }
+  },
+  "$defs": {
+    "ncc_spoke_config": {
+      "type": "object",
+      "properties": {
+        "hub": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object"
+        },
+        "exclude_export_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "include_export_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "group": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

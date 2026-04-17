@@ -1,0 +1,1379 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_storage_bucket_object.providers["0-org-setup"]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: providers/0-org-setup-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.providers["0-org-setup-ro"]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n"
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: providers/0-org-setup-ro-providers.tf
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.tfvars["globals"]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: tfvars/0-globals.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.tfvars["org-setup"]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: tfvars/0-org-setup.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
+  google_storage_bucket_object.version[0]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: versions/0-org-setup-version.txt
+    retention: []
+    source: fast_version.txt
+    temporary_hold: null
+    timeouts: null
+  local_file.providers["0-org-setup"]:
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n"
+    content_base64: null
+    directory_permission: '0777'
+    file_permission: '0644'
+    filename: /tmp/fast-config/providers/0-org-setup-providers.tf
+    sensitive_content: null
+    source: null
+  local_file.providers["0-org-setup-ro"]:
+    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
+      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
+      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
+      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
+      \ by applicable law or agreed to in writing, software\n * distributed under\
+      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
+      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
+      \ the specific language governing permissions and\n * limitations under the\
+      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
+      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
+      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
+      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
+      \n}\n"
+    content_base64: null
+    directory_permission: '0777'
+    file_permission: '0644'
+    filename: /tmp/fast-config/providers/0-org-setup-ro-providers.tf
+    sensitive_content: null
+    source: null
+  local_file.tfvars["globals"]:
+    content: '{"billing_account":{"id":"012345-012345-012345"},"groups":{"domain":"domain:example.org","gcp-billing-admins":"group:gcp-billing-admins@example.org","gcp-devops":"group:gcp-devops@example.org","gcp-network-admins":"group:gcp-network-admins@example.org","gcp-organization-admins":"group:fabric-fast-owners@google.com","gcp-secops-admins":"group:gcp-secops-admins@example.org","gcp-security-admins":"group:gcp-security-admins@example.org","gcp-support":"group:gcp-support@example.org"},"organization":{"customer_id":"abcd123456","domain":"example.org","id":"1234567890"},"prefix":"ft0","universe":null}'
+    content_base64: null
+    directory_permission: '0777'
+    file_permission: '0644'
+    filename: /tmp/fast-config/tfvars/0-globals.auto.tfvars.json
+    sensitive_content: null
+    source: null
+  local_file.tfvars["org-setup"]:
+    content_base64: null
+    directory_permission: '0777'
+    file_permission: '0644'
+    filename: /tmp/fast-config/tfvars/0-org-setup.auto.tfvars.json
+    sensitive_content: null
+    source: null
+  module.factory.module.bigquery-datasets["iac-0/billing_export"].google_bigquery_dataset.default:
+    dataset_id: billing_export
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: Billing export
+    labels: null
+    location: u-germany-northeast1
+    max_time_travel_hours: '168'
+    project: ft0-prod-iac-core-0
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: U-GERMANY-NORTHEAST1
+    logging: []
+    name: ft0-prod-iac-core-0-iac-org-state
+    project: ft0-prod-iac-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
+  : bucket: ft0-prod-iac-core-0-iac-org-state
+    condition: []
+    role: $custom_roles:storage_viewer
+    timeouts: null
+  ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]
+  : bucket: ft0-prod-iac-core-0-iac-org-state
+    condition: []
+    role: roles/storage.admin
+    timeouts: null
+  module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: U-GERMANY-NORTHEAST1
+    logging: []
+    name: ft0-prod-iac-core-0-iac-outputs
+    project: ft0-prod-iac-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  module.factory.module.buckets["iac-0/iac-outputs"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]:
+    bucket: ft0-prod-iac-core-0-iac-outputs
+    condition: []
+    role: roles/storage.admin
+    timeouts: null
+  module.factory.module.folder-1["dev"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Development
+    parent: organizations/1234567890
+    tags: null
+    timeouts: null
+  module.factory.module.folder-1["dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-1["prod"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Production
+    parent: organizations/1234567890
+    tags: null
+    timeouts: null
+  module.factory.module.folder-1["prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.log-buckets["iac-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
+    bucket_id: audit-logs
+    cmek_settings: []
+    enable_analytics: true
+    index_configs: []
+    location: u-germany-northeast1
+    locked: null
+    project: ft0-prod-iac-core-0
+    retention_days: 31
+  module.factory.module.projects-iam["dev-app-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: ft0-dev-net-shared-0
+    service_project: ft0-dev-app-example-0
+    timeouts: null
+  module.factory.module.projects-iam["dev-net-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    project: ft0-dev-net-shared-0
+    timeouts: null
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/cloudbuild.builds.editor
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/iam.serviceAccountAdmin
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/iam.workloadIdentityPoolAdmin"]
+  : condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/iam.workloadIdentityPoolAdmin
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/owner
+  module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/storage.admin"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/storage.admin
+  module.factory.module.projects-iam["prod-app-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
+    deletion_policy: null
+    host_project: ft0-prod-net-shared-0
+    service_project: ft0-prod-app-example-0
+    timeouts: null
+  module.factory.module.projects-iam["prod-net-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    project: ft0-prod-net-shared-0
+    timeouts: null
+  module.factory.module.projects["dev-app-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-dev-app-example-0
+  module.factory.module.projects["dev-app-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-dev-app-example-0
+  module.factory.module.projects["dev-app-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: ft0-dev-app-example-0
+    user_project: null
+  module.factory.module.projects["dev-app-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-012345-012345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: ft0-dev-app-example-0
+    org_id: null
+    project_id: ft0-dev-app-example-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["dev-app-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: ft0-dev-app-example-0
+    role: roles/compute.serviceAgent
+  module.factory.module.projects["dev-app-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: ft0-dev-app-example-0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["dev-app-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-app-example-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-app-0"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-app-example-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-app-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-app-example-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-app-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-app-example-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-app-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-app-example-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-app-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: ft0-dev-app-example-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-dev-net-shared-0
+  module.factory.module.projects["dev-net-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-012345-012345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: ft0-dev-net-shared-0
+    org_id: null
+    project_id: ft0-dev-net-shared-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: ft0-dev-net-shared-0
+    role: roles/compute.serviceAgent
+  module.factory.module.projects["dev-net-0"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: ft0-dev-net-shared-0
+    role: roles/container.serviceAgent
+  module.factory.module.projects["dev-net-0"].google_project_iam_member.service_agents["dns"]:
+    condition: []
+    project: ft0-dev-net-shared-0
+    role: roles/dns.serviceAgent
+  module.factory.module.projects["dev-net-0"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: ft0-dev-net-shared-0
+    role: roles/container.defaultNodeServiceAgent
+  module.factory.module.projects["dev-net-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: ft0-dev-net-shared-0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["dev-net-0"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-net-shared-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-net-shared-0
+    service: container.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service.project_services["dns.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-net-shared-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service.project_services["iap.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-net-shared-0
+    service: iap.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-net-shared-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-dev-net-shared-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service_identity.default["container.googleapis.com"]:
+    project: ft0-dev-net-shared-0
+    service: container.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service_identity.default["dns.googleapis.com"]:
+    project: ft0-dev-net-shared-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service_identity.default["iap.googleapis.com"]:
+    project: ft0-dev-net-shared-0
+    service: iap.googleapis.com
+    timeouts: null
+  module.factory.module.projects["dev-net-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: ft0-dev-net-shared-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-iac-core-0
+  module.factory.module.projects["iac-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-prod-iac-core-0
+  module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: ft0-prod-iac-core-0
+    user_project: null
+  module.factory.module.projects["iac-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-012345-012345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: null
+    labels: null
+    name: ft0-prod-iac-core-0
+    org_id: '1234567890'
+    project_id: ft0-prod-iac-core-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_iam_member.service_agents["cloudkms"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/cloudkms.serviceAgent
+  module.factory.module.projects["iac-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/compute.serviceAgent
+  module.factory.module.projects["iac-0"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/container.serviceAgent
+  module.factory.module.projects["iac-0"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/container.defaultNodeServiceAgent
+  module.factory.module.projects["iac-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["iac-0"].google_project_iam_member.service_agents["pubsub"]:
+    condition: []
+    project: ft0-prod-iac-core-0
+    role: roles/pubsub.serviceAgent
+  module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: orgpolicy.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["accesscontextmanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: accesscontextmanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["bigquerystorage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: bigquerystorage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["cloudbilling.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: cloudbilling.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["cloudresourcemanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: cloudresourcemanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["essentialcontacts.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: essentialcontacts.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["iam.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: iam.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["iamcredentials.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: iamcredentials.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["pubsub.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: pubsub.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["serviceusage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: serviceusage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["storage-component.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: storage-component.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service.project_services["sts.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-iac-core-0
+    service: sts.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service_identity.default["cloudkms.googleapis.com"]:
+    project: ft0-prod-iac-core-0
+    service: cloudkms.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service_identity.default["container.googleapis.com"]:
+    project: ft0-prod-iac-core-0
+    service: container.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: ft0-prod-iac-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["iac-0"].google_project_service_identity.default["pubsub.googleapis.com"]:
+    project: ft0-prod-iac-core-0
+    service: pubsub.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-app-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: ft0-prod-app-example-0
+  module.factory.module.projects["prod-app-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-prod-app-example-0
+  module.factory.module.projects["prod-app-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: ft0-prod-app-example-0
+    user_project: null
+  module.factory.module.projects["prod-app-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-012345-012345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: ft0-prod-app-example-0
+    org_id: null
+    project_id: ft0-prod-app-example-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["prod-app-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: ft0-prod-app-example-0
+    role: roles/compute.serviceAgent
+  module.factory.module.projects["prod-app-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: ft0-prod-app-example-0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["prod-app-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-app-example-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-app-0"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-app-example-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-app-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-app-example-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-app-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-app-example-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-app-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-app-example-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-app-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: ft0-prod-app-example-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: ft0-prod-net-shared-0
+  module.factory.module.projects["prod-net-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 012345-012345-012345
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: ft0-prod-net-shared-0
+    org_id: null
+    project_id: ft0-prod-net-shared-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_iam_member.service_agents["compute-system"]:
+    condition: []
+    project: ft0-prod-net-shared-0
+    role: roles/compute.serviceAgent
+  module.factory.module.projects["prod-net-0"].google_project_iam_member.service_agents["container-engine-robot"]:
+    condition: []
+    project: ft0-prod-net-shared-0
+    role: roles/container.serviceAgent
+  module.factory.module.projects["prod-net-0"].google_project_iam_member.service_agents["dns"]:
+    condition: []
+    project: ft0-prod-net-shared-0
+    role: roles/dns.serviceAgent
+  module.factory.module.projects["prod-net-0"].google_project_iam_member.service_agents["gkenode"]:
+    condition: []
+    project: ft0-prod-net-shared-0
+    role: roles/container.defaultNodeServiceAgent
+  module.factory.module.projects["prod-net-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: ft0-prod-net-shared-0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["prod-net-0"].google_project_service.project_services["compute.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-net-shared-0
+    service: compute.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service.project_services["container.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-net-shared-0
+    service: container.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service.project_services["dns.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-net-shared-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service.project_services["iap.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-net-shared-0
+    service: iap.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-net-shared-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: ft0-prod-net-shared-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service_identity.default["container.googleapis.com"]:
+    project: ft0-prod-net-shared-0
+    service: container.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service_identity.default["dns.googleapis.com"]:
+    project: ft0-prod-net-shared-0
+    service: dns.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service_identity.default["iap.googleapis.com"]:
+    project: ft0-prod-net-shared-0
+    service: iap.googleapis.com
+    timeouts: null
+  module.factory.module.projects["prod-net-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: ft0-prod-net-shared-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.service-accounts["iac-0/iac-org-rw"].google_service_account.service_account[0]:
+    account_id: iac-org-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: IaC service account for org setup (read-write).
+    email: iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    member: serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    project: ft0-prod-iac-core-0
+    timeouts: null
+  module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.factory.terraform_data.project-preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.organization-iam[0].google_logging_organization_sink.sink["audit-logs"]:
+    description: audit-logs (Terraform-managed).
+    disabled: false
+    exclusions: []
+    filter: 'log_id("cloudaudit.googleapis.com/activity") OR
+
+      log_id("cloudaudit.googleapis.com/system_event") OR
+
+      log_id("cloudaudit.googleapis.com/policy") OR
+
+      log_id("cloudaudit.googleapis.com/access_transparency")
+
+      '
+    include_children: true
+    intercept_children: false
+    name: audit-logs
+    org_id: '1234567890'
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/accesscontextmanager.policyAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/accesscontextmanager.policyAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/billing.creator"]:
+    condition: []
+    members: null
+    org_id: '1234567890'
+    role: roles/billing.creator
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudasset.owner"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/cloudasset.owner
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudasset.viewer"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/cloudasset.viewer
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudsupport.admin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/cloudsupport.admin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/cloudsupport.techSupportEditor"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/cloudsupport.techSupportEditor
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.osAdminLogin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/compute.osAdminLogin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.osLoginExternalUser"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/compute.osLoginExternalUser
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/compute.xpnAdmin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/compute.xpnAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/essentialcontacts.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/essentialcontacts.admin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.organizationRoleAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/iam.organizationRoleAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/iam.workforcePoolAdmin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/iam.workforcePoolAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/logging.admin"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/logging.admin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/orgpolicy.policyAdmin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/orgpolicy.policyAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    org_id: '1234567890'
+    role: roles/owner
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/resourcemanager.folderAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.organizationAdmin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/resourcemanager.organizationAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectCreator"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/resourcemanager.projectCreator
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.projectMover"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/resourcemanager.projectMover
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagAdmin"]:
+    condition: []
+    members:
+    - group:fabric-fast-owners@google.com
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/resourcemanager.tagAdmin
+  module.organization-iam[0].google_organization_iam_binding.authoritative["roles/resourcemanager.tagUser"]:
+    condition: []
+    members:
+    - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+    org_id: '1234567890'
+    role: roles/resourcemanager.tagUser
+  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["audit-logs"]:
+    condition:
+    - title: audit-logs bucket writer
+    role: roles/logging.bucketWriter
+  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+    - $iam_principals:service_accounts/iac-0/iac-networking-rw
+    - $iam_principals:service_accounts/iac-0/iac-pf-rw
+    - $iam_principals:service_accounts/iac-0/iac-security-rw
+    role: roles/resourcemanager.tagUser
+  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagViewer"]
+  : condition: []
+    members:
+    - $iam_principals:service_accounts/iac-0/iac-networking-ro
+    - $iam_principals:service_accounts/iac-0/iac-pf-ro
+    - $iam_principals:service_accounts/iac-0/iac-security-ro
+    role: roles/resourcemanager.tagViewer
+  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagUser"]
+  : condition: []
+    members:
+    - $iam_principals:service_accounts/iac-0/iac-networking-rw
+    - $iam_principals:service_accounts/iac-0/iac-pf-rw
+    - $iam_principals:service_accounts/iac-0/iac-security-rw
+    role: roles/resourcemanager.tagUser
+  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagViewer"]
+  : condition: []
+    members:
+    - $iam_principals:service_accounts/iac-0/iac-networking-ro
+    - $iam_principals:service_accounts/iac-0/iac-pf-ro
+    - $iam_principals:service_accounts/iac-0/iac-security-ro
+    role: roles/resourcemanager.tagViewer
+  module.organization[0].google_logging_organization_settings.default[0]:
+    organization: '1234567890'
+    timeouts: null
+  module.organization[0].google_tags_tag_key.default["environment"]:
+    allowed_values_regex: null
+    description: Organization-level environments.
+    parent: organizations/1234567890
+    purpose: null
+    purpose_data: null
+    short_name: environment
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["environment/development"]:
+    description: Development.
+    short_name: development
+    timeouts: null
+  module.organization[0].google_tags_tag_value.default["environment/production"]:
+    description: Production.
+    short_name: production
+    timeouts: null
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-healthchecks"]:
+    allow:
+    - ports: []
+      protocol: all
+    deny: []
+    description: Allow GCP Healthcheck Ranges.
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: ingress-default-allow-healthchecks
+    network: dev-shared-0
+    params: []
+    priority: 1000
+    project: ft0-dev-net-shared-0
+    source_ranges:
+    - 130.211.0.0/22
+    - 209.85.152.0/22
+    - 209.85.204.0/22
+    - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-iap"]:
+    allow:
+    - ports: []
+      protocol: all
+    deny: []
+    description: Allow IAP.
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: ingress-default-allow-iap
+    network: dev-shared-0
+    params: []
+    priority: 1000
+    project: ft0-dev-net-shared-0
+    source_ranges:
+    - 35.235.240.0/20
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-icmp"]:
+    allow:
+    - ports: []
+      protocol: icmp
+    deny: []
+    description: Allow ICMP.
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: ingress-default-allow-icmp
+    network: dev-shared-0
+    params: []
+    priority: 1000
+    project: ft0-dev-net-shared-0
+    source_ranges:
+    - 0.0.0.0/0
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-healthchecks"]:
+    allow:
+    - ports: []
+      protocol: all
+    deny: []
+    description: Allow GCP Healthcheck Ranges.
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: ingress-default-allow-healthchecks
+    network: prod-shared-0
+    params: []
+    priority: 1000
+    project: ft0-prod-net-shared-0
+    source_ranges:
+    - 130.211.0.0/22
+    - 209.85.152.0/22
+    - 209.85.204.0/22
+    - 35.191.0.0/16
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-iap"]:
+    allow:
+    - ports: []
+      protocol: all
+    deny: []
+    description: Allow IAP.
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: ingress-default-allow-iap
+    network: prod-shared-0
+    params: []
+    priority: 1000
+    project: ft0-prod-net-shared-0
+    source_ranges:
+    - 35.235.240.0/20
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-icmp"]:
+    allow:
+    - ports: []
+      protocol: icmp
+    deny: []
+    description: Allow ICMP.
+    direction: INGRESS
+    disabled: false
+    log_config: []
+    name: ingress-default-allow-icmp
+    network: prod-shared-0
+    params: []
+    priority: 1000
+    project: ft0-prod-net-shared-0
+    source_ranges:
+    - 0.0.0.0/0
+    source_service_accounts: null
+    source_tags: null
+    target_service_accounts: null
+    target_tags: null
+    timeouts: null
+  module.vpcs.module.vpcs["dev"].google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: true
+    description: Terraform managed
+    enable_ula_internal_ipv6: null
+    name: dev-shared-0
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: ft0-dev-net-shared-0
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpcs.module.vpcs["dev"].google_compute_route.gateway["directpath-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: dev-shared-0-directpath-googleapis
+    network: dev-shared-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: ft0-dev-net-shared-0
+    tags: null
+    timeouts: null
+  module.vpcs.module.vpcs["dev"].google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: dev-shared-0-private-googleapis
+    network: dev-shared-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: ft0-dev-net-shared-0
+    tags: null
+    timeouts: null
+  module.vpcs.module.vpcs["dev"].google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: dev-shared-0-restricted-googleapis
+    network: dev-shared-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: ft0-dev-net-shared-0
+    tags: null
+    timeouts: null
+  module.vpcs.module.vpcs["dev"].google_compute_subnetwork.subnetwork["u-germany-northeast1/default"]:
+    description: Default primary-region subnet for dev
+    ip_cidr_range: 10.0.0.0/24
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: default
+    network: dev-shared-0
+    params: []
+    private_ip_google_access: true
+    project: ft0-dev-net-shared-0
+    region: u-germany-northeast1
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+  module.vpcs.module.vpcs["prod"].google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: true
+    description: Terraform managed
+    enable_ula_internal_ipv6: null
+    name: prod-shared-0
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: ft0-prod-net-shared-0
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpcs.module.vpcs["prod"].google_compute_route.gateway["directpath-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: prod-shared-0-directpath-googleapis
+    network: prod-shared-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: ft0-prod-net-shared-0
+    tags: null
+    timeouts: null
+  module.vpcs.module.vpcs["prod"].google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: prod-shared-0-private-googleapis
+    network: prod-shared-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: ft0-prod-net-shared-0
+    tags: null
+    timeouts: null
+  module.vpcs.module.vpcs["prod"].google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: prod-shared-0-restricted-googleapis
+    network: prod-shared-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: ft0-prod-net-shared-0
+    tags: null
+    timeouts: null
+  module.vpcs.module.vpcs["prod"].google_compute_subnetwork.subnetwork["u-germany-northeast1/default"]:
+    description: Default primary-region subnet for prod
+    ip_cidr_range: 10.0.0.0/24
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: default
+    network: prod-shared-0
+    params: []
+    private_ip_google_access: true
+    project: ft0-prod-net-shared-0
+    region: u-germany-northeast1
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+  terraform_data.precondition:
+    input: null
+    output: null
+    triggers_replace: null
+  terraform_data.precondition-cicd:
+    input: null
+    output: null
+    triggers_replace: null
+
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_default_service_account: 3
+  google_compute_firewall: 6
+  google_compute_network: 2
+  google_compute_route: 6
+  google_compute_shared_vpc_host_project: 2
+  google_compute_shared_vpc_service_project: 2
+  google_compute_subnetwork: 2
+  google_folder: 2
+  google_logging_organization_settings: 1
+  google_logging_organization_sink: 1
+  google_logging_project_bucket_config: 1
+  google_logging_project_settings: 5
+  google_organization_iam_binding: 21
+  google_project: 5
+  google_project_iam_binding: 6
+  google_project_iam_member: 21
+  google_project_service: 41
+  google_project_service_identity: 14
+  google_service_account: 1
+  google_storage_bucket: 2
+  google_storage_bucket_iam_binding: 3
+  google_storage_bucket_object: 5
+  google_storage_project_service_account: 3
+  google_tags_tag_binding: 2
+  google_tags_tag_key: 1
+  google_tags_tag_value: 2
+  google_tags_tag_value_iam_binding: 4
+  local_file: 4
+  modules: 25
+  resources: 173
+  terraform_data: 4
+
+outputs:
+  iam_principals:
+    domain: domain:example.org
+    gcp-billing-admins: group:gcp-billing-admins@example.org
+    gcp-devops: group:gcp-devops@example.org
+    gcp-network-admins: group:gcp-network-admins@example.org
+    gcp-organization-admins: group:fabric-fast-owners@google.com
+    gcp-secops-admins: group:gcp-secops-admins@example.org
+    gcp-security-admins: group:gcp-security-admins@example.org
+    gcp-support: group:gcp-support@example.org
+  projects: __missing__
+  subnet_ips:
+    dev:
+      u-germany-northeast1/default: 10.0.0.0/24
+    prod:
+      u-germany-northeast1/default: 10.0.0.0/24
+  subnet_self_links: __missing__
+  tfvars: __missing__
+  vpc_self_links: __missing__
+

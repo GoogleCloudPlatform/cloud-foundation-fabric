@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,9 +39,10 @@ projects:
   #     perimeter_name: $vpc_sc_perimeters:default
   #     is_dry_run: true
 vpcs:
-  auto_create_subnetworks: false
-  delete_default_route_on_create: true
-  mtu: 1500
+  defaults:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: true
+    mtu: 1500
 output_files:
   # local path is optional but recommended when starting
   # local_path: ~/fast-config/fast-test-00

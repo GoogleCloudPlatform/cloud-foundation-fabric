@@ -42,13 +42,6 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 - [Project Factory](./2-project-factory/)
   YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
 
-## Environment-level resources (3)
-
-- [Data Platform](./3-data-platform-dev/)
-- [GKE Multitenant](./3-gke-dev/)
-- [Google Cloud VMware Engine](./3-gcve-dev/)
-
-
 ## Importing existing setup into FAST
 For brownfield implementations you may need to import existing setting in the organization, folders, etc. These snippets can help you add existing settings into the YAML file
 

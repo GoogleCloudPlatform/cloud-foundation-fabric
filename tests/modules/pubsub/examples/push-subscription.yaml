@@ -33,7 +33,6 @@ values:
     retain_acked_messages: false
     retry_policy: []
     timeouts: null
-    topic: my-topic
   module.pubsub.google_pubsub_topic.default:
     kms_key_name: null
     labels: null

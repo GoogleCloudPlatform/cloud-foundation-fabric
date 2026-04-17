@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ counts:
   google_compute_ha_vpn_gateway: 5
   google_compute_network: 3
   google_compute_route: 12
-  google_compute_router: 4
+  google_compute_router: 5
   google_compute_router_interface: 10
   google_compute_router_nat: 1
   google_compute_router_peer: 10
@@ -33,11 +33,11 @@ counts:
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 42
   google_project: 3
-  google_project_iam_member: 21
-  google_project_service: 27
-  google_project_service_identity: 21
+  google_project_iam_member: 24
+  google_project_service: 30
+  google_project_service_identity: 24
   google_storage_bucket_object: 2
   modules: 30
   random_id: 15
-  resources: 215
+  resources: 228
   terraform_data: 2

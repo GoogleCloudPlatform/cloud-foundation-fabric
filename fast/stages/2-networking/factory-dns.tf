@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,30 @@ locals {
       }
     )
   }
+  # DNS delegations: auto-create NS and DS records in parent zones
+  # from child zone outputs (name_servers, dns_keys).
+  # Grouped by parent zone key so a single module call per parent
+  # handles all its delegation recordsets.
+  dns_delegation_recordsets = {
+    for zone_key, zone_config in local.dns_zones :
+    zone_key => merge(
+      {
+        for child_key in zone_config.delegations :
+        "NS ${module.dns-zones[child_key].domain}" => {
+          records = module.dns-zones[child_key].name_servers
+        }
+      },
+      {
+        for child_key in zone_config.delegations :
+        "DS ${module.dns-zones[child_key].domain}" => {
+          records = [module.dns-zones[child_key].dns_keys.key_signing_keys[0].ds_record]
+        }
+        if try(local.dns_zones[child_key].zone_config.public.dnssec_config.state, "off") == "on"
+      }
+    )
+    if length(try(zone_config.delegations, [])) > 0
+  }
+
   # DNS response policies
   _dns_response_policies_files = try(
     fileset(local.paths.dns_response_policies, "**/*.yaml"), []
@@ -113,6 +137,19 @@ module "dns-zones" {
     networks    = local.ctx_vpcs.self_links
   }
   depends_on = [module.vpc-factory]
+}
+
+module "dns-delegations" {
+  source     = "../../../modules/dns"
+  for_each   = local.dns_delegation_recordsets
+  project_id = local.dns_zones[each.key].project_id
+  name       = replace(each.key, "/", "-")
+  recordsets = each.value
+  context = {
+    project_ids = local.ctx_projects.project_ids
+    networks    = local.ctx_vpcs.self_links
+  }
+  depends_on = [module.dns-zones]
 }
 
 module "dns-response-policies" {

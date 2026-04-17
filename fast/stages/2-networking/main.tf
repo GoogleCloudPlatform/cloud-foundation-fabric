@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,12 @@ locals {
   }
   # fail if we have no valid defaults
   _defaults = yamldecode(file(local.paths.defaults))
+  # provide sane VPC defaults
+  _vpc_defaults = {
+    auto_create_subnetworks        = false
+    delete_default_route_on_create = true
+    mtu                            = 1500
+  }
   ctx = merge(local._ctx, {
     custom_roles = merge(var.custom_roles, local._ctx.custom_roles)
     folder_ids   = merge(var.folder_ids, var.context.folder_ids)
@@ -76,13 +82,10 @@ locals {
     )
     overrides = try(local._defaults.projects.overrides, {})
   }
-  vpc_defaults = merge(
-    {
-      auto_create_subnetworks        = false
-      delete_default_route_on_create = true
-      mtu                            = 1500
-    },
-    try(local._defaults.vpcs, {})
-  )
+  vpc_defaults = {
+    defaults = merge(
+      local._vpc_defaults, try(local._defaults.vpcs.defaults, {})
+    )
+    overrides = try(local._defaults.vpcs.overrides, {})
+  }
 }
-

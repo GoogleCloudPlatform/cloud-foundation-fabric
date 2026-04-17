@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,26 @@
  */
 
 locals {
-  template_create   = var.create_template != null
+  is_template       = var.create_template != null
   template_regional = try(var.create_template.regional, null) == true
 }
 
 resource "google_compute_instance_template" "default" {
   provider                   = google-beta
-  count                      = local.template_create && !local.template_regional ? 1 : 0
+  count                      = local.is_template && !local.template_regional ? 1 : 0
   project                    = local.project_id
   region                     = local.region
   name_prefix                = "${var.name}-"
   description                = var.description
   tags                       = var.tags
-  machine_type               = var.instance_type
+  machine_type               = var.machine_type
   min_cpu_platform           = var.min_cpu_platform
   can_ip_forward             = var.can_ip_forward
   metadata                   = var.metadata
   metadata_startup_script    = var.metadata_startup_script
   labels                     = var.labels
   resource_manager_tags      = var.tag_bindings_immutable
-  key_revocation_action_type = var.options.key_revocation_action_type
+  key_revocation_action_type = var.lifecycle_config.key_revocation_action_type
   resource_policies = (
     var.resource_policies == null && var.instance_schedule == null
     ? null
@@ -44,29 +44,29 @@ resource "google_compute_instance_template" "default" {
     )
   )
   dynamic "advanced_machine_features" {
-    for_each = local.advanced_mf != null ? [""] : []
+    for_each = local.advanced_mf ? [""] : []
     content {
-      enable_nested_virtualization = local.advanced_mf.enable_nested_virtualization
-      enable_uefi_networking       = local.advanced_mf.enable_uefi_networking
-      performance_monitoring_unit  = local.advanced_mf.performance_monitoring_unit
-      threads_per_core             = local.advanced_mf.threads_per_core
+      enable_nested_virtualization = var.machine_features_config.enable_nested_virtualization
+      enable_uefi_networking       = var.machine_features_config.enable_uefi_networking
+      performance_monitoring_unit  = var.machine_features_config.performance_monitoring_unit
+      threads_per_core             = var.machine_features_config.threads_per_core
       turbo_mode = (
-        local.advanced_mf.enable_turbo_mode ? "ALL_CORE_MAX" : null
+        var.machine_features_config.enable_turbo_mode == true ? "ALL_CORE_MAX" : null
       )
-      visible_core_count = local.advanced_mf.visible_core_count
+      visible_core_count = var.machine_features_config.visible_core_count
     }
   }
 
   disk {
-    architecture           = var.boot_disk.initialize_params.architecture
-    auto_delete            = var.boot_disk.auto_delete
     boot                   = true
+    architecture           = var.boot_disk.architecture
+    auto_delete            = var.boot_disk.auto_delete
     disk_size_gb           = var.boot_disk.initialize_params.size
     disk_type              = var.boot_disk.initialize_params.type
-    provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
-    provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+    source_image           = var.boot_disk.source.image
+    provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
+    provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
-    source_image           = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
       for_each = var.encryption != null ? [""] : []
@@ -81,7 +81,7 @@ resource "google_compute_instance_template" "default" {
   }
 
   dynamic "confidential_instance_config" {
-    for_each = var.confidential_compute ? [""] : []
+    for_each = var.confidential_compute != null ? [""] : []
     content {
       enable_confidential_compute = true
     }
@@ -95,36 +95,40 @@ resource "google_compute_instance_template" "default" {
     }
   }
   dynamic "disk" {
-    for_each = local.attached_disks
-    iterator = config
+    for_each = local.attached_disks_ordered
+    iterator = disk_iter
     content {
-      architecture = config.value.options.architecture
-      auto_delete  = config.value.options.auto_delete
-      device_name = coalesce(
-        config.value.device_name, config.value.name, config.key
+      architecture = var.boot_disk.architecture
+      auto_delete  = var.attached_disks[disk_iter.value.key].mode == "READ_ONLY" ? null : var.attached_disks[disk_iter.value.key].auto_delete
+      device_name  = coalesce(var.attached_disks[disk_iter.value.key].device_name, var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
+      disk_name = (
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? coalesce(var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
+        : null
       )
+      mode                  = var.attached_disks[disk_iter.value.key].mode
+      resource_manager_tags = var.tag_bindings_immutable
+      source_image          = var.attached_disks[disk_iter.value.key].source.image
+      source                = var.attached_disks[disk_iter.value.key].source.attach
+      type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
-        config.value.source_type != "attach" ? config.value.options.type : null
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.type
+        : null
       )
       disk_size_gb = (
-        config.value.source_type != "attach" ? config.value.size : null
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.size
+        : null
       )
-      mode                   = config.value.options.mode
-      provisioned_iops       = config.value.options.provisioned_iops
-      provisioned_throughput = config.value.options.provisioned_throughput
-      source_image = (
-        config.value.source_type == "image" ? config.value.source : null
+      provisioned_iops = (
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_iops
       )
-      source = (
-        config.value.source_type == "attach" ? config.value.source : null
+      provisioned_throughput = (
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_throughput
       )
-      disk_name = (
-        config.value.source_type != "attach" ? config.value.name : null
-      )
-      resource_manager_tags = var.tag_bindings_immutable
-      type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
         content {
@@ -153,8 +157,10 @@ resource "google_compute_instance_template" "default" {
         config.value.addresses.internal,
         null
       )
-      nic_type   = config.value.nic_type
-      stack_type = config.value.stack_type
+      nic_type                    = config.value.nic_type
+      stack_type                  = config.value.stack_type
+      queue_count                 = config.value.queue_count
+      internal_ipv6_prefix_length = config.value.internal_ipv6_prefix_length
       dynamic "access_config" {
         for_each = config.value.nat || config.value.network_tier != null ? [""] : []
         content {
@@ -184,22 +190,42 @@ resource "google_compute_instance_template" "default" {
     }
   }
 
+  dynamic "network_performance_config" {
+    for_each = var.network_performance_tier != null ? [""] : []
+    content {
+      total_egress_bandwidth_tier = var.network_performance_tier
+    }
+  }
+
   scheduling {
-    automatic_restart           = !var.options.spot
+    automatic_restart = coalesce(
+      var.scheduling_config.automatic_restart, var.scheduling_config.provisioning_model != "SPOT"
+    )
     instance_termination_action = local.termination_action
     on_host_maintenance         = local.on_host_maintenance
-    preemptible                 = var.options.spot
-    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+    preemptible                 = var.scheduling_config.provisioning_model == "SPOT"
+    provisioning_model          = coalesce(var.scheduling_config.provisioning_model, "STANDARD")
+    min_node_cpus               = var.scheduling_config.min_node_cpus
+    maintenance_interval        = var.scheduling_config.maintenance_interval
+
     dynamic "max_run_duration" {
-      for_each = var.options.max_run_duration == null ? [] : [""]
+      for_each = var.scheduling_config.max_run_duration == null ? [] : [""]
       content {
-        nanos   = var.options.max_run_duration.nanos
-        seconds = var.options.max_run_duration.seconds
+        nanos   = var.scheduling_config.max_run_duration.nanos
+        seconds = var.scheduling_config.max_run_duration.seconds
+      }
+    }
+
+    dynamic "local_ssd_recovery_timeout" {
+      for_each = var.scheduling_config.local_ssd_recovery_timeout == null ? [] : [""]
+      content {
+        nanos   = var.scheduling_config.local_ssd_recovery_timeout.nanos
+        seconds = var.scheduling_config.local_ssd_recovery_timeout.seconds
       }
     }
 
     dynamic "node_affinities" {
-      for_each = var.options.node_affinities
+      for_each = var.scheduling_config.node_affinities
       iterator = affinity
       content {
         key      = affinity.key
@@ -209,13 +235,18 @@ resource "google_compute_instance_template" "default" {
     }
 
     dynamic "graceful_shutdown" {
-      for_each = var.options.graceful_shutdown != null ? [""] : []
+      for_each = var.lifecycle_config.graceful_shutdown != null ? [""] : []
       content {
-        enabled = var.options.graceful_shutdown.enabled
+        enabled = var.lifecycle_config.graceful_shutdown.enabled
         dynamic "max_duration" {
-          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          for_each = (
+            var.lifecycle_config.graceful_shutdown.enabled == true &&
+            var.lifecycle_config.graceful_shutdown.max_duration_secs != null
+            ? [""]
+            : []
+          )
           content {
-            seconds = var.options.graceful_shutdown.max_duration_secs
+            seconds = var.lifecycle_config.graceful_shutdown.max_duration_secs
             nanos   = 0
           }
         }
@@ -248,20 +279,20 @@ resource "google_compute_instance_template" "default" {
 
 resource "google_compute_region_instance_template" "default" {
   provider                   = google-beta
-  count                      = local.template_create && local.template_regional ? 1 : 0
+  count                      = local.is_template && local.template_regional ? 1 : 0
   project                    = local.project_id
   region                     = local.region
   name_prefix                = "${var.name}-"
   description                = var.description
   tags                       = var.tags
-  machine_type               = var.instance_type
+  machine_type               = var.machine_type
   min_cpu_platform           = var.min_cpu_platform
   can_ip_forward             = var.can_ip_forward
   metadata                   = var.metadata
   metadata_startup_script    = var.metadata_startup_script
   labels                     = var.labels
   resource_manager_tags      = var.tag_bindings_immutable
-  key_revocation_action_type = var.options.key_revocation_action_type
+  key_revocation_action_type = var.lifecycle_config.key_revocation_action_type
   resource_policies = (
     var.resource_policies == null && var.instance_schedule == null
     ? null
@@ -271,35 +302,36 @@ resource "google_compute_region_instance_template" "default" {
     )
   )
   dynamic "advanced_machine_features" {
-    for_each = local.advanced_mf != null ? [""] : []
+    for_each = local.advanced_mf ? [""] : []
     content {
-      enable_nested_virtualization = local.advanced_mf.enable_nested_virtualization
-      enable_uefi_networking       = local.advanced_mf.enable_uefi_networking
-      performance_monitoring_unit  = local.advanced_mf.performance_monitoring_unit
-      threads_per_core             = local.advanced_mf.threads_per_core
+      enable_nested_virtualization = var.machine_features_config.enable_nested_virtualization
+      enable_uefi_networking       = var.machine_features_config.enable_uefi_networking
+      performance_monitoring_unit  = var.machine_features_config.performance_monitoring_unit
+      threads_per_core             = var.machine_features_config.threads_per_core
       turbo_mode = (
-        local.advanced_mf.enable_turbo_mode ? "ALL_CORE_MAX" : null
+        var.machine_features_config.enable_turbo_mode == true ? "ALL_CORE_MAX" : null
       )
-      visible_core_count = local.advanced_mf.visible_core_count
+      visible_core_count = var.machine_features_config.visible_core_count
     }
   }
 
   disk {
-    architecture           = var.boot_disk.initialize_params.architecture
-    auto_delete            = var.boot_disk.auto_delete
     boot                   = true
+    architecture           = var.boot_disk.architecture
+    auto_delete            = var.boot_disk.auto_delete
     disk_size_gb           = var.boot_disk.initialize_params.size
     disk_type              = var.boot_disk.initialize_params.type
-    provisioned_iops       = var.boot_disk.initialize_params.provisioned_iops
-    provisioned_throughput = var.boot_disk.initialize_params.provisioned_throughput
+    source_image           = var.boot_disk.source.image
+    provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
+    provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
-    source_image           = var.boot_disk.initialize_params.image
 
     dynamic "disk_encryption_key" {
       for_each = var.encryption != null ? [""] : []
       content {
-        kms_key_self_link = try(
-          local.ctx_kms_keys[var.encryption.kms_key_self_link],
+        kms_key_self_link = lookup(
+          local.ctx_kms_keys,
+          var.encryption.kms_key_self_link,
           var.encryption.kms_key_self_link
         )
       }
@@ -307,7 +339,7 @@ resource "google_compute_region_instance_template" "default" {
   }
 
   dynamic "confidential_instance_config" {
-    for_each = var.confidential_compute ? [""] : []
+    for_each = var.confidential_compute != null ? [""] : []
     content {
       enable_confidential_compute = true
     }
@@ -320,42 +352,48 @@ resource "google_compute_region_instance_template" "default" {
       count = guest_accelerator.value.count
     }
   }
+
   dynamic "disk" {
-    for_each = local.attached_disks
-    iterator = config
+    for_each = local.attached_disks_ordered
+    iterator = disk_iter
     content {
-      architecture = config.value.options.architecture
-      auto_delete  = config.value.options.auto_delete
-      device_name = coalesce(
-        config.value.device_name, config.value.name, config.key
+      architecture = var.boot_disk.architecture
+      auto_delete  = var.attached_disks[disk_iter.value.key].mode == "READ_ONLY" ? null : var.attached_disks[disk_iter.value.key].auto_delete
+      device_name  = coalesce(var.attached_disks[disk_iter.value.key].device_name, var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
+      disk_name = (
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? coalesce(var.attached_disks[disk_iter.value.key].name, disk_iter.value.key)
+        : null
       )
+      mode                  = var.attached_disks[disk_iter.value.key].mode
+      resource_manager_tags = var.tag_bindings_immutable
+      source_image          = var.attached_disks[disk_iter.value.key].source.image
+      source                = var.attached_disks[disk_iter.value.key].source.attach
+      type                  = "PERSISTENT"
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
       disk_type = (
-        config.value.source_type != "attach" ? config.value.options.type : null
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.type
+        : null
       )
       disk_size_gb = (
-        config.value.source_type != "attach" ? config.value.size : null
+        var.attached_disks[disk_iter.value.key].source.attach == null
+        ? var.attached_disks[disk_iter.value.key].initialize_params.size
+        : null
       )
-      mode                   = config.value.options.mode
-      provisioned_iops       = config.value.options.provisioned_iops
-      provisioned_throughput = config.value.options.provisioned_throughput
-      source_image = (
-        config.value.source_type == "image" ? config.value.source : null
+      provisioned_iops = (
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_iops
       )
-      source = (
-        config.value.source_type == "attach" ? config.value.source : null
+      provisioned_throughput = (
+        var.attached_disks[disk_iter.value.key].initialize_params.hyperdisk.provisioned_throughput
       )
-      disk_name = (
-        config.value.source_type != "attach" ? config.value.name : null
-      )
-      resource_manager_tags = var.tag_bindings_immutable
-      type                  = "PERSISTENT"
       dynamic "disk_encryption_key" {
         for_each = var.encryption != null ? [""] : []
         content {
-          kms_key_self_link = try(
-            local.ctx_kms_keys[var.encryption.kms_key_self_link],
+          kms_key_self_link = lookup(
+            local.ctx_kms_keys,
+            var.encryption.kms_key_self_link,
             var.encryption.kms_key_self_link
           )
         }
@@ -378,8 +416,10 @@ resource "google_compute_region_instance_template" "default" {
         config.value.addresses.internal,
         null
       )
-      nic_type   = config.value.nic_type
-      stack_type = config.value.stack_type
+      nic_type                    = config.value.nic_type
+      stack_type                  = config.value.stack_type
+      queue_count                 = config.value.queue_count
+      internal_ipv6_prefix_length = config.value.internal_ipv6_prefix_length
       dynamic "access_config" {
         for_each = config.value.nat || config.value.network_tier != null ? [""] : []
         content {
@@ -403,21 +443,34 @@ resource "google_compute_region_instance_template" "default" {
   }
 
   scheduling {
-    automatic_restart           = !var.options.spot
+    automatic_restart = coalesce(
+      var.scheduling_config.automatic_restart, var.scheduling_config.provisioning_model != "SPOT"
+    )
     instance_termination_action = local.termination_action
     on_host_maintenance         = local.on_host_maintenance
-    preemptible                 = var.options.spot
-    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+    preemptible                 = var.scheduling_config.provisioning_model == "SPOT"
+    provisioning_model          = coalesce(var.scheduling_config.provisioning_model, "STANDARD")
+    min_node_cpus               = var.scheduling_config.min_node_cpus
+    maintenance_interval        = var.scheduling_config.maintenance_interval
+
     dynamic "max_run_duration" {
-      for_each = var.options.max_run_duration == null ? [] : [""]
+      for_each = var.scheduling_config.max_run_duration == null ? [] : [""]
       content {
-        nanos   = var.options.max_run_duration.nanos
-        seconds = var.options.max_run_duration.seconds
+        nanos   = var.scheduling_config.max_run_duration.nanos
+        seconds = var.scheduling_config.max_run_duration.seconds
+      }
+    }
+
+    dynamic "local_ssd_recovery_timeout" {
+      for_each = var.scheduling_config.local_ssd_recovery_timeout == null ? [] : [""]
+      content {
+        nanos   = var.scheduling_config.local_ssd_recovery_timeout.nanos
+        seconds = var.scheduling_config.local_ssd_recovery_timeout.seconds
       }
     }
 
     dynamic "node_affinities" {
-      for_each = var.options.node_affinities
+      for_each = var.scheduling_config.node_affinities
       iterator = affinity
       content {
         key      = affinity.key
@@ -427,13 +480,18 @@ resource "google_compute_region_instance_template" "default" {
     }
 
     dynamic "graceful_shutdown" {
-      for_each = var.options.graceful_shutdown != null ? [""] : []
+      for_each = var.lifecycle_config.graceful_shutdown != null ? [""] : []
       content {
-        enabled = var.options.graceful_shutdown.enabled
+        enabled = var.lifecycle_config.graceful_shutdown.enabled
         dynamic "max_duration" {
-          for_each = var.options.graceful_shutdown.enabled == true && var.options.graceful_shutdown.max_duration_secs != null ? [""] : []
+          for_each = (
+            var.lifecycle_config.graceful_shutdown.enabled == true &&
+            var.lifecycle_config.graceful_shutdown.max_duration_secs != null
+            ? [""]
+            : []
+          )
           content {
-            seconds = var.options.graceful_shutdown.max_duration_secs
+            seconds = var.lifecycle_config.graceful_shutdown.max_duration_secs
             nanos   = 0
           }
         }

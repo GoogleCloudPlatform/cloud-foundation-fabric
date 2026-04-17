@@ -178,3 +178,13 @@ variable "organization_id" {
     error_message = "The organization_id must in the form organizations/nnn."
   }
 }
+
+variable "service_agents_config" {
+  description = "Service agents configuration."
+  type = object({
+    services      = optional(list(string), [])
+    create_agents = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
+}

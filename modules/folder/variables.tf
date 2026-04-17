@@ -81,27 +81,48 @@ variable "assured_workload_config" {
     condition = try(contains([
       "ASSURED_WORKLOADS_FOR_PARTNERS",
       "AU_REGIONS_AND_US_SUPPORT",
+      "AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT",
       "CA_PROTECTED_B",
       "CA_REGIONS_AND_SUPPORT",
+      "CANADA_CONTROLLED_GOODS",
+      "CANADA_DATA_BOUNDARY_AND_SUPPORT",
       "CJIS",
       "COMPLIANCE_REGIME_UNSPECIFIED",
+      "DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS",
+      "DATA_BOUNDARY_FOR_CANADA_PROTECTED_B",
+      "DATA_BOUNDARY_FOR_CJIS",
+      "DATA_BOUNDARY_FOR_FEDRAMP_HIGH",
+      "DATA_BOUNDARY_FOR_FEDRAMP_MODERATE",
+      "DATA_BOUNDARY_FOR_IL2",
+      "DATA_BOUNDARY_FOR_IL4",
+      "DATA_BOUNDARY_FOR_IL5",
+      "DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075",
+      "DATA_BOUNDARY_FOR_ITAR",
+      "EU_DATA_BOUNDARY_AND_SUPPORT",
       "EU_REGIONS_AND_SUPPORT",
       "FEDRAMP_HIGH",
       "FEDRAMP_MODERATE",
-      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
       "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
-      "HIPAA",
-      "HITRUST",
+      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
+      "HIPAA",   # DEPRECATED
+      "HITRUST", # DEPRECATED
       "IL2",
       "IL4",
       "IL5",
       "IRS_1075",
-      "ISR_REGIONS_AND_SUPPORT",
       "ISR_REGIONS",
+      "ISR_REGIONS_AND_SUPPORT",
+      "ISRAEL_DATA_BOUNDARY_AND_SUPPORT",
       "ITAR",
+      "JAPAN_DATA_BOUNDARY",
       "JP_REGIONS_AND_SUPPORT",
+      "KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS",
       "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
       "REGIONAL_CONTROLS",
+      "REGIONAL_DATA_BOUNDARY",
+      "US_DATA_BOUNDARY_AND_SUPPORT",
+      "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES",
+      "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT",
       "US_REGIONAL_ACCESS"
     ], var.assured_workload_config.compliance_regime), true)
     error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
@@ -260,6 +281,16 @@ variable "parent" {
     )
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id, or map to a context variable via $folder_ids:."
   }
+}
+
+variable "service_agents_config" {
+  description = "Service agents configuration."
+  type = object({
+    services      = optional(list(string), [])
+    create_agents = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "tag_bindings" {

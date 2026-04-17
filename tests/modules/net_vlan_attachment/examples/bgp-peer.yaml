@@ -1,0 +1,113 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_router.interconnect-router:
+    bgp:
+    - advertise_mode: CUSTOM
+      advertised_groups:
+      - ALL_SUBNETS
+      advertised_ip_ranges:
+      - description: ''
+        range: 10.255.255.0/24
+      - description: ''
+        range: 192.168.255.0/24
+      asn: 64514
+      keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    md5_authentication_keys: []
+    name: interconnect-router
+    network: mynet
+    project: myproject
+    region: europe-west8
+    timeouts: null
+  module.example-va.google_compute_interconnect_attachment.default:
+    admin_enabled: true
+    bandwidth: BPS_10G
+    candidate_cloud_router_ip_address: 169.254.0.1/29
+    candidate_cloud_router_ipv6_address: null
+    candidate_customer_router_ip_address: 169.254.0.2/29
+    candidate_customer_router_ipv6_address: null
+    candidate_subnets:
+    - 169.254.0.0/29
+    description: Example vlan attachment
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    encryption: NONE
+    interconnect: https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a
+    ipsec_internal_addresses: null
+    l2_forwarding: []
+    labels: null
+    mtu: '1500'
+    name: vlan-attachment
+    project: myproject
+    region: europe-west8
+    router: interconnect-router
+    subnet_length: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: DEDICATED
+    vlan_tag8021q: 12345
+  module.example-va.google_compute_router_interface.default[0]:
+    name: vlan-attachment-intf
+    private_ip_address: null
+    project: myproject
+    region: europe-west8
+    router: interconnect-router
+    subnetwork: null
+    timeouts: null
+    vpn_tunnel: null
+  module.example-va.google_compute_router_peer.default[0]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: null
+    bfd:
+    - min_receive_interval: 1000
+      min_transmit_interval: 1000
+      multiplier: 5
+      session_initialization_mode: ACTIVE
+    custom_learned_ip_ranges:
+    - range: 10.0.0.0/24
+    custom_learned_route_priority: 100
+    enable: true
+    enable_ipv6: false
+    export_policies: null
+    import_policies: null
+    interface: vlan-attachment-intf
+    md5_authentication_key:
+    - key: bar
+      name: foo
+    name: vlan-attachment-peer
+    peer_asn: 65000
+    project: myproject
+    region: europe-west8
+    router: interconnect-router
+    router_appliance_instance: null
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  module.example-va.random_id.secret:
+    byte_length: 12
+    keepers: null
+    prefix: null
+
+counts:
+  google_compute_router: 1
+  google_compute_interconnect_attachment: 1
+  google_compute_router_interface: 1
+  google_compute_router_peer: 1
+  random_id: 1

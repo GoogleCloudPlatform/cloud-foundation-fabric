@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
-
 values:
   google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
@@ -699,7 +697,9 @@ values:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
     encryption:
-    - {}
+    - customer_managed_encryption_enforcement_config: []
+      customer_supplied_encryption_enforcement_config: []
+      google_managed_encryption_enforcement_config: []
     force_destroy: false
     hierarchical_namespace: []
     ip_filter: []
@@ -794,7 +794,9 @@ values:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
     encryption:
-    - {}
+    - customer_managed_encryption_enforcement_config: []
+      customer_supplied_encryption_enforcement_config: []
+      google_managed_encryption_enforcement_config: []
     force_destroy: false
     hierarchical_namespace: []
     ip_filter: []
@@ -889,7 +891,9 @@ values:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
     encryption:
-    - {}
+    - customer_managed_encryption_enforcement_config: []
+      customer_supplied_encryption_enforcement_config: []
+      google_managed_encryption_enforcement_config: []
     force_destroy: false
     hierarchical_namespace: []
     ip_filter: []
@@ -985,11 +989,6 @@ values:
     force_destroy: false
     name: 2-security/
     timeouts: null
-  module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["3-data-platform-dev/"]:
-    bucket: ft0-prod-iac-core-0-iac-stage-state
-    force_destroy: false
-    name: 3-data-platform-dev/
-    timeouts: null
   ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["1-vpcsc/$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
@@ -1029,16 +1028,6 @@ values:
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
     managed_folder: 2-security/
-    role: roles/storage.admin
-  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/$custom_roles:storage_viewer"]
-  : bucket: ft0-prod-iac-core-0-iac-stage-state
-    condition: []
-    managed_folder: 3-data-platform-dev/
-    role: organizations/1234567890/roles/storageViewer
-  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/roles/storage.admin"]
-  : bucket: ft0-prod-iac-core-0-iac-stage-state
-    condition: []
-    managed_folder: 3-data-platform-dev/
     role: roles/storage.admin
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
@@ -1272,38 +1261,6 @@ values:
   module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/storage.admin"]:
     condition: []
     role: roles/storage.admin
-  module.factory.module.folder-1["data-platform"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Data Platform
-    parent: organizations/1234567890
-    tags: null
-    timeouts: null
-  module.factory.module.folder-1["data-platform"].google_org_policy_policy.default["custom.iamDisableAdminServiceAccount"]:
-    dry_run_spec: []
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        parameters: null
-        values: []
-    timeouts: null
-  ? module.factory.module.folder-1["data-platform"].google_org_policy_policy.default["custom.iamDisableProjectServiceAccountImpersonationRoles"]
-  : dry_run_spec: []
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        parameters: null
-        values: []
-    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
@@ -1324,96 +1281,6 @@ values:
     timeouts: null
   module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"]:
     timeouts: null
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:folder_viewer"]
-  : condition: []
-    role: organizations/1234567890/roles/folderViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:logging_viewer"]
-  : condition: []
-    role: organizations/1234567890/roles/loggingViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:service_account_viewer"]
-  : condition: []
-    role: organizations/1234567890/roles/serviceAccountViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["$custom_roles:storage_viewer"]
-  : condition: []
-    role: organizations/1234567890/roles/storageViewer
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/bigquery.admin"]:
-    condition: []
-    role: roles/bigquery.admin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/bigquery.dataViewer"]
-  : condition: []
-    role: roles/bigquery.dataViewer
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/bigquery.jobUser"]:
-    condition: []
-    role: roles/bigquery.jobUser
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/browser"]:
-    condition: []
-    role: roles/browser
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/composer.admin"]:
-    condition: []
-    role: roles/composer.admin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/composer.user"]:
-    condition: []
-    role: roles/composer.user
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
-    condition: []
-    role: roles/compute.xpnAdmin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/datacatalog.viewer"]
-  : condition: []
-    role: roles/datacatalog.viewer
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/dataflow.admin"]:
-    condition: []
-    role: roles/dataflow.admin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/dataflow.viewer"]:
-    condition: []
-    role: roles/dataflow.viewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/iam.serviceAccountAdmin"]
-  : condition: []
-    role: roles/iam.serviceAccountAdmin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
-    condition: []
-    role: roles/logging.admin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.viewer"]:
-    condition: []
-    role: roles/logging.viewer
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/pubsub.admin"]:
-    condition: []
-    role: roles/pubsub.admin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/pubsub.viewer"]:
-    condition: []
-    role: roles/pubsub.viewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
-  : condition: []
-    role: roles/resourcemanager.folderAdmin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]
-  : condition: []
-    role: roles/resourcemanager.folderViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]
-  : condition: []
-    role: roles/resourcemanager.projectCreator
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectDeleter"]
-  : condition: []
-    role: roles/resourcemanager.projectDeleter
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectIamAdmin"]
-  : condition: []
-    role: roles/resourcemanager.projectIamAdmin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.tagViewer"]
-  : condition: []
-    role: roles/resourcemanager.tagViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageAdmin"]
-  : condition: []
-    role: roles/serviceusage.serviceUsageAdmin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
-  : condition: []
-    role: roles/serviceusage.serviceUsageViewer
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/storage.admin"]:
-    condition: []
-    role: roles/storage.admin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/storage.bucketViewer"]
-  : condition: []
-    role: roles/storage.bucketViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/storage.objectViewer"]
-  : condition: []
-    role: roles/storage.objectViewer
   ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
     role: organizations/1234567890/roles/projectIamViewer
@@ -1427,20 +1294,6 @@ values:
   ? module.factory.module.folder-2-iam["security/dev"].google_folder_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]
   : condition: []
     role: organizations/1234567890/roles/cloudKmsViewer
-  module.factory.module.folder-2["data-platform/dev"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Development
-    tags: null
-    timeouts: null
-  module.factory.module.folder-2["data-platform/dev"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
-  module.factory.module.folder-2["data-platform/prod"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Production
-    tags: null
-    timeouts: null
-  module.factory.module.folder-2["data-platform/prod"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-2["networking/dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
@@ -2223,21 +2076,6 @@ values:
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
-  module.factory.module.projects["log-0"].google_org_policy_policy.default["custom.storageRequireBucketObjectVersionning"]:
-    dry_run_spec: []
-    name: projects/ft0-prod-audit-logs-0/policies/custom.storageRequireBucketObjectVersionning
-    parent: projects/ft0-prod-audit-logs-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'TRUE'
-        parameters: null
-        values: []
-    timeouts: null
   module.factory.module.projects["log-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
     dry_run_spec: []
     name: projects/ft0-prod-audit-logs-0/policies/gcp.restrictCmekCryptoKeyProjects
@@ -2307,26 +2145,6 @@ values:
   module.factory.module.projects["log-0"].google_project_service_identity.default["pubsub.googleapis.com"]:
     project: ft0-prod-audit-logs-0
     service: pubsub.googleapis.com
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-dp-dev-ro"].google_service_account.service_account[0]:
-    account_id: iac-dp-dev-ro
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for data platform dev (read-only).
-    email: iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-dp-dev-rw"].google_service_account.service_account[0]:
-    account_id: iac-dp-dev-rw
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for data platform dev (read-write).
-    email: iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
     timeouts: null
   module.factory.module.service-accounts["iac-0/iac-networking-ro"].google_service_account.service_account[0]:
     account_id: iac-networking-ro
@@ -4562,6 +4380,8 @@ values:
           - is:projects/gke-node-images
           - is:projects/gke-windows-node-images
           - is:projects/ubuntu-os-gke-cloud
+          - is:projects/rocky-linux-accelerator-cloud
+          - is:projects/ubuntu-os-accelerator-images
           denied_values: null
     timeouts: null
   module.organization-iam[0].google_org_policy_policy.default["compute.vmExternalIpAccess"]:
@@ -8015,7 +7835,6 @@ values:
     timeouts: null
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["storageIamChanges"]:
-    bucket_name: l$log_buckets:log-0/audit-logs
     bucket_options: []
     description: Cloud Storage IAM Permission Changes
     disabled: null
@@ -8585,8 +8404,8 @@ counts:
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
   google_essential_contacts_contact: 1
-  google_folder: 10
-  google_folder_iam_binding: 104
+  google_folder: 7
+  google_folder_iam_binding: 74
   google_kms_crypto_key: 3
   google_kms_crypto_key_iam_member: 3
   google_kms_key_ring: 3
@@ -8597,7 +8416,7 @@ counts:
   google_logging_project_settings: 3
   google_monitoring_alert_policy: 10
   google_org_policy_custom_constraint: 89
-  google_org_policy_policy: 170
+  google_org_policy_policy: 167
   google_organization_iam_audit_config: 1
   google_organization_iam_binding: 40
   google_organization_iam_custom_role: 14
@@ -8607,22 +8426,22 @@ counts:
   google_project_service: 37
   google_project_service_identity: 11
   google_scc_management_organization_security_health_analytics_custom_module: 18
-  google_service_account: 14
+  google_service_account: 12
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_object: 10
-  google_storage_managed_folder: 5
-  google_storage_managed_folder_iam_binding: 10
+  google_storage_managed_folder: 4
+  google_storage_managed_folder_iam_binding: 8
   google_storage_project_service_account: 3
-  google_tags_tag_binding: 7
+  google_tags_tag_binding: 5
   google_tags_tag_key: 3
   google_tags_tag_value: 6
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 58
-  resources: 718
+  modules: 52
+  resources: 675
   terraform_data: 4
 
 outputs:
@@ -8636,4 +8455,8 @@ outputs:
     gcp-security-admins: group:gcp-security-admins@example.org
     gcp-support: group:gcp-support@example.org
   projects: __missing__
+  subnet_ips: {}
+  subnet_self_links: {}
   tfvars: __missing__
+  vpc_self_links: {}
+

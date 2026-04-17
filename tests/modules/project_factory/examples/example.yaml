@@ -811,7 +811,6 @@ values:
     - group:team-a-admins@example.org
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.subscriber
-    topic: app-0-topic-a
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
   : bigquery_config: []
     cloud_storage_config: []
@@ -833,7 +832,6 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    topic: app-0-topic-b
   module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_topic.default:
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -934,8 +932,6 @@ values:
     timeouts: null
   ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
   : condition: []
-    members:
-    - serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     role: roles/iam.serviceAccountUser
   ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
   : condition: []

@@ -65,10 +65,10 @@ resource "google_logging_organization_settings" "default" {
     ? null
     : lookup(local.ctx.kms_keys, var.logging_settings.kms_key_name, var.logging_settings.kms_key_name)
   )
-  storage_location = lookup(
-    local.ctx.locations,
-    coalesce(var.logging_settings.storage_location, ""),
-    var.logging_settings.storage_location
+  storage_location = (
+    var.logging_settings.storage_location == null
+    ? null
+    : lookup(local.ctx.locations, var.logging_settings.storage_location, var.logging_settings.storage_location)
   )
 }
 

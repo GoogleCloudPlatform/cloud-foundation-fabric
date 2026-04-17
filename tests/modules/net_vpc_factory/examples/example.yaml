@@ -15,9 +15,9 @@
 values:
   module.net-vpc-factory.module.firewall["data-vpc-0"].google_compute_firewall.custom-rules["allow-iap"]:
     allow:
-      - ports:
-          - "22"
-        protocol: tcp
+    - ports:
+      - '22'
+      protocol: tcp
     deny: []
     description: Allow IAP for SSH
     direction: INGRESS
@@ -29,19 +29,20 @@ values:
     priority: 1000
     project: my-host-project-id
     source_ranges:
-      - 35.235.240.0/20
+    - 35.235.240.0/20
     source_service_accounts: null
     source_tags: null
     target_service_accounts: null
     target_tags:
-      - ssh
+    - ssh
     timeouts: null
   module.net-vpc-factory.module.vpcs["data-vpc-0"].google_compute_network.network[0]:
-    auto_create_subnetworks: true
+    auto_create_subnetworks: false
     delete_bgp_always_compare_med: false
     delete_default_routes_on_create: true
     description: Terraform managed
     enable_ula_internal_ipv6: null
+    mtu: 1500
     name: data-vpc-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null

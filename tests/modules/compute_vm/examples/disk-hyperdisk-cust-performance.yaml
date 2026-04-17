@@ -99,7 +99,7 @@ values:
       disk_encryption_key_rsa: null
       disk_encryption_service_account: null
       force_attach: null
-      mode: READ_WRITE
+      mode: READ_ONLY
       source: test-data2
     boot_disk:
     - auto_delete: true
@@ -128,7 +128,6 @@ values:
     enable_display: false
     hostname: null
     instance_encryption_key: []
-    key_revocation_action_type: NONE
     labels: null
     machine_type: n4-standard-2
     metadata: null

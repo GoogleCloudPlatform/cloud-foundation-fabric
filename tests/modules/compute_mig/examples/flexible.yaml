@@ -72,9 +72,9 @@ values:
     enable_display: null
     guest_accelerator: []
     instance_description: null
-    key_revocation_action_type: NONE
+    key_revocation_action_type: null
     labels: null
-    machine_type: f1-micro
+    machine_type: e2-micro
     metadata:
       user-data: "#cloud-config\n\n# Copyright 2023 Google LLC\n#\n# Licensed under\
         \ the Apache License, Version 2.0 (the \"License\");\n# you may not use this\

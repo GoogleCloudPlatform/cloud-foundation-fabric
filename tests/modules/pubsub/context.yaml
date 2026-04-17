@@ -37,7 +37,6 @@ values:
     - group:test-group@example.com
     project: foo-logging-0
     role: organizations/366118655033/roles/myRoleOne
-    topic: my-topic
 
 counts:
   google_pubsub_topic: 1

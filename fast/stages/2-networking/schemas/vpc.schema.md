@@ -9,6 +9,12 @@
 - ⁺**project_id**: *string*
 - ⁺**name**: *string*
 - **description**: *string*
+- **factories_config**: *object*
+  <br>*additional properties: false*
+  - **firewall_rules**: *string*
+  - **subnets**: *string*
+  - **vlan_attachments**: *string*
+  - **vpns**: *string*
 - **auto_create_subnetworks**: *boolean*
 - **delete_default_routes_on_create**: *boolean*
 - **mtu**: *number*

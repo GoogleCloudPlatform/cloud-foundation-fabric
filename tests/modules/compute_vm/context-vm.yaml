@@ -69,7 +69,7 @@ values:
       force_attach: null
       initialize_params:
       - enable_confidential_compute: null
-        image: projects/debian-cloud/global/images/family/debian-11
+        image: debian-cloud/debian-13
         resource_manager_tags: null
         size: 10
         source_image_encryption_key: []
@@ -88,9 +88,8 @@ values:
     enable_display: false
     hostname: null
     instance_encryption_key: []
-    key_revocation_action_type: NONE
     labels: null
-    machine_type: f1-micro
+    machine_type: e2-micro
     metadata: null
     metadata_startup_script: null
     name: test
