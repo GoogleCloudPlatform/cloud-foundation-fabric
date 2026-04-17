@@ -864,11 +864,12 @@ compute.disableSerialPortAccess:
 | [projects-bigquery.tf](./projects-bigquery.tf) | None | <code>bigquery-dataset</code> |  |
 | [projects-buckets.tf](./projects-buckets.tf) | None | <code>gcs</code> |  |
 | [projects-defaults.tf](./projects-defaults.tf) | None |  |  |
+| [projects-dns-armor.tf](./projects-dns-armor.tf) | None |  | <code>google_network_security_dns_threat_detector</code> |
 | [projects-kms.tf](./projects-kms.tf) | None | <code>kms</code> |  |
 | [projects-log-buckets.tf](./projects-log-buckets.tf) | None | <code>logging-bucket</code> |  |
 | [projects-pubsub.tf](./projects-pubsub.tf) | None | <code>pubsub</code> |  |
 | [projects-service-accounts.tf](./projects-service-accounts.tf) | None | <code>iam-service-account</code> |  |
-| [projects.tf](./projects.tf) | None | <code>project</code> | <code>google_network_security_dns_threat_detector</code> · <code>terraform_data</code> |
+| [projects.tf](./projects.tf) | None | <code>project</code> | <code>terraform_data</code> |
 | [variables-billing.tf](./variables-billing.tf) | None |  |  |
 | [variables-folders.tf](./variables-folders.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
