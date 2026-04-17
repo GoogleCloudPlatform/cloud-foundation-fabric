@@ -29,6 +29,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
   - [URL Map](#url-map)
   - [SSL Certificates](#ssl-certificates)
   - [Backend Authenticated TLS](#backend-authenticated-tls)
+  - [Context](#context)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
   - [Changing the Network Endpoint Group](#changing-the-network-endpoint-group)
@@ -788,6 +789,152 @@ module "glb-0" {
 # tftest modules=3 resources=9 fixtures=fixtures/compute-vm-group-bc.tf inventory=tls-settings.yaml
 ```
 
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-lb-app-ext"
+  name       = "glb-test-0"
+  project_id = "$project_ids:test"
+  backend_buckets_config = {
+    default-gcs = {
+      bucket_name = "my-bucket"
+    }
+  }
+  backend_service_configs = {
+    default = {
+      backends = [
+        { backend = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b" },
+        { backend = "ig-c" }
+      ]
+    }
+    neg-cloudrun = {
+      backends      = [{ backend = "neg-cloudrun" }]
+      health_checks = []
+    }
+    neg-gce = {
+      backends       = [{ backend = "neg-gce" }]
+      balancing_mode = "RATE"
+      max_rate       = { per_endpoint = 10 }
+    }
+    neg-hybrid = {
+      backends       = [{ backend = "neg-hybrid" }]
+      balancing_mode = "RATE"
+      max_rate       = { per_endpoint = 10 }
+    }
+    neg-internet = {
+      backends      = [{ backend = "neg-internet" }]
+      health_checks = []
+    }
+  }
+  group_configs = {
+    ig-c = {
+      zone = "$locations:ew8-c"
+      instances = [
+        "projects/my-project/zones/europe-west8-c/instances/vm-c"
+      ]
+      named_ports = { http = 80 }
+    }
+  }
+  health_check_configs = {
+    default = {
+      http = {
+        host               = "hello.example.org"
+        port_specification = "USE_SERVING_PORT"
+      }
+    }
+  }
+  neg_configs = {
+    neg-cloudrun = {
+      cloudrun = {
+        region = "$locations:ew8"
+        target_service = {
+          name = "hello"
+        }
+      }
+    }
+    neg-gce = {
+      gce = {
+        network    = "$networks:test"
+        subnetwork = "$subnets:test"
+        zone       = "$locations:ew8-b"
+        endpoints = {
+          e-0 = {
+            instance   = "nginx-ew8-b"
+            ip_address = "$addresses:test"
+            port       = 80
+          }
+        }
+      }
+    }
+    neg-hybrid = {
+      hybrid = {
+        network = "$networks:test"
+        zone    = "$locations:ew8-b"
+        endpoints = {
+          e-0 = {
+            ip_address = "$addresses:test-hybrid"
+            port       = 80
+          }
+        }
+      }
+    }
+    neg-internet = {
+      internet = {
+        use_fqdn = true
+        endpoints = {
+          e-0 = {
+            destination = "hello.example.org"
+            port        = 80
+          }
+        }
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [
+          { paths = ["/cloudrun", "/cloudrun/*"], service = "neg-cloudrun" },
+          { paths = ["/gce", "/gce/*"], service = "neg-gce" },
+          { paths = ["/hybrid", "/hybrid/*"], service = "neg-hybrid" },
+          { paths = ["/internet", "/internet/*"], service = "neg-internet" },
+        ]
+      }
+    }
+  }
+  context = {
+    addresses = {
+      test        = "10.24.32.25"
+      test-hybrid = "192.168.0.3"
+    }
+    locations = {
+      ew8   = "europe-west8"
+      ew8-b = "europe-west8-b"
+      ew8-c = "europe-west8-c"
+    }
+    networks = {
+      test = "projects/my-project/global/networks/shared-vpc"
+    }
+    project_ids = {
+      test = "my-project"
+    }
+    subnets = {
+      test = "projects/my-project/regions/europe-west8/subnetworks/gce"
+    }
+  }
+}
+# tftest modules=1 resources=18 inventory=context.yaml
+```
+
 ### Complex example
 
 This example mixes group and NEG backends, and shows how to set HTTPS for specific backends.
@@ -1088,22 +1235,23 @@ After provisioning this change, and verifying that the new certificate is provis
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L126) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L241) | Project id. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L139) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L254) | Project id. | <code>string</code> | ✓ |  |
 | [backend_buckets_config](variables.tf#L17) | Backend buckets configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backend_service_configs](variables-backend-service.tf#L19) | Backend service level configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L52) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [forwarding_rules_config](variables.tf#L58) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [group_configs](variables.tf#L79) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L52) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L65) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [forwarding_rules_config](variables.tf#L71) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L92) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [http_proxy_config](variables.tf#L93) | HTTP proxy configuration. Only used for non-classic load balancers. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [https_proxy_config](variables.tf#L104) | HTTPS proxy connfiguration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L120) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L131) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [protocol](variables.tf#L246) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
-| [ssl_certificates](variables.tf#L259) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [http_proxy_config](variables.tf#L106) | HTTP proxy configuration. Only used for non-classic load balancers. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [https_proxy_config](variables.tf#L117) | HTTPS proxy connfiguration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L133) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L144) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [protocol](variables.tf#L259) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
+| [ssl_certificates](variables.tf#L272) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [urlmap_config](variables-urlmap.tf#L19) | The URL map configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [use_classic_version](variables.tf#L277) | Use classic Global Load Balancer. | <code>bool</code> |  | <code>true</code> |
+| [use_classic_version](variables.tf#L290) | Use classic Global Load Balancer. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
