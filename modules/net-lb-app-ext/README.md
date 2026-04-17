@@ -48,13 +48,8 @@ An HTTP load balancer with a backend service pointing to a GCE instance group:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext"
-  project_id = "$project_ids:my-project"
+  project_id = var.project_id
   name       = "glb-test-0"
-  context = {
-    project_ids = {
-      my-project = var.project_id
-    }
-  }
   backend_service_configs = {
     default = {
       backends = [
