@@ -70,4 +70,3 @@ variable "vpc_self_links" {
   nullable    = false
   default     = {}
 }
-

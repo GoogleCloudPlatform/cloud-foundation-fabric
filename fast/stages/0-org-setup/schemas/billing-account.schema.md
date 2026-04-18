@@ -64,5 +64,3 @@
     - **filter**: *string*
 
 ## Definitions
-
-

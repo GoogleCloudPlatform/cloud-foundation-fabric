@@ -392,4 +392,3 @@ resource "google_sql_ssl_cert" "client_certificates" {
   instance    = google_sql_database_instance.primary.name
   common_name = each.key
 }
-

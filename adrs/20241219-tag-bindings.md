@@ -13,7 +13,7 @@ We need to define a variable to manage tag bindings in our Terraform modules. Th
 
 ## Decision:
 
-We will use the `map(string)` type for the `tag_bindings` variable across all modules where it's needed. 
+We will use the `map(string)` type for the `tag_bindings` variable across all modules where it's needed.
 
 ## Consequences
 

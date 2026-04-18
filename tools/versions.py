@@ -51,7 +51,7 @@ terraform {{
 }}
 """
 
-FAST_VERSIONS_TEMPLATE = "\n# FAST release: {fast_release}"
+FAST_VERSIONS_TEMPLATE = "\n# FAST release: {fast_release}\n"
 
 
 def extract_variables(template, interpolated_string):

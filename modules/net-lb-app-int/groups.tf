@@ -34,4 +34,3 @@ resource "google_compute_instance_group" "default" {
     }
   }
 }
-

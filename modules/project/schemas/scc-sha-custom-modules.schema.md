@@ -15,5 +15,3 @@
   - ⁺**severity**: *string*
 
 ## Definitions
-
-
