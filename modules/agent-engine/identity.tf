@@ -17,23 +17,27 @@
 locals {
   service_account_email = (
     var.service_account_config.create
-    ? google_service_account.service_account[0].email  # use managed SA, when creating
-    : (var.service_account_config.email == null ? null # set to null, if no email provided
-      : lookup(                                        # lookup SA in context
+    ? try(google_service_account.service_account[0].email, null) # use managed SA, when creating
+    : (var.service_account_config.email == null ? null           # set to null, if no email provided
+      : lookup(                                                  # lookup SA in context
         local.ctx.iam_principals,
         var.service_account_config.email,
         var.service_account_config.email
       )
     )
   )
-  service_account_roles = [
+  roles = [
     for role in var.service_account_config.roles
     : lookup(local.ctx.custom_roles, role, role)
   ]
 }
 
 resource "google_service_account" "service_account" {
-  count      = var.service_account_config.create ? 1 : 0
+  count = (
+    var.service_account_config.create
+    && var.agent_engine_config.identity_type == "SERVICE_ACCOUNT"
+    ? 1 : 0
+  )
   project    = local.project_id
   account_id = coalesce(var.service_account_config.name, var.name)
   display_name = coalesce(
@@ -46,10 +50,24 @@ resource "google_service_account" "service_account" {
 resource "google_project_iam_member" "default" {
   for_each = (
     var.service_account_config.create
-    ? toset(local.service_account_roles)
+    && var.agent_engine_config.identity_type == "SERVICE_ACCOUNT"
+    ? toset(local.roles)
     : toset([])
   )
   role    = each.key
   project = local.project_id
   member  = google_service_account.service_account[0].member
+}
+
+resource "google_project_iam_member" "default" {
+  for_each = (
+    var.service_account_config.create
+    && var.agent_engine_config.identity_type == "AGENT_IDENTITY"
+    ? toset(local.roles)
+    : toset([])
+  )
+  role    = each.key
+  project = local.project_id
+  # TBD once agent identity can be retrieved from Agent Engine
+  member = "xxx"
 }

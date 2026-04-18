@@ -41,6 +41,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
       ? null
       : var.agent_engine_config.class_methods
     )
+    identity_type   = var.agent_engine_config.identity_type
     service_account = local.service_account_email
 
     dynamic "deployment_spec" {
