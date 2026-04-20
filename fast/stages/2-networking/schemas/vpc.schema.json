@@ -194,6 +194,9 @@
           "properties": {
             "region": {
               "type": "string"
+            },
+            "num_nat_ips": {
+              "type": "number"
             }
           }
         }
