@@ -97,6 +97,48 @@ module "registry-virtual" {
 # tftest modules=3 resources=3 inventory=remote-virtual.yaml
 ```
 
+## Remote Docker registry with credentials
+
+```hcl
+module "registry-mirror" {
+  source      = "./fabric/modules/artifact-registry"
+  project_id  = var.project_id
+  location    = "europe-west1"
+  name        = "mirror"
+  format = {
+    docker = {
+      remote = {
+        custom_repository = "https://example.com"
+        upstream_credentials = {
+          username                = "myuser"
+          password_secret_version = "${module.secret-manager.ids["example-com-password"]}/versions/latest"
+        }
+      }
+    }
+  }
+}
+
+
+module "secret-manager" {
+  source     = "./fabric/modules/secret-manager"
+  project_id = var.project_id
+  secrets = {
+    example-com-password = {
+      global_replica_locations = {
+        europe-west1 = null
+      }
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          "serviceAccount:service-${var.project_number}@gcp-sa-artifactregistry.iam.gserviceaccount.com",
+        ]
+      }
+    }
+  }
+}
+
+# tftest modules=3 resources=3 inventory=remote-virtual.yaml
+```
+
 ## Additional Docker and Maven Options
 
 ```hcl
