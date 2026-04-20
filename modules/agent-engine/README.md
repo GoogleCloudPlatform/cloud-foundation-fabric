@@ -16,6 +16,7 @@ The module creates Agent Engine and related dependencies.
 - [Private networking: setup PSC-I](#private-networking-setup-psc-i)
 - [Specify an encryption key](#specify-an-encryption-key)
 - [Define environment variables and use secrets](#define-environment-variables-and-use-secrets)
+- [Container-based deployment](#container-based-deployment)
 - [Memory Bank](#memory-bank)
 - [Getting values from context](#getting-values-from-context)
 - [Variables](#variables)
@@ -88,6 +89,33 @@ module "agent_engine" {
 ```
 
 You can change the name of the tar.gz package, of the requirement file, the name of the Python file and the name of the agent function by using the `deployment_files.source_config` variable.
+
+You can also provide custom build arguments for the container image by using the `deployment_files.source_config.image_spec` variable.
+
+```hcl
+module "agent_engine" {
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
+
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+      image_spec = {
+        build_args = {
+          "ENV" = "production"
+        }
+      }
+    }
+  }
+}
+# tftest inventory=image-spec.yaml
+```
 
 ## Serialized Object Deployment
 
@@ -345,6 +373,32 @@ module "agent_engine" {
 # tftest inventory=environment.yaml
 ```
 
+## Container-based deployment
+
+You can deploy your agent as a custom Docker image.
+
+```hcl
+module "agent_engine" {
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = var.project_id
+  region     = var.region
+
+  agent_engine_config = {
+    environment_variables = {
+      FOO = "bar"
+    }
+  }
+
+  deployment_files = {
+    container_config = {
+      image_uri = "us-central1-docker.pkg.dev/my-project/my-repo/my-image:latest"
+    }
+  }
+}
+# tftest inventory=container.yaml
+```
+
 ## Memory Bank
 
 You can optionally configure a Memory Bank to provide long-term persistent memory for your agent.
@@ -390,18 +444,18 @@ The module allows you to dynamically reference context values for resources crea
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [agent_engine_config](variables.tf#L17) | The agent configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L146) | The name of the agent. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L165) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L171) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
-| [bucket_config](variables.tf#L40) | The GCS bucket configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L52) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deployment_files](variables.tf#L66) | The to source files path and names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [description](variables.tf#L103) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [encryption_key](variables.tf#L110) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
-| [managed](variables.tf#L116) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
-| [memory_bank_config](variables.tf#L123) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [networking_config](variables.tf#L152) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [name](variables.tf#L147) | The name of the agent. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L166) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L172) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
+| [agent_engine_config](variables.tf#L17) | The agent configuration. Supported values for agent_framework: 'google-adk', 'langchain', 'langgraph', 'ag2', 'llama-index', 'custom'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [bucket_config](variables.tf#L41) | The GCS bucket configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L53) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [deployment_files](variables.tf#L67) | The to source files path and names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [description](variables.tf#L104) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [encryption_key](variables.tf#L111) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
+| [managed](variables.tf#L117) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
+| [memory_bank_config](variables.tf#L124) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [networking_config](variables.tf#L153) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [service_account_config](variables-serviceaccount.tf#L18) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs

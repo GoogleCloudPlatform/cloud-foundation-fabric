@@ -15,10 +15,10 @@
  */
 
 variable "agent_engine_config" {
-  description = "The agent configuration."
+  description = "The agent configuration. Supported values for agent_framework: 'google-adk', 'langchain', 'langgraph', 'ag2', 'llama-index', 'custom'."
   type = object({
     # Add validation once API stabilizes
-    agent_framework       = string
+    agent_framework       = optional(string)
     class_methods         = optional(string)
     container_concurrency = optional(number)
     environment_variables = optional(map(string), {})
@@ -35,6 +35,7 @@ variable "agent_engine_config" {
     })), {})
   })
   nullable = false
+  default  = {}
 }
 
 variable "bucket_config" {
@@ -66,6 +67,9 @@ variable "context" {
 variable "deployment_files" {
   description = "The to source files path and names."
   type = object({
+    container_config = optional(object({
+      image_uri = string
+    }), null)
     package_config = optional(object({
       are_paths_local   = optional(bool, true)
       dependencies_path = optional(string, "./src/dependencies.tar.gz")
@@ -75,6 +79,9 @@ variable "deployment_files" {
     source_config = optional(object({
       entrypoint_module = optional(string, "agent")
       entrypoint_object = optional(string, "agent")
+      image_spec = optional(object({
+        build_args = optional(map(string), {})
+      }))
       requirements_path = optional(string, "requirements.txt")
       source_path       = optional(string, "./src/source.tar.gz")
     }), null)
@@ -86,17 +93,11 @@ variable "deployment_files" {
   }
   validation {
     condition = (
-      var.deployment_files.package_config != null ||
-      var.deployment_files.source_config != null
-    )
-    error_message = "You must provide either 'package_config' or 'source_config'."
-  }
-  validation {
-    condition = !(
-      var.deployment_files.package_config != null &&
-      var.deployment_files.source_config != null
-    )
-    error_message = "You cannot specify both 'package_config' and 'source_config' simultaneously."
+      (var.deployment_files.container_config != null ? 1 : 0) +
+      (var.deployment_files.package_config != null ? 1 : 0) +
+      (var.deployment_files.source_config != null ? 1 : 0)
+    ) == 1
+    error_message = "You must provide exactly one of 'container_config', 'package_config' or 'source_config'."
   }
 }
 

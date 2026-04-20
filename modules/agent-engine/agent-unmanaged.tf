@@ -108,6 +108,14 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
       }
     }
 
+    dynamic "container_spec" {
+      for_each = var.deployment_files.container_config != null ? { 1 = 1 } : {}
+
+      content {
+        image_uri = var.deployment_files.container_config.image_uri
+      }
+    }
+
     dynamic "package_spec" {
       for_each = var.deployment_files.package_config == null ? {} : { 1 = 1 }
 
@@ -139,11 +147,29 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
           source_archive = filebase64(var.deployment_files.source_config.source_path)
         }
 
-        python_spec {
-          entrypoint_module = var.deployment_files.source_config.entrypoint_module
-          entrypoint_object = var.deployment_files.source_config.entrypoint_object
-          requirements_file = var.deployment_files.source_config.requirements_path
-          version           = var.agent_engine_config.python_version
+        dynamic "python_spec" {
+          for_each = (
+            try(var.deployment_files.source_config.image_spec, null) == null
+            ? { 1 = 1 }
+            : {}
+          )
+          content {
+            entrypoint_module = var.deployment_files.source_config.entrypoint_module
+            entrypoint_object = var.deployment_files.source_config.entrypoint_object
+            requirements_file = var.deployment_files.source_config.requirements_path
+            version           = var.agent_engine_config.python_version
+          }
+        }
+
+        dynamic "image_spec" {
+          for_each = (
+            try(var.deployment_files.source_config.image_spec, null) == null
+            ? {}
+            : { 1 = 1 }
+          )
+          content {
+            build_args = var.deployment_files.source_config.image_spec.build_args
+          }
         }
       }
     }
@@ -216,6 +242,7 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
 
   lifecycle {
     ignore_changes = [
+      spec[0].container_spec,
       spec[0].package_spec,
       spec[0].source_code_spec[0].inline_source[0].source_archive
     ]
