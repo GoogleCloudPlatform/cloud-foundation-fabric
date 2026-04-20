@@ -14,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+# shellcheck disable=SC2034
+DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 echo -- Boilerplate check --
-python3 tools/check_boilerplate.py $PWD
+python3 tools/check_boilerplate.py "$PWD"
 
 echo -- Terraform format --
-terraform fmt -recursive -check -diff $PWD
+terraform fmt -recursive -check -diff "$PWD"
 
 echo -- READMEs --
 python3 tools/check_documentation.py --no-show-summary modules fast blueprints
@@ -29,7 +30,7 @@ echo -- Schema docs --
 python3 tools/check_schema_docs.py --no-show-summary modules fast blueprints
 
 echo -- Links --
-python3 tools/check_links.py --no-show-summary $PWD
+python3 tools/check_links.py --no-show-summary "$PWD"
 
 echo -- FAST Names --
 python3 tools/check_names.py --prefix-length=10 --failed-only fast/stages
@@ -39,8 +40,8 @@ yamllint -c .yamllint .
 
 echo -- Python formatting --
 yapf -p -d -r \
-     tools/*.py \
-     blueprints
+	tools/*.py \
+	blueprints
 
 echo -- Version checks --
 find . -type f -name 'versions.tf' -exec diff -I '[[:space:]]*module_name' -ub default-versions.tf {} \;

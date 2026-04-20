@@ -43,5 +43,3 @@ output "tables" {
   description = "Tables."
   value       = google_biglake_table.tables
 }
-
-

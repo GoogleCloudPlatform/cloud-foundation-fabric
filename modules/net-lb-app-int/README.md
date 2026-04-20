@@ -23,6 +23,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
   - [SSL Certificates](#ssl-certificates)
   - [Backend Authenticated TLS](#backend-authenticated-tls)
   - [PSC service attachment](#psc-service-attachment)
+  - [Context](#context)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Files](#files)
@@ -775,6 +776,167 @@ module "ilb-l7" {
   }
 }
 # tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf e2e
+```
+
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-lb-app-int"
+  name       = "ilb-test-0"
+  project_id = "$project_ids:test"
+  region     = "$locations:ew8"
+  vpc_config = {
+    network    = "$networks:test"
+    subnetwork = "$subnets:test"
+  }
+  address = "$addresses:test"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { group = "projects/foo-test-0/zones/europe-west8-b/instanceGroups/ig-b" },
+        { group = "ig-c" }
+      ]
+    }
+    neg-cloudrun = {
+      backends      = [{ group = "neg-cloudrun" }]
+      health_checks = []
+    }
+    neg-gce = {
+      backends       = [{ group = "neg-gce" }]
+      balancing_mode = "RATE"
+      max_rate       = { per_endpoint = 10 }
+    }
+    neg-hybrid = {
+      backends       = [{ group = "neg-hybrid" }]
+      balancing_mode = "RATE"
+      max_rate       = { per_endpoint = 10 }
+    }
+    neg-internet = {
+      backends      = [{ group = "neg-internet" }]
+      health_checks = []
+    }
+    neg-psc = {
+      backends      = [{ group = "neg-psc" }]
+      health_checks = []
+    }
+  }
+  group_configs = {
+    ig-c = {
+      zone = "$locations:ew8-c"
+      instances = [
+        "projects/foo-test-0/zones/europe-west8-c/instances/vm-c"
+      ]
+      named_ports = { http = 80 }
+    }
+  }
+  health_check_configs = {
+    default = {
+      http = {
+        host               = "hello.example.org"
+        port_specification = "USE_SERVING_PORT"
+      }
+    }
+  }
+  neg_configs = {
+    neg-cloudrun = {
+      cloudrun = {
+        region = "$locations:ew8"
+        target_service = {
+          name = "hello"
+        }
+      }
+    }
+    neg-gce = {
+      gce = {
+        network    = "$networks:test"
+        subnetwork = "$subnets:test"
+        zone       = "$locations:ew8-b"
+        endpoints = {
+          e-0 = {
+            instance   = "nginx-ew8-b"
+            ip_address = "$addresses:test"
+            port       = 80
+          }
+        }
+      }
+    }
+    neg-hybrid = {
+      hybrid = {
+        network = "$networks:test"
+        zone    = "$locations:ew8-b"
+        endpoints = {
+          e-0 = {
+            ip_address = "$addresses:test-hybrid"
+            port       = 80
+          }
+        }
+      }
+    }
+    neg-internet = {
+      internet = {
+        region   = "$locations:ew8"
+        use_fqdn = true
+        endpoints = {
+          e-0 = {
+            destination = "hello.example.org"
+            port        = 80
+          }
+        }
+      }
+    }
+    neg-psc = {
+      psc = {
+        region         = "$locations:ew8"
+        target_service = "projects/foo-test-0/regions/europe-west8/serviceAttachments/sa"
+        network        = "$networks:test"
+        subnetwork     = "$subnets:test"
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [
+          { paths = ["/cloudrun", "/cloudrun/*"], service = "neg-cloudrun" },
+          { paths = ["/gce", "/gce/*"], service = "neg-gce" },
+          { paths = ["/hybrid", "/hybrid/*"], service = "neg-hybrid" },
+          { paths = ["/internet", "/internet/*"], service = "neg-internet" },
+          { paths = ["/psc", "/psc/*"], service = "neg-psc" },
+        ]
+      }
+    }
+  }
+  context = {
+    addresses = {
+      test        = "10.0.0.10"
+      test-hybrid = "192.168.0.3"
+    }
+    locations = {
+      ew8   = "europe-west8"
+      ew8-b = "europe-west8-b"
+      ew8-c = "europe-west8-c"
+    }
+    networks = {
+      test = "projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0"
+    }
+    project_ids = {
+      test = "foo-test-0"
+    }
+    subnets = {
+      test = "projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce"
+    }
+  }
+}
+# tftest modules=1 resources=19 inventory=context.yaml
 ```
 
 ### Complex example

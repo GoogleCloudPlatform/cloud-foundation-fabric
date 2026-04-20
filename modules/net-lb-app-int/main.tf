@@ -183,12 +183,17 @@ resource "google_compute_network_endpoint_group" "default" {
   description           = var.description
   network_endpoint_type = each.value.type
   network = (
-    each.value.network != null ? each.value.network : local.network
+    each.value.network != null
+    ? try(local.ctx.networks[each.value.network], each.value.network)
+    : local.network
   )
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : coalesce(each.value.subnetwork, local.subnetwork)
+    : coalesce(
+      try(local.ctx.subnets[each.value.subnetwork], each.value.subnetwork),
+      local.subnetwork
+    )
   )
 }
 
@@ -238,8 +243,16 @@ resource "google_compute_region_network_endpoint_group" "psc" {
   //description           = coalesce(each.value.description, var.description)
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
-  network               = each.value.psc.network
-  subnetwork            = each.value.psc.subnetwork
+  network = (
+    each.value.psc.network == null
+    ? null
+    : try(local.ctx.networks[each.value.psc.network], each.value.psc.network)
+  )
+  subnetwork = (
+    each.value.psc.subnetwork == null
+    ? null
+    : try(local.ctx.subnets[each.value.psc.subnetwork], each.value.psc.subnetwork)
+  )
   lifecycle {
     # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
     ignore_changes = [psc_data]

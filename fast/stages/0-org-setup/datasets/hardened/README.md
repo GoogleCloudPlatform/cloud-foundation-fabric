@@ -338,7 +338,7 @@ As per October 2025, a bug exits providing misleading error message `Error 409: 
 
 ```
 │ Error: Error creating Policy: googleapi: Error 409: Requested entity already exists
-│ 
+│
 │   with module.organization-iam[0].google_org_policy_policy.default["custom.gkeRequireVPCNativeCluster"],
 │   on ../../../modules/organization/organization-policies.tf line 105, in resource "google_org_policy_policy" "default":
 │  105: resource "google_org_policy_policy" "default" {
@@ -398,7 +398,7 @@ If you get this kind of error, it means that Security Command Center Premium or 
 
 ```bash
 Error: Error creating OrganizationSecurityHealthAnalyticsCustomModule: googleapi: Error 404: Parent resource "organizations/1234567890/locations/global" not found.
-│ 
+│
 │   with module.organization[0].google_scc_management_organization_security_health_analytics_custom_module.scc_organization_custom_module["cloudfunctionsV1RequireIngressInternalAndLoadBalancer"],
 │   on ../../../modules/organization/scc-sha-custom-modules.tf line 49, in resource "google_scc_management_organization_security_health_analytics_custom_module" "scc_organization_custom_module":
 │   49: resource "google_scc_management_organization_security_health_analytics_custom_module" "scc_organization_custom_module" {

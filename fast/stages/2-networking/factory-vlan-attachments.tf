@@ -46,8 +46,8 @@ locals {
     ]...),
     {}
   )
-  # Read and decode the discovered YAML files. This step also injects VPC-level 
-  # inferred attributes  into each configuration, such as the `project_id` and 
+  # Read and decode the discovered YAML files. This step also injects VPC-level
+  # inferred attributes  into each configuration, such as the `project_id` and
   # `network`, ensuring each attachment is correctly associated with its parent VPC.
   _vlan_attachments_preprocess = {
     for k, v in local._vlan_attachments_files : k => merge(

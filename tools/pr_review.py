@@ -86,6 +86,7 @@ Review the provided git diff. Provide a concise, constructive review.
 - Suggest specific code improvements.
 - If the code looks good and follows all guidelines, state that clearly.
 - Format your output in Markdown so it can be posted directly as a GitHub PR comment.
+- Please be mindful of module sources in README examples, where we purposefully use './fabric/modules/' as a base path for our test harness
 - CRITICAL: Keep your entire response concise. The GitHub PR comment size limit is 65536 characters. Your response MUST be well under this limit (e.g., maximum 50000 characters). Focus only on the most important feedback.
 """
 

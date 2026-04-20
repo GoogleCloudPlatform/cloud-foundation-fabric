@@ -39,4 +39,3 @@ vpcs:
   mtu: 1500
 output_files:
   storage_bucket: $storage_buckets:iac-0/iac-outputs
-

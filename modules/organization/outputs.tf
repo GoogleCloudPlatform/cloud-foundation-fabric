@@ -128,6 +128,9 @@ output "scc_mute_configs" {
 output "service_agents" {
   description = "Identities of all organization-level service agents."
   value       = local.service_agents
+  depends_on = [
+    google_organization_service_identity.default
+  ]
 }
 
 output "sink_writer_identities" {

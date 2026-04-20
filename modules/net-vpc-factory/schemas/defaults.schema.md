@@ -24,5 +24,3 @@
     <br>*default: 1500*
 
 ## Definitions
-
-

@@ -24,6 +24,7 @@
 # ]
 # ///
 
+from collections import Counter
 from dataclasses import asdict, dataclass
 from itertools import chain
 
@@ -133,6 +134,17 @@ class Agent:
   is_primary: bool
   aliases: list[str]
   skip_iam: bool
+  node_type: str
+
+  def to_dict(self):
+    d = asdict(self)
+    d.pop('node_type', None)
+    if self.node_type in ['organization', 'folder']:
+      d.pop('is_primary', None)
+      d.pop('role', None)
+      d.pop('skip_iam', None)
+      d.pop('aliases', None)
+    return d
 
 
 @click.command()
@@ -180,6 +192,12 @@ def main(mode, e2e=False):
     if identity in IGNORED_AGENTS or '-IDENTIFIER' in identity:
       continue
 
+    role = col2.code.get_text() if 'roles/' in agent_text else None
+
+    # Ignore Apigee Core service agent as it shares email with primary agent
+    if identity == 'service-PROJECT_NUMBER@gcp-sa-apigee.iam.gserviceaccount.com' and role == 'roles/apigee.coreServiceAgent':
+      continue
+
     if identity in AGENT_NAME_OVERRIDE:
       name = AGENT_NAME_OVERRIDE[identity]
     else:
@@ -221,6 +239,7 @@ def main(mode, e2e=False):
         is_primary=PRIMARY_OVERRIDE.get(name, is_primary),
         aliases=ALIASES.get(name, []),
         skip_iam=skip_iam,
+        node_type=mode,
     )
 
     if mode == 'project' and agent.name == 'cloudservices':
@@ -231,7 +250,11 @@ def main(mode, e2e=False):
 
   # make sure all names and aliases are different:
   names = set(agent.name for agent in agents)
-  assert len(names) == len(agents)
+  duplicate_names = [
+      name for name, count in Counter(agent.name for agent in agents).items()
+      if count > 1
+  ]
+  assert len(names) == len(agents), f"duplicate names found: {duplicate_names}"
   aliases = set(chain.from_iterable(agent.aliases for agent in agents))
   assert aliases.isdisjoint(names)
 
@@ -244,7 +267,7 @@ def main(mode, e2e=False):
     header = open(__file__).readlines()[2:15]
     print("".join(header))
     # and print all the agents
-    print(yaml.safe_dump([asdict(a) for a in agents], sort_keys=False))
+    print(yaml.safe_dump([a.to_dict() for a in agents], sort_keys=False))
   else:
     jit_services = {}
     result = {"locals": {"jit_services": jit_services}}

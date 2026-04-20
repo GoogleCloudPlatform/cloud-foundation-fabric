@@ -451,7 +451,7 @@ labels:
 
 #### Context-based interpolation
 
-When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name). 
+When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name).
 
 To solve this, a **context-based interpolation** system is implemented. A `context` object variable is introduced containing maps of known resource IDs (like `project_ids`, `folder_ids`, `iam_principals`), and a `$` prefix convention is used in the YAML strings to instruct the module to look up the actual ID at plan time.
 
@@ -1063,9 +1063,9 @@ tests:
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml
-  # You can use `extra_files` to include additional tf files outside 
+  # You can use `extra_files` to include additional tf files outside
   # the module's path before running the test.
-  # extra_files:  
+  # extra_files:
   #   - ../plugin-x/*.tf
 
   # You can omit the tfvars and inventory sections and they will
@@ -1083,7 +1083,7 @@ A good example of tests showing different ways of leveraging our framework is in
 
 ### Debugging Terraform Context & Locals
 
-When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`. 
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`.
 
 **ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
 
@@ -1092,7 +1092,7 @@ resource "terraform_data" "debug_dump" {
   lifecycle {
     precondition {
       # The condition is intentionally designed to fail to trigger the error_message
-      condition     = local.target_variable == null 
+      condition     = local.target_variable == null
       error_message = yamlencode(local.target_variable)
     }
   }

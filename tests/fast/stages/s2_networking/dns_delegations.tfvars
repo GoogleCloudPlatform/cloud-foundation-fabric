@@ -32,4 +32,3 @@ tag_values = {
   "environment/development" = "tagValues/12345"
   "environment/production"  = "tagValues/12346"
 }
-
