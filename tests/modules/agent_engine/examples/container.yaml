@@ -39,9 +39,14 @@ values:
     project: project-id
     timeouts: null
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+    context_spec: []
+    deletion_policy: null
     description: Terraform managed.
     display_name: my-agent
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     encryption_spec: []
+    labels: null
     project: project-id
     region: europe-west8
     spec:
@@ -55,9 +60,12 @@ values:
           value: bar
         psc_interface_config: []
         secret_env: []
+      identity_type: null
       package_spec: []
       service_account: my-agent@project-id.iam.gserviceaccount.com
       source_code_spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.agent_engine.time_sleep.wait_5_minutes:
     create_duration: 5m

@@ -109,66 +109,88 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
     }
 
     dynamic "container_spec" {
-      for_each = var.deployment_files.container_config != null ? { 1 = 1 } : {}
+      for_each = var.deployment_config.container_config != null ? { 1 = 1 } : {}
 
       content {
-        image_uri = var.deployment_files.container_config.image_uri
+        image_uri = var.deployment_config.container_config.image_uri
       }
     }
 
     dynamic "package_spec" {
-      for_each = var.deployment_files.package_config != null ? { 1 = 1 } : {}
+      for_each = var.deployment_config.package_config != null ? { 1 = 1 } : {}
 
       content {
         python_version = var.agent_engine_config.python_version
         dependency_files_gcs_uri = (
-          var.deployment_files.package_config.are_paths_local
+          var.deployment_config.package_config.are_paths_local
           ? "gs://${local.bucket_name}/${google_storage_bucket_object.dependencies[0].name}"
-          : var.deployment_files.package_config.dependencies_path
+          : var.deployment_config.package_config.dependencies_path
         )
         requirements_gcs_uri = (
-          var.deployment_files.package_config.are_paths_local
+          var.deployment_config.package_config.are_paths_local
           ? "gs://${local.bucket_name}/${google_storage_bucket_object.requirements[0].name}"
-          : var.deployment_files.package_config.requirements_path
+          : var.deployment_config.package_config.requirements_path
         )
         pickle_object_gcs_uri = (
-          var.deployment_files.package_config.are_paths_local
+          var.deployment_config.package_config.are_paths_local
           ? "gs://${local.bucket_name}/${google_storage_bucket_object.pickle[0].name}"
-          : var.deployment_files.package_config.pickle_path
+          : var.deployment_config.package_config.pickle_path
         )
       }
     }
 
     dynamic "source_code_spec" {
-      for_each = var.deployment_files.source_config != null ? { 1 = 1 } : {}
+      for_each = var.deployment_config.source_files_config != null ? { 1 = 1 } : {}
 
       content {
-        inline_source {
-          source_archive = filebase64(var.deployment_files.source_config.source_path)
-        }
-
-        dynamic "python_spec" {
+        dynamic "inline_source" {
           for_each = (
-            try(var.deployment_files.source_config.image_spec, null) == null
+            try(var.deployment_config.source_files_config.source_path, null) != null
             ? { 1 = 1 }
             : {}
           )
           content {
-            entrypoint_module = var.deployment_files.source_config.entrypoint_module
-            entrypoint_object = var.deployment_files.source_config.entrypoint_object
-            requirements_file = var.deployment_files.source_config.requirements_path
+            source_archive = filebase64(var.deployment_config.source_files_config.source_path)
+          }
+        }
+
+        dynamic "developer_connect_source" {
+          for_each = (
+            try(var.deployment_config.source_files_config.developer_connect_config, null) != null
+            ? { 1 = 1 }
+            : {}
+          )
+          content {
+            config {
+              git_repository_link = var.deployment_config.source_files_config.developer_connect_config.git_repository_link
+              dir                 = var.deployment_config.source_files_config.developer_connect_config.dir
+              revision            = var.deployment_config.source_files_config.developer_connect_config.revision
+            }
+          }
+        }
+
+        dynamic "python_spec" {
+          for_each = (
+            try(var.deployment_config.source_files_config.image_spec, null) == null
+            ? { 1 = 1 }
+            : {}
+          )
+          content {
+            entrypoint_module = try(var.deployment_config.source_files_config.python_spec.entrypoint_module, "agent")
+            entrypoint_object = try(var.deployment_config.source_files_config.python_spec.entrypoint_object, "agent")
+            requirements_file = try(var.deployment_config.source_files_config.python_spec.requirements_file, "requirements.txt")
             version           = var.agent_engine_config.python_version
           }
         }
 
         dynamic "image_spec" {
           for_each = (
-            try(var.deployment_files.source_config.image_spec, null) == null
-            ? {}
-            : { 1 = 1 }
+            try(var.deployment_config.source_files_config.image_spec, null) != null
+            ? { 1 = 1 }
+            : {}
           )
           content {
-            build_args = var.deployment_files.source_config.image_spec.build_args
+            build_args = var.deployment_config.source_files_config.image_spec.build_args
           }
         }
       }
