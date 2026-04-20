@@ -1,6 +1,6 @@
 # AlloyDB cluster and instance with read replicas
 
-This module manages the creation of AlloyDB cluster and configuration with/without automated backup policy, Primary node instance and Read Node Pools. 
+This module manages the creation of AlloyDB cluster and configuration with/without automated backup policy, Primary node instance and Read Node Pools.
 
 
 ## Simple example

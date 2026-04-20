@@ -47,7 +47,7 @@ display_name: Group 1 # Group display name.
 description: Group 1 description # Group description.
 members:  # List of group members.
   - user_1@example.com
-  - user_2@example.com  
+  - user_2@example.com
 managers: # List of group managers.
   - manager_1@example.com
 ```

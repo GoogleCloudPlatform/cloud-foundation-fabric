@@ -84,7 +84,7 @@ python3 tools/check_boilerplate.py --scan-files <files>
 
 #### 2. Testing
 
-Our testing philosophy is simple: test to ensure the code works and does not break due to dependency changes. **Example-based testing via `README.md` is the preferred approach.** 
+Our testing philosophy is simple: test to ensure the code works and does not break due to dependency changes. **Example-based testing via `README.md` is the preferred approach.**
 
 Tests are triggered from HCL Markdown fenced code blocks using a special `# tftest` directive at the end of the block.
 
@@ -208,7 +208,7 @@ Modify one existing README example (do not add a new one) to demonstrate context
 
 ## Architecture & Conventions
 
-*   **Variables & Interfaces:** 
+*   **Variables & Interfaces:**
     *   Prefer object variables (e.g., `iam = { ... }`) over many individual scalar variables.
     *   Design compact variable spaces by leveraging Terraform's `optional()` function with defaults extensively.
     *   Use maps instead of lists for multiple items to ensure stable keys in state and avoid `for_each` dynamic value issues.
@@ -226,7 +226,7 @@ Modify one existing README example (do not add a new one) to demonstrate context
 
 ## Debugging Terraform Context & Locals
 
-When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`. 
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`.
 
 **ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
 
@@ -235,7 +235,7 @@ resource "terraform_data" "debug_dump" {
   lifecycle {
     precondition {
       # The condition is intentionally designed to fail to trigger the error_message
-      condition     = local.target_variable == null 
+      condition     = local.target_variable == null
       error_message = yamlencode(local.target_variable)
     }
   }

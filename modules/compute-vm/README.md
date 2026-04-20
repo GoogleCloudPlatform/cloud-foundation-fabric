@@ -176,7 +176,7 @@ When attaching multiple disks to a VM, Terraform processes them using a `dynamic
 
 If you add a new disk to the `attached_disks` map with a key that comes alphabetically *before* existing disks, it will shift the attachment order of all subsequent disks. This shift can cause Terraform to recreate or modify existing attachments, potentially requiring the VM to be restarted or remounted.
 
-To explicitly control the attachment order and prevent unintended shifts when adding new disks, you can use the optional `position` attribute within each disk's configuration. The module uses the `position` value as the sorting key. If `position` is omitted, it falls back to using the map key itself. 
+To explicitly control the attachment order and prevent unintended shifts when adding new disks, you can use the optional `position` attribute within each disk's configuration. The module uses the `position` value as the sorting key. If `position` is omitted, it falls back to using the map key itself.
 
 By setting a `position` value that sorts alphabetically *after* the existing disks, you can safely append a newly added disk to the end of the attachment list, regardless of its actual map key.
 

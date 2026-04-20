@@ -156,4 +156,3 @@ resource "google_workstations_workstation_iam_member" "bindings" {
     local.ctx.iam_principals, each.value.member, each.value.member
   )
 }
-

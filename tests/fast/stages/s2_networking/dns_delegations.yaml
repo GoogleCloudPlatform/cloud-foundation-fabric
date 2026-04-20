@@ -49,4 +49,3 @@ values:
     routing_policy: []
     ttl: 300
     type: DS
-

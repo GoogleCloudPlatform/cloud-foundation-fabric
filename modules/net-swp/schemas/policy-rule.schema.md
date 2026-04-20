@@ -21,5 +21,3 @@
     - items: *string*
 
 ## Definitions
-
-

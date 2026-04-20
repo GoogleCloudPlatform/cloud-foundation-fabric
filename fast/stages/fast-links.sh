@@ -14,12 +14,12 @@
 # limitations under the License.
 
 if [ $# -eq 0 ]; then
-  echo "Error: no folder or GCS bucket specified. Use -h or --help for usage."
-  exit 1
+	echo "Error: no folder or GCS bucket specified. Use -h or --help for usage."
+	exit 1
 fi
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-  cat <<END
+	cat <<END
 Create commands to initialize stage provider and tfvars files. Use this script
 from inside a stage folder.
 
@@ -32,23 +32,25 @@ Usage with local output files folder:
 Point path/GCS URI to the tenant folder in tenant mode:
   fast-links.sh FOLDER_PATH/TENANT_SHORTNAME
 END
-  exit 0
+	exit 0
 fi
 
 if [[ "$1" == "gs://"* ]]; then
-  CMD="gcloud storage cp $1"
-  CP_CMD=$CMD
+	CMD="gcloud storage cp $1"
+	# shellcheck disable=SC2034
+	CP_CMD=$CMD
 elif [ ! -d "$1" ]; then
-  echo "folder $1 not found"
-  exit 1
+	echo "folder $1 not found"
+	exit 1
 else
-  CMD="ln -s $1"
-  CP_CMD="cp $1"
+	CMD="ln -s $1"
+	# shellcheck disable=SC2034
+	CP_CMD="cp $1"
 fi
 
 if [ ! -f .fast-stage.env ]; then
-  echo "this folder does not look like a FAST stage"
-  exit 1
+	echo "this folder does not look like a FAST stage"
+	exit 1
 fi
 
 set -a && source .fast-stage.env && set +a
@@ -57,26 +59,26 @@ echo -e "# File linking commands for $FAST_STAGE_DESCRIPTION stage\n"
 
 echo "# provider file"
 if [[ ! -z ${FAST_STAGE_PROVIDERS+x} ]]; then
-  echo "$CMD/providers/${FAST_STAGE_LEVEL}-${FAST_STAGE_PROVIDERS}-providers.tf ./"
+	echo "$CMD/providers/${FAST_STAGE_LEVEL}-${FAST_STAGE_PROVIDERS}-providers.tf ./"
 else
-  echo "$CMD/providers/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}-providers.tf ./"
+	echo "$CMD/providers/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}-providers.tf ./"
 fi
 
 if [[ ! -z ${FAST_STAGE_DEPS+x} ]]; then
-  echo -e "\n# input files from other stages"
-  for f in $FAST_STAGE_DEPS; do
-    echo "$CMD/tfvars/$f.auto.tfvars.json ./"
-  done
+	echo -e "\n# input files from other stages"
+	for f in $FAST_STAGE_DEPS; do
+		echo "$CMD/tfvars/$f.auto.tfvars.json ./"
+	done
 fi
 
 echo -e "\n# conventional location for this stage terraform.tfvars (manually managed)"
 echo "$CMD/${FAST_STAGE_LEVEL}-${FAST_STAGE_NAME}.auto.tfvars ./"
 
 if [[ ! -z ${FAST_STAGE_OPTIONAL+x} ]]; then
-  echo -e "\n# optional files"
-  for f in $FAST_STAGE_OPTIONAL; do
-    echo "$CMD/tfvars/$f.auto.tfvars.json ./"
-  done
+	echo -e "\n# optional files"
+	for f in $FAST_STAGE_OPTIONAL; do
+		echo "$CMD/tfvars/$f.auto.tfvars.json ./"
+	done
 fi
 
 echo
