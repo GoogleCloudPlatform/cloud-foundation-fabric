@@ -384,24 +384,77 @@ module "agent_engine" {
 
 ## Getting values from context
 
-The module allows you to dynamically reference context values for resources created outside this module, through the `context` variable. This includes the definition of custom roles, iam_principals, locations, kms_keys, models and project ids.
+The module allows you to dynamically reference context values for resources created outside this module, through the `context` variable. This includes the definition of custom roles, iam_principals, locations, networks, psc_network_attachments, kms_keys, models and project ids.
+
+```hcl
+module "agent_engine" {
+  source     = "./fabric/modules/agent-engine"
+  name       = "my-agent"
+  project_id = "$project_ids:main-project"
+  region     = "$locations:primary"
+  agent_engine_config = {
+    agent_framework = "google-adk"
+  }
+  deployment_files = {
+    source_config = {
+      source_path = "assets/src/source.tar.gz"
+    }
+  }
+  networking_config = {
+    network_attachment_id = "$psc_network_attachments:primary"
+    dns_peering_configs = {
+      "example.com" = {
+        target_network_name = "$networks:vpc-1"
+      }
+      "my-company.local" = {
+        target_network_name = "$networks:vpc-2"
+        target_project_id   = "$project_ids:dns-project"
+      }
+    }
+  }
+  service_account_config = {
+    create = false
+    email  = "$iam_principals:my-custom-sa"
+  }
+  context = {
+    iam_principals = {
+      my-custom-sa = "my-sa@$test-project-1.iam.gserviceaccount.com"
+    }
+    locations = {
+      primary = "europe-west1"
+    }
+    networks = {
+      vpc-1 = "my-vpc-1"
+      vpc-2 = "my-vpc-2"
+    }
+    project_ids = {
+      main-project = "test-project-1"
+      dns-project  = "company-dns-project"
+    }
+    psc_network_attachments = {
+      primary = "projects/test-project-1/regions/europe-west1/networkAttachments/core-service"
+    }
+  }
+}
+# tftest inventory=context.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [agent_engine_config](variables.tf#L17) | The agent configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L146) | The name of the agent. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L165) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L171) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L148) | The name of the agent. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L167) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L173) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L40) | The GCS bucket configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L52) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deployment_files](variables.tf#L66) | The to source files path and names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [description](variables.tf#L103) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [encryption_key](variables.tf#L110) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
-| [managed](variables.tf#L116) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
-| [memory_bank_config](variables.tf#L123) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [networking_config](variables.tf#L152) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [deployment_files](variables.tf#L68) | The to source files path and names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [description](variables.tf#L105) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [encryption_key](variables.tf#L112) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
+| [managed](variables.tf#L118) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
+| [memory_bank_config](variables.tf#L125) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [networking_config](variables.tf#L154) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [service_account_config](variables-serviceaccount.tf#L18) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
