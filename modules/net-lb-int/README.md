@@ -12,6 +12,7 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
   - [PSC service attachments](#psc-service-attachments)
   - [Regional health check](#regional-health-check)
   - [End to end example](#end-to-end-example)
+  - [Context](#context)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Issues](#issues)
 - [Recipes](#recipes)
@@ -376,6 +377,62 @@ module "ilb" {
   }
 }
 # tftest modules=3 resources=7 e2e
+```
+
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "ilb" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = "$project_ids:my-prj"
+  region        = "$locations:primary-region"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  forwarding_rules_config = {
+    default = {
+      address = "$addresses:lb-ip-addr"
+    }
+  }
+  vpc_config = {
+    network    = "$networks:shared-vpc"
+    subnetwork = "$subnets:my-subnet"
+  }
+  group_configs = {
+    my-group = {
+      zone = "$locations:primary-zone"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  health_check_config = {
+    http = {
+      port = 80
+    }
+  }
+  context = {
+    addresses = {
+      lb-ip-addr = "192.168.0.1"
+    }
+    locations = {
+      primary-region = "us-central1"
+      primary-zone   = "us-central1-b"
+    }
+    networks = {
+      shared-vpc = "projects/prj-host/global/networks/shared-vpc"
+    }
+    project_ids = {
+      my-prj = "my-project-1"
+    }
+    subnets = {
+      my-subnet = "projects/prj-host/regions/us-central1/subnetworks/sub-1"
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=context.yaml
 ```
 
 ## Deploying changes to load balancer configurations

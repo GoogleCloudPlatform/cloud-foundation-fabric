@@ -6,4 +6,3 @@ name: core-default
 region: $locations:primary
 ip_cidr_range: 10.71.0.0/24
 description: Default primary-region subnet for core
-

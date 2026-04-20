@@ -61,5 +61,3 @@ module "projects-observability" {
     observability = local.paths.observability
   }
 }
-
-

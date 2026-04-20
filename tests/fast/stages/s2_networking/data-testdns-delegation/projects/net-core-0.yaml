@@ -18,4 +18,3 @@ services:
   - vpcaccess.googleapis.com
 shared_vpc_host_config:
   enabled: true
-

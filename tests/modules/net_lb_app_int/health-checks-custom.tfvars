@@ -29,4 +29,3 @@ health_check_configs = {
     }
   }
 }
-

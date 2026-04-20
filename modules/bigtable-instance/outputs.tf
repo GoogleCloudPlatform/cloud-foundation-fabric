@@ -41,6 +41,3 @@ output "tables" {
   description = "Table resources."
   value       = google_bigtable_table.default
 }
-
-
-
