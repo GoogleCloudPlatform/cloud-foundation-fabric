@@ -183,7 +183,7 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
 
         dynamic "python_spec" {
           for_each = (
-            try(var.deployment_config.source_files_config.image_spec, null) == null
+            try(var.deployment_config.source_files_config.python_spec, null) != null
             ? { 1 = 1 }
             : {}
           )
