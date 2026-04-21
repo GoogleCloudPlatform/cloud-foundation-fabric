@@ -208,9 +208,8 @@ module "spoke-ra" {
     subnet_self_link = var.subnet.self_link
   }
 }
-# tftest modules=5 resources=13 fixtures=fixtures/compute-vm-nva.tf e2e
+# tftest modules=5 resources=13 fixtures=fixtures/compute-vm-nva.tf e2e inventory=bgp-route-policies.yaml
 ```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -220,9 +219,9 @@ module "spoke-ra" {
 | [name](variables.tf#L37) | The name of the NCC spoke. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L42) | The ID of the project where the NCC hub & spokes will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L47) | Region where the spoke is located. | <code>string</code> | ✓ |  |
-| [router_appliances](variables.tf#L52) | List of router appliances this spoke is associated with. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [router_config](variables.tf#L60) | Configuration of the Cloud Router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [vpc_config](variables.tf#L76) | Network and subnetwork for the CR interfaces. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [router_appliances](variables.tf#L52) | List of router appliances this spoke is associated with. Import and export policies are applied to the BGP peers connecting the VPC Cloud Router to the NCC router appliances. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [router_config](variables.tf#L62) | Configuration of the Cloud Router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L122) | Network and subnetwork for the CR interfaces. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [data_transfer](variables.tf#L17) | Site-to-site data transfer feature, available only in some regions. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs

@@ -1,0 +1,506 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.compute-vm-primary-b.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: debian-cloud/debian-13
+        resource_manager_tags: null
+        size: 10
+        source_image_encryption_key: []
+        source_snapshot_encryption_key: []
+        storage_pool: null
+        type: pd-balanced
+      interface: null
+      mode: READ_WRITE
+    can_ip_forward: true
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    instance_encryption_key: []
+    key_revocation_action_type: null
+    labels: null
+    machine_type: e2-micro
+    metadata: null
+    metadata_startup_script: null
+    name: test-primary-b
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary
+      vlan: null
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      preemption_notice_duration: []
+      provisioning_model: STANDARD
+      skip_guest_os_shutdown: false
+      termination_time: null
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west8-b
+  module.compute-vm-primary-c.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: debian-cloud/debian-13
+        resource_manager_tags: null
+        size: 10
+        source_image_encryption_key: []
+        source_snapshot_encryption_key: []
+        storage_pool: null
+        type: pd-balanced
+      interface: null
+      mode: READ_WRITE
+    can_ip_forward: true
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    instance_encryption_key: []
+    key_revocation_action_type: null
+    labels: null
+    machine_type: e2-micro
+    metadata: null
+    metadata_startup_script: null
+    name: test-primary-c
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west8/subnetworks/primary
+      vlan: null
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      preemption_notice_duration: []
+      provisioning_model: STANDARD
+      skip_guest_os_shutdown: false
+      termination_time: null
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west8-c
+  module.compute-vm-secondary-b.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: debian-cloud/debian-13
+        resource_manager_tags: null
+        size: 10
+        source_image_encryption_key: []
+        source_snapshot_encryption_key: []
+        storage_pool: null
+        type: pd-balanced
+      interface: null
+      mode: READ_WRITE
+    can_ip_forward: true
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    instance_encryption_key: []
+    key_revocation_action_type: null
+    labels: null
+    machine_type: e2-micro
+    metadata: null
+    metadata_startup_script: null
+    name: test-secondary-b
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west9/subnetworks/secondary
+      vlan: null
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      preemption_notice_duration: []
+      provisioning_model: STANDARD
+      skip_guest_os_shutdown: false
+      termination_time: null
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west9-b
+  module.compute-vm-secondary-c.google_compute_instance.default[0]:
+    advanced_machine_features: []
+    allow_stopping_for_update: true
+    attached_disk: []
+    boot_disk:
+    - auto_delete: true
+      disk_encryption_key_raw: null
+      disk_encryption_key_rsa: null
+      disk_encryption_service_account: null
+      force_attach: null
+      initialize_params:
+      - enable_confidential_compute: null
+        image: debian-cloud/debian-13
+        resource_manager_tags: null
+        size: 10
+        source_image_encryption_key: []
+        source_snapshot_encryption_key: []
+        storage_pool: null
+        type: pd-balanced
+      interface: null
+      mode: READ_WRITE
+    can_ip_forward: true
+    deletion_protection: false
+    description: Managed by the compute-vm Terraform module.
+    desired_status: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_display: false
+    hostname: null
+    instance_encryption_key: []
+    key_revocation_action_type: null
+    labels: null
+    machine_type: e2-micro
+    metadata: null
+    metadata_startup_script: null
+    name: test-secondary-c
+    network_interface:
+    - access_config: []
+      alias_ip_range: []
+      ipv6_access_config: []
+      network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+      nic_type: null
+      queue_count: null
+      security_policy: null
+      subnetwork: https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west9/subnetworks/secondary
+      vlan: null
+    network_performance_config: []
+    params: []
+    partner_metadata: null
+    project: project-id
+    resource_policies: null
+    scheduling:
+    - automatic_restart: true
+      availability_domain: null
+      graceful_shutdown: []
+      host_error_timeout_seconds: null
+      instance_termination_action: null
+      local_ssd_recovery_timeout: []
+      maintenance_interval: null
+      max_run_duration: []
+      min_node_cpus: null
+      node_affinities: []
+      on_host_maintenance: MIGRATE
+      on_instance_stop_action: []
+      preemptible: false
+      preemption_notice_duration: []
+      provisioning_model: STANDARD
+      skip_guest_os_shutdown: false
+      termination_time: null
+    scratch_disk: []
+    service_account:
+    - scopes:
+      - https://www.googleapis.com/auth/devstorage.read_only
+      - https://www.googleapis.com/auth/logging.write
+      - https://www.googleapis.com/auth/monitoring.write
+    shielded_instance_config: []
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    zone: europe-west9-c
+  module.spoke-ra.google_compute_router.cr:
+    bgp:
+    - advertise_mode: DEFAULT
+      advertised_groups: []
+      advertised_ip_ranges: []
+      asn: 65000
+      keepalive_interval: 20
+    description: null
+    encrypted_interconnect_router: null
+    md5_authentication_keys: []
+    name: spoke-ra-cr
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+    params: []
+    project: project-id
+    region: europe-west8
+    timeouts: null
+  module.spoke-ra.google_compute_router_interface.intf_0:
+    interconnect_attachment: null
+    name: spoke-ra-cr-intf0
+    private_ip_address: 10.0.16.14
+    project: project-id
+    region: europe-west8
+    router: spoke-ra-cr
+    subnetwork: subnet_self_link
+    timeouts: null
+    vpn_tunnel: null
+  module.spoke-ra.google_compute_router_interface.intf_1:
+    interconnect_attachment: null
+    name: spoke-ra-cr-intf1
+    private_ip_address: 10.0.16.15
+    project: project-id
+    redundant_interface: spoke-ra-cr-intf0
+    region: europe-west8
+    router: spoke-ra-cr
+    subnetwork: subnet_self_link
+    timeouts: null
+    vpn_tunnel: null
+  module.spoke-ra.google_compute_router_peer.peer_0["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    enable: true
+    enable_ipv6: false
+    export_policies:
+    - export-policy
+    import_policies:
+    - import-policy
+    interface: spoke-ra-cr-intf0
+    md5_authentication_key: []
+    peer_asn: 65001
+    project: project-id
+    region: europe-west8
+    router: spoke-ra-cr
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  module.spoke-ra.google_compute_router_peer.peer_1["0"]:
+    advertise_mode: DEFAULT
+    advertised_groups: null
+    advertised_ip_ranges: []
+    advertised_route_priority: 100
+    custom_learned_ip_ranges: []
+    custom_learned_route_priority: null
+    enable: true
+    enable_ipv6: false
+    export_policies:
+    - export-policy
+    import_policies:
+    - import-policy
+    interface: spoke-ra-cr-intf1
+    md5_authentication_key: []
+    peer_asn: 65001
+    project: project-id
+    region: europe-west8
+    router: spoke-ra-cr
+    timeouts: null
+    zero_advertised_route_priority: null
+    zero_custom_learned_route_priority: false
+  module.spoke-ra.google_compute_router_route_policy.default["export-policy"]:
+    name: export-policy
+    project: project-id
+    region: europe-west8
+    router: spoke-ra-cr
+    terms:
+    - actions:
+      - description: null
+        expression: med.set(12345)
+        location: null
+        title: null
+      match:
+      - description: null
+        expression: destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1',
+          '65000:2'])
+        location: null
+        title: null
+      priority: 0
+    timeouts: null
+    type: ROUTE_POLICY_TYPE_EXPORT
+  module.spoke-ra.google_compute_router_route_policy.default["import-policy"]:
+    name: import-policy
+    project: project-id
+    region: europe-west8
+    router: spoke-ra-cr
+    terms:
+    - actions:
+      - description: null
+        expression: med.set(12345)
+        location: null
+        title: null
+      match:
+      - description: null
+        expression: destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1',
+          '65000:2'])
+        location: null
+        title: null
+      priority: 0
+    timeouts: null
+    type: ROUTE_POLICY_TYPE_IMPORT
+  module.spoke-ra.google_network_connectivity_hub.hub[0]:
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: ncc-hub
+    project: project-id
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.spoke-ra.google_network_connectivity_spoke.spoke-ra:
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    linked_interconnect_attachments: []
+    linked_producer_vpc_network: []
+    linked_router_appliance_instances:
+    - exclude_export_ranges: null
+      exclude_import_ranges: null
+      include_export_ranges: null
+      include_import_ranges: null
+      instances:
+      - {}
+      site_to_site_data_transfer: false
+    linked_vpc_network: []
+    linked_vpn_tunnels: []
+    location: europe-west8
+    name: spoke-ra
+    project: project-id
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_compute_instance: 4
+  google_compute_router: 1
+  google_compute_router_interface: 2
+  google_compute_router_peer: 2
+  google_compute_router_route_policy: 2
+  google_network_connectivity_hub: 1
+  google_network_connectivity_spoke: 1
+  modules: 5
+  resources: 13
+
+outputs: {}
