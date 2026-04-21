@@ -47,5 +47,6 @@ module "net-lb-app-int" {
   health_check_configs    = try(each.value.health_check_configs, {})
   neg_configs             = try(each.value.neg_configs, {})
   urlmap_config           = try(each.value.urlmap_config, {})
+  context                 = local.ctx
   depends_on = [module.compute-vm]
 }

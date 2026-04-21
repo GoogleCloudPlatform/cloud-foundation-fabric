@@ -28,6 +28,8 @@ variable "context" {
     notification_channels = optional(map(string), {})
     project_ids          = optional(map(string), {})
     project_numbers      = optional(map(string), {})
+    networks             = optional(map(string), {})
+    subnets              = optional(map(string), {})
     pubsub_topics        = optional(map(string), {})
     storage_buckets      = optional(map(string), {})
     tag_keys             = optional(map(string), {})

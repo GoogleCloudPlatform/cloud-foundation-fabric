@@ -53,7 +53,6 @@ module "gcs" {
   tag_bindings                  = try(each.value.tag_bindings, {})
   context = merge(local.ctx, {
     iam_principals  = local.ctx_iam_principals
-    storage_buckets = local.ctx_storage_buckets
   })
   iam                   = try(each.value.iam, {})
   iam_bindings          = try(each.value.iam_bindings, {})

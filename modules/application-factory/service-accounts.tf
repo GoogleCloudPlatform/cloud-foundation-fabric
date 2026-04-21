@@ -33,9 +33,7 @@ module "service-accounts" {
   description  = try(each.value.description, null)
   display_name = try(each.value.display_name, "Terraform-managed.")
   prefix       = try(each.value.prefix, null)
-  context = merge(local.ctx, {
-    iam_principals = local.ctx_iam_principals
-  })
+  context      = local.ctx
   iam_billing_roles      = try(each.value.iam_billing_roles, {})
   iam_folder_roles       = try(each.value.iam_folder_roles, {})
   iam_organization_roles = try(each.value.iam_organization_roles, {})
