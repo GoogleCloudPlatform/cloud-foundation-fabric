@@ -278,7 +278,8 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
     ignore_changes = [
       spec[0].container_spec,
       spec[0].package_spec,
-      spec[0].source_code_spec[0].inline_source[0].source_archive
+      spec[0].source_code_spec[0].inline_source[0].source_archive,
+      spec[0].source_code_spec[0].developer_connect_source
     ]
   }
 }
