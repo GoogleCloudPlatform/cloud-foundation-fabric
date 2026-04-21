@@ -1,17 +1,3 @@
-# Copyright 2026 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 values:
   google_compute_ha_vpn_gateway.default["hub/to-onprem"]:
     description: null
@@ -21,6 +7,7 @@ values:
     labels: null
     name: hub-to-onprem
     network: hub-0
+    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     stack_type: IPV4_ONLY
@@ -49,6 +36,7 @@ values:
     encrypted_interconnect_router: null
     md5_authentication_keys: []
     name: hub-hybrid-connectivity-router
+    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     timeouts: null
@@ -89,7 +77,10 @@ values:
     linked_router_appliance_instances: []
     linked_vpc_network: []
     linked_vpn_tunnels:
-    - include_import_ranges:
+    - exclude_export_ranges: null
+      exclude_import_ranges: null
+      include_export_ranges: null
+      include_import_ranges:
       - ALL_IPV4_RANGES
       site_to_site_data_transfer: true
     location: europe-west1
@@ -104,7 +95,10 @@ values:
       goog-terraform-provisioned: 'true'
     labels: null
     linked_interconnect_attachments:
-    - include_import_ranges:
+    - exclude_export_ranges: null
+      exclude_import_ranges: null
+      include_export_ranges: null
+      include_import_ranges:
       - ALL_IPV4_RANGES
       site_to_site_data_transfer: true
     linked_producer_vpc_network: []
@@ -123,7 +117,10 @@ values:
       goog-terraform-provisioned: 'true'
     labels: null
     linked_interconnect_attachments:
-    - include_import_ranges:
+    - exclude_export_ranges: null
+      exclude_import_ranges: null
+      include_export_ranges: null
+      include_import_ranges:
       - ALL_IPV4_RANGES
       site_to_site_data_transfer: true
     linked_producer_vpc_network: []
@@ -170,11 +167,14 @@ values:
     name: versions/2-networking-version.txt
     retention: []
     source: fast_version.txt
+    source_md5hash: 712fbce8dff4e62d1498a22da63b5072
     temporary_hold: null
     timeouts: null
   module.projects.module.projects-iam["net-core-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: fast-prod-net-core-0
     timeouts: null
+  module.projects.module.projects["net-core-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: fast-prod-net-core-0
   module.projects.module.projects["net-core-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 000000-111111-222222
@@ -206,6 +206,10 @@ values:
     condition: []
     project: fast-prod-net-core-0
     role: roles/container.defaultNodeServiceAgent
+  module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: fast-prod-net-core-0
+    role: roles/monitoring.notificationServiceAgent
   module.projects.module.projects["net-core-0"].google_project_iam_member.service_agents["networkmanagement"]:
     condition: []
     project: fast-prod-net-core-0
@@ -290,6 +294,10 @@ values:
     project: fast-prod-net-core-0
     service: iap.googleapis.com
     timeouts: null
+  module.projects.module.projects["net-core-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: fast-prod-net-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
   module.projects.module.projects["net-core-0"].google_project_service_identity.default["networkmanagement.googleapis.com"]:
     project: fast-prod-net-core-0
     service: networkmanagement.googleapis.com
@@ -333,6 +341,7 @@ values:
     labels: null
     mtu: '1500'
     name: to-onprem-vlan-0
+    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     router: hub-hybrid-connectivity-router
@@ -398,6 +407,7 @@ values:
     labels: null
     mtu: '1500'
     name: to-onprem-vlan-1
+    params: []
     project: fast-prod-net-core-0
     region: europe-west1
     router: hub-hybrid-connectivity-router
@@ -455,6 +465,7 @@ values:
     name: hub-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
+    params: []
     project: fast-prod-net-core-0
     routing_mode: GLOBAL
     timeouts: null
@@ -467,6 +478,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -480,6 +492,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -493,6 +506,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -505,6 +519,7 @@ values:
     log_config: []
     name: hub-default
     network: hub-0
+    params: []
     private_ip_google_access: true
     project: fast-prod-net-core-0
     region: europe-west1
@@ -522,6 +537,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: fast-prod-net-core-0
     tags: null
@@ -536,6 +552,7 @@ values:
       ipv6_address: null
     labels: null
     name: hub-to-onprem-default
+    params: []
     project: fast-prod-net-core-0
     redundancy_type: SINGLE_IP_INTERNALLY_REDUNDANT
     terraform_labels:
@@ -617,6 +634,7 @@ values:
     ike_version: 2
     labels: null
     name: hub-to-onprem-remote-0
+    params: []
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: fast-prod-net-core-0
@@ -638,6 +656,7 @@ values:
     ike_version: 2
     labels: null
     name: hub-to-onprem-remote-1
+    params: []
     peer_external_gateway_interface: 0
     peer_gcp_gateway: null
     project: fast-prod-net-core-0
@@ -677,6 +696,7 @@ counts:
   google_compute_shared_vpc_host_project: 1
   google_compute_subnetwork: 1
   google_compute_vpn_tunnel: 2
+  google_logging_project_settings: 1
   google_network_connectivity_group: 1
   google_network_connectivity_hub: 1
   google_network_connectivity_spoke: 3
@@ -689,4 +709,18 @@ counts:
   random_id: 5
   resources: 65
   terraform_data: 2
-  
+
+outputs:
+  host_project_ids:
+    net-core-0: fast-prod-net-core-0
+  host_project_numbers: __missing__
+  subnet_ips:
+    hub:
+      europe-west1/hub-default: 10.71.0.0/24
+  subnet_proxy_only_self_links:
+    hub: {}
+  subnet_psc_self_links:
+    hub: {}
+  subnet_self_links: __missing__
+  vpc_self_links: __missing__
+

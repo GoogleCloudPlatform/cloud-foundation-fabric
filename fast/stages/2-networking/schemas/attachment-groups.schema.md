@@ -21,5 +21,3 @@
     - ⁺**attachment**: *string*
 
 ## Definitions
-
-
