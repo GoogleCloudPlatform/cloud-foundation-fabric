@@ -8,6 +8,7 @@ This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud H
   - [GCP to on-prem](#gcp-to-on-prem)
   - [GCP to on-prem with custom ciphers](#gcp-to-on-prem-with-custom-ciphers)
   - [IPv6 (dual-stack)](#ipv6-dual-stack)
+  - [BGP Route Policies](#bgp-route-policies)
 - [Recipes](#recipes)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -304,6 +305,86 @@ module "vpn_ha" {
 # tftest modules=1 resources=12 inventory=ipv6.yaml
 ```
 
+### BGP Route Policies
+
+```hcl
+module "vpn_ha" {
+  source     = "./fabric/modules/net-vpn-ha"
+  project_id = var.project_id
+  region     = var.region
+  network    = var.vpc.self_link
+  name       = "mynet-to-onprem"
+  peer_gateways = {
+    default = {
+      external = {
+        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+        interfaces      = ["8.8.8.8"]
+      }
+    }
+  }
+  router_config = {
+    asn = 64514
+    route_policies = {
+      "import-policy" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination != '192.168.10.0/24'"
+            }
+            actions = {
+              expression = "med.set(12345)"
+            }
+          }
+        ]
+      },
+      "export-policy" = {
+        type = "EXPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination != '192.168.10.0/24'"
+            }
+            actions = {
+              expression = "med.set(12345)"
+            }
+          }
+        ]
+      }
+    }
+  }
+  tunnels = {
+    remote-0 = {
+      bgp_peer = {
+        address         = "169.254.1.1"
+        asn             = 64513
+        import_policies = ["import-policy"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range               = "169.254.1.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 0
+    }
+    remote-1 = {
+      bgp_peer = {
+        address         = "169.254.2.1"
+        asn             = 64513
+        import_policies = ["import-policy"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range               = "169.254.2.2/30"
+      peer_external_gateway_interface = 0
+      shared_secret                   = "mySecret"
+      vpn_gateway_interface           = 1
+    }
+  }
+}
+# tftest modules=1 resources=14 inventory=bgp-route-policies.yaml
+```
+
 You can optionally avoid to specify MD5 keys and the module will automatically generate them for you.
 <!-- BEGIN TFDOC -->
 ## Recipes
@@ -321,9 +402,9 @@ You can optionally avoid to specify MD5 keys and the module will automatically g
 | [router_config](variables.tf#L72) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [peer_gateways](variables.tf#L41) | Configuration of the (external or GCP) peer gateway. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tunnels](variables.tf#L88) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vpn_gateway](variables.tf#L142) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
-| [vpn_gateway_create](variables.tf#L148) | Create HA VPN Gateway. Set to null to avoid creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L132) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vpn_gateway](variables.tf#L188) | HA VPN Gateway Self Link for using an existing HA VPN Gateway. Ignored if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
+| [vpn_gateway_create](variables.tf#L194) | Create HA VPN Gateway. Set to null to avoid creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
