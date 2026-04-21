@@ -52,12 +52,14 @@ variable "bucket_config" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    custom_roles   = optional(map(string), {})
-    iam_principals = optional(map(string), {})
-    locations      = optional(map(string), {})
-    kms_keys       = optional(map(string), {})
-    models         = optional(map(string), {})
-    project_ids    = optional(map(string), {})
+    custom_roles            = optional(map(string), {})
+    iam_principals          = optional(map(string), {})
+    locations               = optional(map(string), {})
+    kms_keys                = optional(map(string), {})
+    models                  = optional(map(string), {})
+    networks                = optional(map(string), {})
+    project_ids             = optional(map(string), {})
+    psc_network_attachments = optional(map(string), {})
   })
   nullable = false
   default  = {}

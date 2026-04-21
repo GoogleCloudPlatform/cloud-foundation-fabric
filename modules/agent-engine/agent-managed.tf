@@ -75,18 +75,30 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
           for_each = var.networking_config == null ? {} : { 1 = 1 }
 
           content {
-            network_attachment = var.networking_config.network_attachment_id
+            network_attachment = lookup(
+              local.ctx.psc_network_attachments,
+              var.networking_config.network_attachment_id,
+              var.networking_config.network_attachment_id
+            )
 
             dynamic "dns_peering_configs" {
               for_each = var.networking_config.dns_peering_configs
 
               content {
-                domain         = dns_peering_configs.key
-                target_network = dns_peering_configs.value.target_network_name
+                domain = dns_peering_configs.key
+                target_network = lookup(
+                  local.ctx.networks,
+                  dns_peering_configs.value.target_network_name,
+                  dns_peering_configs.value.target_network_name
+                )
                 target_project = (
                   dns_peering_configs.value.target_project_id == null
-                  ? var.project_id
-                  : dns_peering_configs.value.target_project_id
+                  ? local.project_id
+                  : lookup(
+                    local.ctx.project_ids,
+                    dns_peering_configs.value.target_project_id,
+                    dns_peering_configs.value.target_project_id
+                  )
                 )
               }
             }
