@@ -118,6 +118,8 @@ variable "tunnels" {
         all_peer_vpc_subnets = bool
         ip_ranges            = map(string)
       }))
+      export_policies = optional(list(string))
+      import_policies = optional(list(string))
     })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
