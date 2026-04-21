@@ -245,6 +245,8 @@ def get_pulls(token, date_from, date_to, merged_to, exclude_pulls=None):
 
 def get_release_date(token, name=None):
   'Get published date for a specific release or the latest release.'
+  if name and not name.startswith('v'):
+    name = f'v{name}'
   path = f'releases/tags/{name}' if name else f'releases/latest'
   release = fetch(token, path)
   if not release.get('draft'):
