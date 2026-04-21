@@ -339,9 +339,12 @@ values:
     zone: europe-west9-c
   module.spoke-ra.google_compute_router.cr:
     bgp:
-    - advertise_mode: DEFAULT
-      advertised_groups: []
-      advertised_ip_ranges: []
+    - advertise_mode: CUSTOM
+      advertised_groups:
+      - ALL_SUBNETS
+      advertised_ip_ranges:
+      - description: default
+        range: 10.10.10.0/24
       asn: 65000
       keepalive_interval: 20
     description: null
@@ -386,7 +389,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: spoke-ra-cr-intf0
     md5_authentication_key: []
     peer_asn: 65001
@@ -408,7 +412,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: spoke-ra-cr-intf1
     md5_authentication_key: []
     peer_asn: 65001
@@ -426,36 +431,54 @@ values:
     terms:
     - actions:
       - description: null
-        expression: med.set(12345)
+        expression: med.set(1000)
         location: null
         title: null
       match:
       - description: null
-        expression: destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1',
-          '65000:2'])
+        expression: destination == '10.10.10.0/24'
         location: null
         title: null
       priority: 0
     timeouts: null
     type: ROUTE_POLICY_TYPE_EXPORT
-  module.spoke-ra.google_compute_router_route_policy.default["import-policy"]:
-    name: import-policy
+  module.spoke-ra.google_compute_router_route_policy.default["import-drop-all"]:
+    name: import-drop-all
     project: project-id
     region: europe-west8
     router: spoke-ra-cr
     terms:
     - actions:
       - description: null
-        expression: med.set(12345)
+        expression: drop()
         location: null
         title: null
       match:
+      - description: Drop all the routes not accepted above
+        expression: destination.inAnyRange(prefix('0.0.0.0/0').orLonger())
+        location: null
+        title: default-drop
+      priority: 1
+    timeouts: null
+    type: ROUTE_POLICY_TYPE_IMPORT
+  module.spoke-ra.google_compute_router_route_policy.default["import-rfc1918"]:
+    name: import-rfc1918
+    project: project-id
+    region: europe-west8
+    router: spoke-ra-cr
+    terms:
+    - actions:
       - description: null
-        expression: destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1',
-          '65000:2'])
+        expression: accept()
         location: null
         title: null
-      priority: 0
+      match:
+      - description: Accept the 3 RFC1918 subnets.
+        expression: destination == '10.0.0.0/8' || destination == '172.16.0.0/12'
+          || destination == '192.168.0.0/16'
+        location: null
+        title: import-rfc1918-subnets
+      priority: 1
     timeouts: null
     type: ROUTE_POLICY_TYPE_IMPORT
   module.spoke-ra.google_network_connectivity_hub.hub[0]:
@@ -497,10 +520,10 @@ counts:
   google_compute_router: 1
   google_compute_router_interface: 2
   google_compute_router_peer: 2
-  google_compute_router_route_policy: 2
+  google_compute_router_route_policy: 3
   google_network_connectivity_hub: 1
   google_network_connectivity_spoke: 1
   modules: 5
-  resources: 13
+  resources: 14
 
 outputs: {}

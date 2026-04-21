@@ -163,7 +163,7 @@ module "spoke-ra" {
     {
       internal_ip     = module.compute-vm-primary-b.internal_ip
       vm_self_link    = module.compute-vm-primary-b.self_link
-      import_policies = ["import-policy"]
+      import_policies = ["import-rfc1918", "import-drop-all"]
       export_policies = ["export-policy"]
     }
   ]
@@ -172,31 +172,55 @@ module "spoke-ra" {
     ip_interface0 = "10.0.16.14"
     ip_interface1 = "10.0.16.15"
     peer_asn      = 65001
+    custom_advertise = {
+      all_subnets = true
+      ip_ranges = {
+        "10.10.10.0/24" = "default"
+      }
+    }
     route_policies = {
-      "import-policy" = {
+      "import-rfc1918" = {
         type = "IMPORT"
         terms = [
           {
-            priority = 0
+            priority = 1
             match = {
-              expression = "destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1', '65000:2'])"
+              expression  = "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
+              title       = "import-rfc1918-subnets"
+              description = "Accept the 3 RFC1918 subnets."
             }
             actions = {
-              expression = "med.set(12345)"
+              expression = "accept()"
             }
           }
         ]
-      },
+      }
+      "import-drop-all" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 1
+            match = {
+              expression  = "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+              title       = "default-drop"
+              description = "Drop all the routes not accepted above"
+            }
+            actions = {
+              expression = "drop()"
+            }
+          }
+        ]
+      }
       "export-policy" = {
         type = "EXPORT"
         terms = [
           {
             priority = 0
             match = {
-              expression = "destination != '192.168.10.0/24' && communities.matchesEvery(['65000:1', '65000:2'])"
+              expression = "destination == '10.10.10.0/24'"
             }
             actions = {
-              expression = "med.set(12345)"
+              expression = "med.set(1000)"
             }
           }
         ]
@@ -208,7 +232,7 @@ module "spoke-ra" {
     subnet_self_link = var.subnet.self_link
   }
 }
-# tftest modules=5 resources=13 fixtures=fixtures/compute-vm-nva.tf e2e inventory=bgp-route-policies.yaml
+# tftest modules=5 resources=14 fixtures=fixtures/compute-vm-nva.tf e2e inventory=bgp-route-policies.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

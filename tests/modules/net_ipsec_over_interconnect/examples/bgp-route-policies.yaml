@@ -129,7 +129,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: vpngw-a-remote-0
     md5_authentication_key: []
     name: vpngw-a-remote-0
@@ -154,7 +155,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: vpngw-a-remote-1
     md5_authentication_key: []
     name: vpngw-a-remote-1
@@ -179,7 +181,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: vpngw-a-remote-2
     md5_authentication_key: []
     name: vpngw-a-remote-2
@@ -204,7 +207,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: vpngw-a-remote-3
     md5_authentication_key: []
     name: vpngw-a-remote-3
@@ -225,34 +229,54 @@ values:
     terms:
     - actions:
       - description: null
-        expression: med.set(12345)
+        expression: med.set(1000)
         location: null
         title: null
       match:
       - description: null
-        expression: destination != '192.168.10.0/24'
+        expression: destination == '10.255.255.0/24'
         location: null
         title: null
       priority: 0
     timeouts: null
     type: ROUTE_POLICY_TYPE_EXPORT
-  module.vpngw-a.google_compute_router_route_policy.default["import-policy"]:
-    name: import-policy
+  module.vpngw-a.google_compute_router_route_policy.default["import-drop-all"]:
+    name: import-drop-all
     project: myproject
     region: europe-west8
     router: encrypted-interconnect-overlay-router
     terms:
     - actions:
       - description: null
-        expression: med.set(12345)
+        expression: drop()
         location: null
         title: null
       match:
+      - description: Drop all the routes not accepted above
+        expression: destination.inAnyRange(prefix('0.0.0.0/0').orLonger())
+        location: null
+        title: default-drop
+      priority: 1
+    timeouts: null
+    type: ROUTE_POLICY_TYPE_IMPORT
+  module.vpngw-a.google_compute_router_route_policy.default["import-rfc1918"]:
+    name: import-rfc1918
+    project: myproject
+    region: europe-west8
+    router: encrypted-interconnect-overlay-router
+    terms:
+    - actions:
       - description: null
-        expression: destination != '192.168.10.0/24'
+        expression: accept()
         location: null
         title: null
-      priority: 0
+      match:
+      - description: Accept the 3 RFC1918 subnets.
+        expression: destination == '10.0.0.0/8' || destination == '172.16.0.0/12'
+          || destination == '192.168.0.0/16'
+        location: null
+        title: import-rfc1918-subnets
+      priority: 1
     timeouts: null
     type: ROUTE_POLICY_TYPE_IMPORT
   module.vpngw-a.google_compute_vpn_tunnel.default["remote-0"]:
@@ -354,10 +378,10 @@ counts:
   google_compute_router: 1
   google_compute_router_interface: 4
   google_compute_router_peer: 4
-  google_compute_router_route_policy: 2
+  google_compute_router_route_policy: 3
   google_compute_vpn_tunnel: 4
   modules: 1
   random_id: 1
-  resources: 18
+  resources: 19
 
 outputs: {}

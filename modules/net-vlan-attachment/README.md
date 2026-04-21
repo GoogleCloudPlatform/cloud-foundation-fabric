@@ -81,30 +81,48 @@ module "example-va" {
     create = false
     name   = google_compute_router.interconnect-router.name
     route_policies = {
-      "import-policy" = {
+      "import-rfc1918" = {
         type = "IMPORT"
         terms = [
           {
-            priority = 0
+            priority = 1
             match = {
-              expression = "destination != '192.168.10.0/24'"
+              expression  = "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
+              title       = "import-rfc1918-subnets"
+              description = "Accept the 3 RFC1918 subnets."
             }
             actions = {
-              expression = "med.set(12345)"
+              expression = "accept()"
             }
           }
         ]
-      },
+      }
+      "import-drop-all" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 1
+            match = {
+              expression  = "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+              title       = "default-drop"
+              description = "Drop all the routes not accepted above"
+            }
+            actions = {
+              expression = "drop()"
+            }
+          }
+        ]
+      }
       "export-policy" = {
         type = "EXPORT"
         terms = [
           {
             priority = 0
             match = {
-              expression = "destination != '192.168.10.0/24'"
+              expression = "destination == '10.255.255.0/24'"
             }
             actions = {
-              expression = "med.set(12345)"
+              expression = "med.set(1000)"
             }
           }
         ]
@@ -116,11 +134,11 @@ module "example-va" {
     bgp_range       = "169.254.0.0/29"
     interconnect    = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
     vlan_tag        = 12345
-    import_policies = ["import-policy"]
+    import_policies = ["import-rfc1918", "import-drop-all"]
     export_policies = ["export-policy"]
   }
 }
-# tftest modules=1 resources=7 inventory=bgp-route-policies.yaml
+# tftest modules=1 resources=8 inventory=bgp-route-policies.yaml
 ```
 
 ### Dedicated Interconnect - Single VLAN Attachment (No SLA) - BFD and MD5 Auth

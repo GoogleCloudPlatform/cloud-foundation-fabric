@@ -46,9 +46,12 @@ values:
     timeouts: null
   module.vpn_ha.google_compute_router.router[0]:
     bgp:
-    - advertise_mode: DEFAULT
-      advertised_groups: []
-      advertised_ip_ranges: []
+    - advertise_mode: CUSTOM
+      advertised_groups:
+      - ALL_SUBNETS
+      advertised_ip_ranges:
+      - description: default
+        range: 10.10.0.0/24
       asn: 64514
       keepalive_interval: 20
     description: null
@@ -94,7 +97,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: mynet-to-onprem-remote-0
     md5_authentication_key: []
     name: mynet-to-onprem-remote-0
@@ -119,7 +123,8 @@ values:
     export_policies:
     - export-policy
     import_policies:
-    - import-policy
+    - import-rfc1918
+    - import-drop-all
     interface: mynet-to-onprem-remote-1
     md5_authentication_key: []
     name: mynet-to-onprem-remote-1
@@ -140,34 +145,54 @@ values:
     terms:
     - actions:
       - description: null
-        expression: med.set(12345)
+        expression: med.set(1000)
         location: null
         title: null
       match:
       - description: null
-        expression: destination != '192.168.10.0/24'
+        expression: destination == '10.10.0.0/24'
         location: null
         title: null
       priority: 0
     timeouts: null
     type: ROUTE_POLICY_TYPE_EXPORT
-  module.vpn_ha.google_compute_router_route_policy.default["import-policy"]:
-    name: import-policy
+  module.vpn_ha.google_compute_router_route_policy.default["import-drop-all"]:
+    name: import-drop-all
     project: project-id
     region: europe-west8
     router: vpn-mynet-to-onprem
     terms:
     - actions:
       - description: null
-        expression: med.set(12345)
+        expression: drop()
         location: null
         title: null
       match:
+      - description: Drop all the routes not accepted above
+        expression: destination.inAnyRange(prefix('0.0.0.0/0').orLonger())
+        location: null
+        title: default-drop
+      priority: 1
+    timeouts: null
+    type: ROUTE_POLICY_TYPE_IMPORT
+  module.vpn_ha.google_compute_router_route_policy.default["import-rfc1918"]:
+    name: import-rfc1918
+    project: project-id
+    region: europe-west8
+    router: vpn-mynet-to-onprem
+    terms:
+    - actions:
       - description: null
-        expression: destination != '192.168.10.0/24'
+        expression: accept()
         location: null
         title: null
-      priority: 0
+      match:
+      - description: Accept the 3 RFC1918 subnets.
+        expression: destination == '10.0.0.0/8' || destination == '172.16.0.0/12'
+          || destination == '192.168.0.0/16'
+        location: null
+        title: import-rfc1918-subnets
+      priority: 1
     timeouts: null
     type: ROUTE_POLICY_TYPE_IMPORT
   module.vpn_ha.google_compute_vpn_tunnel.tunnels["remote-0"]:
@@ -233,10 +258,10 @@ counts:
   google_compute_router: 1
   google_compute_router_interface: 2
   google_compute_router_peer: 2
-  google_compute_router_route_policy: 2
+  google_compute_router_route_policy: 3
   google_compute_vpn_tunnel: 2
   modules: 1
   random_id: 3
-  resources: 14
+  resources: 15
 
 outputs: {}

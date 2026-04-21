@@ -151,30 +151,48 @@ module "vpn-dynamic" {
   router_config = {
     asn = 64514
     route_policies = {
-      "import-policy" = {
+      "import-rfc1918" = {
         type = "IMPORT"
         terms = [
           {
-            priority = 0
+            priority = 1
             match = {
-              expression = "destination != '192.168.10.0/24'"
+              expression  = "destination == '10.0.0.0/8' || destination == '172.16.0.0/12' || destination == '192.168.0.0/16'"
+              title       = "import-rfc1918-subnets"
+              description = "Accept the 3 RFC1918 subnets."
             }
             actions = {
-              expression = "med.set(12345)"
+              expression = "accept()"
             }
           }
         ]
-      },
+      }
+      "import-drop-all" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 1
+            match = {
+              expression  = "destination.inAnyRange(prefix('0.0.0.0/0').orLonger())"
+              title       = "default-drop"
+              description = "Drop all the routes not accepted above"
+            }
+            actions = {
+              expression = "drop()"
+            }
+          }
+        ]
+      }
       "export-policy" = {
         type = "EXPORT"
         terms = [
           {
             priority = 0
             match = {
-              expression = "destination != '192.168.10.0/24'"
+              expression = "destination == '192.168.0.0/24'"
             }
             actions = {
-              expression = "med.set(12345)"
+              expression = "med.set(1000)"
             }
           }
         ]
@@ -184,18 +202,25 @@ module "vpn-dynamic" {
   tunnels = {
     remote-1 = {
       bgp_peer = {
-        address          = "169.254.139.134"
-        asn              = 64513
-        custom_advertise = null
-        import_policies  = ["import-policy"]
-        export_policies  = ["export-policy"]
+        address = "169.254.139.134"
+        asn     = 64513
+        custom_advertise = {
+          all_subnets          = true
+          all_vpc_subnets      = false
+          all_peer_vpc_subnets = false
+          ip_ranges = {
+            "192.168.0.0/24" = "default"
+          }
+        }
+        import_policies = ["import-rfc1918", "import-drop-all"]
+        export_policies = ["export-policy"]
       }
       bgp_session_range = "169.254.139.133/30"
       peer_ip           = module.vm.external_ip
     }
   }
 }
-# tftest modules=2 resources=14 inventory=bgp-route-policies.yaml
+# tftest modules=2 resources=15 inventory=bgp-route-policies.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
