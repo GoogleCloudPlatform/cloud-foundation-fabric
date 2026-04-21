@@ -75,6 +75,9 @@ locals {
     ? {}
     : var.tag_bindings
   )
+  _tag_bindings = {
+    for k, v in local.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
 }
 
 data "google_service_account" "service_account" {
@@ -99,5 +102,9 @@ resource "google_service_account" "service_account" {
 resource "google_tags_tag_binding" "binding" {
   for_each  = local.tag_bindings
   parent    = "//iam.googleapis.com/projects/${coalesce(var.project_number, var.project_id)}/serviceAccounts/${local.service_account.unique_id}"
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = (
+    can(regex("\\$\\{", local._tag_bindings[each.key]))
+    ? templatestring(local._tag_bindings[each.key], var.context.tag_vars)
+    : local._tag_bindings[each.key]
+  )
 }

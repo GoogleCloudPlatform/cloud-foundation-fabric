@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
+locals {
+  _tag_bindings = {
+    for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
+}
+
 resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//bigquery.googleapis.com/${google_bigquery_dataset.default.id}"
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = (
+    can(regex("\\$\\{", local._tag_bindings[each.key]))
+    ? templatestring(local._tag_bindings[each.key], var.context.tag_vars)
+    : local._tag_bindings[each.key]
+  )
   location  = lookup(local.ctx.locations, var.location, var.location)
 }

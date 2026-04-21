@@ -68,6 +68,10 @@ module "kms" {
   tag_bindings          = each.value.tag_bindings
   keys                  = each.value.keys
   context = merge(local.ctx, {
+    tag_vars = {
+      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,

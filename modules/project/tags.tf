@@ -173,6 +173,9 @@ locals {
   tag_values = {
     for v in local._tag_values : v.key => v
   }
+  _tag_bindings = {
+    for k, v in coalesce(var.tag_bindings, {}) : k => lookup(local.ctx.tag_values, v, v)
+  }
 }
 
 # keys
@@ -338,5 +341,9 @@ resource "google_tags_tag_value_iam_member" "bindings" {
 resource "google_tags_tag_binding" "binding" {
   for_each  = coalesce(var.tag_bindings, {})
   parent    = "//cloudresourcemanager.googleapis.com/projects/${local.project.number}"
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = (
+    can(regex("\\$\\{", local._tag_bindings[each.key]))
+    ? templatestring(local._tag_bindings[each.key], var.context.tag_vars)
+    : local._tag_bindings[each.key]
+  )
 }
