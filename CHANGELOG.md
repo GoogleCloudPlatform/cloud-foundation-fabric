@@ -3,7 +3,35 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased] <!-- from: 2026-03-05 11:16:15+00:00 to: None since: v54.0.0 -->
+## [Unreleased] <!-- from: 2026-04-14 11:46:52+00:00 to: None since: v55.0.0 -->
+
+## [55.1.0] - 2026-04-20
+
+### FAST
+
+- [[#3882](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3882)] Fix pre-commit hook ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-18 08:07:14+00:00 -->
+- [[#3872](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3872)] Fix regression in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-04-15 17:17:42+00:00 -->
+
+### MODULES
+
+- [[#3886](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3886)] Add more context and tests to agent-engine module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-20 13:15:29+00:00 -->
+- [[#3882](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3882)] Fix pre-commit hook ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-18 08:07:14+00:00 -->
+- [[#3880](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3880)] Add context to net-lb-app-int module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-17 13:00:00+00:00 -->
+- [[#3879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3879)] Add context to net-lb-app-ext module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-17 12:00:57+00:00 -->
+- [[#3878](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3878)] Add example for context on net-lb-int readme; updated copyright ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-17 09:43:53+00:00 -->
+- [[#3876](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3876)] Add context to net-address module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-17 09:23:47+00:00 -->
+- [[#3877](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3877)] Enable creation of organization- and folder-level service agents ([juliocc](https://github.com/juliocc)) <!-- 2026-04-16 17:35:17+00:00 -->
+- [[#3866](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3866)] Add data_api_access attribute to cloudsql-instance module ([jta-ofr](https://github.com/jta-ofr)) <!-- 2026-04-16 09:24:02+00:00 -->
+- [[#3872](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3872)] Fix regression in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-04-15 17:17:42+00:00 -->
+
+### TOOLS
+
+- [[#3888](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3888)] Update guidelines for PR review comments ([ludoo](https://github.com/ludoo)) <!-- 2026-04-20 10:06:09+00:00 -->
+- [[#3882](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3882)] Fix pre-commit hook ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-18 08:07:14+00:00 -->
+- [[#3877](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3877)] Enable creation of organization- and folder-level service agents ([juliocc](https://github.com/juliocc)) <!-- 2026-04-16 17:35:17+00:00 -->
+- [[#3872](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3872)] Fix regression in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-04-15 17:17:42+00:00 -->
+- [[#3869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3869)] ci: remove automated-review label after PR review workflow ([ludoo](https://github.com/ludoo)) <!-- 2026-04-14 16:45:25+00:00 -->
+- [[#3867](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3867)] Fix automated PR review workflow for forks ([ludoo](https://github.com/ludoo)) <!-- 2026-04-14 14:22:20+00:00 -->
 
 ## [55.0.0] - 2026-04-14
 
@@ -2506,7 +2534,8 @@ Project templates are still following the old project factory schemas, and will 
 - [[#2163](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/2163)] feat: add e2e test for pubsub module ([andybubu](https://github.com/andybubu)) <!-- 2024-03-20 16:30:30+00:00 -->
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.1.0...HEAD
+[55.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.0.0...v54.4.0
 [54.4.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.4.0...v54.3.0
 [54.3.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.3.0...v54.2.0
 [54.2.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v54.2.0...v54.1.0
