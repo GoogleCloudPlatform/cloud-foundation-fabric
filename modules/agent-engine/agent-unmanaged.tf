@@ -188,9 +188,9 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
             : {}
           )
           content {
-            entrypoint_module = try(var.deployment_config.source_files_config.python_spec.entrypoint_module, "agent")
-            entrypoint_object = try(var.deployment_config.source_files_config.python_spec.entrypoint_object, "agent")
-            requirements_file = try(var.deployment_config.source_files_config.python_spec.requirements_file, "requirements.txt")
+            entrypoint_module = var.deployment_config.source_files_config.python_spec.entrypoint_module
+            entrypoint_object = var.deployment_config.source_files_config.python_spec.entrypoint_object
+            requirements_file = var.deployment_config.source_files_config.python_spec.requirements_file
             version           = var.agent_engine_config.python_version
           }
         }

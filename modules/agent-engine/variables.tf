@@ -79,7 +79,7 @@ variable "deployment_config" {
       requirements_path = optional(string, "./src/requirements.txt")
     }))
     source_files_config = optional(object({
-      source_path = optional(string)
+      source_path = optional(string, "./src/source.tar.gz")
       developer_connect_config = optional(object({
         git_repository_link = string
         dir                 = string
