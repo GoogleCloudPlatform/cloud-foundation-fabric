@@ -355,11 +355,9 @@ def main(token, changelog_file='CHANGELOG.md', bump=None, exclude_pull=None,
     raise SystemExit('Only one of `release_as` and `release_to` can be used.')
   try:
     releases, _ = load_changelog(changelog_file)
-    latest_release = next((
-        r.name for r in sorted(
-            releases.values(), reverse=True, key=lambda x: x.published
-            if x.published else datetime.date.min) if r.name != 'Unreleased'
-    ), None)
+    latest_release = next((r.name for r in sorted(
+        releases.values(), reverse=True, key=lambda x: x.published
+        if x.published else datetime.date.min) if r.name != 'Unreleased'), None)
 
     if bump:
       if release_as:
