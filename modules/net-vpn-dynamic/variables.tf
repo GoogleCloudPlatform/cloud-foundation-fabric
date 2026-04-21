@@ -82,10 +82,10 @@ variable "router_config" {
     condition = alltrue(flatten([
       for k, v in var.router_config.route_policies : [
         for t in v.terms :
-        t.priority >= 0 && t.priority < 231
+        t.priority >= 0 && t.priority < 2147483648
       ]
     ]))
-    error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive)."
+    error_message = "Route policy term priority must be between 0 (inclusive) and 2147483648 (exclusive)."
   }
 
   validation {

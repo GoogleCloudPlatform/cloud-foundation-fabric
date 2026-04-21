@@ -366,7 +366,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-nva.tf](./factory-nva.tf) | NVA factory | <code>compute-vm</code> · <code>net-lb-int</code> | <code>google_compute_instance_group</code> |
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
-| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> |
+| [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> · <code>google_compute_router_route_policy</code> |
 | [factory-vlan-attachments.tf](./factory-vlan-attachments.tf) | VLAN attachments factory. | <code>net-vlan-attachment</code> |  |
 | [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-factory</code> |  |
 | [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |

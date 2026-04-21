@@ -124,8 +124,8 @@ resource "google_compute_router_route_policy" "default" {
       error_message = "Route policy term priorities must be unique."
     }
     precondition {
-      condition     = alltrue([for t in try(each.value.terms, []) : t.priority >= 0 && t.priority < 231])
-      error_message = "Route policy term priority must be between 0 (inclusive) and 231 (exclusive)."
+      condition     = alltrue([for t in try(each.value.terms, []) : t.priority >= 0 && t.priority < 2147483648])
+      error_message = "Route policy term priority must be between 0 (inclusive) and 2147483648 (exclusive)."
     }
   }
 
