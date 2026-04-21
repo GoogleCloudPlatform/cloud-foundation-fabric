@@ -3,7 +3,16 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.0.0...HEAD) <!-- from: 2026-04-14 11:46:52+00:00 to: None since: v55.0.0 -->
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.1.0...HEAD) <!-- from: 2026-04-20 14:40:53+00:00 to: None since: v55.1.0 -->
+
+### MODULES
+
+- [[#3893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3893)] Skip IAM for the Agent Gateway Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2026-04-21 10:33:14+00:00 -->
+
+### TOOLS
+
+- [[#3893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3893)] Skip IAM for the Agent Gateway Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2026-04-21 10:33:14+00:00 -->
+- [[#3891](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3891)] Add more context to automated reviews ([juliocc](https://github.com/juliocc)) <!-- 2026-04-20 16:55:09+00:00 -->
 
 ## [v55.1.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v55.1.0) - 2026-04-20
 
