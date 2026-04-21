@@ -26,8 +26,8 @@ locals {
 }
 
 module "secret-manager" {
-  source   = "../secret-manager"
-  for_each = local._secret_manager_raw
+  source     = "../secret-manager"
+  for_each   = local._secret_manager_raw
   project_id = try(each.value.project_id, null)
   secrets    = try(each.value.secrets, {})
   context = merge(local.ctx, {

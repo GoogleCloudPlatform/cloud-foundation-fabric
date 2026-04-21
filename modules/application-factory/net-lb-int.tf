@@ -26,8 +26,8 @@ locals {
 }
 
 module "net-lb-int" {
-  source   = "../net-lb-int"
-  for_each = local._net_lb_int_raw
+  source                  = "../net-lb-int"
+  for_each                = local._net_lb_int_raw
   project_id              = try(each.value.project_id, null)
   name                    = try(each.value.name, each.key)
   region                  = each.value.region

@@ -26,24 +26,24 @@ locals {
 }
 
 module "bigquery" {
-  source   = "../bigquery-dataset"
-  for_each = local._bigquery_raw
-  project_id          = try(each.value.project_id, null)
-  id                  = try(each.value.id, each.key)
-  description         = try(each.value.description, "Terraform managed.")
-  friendly_name       = try(each.value.friendly_name, null)
-  location            = try(each.value.location, "EU")
-  labels              = try(each.value.labels, {})
-  encryption_key      = try(each.value.encryption_key, null)
-  options             = try(each.value.options, {})
-  tables              = try(each.value.tables, {})
-  views               = try(each.value.views, {})
-  materialized_views  = try(each.value.materialized_views, {})
-  routines            = try(each.value.routines, {})
-  access              = try(each.value.access, {})
-  access_identities   = try(each.value.access_identities, {})
-  dataset_access      = try(each.value.dataset_access, false)
-  tag_bindings        = try(each.value.tag_bindings, {})
+  source             = "../bigquery-dataset"
+  for_each           = local._bigquery_raw
+  project_id         = try(each.value.project_id, null)
+  id                 = try(each.value.id, each.key)
+  description        = try(each.value.description, "Terraform managed.")
+  friendly_name      = try(each.value.friendly_name, null)
+  location           = try(each.value.location, "EU")
+  labels             = try(each.value.labels, {})
+  encryption_key     = try(each.value.encryption_key, null)
+  options            = try(each.value.options, {})
+  tables             = try(each.value.tables, {})
+  views              = try(each.value.views, {})
+  materialized_views = try(each.value.materialized_views, {})
+  routines           = try(each.value.routines, {})
+  access             = try(each.value.access, {})
+  access_identities  = try(each.value.access_identities, {})
+  dataset_access     = try(each.value.dataset_access, false)
+  tag_bindings       = try(each.value.tag_bindings, {})
   context = merge(local.ctx, {
     iam_principals = local.ctx_iam_principals
   })

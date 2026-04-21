@@ -59,16 +59,16 @@ module "cloudsql" {
   network_config = {
     authorized_networks = try(each.value.network_config.authorized_networks, null)
     connectivity = {
-      public_ipv4 = try(each.value.network_config.connectivity.public_ipv4, false)
-      psa_config  = try(each.value.network_config.connectivity.psa_config, null)
-      psc_allowed_consumer_projects = try(each.value.network_config.connectivity.psc_allowed_consumer_projects, null)
+      public_ipv4                      = try(each.value.network_config.connectivity.public_ipv4, false)
+      psa_config                       = try(each.value.network_config.connectivity.psa_config, null)
+      psc_allowed_consumer_projects    = try(each.value.network_config.connectivity.psc_allowed_consumer_projects, null)
       enable_private_path_for_services = try(each.value.network_config.connectivity.enable_private_path_for_services, false)
     }
   }
-  replicas                      = try(each.value.replicas, {})
-  root_password                 = try(each.value.root_password, {})
-  ssl                           = try(each.value.ssl, {})
-  time_zone                     = try(each.value.time_zone, null)
-  users                         = try(each.value.users, {})
-  context                       = local.ctx
+  replicas      = try(each.value.replicas, {})
+  root_password = try(each.value.root_password, {})
+  ssl           = try(each.value.ssl, {})
+  time_zone     = try(each.value.time_zone, null)
+  users         = try(each.value.users, {})
+  context       = local.ctx
 }

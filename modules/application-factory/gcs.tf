@@ -26,8 +26,8 @@ locals {
 }
 
 module "gcs" {
-  source   = "../gcs"
-  for_each = local._gcs_raw
+  source                        = "../gcs"
+  for_each                      = local._gcs_raw
   project_id                    = try(each.value.project_id, null)
   name                          = try(each.value.name, each.key)
   location                      = try(each.value.location, null)
@@ -53,6 +53,7 @@ module "gcs" {
   tag_bindings                  = try(each.value.tag_bindings, {})
   context = merge(local.ctx, {
     iam_principals  = local.ctx_iam_principals
+    storage_buckets = local.ctx_storage_buckets
   })
   iam                   = try(each.value.iam, {})
   iam_bindings          = try(each.value.iam_bindings, {})

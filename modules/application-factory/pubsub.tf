@@ -26,8 +26,8 @@ locals {
 }
 
 module "pubsub" {
-  source   = "../pubsub"
-  for_each = local._pubsub_raw
+  source                             = "../pubsub"
+  for_each                           = local._pubsub_raw
   project_id                         = try(each.value.project_id, null)
   name                               = try(each.value.name, each.key)
   kms_key                            = try(each.value.kms_key, null)

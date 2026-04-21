@@ -43,8 +43,8 @@ module "artifact-registry" {
   cleanup_policy_dry_run        = try(each.value.cleanup_policy_dry_run, null)
   enable_vulnerability_scanning = try(each.value.enable_vulnerability_scanning, null)
   tag_bindings                  = try(each.value.tag_bindings, {})
-  iam                   = try(each.value.iam, {})
-  iam_bindings          = try(each.value.iam_bindings, {})
-  iam_bindings_additive = try(each.value.iam_bindings_additive, {})
-  iam_by_principals     = try(each.value.iam_by_principals, {})
+  iam                           = try(each.value.iam, {})
+  iam_bindings                  = try(each.value.iam_bindings, {})
+  iam_bindings_additive         = try(each.value.iam_bindings_additive, {})
+  iam_by_principals             = try(each.value.iam_by_principals, {})
 }

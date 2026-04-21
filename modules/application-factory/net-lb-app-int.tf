@@ -48,5 +48,5 @@ module "net-lb-app-int" {
   neg_configs             = try(each.value.neg_configs, {})
   urlmap_config           = try(each.value.urlmap_config, {})
   context                 = local.ctx
-  depends_on = [module.compute-vm]
+  depends_on              = [module.compute-vm]
 }
