@@ -4,6 +4,9 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "allowed_values_regex": {
+      "type": "string"
+    },
     "name": {
       "type": "string"
     },
@@ -56,6 +59,41 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "allowed_values_regex"
+        ]
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "iam"
+              ]
+            },
+            {
+              "required": [
+                "iam_bindings"
+              ]
+            },
+            {
+              "required": [
+                "iam_bindings_additive"
+              ]
+            },
+            {
+              "required": [
+                "values"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
   "$defs": {
     "iam": {
       "type": "object",

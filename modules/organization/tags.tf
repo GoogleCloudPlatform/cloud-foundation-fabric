@@ -26,6 +26,7 @@ locals {
     for f, v_raw in local._factory_tags_data_raw :
     coalesce(lookup(v_raw, "name", null), trimsuffix(f, ".yaml")) => {
       id                    = lookup(v_raw, "id", null)
+      allowed_values_regex = lookup(v_raw, "allowed_values_regex", null)
       description           = lookup(v_raw, "description", null)
       iam                   = lookup(v_raw, "iam", {})
       iam_bindings          = lookup(v_raw, "iam_bindings", {})
@@ -48,6 +49,7 @@ locals {
       id = v.id != null ? v.id : (
         var.tags_config.force_context_ids == true ? "$tag_keys:${k}" : null
       )
+      allowed_values_regex = v.allowed_values_regex
       description = v.description
       iam = var.tags_config.ignore_iam == true ? {} : {
         for ik, iv in v.iam : ik => coalesce(iv, [])
@@ -186,8 +188,9 @@ resource "google_tags_tag_key" "default" {
       each.value.network == "ALL" ? { organization = "auto" } : { network = each.value.network }
     )
   )
-  short_name  = each.key
-  description = each.value.description
+  short_name           = each.key
+  description          = each.value.description
+  allowed_values_regex = each.value.allowed_values_regex
   depends_on = [
     google_organization_iam_binding.authoritative,
     google_organization_iam_binding.bindings,

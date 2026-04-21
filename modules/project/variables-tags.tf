@@ -96,9 +96,10 @@ variable "tag_bindings" {
 variable "tags" {
   description = "Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level."
   type = map(object({
-    id          = optional(string)
-    description = optional(string, "Managed by the Terraform project module.")
-    iam         = optional(map(list(string)), {})
+    allowed_values_regex = optional(string)
+    id                   = optional(string)
+    description          = optional(string, "Managed by the Terraform project module.")
+    iam                  = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
       role    = string
@@ -155,6 +156,18 @@ variable "tags" {
       ]))
     )
     error_message = "Use an empty map instead of null as value."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.tags :
+      v.allowed_values_regex == null || (
+        length(v.iam) == 0 &&
+        length(v.iam_bindings) == 0 &&
+        length(v.iam_bindings_additive) == 0 &&
+        length(v.values) == 0
+      )
+    ])
+    error_message = "If allowed_values_regex is set, iam, iam_bindings, iam_bindings_additive, and values must not be set."
   }
 }
 

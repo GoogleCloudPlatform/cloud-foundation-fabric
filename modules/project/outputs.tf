@@ -209,7 +209,18 @@ output "tag_keys" {
   description = "Tag key resources."
   value = {
     for k, v in google_tags_tag_key.default : k => v if(
-      v.purpose == null || v.purpose == ""
+      (v.purpose == null || v.purpose == "") &&
+      v.allowed_values_regex == null
+    )
+  }
+}
+
+output "tags_dynamic" {
+  description = "Dynamic tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if(
+      (v.purpose == null || v.purpose == "") &&
+      v.allowed_values_regex != null
     )
   }
 }
