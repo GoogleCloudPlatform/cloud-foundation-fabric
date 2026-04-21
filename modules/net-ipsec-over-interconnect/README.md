@@ -105,6 +105,139 @@ module "vpngw-a" {
 }
 # tftest modules=1 resources=16
 ```
+
+### Single region setup with BGP Route Policies
+
+```hcl
+resource "google_compute_router" "encrypted-interconnect-overlay-router" {
+  name    = "encrypted-interconnect-overlay-router"
+  project = "myproject"
+  network = "mynet"
+  region  = "europe-west8"
+  bgp {
+    asn               = 64514
+    advertise_mode    = "CUSTOM"
+    advertised_groups = ["ALL_SUBNETS"]
+    advertised_ip_ranges {
+      range = "10.255.255.0/24"
+    }
+    advertised_ip_ranges {
+      range = "192.168.255.0/24"
+    }
+  }
+}
+
+resource "google_compute_external_vpn_gateway" "default" {
+  name        = "peer-vpn-gateway"
+  project     = "myproject"
+  description = "Peer IPSec over Interconnect VPN gateway"
+  interface {
+    id         = 0
+    ip_address = "10.0.0.1"
+  }
+  interface {
+    id         = 1
+    ip_address = "10.0.0.2"
+  }
+}
+
+module "vpngw-a" {
+  source     = "./fabric/modules/net-ipsec-over-interconnect"
+  project_id = "myproject"
+  network    = "mynet"
+  region     = "europe-west8"
+  name       = "vpngw-a"
+  interconnect_attachments = {
+    a = "attach-01"
+    b = "attach-02"
+  }
+  peer_gateway_config = {
+    create = false
+    id     = google_compute_external_vpn_gateway.default.id
+  }
+  router_config = {
+    create = false
+    name   = google_compute_router.encrypted-interconnect-overlay-router.name
+    route_policies = {
+      "import-policy" = {
+        type = "IMPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination != '192.168.10.0/24'"
+            }
+            actions = {
+              expression = "med.set(12345)"
+            }
+          }
+        ]
+      },
+      "export-policy" = {
+        type = "EXPORT"
+        terms = [
+          {
+            priority = 0
+            match = {
+              expression = "destination != '192.168.10.0/24'"
+            }
+            actions = {
+              expression = "med.set(12345)"
+            }
+          }
+        ]
+      }
+    }
+  }
+  tunnels = {
+    remote-0 = {
+      bgp_peer = {
+        address         = "169.254.1.2"
+        asn             = 64514
+        import_policies = ["import-policy"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range     = "169.254.1.1/30"
+      shared_secret         = "foobar"
+      vpn_gateway_interface = 0
+    }
+    remote-1 = {
+      bgp_peer = {
+        address         = "169.254.1.6"
+        asn             = 64514
+        import_policies = ["import-policy"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range     = "169.254.1.5/30"
+      shared_secret         = "foobar"
+      vpn_gateway_interface = 1
+    }
+    remote-2 = {
+      bgp_peer = {
+        address         = "169.254.1.10"
+        asn             = 64514
+        import_policies = ["import-policy"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range     = "169.254.1.9/30"
+      shared_secret         = "foobar"
+      vpn_gateway_interface = 0
+    }
+    remote-3 = {
+      bgp_peer = {
+        address         = "169.254.1.14"
+        asn             = 64514
+        import_policies = ["import-policy"]
+        export_policies = ["export-policy"]
+      }
+      bgp_session_range     = "169.254.1.13/30"
+      shared_secret         = "foobar"
+      vpn_gateway_interface = 1
+    }
+  }
+}
+# tftest modules=1 resources=18 inventory=bgp-route-policies.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -117,7 +250,7 @@ module "vpngw-a" {
 | [project_id](variables.tf#L54) | The project id. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L59) | GCP Region. | <code>string</code> | ✓ |  |
 | [router_config](variables.tf#L64) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [tunnels](variables.tf#L79) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L123) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
