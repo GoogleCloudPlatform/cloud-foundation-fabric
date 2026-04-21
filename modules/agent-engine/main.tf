@@ -22,7 +22,7 @@ locals {
     : try(google_vertex_ai_reasoning_engine.unmanaged[0], null)
   )
   bucket_name = (
-    var.deployment_files.package_config != null && var.bucket_config.create
+    var.deployment_config.package_config != null && var.bucket_config.create
     ? google_storage_bucket.default[0].name
     : coalesce(var.bucket_config.name, var.name)
   )
@@ -56,7 +56,7 @@ resource "time_sleep" "wait_5_minutes" {
 resource "google_storage_bucket" "default" {
   count = (
     var.bucket_config.create
-    && var.deployment_files.package_config != null
+    && var.deployment_config.package_config != null
     ? 1 : 0
   )
   name                        = coalesce(var.bucket_config.name, var.name)
@@ -68,39 +68,45 @@ resource "google_storage_bucket" "default" {
 
 resource "google_storage_bucket_object" "dependencies" {
   count = (
-    var.deployment_files.package_config != null
-    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+    var.deployment_config.package_config != null
+    && var.deployment_config.package_config.are_paths_local ? 1 : 0
   )
   name   = "dependencies.tar.gz"
   bucket = local.bucket_name
-  source = try(var.deployment_files.package_config.dependencies_path, null)
-  source_md5hash = filemd5(
-    try(var.deployment_files.package_config.dependencies_path, null)
+  source = try(var.deployment_config.package_config.dependencies_path, null)
+  source_md5hash = (
+    try(var.deployment_config.package_config.dependencies_path, null) == null
+    ? null
+    : filemd5(var.deployment_config.package_config.dependencies_path)
   )
 }
 
 resource "google_storage_bucket_object" "pickle" {
   count = (
-    var.deployment_files.package_config != null
-    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+    var.deployment_config.package_config != null
+    && var.deployment_config.package_config.are_paths_local ? 1 : 0
   )
   name   = "pickle.pkl"
   bucket = local.bucket_name
-  source = try(var.deployment_files.package_config.pickle_path, null)
-  source_md5hash = filemd5(
-    try(var.deployment_files.package_config.pickle_path)
+  source = try(var.deployment_config.package_config.pickle_path, null)
+  source_md5hash = (
+    try(var.deployment_config.package_config.pickle_path, null) == null
+    ? null
+    : filemd5(var.deployment_config.package_config.pickle_path)
   )
 }
 
 resource "google_storage_bucket_object" "requirements" {
   count = (
-    var.deployment_files.package_config != null
-    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+    var.deployment_config.package_config != null
+    && var.deployment_config.package_config.are_paths_local ? 1 : 0
   )
   name   = "requirements.txt"
   bucket = local.bucket_name
-  source = try(var.deployment_files.package_config.requirements_path, null)
-  source_md5hash = filemd5(
-    try(var.deployment_files.package_config.requirements_path)
+  source = try(var.deployment_config.package_config.requirements_path, null)
+  source_md5hash = (
+    try(var.deployment_config.package_config.requirements_path, null) == null
+    ? null
+    : filemd5(var.deployment_config.package_config.requirements_path)
   )
 }
