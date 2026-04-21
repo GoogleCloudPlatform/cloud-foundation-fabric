@@ -1,10 +1,8 @@
 cloudpickle>=3.1.1
 pytest>=7.2.1
 PyYAML>=6.0
-tftest>=1.8.1
+tftest>=1.8.7
 marko>=1.2.2
-deepdiff>=6.2.3
-python-hcl2>=4.3.0
 pytest-xdist>=3.1.0
 jsonschema>=4.22.0
 yamllint>=1.37.1

@@ -23,6 +23,12 @@ locals {
     for k, v in var.attached_disks : k => v
     if v.initialize_params.replica_zone == null
   }
+  attached_disks_ordered = {
+    for k, v in var.attached_disks : coalesce(v.position, k) => {
+      key         = k
+      is_regional = v.initialize_params.replica_zone != null
+    }
+  }
 }
 
 resource "google_compute_disk" "boot" {
@@ -124,4 +130,3 @@ resource "google_compute_region_disk" "disks" {
     }
   }
 }
-

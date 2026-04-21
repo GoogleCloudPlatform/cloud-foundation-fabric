@@ -1,5 +1,6 @@
 venv/*
 */venv/*
+.venv/*
 .python-version
 .terraform
 terraform.tfstate*
@@ -31,4 +32,3 @@ node_modules
 fast/**/globals.auto.tfvars.json
 cloud_sql_proxy
 env/
-

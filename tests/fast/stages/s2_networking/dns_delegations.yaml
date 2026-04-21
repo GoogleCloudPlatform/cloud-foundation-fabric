@@ -1,0 +1,51 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+counts:
+  google_compute_network: 1
+  google_compute_route: 3
+  google_compute_shared_vpc_host_project: 1
+  google_compute_subnetwork: 1
+  google_dns_managed_zone: 4
+  google_dns_record_set: 3
+  google_project: 1
+  google_project_iam_member: 8
+  google_project_service: 10
+  google_project_service_identity: 8
+  google_storage_bucket_object: 2
+  modules: 9
+  resources: 46
+  terraform_data: 2
+values:
+  module.dns-delegations["net-core-0/pub-parent"].google_dns_record_set.dns_record_set["NS child.example.com."]:
+    managed_zone: net-core-0-pub-parent
+    name: child.example.com.
+    project: fast-prod-net-core-0
+    routing_policy: []
+    ttl: 300
+    type: NS
+  module.dns-delegations["net-core-0/pub-parent"].google_dns_record_set.dns_record_set["NS child-dnssec.example.com."]:
+    managed_zone: net-core-0-pub-parent
+    name: child-dnssec.example.com.
+    project: fast-prod-net-core-0
+    routing_policy: []
+    ttl: 300
+    type: NS
+  module.dns-delegations["net-core-0/pub-parent"].google_dns_record_set.dns_record_set["DS child-dnssec.example.com."]:
+    managed_zone: net-core-0-pub-parent
+    name: child-dnssec.example.com.
+    project: fast-prod-net-core-0
+    routing_policy: []
+    ttl: 300
+    type: DS

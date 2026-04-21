@@ -29,7 +29,6 @@ values:
     retain_acked_messages: false
     retry_policy: []
     timeouts: null
-    topic: my-topic
   module.pubsub.google_pubsub_subscription.default["test-pull-override"]:
     bigquery_config: []
     cloud_storage_config: []
@@ -50,7 +49,6 @@ values:
     terraform_labels:
       test: override
     timeouts: null
-    topic: my-topic
   module.pubsub.google_pubsub_topic.default:
     kms_key_name: null
     labels:

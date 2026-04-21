@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,6 +41,14 @@
   api: aiplatform.googleapis.com
   identity: service-${project_number}@gcp-sa-aiplatform-is.${universe_domain}iam.gserviceaccount.com
   role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
+- name: aiplatform-pie
+  display_name: AI Platform Private Instance (PIE) Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-aiplatform-pie.${universe_domain}iam.gserviceaccount.com
+  role: roles/aiplatform.serviceAgent
   is_primary: false
   aliases: []
   skip_iam: false
@@ -132,6 +140,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: agentgateway
+  display_name: Agent Gateway Service Account
+  api: networkservices.googleapis.com
+  identity: service-${project_number}@gcp-sa-agentgateway.${universe_domain}iam.gserviceaccount.com
+  role: roles/agentgateway.serviceAgent
+  is_primary: false
+  aliases: []
+  skip_iam: true
 - name: alloydb
   display_name: AlloyDB Service Account
   api: alloydb.googleapis.com
@@ -277,6 +293,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: appoptimize
+  display_name: App Optimize Service Agent
+  api: appoptimize.googleapis.com
+  identity: service-${project_number}@gcp-sa-appoptimize.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: integrations
   display_name: Application Integration Service Agent
   api: integrations.googleapis.com
@@ -307,6 +331,14 @@
   identity: service-${project_number}@gcp-sa-audit-manager.${universe_domain}iam.gserviceaccount.com
   role: roles/auditmanager.serviceAgent
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: autoannotate
+  display_name: Auto Annotate Service Account
+  api: storage.googleapis.com
+  identity: service-${project_number}@gcp-sa-autoannotate.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: recommendationengine
@@ -406,6 +438,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: bqms
+  display_name: BigQuery Migration Service Agent
+  api: bigquerymigration.googleapis.com
+  identity: service-${project_number}@gcp-sa-bqms.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: prod-bigqueryomni
   display_name: BigQuery Omni Service Agent
   api: bigquery.googleapis.com
@@ -444,14 +484,6 @@
   identity: service-${project_number}@gcp-sa-bne.${universe_domain}iam.gserviceaccount.com
   role: roles/blockchainnodeengine.serviceAgent
   is_primary: true
-  aliases: []
-  skip_iam: false
-- name: chronicle-sv
-  display_name: Chronicle Security Validation Service Account
-  api: chronicle.googleapis.com
-  identity: service-${project_number}@gcp-sa-chronicle-sv.${universe_domain}iam.gserviceaccount.com
-  role: null
-  is_primary: false
   aliases: []
   skip_iam: false
 - name: chronicle
@@ -646,14 +678,6 @@
   identity: service-${project_number}@gcp-sa-cloudkms.${universe_domain}iam.gserviceaccount.com
   role: roles/cloudkms.serviceAgent
   is_primary: false
-  aliases: []
-  skip_iam: false
-- name: lifesciences
-  display_name: Cloud Life Sciences Service Agent
-  api: lifesciences.googleapis.com
-  identity: service-${project_number}@gcp-sa-lifesciences.${universe_domain}iam.gserviceaccount.com
-  role: roles/lifesciences.serviceAgent
-  is_primary: true
   aliases: []
   skip_iam: false
 - name: logging
@@ -864,6 +888,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: hypercomputecluster
+  display_name: Cluster Director Service Agent
+  api: hypercomputecluster.googleapis.com
+  identity: service-${project_number}@gcp-sa-hypercomputecluster.${universe_domain}iam.gserviceaccount.com
+  role: roles/hypercomputecluster.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: compute-system
   display_name: Compute Engine Service Agent
   api: compute.googleapis.com
@@ -985,6 +1017,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: ces
+  display_name: Customer Engagement Suite Service Account
+  api: ces.googleapis.com
+  identity: service-${project_number}@gcp-sa-ces.${universe_domain}iam.gserviceaccount.com
+  role: roles/ces.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
 - name: dataconnectors
   display_name: Data Connectors Service Account
   api: dataconnectors.googleapis.com
@@ -1007,6 +1047,14 @@
   identity: service-${project_number}@gcp-sa-datapipelines.${universe_domain}iam.gserviceaccount.com
   role: roles/datapipelines.serviceAgent
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: datastudio-cmek
+  display_name: Data Studio CMEK Service Account
+  api: datastudio.googleapis.com
+  identity: service-${project_number}@gcp-sa-datastudio-cmek.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: datastudio
@@ -1241,6 +1289,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: storage-search
+  display_name: GCS Search Service Account
+  api: storage.googleapis.com
+  identity: service-${project_number}@gcp-sa-storage-search.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: gkedataplanev2
   display_name: GKE Dataplane V2 Service Account
   api: gkedataplanev2.googleapis.com
@@ -1279,6 +1335,14 @@
   api: cloudaicompanion.googleapis.com
   identity: service-${project_number}@gcp-sa-cloudaicompanion.${universe_domain}iam.gserviceaccount.com
   role: roles/cloudaicompanion.serviceAgent
+  is_primary: true
+  aliases: []
+  skip_iam: false
+- name: generativelanguage
+  display_name: Generative Language Service Agent
+  api: generativelanguage.googleapis.com
+  identity: service-${project_number}@gcp-sa-generativelanguage.${universe_domain}iam.gserviceaccount.com
+  role: null
   is_primary: true
   aliases: []
   skip_iam: false
@@ -1366,6 +1430,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: run-ai
+  display_name: Google Cloud Run AI Bundle Service Agent
+  api: run.googleapis.com
+  identity: service-${project_number}@gcp-sa-run-ai.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: serverless-robot-prod
   display_name: Google Cloud Run Service Agent
   api: run.googleapis.com
@@ -1401,6 +1473,14 @@
   aliases:
   - storage
   skip_iam: false
+- name: diagon
+  display_name: Hypercompute Diagon Service Account
+  api: hypercomputecluster.googleapis.com
+  identity: service-${project_number}@gcp-sa-diagon.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: iap
   display_name: IAP Service Account
   api: iap.googleapis.com
@@ -1413,6 +1493,14 @@
   display_name: Identity Pool Resource Identity
   api: iam.googleapis.com
   identity: service-${project_number}@gcp-ri-identitypool.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
+- name: global-spanner
+  display_name: Infra Spanner Production Service Account
+  api: spanner.googleapis.com
+  identity: service-${project_number}@gcp-sa-global-spanner.${universe_domain}iam.gserviceaccount.com
   role: null
   is_primary: false
   aliases: []
@@ -1860,12 +1948,28 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: vs-cmek
+  display_name: Vector Search Cmek Service Account
+  api: vectorsearch.googleapis.com
+  identity: service-${project_number}@gcp-sa-vs-cmek.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: vectorsearch
   display_name: Vector Search Service Account
   api: vectorsearch.googleapis.com
   identity: service-${project_number}@gcp-sa-vectorsearch.${universe_domain}iam.gserviceaccount.com
   role: roles/vectorsearch.serviceAgent
   is_primary: true
+  aliases: []
+  skip_iam: false
+- name: vertex-sandbox
+  display_name: Vertex AI Agent Sandbox Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-sandbox.${universe_domain}iam.gserviceaccount.com
+  role: roles/aiplatform.agentSandboxServiceAgent
+  is_primary: false
   aliases: []
   skip_iam: false
 - name: vertex-shtune
@@ -1964,6 +2068,14 @@
   is_primary: false
   aliases: []
   skip_iam: false
+- name: vertex-vtc
+  display_name: Vertex AI Training Cluster Service Agent
+  api: aiplatform.googleapis.com
+  identity: service-${project_number}@gcp-sa-vertex-vtc.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: vertex-agent
   display_name: Vertex Agent Service Agent
   api: aiplatform.googleapis.com
@@ -2012,3 +2124,4 @@
   is_primary: false
   aliases: []
   skip_iam: false
+

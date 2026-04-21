@@ -50,7 +50,7 @@ locals {
       }
     ]...
   )
-  # convert all the iam_by_principals_conditional into a flat list of bindings 
+  # convert all the iam_by_principals_conditional into a flat list of bindings
   _iam_bindings_conditional = flatten([
     for principal, config in var.iam_by_principals_conditional : [
       for role in config.roles : {
@@ -126,4 +126,3 @@ resource "google_folder_iam_member" "bindings" {
     }
   }
 }
-

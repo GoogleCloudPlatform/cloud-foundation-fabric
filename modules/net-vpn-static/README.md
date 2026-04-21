@@ -99,7 +99,7 @@ module "vpn" {
 | [gateway_address_create](variables.tf#L23) | Create external address assigned to the VPN gateway. Needs to be explicitly set to false to use address in gateway_address variable. | <code>bool</code> |  | <code>true</code> |
 | [remote_ranges](variables.tf#L49) | Remote IP CIDR ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [route_priority](variables.tf#L56) | Route priority, defaults to 1000. | <code>number</code> |  | <code>1000</code> |
-| [tunnels](variables.tf#L62) | VPN tunnel configurations. | <code title="map&#40;object&#40;&#123;&#10;  cipher_suite &#61; optional&#40;object&#40;&#123;&#10;    phase1 &#61; optional&#40;object&#40;&#123;&#10;      dh         &#61; optional&#40;list&#40;string&#41;&#41;&#10;      encryption &#61; optional&#40;list&#40;string&#41;&#41;&#10;      integrity  &#61; optional&#40;list&#40;string&#41;&#41;&#10;      prf        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    phase2 &#61; optional&#40;object&#40;&#123;&#10;      encryption &#61; optional&#40;list&#40;string&#41;&#41;&#10;      integrity  &#61; optional&#40;list&#40;string&#41;&#41;&#10;      pfs        &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  ike_version   &#61; optional&#40;number, 2&#41;&#10;  peer_ip       &#61; string&#10;  shared_secret &#61; optional&#40;string&#41;&#10;  traffic_selectors &#61; object&#40;&#123;&#10;    local  &#61; list&#40;string&#41;&#10;    remote &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tunnels](variables.tf#L62) | VPN tunnel configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -109,9 +109,9 @@ module "vpn" {
 | [gateway](outputs.tf#L22) | VPN gateway resource. |  |
 | [id](outputs.tf#L27) | Fully qualified VPN gateway id. |  |
 | [name](outputs.tf#L32) | VPN gateway name. |  |
-| [random_secret](outputs.tf#L37) | Generated secret. |  |
-| [self_link](outputs.tf#L42) | VPN gateway self link. |  |
-| [tunnel_names](outputs.tf#L47) | VPN tunnel names. |  |
-| [tunnel_self_links](outputs.tf#L55) | VPN tunnel self links. |  |
-| [tunnels](outputs.tf#L63) | VPN tunnel resources. |  |
+| [random_secret](outputs.tf#L37) | Generated secret. | ✓ |
+| [self_link](outputs.tf#L43) | VPN gateway self link. |  |
+| [tunnel_names](outputs.tf#L48) | VPN tunnel names. |  |
+| [tunnel_self_links](outputs.tf#L56) | VPN tunnel self links. |  |
+| [tunnels](outputs.tf#L64) | VPN tunnel resources. |  |
 <!-- END TFDOC -->

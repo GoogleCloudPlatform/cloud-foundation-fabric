@@ -197,7 +197,7 @@ resource "google_essential_contacts_contact" "contact" {
 resource "google_monitoring_monitored_project" "primary" {
   provider      = google-beta
   for_each      = toset(var.metric_scopes)
-  metrics_scope = each.value
+  metrics_scope = lookup(local.ctx.project_ids, each.value, each.value)
   name          = local.project.project_id
 }
 

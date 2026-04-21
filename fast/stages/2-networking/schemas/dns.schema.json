@@ -38,6 +38,13 @@
     },
     "public": {
       "$ref": "#/$defs/public_zone"
+    },
+    "delegations": {
+      "type": "array",
+      "description": "List of child zone keys (e.g. 'net-dev-0/pvt-dev-zone') whose NS and DS records are auto-created in this parent zone.",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [

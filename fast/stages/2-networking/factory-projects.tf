@@ -34,9 +34,7 @@ module "projects" {
   source        = "../../../modules/project-factory"
   data_defaults = local.project_defaults.defaults
   data_overrides = merge(
-    {
-      universe = var.universe
-    },
+    { universe = var.universe },
     local.project_defaults.overrides
   )
   context = local.ctx

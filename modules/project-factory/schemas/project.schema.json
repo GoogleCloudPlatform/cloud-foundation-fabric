@@ -1237,6 +1237,12 @@
         },
         "tag_bindings": {
           "$ref": "#/$defs/tag_bindings"
+        },
+        "custom_placement_config": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

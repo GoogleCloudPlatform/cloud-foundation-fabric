@@ -19,14 +19,14 @@ sysctl -w net.ipv4.ip_forward=1
 
 # Stop ipsec when terminating
 _stop_ipsec() {
-  echo "Shutting down strongSwan/ipsec..."
-  ipsec stop
+	echo "Shutting down strongSwan/ipsec..."
+	ipsec stop
 }
 trap _stop_ipsec TERM
 
 # Making the container to work as a default gateway for LAN_NETWORKS
-iptables -t nat -A POSTROUTING -s ${LAN_NETWORKS} -o ${VPN_DEVICE} -m policy --dir out --pol ipsec -j ACCEPT
-iptables -t nat -A POSTROUTING -s ${LAN_NETWORKS} -o ${VPN_DEVICE} -j MASQUERADE
+iptables -t nat -A POSTROUTING -s "${LAN_NETWORKS}" -o "${VPN_DEVICE}" -m policy --dir out --pol ipsec -j ACCEPT
+iptables -t nat -A POSTROUTING -s "${LAN_NETWORKS}" -o "${VPN_DEVICE}" -j MASQUERADE
 
 # Start ipsec
 echo "Starting up strongSwan/ipsec..."

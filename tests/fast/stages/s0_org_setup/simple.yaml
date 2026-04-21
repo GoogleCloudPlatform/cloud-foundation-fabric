@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
-
 values:
   google_storage_bucket_object.providers["0-org-setup"]:
     bucket: ft0-prod-iac-core-0-iac-outputs
@@ -810,11 +808,6 @@ values:
     force_destroy: false
     name: 2-security/
     timeouts: null
-  module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder.folder["3-data-platform-dev/"]:
-    bucket: ft0-prod-iac-core-0-iac-stage-state
-    force_destroy: false
-    name: 3-data-platform-dev/
-    timeouts: null
   ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["1-vpcsc/$custom_roles:storage_viewer"]
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
@@ -854,16 +847,6 @@ values:
   : bucket: ft0-prod-iac-core-0-iac-stage-state
     condition: []
     managed_folder: 2-security/
-    role: roles/storage.admin
-  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/$custom_roles:storage_viewer"]
-  : bucket: ft0-prod-iac-core-0-iac-stage-state
-    condition: []
-    managed_folder: 3-data-platform-dev/
-    role: organizations/1234567890/roles/storageViewer
-  ? module.factory.module.buckets["iac-0/iac-stage-state"].google_storage_managed_folder_iam_binding.authoritative["3-data-platform-dev/roles/storage.admin"]
-  : bucket: ft0-prod-iac-core-0-iac-stage-state
-    condition: []
-    managed_folder: 3-data-platform-dev/
     role: roles/storage.admin
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
@@ -989,12 +972,6 @@ values:
   module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/viewer"]:
     condition: []
     role: roles/viewer
-  module.factory.module.folder-1["data-platform"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Data Platform
-    parent: organizations/1234567890
-    tags: null
-    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
@@ -1015,27 +992,6 @@ values:
     timeouts: null
   module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"]:
     timeouts: null
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/compute.xpnAdmin"]:
-    condition: []
-    role: roles/compute.xpnAdmin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/logging.admin"]:
-    condition: []
-    role: roles/logging.admin
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/owner"]:
-    condition: []
-    role: roles/owner
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderAdmin"]
-  : condition: []
-    role: roles/resourcemanager.folderAdmin
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.folderViewer"]
-  : condition: []
-    role: roles/resourcemanager.folderViewer
-  ? module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/resourcemanager.projectCreator"]
-  : condition: []
-    role: roles/resourcemanager.projectCreator
-  module.factory.module.folder-2-iam["data-platform/dev"].google_folder_iam_binding.authoritative["roles/viewer"]:
-    condition: []
-    role: roles/viewer
   ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
     role: organizations/1234567890/roles/projectIamViewer
@@ -1046,20 +1002,6 @@ values:
         \  'organizations/1234567890/roles/serviceProjectNetworkAdmin'\n])\n"
       title: Data platform dev delegated IAM grant.
     role: roles/resourcemanager.projectIamAdmin
-  module.factory.module.folder-2["data-platform/dev"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Development
-    tags: null
-    timeouts: null
-  module.factory.module.folder-2["data-platform/dev"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
-  module.factory.module.folder-2["data-platform/prod"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: Production
-    tags: null
-    timeouts: null
-  module.factory.module.folder-2["data-platform/prod"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-2["networking/dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
@@ -1570,26 +1512,6 @@ values:
   module.factory.module.projects["log-0"].google_project_service_identity.default["pubsub.googleapis.com"]:
     project: ft0-prod-audit-logs-0
     service: pubsub.googleapis.com
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-dp-dev-ro"].google_service_account.service_account[0]:
-    account_id: iac-dp-dev-ro
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for data platform dev (read-only).
-    email: iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-dp-dev-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
-    timeouts: null
-  module.factory.module.service-accounts["iac-0/iac-dp-dev-rw"].google_service_account.service_account[0]:
-    account_id: iac-dp-dev-rw
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: IaC service account for data platform dev (read-write).
-    email: iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    member: serviceAccount:iac-dp-dev-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-    project: ft0-prod-iac-core-0
     timeouts: null
   module.factory.module.service-accounts["iac-0/iac-networking-ro"].google_service_account.service_account[0]:
     account_id: iac-networking-ro
@@ -2940,8 +2862,8 @@ counts:
   google_bigquery_default_service_account: 2
   google_billing_account_iam_member: 6
   google_essential_contacts_contact: 1
-  google_folder: 10
-  google_folder_iam_binding: 44
+  google_folder: 7
+  google_folder_iam_binding: 37
   google_logging_organization_settings: 1
   google_logging_organization_sink: 3
   google_logging_project_bucket_config: 3
@@ -2957,22 +2879,22 @@ counts:
   google_project_iam_member: 15
   google_project_service: 33
   google_project_service_identity: 9
-  google_service_account: 14
+  google_service_account: 12
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 4
   google_storage_bucket: 3
   google_storage_bucket_iam_binding: 4
   google_storage_bucket_object: 10
-  google_storage_managed_folder: 5
-  google_storage_managed_folder_iam_binding: 10
+  google_storage_managed_folder: 4
+  google_storage_managed_folder_iam_binding: 8
   google_storage_project_service_account: 3
-  google_tags_tag_binding: 7
+  google_tags_tag_binding: 5
   google_tags_tag_key: 3
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 50
-  resources: 325
+  modules: 44
+  resources: 308
   terraform_data: 4
 
 outputs:
@@ -2986,4 +2908,7 @@ outputs:
     gcp-security-admins: group:gcp-security-admins@example.org
     gcp-support: group:gcp-support@example.org
   projects: __missing__
+  subnet_ips: {}
+  subnet_self_links: {}
   tfvars: __missing__
+  vpc_self_links: {}

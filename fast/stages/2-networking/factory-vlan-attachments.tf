@@ -46,8 +46,8 @@ locals {
     ]...),
     {}
   )
-  # Read and decode the discovered YAML files. This step also injects VPC-level 
-  # inferred attributes  into each configuration, such as the `project_id` and 
+  # Read and decode the discovered YAML files. This step also injects VPC-level
+  # inferred attributes  into each configuration, such as the `project_id` and
   # `network`, ensuring each attachment is correctly associated with its parent VPC.
   _vlan_attachments_preprocess = {
     for k, v in local._vlan_attachments_files : k => merge(
@@ -73,6 +73,7 @@ module "vlan-attachments" {
   for_each = local.vlan_attachments
 
   admin_enabled                 = try(each.value.admin_enabled, true)
+  bgp_peer                      = try(each.value.bgp_peer, null)
   dedicated_interconnect_config = try(each.value.dedicated_interconnect_config, null)
   description                   = try(each.value.description, "Terraform managed.")
   ipsec_gateway_ip_ranges       = try(each.value.ipsec_gateway_ip_ranges, {})
