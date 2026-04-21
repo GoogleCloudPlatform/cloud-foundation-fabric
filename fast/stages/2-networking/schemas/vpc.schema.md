@@ -112,6 +112,19 @@
     - items: *string*
   - **range_prefix**: *string*
   - **service_producer**: *string*
+- **route_policy_term**<a name="refs-route_policy_term"></a>: *object*
+  <br>*additional properties: false*
+  - ⁺**actions**: *object*
+    - ⁺**expression**: *string*
+    - **title**: *string*
+    - **description**: *string*
+    - **location**: *string*
+  - ⁺**match**: *object*
+    - ⁺**expression**: *string*
+    - **title**: *string*
+    - **description**: *string*
+    - **location**: *string*
+  - ⁺**priority**: *number*
 - **routes**<a name="refs-routes"></a>: *object*
   - **`^[a-z0-9-]+$`**: *object*
     - **description**: *string*
@@ -130,6 +143,11 @@
       - **all_subnets**: *boolean*
       - **ip_ranges**: *object*
         - **`.*`**: *string*
+    - **route_policies**: *object*
+      - **`^[a-z0-9-]+$`**: *object*
+        - **type**: *string*
+        - **terms**: *array*
+          - items: *reference([route_policy_term](#refs-route_policy_term))*
 - **simple_subnet**<a name="refs-simple_subnet"></a>: *object*
   - ⁺**name**: *string*
   - ⁺**ip_cidr_range**: *string*

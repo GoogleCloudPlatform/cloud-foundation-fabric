@@ -30,6 +30,10 @@
   - **bgp_peer**: *object*
     - **address**: *string*
     - **asn**: *number*
+    - **import_policies**: *array*
+      - items: *string*
+    - **export_policies**: *array*
+      - items: *string*
   - **bgp_session_range**: *string*
   - **peer_external_gateway_interface**: *number*
   - **shared_secret**: *string*

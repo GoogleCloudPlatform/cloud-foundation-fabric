@@ -358,20 +358,29 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "action",
+        "actions",
         "match",
         "priority"
       ],
       "properties": {
-        "action": {
+        "actions": {
           "type": "object",
           "required": [
             "expression"
           ],
           "properties": {
-            "expression": "string",
-            "title": "string",
-            "description": "string"
+            "expression": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
           }
         },
         "match": {
@@ -380,9 +389,18 @@
             "expression"
           ],
           "properties": {
-            "expression": "string",
-            "title": "string",
-            "description": "string"
+            "expression": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
           }
         },
         "priority": {
