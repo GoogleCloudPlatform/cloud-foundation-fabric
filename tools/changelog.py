@@ -310,7 +310,7 @@ def write_changelog(releases, rel_changes, release_as, release_to, release_from,
       if r.published else datetime.date.max)
   if release_as:
     # inject an empty 'Unreleased' block as the current one will be replaced
-    rel_link = f'https://github.com/{ORG}/{REPO}/compare/v{release_as}...HEAD'
+    rel_link = f'https://github.com/{ORG}/{REPO}/compare/v{_strip_relname(release_as)}...HEAD'
     rel_buffer.append(f'## [Unreleased]({rel_link})\n')
   for rel in sorted_releases:
     if rel.name == release_to or (rel.name == 'Unreleased' and not release_to):
