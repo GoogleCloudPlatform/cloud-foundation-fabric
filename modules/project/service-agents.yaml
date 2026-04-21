@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@
   role: roles/agentgateway.serviceAgent
   is_primary: false
   aliases: []
-  skip_iam: false
+  skip_iam: true
 - name: alloydb
   display_name: AlloyDB Service Account
   api: alloydb.googleapis.com
@@ -1430,6 +1430,14 @@
   is_primary: true
   aliases: []
   skip_iam: false
+- name: run-ai
+  display_name: Google Cloud Run AI Bundle Service Agent
+  api: run.googleapis.com
+  identity: service-${project_number}@gcp-sa-run-ai.${universe_domain}iam.gserviceaccount.com
+  role: null
+  is_primary: false
+  aliases: []
+  skip_iam: false
 - name: serverless-robot-prod
   display_name: Google Cloud Run Service Agent
   api: run.googleapis.com
@@ -2116,3 +2124,4 @@
   is_primary: false
   aliases: []
   skip_iam: false
+
