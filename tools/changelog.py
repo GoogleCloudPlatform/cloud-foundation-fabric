@@ -281,17 +281,17 @@ def load_changelog(filename):
             name = match.group(1)
             link = match.group(2)
             date_str = match.group(3)
-            
+
             if name == 'Unreleased':
-                date = ''
+              date = ''
             else:
-                name = _strip_relname(name)
-                if not date_str or not date_str.strip():
-                    date = datetime.date.today()
-                else:
-                    # Strip out trailing comments like ` <!-- from...`
-                    date_only = date_str.split()[0]
-                    date = datetime.datetime.strptime(date_only, '%Y-%m-%d').date()
+              name = _strip_relname(name)
+              if not date_str or not date_str.strip():
+                date = datetime.date.today()
+              else:
+                # Strip out trailing comments like ` <!-- from...`
+                date_only = date_str.split()[0]
+                date = datetime.datetime.strptime(date_only, '%Y-%m-%d').date()
             releases[name] = FileRelease(name, date, [l])
         elif name:
           releases[name].content.append(l)
@@ -300,13 +300,14 @@ def load_changelog(filename):
   return releases, None
 
 
-def write_changelog(releases, rel_changes, release_as, release_to,
-                    release_from, filename='CHANGELOG.md'):
+def write_changelog(releases, rel_changes, release_as, release_to, release_from,
+                    filename='CHANGELOG.md'):
   'Inject the pull request data and write changelog to file.'
   rel_buffer = []
   release_to = _strip_relname(release_to) if release_to else None
-  sorted_releases = sorted(releases.values(), reverse=True,
-                           key=lambda r: r.published if r.published else datetime.date.max)
+  sorted_releases = sorted(
+      releases.values(), reverse=True, key=lambda r: r.published
+      if r.published else datetime.date.max)
   if release_as:
     # inject an empty 'Unreleased' block as the current one will be replaced
     rel_link = f'https://github.com/{ORG}/{REPO}/compare/v{release_as}...HEAD'
@@ -316,8 +317,7 @@ def write_changelog(releases, rel_changes, release_as, release_to,
       rel_buffer.append(rel_changes)
     else:
       rel_buffer.append('\n'.join(rel.content))
-  open(filename, 'w').write(
-      '\n'.join([HEADING] + rel_buffer) + '\n')
+  open(filename, 'w').write('\n'.join([HEADING] + rel_buffer) + '\n')
 
 
 @click.command
@@ -340,7 +340,9 @@ def write_changelog(releases, rel_changes, release_as, release_to,
               help='Write modified changelog file.')
 @click.option('--verbose', '-v', is_flag=True, default=False,
               help='Print information about the running operations')
-@click.option('--bump', type=click.Choice(['major', 'minor', 'patch']), help='Automatically determine release_as by bumping the latest release.')
+@click.option(
+    '--bump', type=click.Choice(['major', 'minor', 'patch']),
+    help='Automatically determine release_as by bumping the latest release.')
 @click.argument('changelog-file', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
 def main(token, changelog_file='CHANGELOG.md', bump=None, exclude_pull=None,
@@ -351,31 +353,35 @@ def main(token, changelog_file='CHANGELOG.md', bump=None, exclude_pull=None,
     raise SystemExit('Only one of `release_as` and `release_to` can be used.')
   try:
     releases, _ = load_changelog(changelog_file)
-    latest_release = [r.name for r in sorted(releases.values(), reverse=True, key=lambda x: x.published if x.published else datetime.date.min) if r.name != 'Unreleased'][0]
-    
+    latest_release = [
+        r.name for r in sorted(
+            releases.values(), reverse=True, key=lambda x: x.published
+            if x.published else datetime.date.min) if r.name != 'Unreleased'
+    ][0]
+
     if bump:
-        if release_as:
-            raise SystemExit('Cannot use both --bump and --release-as.')
-        if release_to:
-            raise SystemExit('Cannot use both --bump and --release-to.')
-        
-        base_version = release_from or latest_release
-        import re
-        m = re.match(r'^(v?)(\d+)\.(\d+)\.(\d+)(.*)$', base_version)
-        if not m:
-            raise SystemExit(f'Cannot bump version {base_version}')
-        prefix, major, minor, patch, suffix = m.groups()
-        if bump == 'major':
-            new_version = f"{int(major)+1}.0.0"
-        elif bump == 'minor':
-            new_version = f"{major}.{int(minor)+1}.0"
-        elif bump == 'patch':
-            new_version = f"{major}.{minor}.{int(patch)+1}"
-        
-        release_as = f"{prefix}{new_version}{suffix}"
-        logging.info(f'Bumping {base_version} to {release_as}')
-        if not release_from:
-            release_from = latest_release
+      if release_as:
+        raise SystemExit('Cannot use both --bump and --release-as.')
+      if release_to:
+        raise SystemExit('Cannot use both --bump and --release-to.')
+
+      base_version = release_from or latest_release
+      import re
+      m = re.match(r'^(v?)(\d+)\.(\d+)\.(\d+)(.*)$', base_version)
+      if not m:
+        raise SystemExit(f'Cannot bump version {base_version}')
+      prefix, major, minor, patch, suffix = m.groups()
+      if bump == 'major':
+        new_version = f"{int(major)+1}.0.0"
+      elif bump == 'minor':
+        new_version = f"{major}.{int(minor)+1}.0"
+      elif bump == 'patch':
+        new_version = f"{major}.{minor}.{int(patch)+1}"
+
+      release_as = f"{prefix}{new_version}{suffix}"
+      logging.info(f'Bumping {base_version} to {release_as}')
+      if not release_from:
+        release_from = latest_release
 
     date_from = get_release_date(token, release_from)
     logging.info(f'release date from: {date_from}')
@@ -392,8 +398,8 @@ def main(token, changelog_file='CHANGELOG.md', bump=None, exclude_pull=None,
     if not write:
       print(rel_changes)
       raise SystemExit(0)
-    write_changelog(releases, rel_changes, release_as, release_to,
-                    release_from, changelog_file)
+    write_changelog(releases, rel_changes, release_as, release_to, release_from,
+                    changelog_file)
   except Error as e:
     raise SystemExit(f'Error running command: {e}')
 
