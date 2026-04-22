@@ -500,6 +500,9 @@
         "location": {
           "type": "string"
         },
+        "name": {
+          "type": "string"
+        },
         "threat_detector_provider": {
           "type": "string",
           "enum": [

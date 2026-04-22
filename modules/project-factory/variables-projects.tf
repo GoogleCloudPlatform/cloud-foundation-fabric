@@ -236,6 +236,7 @@ variable "projects" {
       excluded_networks        = optional(list(string), [])
       labels                   = optional(map(string), {})
       location                 = optional(string)
+      name                     = optional(string)
       threat_detector_provider = optional(string)
     }), {})
     factories_config = optional(object({

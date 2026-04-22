@@ -21,7 +21,15 @@ resource "google_network_security_dns_threat_detector" "dns_threat_detector" {
     if try(v.dns_threat_detector.enabled, false)
   }
   project = module.projects[each.key].project_id
-  name    = each.value.prefix == null ? each.value.name : "${each.value.prefix}-${each.value.name}"
+  name = (
+    try(each.value.dns_threat_detector.name, null) != null
+    ? each.value.dns_threat_detector.name
+    : (
+      each.value.prefix == null
+      ? each.value.name
+      : "${each.value.prefix}-${each.value.name}"
+    )
+  )
   excluded_networks = [
     for s in try(each.value.dns_threat_detector.excluded_networks, []) :
     lookup(local.ctx.networks, s, s)

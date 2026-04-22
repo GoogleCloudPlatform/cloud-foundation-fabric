@@ -156,6 +156,7 @@
     - items: *string*
   - **labels**: *object*
   - **location**: *string*
+  - **name**: *string*
   - **threat_detector_provider**: *string*
     <br>*enum: ['INFOBLOX']*
 - **org_policies**: *object*
