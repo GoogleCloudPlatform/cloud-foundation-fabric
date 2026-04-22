@@ -151,7 +151,7 @@
 - **descriptive_name**: *string*
 - **dns_threat_detector**: *object*
   <br>*additional properties: false*
-  - ⁺**enabled**: *boolean*
+  - **enabled**: *boolean*
   - **excluded_networks**: *array*
     - items: *string*
   - **labels**: *object*
