@@ -37,7 +37,7 @@ Run the changelog script, specifying the bump type (e.g., `major`, `minor`, `pat
 
 ```bash
 # Set your bump type here (major, minor, or patch)
-BUMP_TYPE="minor" 
+BUMP_TYPE="minor"
 
 # Option A: Using uv (Recommended)
 uv run tools/changelog.py --release-from $LATEST_RELEASE --bump $BUMP_TYPE --write --token $(gh auth token)
@@ -111,7 +111,7 @@ BREAKING_CHANGES=$(echo "$RELEASE_NOTES" | awk '/^### BREAKING CHANGES/{flag=1; 
 if [ -n "$(echo "$BREAKING_CHANGES" | tr -d '[:space:]')" ]; then
   # Convert "### BREAKING CHANGES" to "### Breaking Changes"
   FORMATTED_BREAKING_CHANGES=$(echo "$BREAKING_CHANGES" | sed 's/^### BREAKING CHANGES/### Breaking Changes/')
-  
+
   # Prepend breaking changes to the generated notes
   gh release create "$NEW_RELEASE" --title "$NEW_RELEASE" --generate-notes --notes "$FORMATTED_BREAKING_CHANGES"
 else
