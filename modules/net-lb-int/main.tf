@@ -65,7 +65,7 @@ resource "google_compute_forwarding_rule" "default" {
   description = each.value.description
   ip_address  = try(local.ctx.addresses[each.value.address], each.value.address)
   ip_protocol = each.value.protocol
-  ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
+  ip_version  = each.value.ipv6 == true ? "IPV6" : null # leave null so GCP infers from ip_address; avoids known-after-apply cascade when address resolves from partially-unknown context map
   backend_service = (
     google_compute_region_backend_service.default.self_link
   )

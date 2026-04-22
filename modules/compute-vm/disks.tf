@@ -111,9 +111,9 @@ resource "google_compute_region_disk" "disks" {
     for k, v in local.attached_disks_regional :
     k => v if v.source.attach == null
   }
-  project       = local.project_id
-  region        = local.region
-  replica_zones = [local.zone, each.value.initialize_params.replica_zone]
+  project                = local.project_id
+  region                 = local.region
+  replica_zones          = [local.zone, each.value.initialize_params.replica_zone]
   name                   = coalesce(each.value.name, "${var.name}-${each.key}")
   type                   = each.value.initialize_params.type
   size                   = each.value.initialize_params.size

@@ -65,7 +65,7 @@ resource "google_compute_global_forwarding_rule" "default" {
   description = each.value.description
   ip_address  = try(local.ctx.addresses[each.value.address], each.value.address)
   ip_protocol = "TCP"
-  ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
+  ip_version  = each.value.ipv6 == true ? "IPV6" : null # leave null so GCP infers from ip_address; avoids known-after-apply cascade when address resolves from partially-unknown context map
   load_balancing_scheme = (
     var.use_classic_version ? "EXTERNAL" : "EXTERNAL_MANAGED"
   )
