@@ -38,23 +38,57 @@ values:
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     timeouts: null
+  module.agent_engine.google_storage_bucket.default[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST8
+    logging: []
+    name: my-agent
+    project: project-id
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+    context_spec: []
+    deletion_policy: null
     description: Terraform managed.
     display_name: my-agent
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     encryption_spec: []
+    labels: null
     project: project-id
     region: europe-west8
     spec:
     - agent_framework: google-adk
       class_methods: null
+      container_spec: []
       deployment_spec: []
+      identity_type: null
       package_spec:
-      - dependency_files_gcs_uri: dependencies.tar.gz
-        pickle_object_gcs_uri: pickle.pkl
+      - dependency_files_gcs_uri: gs://my-bucket/dependencies.tar.gz
+        pickle_object_gcs_uri: gs://my-bucket/pickle.pkl
         python_version: '3.13'
-        requirements_gcs_uri: requirements.txt
+        requirements_gcs_uri: gs://my-bucket/requirements.txt
       service_account: my-agent@project-id.iam.gserviceaccount.com
       source_code_spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.agent_engine.time_sleep.wait_5_minutes:
     create_duration: 5m
@@ -64,9 +98,10 @@ values:
 counts:
   google_project_iam_member: 3
   google_service_account: 1
+  google_storage_bucket: 1
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 6
+  resources: 7
   time_sleep: 1
 
 outputs: {}
