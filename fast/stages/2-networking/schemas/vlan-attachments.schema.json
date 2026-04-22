@@ -13,6 +13,9 @@
       "type": "boolean",
       "default": true
     },
+    "attachment_group": {
+      "type": "string"
+    },
     "dedicated_interconnect_config": {
       "type": "object",
       "additionalProperties": false,

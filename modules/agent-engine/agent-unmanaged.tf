@@ -21,6 +21,11 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
   project      = local.project_id
   description  = var.description
   region       = local.location
+  deletion_policy = (
+    var.enable_deletion_protection
+    ? null
+    : "FORCE"
+  )
 
   dynamic "encryption_spec" {
     for_each = var.encryption_key == null ? {} : { 1 = 1 }

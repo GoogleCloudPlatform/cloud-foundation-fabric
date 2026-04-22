@@ -63,7 +63,7 @@ resource "google_storage_bucket" "default" {
   project                     = local.project_id
   location                    = local.location
   uniform_bucket_level_access = var.bucket_config.uniform_bucket_level_access
-  force_destroy               = !var.bucket_config.deletion_protection
+  force_destroy               = !var.enable_deletion_protection
 }
 
 resource "google_storage_bucket_object" "dependencies" {
