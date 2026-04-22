@@ -438,7 +438,7 @@ module "agent_engine" {
     }
   }
 }
-# tftest
+# tftest inventory=deletion-protection.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
