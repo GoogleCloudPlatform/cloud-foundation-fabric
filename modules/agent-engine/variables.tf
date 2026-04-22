@@ -15,10 +15,10 @@
  */
 
 variable "agent_engine_config" {
-  description = "The agent configuration."
+  description = "The agent configuration. Supported values for agent_framework: 'google-adk', 'langchain', 'langgraph', 'ag2', 'llama-index', 'custom'."
   type = object({
     # Add validation once API stabilizes
-    agent_framework       = string
+    agent_framework       = optional(string)
     class_methods         = optional(string)
     container_concurrency = optional(number)
     environment_variables = optional(map(string), {})
@@ -35,13 +35,13 @@ variable "agent_engine_config" {
     })), {})
   })
   nullable = false
+  default  = {}
 }
 
 variable "bucket_config" {
   description = "The GCS bucket configuration."
   type = object({
     create                      = optional(bool, true)
-    deletion_protection         = optional(bool, true)
     name                        = optional(string)
     uniform_bucket_level_access = optional(bool, true)
   })
@@ -65,40 +65,63 @@ variable "context" {
   default  = {}
 }
 
-variable "deployment_files" {
-  description = "The to source files path and names."
+variable "deployment_config" {
+  description = "The deployment configuration."
   type = object({
+    container_config = optional(object({
+      image_uri = string
+    }))
     package_config = optional(object({
       are_paths_local   = optional(bool, true)
       dependencies_path = optional(string, "./src/dependencies.tar.gz")
       pickle_path       = optional(string, "./src/pickle.pkl")
       requirements_path = optional(string, "./src/requirements.txt")
-    }), null)
-    source_config = optional(object({
-      entrypoint_module = optional(string, "agent")
-      entrypoint_object = optional(string, "agent")
-      requirements_path = optional(string, "requirements.txt")
-      source_path       = optional(string, "./src/source.tar.gz")
-    }), null)
+    }))
+    source_files_config = optional(object({
+      source_path = optional(string, "./src/source.tar.gz")
+      developer_connect_config = optional(object({
+        git_repository_link = string
+        dir                 = string
+        revision            = string
+      }))
+      python_spec = optional(object({
+        entrypoint_module = optional(string, "agent")
+        entrypoint_object = optional(string, "agent")
+        requirements_file = optional(string, "requirements.txt")
+      }))
+      image_spec = optional(object({
+        build_args = optional(map(string), {})
+      }))
+    }))
+
   })
   nullable = false
-  default = {
-    package_config = null
-    source_config  = {}
+  default  = {}
+  validation {
+    condition = (
+      (var.deployment_config.container_config != null ? 1 : 0) +
+      (var.deployment_config.package_config != null ? 1 : 0) +
+      (var.deployment_config.source_files_config != null ? 1 : 0)
+    ) <= 1
+    error_message = "You can provide at most one of 'container_config', 'package_config' or 'source_files_config'."
   }
   validation {
     condition = (
-      var.deployment_files.package_config != null ||
-      var.deployment_files.source_config != null
+      var.deployment_config.source_files_config == null ? true : (
+        (var.deployment_config.source_files_config.source_path != null ? 1 : 0) +
+        (var.deployment_config.source_files_config.developer_connect_config != null ? 1 : 0)
+      ) <= 1
     )
-    error_message = "You must provide either 'package_config' or 'source_config'."
+    error_message = "Only one of 'source_path' or 'developer_connect_config' can be specified within 'source_files_config'."
   }
   validation {
-    condition = !(
-      var.deployment_files.package_config != null &&
-      var.deployment_files.source_config != null
+    condition = (
+      var.deployment_config.source_files_config == null ? true : (
+        (var.deployment_config.source_files_config.python_spec != null ? 1 : 0) +
+        (var.deployment_config.source_files_config.image_spec != null ? 1 : 0)
+      ) <= 1
     )
-    error_message = "You cannot specify both 'package_config' and 'source_config' simultaneously."
+    error_message = "Only one of 'python_spec' or 'image_spec' can be specified within 'source_files_config'."
   }
 }
 
@@ -107,6 +130,13 @@ variable "description" {
   type        = string
   nullable    = false
   default     = "Terraform managed."
+}
+
+variable "enable_deletion_protection" {
+  description = "Whether deletion protection should be enabled."
+  type        = bool
+  nullable    = false
+  default     = true
 }
 
 variable "encryption_key" {
