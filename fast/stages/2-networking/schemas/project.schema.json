@@ -886,27 +886,8 @@
             },
             "then": {
               "not": {
-                "anyOf": [
-                  {
-                    "required": [
-                      "iam"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "iam_bindings"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "iam_bindings_additive"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "values"
-                    ]
-                  }
+                "required": [
+                  "values"
                 ]
               }
             }

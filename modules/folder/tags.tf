@@ -23,9 +23,5 @@ locals {
 resource "google_tags_tag_binding" "binding" {
   for_each  = coalesce(var.tag_bindings, {})
   parent    = "//cloudresourcemanager.googleapis.com/${local.folder_id}"
-  tag_value = (
-    can(regex("\\$\\{", local._tag_bindings[each.key]))
-    ? templatestring(local._tag_bindings[each.key], var.context.tag_vars)
-    : local._tag_bindings[each.key]
-  )
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

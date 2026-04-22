@@ -161,13 +161,10 @@ variable "tags" {
     condition = alltrue([
       for k, v in var.tags :
       v.allowed_values_regex == null || (
-        length(v.iam) == 0 &&
-        length(v.iam_bindings) == 0 &&
-        length(v.iam_bindings_additive) == 0 &&
         length(v.values) == 0
       )
     ])
-    error_message = "If allowed_values_regex is set, iam, iam_bindings, iam_bindings_additive, and values must not be set."
+    error_message = "If allowed_values_regex is set, values must not be set."
   }
 }
 

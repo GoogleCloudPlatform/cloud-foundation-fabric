@@ -23,10 +23,6 @@ locals {
 resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//cloudkms.googleapis.com/${local.keyring.id}"
-  tag_value = (
-    can(regex("\\$\\{", local._tag_bindings[each.key]))
-    ? templatestring(local._tag_bindings[each.key], var.context.tag_vars)
-    : local._tag_bindings[each.key]
-  )
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
   location  = lookup(local.ctx.locations, var.keyring.location, var.keyring.location)
 }

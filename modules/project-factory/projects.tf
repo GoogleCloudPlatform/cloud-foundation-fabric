@@ -65,8 +65,9 @@ locals {
   })
   tag_vars_projects = {
     for k, v in local.projects_input : v.name => {
-      for kk, vv in module.projects[k].tags_dynamic :
-      kk => "${module.projects[k].project_id}/${vv.short_name}"
+      for kk, vv in module.projects[k].tag_keys :
+      kk => vv.namespaced_name
+      if vv.allowed_values_regex != null
     }
   }
   per_project_service_agents = {

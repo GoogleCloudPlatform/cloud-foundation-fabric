@@ -23,11 +23,7 @@ locals {
 resource "google_tags_location_tag_binding" "binding" {
   for_each = var.tag_bindings
   parent   = "//storage.googleapis.com/projects/_/buckets/${local._name}"
-  tag_value = (
-    can(regex("\\$\\{", local._tag_bindings[each.key]))
-    ? templatestring(local._tag_bindings[each.key], var.context.tag_vars)
-    : local._tag_bindings[each.key]
-  )
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
   location = lookup(local.ctx.locations, var.location, var.location)
   depends_on = [
     google_storage_bucket.bucket,
