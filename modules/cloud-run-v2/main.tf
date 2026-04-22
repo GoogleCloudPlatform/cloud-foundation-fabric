@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if k != "condition_vars" && k != "tag_vars"
   }
   connector = (
     var.vpc_connector_create != null
