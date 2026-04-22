@@ -153,7 +153,7 @@ variable "context" {
       projects     = optional(map(map(string)), {})
       organization = optional(map(string), {})
     }), {})
-    vpc_sc_perimeters     = optional(map(string), {})
+    vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
   nullable = false
