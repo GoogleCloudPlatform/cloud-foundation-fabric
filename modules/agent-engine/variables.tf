@@ -42,7 +42,6 @@ variable "bucket_config" {
   description = "The GCS bucket configuration."
   type = object({
     create                      = optional(bool, true)
-    deletion_protection         = optional(bool, true)
     name                        = optional(string)
     uniform_bucket_level_access = optional(bool, true)
   })
@@ -131,6 +130,13 @@ variable "description" {
   type        = string
   nullable    = false
   default     = "Terraform managed."
+}
+
+variable "enable_deletion_protection" {
+  description = "Whether deletion protection should be enabled."
+  type        = bool
+  nullable    = false
+  default     = true
 }
 
 variable "encryption_key" {
