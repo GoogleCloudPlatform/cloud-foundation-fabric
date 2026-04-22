@@ -151,25 +151,6 @@ values:
     source: null
     temporary_hold: null
     timeouts: null
-  google_storage_bucket_object.version[0]:
-    bucket: test
-    cache_control: null
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    contexts: []
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: null
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: versions/2-networking-version.txt
-    retention: []
-    source: fast_version.txt
-    source_md5hash: 712fbce8dff4e62d1498a22da63b5072
-    temporary_hold: null
-    timeouts: null
   module.projects.module.projects-iam["net-core-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
     project: fast-prod-net-core-0
     timeouts: null
