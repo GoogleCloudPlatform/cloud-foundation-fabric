@@ -14,4 +14,4 @@ nat_config:
     config_source_subnetworks:
       all: false
       subnetworks:
-          - self_link: $subnets:core/europe-west1/core-default
+        - self_link: $subnets:core/europe-west1/core-default

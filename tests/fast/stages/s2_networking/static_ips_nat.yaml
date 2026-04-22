@@ -30,19 +30,19 @@ counts:
   resources: 43
   terraform_data: 2
 values:
-  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-0"]: 
+  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-0"]:
     address_type: EXTERNAL
     description: 'Terraform managed.'
     name: core-nat-static-ip-0
     project: fast-prod-net-core-0
     region: europe-west1
-  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-1"]: 
+  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-1"]:
     address_type: EXTERNAL
     description: 'Terraform managed.'
     name: core-nat-static-ip-1
     project: fast-prod-net-core-0
     region: europe-west1
-  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-2"]: 
+  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-2"]:
     address_type: EXTERNAL
     description: 'Terraform managed.'
     name: core-nat-static-ip-2
@@ -52,7 +52,7 @@ values:
     name: core-nat-static-nat
     project: fast-prod-net-core-0
     region: europe-west1
-  module.nat["core/nat-static"].google_compute_router_nat.nat: 
+  module.nat["core/nat-static"].google_compute_router_nat.nat:
     enable_dynamic_port_allocation: False
     enable_endpoint_independent_mapping: True
     icmp_idle_timeout_sec: 30
@@ -61,14 +61,14 @@ values:
         filter: ALL
     max_ports_per_vm: 65536
     name: core-nat-static
-    nat64_subnetwork: [ ]
+    nat64_subnetwork: []
     project: fast-prod-net-core-0
     region: europe-west1
     router: core-nat-static-nat
-    rules: [ ]
+    rules: []
     source_subnetwork_ip_ranges_to_nat: LIST_OF_SUBNETWORKS
     subnetwork:
-      - secondary_ip_range_names: [ ]
+      - secondary_ip_range_names: []
         source_ip_ranges_to_nat:
           - 'ALL_IP_RANGES'
     tcp_established_idle_timeout_sec: 1200
