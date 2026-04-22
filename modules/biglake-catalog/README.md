@@ -81,7 +81,7 @@ module "biglake_catalog" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [databases](variables.tf#L17) | Databases. | <code title="map&#40;object&#40;&#123;&#10;  type &#61; string&#10;  hive_options &#61; object&#40;&#123;&#10;    location_uri &#61; string&#10;    parameters   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#10;  tables &#61; map&#40;object&#40;&#123;&#10;    type &#61; string&#10;    hive_options &#61; object&#40;&#123;&#10;      table_type    &#61; string&#10;      location_uri  &#61; string&#10;      input_format  &#61; string&#10;      output_format &#61; string&#10;      parameters    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [databases](variables.tf#L17) | Databases. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [location](variables.tf#L38) | Location. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L43) | Name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L48) | Project ID. | <code>string</code> | ✓ |  |

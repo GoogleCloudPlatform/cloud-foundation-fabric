@@ -11,6 +11,7 @@ database_version = "POSTGRES_13"
 tier             = "db-g1-small"
 network_config = {
   connectivity = {
+    psc_allowed_consumer_projects = ["$project_ids:myprj"]
     psa_config = {
       private_network = "$networks:myvpc"
     }

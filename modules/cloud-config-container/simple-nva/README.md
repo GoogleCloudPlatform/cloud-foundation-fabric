@@ -163,17 +163,16 @@ Check FRR running configuration with `show running-config` from vtysh. Please al
 
 Sample frr.conf file is based on the documentation available [here](https://docs.frrouting.org/en/latest/basic.html). It configures a BGP service with ASN 65001 on FRR container establishing a BGP session with a remote neighbor with IP address 10.128.0.2 and ASN 65002. Check BGP status for FRR with `show bgp summary` from vtysh.
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [network_interfaces](variables.tf#L75) | Network interfaces configuration. | <code title="list&#40;object&#40;&#123;&#10;  routes              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  enable_masquerading &#61; optional&#40;bool, false&#41;&#10;  non_masq_cidrs      &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [network_interfaces](variables.tf#L75) | Network interfaces configuration. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [cloud_config](variables.tf#L17) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
 | [enable_health_checks](variables.tf#L23) | Configures routing to enable responses to health check probes. | <code>bool</code> |  | <code>false</code> |
-| [files](variables.tf#L29) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [frr_config](variables.tf#L39) | FRR configuration for container running on the NVA. | <code title="object&#40;&#123;&#10;  config_file     &#61; string&#10;  daemons_enabled &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [open_ports](variables.tf#L84) | Optional firewall ports to open. | <code title="object&#40;&#123;&#10;  tcp &#61; list&#40;string&#41;&#10;  udp &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  tcp &#61; &#91;&#93;&#10;  udp &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [files](variables.tf#L29) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [frr_config](variables.tf#L39) | FRR configuration for container running on the NVA. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [open_ports](variables.tf#L84) | Optional firewall ports to open. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
 | [run_cmds](variables.tf#L96) | Optional cloud init run commands to execute. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
@@ -181,5 +180,4 @@ Sample frr.conf file is based on the documentation available [here](https://docs
 | name | description | sensitive |
 |---|---|:---:|
 | [cloud_config](outputs.tf#L17) | Rendered cloud-config file to be passed as user-data instance metadata. |  |
-
 <!-- END TFDOC -->

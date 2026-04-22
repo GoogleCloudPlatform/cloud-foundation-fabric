@@ -165,7 +165,6 @@ values:
     enable_display: false
     hostname: null
     instance_encryption_key: []
-    key_revocation_action_type: NONE
     labels: null
     machine_type: c4d-standard-2
     metadata: null

@@ -138,11 +138,11 @@ Note that the `network` argument is unusual in that it requires the project numb
 | [location](variables.tf#L41) | Namespace location. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L46) | Namespace name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L51) | Project used for resources. | <code>string</code> | ✓ |  |
-| [endpoint_config](variables.tf#L18) | Map of endpoint attributes, keys are in service/endpoint format. | <code title="map&#40;object&#40;&#123;&#10;  address  &#61; string&#10;  port     &#61; number&#10;  network  &#61; optional&#40;string, null&#41;&#10;  metadata &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [endpoint_config](variables.tf#L18) | Map of endpoint attributes, keys are in service/endpoint format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L29) | IAM bindings for namespace, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L35) | Labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_iam](variables.tf#L56) | IAM bindings for services, in {SERVICE => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L62) | Service configuration, using service names as keys. | <code title="map&#40;object&#40;&#123;&#10;  endpoints &#61; list&#40;string&#41;&#10;  metadata  &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L62) | Service configuration, using service names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

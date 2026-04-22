@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "click",
+#     "iso8601",
+#     "marko",
+#     "requests",
+# ]
+# ///
 # Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +43,8 @@ It works on a set of simple principles
   the `merged_to` argument (defaulting to `master`) are ignored
 - the unreleased block can optionally be marked with a release name via the
   `release_as` argument to prepare for a new release
+- versions can be automatically bumped (major, minor, patch) using the `--bump`
+  argument, which computes `release_as` automatically from the latest release
 
 Example usage:
 
@@ -51,6 +62,10 @@ Example usage:
   ```
   ./tools/changelog.py  --token=$TOKEN --write \
     --release-from=v35.0.0 --release-as=v36.0.0
+  ```
+- create a new release by automatically bumping the latest version
+  ```
+  ./tools/changelog.py  --token=$TOKEN --write --bump minor
   ```
 - create an rc release on the fast-dev branch capturing only branch-merged PRs
   ```
@@ -149,9 +164,12 @@ def format_release(pull_groups, upgrade_notes, release_as, release_to,
     date_to = datetime.date.today()
   comment = f'<!-- from: {date_from} to: {date_to} since: {release_from} -->'
   if release_to is None and not release_as:
-    buffer = [f'## [{release_as or "Unreleased"}] {comment}']
+    link = f'https://github.com/{ORG}/{REPO}/compare/{release_from}...HEAD'
+    buffer = [f'## [Unreleased]({link}) {comment}']
   else:
-    buffer = [(f'## [{_strip_relname(release_to or release_as)}] - '
+    version = _strip_relname(release_to or release_as)
+    link = f'https://github.com/{ORG}/{REPO}/releases/tag/v{version}'
+    buffer = [(f'## [v{version}]({link}) - '
                f'{date_to.strftime("%Y-%m-%d")} {comment}')]
   if upgrade_notes:
     buffer.append('\n### BREAKING CHANGES\n')
@@ -227,6 +245,8 @@ def get_pulls(token, date_from, date_to, merged_to, exclude_pulls=None):
 
 def get_release_date(token, name=None):
   'Get published date for a specific release or the latest release.'
+  if name and not name.startswith('v'):
+    name = f'v{name}'
   path = f'releases/tags/{name}' if name else f'releases/latest'
   release = fetch(token, path)
   if not release.get('draft'):
@@ -251,65 +271,55 @@ def group_pulls(pulls):
 def load_changelog(filename):
   'Return structured data from changelog file.'
   releases = {}
-  links = None
   name = None
   try:
     with open(filename) as f:
       for l in f.readlines():
         l = l.strip()
-        if l.startswith(LINK_MARKER):
-          links = {}
-          continue
         if l.startswith('## '):
-          if l[4:].startswith('Unreleased'):
-            name, date = 'Unreleased', ''
-          else:
-            name, _, date = l[3:].partition(' - ')
-            name = _strip_relname(name)
-          if not date.strip():
-            date = datetime.date.today()
-          else:
-            date = datetime.datetime.strptime(date.split()[0],
-                                              '%Y-%m-%d').date()
-          releases[name] = FileRelease(name, date, [l])
-        elif name and links is None:
+          import re
+          match = re.match(r'^## \[(.*?)\](?:\((.*?)\))?(?:\s*-\s*(.*))?', l)
+          if match:
+            name = match.group(1)
+            link = match.group(2)
+            date_str = match.group(3)
+
+            if name == 'Unreleased':
+              date = ''
+            else:
+              name = _strip_relname(name)
+              if not date_str or not date_str.strip():
+                date = datetime.date.today()
+              else:
+                # Strip out trailing comments like ` <!-- from...`
+                date_only = date_str.split()[0]
+                date = datetime.datetime.strptime(date_only, '%Y-%m-%d').date()
+            releases[name] = FileRelease(name, date, [l])
+        elif name:
           releases[name].content.append(l)
-        elif l.startswith('['):
-          name, _, _ = l.partition(':')
-          links[_strip_relname(name)] = l
   except (IOError, OSError) as e:
     raise Error(f'Cannot open {filename}: {e.args[0]}')
-  return releases, links
+  return releases, None
 
 
-def write_changelog(releases, links, rel_changes, release_as, release_to,
-                    release_from, filename='CHANGELOG.md'):
+def write_changelog(releases, rel_changes, release_as, release_to, release_from,
+                    filename='CHANGELOG.md'):
   'Inject the pull request data and write changelog to file.'
-  rel_buffer, link_buffer = [], []
-  release_to = _strip_relname(release_to)
-  sorted_releases = sorted(releases.values(), reverse=True,
-                           key=lambda r: r.published)
+  rel_buffer = []
+  release_to = _strip_relname(release_to) if release_to else None
+  sorted_releases = sorted(
+      releases.values(), reverse=True, key=lambda r: r.published
+      if r.published else datetime.date.max)
   if release_as:
     # inject an empty 'Unreleased' block as the current one will be replaced
-    rel_buffer.append('## Unreleased\n')
-    rel_link = CHANGE_URL.format(name='Unreleased', release_from=release_as,
-                                 release_to='HEAD')
-    link_buffer.append(rel_link)
+    rel_link = f'https://github.com/{ORG}/{REPO}/compare/v{_strip_relname(release_as)}...HEAD'
+    rel_buffer.append(f'## [Unreleased]({rel_link})\n')
   for rel in sorted_releases:
-    rel_link = links.get(rel.name)
-    if rel_link is None:
-      raise Error(f"no link found for {rel.name}")
-    if rel.name == release_to:
+    if rel.name == release_to or (rel.name == 'Unreleased' and not release_to):
       rel_buffer.append(rel_changes)
-      if release_as:
-        rel_link = CHANGE_URL.format(name=release_as, release_from=release_from,
-                                     release_to=release_as)
     else:
       rel_buffer.append('\n'.join(rel.content))
-    link_buffer.append(rel_link)
-  open(filename, 'w').write(
-      '\n'.join([HEADING] + rel_buffer +
-                ['<!-- markdown-link-check-disable -->'] + link_buffer))
+  open(filename, 'w').write('\n'.join([HEADING] + rel_buffer) + '\n')
 
 
 @click.command
@@ -332,15 +342,47 @@ def write_changelog(releases, links, rel_changes, release_as, release_to,
               help='Write modified changelog file.')
 @click.option('--verbose', '-v', is_flag=True, default=False,
               help='Print information about the running operations')
+@click.option(
+    '--bump', type=click.Choice(['major', 'minor', 'patch']),
+    help='Automatically determine release_as by bumping the latest release.')
 @click.argument('changelog-file', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
-def main(token, changelog_file='CHANGELOG.md', exclude_pull=None,
+def main(token, changelog_file='CHANGELOG.md', bump=None, exclude_pull=None,
          merged_to=None, release_as=None, release_from=None, release_to=None,
          write=False, verbose=False):
   logging.basicConfig(level=logging.INFO if verbose else logging.WARNING)
   if release_as is not None and release_to is not None:
     raise SystemExit('Only one of `release_as` and `release_to` can be used.')
   try:
+    releases, _ = load_changelog(changelog_file)
+    latest_release = next((r.name for r in sorted(
+        releases.values(), reverse=True, key=lambda x: x.published
+        if x.published else datetime.date.min) if r.name != 'Unreleased'), None)
+
+    if bump:
+      if release_as:
+        raise SystemExit('Cannot use both --bump and --release-as.')
+      if release_to:
+        raise SystemExit('Cannot use both --bump and --release-to.')
+
+      base_version = release_from or latest_release
+      import re
+      m = re.match(r'^(v?)(\d+)\.(\d+)\.(\d+)(.*)$', base_version)
+      if not m:
+        raise SystemExit(f'Cannot bump version {base_version}')
+      prefix, major, minor, patch, suffix = m.groups()
+      if bump == 'major':
+        new_version = f"{int(major)+1}.0.0"
+      elif bump == 'minor':
+        new_version = f"{major}.{int(minor)+1}.0"
+      elif bump == 'patch':
+        new_version = f"{major}.{minor}.{int(patch)+1}"
+
+      release_as = f"{prefix}{new_version}{suffix}"
+      logging.info(f'Bumping {base_version} to {release_as}')
+      if not release_from:
+        release_from = latest_release
+
     date_from = get_release_date(token, release_from)
     logging.info(f'release date from: {date_from}')
     date_to = None if not release_to else get_release_date(token, release_to)
@@ -356,9 +398,8 @@ def main(token, changelog_file='CHANGELOG.md', exclude_pull=None,
     if not write:
       print(rel_changes)
       raise SystemExit(0)
-    releases, links = load_changelog(changelog_file)
-    write_changelog(releases, links, rel_changes, release_as, release_to,
-                    release_from, changelog_file)
+    write_changelog(releases, rel_changes, release_as, release_to, release_from,
+                    changelog_file)
   except Error as e:
     raise SystemExit(f'Error running command: {e}')
 

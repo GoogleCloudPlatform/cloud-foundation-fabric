@@ -21,4 +21,3 @@ includedPermissions:
   - resourcemanager.folders.getIamPolicy
   - resourcemanager.folders.list
   - resourcemanager.folders.searchPolicyBindings
-

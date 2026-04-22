@@ -47,4 +47,3 @@ output "firestore_indexes" {
   description = "Firestore indexes."
   value       = google_firestore_index.firestore_indexes
 }
-

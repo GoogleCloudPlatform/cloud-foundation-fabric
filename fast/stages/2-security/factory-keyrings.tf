@@ -75,4 +75,3 @@ module "kms" {
   })
   depends_on = [module.factory]
 }
-

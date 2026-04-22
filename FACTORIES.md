@@ -90,8 +90,6 @@ The following table details how FAST stages implement factory patterns.
 | **2-security** | `projects` | Module-Backed (Factory) | `project-factory` |
 | **2-security** | `certificate_authorities` | Stage-Implemented (Module) | `certificate-authority-service` |
 | **2-security** | `keyrings` (KMS) | Stage-Implemented (Module) | `kms` |
-| **3-data-platform-dev** | `aspect_types` | Module-Backed (Factory) | `dataplex-aspect-types` |
-| **3-data-platform-dev** | `data_domains` | Native (Complex) | Multiple |
 | **3-secops-dev** | `rules`, `reference_lists` | Module-Backed (Factory) | `secops-rules` |
 
 ## Maintenance Guide

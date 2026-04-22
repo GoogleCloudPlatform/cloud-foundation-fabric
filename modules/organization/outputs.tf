@@ -66,6 +66,14 @@ output "logging_identities" {
   }
 }
 
+output "logging_sinks" {
+  description = "Logging sink resources."
+  value = {
+    for name, sink in google_logging_organization_sink.sink :
+    name => sink
+  }
+}
+
 output "network_tag_keys" {
   description = "Tag key resources."
   value = {
@@ -120,6 +128,9 @@ output "scc_mute_configs" {
 output "service_agents" {
   description = "Identities of all organization-level service agents."
   value       = local.service_agents
+  depends_on = [
+    google_organization_service_identity.default
+  ]
 }
 
 output "sink_writer_identities" {
@@ -147,6 +158,13 @@ output "tag_values" {
   }
 }
 
+output "workforce_identity_pool_ids" {
+  description = "Workforce identity pool ids."
+  value = {
+    for k, v in google_iam_workforce_pool.default : k => v.name
+  }
+}
+
 output "workforce_identity_provider_names" {
   description = "Workforce Identity provider names."
   value = {
@@ -157,9 +175,9 @@ output "workforce_identity_provider_names" {
 output "workforce_identity_providers" {
   description = "Workforce Identity provider attributes."
   value = {
-    for k, v in google_iam_workforce_pool_provider.default : k => {
-      name = v.name
-      pool = try(google_iam_workforce_pool.default[0].name, null)
+    for k, v in local.wfif_providers : k => {
+      name = google_iam_workforce_pool_provider.default[k].name
+      pool = google_iam_workforce_pool.default[v.pool].name
     }
   }
 }

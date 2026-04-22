@@ -353,177 +353,180 @@
         }
       }
     },
-    "workforce_identity_config": {
+    "workforce_identity_pools": {
       "type": "object",
       "additionalProperties": false,
-      "properties": {
-        "pool_name": {
-          "type": "string"
-        },
-        "display_name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "disabled": {
-          "type": "boolean"
-        },
-        "session_duration": {
-          "type": "string"
-        },
-        "access_restrictions": {
+      "patternProperties": {
+        "^[a-z][a-z0-9-]+[a-z0-9]$": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "allowed_services": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "domain": {
-                    "type": "string"
-                  }
-                }
-              }
+            "display_name": {
+              "type": "string"
             },
-            "disable_programmatic_signin": {
+            "description": {
+              "type": "string"
+            },
+            "disabled": {
               "type": "boolean"
-            }
-          }
-        },
-        "providers": {
-          "type": "object",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^[a-z][a-z0-9-]+[a-z0-9]$": {
+            },
+            "session_duration": {
+              "type": "string"
+            },
+            "access_restrictions": {
               "type": "object",
               "additionalProperties": false,
               "properties": {
-                "description": {
-                  "type": "string"
+                "allowed_services": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "domain": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 },
-                "display_name": {
-                  "type": "string"
-                },
-                "attribute_condition": {
-                  "type": "string"
-                },
-                "attribute_mapping": {
-                  "type": "object"
-                },
-                "attribute_mapping_template": {
-                  "type": "string",
-                  "enum": [
-                    "azuread",
-                    "okta"
-                  ]
-                },
-                "disabled": {
+                "disable_programmatic_signin": {
                   "type": "boolean"
-                },
-                "identity_provider": {
+                }
+              }
+            },
+            "providers": {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9-]+[a-z0-9]$": {
                   "type": "object",
-                  "oneOf": [
-                    {
-                      "properties": {
-                        "oidc": {
-                          "type": "object",
-                          "description": "OpenID Connect configuration.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    },
+                    "display_name": {
+                      "type": "string"
+                    },
+                    "attribute_condition": {
+                      "type": "string"
+                    },
+                    "attribute_mapping": {
+                      "type": "object"
+                    },
+                    "attribute_mapping_template": {
+                      "type": "string",
+                      "enum": [
+                        "azuread",
+                        "okta"
+                      ]
+                    },
+                    "disabled": {
+                      "type": "boolean"
+                    },
+                    "identity_provider": {
+                      "type": "object",
+                      "oneOf": [
+                        {
                           "properties": {
-                            "issuer_uri": {
-                              "type": "string",
-                              "description": "The URI of the OIDC issuer."
-                            },
-                            "client_id": {
-                              "type": "string",
-                              "description": "The client ID."
-                            },
-                            "client_secret": {
-                              "type": "string",
-                              "description": "The client secret (optional)."
-                            },
-                            "jwks_json": {
-                              "type": "string",
-                              "description": "JSON Web Key Set as a JSON string (optional)."
-                            },
-                            "web_sso_config": {
+                            "oidc": {
                               "type": "object",
-                              "description": "Optional Web SSO configuration for OIDC.",
+                              "description": "OpenID Connect configuration.",
                               "properties": {
-                                "response_type": {
+                                "issuer_uri": {
                                   "type": "string",
-                                  "default": "CODE",
-                                  "enum": [
-                                    "CODE",
-                                    "ID_TOKEN"
-                                  ]
+                                  "description": "The URI of the OIDC issuer."
                                 },
-                                "assertion_claims_behavior": {
+                                "client_id": {
                                   "type": "string",
-                                  "default": "ONLY_ID_TOKEN_CLAIMS",
-                                  "enum": [
-                                    "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS",
-                                    "ONLY_ID_TOKEN_CLAIMS"
-                                  ]
+                                  "description": "The client ID."
                                 },
-                                "additional_scopes": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
+                                "client_secret": {
+                                  "type": "string",
+                                  "description": "The client secret (optional)."
+                                },
+                                "jwks_json": {
+                                  "type": "string",
+                                  "description": "JSON Web Key Set as a JSON string (optional)."
+                                },
+                                "web_sso_config": {
+                                  "type": "object",
+                                  "description": "Optional Web SSO configuration for OIDC.",
+                                  "properties": {
+                                    "response_type": {
+                                      "type": "string",
+                                      "default": "CODE",
+                                      "enum": [
+                                        "CODE",
+                                        "ID_TOKEN"
+                                      ]
+                                    },
+                                    "assertion_claims_behavior": {
+                                      "type": "string",
+                                      "default": "ONLY_ID_TOKEN_CLAIMS",
+                                      "enum": [
+                                        "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS",
+                                        "ONLY_ID_TOKEN_CLAIMS"
+                                      ]
+                                    },
+                                    "additional_scopes": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [],
+                                  "additionalProperties": false
                                 }
                               },
-                              "required": [],
+                              "required": [
+                                "issuer_uri",
+                                "client_id"
+                              ],
                               "additionalProperties": false
                             }
                           },
                           "required": [
-                            "issuer_uri",
-                            "client_id"
+                            "oidc"
                           ],
                           "additionalProperties": false
-                        }
-                      },
-                      "required": [
-                        "oidc"
-                      ],
-                      "additionalProperties": false
-                    },
-                    {
-                      "properties": {
-                        "saml": {
-                          "type": "object",
-                          "description": "SAML configuration.",
+                        },
+                        {
                           "properties": {
-                            "idp_metadata_xml": {
-                              "type": "string",
-                              "description": "SAML IdP metadata XML."
+                            "saml": {
+                              "type": "object",
+                              "description": "SAML configuration.",
+                              "properties": {
+                                "idp_metadata_xml": {
+                                  "type": "string",
+                                  "description": "SAML IdP metadata XML."
+                                }
+                              },
+                              "required": [
+                                "idp_metadata_xml"
+                              ],
+                              "additionalProperties": false
                             }
                           },
                           "required": [
-                            "idp_metadata_xml"
+                            "saml"
                           ],
                           "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "saml"
-                      ],
-                      "additionalProperties": false
-                    }
-                  ]
-                },
-                "oauth2_client_config": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "extended_attributes": {
-                      "$ref": "#/$defs/wfif_oauth2_client_attrs"
+                      ]
                     },
-                    "extra_attributes": {
-                      "$ref": "#/$defs/wfif_oauth2_client_attrs"
+                    "oauth2_client_config": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "extended_attributes": {
+                          "$ref": "#/$defs/wfif_oauth2_client_attrs"
+                        },
+                        "extra_attributes": {
+                          "$ref": "#/$defs/wfif_oauth2_client_attrs"
+                        }
+                      }
                     }
                   }
                 }

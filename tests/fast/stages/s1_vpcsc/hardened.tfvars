@@ -9,13 +9,21 @@ iam_principals = {
   "service_agents/org/ktd-hpsa"            = "serviceAccount:service-org-1234567890@gcp-sa-ktd-hpsa.iam.gserviceaccount.com"
   "service_agents/org/security-center-api" = "serviceAccount:service-org-1234567890@security-center-api.iam.gserviceaccount.com"
 }
-logging = {
-  project_number = "1234567890"
-  writer_identities = {
-    audit-logs           = "serviceAccount:service-org-1234567890@gcp-sa-logging.iam.gserviceaccount.com"
-    iam                  = "serviceAccount:service-org-1234567890@gcp-sa-logging.iam.gserviceaccount.com"
-    vpc-sc               = "serviceAccount:service-org-1234567890@gcp-sa-logging.iam.gserviceaccount.com"
-    workspace-audit-logs = "serviceAccount:o1234567890-1234567890@gcp-sa-logging.iam.gserviceaccount.com"
+logging_sinks = {
+  audit-logs = {
+    bigquery_options   = []
+    description        = "audit-logs (Terraform-managed)."
+    destination        = "logging.googleapis.com/projects/ft0-prod-audit-logs-0/locations/global/buckets/audit-logs"
+    disabled           = false
+    exclusions         = []
+    filter             = ""
+    id                 = "organizations/1234567890/sinks/audit-logs"
+    include_children   = true
+    intercept_children = false
+    name               = "audit-logs"
+    org_id             = "529325294915"
+    project_id         = "ft0-prod-audit-logs-0"
+    writer_identity    = "serviceAccount:service-org-1234567890@gcp-sa-logging.iam.gserviceaccount.com"
   }
 }
 organization = {
@@ -24,6 +32,12 @@ organization = {
   customer_id = "C00000000"
 }
 prefix = "fast"
+project_ids = {
+  log-0 = "ft0-prod-audit-logs-0"
+}
+project_numbers = {
+  log-0 = 1122334455
+}
 resource_discovery = {
   enabled = false
 }

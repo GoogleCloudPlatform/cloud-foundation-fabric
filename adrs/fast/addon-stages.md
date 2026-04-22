@@ -1,6 +1,6 @@
 # Add-on stages
 
-**authors:** [Ludo](https://github.com/ludoo), [Julio](https://github.com/juliocc)  
+**authors:** [Ludo](https://github.com/ludoo), [Julio](https://github.com/juliocc)
 **date:** Jan 5, 2025
 
 ## Status
@@ -54,7 +54,7 @@ fast
     ├── 0-bootstrap
     ├── 1-resman
     ├── 1-vpcsc
-    ├── 2-networking    
+    ├── 2-networking
     ├── 2-networking-legacy-a-simple
     ├── 2-networking-legacy-b-nva
     ├── 2-networking-legacy-c-separate-envs

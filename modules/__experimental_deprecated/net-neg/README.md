@@ -25,12 +25,11 @@ module "neg" {
 # tftest skip
 ```
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [endpoints](variables.tf#L17) | List of (instance, port, address) of the NEG. | <code title="list&#40;object&#40;&#123;&#10;  instance   &#61; string&#10;  port       &#61; number&#10;  ip_address &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [endpoints](variables.tf#L17) | List of (instance, port, address) of the NEG. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [name](variables.tf#L26) | NEG name. | <code>string</code> | ✓ |  |
 | [network](variables.tf#L31) | Name or self link of the VPC used for the NEG. Use the self link for Shared VPC. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L36) | NEG project id. | <code>string</code> | ✓ |  |
@@ -44,5 +43,4 @@ module "neg" {
 | [id](outputs.tf#L17) | Network endpoint group ID. |  |
 | [self_lnk](outputs.tf#L22) | Network endpoint group self link. |  |
 | [size](outputs.tf#L27) | Size of the network endpoint group. |  |
-
 <!-- END TFDOC -->

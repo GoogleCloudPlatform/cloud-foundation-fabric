@@ -21,7 +21,6 @@ values:
       write_metadata: false
     name: test-bigquery
     project: project-id
-    topic: my-topic
   module.pubsub.google_pubsub_topic.default:
     name: my-topic
     project: project-id

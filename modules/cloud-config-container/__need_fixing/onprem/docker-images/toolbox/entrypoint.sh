@@ -15,4 +15,6 @@
 # limitations under the License.
 
 echo "Entering sleep..."
-trap : TERM INT; (while true; do sleep 1000; done) & wait
+trap : TERM INT
+(while true; do sleep 1000; done) &
+wait

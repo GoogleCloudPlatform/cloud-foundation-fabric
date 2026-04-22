@@ -135,7 +135,7 @@ variable "materialized_views" {
     enable_refresh                   = optional(bool)
     friendly_name                    = optional(string)
     labels                           = optional(map(string), {})
-    refresh_interval_ms              = optional(bool)
+    refresh_interval_ms              = optional(number)
     require_partition_filter         = optional(bool)
     options = optional(object({
       clustering      = optional(list(string))

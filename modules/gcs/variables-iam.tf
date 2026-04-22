@@ -56,4 +56,3 @@ variable "iam_by_principals" {
   default     = {}
   nullable    = false
 }
-

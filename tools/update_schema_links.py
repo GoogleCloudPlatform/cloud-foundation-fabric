@@ -39,7 +39,7 @@ def get_yaml_files(folder):
 @click.argument('folder', type=click.Path(exists=True, file_okay=False))
 @click.option(
     '--format', default=
-    'https://cdn.jsdelivr.net/gh/GoogleCloudPlatform/cloud-foundation-fabric@fast-dev/fast/stages/{parent}/schemas/',
+    'https://cdn.jsdelivr.net/gh/GoogleCloudPlatform/cloud-foundation-fabric@master/fast/stages/{parent}/schemas/',
     help='Format string for the new schema path. Use {parent} placeholder. '
     'Example: https://example.com/{parent}/schemas')
 @click.option('--dry-run', is_flag=True, default=False,

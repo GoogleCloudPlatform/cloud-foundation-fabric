@@ -150,6 +150,7 @@ repos:
       (?x)^(
         /templates/.*|
         modules/cloud-config-container/.*|
+        .*/0-org-setup/assets/workflow-.*\.yaml
       )$
 
 - repo: https://github.com/jumanjihouse/pre-commit-hooks
@@ -172,6 +173,7 @@ repos:
       (?x)^(
         /templates/.*|
         modules/cloud-config-container/.*|
+        .*/0-org-setup/assets/workflow-.*\.yaml
       )$
 
 - repo: https://github.com/google/yapf/

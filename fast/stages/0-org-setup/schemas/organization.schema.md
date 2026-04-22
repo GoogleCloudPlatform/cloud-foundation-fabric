@@ -98,36 +98,37 @@
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **tags**: *object*
   <br>*additional properties: object*
-- **workforce_identity_config**: *object*
+- **workforce_identity_pools**: *object*
   <br>*additional properties: false*
-  - **pool_name**: *string*
-  - **display_name**: *string*
-  - **description**: *string*
-  - **disabled**: *boolean*
-  - **session_duration**: *string*
-  - **access_restrictions**: *object*
+  - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
     <br>*additional properties: false*
-    - **allowed_services**: *array*
-      - items: *object*
-        <br>*additional properties: false*
-        - **domain**: *string*
-    - **disable_programmatic_signin**: *boolean*
-  - **providers**: *object*
-    <br>*additional properties: false*
-    - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
+    - **display_name**: *string*
+    - **description**: *string*
+    - **disabled**: *boolean*
+    - **session_duration**: *string*
+    - **access_restrictions**: *object*
       <br>*additional properties: false*
-      - **description**: *string*
-      - **display_name**: *string*
-      - **attribute_condition**: *string*
-      - **attribute_mapping**: *object*
-      - **attribute_mapping_template**: *string*
-        <br>*enum: ['azuread', 'okta']*
-      - **disabled**: *boolean*
-      - **identity_provider**: *object*
-      - **oauth2_client_config**: *object*
+      - **allowed_services**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - **domain**: *string*
+      - **disable_programmatic_signin**: *boolean*
+    - **providers**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
         <br>*additional properties: false*
-        - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
-        - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+        - **description**: *string*
+        - **display_name**: *string*
+        - **attribute_condition**: *string*
+        - **attribute_mapping**: *object*
+        - **attribute_mapping_template**: *string*
+          <br>*enum: ['azuread', 'okta']*
+        - **disabled**: *boolean*
+        - **identity_provider**: *object*
+        - **oauth2_client_config**: *object*
+          <br>*additional properties: false*
+          - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+          - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
 
 ## Definitions
 

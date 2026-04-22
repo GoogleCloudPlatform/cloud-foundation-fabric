@@ -53,4 +53,3 @@ variable "factories_config" {
   nullable = false
   default  = {}
 }
-

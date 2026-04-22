@@ -9,4 +9,3 @@ domain: child-dnssec.example.com.
 public:
   dnssec_config:
     state: "on"
-

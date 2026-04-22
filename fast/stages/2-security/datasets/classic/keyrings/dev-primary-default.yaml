@@ -27,4 +27,3 @@ keys:
     rotation_period: 7776000s
   gke:
     rotation_period: 7776000s
-

@@ -8,19 +8,20 @@ Note that this module assumes that some options are the same for both the primar
 > [!WARNING]
 > If you use the `users` field, you terraform state will contain each user's password in plain text.
 
-<!-- TOC -->
-* [AlloyDB module](#alloydb-module)
-  * [Examples](#examples)
-    * [Simple example](#simple-example)
-    * [Read pool](#read-pool)
-    * [Cross region replication](#cross-region-replication)
-    * [PSC instance](#psc-instance)
-    * [Custom flags and users definition](#custom-flags-and-users-definition)
-    * [CMEK encryption](#cmek-encryption)
-  * [Variables](#variables)
-  * [Outputs](#outputs)
-  * [Fixtures](#fixtures)
-<!-- TOC -->
+<!-- BEGIN TOC -->
+- [Examples](#examples)
+  - [Simple example](#simple-example)
+  - [Read pool](#read-pool)
+  - [Read pool with advanced query insights](#read-pool-with-advanced-query-insights)
+  - [Cross region replication](#cross-region-replication)
+  - [Cross region replication with primary and secondary cluster read pool](#cross-region-replication-with-primary-and-secondary-cluster-read-pool)
+  - [PSC instance](#psc-instance)
+  - [Custom flags and users definition](#custom-flags-and-users-definition)
+  - [CMEK encryption](#cmek-encryption)
+- [Tag bindings](#tag-bindings)
+- [Variables](#variables)
+- [Outputs](#outputs)
+<!-- END TOC -->
 
 ## Examples
 
@@ -101,6 +102,84 @@ module "alloydb" {
   deletion_protection = false
 }
 # tftest modules=1 resources=4 inventory=read_pool.yaml e2e
+```
+
+### Read pool with advanced query insights
+
+This example demonstrates how to configure an AlloyDB cluster with a read pool and enable [advanced query insights](https://docs.cloud.google.com/alloydb/docs/advanced-query-insights-overview) for both the primary instance and the read pool instance.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  parent          = var.folder_id
+  name            = "alloydb"
+  prefix          = var.prefix
+  services = [
+    "servicenetworking.googleapis.com",
+    "alloydb.googleapis.com",
+    "geminicloudassist.googleapis.com"
+  ]
+}
+
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = module.project.project_id
+  name       = "my-network"
+  # need only one - psa_config or subnets_psc
+  psa_configs = [{
+    ranges = { alloydb = "10.60.0.0/16" }
+  }]
+  subnets_psc = [{
+    ip_cidr_range = "10.0.3.0/24"
+    name          = "psc"
+    region        = var.region
+  }]
+}
+
+module "alloydb" {
+  source         = "./fabric/modules/alloydb"
+  project_id     = module.project.project_id
+  project_number = var.project_number
+  cluster_name   = "db"
+  instance_name  = "db"
+  location       = var.region
+  network_config = {
+    psa_config = {
+      network = module.vpc.id
+    }
+  }
+
+  read_pool = {
+    "regional-read-pool" = {
+      node_count = 2
+      observability_config = {
+        enabled                       = true
+        preserve_comments             = true
+        track_wait_events             = true
+        max_query_string_length       = 20480
+        record_application_tags       = true
+        query_plans_per_minute        = 30
+        track_active_queries          = true
+        assistive_experiences_enabled = true
+      }
+    }
+  }
+
+  observability_config = {
+    enabled                       = true
+    preserve_comments             = true
+    track_wait_events             = true
+    max_query_string_length       = 20480
+    record_application_tags       = true
+    query_plans_per_minute        = 30
+    track_active_queries          = true
+    assistive_experiences_enabled = true
+  }
+
+  deletion_protection = false
+}
+# tftest modules=3 resources=19 inventory=read_pool_with_advanced_query_insights.yaml e2e
 ```
 
 ### Cross region replication
@@ -346,34 +425,35 @@ module "alloydb" {
 | [cluster_name](variables.tf#L84) | Name of the primary cluster. | <code>string</code> | ✓ |  |
 | [instance_name](variables.tf#L211) | Name of primary instance. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L223) | Region or zone of the cluster and instance. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L268) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code title="object&#40;&#123;&#10;  psa_config &#61; optional&#40;object&#40;&#123;&#10;    network                      &#61; string&#10;    allocated_ip_range           &#61; optional&#40;string&#41;&#10;    authorized_external_networks &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    enable_public_ip             &#61; optional&#40;bool, false&#41;&#10;    enable_outbound_public_ip    &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  psc_config &#61; optional&#40;object&#40;&#123;&#10;    allowed_consumer_projects &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L303) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [network_config](variables.tf#L268) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L319) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
 | [annotations](variables.tf#L17) | Map FLAG_NAME=>VALUE for annotations which allow client tools to store small amount of arbitrary data. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [automated_backup_configuration](variables.tf#L23) | Automated backup settings for cluster. | <code title="object&#40;&#123;&#10;  enabled       &#61; optional&#40;bool, false&#41;&#10;  backup_window &#61; optional&#40;string, &#34;1800s&#34;&#41;&#10;  location      &#61; optional&#40;string&#41;&#10;  weekly_schedule &#61; optional&#40;object&#40;&#123;&#10;    days_of_week &#61; optional&#40;list&#40;string&#41;, &#91;&#10;      &#34;MONDAY&#34;, &#34;TUESDAY&#34;, &#34;WEDNESDAY&#34;, &#34;THURSDAY&#34;, &#34;FRIDAY&#34;, &#34;SATURDAY&#34;, &#34;SUNDAY&#34;&#10;    &#93;&#41;&#10;    start_times &#61; optional&#40;list&#40;object&#40;&#123;&#10;      hours &#61; number&#10;    &#125;&#41;&#41;, &#91;&#123; hours &#61; 23 &#125;&#93;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  retention_count  &#61; optional&#40;number, 7&#41;&#10;  retention_period &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [automated_backup_configuration](variables.tf#L23) | Automated backup settings for cluster. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [availability_type](variables.tf#L61) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;REGIONAL&#34;</code> |
-| [client_connection_config](variables.tf#L67) | Client connection config. | <code title="object&#40;&#123;&#10;  require_connectors &#61; optional&#40;bool, false&#41;&#10;  ssl_config &#61; optional&#40;object&#40;&#123;&#10;    ssl_mode &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [client_connection_config](variables.tf#L67) | Client connection config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [cluster_display_name](variables.tf#L78) | Display name of the primary cluster. | <code>string</code> |  | <code>null</code> |
-| [continuous_backup_configuration](variables.tf#L90) | Continuous backup settings for cluster. | <code title="object&#40;&#123;&#10;  enabled              &#61; optional&#40;bool, true&#41;&#10;  recovery_window_days &#61; optional&#40;number, 14&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [cross_region_replication](variables.tf#L100) | Cross region replication config. | <code title="object&#40;&#123;&#10;  enabled                         &#61; optional&#40;bool, false&#41;&#10;  promote_secondary               &#61; optional&#40;bool, false&#41;&#10;  switchover_mode                 &#61; optional&#40;bool, false&#41;&#10;  region                          &#61; optional&#40;string&#41;&#10;  secondary_cluster_display_name  &#61; optional&#40;string&#41;&#10;  secondary_cluster_name          &#61; optional&#40;string&#41;&#10;  secondary_instance_display_name &#61; optional&#40;string&#41;&#10;  secondary_instance_name         &#61; optional&#40;string&#41;&#10;  secondary_machine_config &#61; optional&#40;object&#40;&#123;&#10;    cpu_count    &#61; number&#10;    machine_type &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  read_pool &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name &#61; optional&#40;string&#41;&#10;    node_count   &#61; optional&#40;number, 1&#41;&#10;    flags        &#61; optional&#40;map&#40;string&#41;&#41;&#10;    client_connection_config &#61; optional&#40;object&#40;&#123;&#10;      require_connectors &#61; optional&#40;bool, false&#41;&#10;      ssl_config &#61; optional&#40;object&#40;&#123;&#10;        ssl_mode &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    machine_config &#61; optional&#40;object&#40;&#123;&#10;      cpu_count    &#61; optional&#40;number, 2&#41;&#10;      machine_type &#61; optional&#40;string&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    network_config &#61; optional&#40;object&#40;&#123;&#10;      authorized_external_networks &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;      enable_public_ip             &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    query_insights_config &#61; optional&#40;object&#40;&#123;&#10;      query_string_length     &#61; optional&#40;number, 1024&#41;&#10;      record_application_tags &#61; optional&#40;bool, true&#41;&#10;      record_client_address   &#61; optional&#40;bool, true&#41;&#10;      query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [continuous_backup_configuration](variables.tf#L90) | Continuous backup settings for cluster. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [cross_region_replication](variables.tf#L100) | Cross region replication config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [database_version](variables.tf#L157) | Database type and version to create. | <code>string</code> |  | <code>&#34;POSTGRES_15&#34;</code> |
 | [deletion_policy](variables.tf#L163) | AlloyDB cluster and instance deletion policy. | <code>string</code> |  | <code>null</code> |
 | [deletion_protection](variables.tf#L169) | Whether Terraform will be prevented from destroying the cluster. When the field is set to true or unset in Terraform state, a terraform apply or terraform destroy that would delete the cluster will fail. When the field is set to false, deleting the cluster is allowed. | <code>bool</code> |  | <code>null</code> |
 | [display_name](variables.tf#L175) | AlloyDB instance display name. | <code>string</code> |  | <code>null</code> |
-| [encryption_config](variables.tf#L181) | Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code title="object&#40;&#123;&#10;  primary_kms_key_name   &#61; string&#10;  secondary_kms_key_name &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [encryption_config](variables.tf#L181) | Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [flags](variables.tf#L190) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [gce_zone](variables.tf#L196) | The GCE zone that the instance should serve from. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. | <code>string</code> |  | <code>null</code> |
-| [initial_user](variables.tf#L202) | AlloyDB cluster initial user credentials. | <code title="object&#40;&#123;&#10;  user     &#61; optional&#40;string, &#34;postgres&#34;&#41;&#10;  password &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [initial_user](variables.tf#L202) | AlloyDB cluster initial user credentials. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [labels](variables.tf#L217) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [machine_config](variables.tf#L229) | AlloyDB machine config. | <code title="object&#40;&#123;&#10;  cpu_count    &#61; optional&#40;number, 2&#41;&#10;  machine_type &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [maintenance_config](variables.tf#L243) | Set maintenance window configuration. | <code title="object&#40;&#123;&#10;  enabled &#61; optional&#40;bool, false&#41;&#10;  day     &#61; optional&#40;string, &#34;SUNDAY&#34;&#41;&#10;  start_time &#61; optional&#40;object&#40;&#123;&#10;    hours &#61; optional&#40;number, 23&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L293) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [project_number](variables.tf#L308) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
-| [query_insights_config](variables.tf#L314) | Query insights config. | <code title="object&#40;&#123;&#10;  query_string_length     &#61; optional&#40;number, 1024&#41;&#10;  record_application_tags &#61; optional&#40;bool, true&#41;&#10;  record_client_address   &#61; optional&#40;bool, true&#41;&#10;  query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [read_pool](variables.tf#L325) | Map of read pool instances to create in the primary cluster. | <code title="map&#40;object&#40;&#123;&#10;  display_name &#61; optional&#40;string&#41;&#10;  node_count   &#61; optional&#40;number, 1&#41;&#10;  flags        &#61; optional&#40;map&#40;string&#41;&#41;&#10;  client_connection_config &#61; optional&#40;object&#40;&#123;&#10;    require_connectors &#61; optional&#40;bool, false&#41;&#10;    ssl_config &#61; optional&#40;object&#40;&#123;&#10;      ssl_mode &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  machine_config &#61; optional&#40;object&#40;&#123;&#10;    cpu_count    &#61; optional&#40;number, 2&#41;&#10;    machine_type &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  network_config &#61; optional&#40;object&#40;&#123;&#10;    authorized_external_networks &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    enable_public_ip             &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  query_insights_config &#61; optional&#40;object&#40;&#123;&#10;    query_string_length     &#61; optional&#40;number, 1024&#41;&#10;    record_application_tags &#61; optional&#40;bool, true&#41;&#10;    record_client_address   &#61; optional&#40;bool, true&#41;&#10;    query_plans_per_minute  &#61; optional&#40;number, 5&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [skip_await_major_version_upgrade](variables.tf#L370) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
-| [subscription_type](variables.tf#L376) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
-| [tag_bindings](variables.tf#L382) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [users](variables.tf#L389) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code title="map&#40;object&#40;&#123;&#10;  password &#61; optional&#40;string&#41;&#10;  roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#34;alloydbsuperuser&#34;&#93;&#41;&#10;  type     &#61; optional&#40;string, &#34;ALLOYDB_BUILT_IN&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [machine_config](variables.tf#L229) | AlloyDB machine config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [maintenance_config](variables.tf#L243) | Set maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [observability_config](variables.tf#L293) | Advanced query insights config for AlloyDB. Mutually exclusive with query_insights_config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L309) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [project_number](variables.tf#L324) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
+| [query_insights_config](variables.tf#L330) | Query insights config. Mutually exclusive with observability_config. It will be ignored if observability_config is enabled. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [read_pool](variables.tf#L341) | Map of read pool instances to create in the primary cluster. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [skip_await_major_version_upgrade](variables.tf#L397) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
+| [subscription_type](variables.tf#L403) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
+| [tag_bindings](variables.tf#L409) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [users](variables.tf#L416) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

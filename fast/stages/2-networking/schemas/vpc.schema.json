@@ -25,6 +25,9 @@
         "firewall_rules": {
           "type": "string"
         },
+        "attachment_groups": {
+          "type": "string"
+        },
         "subnets": {
           "type": "string"
         },

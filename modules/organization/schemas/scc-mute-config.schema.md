@@ -11,5 +11,3 @@
     <br>*default: DYNAMIC*, *enum: ['DYNAMIC', 'STATIC']*
 
 ## Definitions
-
-

@@ -23,6 +23,10 @@ values:
     - ip_configuration:
       - ipv4_enabled: false
         private_network: projects/myprj/global/networks/myvpc
+        psc_config:
+        - allowed_consumer_projects:
+          - my-project
+          psc_enabled: true
 
 counts:
   google_sql_database_instance: 1

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-data "google_client_config" "default" {
+ephemeral "google_client_config" "default" {
   count = var.project_reuse == null ? 0 : 1
 }
 
@@ -23,7 +23,7 @@ provider "restful" {
   security = {
     http = {
       token = {
-        token = try(data.google_client_config.default[0].access_token, "")
+        token = try(ephemeral.google_client_config.default[0].access_token, "")
       }
     }
   }

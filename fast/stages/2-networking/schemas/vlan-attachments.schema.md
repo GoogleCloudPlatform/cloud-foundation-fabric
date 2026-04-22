@@ -7,6 +7,7 @@
 *additional properties: false*
 
 - **admin_enabled**: *boolean*
+- **attachment_group**: *string*
 - **dedicated_interconnect_config**: *object*
   <br>*additional properties: false*
   - **bandwidth**: *string*

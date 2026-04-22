@@ -26,9 +26,9 @@ Once the terraform configuration is applied you can verify that all is working b
 |---|---|:---:|:---:|:---:|
 | [analytics_region](variables.tf#L27) | Region. | <code>string</code> | ✓ |  |
 | [instance_region](variables.tf#L32) | Region. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L37) | Network configuration. | <code title="object&#40;&#123;&#10;  subnet_ip_cidr_range            &#61; string&#10;  subnet_psc_ip_cidr_range        &#61; string&#10;  subnet_proxy_only_ip_cidr_range &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [network_config](variables.tf#L37) | Network configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L46) | Project ID. | <code>string</code> | ✓ |  |
-| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code title="object&#40;&#123;&#10;  name             &#61; string&#10;  number           &#61; number&#10;  services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

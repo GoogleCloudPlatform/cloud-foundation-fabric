@@ -98,6 +98,7 @@ module "folder-1-iam" {
     if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
@@ -170,6 +171,7 @@ module "folder-2-iam" {
     if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
@@ -245,6 +247,7 @@ module "folder-3-iam" {
     if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
@@ -320,6 +323,7 @@ module "folder-4-iam" {
     if contains(["pam_entitlements"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})

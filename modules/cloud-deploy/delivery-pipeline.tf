@@ -155,4 +155,3 @@ resource "google_clouddeploy_delivery_pipeline" "default" {
     }
   }
 }
-

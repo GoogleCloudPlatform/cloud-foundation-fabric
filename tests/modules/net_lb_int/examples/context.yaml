@@ -1,0 +1,114 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.ilb.google_compute_forwarding_rule.default["default"]:
+    all_ports: true
+    allow_global_access: true
+    allow_psc_global_access: null
+    description: null
+    ip_address: 192.168.0.1
+    ip_collection: null
+    ip_protocol: TCP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL
+    name: ilb-test-default
+    network: projects/prj-host/global/networks/shared-vpc
+    no_automate_dns_zone: null
+    ports: null
+    project: my-project-1
+    recreate_closed_psc: false
+    region: us-central1
+    service_label: ilb-test
+    source_ip_ranges: null
+    subnetwork: projects/prj-host/regions/us-central1/subnetworks/sub-1
+    target: null
+    timeouts: null
+  module.ilb.google_compute_health_check.default[0]:
+    check_interval_sec: 5
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check:
+    - host: null
+      port: 80
+      port_name: null
+      port_specification: null
+      proxy_header: NONE
+      request_path: /
+      response: null
+    https_health_check: []
+    name: ilb-test
+    project: my-project-1
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check: []
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.ilb.google_compute_instance_group.default["my-group"]:
+    description: Terraform managed.
+    instances:
+    - instance-2-self-link
+    name: ilb-test-my-group
+    named_port: []
+    project: my-project-1
+    timeouts: null
+    zone: us-central1-b
+  module.ilb.google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    backend: []
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    custom_metrics: []
+    description: Terraform managed.
+    dynamic_forwarding: []
+    enable_cdn: null
+    failover_policy: []
+    ha_policy: []
+    iap:
+    - enabled: false
+      oauth2_client_id: null
+      oauth2_client_secret: null
+    ip_address_selection_policy: null
+    load_balancing_scheme: INTERNAL
+    locality_lb_policy: null
+    name: ilb-test
+    network: projects/prj-host/global/networks/shared-vpc
+    network_pass_through_lb_traffic_policy: []
+    outlier_detection: []
+    params: []
+    project: my-project-1
+    protocol: UNSPECIFIED
+    region: us-central1
+    security_policy: null
+    strong_session_affinity_cookie: []
+    subsetting: []
+    timeouts: null
+    tls_settings: []
+
+counts:
+  google_compute_forwarding_rule: 1
+  google_compute_health_check: 1
+  google_compute_instance_group: 1
+  google_compute_region_backend_service: 1
+  modules: 1
+  resources: 4
+
+outputs: {}

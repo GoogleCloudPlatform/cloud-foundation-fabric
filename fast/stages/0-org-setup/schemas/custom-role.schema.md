@@ -12,5 +12,3 @@
     <br>*pattern: ^[a-zA-Z-]+\.[a-zA-Z-]+\.[a-zA-Z-]+$*
 
 ## Definitions
-
-

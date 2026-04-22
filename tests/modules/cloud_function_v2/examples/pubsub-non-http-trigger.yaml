@@ -76,7 +76,6 @@ values:
     - serviceAccount:123-compute@developer.gserviceaccount.com
     project: project-id
     role: roles/pubsub.subscriber
-    topic: topic
 
 counts:
   archive_file: 1

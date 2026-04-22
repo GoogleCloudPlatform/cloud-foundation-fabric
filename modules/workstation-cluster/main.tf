@@ -184,4 +184,3 @@ resource "google_workstations_workstation" "workstations" {
   env                    = each.value.env
   annotations            = each.value.annotations
 }
-

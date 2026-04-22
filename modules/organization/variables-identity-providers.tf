@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-variable "workforce_identity_config" {
-  description = "Workforce Identity Federation pool and providers."
-  type = object({
-    pool_name        = optional(string, "default")
+variable "workforce_identity_pools" {
+  description = "Workforce Identity Federation pools and providers."
+  type = map(object({
     description      = optional(string)
     disabled         = optional(bool)
     display_name     = optional(string)
@@ -69,12 +68,12 @@ variable "workforce_identity_config" {
         }))
       }), {})
     })), {})
-  })
-  nullable = true
-  default  = null
+  }))
+  nullable = false
+  default  = {}
   validation {
     condition = alltrue([
-      for v in try(var.workforce_identity_config.providers, {}) : contains(
+      for v in try(var.workforce_identity_pools.providers, {}) : contains(
         ["azuread", "okta"],
         coalesce(v.attribute_mapping_template, "azuread")
       )
@@ -83,7 +82,7 @@ variable "workforce_identity_config" {
   }
   validation {
     condition = alltrue([
-      for v in try(var.workforce_identity_config.providers, {}) : (
+      for v in try(var.workforce_identity_pools.providers, {}) : (
         (try(v.identity_provider.oidc, null) == null ? 0 : 1) +
         (try(v.identity_provider.saml, null) == null ? 0 : 1)
       ) == 1
@@ -92,7 +91,7 @@ variable "workforce_identity_config" {
   }
   validation {
     condition = alltrue([
-      for v in try(var.workforce_identity_config.providers, {}) : contains(
+      for v in try(var.workforce_identity_pools.providers, {}) : contains(
         ["CODE", "ID_TOKEN"],
         coalesce(try(
           v.identity_provider.oidc.web_sso_config.response_type, null
@@ -103,7 +102,7 @@ variable "workforce_identity_config" {
   }
   validation {
     condition = alltrue([
-      for v in try(var.workforce_identity_config.providers, {}) : contains(
+      for v in try(var.workforce_identity_pools.providers, {}) : contains(
         ["MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS", "ONLY_ID_TOKEN_CLAIMS"],
         coalesce(try(
           v.identity_provider.oidc.web_sso_config.assertion_claims_behavior, null
@@ -114,7 +113,7 @@ variable "workforce_identity_config" {
   }
   validation {
     condition = alltrue([
-      for v in try(var.workforce_identity_config.providers, {}) : contains(
+      for v in try(var.workforce_identity_pools.providers, {}) : contains(
         ["AZURE_AD_GROUPS_MAIL", "AZURE_AD_GROUPS_ID"],
         coalesce(try(
           v.oauth2_client_config.extended_attributes.attributes_type, null
@@ -125,7 +124,7 @@ variable "workforce_identity_config" {
   }
   validation {
     condition = alltrue([
-      for v in try(var.workforce_identity_config.providers, {}) : contains(
+      for v in try(var.workforce_identity_pools.providers, {}) : contains(
         ["AZURE_AD_GROUPS_MAIL", "AZURE_AD_GROUPS_ID"],
         coalesce(try(
           v.oauth2_client_config.extra_attributes.attributes_type, null

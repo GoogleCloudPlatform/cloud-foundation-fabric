@@ -21,7 +21,7 @@ resource "google_compute_instance_group" "default" {
     ? local.project_id
     : each.value.project_id
   )
-  zone        = each.value.zone
+  zone        = try(local.ctx.locations[each.value.zone], each.value.zone)
   name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   instances   = each.value.instances
@@ -34,4 +34,3 @@ resource "google_compute_instance_group" "default" {
     }
   }
 }
-

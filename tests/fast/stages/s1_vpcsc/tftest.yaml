@@ -26,4 +26,3 @@ tests:
       - simple.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s1_vpcsc/data-simple
-

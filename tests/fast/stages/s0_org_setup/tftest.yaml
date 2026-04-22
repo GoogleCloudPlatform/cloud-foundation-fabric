@@ -15,13 +15,18 @@
 
 module: fast/stages/0-org-setup
 tests:
-  simple:
-    inventory:
-      - simple.yaml
-    extra_dirs:
-      - ../../../tests/fast/stages/s0_org_setup/data-simple
   hardened:
     inventory:
       - hardened.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s0_org_setup/data-hardened
+  simple:
+    inventory:
+      - simple.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s0_org_setup/data-simple
+  starter-gcd:
+    inventory:
+      - starter-gcd.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s0_org_setup/data-starter-gcd

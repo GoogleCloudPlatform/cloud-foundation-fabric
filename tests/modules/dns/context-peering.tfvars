@@ -28,4 +28,3 @@ recordsets = {
 iam = {
   "$custom_roles:myrole" = ["$iam_principals:mygroup"]
 }
-

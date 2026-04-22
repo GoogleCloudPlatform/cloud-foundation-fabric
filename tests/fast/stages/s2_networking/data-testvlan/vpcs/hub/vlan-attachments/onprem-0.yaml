@@ -15,6 +15,7 @@
 # yaml-language-server: $schema=../../../../../schemas/vlan-attachments.schema.json
 
 name: to-onprem-vlan-0
+attachment_group: $attachment_groups:hub/test-group
 region: $locations:primary
 router_config:
   create: false

@@ -26,14 +26,12 @@ values:
     - serviceAccount:sa1@sa.example
     project: project-id
     role: roles/pubsub.subscriber
-    topic: my-topic
   module.pubsub.google_pubsub_topic_iam_binding.authoritative["roles/pubsub.viewer"]:
     condition: []
     members:
     - group:organization-admins@example.org
     project: project-id
     role: roles/pubsub.viewer
-    topic: my-topic
 
 counts:
   google_pubsub_topic: 1

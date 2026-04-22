@@ -12,4 +12,3 @@ public:
 delegations:
   - net-core-0/pub-child
   - net-core-0/pub-child-dnssec
-
