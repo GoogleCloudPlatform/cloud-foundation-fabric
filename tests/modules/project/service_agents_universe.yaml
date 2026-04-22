@@ -147,6 +147,14 @@ outputs:
       is_primary: true
       name: serverless-robot-prod
       role: roles/run.serviceAgent
+    run-ai:
+      api: run.googleapis.com
+      display_name: Google Cloud Run AI Bundle Service Agent
+      email: service-12345@gcp-sa-run-ai.alpha-system.iam.gserviceaccount.com
+      iam_email: serviceAccount:service-12345@gcp-sa-run-ai.alpha-system.iam.gserviceaccount.com
+      is_primary: false
+      name: run-ai
+      role: null
     serverless-robot-prod:
       api: run.googleapis.com
       display_name: Google Cloud Run Service Agent
