@@ -622,6 +622,8 @@ labels:
  app: app-0
  team: team-a
 parent: $folder_ids:team-a/app-0
+dns_threat_detector:
+  enabled: true
 iam_by_principals:
   $iam_principals:service_accounts/dev-ta-app0-be/app-0-be:
     - roles/storage.objectViewer
