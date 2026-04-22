@@ -1097,6 +1097,10 @@ module "project" {
     "compute.googleapis.com",
   ]
   tags = {
+    cost_center = {
+      description          = "Cost center code."
+      allowed_values_regex = "^cc-[0-9]{3}$"
+    }
     environment = {
       description = "Environment specification."
       iam = {
@@ -2332,7 +2336,7 @@ module "project" {
 | [skip_delete](variables.tf#L408) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tags_config](variables-tags.tf#L161) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tags_config](variables-tags.tf#L174) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [universe](variables.tf#L420) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [vpc_sc](variables.tf#L431) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [workload_identity_pools](variables-identity-providers.tf#L17) | Workload Identity Federation pools and providers. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -2364,10 +2368,11 @@ module "project" {
 | [services](outputs.tf#L192) | Service APIs to enable in the project. |  |
 | [sink_writer_identities](outputs.tf#L201) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L208) | Tag key resources. |  |
-| [tag_values](outputs.tf#L217) | Tag value resources. |  |
-| [workload_identity_pool_ids](outputs.tf#L225) | Workload identity provider ids. |  |
-| [workload_identity_provider_ids](outputs.tf#L232) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L240) | Workload identity provider attributes. |  |
+| [tag_values](outputs.tf#L228) | Tag value resources. |  |
+| [tags_dynamic](outputs.tf#L218) | Dynamic tag key resources. |  |
+| [workload_identity_pool_ids](outputs.tf#L236) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L243) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L251) | Workload identity provider attributes. |  |
 
 ## Fixtures
 

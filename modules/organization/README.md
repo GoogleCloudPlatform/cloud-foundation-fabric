@@ -771,6 +771,10 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags = {
+    cost_center = {
+      description          = "Cost center code."
+      allowed_values_regex = "^cc-[0-9]{3}$"
+    }
     environment = {
       description = "Environment specification."
       iam = {
@@ -1056,7 +1060,7 @@ module "org" {
 | [service_agents_config](variables.tf#L182) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tags_config](variables-tags.tf#L161) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tags_config](variables-tags.tf#L174) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [workforce_identity_pools](variables-identity-providers.tf#L17) | Workforce Identity Federation pools and providers. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
@@ -1079,8 +1083,9 @@ module "org" {
 | [service_agents](outputs.tf#L128) | Identities of all organization-level service agents. |  |
 | [sink_writer_identities](outputs.tf#L136) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L144) | Tag key resources. |  |
-| [tag_values](outputs.tf#L153) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L161) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L168) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L175) | Workforce Identity provider attributes. |  |
+| [tag_values](outputs.tf#L164) | Tag value resources. |  |
+| [tags_dynamic](outputs.tf#L154) | Dynamic tag key resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L172) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L179) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L186) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->
