@@ -12,6 +12,7 @@
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **firewall_rules**: *string*
+  - **attachment_groups**: *string*
   - **subnets**: *string*
   - **vlan_attachments**: *string*
   - **vpns**: *string*
