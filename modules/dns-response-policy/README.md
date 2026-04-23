@@ -9,6 +9,7 @@ The module also allows setting rules via a factory. An example is given below.
   - [Manage policy and override resolution for specific names](#manage-policy-and-override-resolution-for-specific-names)
   - [Use existing policy and override resolution via wildcard with exceptions](#use-existing-policy-and-override-resolution-via-wildcard-with-exceptions)
   - [Define policy rules via a factory file](#define-policy-rules-via-a-factory-file)
+  - [Context](#context)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -140,20 +141,61 @@ restricted:
         - 199.36.153.7
 # tftest-file id=rules-file path=config/rules.yaml
 ```
+
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "dns-policy" {
+  source     = "./fabric/modules/dns-response-policy"
+  project_id = "$project_ids:test-project"
+  name       = "googleapis"
+  networks = {
+    landing = "$networks:landing"
+  }
+  rules = {
+    model-armor = {
+      dns_name = "$dns_names:rep-model-armor"
+      local_data = {
+        A = {
+          name    = "$dns_names:rep-model-armor"
+          rrdatas = ["$addresses:psc-address-rep"]
+        }
+      }
+    }
+  }
+  context = {
+    addresses = {
+      psc-address-rep = "10.24.32.25"
+    }
+    dns_names = {
+      rep-model-armor = "modelarmor.europe-west1.rep.googleapis.com."
+    }
+    networks = {
+      landing = "projects/my-project/global/networks/shared-vpc"
+    }
+    project_ids = {
+      test-project = "my-project"
+    }
+  }
+}
+# tftest
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L49) | Policy name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L68) | Project id for the zone. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L51) | Policy name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L70) | Project id for the zone. | <code>string</code> | ✓ |  |
 | [clusters](variables.tf#L17) | Map of GKE clusters to which this policy is applied in name => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L24) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L34) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [factories_config](variables.tf#L40) | Path to folder containing rules data files for the optional factory. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [networks](variables.tf#L54) | Map of VPC self links to which this policy is applied in name => self link format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_create](variables.tf#L61) | Set to false to use the existing policy matching name and only manage rules. | <code>bool</code> |  | <code>true</code> |
-| [rules](variables.tf#L73) | Map of policy rules in name => rule format. Local data takes precedence over behavior and is in the form record type => attributes. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L36) | Policy description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [factories_config](variables.tf#L42) | Path to folder containing rules data files for the optional factory. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [networks](variables.tf#L56) | Map of VPC self links to which this policy is applied in name => self link format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [policy_create](variables.tf#L63) | Set to false to use the existing policy matching name and only manage rules. | <code>bool</code> |  | <code>true</code> |
+| [rules](variables.tf#L75) | Map of policy rules in name => rule format. Local data takes precedence over behavior and is in the form record type => attributes. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
