@@ -177,7 +177,7 @@ module "projects-iam" {
   }
   context = merge(local.ctx, {
     tag_vars = {
-      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
     folder_ids = local.ctx.folder_ids

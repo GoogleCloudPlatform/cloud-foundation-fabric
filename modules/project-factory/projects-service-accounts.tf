@@ -86,7 +86,7 @@ module "service-accounts" {
   display_name = each.value.display_name
   context = merge(local.ctx, {
     tag_vars = {
-      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
     project_ids = local.ctx_project_ids

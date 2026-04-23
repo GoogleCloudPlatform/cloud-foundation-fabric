@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if k != "condition_vars" && k != "tag_vars"
   }
   ctx_kms_keys = merge(local.ctx.kms_keys, {
     for k, v in google_kms_key_handle.default : "$kms_keys:autokeys/${k}" => v.kms_key

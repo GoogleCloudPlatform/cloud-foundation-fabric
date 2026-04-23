@@ -52,7 +52,7 @@ module "bigquery-datasets" {
   id         = each.value.id
   context = merge(local.ctx, {
     tag_vars = {
-      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
     iam_principals = merge(

@@ -109,7 +109,7 @@ module "folder-1-iam" {
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     tag_vars = {
-      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
     iam_principals  = local.ctx_iam_principals
@@ -190,7 +190,7 @@ module "folder-2-iam" {
       for k, v in module.folder-1 : k => v.id
     })
     tag_vars = {
-      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
     iam_principals  = local.ctx_iam_principals
@@ -271,7 +271,7 @@ module "folder-3-iam" {
       for k, v in module.folder-2 : k => v.id
     })
     tag_vars = {
-      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
     iam_principals  = local.ctx_iam_principals
@@ -352,7 +352,7 @@ module "folder-4-iam" {
       for k, v in module.folder-3 : k => v.id
     })
     tag_vars = {
-      projects = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
     iam_principals  = local.ctx_iam_principals
