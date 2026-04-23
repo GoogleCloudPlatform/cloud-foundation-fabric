@@ -102,7 +102,11 @@ module "factory" {
     project_ids = merge(
       var.project_ids, var.host_project_ids, local.context.project_ids
     )
-    tag_values        = merge(var.tag_values, local.context.tag_values)
+    tag_values = merge(var.tag_values, local.context.tag_values)
+    tag_vars = {
+      projects     = merge(var.tag_vars.projects, try(local.context.tag_vars.projects, {}))
+      organization = merge(var.tag_vars.organization, try(local.context.tag_vars.organization, {}))
+    }
     vpc_sc_perimeters = merge(var.perimeters, local.context.vpc_sc_perimeters)
   }
   data_defaults  = local.project_defaults.defaults
