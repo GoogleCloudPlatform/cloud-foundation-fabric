@@ -481,6 +481,36 @@
     "descriptive_name": {
       "type": "string"
     },
+    "dns_threat_detector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "excluded_networks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "type": "object"
+        },
+        "location": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "threat_detector_provider": {
+          "type": "string",
+          "enum": [
+            "INFOBLOX"
+          ]
+        }
+      }
+    },
     "org_policies": {
       "type": "object",
       "additionalProperties": false,

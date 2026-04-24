@@ -66,10 +66,7 @@
               "additionalProperties": false,
               "patternProperties": {
                 "^[a-z0-9_-]+$": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string"
                 }
               }
             },
