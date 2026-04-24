@@ -23,4 +23,3 @@ backend_service_configs = {
   }
 }
 health_check_configs = {}
-

@@ -52,4 +52,3 @@
   display_name: Progressive Rollout Service Agent
   api: progressiverollout.googleapis.com
   identity: service-folder-${folder_number}@gcp-sa-progrollout.iam.gserviceaccount.com
-

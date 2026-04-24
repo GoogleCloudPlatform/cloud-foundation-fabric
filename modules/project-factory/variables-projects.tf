@@ -231,6 +231,14 @@ variable "projects" {
       friendly_name  = optional(string)
       location       = optional(string)
     })), {})
+    dns_threat_detector = optional(object({
+      enabled                  = optional(bool, false)
+      excluded_networks        = optional(list(string), [])
+      labels                   = optional(map(string), {})
+      location                 = optional(string)
+      name                     = optional(string)
+      threat_detector_provider = optional(string)
+    }), {})
     factories_config = optional(object({
       custom_roles           = optional(string)
       observability          = optional(string)

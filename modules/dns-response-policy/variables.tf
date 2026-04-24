@@ -24,6 +24,8 @@ variable "clusters" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    addresses   = optional(map(string), {})
+    dns_names   = optional(map(string), {})
     networks    = optional(map(string), {})
     project_ids = optional(map(string), {})
   })

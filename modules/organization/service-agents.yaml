@@ -116,4 +116,3 @@
   display_name: SCC CMEK Spanner Service Agent (PROD)
   api: securitycenter.googleapis.com
   identity: service-org-${organization_number}@gcp-sa-sccspanner.iam.gserviceaccount.com
-

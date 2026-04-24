@@ -451,7 +451,7 @@ labels:
 
 #### Context-based interpolation
 
-When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name). 
+When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name).
 
 To solve this, a **context-based interpolation** system is implemented. A `context` object variable is introduced containing maps of known resource IDs (like `project_ids`, `folder_ids`, `iam_principals`), and a `$` prefix convention is used in the YAML strings to instruct the module to look up the actual ID at plan time.
 
@@ -1063,9 +1063,9 @@ tests:
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml
-  # You can use `extra_files` to include additional tf files outside 
+  # You can use `extra_files` to include additional tf files outside
   # the module's path before running the test.
-  # extra_files:  
+  # extra_files:
   #   - ../plugin-x/*.tf
 
   # You can omit the tfvars and inventory sections and they will
@@ -1083,7 +1083,7 @@ A good example of tests showing different ways of leveraging our framework is in
 
 ### Debugging Terraform Context & Locals
 
-When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`. 
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`.
 
 **ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
 
@@ -1092,7 +1092,7 @@ resource "terraform_data" "debug_dump" {
   lifecycle {
     precondition {
       # The condition is intentionally designed to fail to trigger the error_message
-      condition     = local.target_variable == null 
+      condition     = local.target_variable == null
       error_message = yamlencode(local.target_variable)
     }
   }
@@ -1404,58 +1404,4 @@ The tool can also be run so that it prints the generated output on standard outp
 
 ## Cutting a new release
 
-Cutting a new release is mostly about updating `CHANGELOG.md` - luckily the [changelog tool](./tools/changelog.py) will do the heavy lifting for you.
-
-In order to use it, you will need to generate a [Github Token](https://github.com/settings/tokens/). The token does not require any scope, so if you're purposely generating one, make sure to avoid adding any. Store the token in your favourite secret manager for future usage.
-
-Also make sure to work in a `venv` where all the [requirements for the fabric tools](./tools/requirements.txt) are installed.
-
-```bash
-cd cloud-foundation-fabric
-git checkout master
-git pull
-./tools/changelog.py --write --token $YOURGITHUBTOKEN
-```
-
-After ~1 minute, the [CHANGELOG.md](./CHANGELOG.md) file will be updated by the tool - review any change by running `git diff` and make sure no unlabeled PR is listed. If you find unlabeled PRs, visit their link and add the relevant labels (e.g. on:FAST, on:blueprints, on:module, ...), and finally run again
-
-```bash
-./tools/changelog.py --write --token $YOURGITHUBTOKEN
-```
-
-Now open the up-to-date CHANGELOG.md in your favorite editor, and append the new release H2 after the `## [Unreleased]` header you see at the top - e.g. if the latest version is `29.0.0`, add an header for `30.0.0` and mark todays date as follows:
-
-```md
-[...]
-## [Unreleased]
-<!-- None < 2024-03-20 13:57:56+00:00 -->
-
-## [30.0.0] - 2024-03-20
-
-## [29.0.0] - 2024-01-24
-
-```
-
-Now scroll to the bottom section of the document, and update the release links by adding `30.0.0` and updating `Unreleased` as follows:
-
-```md
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...HEAD
-[30.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0
-[29.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0
-```
-
-Once done, add, commit and push changes to master.
-
-As CHANGELOG.md is now ready, [create a new release from the Github UI](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/new), and use `vXX.Y.Z` as the release tag and title (don't forget the `v` in front!).
-
-As a description, copy the whole content added to [CHANGELOG.md](./CHANGELOG.md) for the current release, and then click the 'Publish release' button.
-
-As a last cleanup for the CHANGELOG.md file, run
-
-```bash
-git pull
-./tools/changelog.py --write --token $TOKEN --release-to vXX.Y.Z
-git diff
-```
-
-And add / commit / push any change in case of a diff.
+The release process has been codified into a Gemini CLI skill. Please refer to the [Release Process Skill](skills/maintenance/release-process/SKILL.md) for detailed instructions on how to cut a new release.

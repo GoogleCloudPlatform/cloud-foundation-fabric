@@ -85,7 +85,7 @@ def _check_dir(dir_name):
     tree = schema_docs.parse_node(schema)
     props, defs = schema_docs.render_node(tree)
     doc = schema_docs.DOC.format(title=schema.get('title'), properties=props,
-                                 definitions=defs or '')
+                                 definitions=defs or '').strip()
     new_doc_content = f'{doc}\n'
 
     state = State.OK

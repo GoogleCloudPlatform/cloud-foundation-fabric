@@ -64,4 +64,3 @@ variable "shared_secret" {
   description = "Shared secret."
   type        = string
 }
-
