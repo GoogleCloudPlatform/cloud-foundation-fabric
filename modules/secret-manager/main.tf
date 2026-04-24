@@ -33,6 +33,9 @@ locals {
     }
     if v.tag_bindings != null
   ]...)
+  _tag_bindings = {
+    for k, v in local.tag_bindings : k => lookup(local.ctx.tag_values, v.tag, v.tag)
+  }
   versions = flatten([
     for k, v in var.secrets : [
       for sk, sv in v.versions : merge(sv, {

@@ -15,6 +15,12 @@
  */
 
 locals {
+  _ctx_p = "$"
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
+    } if !endswith(k, "_vars")
+  }
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
   is_regional = var.availability_type == "REGIONAL"
 

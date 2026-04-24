@@ -312,22 +312,22 @@ module "additive_iam" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [cleanup_policies](variables.tf#L17) | Object containing details about the cleanup policies for an Artifact Registry repository. | <code>map&#40;object&#40;&#123;&#8230;default &#61; null</code> | ✓ |  |
-| [format](variables.tf#L79) | Repository format. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [location](variables.tf#L229) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L234) | Registry name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L239) | Registry project id. | <code>string</code> | ✓ |  |
+| [format](variables.tf#L83) | Repository format. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L233) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L238) | Registry name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L243) | Registry project id. | <code>string</code> | ✓ |  |
 | [cleanup_policy_dry_run](variables.tf#L38) | If true, the cleanup pipeline is prevented from deleting versions in this repository. | <code>bool</code> |  | <code>null</code> |
 | [context](variables.tf#L44) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L61) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
-| [enable_vulnerability_scanning](variables.tf#L67) | Whether vulnerability scanning should be enabled in the repository. | <code>bool</code> |  | <code>null</code> |
-| [encryption_key](variables.tf#L73) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
+| [description](variables.tf#L65) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
+| [enable_vulnerability_scanning](variables.tf#L71) | Whether vulnerability scanning should be enabled in the repository. | <code>bool</code> |  | <code>null</code> |
+| [encryption_key](variables.tf#L77) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L36) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L43) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L58) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L73) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L223) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L244) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables.tf#L251) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L227) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L248) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables.tf#L255) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

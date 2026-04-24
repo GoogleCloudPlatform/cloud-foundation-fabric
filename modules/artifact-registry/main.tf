@@ -21,6 +21,9 @@ locals {
     } if !endswith(k, "_vars")
   }
   ctx_p         = "$"
+  _tag_bindings = {
+    for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
   format_obj    = one([for k, v in var.format : v if v != null])
   format_string = one([for k, v in var.format : k if v != null])
   location      = lookup(local.ctx.locations, var.location, var.location)
@@ -240,5 +243,5 @@ resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//artifactregistry.googleapis.com/${google_artifact_registry_repository.registry.id}"
   location  = local.location
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

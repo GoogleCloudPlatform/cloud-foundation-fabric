@@ -422,38 +422,39 @@ module "alloydb" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [cluster_name](variables.tf#L84) | Name of the primary cluster. | <code>string</code> | ✓ |  |
-| [instance_name](variables.tf#L211) | Name of primary instance. | <code>string</code> | ✓ |  |
-| [location](variables.tf#L223) | Region or zone of the cluster and instance. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L268) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L319) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
+| [cluster_name](variables.tf#L101) | Name of the primary cluster. | <code>string</code> | ✓ |  |
+| [instance_name](variables.tf#L228) | Name of primary instance. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L240) | Region or zone of the cluster and instance. | <code>string</code> | ✓ |  |
+| [network_config](variables.tf#L285) | Network configuration for cluster and instance. Only one between psa_config and psc_config can be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L336) | The ID of the project where this instances will be created. | <code>string</code> | ✓ |  |
 | [annotations](variables.tf#L17) | Map FLAG_NAME=>VALUE for annotations which allow client tools to store small amount of arbitrary data. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [automated_backup_configuration](variables.tf#L23) | Automated backup settings for cluster. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [availability_type](variables.tf#L61) | Availability type for the primary replica. Either `ZONAL` or `REGIONAL`. | <code>string</code> |  | <code>&#34;REGIONAL&#34;</code> |
 | [client_connection_config](variables.tf#L67) | Client connection config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [cluster_display_name](variables.tf#L78) | Display name of the primary cluster. | <code>string</code> |  | <code>null</code> |
-| [continuous_backup_configuration](variables.tf#L90) | Continuous backup settings for cluster. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [cross_region_replication](variables.tf#L100) | Cross region replication config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [database_version](variables.tf#L157) | Database type and version to create. | <code>string</code> |  | <code>&#34;POSTGRES_15&#34;</code> |
-| [deletion_policy](variables.tf#L163) | AlloyDB cluster and instance deletion policy. | <code>string</code> |  | <code>null</code> |
-| [deletion_protection](variables.tf#L169) | Whether Terraform will be prevented from destroying the cluster. When the field is set to true or unset in Terraform state, a terraform apply or terraform destroy that would delete the cluster will fail. When the field is set to false, deleting the cluster is allowed. | <code>bool</code> |  | <code>null</code> |
-| [display_name](variables.tf#L175) | AlloyDB instance display name. | <code>string</code> |  | <code>null</code> |
-| [encryption_config](variables.tf#L181) | Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [flags](variables.tf#L190) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [gce_zone](variables.tf#L196) | The GCE zone that the instance should serve from. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. | <code>string</code> |  | <code>null</code> |
-| [initial_user](variables.tf#L202) | AlloyDB cluster initial user credentials. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [labels](variables.tf#L217) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [machine_config](variables.tf#L229) | AlloyDB machine config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [maintenance_config](variables.tf#L243) | Set maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [observability_config](variables.tf#L293) | Advanced query insights config for AlloyDB. Mutually exclusive with query_insights_config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L309) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [project_number](variables.tf#L324) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
-| [query_insights_config](variables.tf#L330) | Query insights config. Mutually exclusive with observability_config. It will be ignored if observability_config is enabled. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [read_pool](variables.tf#L341) | Map of read pool instances to create in the primary cluster. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [skip_await_major_version_upgrade](variables.tf#L397) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
-| [subscription_type](variables.tf#L403) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
-| [tag_bindings](variables.tf#L409) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [users](variables.tf#L416) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [cluster_display_name](variables.tf#L95) | Display name of the primary cluster. | <code>string</code> |  | <code>null</code> |
+| [context](variables.tf#L78) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [continuous_backup_configuration](variables.tf#L107) | Continuous backup settings for cluster. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [cross_region_replication](variables.tf#L117) | Cross region replication config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [database_version](variables.tf#L174) | Database type and version to create. | <code>string</code> |  | <code>&#34;POSTGRES_15&#34;</code> |
+| [deletion_policy](variables.tf#L180) | AlloyDB cluster and instance deletion policy. | <code>string</code> |  | <code>null</code> |
+| [deletion_protection](variables.tf#L186) | Whether Terraform will be prevented from destroying the cluster. When the field is set to true or unset in Terraform state, a terraform apply or terraform destroy that would delete the cluster will fail. When the field is set to false, deleting the cluster is allowed. | <code>bool</code> |  | <code>null</code> |
+| [display_name](variables.tf#L192) | AlloyDB instance display name. | <code>string</code> |  | <code>null</code> |
+| [encryption_config](variables.tf#L198) | Set encryption configuration. KMS name format: 'projects/[PROJECT]/locations/[REGION]/keyRings/[RING]/cryptoKeys/[KEY_NAME]'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [flags](variables.tf#L207) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [gce_zone](variables.tf#L213) | The GCE zone that the instance should serve from. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. | <code>string</code> |  | <code>null</code> |
+| [initial_user](variables.tf#L219) | AlloyDB cluster initial user credentials. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L234) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [machine_config](variables.tf#L246) | AlloyDB machine config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [maintenance_config](variables.tf#L260) | Set maintenance window configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [observability_config](variables.tf#L310) | Advanced query insights config for AlloyDB. Mutually exclusive with query_insights_config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L326) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
+| [project_number](variables.tf#L341) | The project number of the project where this instances will be created. Only used for testing purposes. | <code>string</code> |  | <code>null</code> |
+| [query_insights_config](variables.tf#L347) | Query insights config. Mutually exclusive with observability_config. It will be ignored if observability_config is enabled. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [read_pool](variables.tf#L358) | Map of read pool instances to create in the primary cluster. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [skip_await_major_version_upgrade](variables.tf#L414) | Set to true to skip awaiting on the major version upgrade of the cluster. | <code>bool</code> |  | <code>true</code> |
+| [subscription_type](variables.tf#L420) | The subscription type of cluster. Possible values are: 'STANDARD' or 'TRIAL'. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
+| [tag_bindings](variables.tf#L426) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [users](variables.tf#L433) | Map of users to create in the primary instance (and replicated to other replicas). Set PASSWORD to null if you want to get an autogenerated password. The user types available are: 'ALLOYDB_BUILT_IN' or 'ALLOYDB_IAM_USER'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
