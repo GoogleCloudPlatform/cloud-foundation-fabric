@@ -104,8 +104,11 @@ module "factory" {
     )
     tag_values = merge(var.tag_values, local.context.tag_values)
     tag_vars = {
-      projects     = merge(var.tag_vars.projects, try(local.context.tag_vars.projects, {}))
-      organization = merge(var.tag_vars.organization, try(local.context.tag_vars.organization, {}))
+      projects = try(local.context.tag_vars.projects, {})
+      organization = merge({
+        for k, v in var.tag_keys : k => v.namespaced_name
+        if v.allowed_values_regex != null
+      }, try(local.context.tag_vars.organization, {}))
     }
     vpc_sc_perimeters = merge(var.perimeters, local.context.vpc_sc_perimeters)
   }

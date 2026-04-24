@@ -48,8 +48,11 @@ locals {
     tag_keys        = merge(var.tag_keys, local._ctx.tag_keys)
     tag_values      = merge(var.tag_values, local._ctx.tag_values)
     tag_vars = {
-      projects     = merge(var.tag_vars.projects, try(local._ctx.tag_vars.projects, {}))
-      organization = merge(var.tag_vars.organization, try(local._ctx.tag_vars.organization, {}))
+      projects = try(local._ctx.tag_vars.projects, {})
+      organization = merge({
+        for k, v in var.tag_keys : k => v.namespaced_name
+        if v.allowed_values_regex != null
+      }, try(local._ctx.tag_vars.organization, {}))
     }
     vpc_sc_perimeters = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
   })

@@ -18,7 +18,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if k != "condition_vars" && k != "tag_vars"
   }
   ctx_p = "$"
   iam_email = (
@@ -102,9 +102,5 @@ resource "google_service_account" "service_account" {
 resource "google_tags_tag_binding" "binding" {
   for_each = local.tag_bindings
   parent   = "//iam.googleapis.com/projects/${coalesce(var.project_number, var.project_id)}/serviceAccounts/${local.service_account.unique_id}"
-  tag_value = (
-    can(regex("\\$\\{", local._tag_bindings[each.key]))
-    ? templatestring(local._tag_bindings[each.key], var.context.tag_vars)
-    : local._tag_bindings[each.key]
-  )
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

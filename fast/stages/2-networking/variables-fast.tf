@@ -109,9 +109,15 @@ variable "storage_buckets" {
 variable "tag_keys" {
   # tfdoc:variable:source 0-org-setup
   description = "FAST-managed resource manager tag keys."
-  type        = map(string)
-  nullable    = false
-  default     = {}
+  type = map(object({
+    namespaced_name      = string
+    allowed_values_regex = optional(string)
+    # id         = string
+    # short_name = string
+    # parent     = string
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "tag_values" {

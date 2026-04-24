@@ -50,3 +50,5 @@ output "vpc_self_links" {
     for k, v in module.vpcs.vpcs : k => v.id
   }
 }
+
+
