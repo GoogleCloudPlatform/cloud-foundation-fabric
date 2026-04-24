@@ -212,6 +212,11 @@
     <br>*additional properties: string*
   - **tag_values**: *object*
     <br>*additional properties: string*
+  - **tag_vars**: *object*
+    <br>*additional properties: false*
+    - **projects**: *object*
+      <br>*additional properties: object*
+    - **organization**: *string*
   - **vpc_sc_perimeters**: *object*
     <br>*additional properties: string*
 - **output_files**: *object*
