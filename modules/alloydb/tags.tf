@@ -19,18 +19,12 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
-locals {
-  _tag_bindings = {
-    for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
-  }
-}
-
 resource "google_tags_location_tag_binding" "primary_binding" {
   for_each = var.tag_bindings
   parent = (
     "//alloydb.googleapis.com/projects/${coalesce(var.project_number, try(data.google_project.project[0].number, null))}/locations/${var.location}/clusters/${google_alloydb_cluster.primary.cluster_id}"
   )
-  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
+  tag_value = each.value
   location  = var.location
 }
 
@@ -39,6 +33,6 @@ resource "google_tags_location_tag_binding" "secondary_binding" {
   parent = (
     "//alloydb.googleapis.com/projects/${coalesce(var.project_number, try(data.google_project.project[0].number, null))}/locations/${var.cross_region_replication.region}/clusters/${google_alloydb_cluster.secondary[0].cluster_id}"
   )
-  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
+  tag_value = each.value
   location  = var.cross_region_replication.region
 }

@@ -75,22 +75,7 @@ variable "client_connection_config" {
   default = null
 }
 
-variable "context" {
-  description = "Context-specific interpolations."
-  type = object({
-    kms_keys    = optional(map(string), {})
-    locations   = optional(map(string), {})
-    networks    = optional(map(string), {})
-    project_ids = optional(map(string), {})
-    tag_values  = optional(map(string), {})
-    tag_vars = optional(object({
-      projects     = optional(map(map(string)), {})
-      organization = optional(map(string), {})
-    }), {})
-  })
-  default  = {}
-  nullable = false
-}
+
 
 variable "cluster_display_name" {
   description = "Display name of the primary cluster."
