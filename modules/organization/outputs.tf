@@ -150,8 +150,6 @@ output "tag_keys" {
   }
 }
 
-
-
 output "tag_values" {
   description = "Tag value resources."
   value = {

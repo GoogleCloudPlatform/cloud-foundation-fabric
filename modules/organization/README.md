@@ -1083,8 +1083,8 @@ module "org" {
 | [service_agents](outputs.tf#L128) | Identities of all organization-level service agents. |  |
 | [sink_writer_identities](outputs.tf#L136) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L144) | Tag key resources. |  |
-| [tag_values](outputs.tf#L155) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L163) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L170) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L177) | Workforce Identity provider attributes. |  |
+| [tag_values](outputs.tf#L153) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L161) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L168) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L175) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->

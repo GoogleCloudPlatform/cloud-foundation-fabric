@@ -75,8 +75,6 @@ variable "client_connection_config" {
   default = null
 }
 
-
-
 variable "cluster_display_name" {
   description = "Display name of the primary cluster."
   type        = string

@@ -15,7 +15,6 @@
  */
 
 locals {
-
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
   is_regional = var.availability_type == "REGIONAL"
 

@@ -2368,10 +2368,10 @@ module "project" {
 | [services](outputs.tf#L192) | Service APIs to enable in the project. |  |
 | [sink_writer_identities](outputs.tf#L201) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L208) | Tag key resources. |  |
-| [tag_values](outputs.tf#L219) | Tag value resources. |  |
-| [workload_identity_pool_ids](outputs.tf#L227) | Workload identity provider ids. |  |
-| [workload_identity_provider_ids](outputs.tf#L234) | Workload identity provider attributes. |  |
-| [workload_identity_providers](outputs.tf#L242) | Workload identity provider attributes. |  |
+| [tag_values](outputs.tf#L217) | Tag value resources. |  |
+| [workload_identity_pool_ids](outputs.tf#L225) | Workload identity provider ids. |  |
+| [workload_identity_provider_ids](outputs.tf#L232) | Workload identity provider attributes. |  |
+| [workload_identity_providers](outputs.tf#L240) | Workload identity provider attributes. |  |
 
 ## Fixtures
 
