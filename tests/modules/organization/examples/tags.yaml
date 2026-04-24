@@ -72,7 +72,6 @@ values:
     member: group:app2-team@example.org
     role: roles/resourcemanager.tagAdmin
 
-values:
   module.org.google_tags_tag_key.default["cost_center"]:
     allowed_values_regex: "^cc-[0-9]{3}$"
     description: Cost center code.

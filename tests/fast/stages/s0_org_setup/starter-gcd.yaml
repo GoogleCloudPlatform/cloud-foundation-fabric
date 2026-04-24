@@ -1324,7 +1324,6 @@ values:
     input: null
     output: null
     triggers_replace: null
-    
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3

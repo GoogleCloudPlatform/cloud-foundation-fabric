@@ -112,9 +112,6 @@ variable "tag_keys" {
   type = map(object({
     namespaced_name      = string
     allowed_values_regex = optional(string)
-    # id         = string
-    # short_name = string
-    # parent     = string
   }))
   default  = {}
   nullable = false
