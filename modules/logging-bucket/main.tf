@@ -24,9 +24,12 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    }
+    } if !endswith(k, "_vars")
   }
   ctx_p = "$"
+  _tag_bindings = {
+    for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
   location = lookup(
     local.ctx.locations, var.location, var.location
   )
@@ -110,5 +113,5 @@ resource "google_logging_log_view" "views" {
 resource "google_tags_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//logging.googleapis.com/${local.bucket.id}"
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

@@ -149,6 +149,7 @@ locals {
       )
       tags = {
         for tag_name, tag_data in try(v.tags, {}) : tag_name => {
+          allowed_values_regex = try(tag_data.allowed_values_regex, null)
           description = try(
             tag_data.description,
             "Managed by the Terraform project-factory module."

@@ -30,6 +30,13 @@ context = {
   tag_values = {
     "test/one" = "tagValues/1234567890"
   }
+  tag_vars = {
+    projects = {
+      "test-00" = {
+        test = "foo-test-0/dynamic_test"
+      }
+    }
+  }
 }
 encryption = {
   encrypt_boot      = true
@@ -52,6 +59,8 @@ network_interfaces = [{
 }]
 project_id = "$project_ids:test"
 tag_bindings = {
-  foo = "$tag_values:test/one"
+  bar = "tagValues/1234567891"
+  baz = "$tag_values:test/one"
+  foo = "$${projects[\"test-00\"].test}/cc-123"
 }
 zone = "$locations:ew8a"

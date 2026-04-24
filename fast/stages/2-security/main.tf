@@ -38,10 +38,17 @@ locals {
       },
       local._ctx.iam_principals
     )
-    project_ids       = merge(var.project_ids, local._ctx.project_ids)
-    storage_buckets   = merge(var.storage_buckets, local._ctx.storage_buckets)
-    tag_keys          = merge(var.tag_keys, local._ctx.tag_keys)
-    tag_values        = merge(var.tag_values, local._ctx.tag_values)
+    project_ids     = merge(var.project_ids, local._ctx.project_ids)
+    storage_buckets = merge(var.storage_buckets, local._ctx.storage_buckets)
+    tag_keys        = merge(var.tag_keys, local._ctx.tag_keys)
+    tag_values      = merge(var.tag_values, local._ctx.tag_values)
+    tag_vars = {
+      projects = try(local._ctx.tag_vars.projects, {})
+      organization = merge({
+        for k, v in var.tag_keys : k => v.namespaced_name
+        if v.allowed_values_regex != null
+      }, try(local._ctx.tag_vars.organization, {}))
+    }
     vpc_sc_perimeters = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
   })
   # normalize defaults

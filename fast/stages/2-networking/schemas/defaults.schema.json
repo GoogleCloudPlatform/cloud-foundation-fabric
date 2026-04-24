@@ -710,6 +710,24 @@
             "type": "string"
           }
         },
+        "tag_vars": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "projects": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "organization": {
+              "type": "string"
+            }
+          }
+        },
         "vpc_sc_perimeters": {
           "type": "object",
           "additionalProperties": {

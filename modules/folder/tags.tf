@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+locals {
+  _tag_bindings = {
+    for k, v in coalesce(var.tag_bindings, {}) : k => lookup(local.ctx.tag_values, v, v)
+  }
+}
+
 resource "google_tags_tag_binding" "binding" {
   for_each  = coalesce(var.tag_bindings, {})
   parent    = "//cloudresourcemanager.googleapis.com/${local.folder_id}"
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }
