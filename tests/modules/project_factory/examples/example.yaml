@@ -972,6 +972,7 @@ counts:
   google_kms_crypto_key_iam_member: 2
   google_kms_key_ring: 1
   google_monitoring_notification_channel: 1
+  google_network_security_dns_threat_detector: 1
   google_org_policy_policy: 3
   google_privileged_access_manager_entitlement: 2
   google_project: 4
@@ -995,5 +996,5 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 34
-  resources: 118
+  resources: 119
   terraform_data: 2
