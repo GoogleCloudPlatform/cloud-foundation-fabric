@@ -117,9 +117,10 @@ resource "google_sql_database_instance" "primary" {
         )
         content {
           psc_enabled = true
-          allowed_consumer_projects = (
-            var.network_config.connectivity.psc_allowed_consumer_projects
-          )
+          allowed_consumer_projects = [
+            for p in var.network_config.connectivity.psc_allowed_consumer_projects :
+            lookup(local.ctx.project_ids, p, p)
+          ]
         }
       }
     }
@@ -316,9 +317,10 @@ resource "google_sql_database_instance" "replicas" {
         )
         content {
           psc_enabled = true
-          allowed_consumer_projects = (
-            var.network_config.connectivity.psc_allowed_consumer_projects
-          )
+          allowed_consumer_projects = [
+            for p in var.network_config.connectivity.psc_allowed_consumer_projects :
+            lookup(local.ctx.project_ids, p, p)
+          ]
         }
       }
     }

@@ -21,6 +21,11 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
   project      = local.project_id
   description  = var.description
   region       = local.location
+  deletion_policy = (
+    var.enable_deletion_protection
+    ? null
+    : "FORCE"
+  )
 
   dynamic "encryption_spec" {
     for_each = var.encryption_key == null ? {} : { 1 = 1 }
@@ -75,18 +80,30 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
           for_each = var.networking_config == null ? {} : { 1 = 1 }
 
           content {
-            network_attachment = var.networking_config.network_attachment_id
+            network_attachment = lookup(
+              local.ctx.psc_network_attachments,
+              var.networking_config.network_attachment_id,
+              var.networking_config.network_attachment_id
+            )
 
             dynamic "dns_peering_configs" {
               for_each = var.networking_config.dns_peering_configs
 
               content {
-                domain         = dns_peering_configs.key
-                target_network = dns_peering_configs.value.target_network_name
+                domain = dns_peering_configs.key
+                target_network = lookup(
+                  local.ctx.networks,
+                  dns_peering_configs.value.target_network_name,
+                  dns_peering_configs.value.target_network_name
+                )
                 target_project = (
                   dns_peering_configs.value.target_project_id == null
-                  ? var.project_id
-                  : dns_peering_configs.value.target_project_id
+                  ? local.project_id
+                  : lookup(
+                    local.ctx.project_ids,
+                    dns_peering_configs.value.target_project_id,
+                    dns_peering_configs.value.target_project_id
+                  )
                 )
               }
             }
@@ -108,42 +125,90 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
       }
     }
 
+    dynamic "container_spec" {
+      for_each = var.deployment_config.container_config != null ? { 1 = 1 } : {}
+
+      content {
+        image_uri = var.deployment_config.container_config.image_uri
+      }
+    }
+
     dynamic "package_spec" {
-      for_each = var.deployment_files.package_config == null ? {} : { 1 = 1 }
+      for_each = var.deployment_config.package_config != null ? { 1 = 1 } : {}
 
       content {
         python_version = var.agent_engine_config.python_version
         dependency_files_gcs_uri = (
-          var.deployment_files.package_config.are_paths_local
+          var.deployment_config.package_config.are_paths_local
           ? "gs://${local.bucket_name}/${google_storage_bucket_object.dependencies[0].name}"
-          : var.deployment_files.package_config.dependencies_path
+          : var.deployment_config.package_config.dependencies_path
         )
         requirements_gcs_uri = (
-          var.deployment_files.package_config.are_paths_local
+          var.deployment_config.package_config.are_paths_local
           ? "gs://${local.bucket_name}/${google_storage_bucket_object.requirements[0].name}"
-          : var.deployment_files.package_config.requirements_path
+          : var.deployment_config.package_config.requirements_path
         )
         pickle_object_gcs_uri = (
-          var.deployment_files.package_config.are_paths_local
+          var.deployment_config.package_config.are_paths_local
           ? "gs://${local.bucket_name}/${google_storage_bucket_object.pickle[0].name}"
-          : var.deployment_files.package_config.pickle_path
+          : var.deployment_config.package_config.pickle_path
         )
       }
     }
 
     dynamic "source_code_spec" {
-      for_each = var.deployment_files.source_config == null ? {} : { 1 = 1 }
+      for_each = var.deployment_config.source_files_config != null ? { 1 = 1 } : {}
 
       content {
-        inline_source {
-          source_archive = filebase64(var.deployment_files.source_config.source_path)
+        dynamic "inline_source" {
+          for_each = (
+            try(var.deployment_config.source_files_config.source_path, null) != null
+            ? { 1 = 1 }
+            : {}
+          )
+          content {
+            source_archive = filebase64(var.deployment_config.source_files_config.source_path)
+          }
         }
 
-        python_spec {
-          entrypoint_module = var.deployment_files.source_config.entrypoint_module
-          entrypoint_object = var.deployment_files.source_config.entrypoint_object
-          requirements_file = var.deployment_files.source_config.requirements_path
-          version           = var.agent_engine_config.python_version
+        dynamic "developer_connect_source" {
+          for_each = (
+            try(var.deployment_config.source_files_config.developer_connect_config, null) != null
+            ? { 1 = 1 }
+            : {}
+          )
+          content {
+            config {
+              git_repository_link = var.deployment_config.source_files_config.developer_connect_config.git_repository_link
+              dir                 = var.deployment_config.source_files_config.developer_connect_config.dir
+              revision            = var.deployment_config.source_files_config.developer_connect_config.revision
+            }
+          }
+        }
+
+        dynamic "python_spec" {
+          for_each = (
+            try(var.deployment_config.source_files_config.python_spec, null) != null
+            ? { 1 = 1 }
+            : {}
+          )
+          content {
+            entrypoint_module = var.deployment_config.source_files_config.python_spec.entrypoint_module
+            entrypoint_object = var.deployment_config.source_files_config.python_spec.entrypoint_object
+            requirements_file = var.deployment_config.source_files_config.python_spec.requirements_file
+            version           = var.agent_engine_config.python_version
+          }
+        }
+
+        dynamic "image_spec" {
+          for_each = (
+            try(var.deployment_config.source_files_config.image_spec, null) != null
+            ? { 1 = 1 }
+            : {}
+          )
+          content {
+            build_args = var.deployment_config.source_files_config.image_spec.build_args
+          }
         }
       }
     }
@@ -216,8 +281,10 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
 
   lifecycle {
     ignore_changes = [
+      spec[0].container_spec,
       spec[0].package_spec,
-      spec[0].source_code_spec[0].inline_source[0].source_archive
+      spec[0].source_code_spec[0].inline_source[0].source_archive,
+      spec[0].source_code_spec[0].developer_connect_source
     ]
   }
 }

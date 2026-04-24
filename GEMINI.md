@@ -60,6 +60,11 @@ Always format code and update documentation before committing.
 terraform fmt -check -recursive modules/<module-name>
 terraform fmt -recursive modules/<module-name>
 
+# Format Python code
+# ALWAYS run yapf with the repository's .style.yapf configuration after editing any Python file.
+# You can use the local virtual environment or run it directly:
+~/venv/bin/yapf -i <python-files>
+
 # Check README consistency (variables table must match variables.tf)
 python3 tools/check_documentation.py modules/<module-name>
 
