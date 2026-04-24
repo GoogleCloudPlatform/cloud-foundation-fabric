@@ -27,7 +27,7 @@ Example of exclusion in `locals`:
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars" && k != "tag_vars"
+    } if !endswith(k, "_vars")
   }
 ```
 
@@ -41,7 +41,7 @@ Example of usage:
 
 *   Maintains the single `context` variable pattern while supporting complex template interpolations.
 *   Ensures type safety during context flattening.
-*   Requires explicit exclusion of any new `_vars` variable in the module's local context construction.
+*   Automatically excludes any new `_vars` variable in the module's local context construction using `endswith`.
 
 ## Reasoning
 

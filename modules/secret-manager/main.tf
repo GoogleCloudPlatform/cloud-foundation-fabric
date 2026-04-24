@@ -18,7 +18,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   ctx_p       = "$"
   project_id  = lookup(local.ctx.project_ids, var.project_id, var.project_id)
