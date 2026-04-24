@@ -100,11 +100,23 @@ module "registry-virtual" {
 ## Remote Docker registry with credentials
 
 ```hcl
+
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "ar"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "artifactregistry.googleapis.com",
+  ]
+}
+
 module "registry-mirror" {
-  source      = "./fabric/modules/artifact-registry"
-  project_id  = var.project_id
-  location    = "europe-west1"
-  name        = "mirror"
+  source     = "./fabric/modules/artifact-registry"
+  project_id = module.project.id
+  location   = "europe-west1"
+  name       = "mirror"
   format = {
     docker = {
       remote = {
@@ -121,7 +133,7 @@ module "registry-mirror" {
 
 module "secret-manager" {
   source     = "./fabric/modules/secret-manager"
-  project_id = var.project_id
+  project_id = module.project.id
   secrets = {
     example-com-password = {
       global_replica_locations = {
@@ -129,14 +141,14 @@ module "secret-manager" {
       }
       iam = {
         "roles/secretmanager.secretAccessor" = [
-          "serviceAccount:service-${var.project_number}@gcp-sa-artifactregistry.iam.gserviceaccount.com",
+          module.project.service_agents["artifactregistry"].iam_email
         ]
       }
     }
   }
 }
 
-# tftest modules=3 resources=3 inventory=remote-virtual.yaml
+# tftest modules=3 resources=3 inventory=remote-credentials.yaml
 ```
 
 ## Additional Docker and Maven Options
