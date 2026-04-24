@@ -278,21 +278,21 @@ values:
     condition: []
     role: roles/storage.admin
     timeouts: null
+  module.factory.module.folder-1-iam["dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-1-iam["prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
   module.factory.module.folder-1["dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
     parent: organizations/1234567890
     tags: null
     timeouts: null
-  module.factory.module.folder-1["dev"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-1["prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
     parent: organizations/1234567890
     tags: null
-    timeouts: null
-  module.factory.module.folder-1["prod"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.factory.module.log-buckets["iac-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-logs
@@ -1176,6 +1176,7 @@ values:
     delete_default_routes_on_create: true
     description: Terraform managed
     enable_ula_internal_ipv6: null
+    mtu: 1500
     name: dev-shared-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
@@ -1248,6 +1249,7 @@ values:
     delete_default_routes_on_create: true
     description: Terraform managed
     enable_ula_internal_ipv6: null
+    mtu: 1500
     name: prod-shared-0
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
     network_profile: null
@@ -1322,7 +1324,6 @@ values:
     input: null
     output: null
     triggers_replace: null
-
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
@@ -1353,7 +1354,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 4
   local_file: 4
-  modules: 25
+  modules: 27
   resources: 173
   terraform_data: 4
 

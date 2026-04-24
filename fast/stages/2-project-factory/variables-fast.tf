@@ -131,6 +131,17 @@ variable "tag_values" {
   default     = {}
 }
 
+variable "tag_keys" {
+  # tfdoc:variable:source 0-org-setup
+  description = "FAST-managed resource manager tag keys."
+  type = map(object({
+    namespaced_name      = string
+    allowed_values_regex = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "universe" {
   # tfdoc:variable:source 0-globals
   description = "GCP universe where to deploy projects. The prefix will be prepended to the project id."

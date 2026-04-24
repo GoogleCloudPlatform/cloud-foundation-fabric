@@ -834,6 +834,9 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "allowed_values_regex": {
+            "type": "string"
+          },
           "description": {
             "type": "string"
           },
@@ -873,7 +876,23 @@
               }
             }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "allowed_values_regex"
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "values"
+                ]
+              }
+            }
+          }
+        ]
       }
     },
     "tag_bindings": {

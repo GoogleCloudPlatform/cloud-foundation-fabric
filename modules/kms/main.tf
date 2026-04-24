@@ -18,7 +18,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   ctx_p = "$"
   keyring = (

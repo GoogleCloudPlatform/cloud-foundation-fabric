@@ -972,6 +972,8 @@ values:
   module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/viewer"]:
     condition: []
     role: roles/viewer
+  module.factory.module.folder-1-iam["teams"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Networking
@@ -990,8 +992,6 @@ values:
     parent: organizations/1234567890
     tags: null
     timeouts: null
-  module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"]:
-    timeouts: null
   ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
   : condition: []
     role: organizations/1234567890/roles/projectIamViewer
@@ -1002,33 +1002,33 @@ values:
         \  'organizations/1234567890/roles/serviceProjectNetworkAdmin'\n])\n"
       title: Data platform dev delegated IAM grant.
     role: roles/resourcemanager.projectIamAdmin
+  module.factory.module.folder-2-iam["networking/dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-2-iam["networking/prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-2-iam["security/dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-2-iam["security/prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
   module.factory.module.folder-2["networking/dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
     tags: null
-    timeouts: null
-  module.factory.module.folder-2["networking/dev"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.factory.module.folder-2["networking/prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
     tags: null
     timeouts: null
-  module.factory.module.folder-2["networking/prod"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-2["security/dev"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Development
     tags: null
     timeouts: null
-  module.factory.module.folder-2["security/dev"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-2["security/prod"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Production
     tags: null
-    timeouts: null
-  module.factory.module.folder-2["security/prod"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.factory.module.log-buckets["log-0/audit-logs"].google_logging_project_bucket_config.bucket[0]:
     bucket_id: audit-logs
@@ -2893,7 +2893,7 @@ counts:
   google_tags_tag_value: 5
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 44
+  modules: 47
   resources: 308
   terraform_data: 4
 

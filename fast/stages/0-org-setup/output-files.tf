@@ -40,6 +40,7 @@ locals {
       module.factory.project_ids
     )
     storage_buckets = module.factory.storage_buckets
+    tag_keys        = module.organization[0].tag_keys
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
@@ -125,6 +126,7 @@ locals {
       subnet_self_links = {
         for k, v in module.vpcs.vpcs : k => v.subnet_ids
       }
+      tag_keys   = local.of_ctx.tag_keys
       tag_values = local.of_ctx.tag_values
       vpc_self_links = {
         for k, v in module.vpcs.vpcs : k => v.id
