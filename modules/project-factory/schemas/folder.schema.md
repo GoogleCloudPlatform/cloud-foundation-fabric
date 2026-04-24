@@ -173,7 +173,7 @@
   - **versioning**: *boolean*
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -184,7 +184,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -197,7 +197,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -207,7 +207,7 @@
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)*
 - **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *object*
@@ -219,7 +219,7 @@
       - **description**: *string*
     - ⁺**roles**: *array*
       - items: *string*
-        <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)*
+        <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*

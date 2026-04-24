@@ -1289,7 +1289,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
@@ -1315,7 +1315,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -1354,7 +1354,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -1387,7 +1387,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)"
           }
         }
       }
@@ -1427,7 +1427,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-]+/roles/)"
+                "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|projects/[a-z0-9-.:]+/roles/)"
               }
             }
           }
