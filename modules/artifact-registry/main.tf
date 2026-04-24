@@ -20,7 +20,7 @@ locals {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
     } if !endswith(k, "_vars")
   }
-  ctx_p         = "$"
+  ctx_p = "$"
   _tag_bindings = {
     for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
   }
