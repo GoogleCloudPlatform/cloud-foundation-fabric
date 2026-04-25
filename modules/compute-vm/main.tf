@@ -22,7 +22,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    }
+    } if !endswith(k, "_vars")
   }
   ctx_kms_keys = merge(local.ctx.kms_keys, {
     for k, v in google_kms_key_handle.default :

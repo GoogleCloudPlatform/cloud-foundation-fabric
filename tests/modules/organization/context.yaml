@@ -165,13 +165,18 @@ values:
     org_id: '1234567890'
     role: organizations/366118655033/roles/myRoleTwo
   google_privileged_access_manager_entitlement.default["net-admins"]:
-    additional_notification_targets: []
+    additional_notification_targets:
+    - admin_email_recipients:
+      - foo@example.com
+      requester_email_recipients:
+      - foo@example.com
     approval_workflow:
     - manual_approvals:
       - require_approver_justification: true
         steps:
         - approvals_needed: 1
-          approver_email_recipients: null
+          approver_email_recipients:
+          - foo@example.com
           approvers:
           - principals:
             - group:test-group@example.com

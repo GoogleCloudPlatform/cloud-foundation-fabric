@@ -17,7 +17,7 @@
 org-setup:
   provider_files:
     apply: 0-org-setup-providers.tf
-    plan: 0-org-setup-providers-ro.tf
+    plan: 0-org-setup-ro-providers.tf
   repository:
     name: myorg/0-org-setup
     type: github

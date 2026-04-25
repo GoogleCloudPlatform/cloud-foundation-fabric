@@ -117,8 +117,15 @@ resource "google_privileged_access_manager_entitlement" "default" {
               ]
             }
 
-            approvals_needed          = step.value.approvals_needed
-            approver_email_recipients = step.value.approver_email_recipients
+            approvals_needed = step.value.approvals_needed
+            approver_email_recipients = (
+              step.value.approver_email_recipients == null
+              ? null
+              : [
+                for e in step.value.approver_email_recipients :
+                lookup(local.ctx.email_addresses, e, e)
+              ]
+            )
           }
         }
       }
@@ -128,8 +135,22 @@ resource "google_privileged_access_manager_entitlement" "default" {
   dynamic "additional_notification_targets" {
     for_each = each.value.additional_notification_targets == null ? [] : [""]
     content {
-      admin_email_recipients     = each.value.additional_notification_targets.admin_email_recipients
-      requester_email_recipients = each.value.additional_notification_targets.requester_email_recipients
+      admin_email_recipients = (
+        each.value.additional_notification_targets.admin_email_recipients == null
+        ? null
+        : [
+          for e in each.value.additional_notification_targets.admin_email_recipients :
+          lookup(local.ctx.email_addresses, e, e)
+        ]
+      )
+      requester_email_recipients = (
+        each.value.additional_notification_targets.requester_email_recipients == null
+        ? null
+        : [
+          for e in each.value.additional_notification_targets.requester_email_recipients :
+          lookup(local.ctx.email_addresses, e, e)
+        ]
+      )
     }
   }
   depends_on = [

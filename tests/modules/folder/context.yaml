@@ -145,8 +145,14 @@ values:
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
     topic: audit-logs
-  google_tags_tag_binding.binding["foo"]:
+  google_tags_tag_binding.binding["bar"]:
+    tag_value: tagValues/1234567891
+    timeouts: null
+  google_tags_tag_binding.binding["baz"]:
     tag_value: tagValues/1234567890
+    timeouts: null
+  google_tags_tag_binding.binding["foo"]:
+    tag_value: foo-test-0/dynamic_test/cc-123
     timeouts: null
 
 counts:
@@ -160,6 +166,6 @@ counts:
   google_logging_folder_sink: 1
   google_privileged_access_manager_entitlement: 1
   google_pubsub_topic_iam_member: 1
-  google_tags_tag_binding: 1
+  google_tags_tag_binding: 3
   modules: 0
-  resources: 17
+  resources: 19
