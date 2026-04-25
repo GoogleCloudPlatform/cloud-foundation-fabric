@@ -3,14 +3,46 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.1.0...HEAD) <!-- from: 2026-04-20 14:40:53+00:00 to: None since: v55.1.0 -->
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.2.0...HEAD)
+
+## [v55.2.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v55.2.0) - 2026-04-25 <!-- from: 2026-04-20 14:40:53+00:00 to: 2026-04-25 since: v55.1.0 -->
+
+### BREAKING CHANGES
+
+- `terraform-google-provider`: version updated to 7.28 which includes BYOC support.
+`terraform-google-provider-beta`: version updated to 7.28 which includes BYOC support
+`modules/agent-engine`: updated variable name from `deployment_files` to `deployment_config` for introducing `container_config`.  Evaluate recreation of resources before using this version. [[#3885](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3885)]
+
+
+### FAST
+
+- [[#3906](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3906)] Bump GH template action versions to avoid GHA Node 20 deprecation ([brews](https://github.com/brews)) <!-- 2026-04-25 04:48:01+00:00 -->
+- [[#3905](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3905)] Fix failing CICD setup from bad provider file name in fast datasets ([brews](https://github.com/brews)) <!-- 2026-04-25 04:28:07+00:00 -->
+- [[#3904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3904)] Support organization roles in all schemas ([AlbertoOS](https://github.com/AlbertoOS)) <!-- 2026-04-24 21:11:50+00:00 -->
+- [[#3897](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3897)] Add support for dynamic tags ([juliocc](https://github.com/juliocc)) <!-- 2026-04-24 20:45:46+00:00 -->
+- [[#3902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3902)] Update `labels` field in schemas from `map(list(string)))` to `map(string)` ([AlbertoOS](https://github.com/AlbertoOS)) <!-- 2026-04-24 07:18:58+00:00 -->
+- [[#3874](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3874)] Add DNS Armor support ([lnesteroff](https://github.com/lnesteroff)) <!-- 2026-04-24 06:58:48+00:00 -->
+- [[#3871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3871)] Add attachment groups factory to 2-networking ([sruffilli](https://github.com/sruffilli)) <!-- 2026-04-22 10:22:51+00:00 -->
+- [[#3885](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3885)] Add agent engine BYOC support ([heyanand](https://github.com/heyanand)) <!-- 2026-04-21 17:46:21+00:00 -->
 
 ### MODULES
 
+- [[#3881](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3881)] Add support for auto_update_policy to modules/cloud-function-v2 ([vsingh55](https://github.com/vsingh55)) <!-- 2026-04-25 04:48:41+00:00 -->
+- [[#3904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3904)] Support organization roles in all schemas ([AlbertoOS](https://github.com/AlbertoOS)) <!-- 2026-04-24 21:11:50+00:00 -->
+- [[#3897](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3897)] Add support for dynamic tags ([juliocc](https://github.com/juliocc)) <!-- 2026-04-24 20:45:46+00:00 -->
+- [[#3903](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3903)] Support context interpolation for PAM email recipients ([ludoo](https://github.com/ludoo)) <!-- 2026-04-24 16:29:32+00:00 -->
+- [[#3874](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3874)] Add DNS Armor support ([lnesteroff](https://github.com/lnesteroff)) <!-- 2026-04-24 06:58:48+00:00 -->
+- [[#3899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3899)] Add more context to dns-response-policy module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-23 11:49:31+00:00 -->
+- [[#3898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3898)] Add enable_deletion_protection variable to agent engine module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-04-22 14:05:10+00:00 -->
+- [[#3892](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3892)] Fix folder-level essential contacts provisioning in project-factory ([leszek-grudzien](https://github.com/leszek-grudzien)) <!-- 2026-04-22 09:59:30+00:00 -->
+- [[#3885](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3885)] Add agent engine BYOC support ([heyanand](https://github.com/heyanand)) <!-- 2026-04-21 17:46:21+00:00 -->
+- [[#3894](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3894)] Support context interpolation for psc_allowed_consumer_projects in module cloudsql-instance ([sruffilli](https://github.com/sruffilli)) <!-- 2026-04-21 15:22:49+00:00 -->
 - [[#3893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3893)] Skip IAM for the Agent Gateway Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2026-04-21 10:33:14+00:00 -->
 
 ### TOOLS
 
+- [[#3885](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3885)] Add agent engine BYOC support ([heyanand](https://github.com/heyanand)) <!-- 2026-04-21 17:46:21+00:00 -->
+- [[#3895](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3895)] Release process skill and update to changelog tool ([ludoo](https://github.com/ludoo)) <!-- 2026-04-21 14:39:58+00:00 -->
 - [[#3893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3893)] Skip IAM for the Agent Gateway Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2026-04-21 10:33:14+00:00 -->
 - [[#3891](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3891)] Add more context to automated reviews ([juliocc](https://github.com/juliocc)) <!-- 2026-04-20 16:55:09+00:00 -->
 
