@@ -739,7 +739,7 @@ Once one or more providers have been defined they can be referenced in the CI/CD
 org-setup:
   provider_files:
     apply: 0-org-setup-providers.tf
-    plan: 0-org-setup-providers-ro.tf
+    plan: 0-org-setup-ro-providers.tf
   repository:
     name: example/0-org-setup
     type: github
