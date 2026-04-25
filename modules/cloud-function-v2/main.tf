@@ -58,6 +58,17 @@ resource "google_cloudfunctions2_function" "function" {
     entry_point           = var.function_config.entry_point
     environment_variables = var.build_environment_variables
     docker_repository     = var.docker_repository_id
+
+    dynamic "automatic_update_policy" {
+      for_each = try(var.function_config.automatic_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
+    dynamic "on_deploy_update_policy" {
+      for_each = try(var.function_config.on_deploy_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
     source {
       storage_source {
         bucket = local.bucket
