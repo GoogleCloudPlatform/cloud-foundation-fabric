@@ -146,18 +146,34 @@ values:
     project: foo-test-0
     role: organizations/366118655033/roles/myRoleOne
     zone: europe-west8-a
+  google_tags_location_tag_binding.disks["data-0/bar"]:
+    location: europe-west8-a
+    tag_value: tagValues/1234567891
+    timeouts: null
+  google_tags_location_tag_binding.disks["data-0/baz"]:
+    location: europe-west8-a
+    tag_value: tagValues/1234567890
+    timeouts: null
   google_tags_location_tag_binding.disks["data-0/foo"]:
+    location: europe-west8-a
+    tag_value: foo-test-0/dynamic_test/cc-123
+    timeouts: null
+  google_tags_location_tag_binding.instance["bar"]:
+    location: europe-west8-a
+    tag_value: tagValues/1234567891
+    timeouts: null
+  google_tags_location_tag_binding.instance["baz"]:
     location: europe-west8-a
     tag_value: tagValues/1234567890
     timeouts: null
   google_tags_location_tag_binding.instance["foo"]:
     location: europe-west8-a
-    tag_value: tagValues/1234567890
+    tag_value: foo-test-0/dynamic_test/cc-123
     timeouts: null
 counts:
   google_compute_disk: 1
   google_compute_instance: 1
   google_compute_instance_iam_binding: 1
-  google_tags_location_tag_binding: 2
+  google_tags_location_tag_binding: 6
   modules: 0
-  resources: 5
+  resources: 9

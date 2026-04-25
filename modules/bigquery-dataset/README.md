@@ -359,30 +359,30 @@ module "bigquery-dataset" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [id](variables.tf#L111) | Dataset id. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L175) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
+| [id](variables.tf#L115) | Dataset id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L179) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
 | [access](variables.tf#L17) | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [access_identities](variables.tf#L33) | Map of access identities used for basic access roles. View identities have the format 'project_id\|dataset_id\|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [authorized_datasets](variables.tf#L39) | An array of datasets to be authorized on the dataset. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [authorized_routines](variables.tf#L48) | An array of routines to be authorized on the dataset. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [authorized_views](variables.tf#L58) | An array of views to be authorized on the dataset. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [context](variables.tf#L68) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [dataset_access](variables.tf#L83) | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
-| [description](variables.tf#L89) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [encryption_key](variables.tf#L95) | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
-| [friendly_name](variables.tf#L101) | Dataset friendly name. | <code>string</code> |  | <code>null</code> |
+| [dataset_access](variables.tf#L87) | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
+| [description](variables.tf#L93) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [encryption_key](variables.tf#L99) | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
+| [friendly_name](variables.tf#L105) | Dataset friendly name. | <code>string</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L23) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L38) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L53) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L116) | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L122) | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
-| [materialized_views](variables.tf#L128) | Materialized views definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [options](variables.tf#L161) | Dataset options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [routines](variables.tf#L180) | Routine definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tables](variables.tf#L219) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L304) | Tag bindings for this dataset, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [views](variables.tf#L311) | View definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L120) | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L126) | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
+| [materialized_views](variables.tf#L132) | Materialized views definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [options](variables.tf#L165) | Dataset options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [routines](variables.tf#L184) | Routine definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tables](variables.tf#L223) | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L308) | Tag bindings for this dataset, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [views](variables.tf#L315) | View definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

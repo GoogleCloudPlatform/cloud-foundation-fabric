@@ -119,6 +119,21 @@ pytest -s 'tests/examples/test_plan.py::test_example[terraform:modules/<module-n
 
 **Note:** `TF_PLUGIN_CACHE_DIR` is recommended to speed up tests.
 
+#### 4. Module-level `tftest.yaml` Tests
+
+Modules with their own `tests/modules/<module_name>/tftest.yaml` define test scenarios (e.g., context resolution, IAM variants) using `tfvars` + YAML inventory pairs. Run them individually:
+
+```bash
+# Run a specific test from a module's tftest.yaml
+pytest 'tests/modules/<module_name>/tftest.yaml::<test_name>' --tb=short -s
+```
+
+For example:
+```bash
+pytest 'tests/modules/organization/tftest.yaml::context' --tb=short -s
+pytest 'tests/modules/project/tftest.yaml::context' --tb=short -s
+```
+
 #### 3. Contributing
 
 *   **Branching:** Use `username/feature-name`.
