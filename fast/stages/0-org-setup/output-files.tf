@@ -51,8 +51,10 @@ locals {
     tag_vars = {
       projects = merge([
         for k, v in module.factory.projects : {
-          for kk, vv in v.tag_vars : "${k}/${kk}" => vv
-        }
+          "${k}" = {
+            for kk, vv in v.tag_vars : kk => vv
+          }
+        } if v.tag_vars != {}
       ]...)
       organization = {
         for k, v in module.organization[0].tag_keys :
