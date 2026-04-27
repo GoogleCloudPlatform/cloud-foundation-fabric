@@ -149,7 +149,7 @@ module "secret-manager" {
   }
 }
 
-# tftest modules=3 resources=3 inventory=remote-credentials.yaml
+# tftest modules=3 resources=7 inventory=remote-credentials.yaml
 ```
 
 ## Additional Docker and Maven Options
