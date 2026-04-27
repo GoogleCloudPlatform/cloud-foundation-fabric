@@ -74,6 +74,7 @@ locals {
       }
       tag_vars = {
         for sk, sv in module.projects[k].tag_keys : sk => sv.namespaced_name
+        # the provider returns allowed_values_regex set to "" not null
         if sv.allowed_values_regex != ""
       }
       workload_identity_pools = (

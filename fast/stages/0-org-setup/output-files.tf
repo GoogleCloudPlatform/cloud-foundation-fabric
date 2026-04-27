@@ -52,10 +52,11 @@ locals {
       projects = merge([
         for k, v in module.factory.projects : {
           (k) = { for kk, vv in v.tag_vars : kk => vv }
-        } if v.tag_vars != {}
+        } if length(v.tag_vars) > 0
       ]...)
       organization = {
         for k, v in module.organization[0].tag_keys :
+        # the provider returns allowed_values_regex set to "" not null
         k => v.namespaced_name if v.allowed_values_regex != ""
       }
     }
