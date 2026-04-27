@@ -40,7 +40,10 @@ locals {
       module.factory.project_ids
     )
     storage_buckets = module.factory.storage_buckets
-    tag_keys        = module.organization[0].tag_keys
+    tag_keys = merge(
+      local.ctx.tag_keys,
+      local.org_tag_keys
+    )
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
