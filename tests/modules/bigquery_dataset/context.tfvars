@@ -23,6 +23,13 @@ context = {
   tag_values = {
     "test/one" = "tagValues/1234567890"
   }
+  tag_vars = {
+    projects = {
+      "test-00" = {
+        test = "foo-test-0/dynamic_test"
+      }
+    }
+  }
 }
 project_id     = "$project_ids:test"
 id             = "dataset_0"
@@ -37,5 +44,7 @@ iam = {
   ]
 }
 tag_bindings = {
-  foo = "$tag_values:test/one"
+  bar = "tagValues/1234567891"
+  baz = "$tag_values:test/one"
+  foo = "$${projects[\"test-00\"].test}/cc-123"
 }

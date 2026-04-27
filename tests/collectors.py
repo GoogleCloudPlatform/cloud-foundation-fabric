@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -111,23 +111,13 @@ class FabricTestItem(pytest.Item):
         return [str(root_path / x) for x in paths]
 
       files_root = self.parent.path.parent
-      # extra_dirs and extra_files need additional .parent
-      extra_dirs = [
-          f"--extra-dirs={x}"
-          for x in full_paths(files_root.parent, self.extra_dirs)
-      ]
-      extra_files = [
-          f"--extra-files={x}"
-          for x in full_paths(files_root.parent, self.extra_files)
-      ]
       print(
           f'Error in inventory file: {" ".join(full_paths(files_root, self.inventory))}'
       )
-      print(f'To regenerate inventory run: python tools/plan_summary.py '
-            f'{" ".join(extra_dirs)} '
-            f'{" ".join(extra_files)} '
-            f'{self.module} '
-            f'{" ".join(full_paths(files_root, self.tf_var_files))}')
+      test_name = self.name.split('[')[0]
+      print(
+          f'To regenerate inventory run:\nuv run tools/generate_plan_summary.py '
+          f'{self.parent.path.relative_to(_REPO_ROOT)} {test_name} --save')
       raise
 
   def reportinfo(self):

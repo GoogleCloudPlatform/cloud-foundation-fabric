@@ -13,9 +13,29 @@
 # limitations under the License.
 'Pytest configuration.'
 
+import itertools
 import pytest
 
 pytest_plugins = (
     'tests.fixtures',
     'tests.collectors',
 )
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+  failed_reports = terminalreporter.stats.get('failed', [])
+  commands = []
+  for rep in failed_reports:
+    capstdout = getattr(rep, 'capstdout', '')
+    lines = capstdout.splitlines()
+    for line, next_line in itertools.pairwise(lines):
+      if line.strip() == 'To regenerate inventory run:':
+        commands.append(next_line.strip())
+
+  if commands:
+    terminalreporter.ensure_newline()
+    terminalreporter.section(
+        'Commands to regenerate inventories for failed tests', sep='=',
+        bold=True)
+    for cmd in sorted(set(commands)):
+      terminalreporter.write_line(cmd)
