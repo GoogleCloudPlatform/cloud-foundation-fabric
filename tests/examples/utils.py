@@ -21,7 +21,8 @@ import marko
 Directive = collections.namedtuple('Directive', 'name args kwargs')
 TerraformExample = collections.namedtuple(
     'TerraformExample', 'name code module files fixtures type directive')
-YamlExample = collections.namedtuple('YamlExample', 'body module schema')
+YamlExample = collections.namedtuple('YamlExample',
+                                     'body module schema directive')
 File = collections.namedtuple('File', 'path content')
 
 
@@ -100,7 +101,7 @@ def get_readme_examples(readme_path, fabric_root):
         schema = directive.kwargs.get('schema')
         if directive.name == "tftest-file" and schema:
           schema = module / 'schemas' / schema
-          example = YamlExample(code, module, schema)
+          example = YamlExample(code, module, schema, directive)
           yaml_path = directive.kwargs['path']
           example_id = f'yaml:{path}:{last_header}:{yaml_path}:{index}'
           examples.append((example, example_id, [], last_header, index))

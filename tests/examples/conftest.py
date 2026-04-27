@@ -50,6 +50,8 @@ def pytest_generate_tests(metafunc, test_group='example',
           examples.append(pytest.param(example, marks=pytest_marks))
           ids.append(example_id)
         elif isinstance(example, YamlExample):
+          if not filter_tests(example.directive.args):
+            continue
           examples.append(pytest.param(example))
           ids.append(example_id)
 
