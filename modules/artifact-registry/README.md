@@ -5,6 +5,7 @@ This module simplifies the creation of repositories using Google Cloud Artifact 
 <!-- BEGIN TOC -->
 - [Simple Docker Repository](#simple-docker-repository)
 - [Remote and Virtual Repositories](#remote-and-virtual-repositories)
+- [Remote Docker registry with credentials](#remote-docker-registry-with-credentials)
 - [Additional Docker and Maven Options](#additional-docker-and-maven-options)
 - [Other Formats](#other-formats)
 - [Cleanup Policies](#cleanup-policies)
@@ -148,7 +149,7 @@ module "secret-manager" {
   }
 }
 
-# tftest modules=3 resources=3 inventory=remote-credentials.yaml
+# tftest modules=3 resources=7 inventory=remote-credentials.yaml
 ```
 
 ## Additional Docker and Maven Options
