@@ -191,16 +191,17 @@ A reference Certificate Authority Services (CAS) is also part of this stage, all
 | [prefix](variables-fast.tf#L57) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  | <code>0-org-setup</code> |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [factories_config](variables.tf#L36) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L40) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [perimeters](variables-fast.tf#L49) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
 | [project_ids](variables-fast.tf#L67) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [service_accounts](variables-fast.tf#L75) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [storage_buckets](variables-fast.tf#L83) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_keys](variables-fast.tf#L91) | FAST-managed resource manager tag keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [tag_values](variables-fast.tf#L102) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [universe](variables-fast.tf#L110) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
+| [tag_keys](variables-fast.tf#L91) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_values](variables-fast.tf#L99) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [tag_vars](variables-fast.tf#L107) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
+| [universe](variables-fast.tf#L118) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>0-org-setup</code> |
 
 ## Outputs
 

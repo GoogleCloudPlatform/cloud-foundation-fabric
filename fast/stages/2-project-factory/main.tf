@@ -18,7 +18,8 @@
 
 locals {
   _context = {
-    for k, v in var.context : k => merge(v, try(local.defaults.context[k], {}))
+    for k, v in var.context :
+    k => merge(v, try(local.defaults.context[k], {}))
   }
   context = merge(local._context, {
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
@@ -104,11 +105,12 @@ module "factory" {
     )
     tag_values = merge(var.tag_values, local.context.tag_values)
     tag_vars = {
-      projects = try(local.context.tag_vars.projects, {})
-      organization = merge({
-        for k, v in var.tag_keys : k => v.namespaced_name
-        if v.allowed_values_regex != null
-      }, try(local.context.tag_vars.organization, {}))
+      organization = merge(
+        var.tag_vars.organization, local.context.tag_vars.organization
+      )
+      projects = merge(
+        var.tag_vars.projects, local.context.tag_vars.projects
+      )
     }
     vpc_sc_perimeters = merge(var.perimeters, local.context.vpc_sc_perimeters)
   }
