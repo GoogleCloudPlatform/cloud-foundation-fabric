@@ -44,10 +44,10 @@ locals {
     tag_values      = merge(var.tag_values, local._ctx.tag_values)
     tag_vars = {
       organization = merge(
-        var.tag_vars.organization, var.context.tag_vars.organization
+        var.tag_vars.organization, local._ctx.tag_vars.organization
       )
       projects = merge(
-        var.tag_vars.projects, var.context.tag_vars.projects
+        var.tag_vars.projects, local._ctx.tag_vars.projects
       )
     }
     vpc_sc_perimeters = merge(var.perimeters, local._ctx.vpc_sc_perimeters)

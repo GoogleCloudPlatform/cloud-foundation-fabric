@@ -57,7 +57,7 @@ locals {
       organization = {
         for k, v in module.organization[0].tag_keys :
         # the provider returns allowed_values_regex set to "" not null
-        k => v.namespaced_name if v.allowed_values_regex != ""
+        k => v.namespaced_name if try(v.allowed_values_regex, "") != ""
       }
     }
   })
