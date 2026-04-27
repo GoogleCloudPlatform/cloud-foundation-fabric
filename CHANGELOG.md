@@ -5,8 +5,6 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.2.0...HEAD)
 
-## [v55.2.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v55.2.0) - 2026-04-25 <!-- from: 2026-04-20 14:40:53+00:00 to: 2026-04-25 since: v55.1.0 -->
-
 ### BREAKING CHANGES
 
 - `terraform-google-provider`: version updated to 7.28 which includes BYOC support.
