@@ -15,6 +15,9 @@
  */
 
 locals {
+  _tag_bindings = {
+    for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
   resource_types = {
     JOB     = "jobs"
     SERVICE = "services"
@@ -27,6 +30,6 @@ resource "google_tags_location_tag_binding" "binding" {
   parent = (
     "//run.googleapis.com/projects/${local.project_id}/locations/${local.location}/${local.resource_types[var.type]}/${local.resource.name}"
   )
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
   location  = local.location
 }

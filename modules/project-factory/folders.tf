@@ -69,7 +69,6 @@ module "folder-1" {
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -107,7 +106,12 @@ module "folder-1-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
@@ -137,7 +141,6 @@ module "folder-2" {
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -180,10 +183,15 @@ module "folder-2-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
@@ -213,7 +221,6 @@ module "folder-3" {
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -256,10 +263,15 @@ module "folder-3-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
@@ -289,7 +301,6 @@ module "folder-4" {
   }
   org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -332,10 +343,15 @@ module "folder-4-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
     })
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids

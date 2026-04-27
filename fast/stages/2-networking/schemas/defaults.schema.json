@@ -710,6 +710,24 @@
             "type": "string"
           }
         },
+        "tag_vars": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "projects": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "organization": {
+              "type": "string"
+            }
+          }
+        },
         "vpc_sc_perimeters": {
           "type": "object",
           "additionalProperties": {
@@ -736,7 +754,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:roles/|\\$custom_roles:)": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
@@ -762,7 +780,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -801,7 +819,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -834,7 +852,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
           }
         }
       }

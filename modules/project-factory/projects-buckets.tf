@@ -73,6 +73,10 @@ module "buckets" {
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,

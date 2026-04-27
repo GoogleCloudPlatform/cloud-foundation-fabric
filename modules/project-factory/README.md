@@ -881,11 +881,11 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L166) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L170) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_defaults](variables.tf#L43) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_merges](variables.tf#L108) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_overrides](variables.tf#L127) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_defaults](variables.tf#L47) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_merges](variables.tf#L112) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L131) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folders](variables-folders.tf#L17) | Folders data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-billing.tf#L17) | Notification channels used by budget alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [projects](variables-projects.tf#L17) | Projects data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -894,20 +894,20 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L91) | Folder ids. |  |
-| [iam_principals](outputs.tf#L96) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L101) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L106) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L113) | Project ids. |  |
-| [project_numbers](outputs.tf#L118) | Project numbers. |  |
-| [projects](outputs.tf#L125) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L130) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L137) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L144) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L151) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L158) | Service account emails. |  |
-| [service_agents](outputs.tf#L163) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L174) | Bucket names. |  |
+| [folder_ids](outputs.tf#L102) | Folder ids. |  |
+| [iam_principals](outputs.tf#L107) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L112) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L117) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L124) | Project ids. |  |
+| [project_numbers](outputs.tf#L129) | Project numbers. |  |
+| [projects](outputs.tf#L136) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L141) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L148) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L155) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L162) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L169) | Service account emails. |  |
+| [service_agents](outputs.tf#L174) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L185) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
