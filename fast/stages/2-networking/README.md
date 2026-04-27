@@ -384,7 +384,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [prefix](variables-fast.tf#L75) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_keys](variables-fast.tf#L50) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -392,9 +392,10 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [project_ids](variables-fast.tf#L85) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_accounts](variables-fast.tf#L93) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [storage_buckets](variables-fast.tf#L101) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_keys](variables-fast.tf#L109) | FAST-managed resource manager tag keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_values](variables-fast.tf#L120) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables-fast.tf#L128) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tag_keys](variables-fast.tf#L109) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_values](variables-fast.tf#L117) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_vars](variables-fast.tf#L125) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables-fast.tf#L136) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
