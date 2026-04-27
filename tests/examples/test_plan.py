@@ -87,9 +87,10 @@ def _test_terraform_example(plan_validator, example):
     except AssertionError:
       repo_root = BASE_PATH.parents[1]
       readme_rel = example.readme_path.relative_to(repo_root)
+      index_arg = f" --index {example.index}" if example.index > 1 else ""
       print(
           f'To regenerate inventory run:\nuv run tools/generate_plan_summary.py '
-          f'{readme_rel} "{example.header}" --save')
+          f'{readme_rel} "{example.header}"{index_arg} --save')
       raise
 
     print('\n')
