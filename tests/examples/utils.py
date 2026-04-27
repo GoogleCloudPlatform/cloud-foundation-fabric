@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ import marko
 
 Directive = collections.namedtuple('Directive', 'name args kwargs')
 TerraformExample = collections.namedtuple(
-    'TerraformExample', 'name code module files fixtures type directive')
+    'TerraformExample',
+    'name code module files fixtures type directive readme_path header index')
 YamlExample = collections.namedtuple('YamlExample',
                                      'body module schema directive')
 File = collections.namedtuple('File', 'path content')
@@ -95,7 +96,8 @@ def get_readme_examples(readme_path, fabric_root):
           marks.append('serial')
 
         example = TerraformExample(name, code, path, files[last_header],
-                                   fixtures, child.lang, directive)
+                                   fixtures, child.lang, directive, readme_path,
+                                   last_header, index)
         examples.append((example, example_id, marks, last_header, index))
       elif child.lang == "yaml":
         schema = directive.kwargs.get('schema')

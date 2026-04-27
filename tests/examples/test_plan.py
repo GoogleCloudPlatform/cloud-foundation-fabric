@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,8 +81,16 @@ def _test_terraform_example(plan_validator, example):
       inventory = BASE_PATH.parent / python_test_path / 'examples'
       inventory = inventory / directive.kwargs['inventory']
 
-    summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
-                             tf_var_files=tf_var_files)
+    try:
+      summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
+                               tf_var_files=tf_var_files)
+    except AssertionError:
+      repo_root = BASE_PATH.parents[1]
+      readme_rel = example.readme_path.relative_to(repo_root)
+      print(
+          f'To regenerate inventory run:\nuv run tools/generate_plan_summary.py '
+          f'{readme_rel} "{example.header}" --save')
+      raise
 
     print('\n')
     print(yaml.dump({'values': summary.values}))

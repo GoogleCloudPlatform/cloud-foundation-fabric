@@ -85,9 +85,7 @@ def output_summary(summary, inventory_path, save):
     print(f"Inventory saved to {inventory_path}")
   else:
     print(yaml.dump({'values': values}))
-    print()
     print(yaml.dump({'counts': summary.counts}))
-    print()
     print(yaml.dump({'outputs': outputs}))
 
 
