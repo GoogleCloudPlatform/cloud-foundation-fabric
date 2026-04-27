@@ -63,6 +63,13 @@ locals {
       }
     ]...) : k => v
   })
+  tag_vars_projects = {
+    for k, v in local.projects_input : v.name => {
+      for kk, vv in module.projects[k].tag_keys :
+      kk => vv.namespaced_name
+      if vv.allowed_values_regex != null
+    }
+  }
   per_project_service_agents = {
     for k, v in module.projects : k => {
       for kk, vv in v.service_agents :
@@ -169,6 +176,10 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     folder_ids = local.ctx.folder_ids
     kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
     iam_principals = merge(

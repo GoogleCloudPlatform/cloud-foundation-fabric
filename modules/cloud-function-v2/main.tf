@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   bucket = (
     var.bucket_config == null
@@ -58,6 +58,17 @@ resource "google_cloudfunctions2_function" "function" {
     entry_point           = var.function_config.entry_point
     environment_variables = var.build_environment_variables
     docker_repository     = var.docker_repository_id
+
+    dynamic "automatic_update_policy" {
+      for_each = try(var.function_config.automatic_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
+    dynamic "on_deploy_update_policy" {
+      for_each = try(var.function_config.on_deploy_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
     source {
       storage_source {
         bucket = local.bucket

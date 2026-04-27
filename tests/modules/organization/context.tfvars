@@ -149,8 +149,13 @@ pam_entitlements = {
     manual_approvals = {
       require_approver_justification = true
       steps = [{
-        approvers = ["$iam_principals:mygroup"]
+        approvers                 = ["$iam_principals:mygroup"]
+        approver_email_recipients = ["$email_addresses:default"]
       }]
+    }
+    additional_notification_targets = {
+      admin_email_recipients     = ["$email_addresses:default"]
+      requester_email_recipients = ["$email_addresses:default"]
     }
     eligible_users = ["$iam_principals:mygroup"]
     privileged_access = [

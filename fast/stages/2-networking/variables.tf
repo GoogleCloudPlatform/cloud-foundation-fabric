@@ -17,17 +17,21 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    cidr_ranges_sets  = optional(map(list(string)), {})
-    custom_roles      = optional(map(string), {})
-    email_addresses   = optional(map(string), {})
-    folder_ids        = optional(map(string), {})
-    kms_keys          = optional(map(string), {})
-    iam_principals    = optional(map(string), {})
-    locations         = optional(map(string), {})
-    project_ids       = optional(map(string), {})
-    storage_buckets   = optional(map(string), {})
-    tag_keys          = optional(map(string), {})
-    tag_values        = optional(map(string), {})
+    cidr_ranges_sets = optional(map(list(string)), {})
+    custom_roles     = optional(map(string), {})
+    email_addresses  = optional(map(string), {})
+    folder_ids       = optional(map(string), {})
+    kms_keys         = optional(map(string), {})
+    iam_principals   = optional(map(string), {})
+    locations        = optional(map(string), {})
+    project_ids      = optional(map(string), {})
+    storage_buckets  = optional(map(string), {})
+    tag_keys         = optional(map(string), {})
+    tag_values       = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
     vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}

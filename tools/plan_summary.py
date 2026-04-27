@@ -39,6 +39,10 @@ except ImportError:
   sys.path.append(str(BASEDIR / 'tests'))
   import fixtures
 
+FILTERED_ATTRIBUTES = [
+    'source_md5hash',
+]
+
 
 @click.command()
 @click.option('--example', default=False, is_flag=True)
@@ -62,7 +66,8 @@ def main(example, module, tfvars, extra_files, extra_dirs):
     summary = fixtures.plan_summary(module, Path(), tfvars,
                                     extra_files=extra_files,
                                     extra_dirs=extra_dirs)
-    print(yaml.dump({'values': summary.values}))
+    values = fixtures.filter_plan_values(summary.values, FILTERED_ATTRIBUTES)
+    print(yaml.dump({'values': values}))
     print(yaml.dump({'counts': summary.counts}))
     outputs = {
         k: v.get('value', '__missing__') for k, v in summary.outputs.items()
