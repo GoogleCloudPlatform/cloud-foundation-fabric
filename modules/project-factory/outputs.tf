@@ -66,6 +66,16 @@ locals {
           module.buckets["${k}/${sk}"].name
         )
       }
+      tag_keys = {
+        for sk, sv in module.projects[k].tag_keys : sk => sv.id
+      }
+      tag_values = {
+        for sk, sv in module.projects[k].tag_values : sk => sv.id
+      }
+      tag_vars = {
+        for sk, sv in module.projects[k].tag_keys : sk => sv.namespaced_name
+        if sv.allowed_values_regex != ""
+      }
       workload_identity_pools = (
         module.projects[k].workload_identity_pool_ids
       )

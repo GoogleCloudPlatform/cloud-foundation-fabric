@@ -48,6 +48,17 @@ locals {
       local.ctx.tag_values,
       local.org_tag_values
     )
+    tag_vars = {
+      projects = merge([
+        for k, v in module.factory.projects : {
+          for kk, vv in v.tag_vars : "${k}/${kk}" => vv
+        }
+      ]...)
+      organization = {
+        for k, v in module.organization[0].tag_keys :
+        k => v.namespaced_name if v.allowed_values_regex != ""
+      }
+    }
   })
   of_logging_sinks = {
     # Include project_id in the destination if supported (omitted for
@@ -131,6 +142,7 @@ locals {
       }
       tag_keys   = local.of_ctx.tag_keys
       tag_values = local.of_ctx.tag_values
+      tag_vars   = local.of_ctx.tag_vars
       vpc_self_links = {
         for k, v in module.vpcs.vpcs : k => v.id
       }

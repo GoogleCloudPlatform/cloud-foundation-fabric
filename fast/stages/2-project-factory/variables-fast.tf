@@ -123,6 +123,14 @@ variable "subnet_self_links" {
   default     = {}
 }
 
+variable "tag_keys" {
+  # tfdoc:variable:source 0-org-setup
+  description = "FAST-managed resource manager tag keys."
+  type        = map(string)
+  nullable    = false
+  default     = {}
+}
+
 variable "tag_values" {
   # tfdoc:variable:source 0-org-setup
   description = "FAST-managed resource manager tag values."
@@ -131,15 +139,15 @@ variable "tag_values" {
   default     = {}
 }
 
-variable "tag_keys" {
+variable "tag_vars" {
   # tfdoc:variable:source 0-org-setup
-  description = "FAST-managed resource manager tag keys."
-  type = map(object({
-    namespaced_name      = string
-    allowed_values_regex = optional(string)
-  }))
-  default  = {}
+  description = "FAST-managed resource manager tag key namespaced names."
+  type = object({
+    projects     = optional(map(map(string)), {})
+    organization = optional(map(string), {})
+  })
   nullable = false
+  default  = {}
 }
 
 variable "universe" {

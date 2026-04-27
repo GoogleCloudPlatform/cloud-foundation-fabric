@@ -18,7 +18,8 @@
 
 locals {
   _context = {
-    for k, v in var.context : k => merge(v, try(local.defaults.context[k], {}))
+    for k, v in var.context :
+    k => merge(v, try(local.defaults.context[k], {})) if !endswith(k, "_vars")
   }
   context = merge(local._context, {
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
