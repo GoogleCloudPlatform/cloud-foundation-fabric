@@ -144,6 +144,17 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     return PlanSummary(values, dict(counts), outputs)
 
 
+def filter_plan_values(values, ignored_attributes):
+  """Remove ignored attributes from plan values."""
+  if not ignored_attributes:
+    return values
+  for addr, resource_values in values.items():
+    if isinstance(resource_values, dict):
+      for attr in ignored_attributes:
+        resource_values.pop(attr, None)
+  return values
+
+
 @pytest.fixture(name='plan_summary')
 def plan_summary_fixture(request):
   """Return a function to generate a PlanSummary.

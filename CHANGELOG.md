@@ -3,9 +3,9 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.2.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v55.3.0...HEAD)
 
-## [v55.2.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v55.2.0) - 2026-04-25 <!-- from: 2026-04-20 14:40:53+00:00 to: 2026-04-25 since: v55.1.0 -->
+## [v55.3.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v55.3.0) - 2026-04-27 <!-- from: 2026-04-20 14:40:53+00:00 to: 2026-04-27 since: v55.1.0 -->
 
 ### BREAKING CHANGES
 
@@ -16,6 +16,8 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#3911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3911)] Remove data platform IAM grants from datasets ([wiktorn](https://github.com/wiktorn)) <!-- 2026-04-27 07:50:16+00:00 -->
+- [[#3910](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3910)] Fix regressions in FAST v55.2.0 ([ludoo](https://github.com/ludoo)) <!-- 2026-04-27 07:01:04+00:00 -->
 - [[#3906](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3906)] Bump GH template action versions to avoid GHA Node 20 deprecation ([brews](https://github.com/brews)) <!-- 2026-04-25 04:48:01+00:00 -->
 - [[#3905](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3905)] Fix failing CICD setup from bad provider file name in fast datasets ([brews](https://github.com/brews)) <!-- 2026-04-25 04:28:07+00:00 -->
 - [[#3904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3904)] Support organization roles in all schemas ([AlbertoOS](https://github.com/AlbertoOS)) <!-- 2026-04-24 21:11:50+00:00 -->
@@ -27,6 +29,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#3910](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3910)] Fix regressions in FAST v55.2.0 ([ludoo](https://github.com/ludoo)) <!-- 2026-04-27 07:01:04+00:00 -->
 - [[#3881](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3881)] Add support for auto_update_policy to modules/cloud-function-v2 ([vsingh55](https://github.com/vsingh55)) <!-- 2026-04-25 04:48:41+00:00 -->
 - [[#3904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3904)] Support organization roles in all schemas ([AlbertoOS](https://github.com/AlbertoOS)) <!-- 2026-04-24 21:11:50+00:00 -->
 - [[#3897](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3897)] Add support for dynamic tags ([juliocc](https://github.com/juliocc)) <!-- 2026-04-24 20:45:46+00:00 -->
@@ -41,6 +44,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#3911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3911)] Remove data platform IAM grants from datasets ([wiktorn](https://github.com/wiktorn)) <!-- 2026-04-27 07:50:16+00:00 -->
 - [[#3885](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3885)] Add agent engine BYOC support ([heyanand](https://github.com/heyanand)) <!-- 2026-04-21 17:46:21+00:00 -->
 - [[#3895](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3895)] Release process skill and update to changelog tool ([ludoo](https://github.com/ludoo)) <!-- 2026-04-21 14:39:58+00:00 -->
 - [[#3893](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3893)] Skip IAM for the Agent Gateway Service Agent ([juliocc](https://github.com/juliocc)) <!-- 2026-04-21 10:33:14+00:00 -->

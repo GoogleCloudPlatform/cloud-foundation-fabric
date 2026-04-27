@@ -1098,22 +1098,6 @@ values:
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
   : condition: []
     role: roles/serviceusage.serviceUsageViewer
-  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_ro"]:
-    condition:
-    - description: null
-      expression: 'resource.matchTag(''1234567890/environment'', ''development'')
-
-        '
-      title: Data platform dev network viewer.
-    role: roles/compute.networkViewer
-  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_rw"]:
-    condition:
-    - description: null
-      expression: 'resource.matchTag(''1234567890/environment'', ''development'')
-
-        '
-      title: Data platform dev service project admin.
-    role: organizations/1234567890/roles/serviceProjectNetworkAdmin
   module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["project_factory"]:
     condition:
     - description: null
@@ -1281,16 +1265,6 @@ values:
     parent: organizations/1234567890
     tags: null
     timeouts: null
-  ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
-  : condition: []
-    role: organizations/1234567890/roles/projectIamViewer
-  module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.bindings["dp_dev"]:
-    condition:
-    - description: null
-      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
-        \  'organizations/1234567890/roles/serviceProjectNetworkAdmin'\n])\n"
-      title: Data platform dev delegated IAM grant.
-    role: roles/resourcemanager.projectIamAdmin
   module.factory.module.folder-2-iam["networking/dev"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.factory.module.folder-2-iam["networking/prod"].google_tags_tag_binding.binding["environment"]:
@@ -8399,6 +8373,50 @@ values:
     output: null
     triggers_replace: null
 
+counts:
+  google_bigquery_dataset: 1
+  google_bigquery_default_service_account: 2
+  google_billing_account_iam_member: 6
+  google_essential_contacts_contact: 1
+  google_folder: 7
+  google_folder_iam_binding: 70
+  google_kms_crypto_key: 3
+  google_kms_crypto_key_iam_member: 3
+  google_kms_key_ring: 3
+  google_logging_metric: 10
+  google_logging_organization_settings: 1
+  google_logging_organization_sink: 3
+  google_logging_project_bucket_config: 6
+  google_logging_project_settings: 3
+  google_monitoring_alert_policy: 10
+  google_org_policy_custom_constraint: 89
+  google_org_policy_policy: 167
+  google_organization_iam_audit_config: 1
+  google_organization_iam_binding: 40
+  google_organization_iam_custom_role: 14
+  google_project: 3
+  google_project_iam_binding: 64
+  google_project_iam_member: 17
+  google_project_service: 37
+  google_project_service_identity: 11
+  google_scc_management_organization_security_health_analytics_custom_module: 18
+  google_service_account: 12
+  google_service_account_iam_binding: 2
+  google_service_account_iam_member: 4
+  google_storage_bucket: 3
+  google_storage_bucket_iam_binding: 4
+  google_storage_bucket_object: 10
+  google_storage_managed_folder: 4
+  google_storage_managed_folder_iam_binding: 8
+  google_storage_project_service_account: 3
+  google_tags_tag_binding: 5
+  google_tags_tag_key: 3
+  google_tags_tag_value: 6
+  google_tags_tag_value_iam_binding: 4
+  local_file: 9
+  modules: 54
+  resources: 671
+  terraform_data: 4
 
 outputs:
   iam_principals:
@@ -8415,3 +8433,4 @@ outputs:
   subnet_self_links: {}
   tfvars: __missing__
   vpc_self_links: {}
+

@@ -27,6 +27,10 @@ except ImportError:
   sys.path.append(str(BASEDIR / 'tests'))
   import fixtures
 
+FILTERED_ATTRIBUTES = [
+    'source_md5hash',
+]
+
 
 @click.command()
 @click.argument('test_file', type=click.Path(), nargs=1)
@@ -52,7 +56,8 @@ def main(test_file, test_name):
                                   extra_files=extra_files,
                                   extra_dirs=extra_dirs)
 
-  print(yaml.dump({'values': summary.values}))
+  values = fixtures.filter_plan_values(summary.values, FILTERED_ATTRIBUTES)
+  print(yaml.dump({'values': values}))
   print(yaml.dump({'counts': summary.counts}))
   outputs = {
       k: v.get('value', '__missing__') for k, v in summary.outputs.items()
