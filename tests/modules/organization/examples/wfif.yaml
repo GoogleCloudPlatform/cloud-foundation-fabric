@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.org.google_iam_workforce_pool.default[0]:
+  module.org.google_iam_workforce_pool.default["test-pool"]:
     access_restrictions: []
     description: Workforce pool for testing.
     disabled: null
@@ -23,11 +23,12 @@ values:
     session_duration: 3600s
     timeouts: null
     workforce_pool_id: test-pool
-  module.org.google_iam_workforce_pool_provider.default["oidc-full"]:
+  module.org.google_iam_workforce_pool_provider.default["test-pool/oidc-full"]:
     attribute_condition: null
     attribute_mapping:
       google.subject: assertion.sub
     description: null
+    detailed_audit_logging: null
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
@@ -53,9 +54,10 @@ values:
         response_type: CODE
     provider_id: oidc-full
     saml: []
+    scim_usage: null
     timeouts: null
     workforce_pool_id: test-pool
-  module.org.google_iam_workforce_pool_provider.default["saml-basic"]:
+  module.org.google_iam_workforce_pool_provider.default["test-pool/saml-basic"]:
     attribute_condition: null
     attribute_mapping:
       attribute.first_name: assertion.attributes.givenname[0]
@@ -65,6 +67,7 @@ values:
       google.groups: assertion.attributes.groups
       google.subject: assertion.subject
     description: null
+    detailed_audit_logging: null
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
@@ -74,13 +77,15 @@ values:
     provider_id: saml-basic
     saml:
     - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
+    scim_usage: null
     timeouts: null
     workforce_pool_id: test-pool
-  module.org.google_iam_workforce_pool_provider.default["saml-full"]:
+  module.org.google_iam_workforce_pool_provider.default["test-pool/saml-full"]:
     attribute_condition: null
     attribute_mapping:
       google.subject: assertion.sub
     description: null
+    detailed_audit_logging: null
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
@@ -98,6 +103,7 @@ values:
     provider_id: saml-full
     saml:
     - idp_metadata_xml: <?xml version="1.0" encoding="utf-8"?>...
+    scim_usage: null
     timeouts: null
     workforce_pool_id: test-pool
 

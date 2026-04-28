@@ -6,6 +6,7 @@
 
 *additional properties: false*
 
+- **allowed_values_regex**: *string*
 - **name**: *string*
 - **description**: *string*
 - **id**: *string*

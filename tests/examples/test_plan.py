@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,8 +81,17 @@ def _test_terraform_example(plan_validator, example):
       inventory = BASE_PATH.parent / python_test_path / 'examples'
       inventory = inventory / directive.kwargs['inventory']
 
-    summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
-                             tf_var_files=tf_var_files)
+    try:
+      summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
+                               tf_var_files=tf_var_files)
+    except AssertionError:
+      repo_root = BASE_PATH.parents[1]
+      readme_rel = example.readme_path.relative_to(repo_root)
+      index_arg = f" --index {example.index}" if example.index > 1 else ""
+      print(
+          f'To regenerate inventory run:\nuv run tools/generate_plan_summary.py '
+          f'{readme_rel} "{example.header}"{index_arg} --save')
+      raise
 
     print('\n')
     print(yaml.dump({'values': summary.values}))
@@ -105,7 +114,7 @@ def _test_terraform_example(plan_validator, example):
     result = subprocess.run(
         f'{binary} fmt -check -diff -no-color main.tf'.split(), cwd=tmp_path,
         stdout=subprocess.PIPE, encoding='utf-8')
-    assert result.returncode == 0, f'terraform example code in README.md not formatted correctly\n{result.stdout}'
+    assert result.returncode == 0, f'[{example.name}] terraform example code in README.md not formatted correctly\n{result.stdout}'
 
 
 def _test_yaml_example(example):

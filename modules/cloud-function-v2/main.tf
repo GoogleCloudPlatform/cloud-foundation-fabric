@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   bucket = (
     var.bucket_config == null
@@ -58,6 +58,17 @@ resource "google_cloudfunctions2_function" "function" {
     entry_point           = var.function_config.entry_point
     environment_variables = var.build_environment_variables
     docker_repository     = var.docker_repository_id
+
+    dynamic "automatic_update_policy" {
+      for_each = try(var.function_config.automatic_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
+    dynamic "on_deploy_update_policy" {
+      for_each = try(var.function_config.on_deploy_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
     source {
       storage_source {
         bucket = local.bucket
@@ -93,19 +104,20 @@ resource "google_cloudfunctions2_function" "function" {
     }
   }
   service_config {
-    all_traffic_on_latest_revision = true
-    available_cpu                  = var.function_config.cpu
-    available_memory               = "${var.function_config.memory_mb}M"
-    binary_authorization_policy    = var.function_config.binary_authorization_policy
-    environment_variables          = var.environment_variables
-    ingress_settings               = var.ingress_settings
-    max_instance_count             = var.function_config.instance_count
-    min_instance_count             = 0
-    service_account_email          = local.service_account_email
-    timeout_seconds                = var.function_config.timeout_seconds
-    vpc_connector                  = local.vpc_connector
-    vpc_connector_egress_settings  = var.vpc_connector.egress_settings
-    direct_vpc_egress              = try(var.direct_vpc_egress.mode, null)
+    all_traffic_on_latest_revision   = true
+    available_cpu                    = var.function_config.cpu
+    available_memory                 = "${var.function_config.memory_mb}M"
+    binary_authorization_policy      = var.function_config.binary_authorization_policy
+    environment_variables            = var.environment_variables
+    ingress_settings                 = var.ingress_settings
+    max_instance_count               = var.function_config.instance_count
+    max_instance_request_concurrency = var.function_config.max_instance_request_concurrency
+    min_instance_count               = 0
+    service_account_email            = local.service_account_email
+    timeout_seconds                  = var.function_config.timeout_seconds
+    vpc_connector                    = local.vpc_connector
+    vpc_connector_egress_settings    = var.vpc_connector.egress_settings
+    direct_vpc_egress                = try(var.direct_vpc_egress.mode, null)
 
     dynamic "direct_vpc_network_interface" {
       for_each = var.direct_vpc_egress == null ? [] : [""]
@@ -164,7 +176,7 @@ resource "google_cloudfunctions2_function_iam_binding" "binding" {
   role           = lookup(local.ctx.custom_roles, each.key, each.key)
   members        = [for member in each.value : lookup(local.ctx.iam_principals, member, member)]
   lifecycle {
-    replace_triggered_by = [google_cloudfunctions2_function.function]
+    replace_triggered_by = [google_cloudfunctions2_function.function.id]
   }
 }
 
@@ -188,7 +200,7 @@ resource "google_cloud_run_service_iam_binding" "invoker" {
   role     = "roles/run.invoker"
   members  = [for member in local.run_invoker_members : lookup(local.ctx.iam_principals, member, member)]
   lifecycle {
-    replace_triggered_by = [google_cloudfunctions2_function.function]
+    replace_triggered_by = [google_cloudfunctions2_function.function.id]
   }
 }
 
@@ -205,7 +217,7 @@ resource "google_cloud_run_service_iam_member" "invoker" {
   role     = "roles/run.invoker"
   member   = "serviceAccount:${local.trigger_sa_email}"
   lifecycle {
-    replace_triggered_by = [google_cloudfunctions2_function.function]
+    replace_triggered_by = [google_cloudfunctions2_function.function.id]
   }
 }
 

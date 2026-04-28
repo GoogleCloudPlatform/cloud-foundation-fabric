@@ -177,6 +177,25 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
         item[context].append(data)
 
 
+def _extract_title(element):
+  'Extract and format text from marko elements.'
+  if isinstance(element, str):
+    return element
+  if hasattr(element, 'children'):
+    if isinstance(element.children, str):
+      if element.get_type() == 'CodeSpan':
+        return f'`{element.children}`'
+      return element.children
+    elif isinstance(element.children, list):
+      inner = ''.join(_extract_title(c) for c in element.children)
+      if element.get_type() == 'StrongEmphasis':
+        return f'**{inner}**'
+      elif element.get_type() == 'Emphasis':
+        return f'*{inner}*'
+      return inner
+  return ''
+
+
 def create_toc(readme, skip=['contents']):
   'Create a Markdown table of contents a for README.'
   doc = marko.parse(readme)
@@ -184,7 +203,7 @@ def create_toc(readme, skip=['contents']):
   headings = [x for x in doc.children if x.get_type() == 'Heading']
   skip = skip or []
   for h in headings[1:]:
-    title = h.children[0].children
+    title = _extract_title(h)
     slug = title.lower().strip()
     slug = re.sub(r'[^\w\s-]', '', slug)
     slug = re.sub(r'[-\s]+', '-', slug)
@@ -197,7 +216,7 @@ def create_toc(readme, skip=['contents']):
 
 
 def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
-                 readme=None):
+                 readme=None, hover=False):
   'Return tfdoc mark and generated content.'
   if readme:
     # check for overrides in doc
@@ -226,7 +245,7 @@ def create_tfref(module_path, files=False, show_extra=False, exclude_files=None,
 
 
 def format_tfref(outputs, variables, files, fixtures, recipes=None,
-                 show_extra=False):
+                 show_extra=False, hover=False):
   'Return formatted document.'
   buffer = []
   if recipes:
@@ -237,7 +256,7 @@ def format_tfref(outputs, variables, files, fixtures, recipes=None,
     buffer += list(format_tfref_files(files))
   if variables:
     buffer += ['', '## Variables', '']
-    buffer += list(format_tfref_variables(variables, show_extra))
+    buffer += list(format_tfref_variables(variables, show_extra, hover))
   if outputs:
     buffer += ['', '## Outputs', '']
     buffer += list(format_tfref_outputs(outputs, show_extra))
@@ -301,7 +320,7 @@ def format_tfref_recipes(recipes):
     yield f'- [{r.title}]({r.path})'
 
 
-def format_tfref_variables(items, show_extra=True):
+def format_tfref_variables(items, show_extra=True, hover=False):
   'Format variables table.'
   if not items:
     return
@@ -326,7 +345,10 @@ def format_tfref_variables(items, show_extra=True):
           value = '…'
         else:
           value = f'{value[0]}…{value[-1].strip()}'
-        vars[k] = f'<code title="{_escape(title)}">{_escape(value)}</code>'
+        if hover:
+          vars[k] = f'<code title="{_escape(title)}">{_escape(value)}</code>'
+        else:
+          vars[k] = f'<code>{_escape(value)}</code>'
     format = (
         f'| [{i.name}]({i.file}#L{i.line}) | {i.description or ""} | {vars["type"]} '
         f'| {vars["required"]} | {vars["default"]} |')
@@ -524,8 +546,9 @@ def render_toc(readme, toc):
 @click.option('--show-extra/--no-show-extra', default=False)
 @click.option('--toc-only', is_flag=True, default=False)
 @click.option('--toc-skip', multiple=True, default=['contents'])
+@click.option('--hover', is_flag=True, default=False)
 def main(module_paths=None, exclude_file=None, files=False, replace=True,
-         show_extra=True, toc_only=False, toc_skip=['contents']):
+         show_extra=True, toc_only=False, toc_skip=['contents'], hover=False):
   'Program entry point.'
   if not module_paths:
     return
@@ -536,7 +559,8 @@ def main(module_paths=None, exclude_file=None, files=False, replace=True,
       readme_path = os.path.join(module_path, 'README.md')
     readme = get_readme(readme_path)
     if not toc_only:
-      doc = create_tfref(module_path, files, show_extra, exclude_file, readme)
+      doc = create_tfref(module_path, files, show_extra, exclude_file, readme,
+                         hover)
       readme = render_tfref(readme, doc.content)
     toc = create_toc(readme, toc_skip)
     readme = render_toc(readme, toc)

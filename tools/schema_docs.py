@@ -177,12 +177,12 @@ def main(paths=None):
       tree = parse_node(schema)
       props, defs = render_node(tree)
       doc = DOC.format(title=schema.get('title'), properties=props,
-                       definitions=defs or '')
+                       definitions=defs or '').strip()
       f_doc = f.with_suffix('.md')
       f_doc.write_text(f'{doc}\n')
       logging.info(f'doc {f}')
 
 
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.DEBUG)
+  logging.basicConfig(level=logging.INFO)
   main()

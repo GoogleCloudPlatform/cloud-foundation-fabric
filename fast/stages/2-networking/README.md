@@ -12,6 +12,7 @@
   - [Networking projects](#networking-projects)
   - [VPCs](#vpcs)
   - [DNS](#dns)
+    - [Delegated Public Zones](#delegated-public-zones)
   - [Firewall Policies](#firewall-policies)
   - [Cloud NAT and Routers](#cloud-nat-and-routers)
   - [VPC Connectivity](#vpc-connectivity)
@@ -159,18 +160,19 @@ The following diagram shows the canonical paths for the different factory config
 ```tree
 .
 ├── dns
-│   ├── response-policies   # Response Policy Rules for DNS.
-│   └── zones               # DNS zones (private, forwarding, peering).
-├── firewall-policies       # Hierarchical firewall policies.
-├── ncc-hubs                # NCC configurations.
-├── nvas                    # NVA configurations.
-├── projects                # Project definitions.
+│   ├── response-policies    # Response Policy Rules for DNS.
+│   └── zones                # DNS zones (private, forwarding, peering).
+├── firewall-policies        # Hierarchical firewall policies.
+├── ncc-hubs                 # NCC configurations.
+├── nvas                     # NVA configurations.
+├── projects                 # Project definitions.
 └── vpcs
-    └── [vpc-name]          # Each subfolder represents a VPC.
-        ├── .config.yaml    # Main VPC configuration, peerings, NAT.
-        ├── firewall-rules  # VPC-level firewall rules.
-        ├── subnets         # Subnet definitions.
-        └── vpns            # VPN configurations.
+    └── [vpc-name]           # Each subfolder represents a VPC.
+        ├── .config.yaml     # Main VPC configuration, peerings, NAT.
+        ├── firewall-rules   # VPC-level firewall rules.
+        ├── subnets          # Subnet definitions.
+        ├── vlan-attachments # VLAN attachment configurations.
+        └── vpns             # VPN configurations.
 ```
 
 ### Networking projects
@@ -198,6 +200,68 @@ In the default dataset, DNS is centralized in the `net-core-0` (hub) project. It
 - **Peering zones** to make its DNS resolution available to the spoke VPCs.
 
 The spoke VPCs have their own private zones for subdomains (e.g., `dev.test.`) and use the hub for all other DNS lookups.
+
+#### Delegated Public Zones
+
+The factory also supports delegating public zones, which is useful for scenarios where a parent public zone is managed in one project, and you want to delegate a subdomain to a different project.
+
+To configure this, you first define the parent public zone. Then, for the delegated zone, you specify `delegation_config` pointing to the parent zone. This automatically creates the necessary `NS` (and `DS` records if you are using DNSSEC) records in the parent zone.
+
+Here's an example of how to set this up:
+
+```yaml
+# Parent public zone (e.g., in dns/zones/net-core-0/pub-gcp-example-com.yaml)
+#
+# yaml-language-server: $schema=../../../../../schemas/dns.schema.json
+
+project_id: $project_ids:net-core-0
+domain: gcp.example.com.
+public:
+  enable_logging: false
+  dnssec_config:
+    state: "on"
+    non_existence: "nsec3"
+    key_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+    zone_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+recordsets:
+  "A localhost":
+    records: ["127.0.0.1"]
+delegations:
+  - net-dev-0/pub-dev-gcp-example-com
+```
+
+```yaml
+# Delegated child zone (e.g., in dns/zones/net-dev-0/pub-dev-gcp-example-com.yaml)
+#
+# yaml-language-server: $schema=../../../../../schemas/dns.schema.json
+
+project_id: $project_ids:net-dev-0
+domain: dev.gcp.example.com.
+public:
+  enable_logging: false
+  dnssec_config:
+    state: "on"
+    non_existence: "nsec3"
+    key_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+    zone_signing_key:
+      algorithm: "ecdsap256sha256"
+      key_length: 256
+recordsets:
+  "A localhost":
+    records: ["127.0.0.1"]
+
+```
+
+In this example:
+- A public zone for `gcp.example.com.` is created in the `net-core-0` project.
+- A separate public zone for `dev.gcp.example.com.` is created in the `net-dev-0` project.
+- The `delegation_config` in the parent zone tells the factory to find the child zone named `pub-dev-gcp-example-com` in the `net-dev-0` project and create the necessary `NS` and `DS` records to make the delegation effective.
 
 ### Firewall Policies
 
@@ -233,9 +297,10 @@ routers:
 
 ### VPC Connectivity
 
-This stage supports multiple ways to connect VPCs:
+This stage supports multiple ways to connect VPCs to other VPCs or other networks:
 
 - **VPC Peering:** Managed via the `peering_config` section in a VPC's `.config.yaml` file.
+- **VLAN Attachments:** Partner or Dedicated Interconnect VLAN attachments are defined in the `vpcs/[vpc-name]/vlan-attachments` directory. By default, they are disabled by passing a non-existing directory via `factories_config`.
 - **VPNs:** High-availability VPNs are defined in the `vpcs/[vpc-name]/vpns` directory.
 - **Network Connectivity Center (NCC):** Managed via the `ncc_config` section in a VPC's `.config.yaml` file.
 
@@ -302,6 +367,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [factory-peering.tf](./factory-peering.tf) | VPC Peering factory. |  | <code>google_compute_network_peering</code> |
 | [factory-projects.tf](./factory-projects.tf) | Projects factory. | <code>project-factory</code> |  |
 | [factory-routers.tf](./factory-routers.tf) | Routers factory. |  | <code>google_compute_router</code> |
+| [factory-vlan-attachments.tf](./factory-vlan-attachments.tf) | VLAN attachments factory. | <code>net-vlan-attachment</code> | <code>google_compute_interconnect_attachment_group</code> |
 | [factory-vpcs.tf](./factory-vpcs.tf) | VPC and firewall rules factory. | <code>net-vpc</code> · <code>net-vpc-factory</code> |  |
 | [factory-vpns.tf](./factory-vpns.tf) | VPNs factory. | <code>net-vpn-ha</code> | <code>google_compute_ha_vpn_gateway</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
@@ -313,12 +379,12 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [billing_account](variables-fast.tf#L17) | Billing account id. | <code title="object&#40;&#123;&#10;  id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [organization](variables-fast.tf#L58) | Organization details. | <code title="object&#40;&#123;&#10;  id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [billing_account](variables-fast.tf#L17) | Billing account id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [organization](variables-fast.tf#L58) | Organization details. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [prefix](variables-fast.tf#L75) | Prefix used for resources that need unique names. Use a maximum of 9 chars for organizations, and 11 chars for tenants. | <code>string</code> | ✓ |  |
-| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  cidr_ranges_sets  &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  storage_buckets   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables-fast.tf#L25) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L37) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  dataset &#61; optional&#40;string, &#34;datasets&#47;hub-and-spokes-peerings&#34;&#41;&#10;  paths &#61; optional&#40;object&#40;&#123;&#10;    defaults              &#61; optional&#40;string, &#34;defaults.yaml&#34;&#41;&#10;    dns                   &#61; optional&#40;string, &#34;dns&#47;zones&#34;&#41;&#10;    dns_response_policies &#61; optional&#40;string, &#34;dns&#47;response-policies&#34;&#41;&#10;    firewall_policies     &#61; optional&#40;string, &#34;firewall-policies&#34;&#41;&#10;    folders               &#61; optional&#40;string, &#34;folders&#34;&#41;&#10;    ncc_hubs              &#61; optional&#40;string, &#34;ncc-hubs&#34;&#41;&#10;    nvas                  &#61; optional&#40;string, &#34;nvas&#34;&#41;&#10;    projects              &#61; optional&#40;string, &#34;projects&#34;&#41;&#10;    vpcs                  &#61; optional&#40;string, &#34;vpcs&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folder_ids](variables-fast.tf#L33) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_principals](variables-fast.tf#L41) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_keys](variables-fast.tf#L50) | KMS key ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -328,7 +394,8 @@ Internally created resources are mapped to context namespaces, and use specific 
 | [storage_buckets](variables-fast.tf#L101) | Storage buckets created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_keys](variables-fast.tf#L109) | FAST-managed resource manager tag keys. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_values](variables-fast.tf#L117) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables-fast.tf#L125) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code title="object&#40;&#123;&#10;  domain                         &#61; string&#10;  prefix                         &#61; string&#10;  forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tag_vars](variables-fast.tf#L125) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables-fast.tf#L136) | GCP universe where to deploy projects. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

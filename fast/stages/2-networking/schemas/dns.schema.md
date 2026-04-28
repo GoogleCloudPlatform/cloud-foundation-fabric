@@ -16,12 +16,14 @@
 - **peering**: *reference([peering_zone](#refs-peering_zone))*
 - **forwarding**: *reference([forwarding_zone](#refs-forwarding_zone))*
 - **public**: *reference([public_zone](#refs-public_zone))*
+- **delegations**: *array*
+  - items: *string*
 
 ## Definitions
 
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|\$custom_roles:)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
 - **recordsets**<a name="refs-recordsets"></a>: *object*

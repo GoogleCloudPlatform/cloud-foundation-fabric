@@ -15,6 +15,14 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+
   fwd_rule_names = {
     for k, v in var.forwarding_rules_config :
     k => k == "" ? var.name : "${var.name}-${k}"
@@ -55,7 +63,7 @@ resource "google_compute_global_forwarding_rule" "default" {
   project     = var.project_id
   name        = coalesce(each.value.name, local.fwd_rule_names[each.key])
   description = each.value.description
-  ip_address  = each.value.address
+  ip_address  = try(local.ctx.addresses[each.value.address], each.value.address)
   ip_protocol = "TCP"
   ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
   load_balancing_scheme = (
@@ -80,7 +88,7 @@ resource "google_compute_ssl_certificate" "default" {
 
 resource "google_compute_managed_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.managed_configs
-  project     = var.project_id
+  project     = local.project_id
   name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   managed {
@@ -94,7 +102,7 @@ resource "google_compute_target_http_proxy" "default" {
   count = (
     var.protocol == "HTTP" && var.use_classic_version ? 1 : 0
   )
-  project     = var.project_id
+  project     = local.project_id
   name        = coalesce(var.https_proxy_config.name, var.name)
   description = var.http_proxy_config.description
   url_map     = google_compute_url_map.default.id
@@ -104,7 +112,7 @@ resource "google_compute_target_https_proxy" "default" {
   count = (
     var.protocol == "HTTPS" && var.use_classic_version ? 1 : 0
   )
-  project                          = var.project_id
+  project                          = local.project_id
   name                             = coalesce(var.https_proxy_config.name, var.name)
   description                      = var.https_proxy_config.description
   certificate_map                  = var.https_proxy_config.certificate_map
@@ -120,7 +128,7 @@ resource "google_compute_target_http_proxy" "new" {
   count = (
     var.protocol == "HTTP" && !var.use_classic_version ? 1 : 0
   )
-  project                     = var.project_id
+  project                     = local.project_id
   name                        = coalesce(var.http_proxy_config.name, var.name)
   description                 = var.http_proxy_config.description
   http_keep_alive_timeout_sec = var.http_proxy_config.http_keepalive_timeout
@@ -131,7 +139,7 @@ resource "google_compute_target_https_proxy" "new" {
   count = (
     var.protocol == "HTTPS" && !var.use_classic_version ? 1 : 0
   )
-  project                          = var.project_id
+  project                          = local.project_id
   name                             = coalesce(var.https_proxy_config.name, var.name)
   description                      = var.https_proxy_config.description
   certificate_map                  = var.https_proxy_config.certificate_map

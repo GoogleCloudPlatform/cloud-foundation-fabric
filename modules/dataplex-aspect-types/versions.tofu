@@ -12,24 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Fabric release: v54.0.0
+# Fabric release: v55.3.0
 
 terraform {
-  required_version = ">= 1.10.0"
+  required_version = ">= 1.11.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 7.17.0, < 8.0.0" # tftest
+      version = ">= 7.29.0, < 8.0.0" # tftest
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 7.17.0, < 8.0.0" # tftest
+      version = ">= 7.29.0, < 8.0.0" # tftest
     }
   }
   provider_meta "google" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dataplex-aspect-types:v54.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dataplex-aspect-types:v55.3.0-tofu"
   }
   provider_meta "google-beta" {
-    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dataplex-aspect-types:v54.0.0-tofu"
+    module_name = "google-pso-tool/cloud-foundation-fabric/modules/dataplex-aspect-types:v55.3.0-tofu"
   }
 }

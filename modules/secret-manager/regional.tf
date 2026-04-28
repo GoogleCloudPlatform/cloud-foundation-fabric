@@ -86,5 +86,5 @@ resource "google_tags_location_tag_binding" "binding" {
     google_secret_manager_regional_secret.default[each.value.secret].secret_id
   )
   location  = lookup(local.ctx.locations, each.value.location, each.value.location)
-  tag_value = lookup(local.ctx.tag_values, each.value.tag, each.value.tag)
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

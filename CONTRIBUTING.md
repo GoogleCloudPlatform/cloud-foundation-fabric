@@ -82,6 +82,8 @@ pytest tests/examples
 
 Once everything looks good, add/commit any pending changes then push and open a PR on GitHub. We typically enforce a set of design and style conventions, so please make sure you have familiarized yourself with the following sections and implemented them in your code, to avoid lengthy review cycles.
 
+When naming your Pull Request, do not use Conventional Commits guidelines (e.g., do not use `feat(net-vpc): add NCC support`). Instead, use short, capitalized, imperative titles with no trailing dot, such as "Add NCC support to `modules/net-vpc`". Keep the title concise and explain the details of the change in the PR description.
+
 HINT: if you work on high-latency or low-bandwidth network use `TF_PLUGIN_CACHE_DIR` environment variable to dramatically speed up the tests, for example:
 
 ```bash
@@ -160,9 +162,13 @@ module "project" {
   iam = {
     "roles/viewer" = ["user1:one@example.org"]
   }
-  policy_boolean = {
-    "constraints/compute.disableGuestAttributesAccess" = true
-    "constraints/compute.skipDefaultNetworkCreation" = true
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      rules = [{ enforce = true }]
+    }
+    "compute.skipDefaultNetworkCreation" = {
+      rules = [{ enforce = true }]
+    }
   }
   service_encryption_key_ids = {
     "compute.googleapis.com" = [local.kms.europe-west1.compute]
@@ -217,19 +223,20 @@ Variables should not simply map to the underlying resource attributes, but their
 
 This translates into different practical approaches:
 
-- multiple sets of interfaces that support the same feature which are then internally combined into the same resources (e.g. IAM groups below)
+- multiple sets of interfaces that support the same feature which are then internally combined into the same resources (e.g. IAM by principals below)
 - functional interfaces that don't map 1:1 to resources (e.g. project service identities below)
+- slight deviations from exact resource attribute names when an alternative name is more intuitive, shorter, or better aggregates functionality for the user
 - crossing the project boundary to configure resources which support key logical functionality (e.g shared VPC below)
 
-The most pervasive example of the first practical approach above is IAM: given its importance we implement both a role-based interface and a group-based interface, which is less verbose and makes it easy to understand at a glance the roles assigned to a specific group. Both interfaces provide data that is then internally combined to drive the same IAM binding resource, and are available for authoritative and additive roles.
+The most pervasive example of the first practical approach above is IAM: given its importance we implement both a role-based interface and a principal-based interface, which is less verbose and makes it easy to understand at a glance the roles assigned to a specific principal. Both interfaces provide data that is then internally combined to drive the same IAM binding resource, and are available for authoritative and additive roles.
 
 ```hcl
 module "project" {
   source          = "./modules/project"
   name            = "project-example"
-  group_iam = {
-    "roles/editor" = [
-      "group:foo@example.com"
+  iam_by_principals = {
+    "group:foo@example.com" = [
+      "roles/editor"
     ]
   }
   iam = {
@@ -327,8 +334,10 @@ module "simple-vm-example" {
   zone       = "europe-west1-b"
   name       = "test"
   boot_disk  = {
-    initialize_params = {
+    source = {
       image = "projects/debian-cloud/global/images/family/cos-97-lts"
+    }
+    initialize_params = {
       type = "pd-balanced"
       size = 10
     }
@@ -336,21 +345,28 @@ module "simple-vm-example" {
 }
 ```
 
-Where this results in objects with too many attributes, we usually split attributes between required and optional by adding a second level, as in this example where VM `attached_disks[].options` contains less used attributes and can be set to null if not needed.
+Where this results in objects with too many attributes, we usually group attributes into logical blocks, as in this example where VM `attached_disks` separates initialization parameters and source parameters.
+
+To simplify the variable space and allow users to declare only the values they want to change, we leverage Terraform's **`optional()` function with defaults** extensively. This reduces verbosity, aggregates attributes in logical units, and provides sane defaults directly at the variable definition level without needing complex `coalesce()` or `try()` logic in the module itself:
 
 ```hcl
-module "simple-vm-example" {
-  source     = "./modules/compute-vm"
-  project_id = var.project_id
-  zone       = "europe-west1-b"
-  name       = "test"
-  attached_disks = [
-    { name="data", size=10, source=null, source_type=null, options=null }
-  ]
+variable "boot_disk" {
+  description = "Boot disk properties."
+  type = object({
+    architecture      = optional(string)
+    auto_delete       = optional(bool, true)
+    initialize_params = optional(object({
+      size = optional(number, 10)
+      type = optional(string, "pd-balanced")
+    }), {})
+  })
+  default = {}
 }
 ```
 
-Whenever options are not passed like in the example above, we typically infer their values from a defaults variable which can be customized when using defaults across several items. In the following example instead of specifying regional PD options for both disks, we set their options to `null` and change the defaults used for all disks.
+When defining multiple items, we use maps instead of lists. This ensures stable keys in the Terraform state (avoiding index shifts), allows reusing the structure via keys without hitting the "dynamic values in `for_each`" issue, and keeps stable ordering.
+
+When this map pattern is combined with `optional()` defaults, consumers only need to provide the specific attributes they explicitly want to override for each item.
 
 ```hcl
 module "simple-vm-example" {
@@ -358,16 +374,16 @@ module "simple-vm-example" {
   project_id = var.project_id
   zone       = "europe-west1-b"
   name       = "test"
-  attached_disk_defaults = {
-    auto_delete = false
-    mode = "READ_WRITE"
-    replica_zone = "europe-west1-c"
-    type = "pd-balanced"
+  attached_disks = {
+    data1 = {
+      # initialize_params size defaults to 10
+    }
+    data2 = {
+      initialize_params = {
+        size = 20
+      }
+    }
   }
-  attached_disks = [
-    { name="data1", size=10, source=null, source_type=null, options=null },
-    { name="data2", size=10, source=null, source_type=null, options=null }
-  ]
 }
 ```
 
@@ -380,18 +396,18 @@ As an example, users can safely reference the project module's `project_id` outp
 ```hcl
 output "project_id" {
   description = "Project id."
-  value       = "${local.prefix}${var.name}"
+  value       = local.project_id
   depends_on = [
     google_project.project,
     data.google_project.project,
-    google_project_organization_policy.boolean,
-    google_project_organization_policy.list,
+    google_org_policy_policy.default,
     google_project_service.project_services,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
-    google_project_iam_member.shared_vpc_host_robots,
-    google_kms_crypto_key_iam_member.service_identity_cmek,
-    google_project_service_identity.servicenetworking,
-    google_project_iam_member.servicenetworking
+    google_kms_crypto_key_iam_binding.service_identity_cmek,
+    google_project_service_identity.default,
+    google_project_iam_binding.service_agents
   ]
 }
 ```
@@ -420,9 +436,50 @@ module "project" {
 }
 ```
 
+#### Use factories and JSON schemas for scale and validation
+
+To support managing resources at scale (such as creating multiple projects, IAM bindings, or VPC subnets from external configuration), we implement "factories" using variables that accept paths to YAML data files.
+
+To enforce the interface of these factories and ensure the YAML data structure matches the expected variable types, we use JSON schemas. These schemas are typically stored in a `schemas/` folder within the module or stage.
+
+When authoring YAML factory configuration, we include a modeline to enable IDE validation and allow our `check_yaml_schema.py` tool to automatically validate them in CI/CD:
+
+```yaml
+# yaml-language-server: $schema=../schemas/project.schema.json
+billing_account: 012345-67890A-BCDEF0
+labels:
+  environment: dev
+```
+
+#### Context-based interpolation
+
+When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name).
+
+To solve this, a **context-based interpolation** system is implemented. A `context` object variable is introduced containing maps of known resource IDs (like `project_ids`, `folder_ids`, `iam_principals`), and a `$` prefix convention is used in the YAML strings to instruct the module to look up the actual ID at plan time.
+
+Crucially, this context is not just for static values coming from outside the module. It is also used for **internal module cross-referencing** between resources for quantities that are only known after apply (e.g., referencing a newly created service account's email within the same factory run).
+
+This system provides a major benefit: it makes the YAML configuration files **highly portable across installations and environments**. By using mnemonic keys instead of hardcoded IDs, the exact same YAML dataset can be deployed to a dev organization and a prod organization simply by providing a different `context` map to the module.
+
+```yaml
+# Instead of hardcoding the folder ID: parent: folders/1234567890
+parent: $folder_ids:teams/team-a
+
+iam:
+  # Instead of hardcoding the SA email: "roles/owner": ["serviceAccount:my-sa@my-project.iam.gserviceaccount.com"]
+  "roles/owner":
+    - $iam_principals:service_accounts/my-project/rw
+```
+
 ### FAST stage design
 
 Due to their increased complexity and larger scope, FAST stages have some additional design considerations. Please refer to the [FAST documentation](./fast/) for additional context.
+
+#### YAML datasets and the 'translation machine'
+
+A key architectural shift in FAST is the extensive use of YAML datasets. Rather than hardcoding infrastructure topologies in `tfvars` or Terraform code, FAST leverages YAML files (like `data/folders.yaml`, `data/projects.yaml`) to define the *intent* or desired state of the infrastructure (e.g., folder hierarchies, project allocations).
+
+In this paradigm, the FAST stages act as a "translation machine". The stages parse the YAML data using Terraform's `for_each` and local blocks, validate the data (via JSON schemas, as mentioned earlier), and translate that high-level intent into the corresponding Terraform modules and resources. This allows for entirely different architectures to be implemented simply by replacing the YAML dataset, without touching the underlying stage code.
 
 #### Standalone usage
 
@@ -503,11 +560,38 @@ locals {
 }
 ```
 
-#### Use alphabetical order for outputs and variables
+For complex or long **ternary operators**, wrap the expression in parentheses and break lines to align the `?` and `:` tokens clearly:
+
+```hcl
+locals {
+  parent_id = (
+    var.parent == null || startswith(coalesce(var.parent, "-"), "$")
+    ? var.parent
+    : split("/", var.parent)[1]
+  )
+}
+```
+
+For **function calls** with many arguments or complex expressions, split them across multiple lines to ensure legibility, typically breaking after the opening parenthesis and before the closing one:
+
+```hcl
+locals {
+  ctx_kms_keys = merge(local.ctx.kms_keys, {
+    for k, v in google_kms_key_handle.default :
+    "$kms_keys:autokeys/${k}" => v.kms_key
+  })
+}
+```
+
+#### Alphabetical ordering and local variables conventions
 
 We enforce alphabetical ordering for outputs and variables and have a check that prevents PRs using the wrong order to be merged. We also tend to prefer alphabetical ordering in locals when there's no implied logical grouping (e.g. for successive data transformations).
 
-Additionally, we adopt a convention similar to the one used in Python for private class members, so that locals only referenced from inside the same locals block are prefixed by `_`, as in the example shown in the next section.
+For `locals`, we enforce a clear separation of scope:
+- **Module-level locals:** Used to define values that will be referenced directly by resources or outputs (e.g., `svpc_host_config`).
+- **Block-level "private" locals:** Prefixed with an underscore (`_`), these are intermediate values only referenced from inside the same locals block to compute the final module-level locals (e.g., `_svpc_service_iam`).
+
+This convention, similar to Python's private class members, improves legibility by hiding intermediate data transformations, as shown in the example in the next section.
 
 ```hcl
 locals {
@@ -545,32 +629,21 @@ This is an example from the `project` module. Notice how we're breaking two of t
 
 ```hcl
 locals {
-  _group_iam_roles = distinct(flatten(values(var.group_iam)))
-  _group_iam = {
-    for r in local._group_iam_roles : r => [
-      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+  # get the set of IAM by principals roles
+  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  # recompose the principals under each role
+  _iam_principals = {
+    for r in local._iam_principal_roles : r => [
+      for k, v in var.iam_by_principals :
+      k if try(index(v, r), null) != null
     ]
   }
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
-  _iam_additive_member_pairs = flatten([
-    for member, roles in var.iam_additive_members : [
-      for role in roles : { role = role, member = member }
-    ]
-  ])
   iam = {
-    for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
+    for role in distinct(concat(keys(var.iam), keys(local._iam_principals))) :
     role => concat(
       try(var.iam[role], []),
-      try(local._group_iam[role], [])
+      try(local._iam_principals[role], [])
     )
-  }
-  iam_additive = {
-    for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
-    "${pair.role}-${pair.member}" => pair
   }
 }
 ```
@@ -634,9 +707,11 @@ The linting workflow tests:
 - that the correct copyright boilerplate is present in all files, using `tools/check_boilerplate.py`
 - that all Terraform code is linted via `terraform fmt`
 - that Terraform variables and outputs are sorted alphabetically
+- that `tflint` runs successfully without warnings, via `tools/tflint-fast.py`
 - that all README files have up to date outputs, variables, and files (where relevant) tables, via `tools/check_documentation.py`
 - that all links in README files are syntactically correct and valid if internal, via `tools/check_links.py`
 - that resource names used in FAST stages stay within a length limit, via `tools/check_names.py`
+- that YAML data files in factories conform to their respective JSON schemas, via `tools/check_yaml_schema.py`
 - that all Python code has been formatted with the correct `yapf` style
 
 You can run those checks individually on your code to address any error before sending a PR, all you need to do is run the same command used in the workflow file from within your virtual environment. To run documentation tests for example if you changed the `project` module:
@@ -841,7 +916,15 @@ pytest -k 'modules and gke-cluster-autopilot: and monitoring and :2' tests/examp
 
 #### Generating the inventory automatically
 
-Building an inventory file by hand is difficult. To simplify this task, the default test runner for examples prints the inventory for the full plan if it succeeds. Therefore, you can start without an inventory and then run a test to get the full plan and extract the pieces you want to build the inventory file.
+Building an inventory file by hand is difficult. To simplify this task, you can use the unified tool `tools/generate_plan_summary.py` to generate the inventory. This script parses the README, extracts any embedded files or fixtures, and runs the plan. It can also automatically save the inventory to the correct location if you pass the `--save` flag and have specified `inventory=filename.yaml` in the `# tftest` directive in the README.
+
+```bash
+uv run tools/generate_plan_summary.py modules/dns/README.md "Private Zone" --save
+```
+
+#### Alternative: Generating the inventory via `pytest` (Legacy)
+
+The default test runner for examples also prints the inventory for the full plan if it succeeds. Therefore, you can start without an inventory and then run a test to get the full plan and extract the pieces you want to build the inventory file.
 
 Suppose you want to generate the inventory for the last DNS example above (the one creating the recordsets from a YAML file). Assuming that example is the first code block under the "Private Zone" section in the README for the `dns` module, you can run the following command to build the inventory:
 
@@ -990,9 +1073,9 @@ tests:
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml
-  # You can use `extra_files` to include additional tf files outside 
+  # You can use `extra_files` to include additional tf files outside
   # the module's path before running the test.
-  # extra_files:  
+  # extra_files:
   #   - ../plugin-x/*.tf
 
   # You can omit the tfvars and inventory sections and they will
@@ -1008,60 +1091,46 @@ tests:
 
 A good example of tests showing different ways of leveraging our framework is in the [`tests/modules/organization`](./tests/modules/organization) folder.
 
+### Debugging Terraform Context & Locals
+
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`.
+
+**ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
+
+```hcl
+resource "terraform_data" "debug_dump" {
+  lifecycle {
+    precondition {
+      # The condition is intentionally designed to fail to trigger the error_message
+      condition     = local.target_variable == null
+      error_message = yamlencode(local.target_variable)
+    }
+  }
+}
+```
+
+Run the specific `pytest` plan test. The test will fail, and the captured output will contain the fully evaluated YAML representation of your target variable, making context resolution issues immediately obvious.
+
 #### Generating the inventory for `tftest`-based tests
 
-Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests. Currently the process relies on an additional tool (`tools/plan_summary.py`) but but we have plans to unify both cases in the future.
+Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests using the unified tool `tools/generate_plan_summary.py`.
 
-As an example, if you want to generate the inventory for the `organization` module using the `common.tfvars` and `audit_config.tfvars` found in `tests/modules/organization/`, simply run `plan_summary.py` as follows:
-
-```bash
-$ python tools/plan_summary.py modules/organization \
-   tests/modules/organization/common.tfvars \
-   tests/modules/organization/audit_config.tfvars
-
-values:
-  google_organization_iam_audit_config.config["allServices"]:
-    audit_log_config:
-    - exempted_members:
-      - user:me@example.org
-      log_type: DATA_WRITE
-    - exempted_members: []
-      log_type: DATA_READ
-    org_id: '1234567890'
-    service: allServices
-
-counts:
-  google_organization_iam_audit_config: 1
-  modules: 0
-  resources: 1
-
-outputs:
-  custom_role_id: {}
-  custom_roles: {}
-  firewall_policies: {}
-  firewall_policy_id: {}
-  network_tag_keys: {}
-  network_tag_values: {}
-  organization_id: organizations/1234567890
-  sink_writer_identities: {}
-  tag_keys: {}
-  tag_values: {}
-
-```
-
-You can now use this output to create the inventory file for your test. As mentioned before, please only use those values relevant to your test scenario.
-
-You can optionally pass to the command additional files that your plan might need to properly execute.
-
-In this example we pass in two extra files from the organization folder.
+As an example, if you want to generate the inventory for the `organization` module for the test case `audit_config` defined in its `tftest.yaml`, simply run:
 
 ```bash
-$ python tools/plan_summary.py modules/organization \
-   tests/modules/organization/common.tfvars \
-   tests/modules/organization/audit_config.tfvars \
-   --extra-files ../my-file-1.tf \
-   --extra-files ../my-file-2.yaml
+uv run tools/generate_plan_summary.py tests/modules/organization/tftest.yaml audit_config
 ```
+
+If you want to automatically save the generated inventory to the correct location (e.g., `tests/modules/organization/audit_config.yaml`), add the `--save` flag:
+
+```bash
+uv run tools/generate_plan_summary.py tests/modules/organization/tftest.yaml audit_config --save
+```
+
+This will generate the inventory file with the correct structure and a valid license header.
+
+If your test requires extra files or directories, you should specify them in the `tftest.yaml` file under the specific test case (using `extra_files` or `extra_dirs`), rather than passing them via command line flags.
+
 
 ### Running end-to-end tests
 
@@ -1258,7 +1327,7 @@ def test_name(plan_summary, tfvars_to_yaml, tmp_path):
   assert s.values[address]['project'] == 'my-project'
 ```
 
-For more examples on how to write python tests, check the tests for the [`organization`](./tests/modules/organization/test_plan_org_policies.py) module.
+For more examples on how to write python tests, check the tests for the [`organization`](./tests/modules/organization/) module.
 
 ### Running tests from a temporary directory
 
@@ -1311,58 +1380,4 @@ The tool can also be run so that it prints the generated output on standard outp
 
 ## Cutting a new release
 
-Cutting a new release is mostly about updating `CHANGELOG.md` - luckily the [changelog tool](./tools/changelog.py) will do the heavy lifting for you.
-
-In order to use it, you will need to generate a [Github Token](https://github.com/settings/tokens/). The token does not require any scope, so if you're purposely generating one, make sure to avoid adding any. Store the token in your favourite secret manager for future usage.
-
-Also make sure to work in a `venv` where all the [requirements for the fabric tools](./tools/requirements.txt) are installed.
-
-```bash
-cd cloud-foundation-fabric
-git checkout master
-git pull
-./tools/changelog.py --write --token $YOURGITHUBTOKEN
-```
-
-After ~1 minute, the [CHANGELOG.md](./CHANGELOG.md) file will be updated by the tool - review any change by running `git diff` and make sure no unlabeled PR is listed. If you find unlabeled PRs, visit their link and add the relevant labels (e.g. on:FAST, on:blueprints, on:module, ...), and finally run again
-
-```bash
-./tools/changelog.py --write --token $YOURGITHUBTOKEN
-```
-
-Now open the up-to-date CHANGELOG.md in your favorite editor, and append the new release H2 after the `## [Unreleased]` header you see at the top - e.g. if the latest version is `29.0.0`, add an header for `30.0.0` and mark todays date as follows:
-
-```md
-[...]
-## [Unreleased]
-<!-- None < 2024-03-20 13:57:56+00:00 -->
-
-## [30.0.0] - 2024-03-20
-
-## [29.0.0] - 2024-01-24
-
-```
-
-Now scroll to the bottom section of the document, and update the release links by adding `30.0.0` and updating `Unreleased` as follows:
-
-```md
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...HEAD
-[30.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0
-[29.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0
-```
-
-Once done, add, commit and push changes to master.
-
-As CHANGELOG.md is now ready, [create a new release from the Github UI](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/new), and use `vXX.Y.Z` as the release tag and title (don't forget the `v` in front!).
-
-As a description, copy the whole content added to [CHANGELOG.md](./CHANGELOG.md) for the current release, and then click the 'Publish release' button.
-
-As a last cleanup for the CHANGELOG.md file, run
-
-```bash
-git pull
-./tools/changelog.py --write --token $TOKEN --release Unreleased --release vXX.Y.Z
-git diff
-```
-
-And add / commit / push any change in case of a diff.
+The release process has been codified into a Gemini CLI skill. Please refer to the [Release Process Skill](skills/maintenance/release-process/SKILL.md) for detailed instructions on how to cut a new release.

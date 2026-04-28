@@ -1,0 +1,172 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.addresses.google_compute_address.external["vpn"]:
+    address_type: EXTERNAL
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_collection: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: vpn
+    network: null
+    project: project-id
+    region: europe-west1
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.vpn.google_compute_forwarding_rule.esp:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: null
+    ip_collection: null
+    ip_protocol: ESP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: vpn-remote-esp
+    no_automate_dns_zone: null
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.vpn.google_compute_forwarding_rule.udp-4500:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: null
+    ip_collection: null
+    ip_protocol: UDP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: vpn-remote-udp-4500
+    no_automate_dns_zone: null
+    port_range: '4500'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.vpn.google_compute_forwarding_rule.udp-500:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    description: null
+    ip_collection: null
+    ip_protocol: UDP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL
+    name: vpn-remote-udp-500
+    no_automate_dns_zone: null
+    port_range: '500'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.vpn.google_compute_route.route["remote-0-10-10-0-0-24"]:
+    description: null
+    dest_range: 10.10.0.0/24
+    name: vpn-remote-remote-0-10-10-0-0-24
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+    next_hop_gateway: null
+    next_hop_ilb: null
+    next_hop_instance: null
+    params: []
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpn.google_compute_vpn_gateway.gateway:
+    description: null
+    name: remote
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+    project: project-id
+    region: europe-west8
+    timeouts: null
+  module.vpn.google_compute_vpn_tunnel.tunnels["remote-0"]:
+    cipher_suite:
+    - phase1:
+      - dh:
+        - Group-14
+        encryption:
+        - AES-CBC-256
+        integrity:
+        - HMAC-SHA2-256-128
+        prf:
+        - PRF-HMAC-SHA2-256
+      phase2:
+      - encryption:
+        - AES-CBC-128
+        integrity:
+        - HMAC-SHA2-256-128
+        pfs:
+        - Group-14
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ike_version: 2
+    labels: null
+    local_traffic_selector:
+    - 0.0.0.0/0
+    name: remote-remote-0
+    peer_external_gateway: null
+    peer_external_gateway_interface: null
+    peer_gcp_gateway: null
+    peer_ip: 1.1.1.1
+    project: project-id
+    region: europe-west8
+    remote_traffic_selector:
+    - 0.0.0.0/0
+    router: null
+    shared_secret: mysecret
+    shared_secret_wo: null
+    shared_secret_wo_version: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    vpn_gateway: null
+    vpn_gateway_interface: null
+  module.vpn.random_id.secret:
+    byte_length: 8
+    keepers: null
+    prefix: null
+
+counts:
+  google_compute_address: 1
+  google_compute_forwarding_rule: 3
+  google_compute_route: 1
+  google_compute_vpn_gateway: 1
+  google_compute_vpn_tunnel: 1
+  modules: 2
+  random_id: 1
+  resources: 8
+
+outputs: {}

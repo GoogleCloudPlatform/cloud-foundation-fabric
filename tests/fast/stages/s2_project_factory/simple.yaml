@@ -23,6 +23,6 @@ counts:
   google_project_service_identity: 2
   google_storage_bucket_object: 1
   google_tags_tag_binding: 2
-  modules: 8
+  modules: 10
   resources: 26
   terraform_data: 2

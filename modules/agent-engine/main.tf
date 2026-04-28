@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ locals {
     : try(google_vertex_ai_reasoning_engine.unmanaged[0], null)
   )
   bucket_name = (
-    var.deployment_files.package_config != null && var.bucket_config.create
+    var.deployment_config.package_config != null && var.bucket_config.create
     ? google_storage_bucket.default[0].name
     : coalesce(var.bucket_config.name, var.name)
   )
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   location = lookup(
     local.ctx.locations, var.region, var.region
@@ -56,51 +56,57 @@ resource "time_sleep" "wait_5_minutes" {
 resource "google_storage_bucket" "default" {
   count = (
     var.bucket_config.create
-    && var.deployment_files.package_config != null
+    && var.deployment_config.package_config != null
     ? 1 : 0
   )
   name                        = coalesce(var.bucket_config.name, var.name)
   project                     = local.project_id
   location                    = local.location
   uniform_bucket_level_access = var.bucket_config.uniform_bucket_level_access
-  force_destroy               = !var.bucket_config.deletion_protection
+  force_destroy               = !var.enable_deletion_protection
 }
 
 resource "google_storage_bucket_object" "dependencies" {
   count = (
-    var.deployment_files.package_config != null
-    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+    var.deployment_config.package_config != null
+    && var.deployment_config.package_config.are_paths_local ? 1 : 0
   )
   name   = "dependencies.tar.gz"
   bucket = local.bucket_name
-  source = try(var.deployment_files.package_config.dependencies_path, null)
-  source_md5hash = filemd5(
-    try(var.deployment_files.package_config.dependencies_path, null)
+  source = try(var.deployment_config.package_config.dependencies_path, null)
+  source_md5hash = (
+    try(var.deployment_config.package_config.dependencies_path, null) == null
+    ? null
+    : filemd5(var.deployment_config.package_config.dependencies_path)
   )
 }
 
 resource "google_storage_bucket_object" "pickle" {
   count = (
-    var.deployment_files.package_config != null
-    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+    var.deployment_config.package_config != null
+    && var.deployment_config.package_config.are_paths_local ? 1 : 0
   )
   name   = "pickle.pkl"
   bucket = local.bucket_name
-  source = try(var.deployment_files.package_config.pickle_path, null)
-  source_md5hash = filemd5(
-    try(var.deployment_files.package_config.pickle_path)
+  source = try(var.deployment_config.package_config.pickle_path, null)
+  source_md5hash = (
+    try(var.deployment_config.package_config.pickle_path, null) == null
+    ? null
+    : filemd5(var.deployment_config.package_config.pickle_path)
   )
 }
 
 resource "google_storage_bucket_object" "requirements" {
   count = (
-    var.deployment_files.package_config != null
-    && var.deployment_files.package_config.are_paths_local ? 1 : 0
+    var.deployment_config.package_config != null
+    && var.deployment_config.package_config.are_paths_local ? 1 : 0
   )
   name   = "requirements.txt"
   bucket = local.bucket_name
-  source = try(var.deployment_files.package_config.requirements_path, null)
-  source_md5hash = filemd5(
-    try(var.deployment_files.package_config.requirements_path)
+  source = try(var.deployment_config.package_config.requirements_path, null)
+  source_md5hash = (
+    try(var.deployment_config.package_config.requirements_path, null) == null
+    ? null
+    : filemd5(var.deployment_config.package_config.requirements_path)
   )
 }

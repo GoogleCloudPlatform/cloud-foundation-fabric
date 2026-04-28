@@ -55,9 +55,8 @@ values:
     enable_display: false
     hostname: null
     instance_encryption_key: []
-    key_revocation_action_type: NONE
     labels: null
-    machine_type: f1-micro
+    machine_type: e2-micro
     metadata: null
     metadata_startup_script: null
     name: schedule-test
@@ -114,7 +113,6 @@ values:
       disk_name: disk-1
       disk_type: pd-balanced
       goog-terraform-provisioned: 'true'
-    interface: null
     labels:
       disk_name: disk-1
       disk_type: pd-balanced

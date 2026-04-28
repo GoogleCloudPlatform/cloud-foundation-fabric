@@ -92,6 +92,10 @@ variable "context" {
     storage_buckets   = optional(map(string), {})
     tag_keys          = optional(map(string), {})
     tag_values        = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
@@ -177,4 +181,14 @@ variable "organization_id" {
     condition     = can(regex("^organizations/[0-9]+", var.organization_id))
     error_message = "The organization_id must in the form organizations/nnn."
   }
+}
+
+variable "service_agents_config" {
+  description = "Service agents configuration."
+  type = object({
+    services      = optional(list(string), [])
+    create_agents = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
 }

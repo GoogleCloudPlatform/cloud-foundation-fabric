@@ -40,5 +40,3 @@
         - items: *string*
 
 ## Definitions
-
-

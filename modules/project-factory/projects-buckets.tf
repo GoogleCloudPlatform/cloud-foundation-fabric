@@ -57,6 +57,7 @@ locals {
         logging_config          = lookup(opts, "logging_config", null)
         enable_object_retention = lookup(opts, "enable_object_retention", null)
         tag_bindings            = lookup(opts, "tag_bindings", {})
+        custom_placement_config = lookup(opts, "custom_placement_config", null)
       }
     ]
   ])
@@ -72,6 +73,10 @@ module "buckets" {
   encryption_key = each.value.encryption_key
   force_destroy  = each.value.force_destroy
   context = merge(local.ctx, {
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals = merge(
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
@@ -105,4 +110,5 @@ module "buckets" {
   logging_config              = each.value.logging_config
   enable_object_retention     = each.value.enable_object_retention
   tag_bindings                = each.value.tag_bindings
+  custom_placement_config     = each.value.custom_placement_config
 }

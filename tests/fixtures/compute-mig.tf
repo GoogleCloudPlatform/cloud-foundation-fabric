@@ -25,7 +25,7 @@ module "_instance-template" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }

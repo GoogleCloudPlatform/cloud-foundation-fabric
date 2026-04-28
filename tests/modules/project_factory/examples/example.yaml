@@ -290,7 +290,7 @@ values:
     display_name: App 0
     tags: null
     timeouts: null
-  module.project-factory.module.folder-2["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
+  module.project-factory.module.folder-2-iam["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
     tag_value: tagValues/123456
     timeouts: null
   module.project-factory.module.folder-2["team-c/apps"].google_folder.folder[0]:
@@ -811,7 +811,6 @@ values:
     - group:team-a-admins@example.org
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.subscriber
-    topic: app-0-topic-a
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
   : bigquery_config: []
     cloud_storage_config: []
@@ -833,7 +832,6 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    topic: app-0-topic-b
   module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_topic.default:
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -934,8 +932,6 @@ values:
     timeouts: null
   ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
   : condition: []
-    members:
-    - serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     role: roles/iam.serviceAccountUser
   ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
   : condition: []
@@ -976,6 +972,7 @@ counts:
   google_kms_crypto_key_iam_member: 2
   google_kms_key_ring: 1
   google_monitoring_notification_channel: 1
+  google_network_security_dns_threat_detector: 1
   google_org_policy_policy: 3
   google_privileged_access_manager_entitlement: 2
   google_project: 4
@@ -998,6 +995,6 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 34
-  resources: 118
+  modules: 35
+  resources: 119
   terraform_data: 2
