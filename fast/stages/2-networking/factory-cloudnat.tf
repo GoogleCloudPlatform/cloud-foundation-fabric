@@ -30,7 +30,7 @@ locals {
           endpoint_types            = try(nat_config.endpoint_types, null)
           logging_filter            = try(nat_config.logging_filter, null)
           num_nat_ips               = try(nat_config.num_nat_ips, 0)
-          region                    = nat_config.region
+          region                    = try(nat_config.region, null)
           router_asn                = try(nat_config.router_asn, null)
           router_create             = try(nat_config.router_create, true)
           router_network            = module.vpc-factory.vpcs[vpc_key].id
