@@ -293,14 +293,14 @@ variable "network_config" {
 variable "observability_config" {
   description = "Advanced query insights config for AlloyDB. Mutually exclusive with query_insights_config."
   type = object({
-    enabled                 = optional(bool, false)
-    preserve_comments       = optional(bool, false)
-    track_wait_events       = optional(bool, true)
-    max_query_string_length = optional(number, 10240)
-    record_application_tags = optional(bool, false)
-    query_plans_per_minute  = optional(number, 20)
-    track_active_queries    = optional(bool, false)
-    # track_client_address          = optional(bool, false) # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+    enabled                       = optional(bool, false)
+    preserve_comments             = optional(bool, false)
+    track_wait_events             = optional(bool, true)
+    max_query_string_length       = optional(number, 10240)
+    record_application_tags       = optional(bool, false)
+    query_plans_per_minute        = optional(number, 20)
+    track_active_queries          = optional(bool, false)
+    track_client_address          = optional(bool, false)
     assistive_experiences_enabled = optional(bool, false)
   })
   default = null
@@ -365,14 +365,14 @@ variable "read_pool" {
       query_plans_per_minute  = optional(number, 5)
     }))
     observability_config = optional(object({
-      enabled                 = optional(bool, false)
-      preserve_comments       = optional(bool, false)
-      track_wait_events       = optional(bool, true)
-      max_query_string_length = optional(number, 10240)
-      record_application_tags = optional(bool, false)
-      query_plans_per_minute  = optional(number, 20)
-      track_active_queries    = optional(bool, false)
-      # track_client_address          = optional(bool, false) # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+      enabled                       = optional(bool, false)
+      preserve_comments             = optional(bool, false)
+      track_wait_events             = optional(bool, true)
+      max_query_string_length       = optional(number, 10240)
+      record_application_tags       = optional(bool, false)
+      query_plans_per_minute        = optional(number, 20)
+      track_active_queries          = optional(bool, false)
+      track_client_address          = optional(bool, false)
       assistive_experiences_enabled = optional(bool, false)
     }), null)
   }))

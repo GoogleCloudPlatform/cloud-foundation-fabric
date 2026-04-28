@@ -259,14 +259,14 @@ resource "google_alloydb_instance" "primary" {
   dynamic "observability_config" {
     for_each = try(var.observability_config.enabled, false) ? [""] : []
     content {
-      enabled                 = var.observability_config.enabled
-      preserve_comments       = var.observability_config.preserve_comments
-      track_wait_events       = var.observability_config.track_wait_events
-      max_query_string_length = var.observability_config.max_query_string_length
-      record_application_tags = var.observability_config.record_application_tags
-      query_plans_per_minute  = var.observability_config.query_plans_per_minute
-      track_active_queries    = var.observability_config.track_active_queries
-      # track_client_address          = var.observability_config.track_client_address # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+      enabled                       = var.observability_config.enabled
+      preserve_comments             = var.observability_config.preserve_comments
+      track_wait_events             = var.observability_config.track_wait_events
+      max_query_string_length       = var.observability_config.max_query_string_length
+      record_application_tags       = var.observability_config.record_application_tags
+      query_plans_per_minute        = var.observability_config.query_plans_per_minute
+      track_active_queries          = var.observability_config.track_active_queries
+      track_client_address          = var.observability_config.track_client_address
       assistive_experiences_enabled = var.observability_config.assistive_experiences_enabled
     }
   }
@@ -537,14 +537,14 @@ resource "google_alloydb_instance" "read_pool_primary" {
   dynamic "observability_config" {
     for_each = try(each.value.observability_config.enabled, false) ? [""] : []
     content {
-      enabled                 = each.value.observability_config.enabled
-      preserve_comments       = each.value.observability_config.preserve_comments
-      track_wait_events       = each.value.observability_config.track_wait_events
-      max_query_string_length = each.value.observability_config.max_query_string_length
-      record_application_tags = each.value.observability_config.record_application_tags
-      query_plans_per_minute  = each.value.observability_config.query_plans_per_minute
-      track_active_queries    = each.value.observability_config.track_active_queries
-      # track_client_address          = each.value.observability_config.track_client_address # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+      enabled                       = each.value.observability_config.enabled
+      preserve_comments             = each.value.observability_config.preserve_comments
+      track_wait_events             = each.value.observability_config.track_wait_events
+      max_query_string_length       = each.value.observability_config.max_query_string_length
+      record_application_tags       = each.value.observability_config.record_application_tags
+      query_plans_per_minute        = each.value.observability_config.query_plans_per_minute
+      track_active_queries          = each.value.observability_config.track_active_queries
+      track_client_address          = each.value.observability_config.track_client_address
       assistive_experiences_enabled = each.value.observability_config.assistive_experiences_enabled
     }
   }
