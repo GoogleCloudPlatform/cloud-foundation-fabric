@@ -45,7 +45,7 @@ variable "backup_configuration" {
     retain_backups_on_delete       = optional(bool)
     final_backup = optional(object({
       enabled        = optional(bool, false)
-      retention_days = optional(number, 7)
+      retention_days = optional(number)
     }))
   })
   default = null

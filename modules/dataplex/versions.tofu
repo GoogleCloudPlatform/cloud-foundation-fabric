@@ -15,15 +15,15 @@
 # Fabric release: v55.3.0
 
 terraform {
-  required_version = ">= 1.10.0"
+  required_version = ">= 1.11.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 7.28.0, < 8.0.0" # tftest
+      version = ">= 7.29.0, < 8.0.0" # tftest
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 7.28.0, < 8.0.0" # tftest
+      version = ">= 7.29.0, < 8.0.0" # tftest
     }
   }
   provider_meta "google" {
