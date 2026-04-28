@@ -351,7 +351,7 @@ module "cf_http" {
 # tftest fixtures=fixtures/vpc-connector.tf inventory=service-vpc-access-connector.yaml
 ```
 
-If creation of the VPC Access Connector is required, use the `vpc_connector.create` and `vpc_connector_create` variable which also supports optional attributes like number of instances, machine type, or throughput.
+If creation of the VPC Access Connector is required, set `vpc_connector_create` to configure the connector with optional attributes like number of instances, machine type, or throughput.
 
 ```hcl
 module "cf_http" {
@@ -362,9 +362,6 @@ module "cf_http" {
   bucket_name = var.bucket
   bundle_config = {
     path = "assets/sample-function/"
-  }
-  vpc_connector = {
-    create = true
   }
   vpc_connector_create = {
     ip_cidr_range = "10.10.10.0/28"
@@ -389,9 +386,6 @@ module "cf_http" {
   bucket_name = var.bucket
   bundle_config = {
     path = "assets/sample-function/"
-  }
-  vpc_connector = {
-    create = true
   }
   vpc_connector_create = {
     machine_type = "e2-standard-4"
