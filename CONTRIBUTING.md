@@ -82,6 +82,8 @@ pytest tests/examples
 
 Once everything looks good, add/commit any pending changes then push and open a PR on GitHub. We typically enforce a set of design and style conventions, so please make sure you have familiarized yourself with the following sections and implemented them in your code, to avoid lengthy review cycles.
 
+When naming your Pull Request, do not use Conventional Commits guidelines (e.g., do not use `feat(net-vpc): add NCC support`). Instead, use short, capitalized, imperative titles with no trailing dot, such as "Add NCC support to `modules/net-vpc`". Keep the title concise and explain the details of the change in the PR description.
+
 HINT: if you work on high-latency or low-bandwidth network use `TF_PLUGIN_CACHE_DIR` environment variable to dramatically speed up the tests, for example:
 
 ```bash

@@ -5,6 +5,7 @@ This module simplifies the creation of repositories using Google Cloud Artifact 
 <!-- BEGIN TOC -->
 - [Simple Docker Repository](#simple-docker-repository)
 - [Remote and Virtual Repositories](#remote-and-virtual-repositories)
+- [Remote Docker registry with credentials](#remote-docker-registry-with-credentials)
 - [Additional Docker and Maven Options](#additional-docker-and-maven-options)
 - [Other Formats](#other-formats)
 - [Cleanup Policies](#cleanup-policies)
@@ -95,6 +96,60 @@ module "registry-virtual" {
 }
 
 # tftest modules=3 resources=3 inventory=remote-virtual.yaml
+```
+
+## Remote Docker registry with credentials
+
+```hcl
+
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "ar"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "artifactregistry.googleapis.com",
+  ]
+}
+
+module "registry-mirror" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = module.project.id
+  location   = "europe-west1"
+  name       = "mirror"
+  format = {
+    docker = {
+      remote = {
+        custom_repository = "https://example.com"
+        upstream_credentials = {
+          username                = "myuser"
+          password_secret_version = "${module.secret-manager.ids["example-com-password"]}/versions/latest"
+        }
+      }
+    }
+  }
+}
+
+
+module "secret-manager" {
+  source     = "./fabric/modules/secret-manager"
+  project_id = module.project.id
+  secrets = {
+    example-com-password = {
+      global_replica_locations = {
+        europe-west1 = null
+      }
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          module.project.service_agents["artifactregistry"].iam_email
+        ]
+      }
+    }
+  }
+}
+
+# tftest modules=3 resources=7 inventory=remote-credentials.yaml
 ```
 
 ## Additional Docker and Maven Options
