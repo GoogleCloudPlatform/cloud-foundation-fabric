@@ -284,6 +284,19 @@ nat_config:
 # [...]
 ```
 
+- **External IPs for NAT:** You can specify how many static IPs do you want, so they would be reserved and kept static. This is helpful when you need to connect to an external service that needs to whitelist the IPs. This is done by defining the number of static IP addresses in the `nat` section of a VPC's `.config.yaml` file.
+
+For example:
+
+```yaml
+# [...]
+nat_config:
+  nat-ew8:
+    num_nat_ips: 3
+    region: $locations:primary
+# [...]
+```
+
 - **Cloud Routers:** The `factory-routers.tf` file manages Cloud Routers, which are used with Cloud VPN and Cloud Interconnect to exchange routes with on-premises networks. Routers are configured within each VPC's `.config.yaml` file.
 
 ```yaml
@@ -359,7 +372,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [factory-cloudnat.tf](./factory-cloudnat.tf) | Cloud NAT factory. | <code>net-cloudnat</code> |  |
+| [factory-cloudnat.tf](./factory-cloudnat.tf) | Cloud NAT factory. | <code>net-address</code> · <code>net-cloudnat</code> |  |
 | [factory-dns.tf](./factory-dns.tf) | DNS zones and RPZ factory. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [factory-firewall-policies.tf](./factory-firewall-policies.tf) | Firewall policies factory. | <code>net-firewall-policy</code> |  |
 | [factory-ncc.tf](./factory-ncc.tf) | NCC Hubs and Groups factory |  | <code>google_network_connectivity_group</code> · <code>google_network_connectivity_hub</code> · <code>google_network_connectivity_spoke</code> |
