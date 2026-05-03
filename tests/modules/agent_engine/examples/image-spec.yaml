@@ -23,11 +23,6 @@ values:
     member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_project_iam_member.default["roles/viewer"]:
-    condition: []
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
-    project: project-id
-    role: roles/viewer
   module.agent_engine.google_service_account.service_account[0]:
     account_id: my-agent
     create_ignore_already_exists: null
@@ -74,7 +69,7 @@ values:
     triggers: null
 
 counts:
-  google_project_iam_member: 3
+  google_project_iam_member: 2
   google_service_account: 1
   google_vertex_ai_reasoning_engine: 1
   modules: 1

@@ -24,9 +24,7 @@ variable "service_account_config" {
     name         = optional(string)
     roles = optional(list(string), [
       "roles/aiplatform.user",
-      "roles/storage.objectViewer",
-      # TODO: remove when b/441480710 is solved
-      "roles/viewer"
+      "roles/storage.objectViewer"
     ])
   })
   nullable = false
