@@ -147,8 +147,35 @@ module "projects" {
   logging_metrics       = try(each.value.logging_metrics, null)
   logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
-  org_policies          = each.value.org_policies
-  quotas                = each.value.quotas
+  org_policies = {
+    for k, v in each.value.org_policies
+    : k => {
+      inherit_from_parent = v.inherit_from_parent
+      reset               = v.reset
+      rules = [
+        for rule in v.rules
+        : {
+          allow = {
+            all = try(v.allow.all, null)
+            values = [
+              for vv in try(v.allow.values, null)
+              : lookup(local.ctx.subnets, vv, vv)
+            ]
+          }
+          condition = v.condition
+          deny = {
+            all = try(v.deny.all, null)
+            values = [
+              for vv in try(v.deny.values, null)
+              : lookup(local.ctx.subnets, vv, vv)
+            ]
+          }
+          enforce = v.enforce
+        }
+      ]
+    }
+  }
+  quotas = each.value.quotas
   services = distinct(concat(
     each.value.services,
     var.data_merges.services

@@ -296,6 +296,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$tag_keys:my_project/my_key` *project-level tag keys*
 - `$tag_values:my_key/my_value` *static context*
 - `$tag_values:my_project/my_key/my_value` *project-level tag values*
+- `$subnets:my_subnet`
 - `$vpc_host_projects:my_project`
 - `$vpc_sc_perimeters:my_perimeter`
 
@@ -881,11 +882,11 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L170) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L171) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_defaults](variables.tf#L47) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_merges](variables.tf#L112) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_overrides](variables.tf#L131) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_defaults](variables.tf#L48) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_merges](variables.tf#L113) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L132) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folders](variables-folders.tf#L17) | Folders data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-billing.tf#L17) | Notification channels used by budget alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [projects](variables-projects.tf#L17) | Projects data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
