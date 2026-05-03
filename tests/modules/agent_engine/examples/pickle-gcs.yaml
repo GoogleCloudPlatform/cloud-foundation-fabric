@@ -96,7 +96,7 @@ counts:
   google_storage_bucket: 1
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 7
+  resources: 6
   time_sleep: 1
 
 outputs: {}
