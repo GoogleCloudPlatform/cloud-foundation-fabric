@@ -43,16 +43,6 @@ locals {
   }
 }
 
-# TODO: fix once eventual consistency issue is solved.
-# AE doesn't retry the deployment (yet) if bindings are still not active.
-resource "time_sleep" "wait_5_minutes" {
-  create_duration = "5m"
-
-  depends_on = [
-    google_project_iam_member.default
-  ]
-}
-
 resource "google_storage_bucket" "default" {
   count = (
     var.bucket_config.create

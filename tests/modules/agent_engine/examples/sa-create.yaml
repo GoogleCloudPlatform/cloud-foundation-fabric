@@ -13,14 +13,26 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
+  module.agent_engine.google_project_iam_member.iam_member_sa["roles/aiplatform.user"]:
     condition: []
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
+  module.agent_engine.google_project_iam_member.iam_member_sa["roles/storage.objectViewer"]:
     condition: []
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/storage.objectViewer
+  module.agent_engine.google_service_account.service_account[0]:
+    account_id: my-agent
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: my-agent
+    email: my-agent@project-id.iam.gserviceaccount.com
+    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
     context_spec: []
     deletion_policy: null
@@ -36,19 +48,10 @@ values:
     - agent_framework: google-adk
       class_methods: null
       container_spec: []
-      deployment_spec:
-      - env:
-        - name: FOO
-          value: bar
-        psc_interface_config: []
-        secret_env:
-        - name: MY_SECRET
-          secret_ref:
-          - secret: projects/project-id/secrets/my-secret
-            version: latest
-      identity_type: AGENT_IDENTITY
+      deployment_spec: []
+      identity_type: SERVICE_ACCOUNT
       package_spec: []
-      service_account: null
+      service_account: my-agent@project-id.iam.gserviceaccount.com
       source_code_spec:
       - developer_connect_source: []
         image_spec: []
@@ -65,8 +68,9 @@ values:
 
 counts:
   google_project_iam_member: 2
+  google_service_account: 1
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 3
+  resources: 4
 
 outputs: {}

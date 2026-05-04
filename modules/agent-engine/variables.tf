@@ -97,7 +97,7 @@ variable "deployment_config" {
         entrypoint_module = optional(string, "agent")
         entrypoint_object = optional(string, "agent")
         requirements_file = optional(string, "requirements.txt")
-      }))
+      }), {})
       image_spec = optional(object({
         build_args = optional(map(string), {})
       }))
@@ -122,15 +122,6 @@ variable "deployment_config" {
       ) <= 1
     )
     error_message = "Only one of 'source_path' or 'developer_connect_config' can be specified within 'source_files_config'."
-  }
-  validation {
-    condition = (
-      var.deployment_config.source_files_config == null ? true : (
-        (var.deployment_config.source_files_config.python_spec != null ? 1 : 0) +
-        (var.deployment_config.source_files_config.image_spec != null ? 1 : 0)
-      ) <= 1
-    )
-    error_message = "Only one of 'python_spec' or 'image_spec' can be specified within 'source_files_config'."
   }
 }
 

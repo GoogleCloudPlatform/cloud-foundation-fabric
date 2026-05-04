@@ -15,17 +15,13 @@
  */
 
 resource "google_vertex_ai_reasoning_engine" "managed" {
-  provider     = google-beta
-  count        = var.managed ? 1 : 0
-  display_name = var.name
-  project      = local.project_id
-  description  = var.description
-  region       = local.location
-  deletion_policy = (
-    var.enable_deletion_protection
-    ? null
-    : "FORCE"
-  )
+  provider        = google-beta
+  count           = var.managed ? 1 : 0
+  display_name    = var.name
+  project         = local.project_id
+  description     = var.description
+  region          = local.location
+  deletion_policy = var.enable_deletion_protection ? null : "FORCE"
 
   dynamic "encryption_spec" {
     for_each = var.encryption_key == null ? {} : { 1 = 1 }
@@ -127,7 +123,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
     }
 
     dynamic "container_spec" {
-      for_each = var.deployment_config.container_config != null ? { 1 = 1 } : {}
+      for_each = var.deployment_config.container_config == null ? {} : { 1 = 1 }
 
       content {
         image_uri = var.deployment_config.container_config.image_uri
@@ -135,7 +131,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
     }
 
     dynamic "package_spec" {
-      for_each = var.deployment_config.package_config != null ? { 1 = 1 } : {}
+      for_each = var.deployment_config.package_config == null ? {} : { 1 = 1 }
 
       content {
         python_version = var.agent_engine_config.python_version
@@ -158,14 +154,18 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
     }
 
     dynamic "source_code_spec" {
-      for_each = var.deployment_config.source_files_config != null ? { 1 = 1 } : {}
+      for_each = (
+        var.deployment_config.source_files_config == null
+        ? {}
+        : { 1 = 1 }
+      )
 
       content {
         dynamic "inline_source" {
           for_each = (
-            try(var.deployment_config.source_files_config.source_path, null) != null
-            ? { 1 = 1 }
-            : {}
+            try(var.deployment_config.source_files_config.source_path, null) == null
+            ? {}
+            : { 1 = 1 }
           )
           content {
             source_archive = filebase64(var.deployment_config.source_files_config.source_path)
@@ -174,9 +174,9 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
 
         dynamic "developer_connect_source" {
           for_each = (
-            try(var.deployment_config.source_files_config.developer_connect_config, null) != null
-            ? { 1 = 1 }
-            : {}
+            try(var.deployment_config.source_files_config.developer_connect_config, null) == null
+            ? {}
+            : { 1 = 1 }
           )
           content {
             config {
@@ -189,9 +189,10 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
 
         dynamic "python_spec" {
           for_each = (
-            try(var.deployment_config.source_files_config.python_spec, null) != null
-            ? { 1 = 1 }
-            : {}
+            try(var.deployment_config.source_files_config.python_spec, null) == null
+            || try(var.deployment_config.source_files_config.image_spec, null) != null
+            ? {}
+            : { 1 = 1 }
           )
           content {
             entrypoint_module = var.deployment_config.source_files_config.python_spec.entrypoint_module
@@ -203,9 +204,9 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
 
         dynamic "image_spec" {
           for_each = (
-            try(var.deployment_config.source_files_config.image_spec, null) != null
-            ? { 1 = 1 }
-            : {}
+            try(var.deployment_config.source_files_config.image_spec, null) == null
+            ? {}
+            : { 1 = 1 }
           )
           content {
             build_args = var.deployment_config.source_files_config.image_spec.build_args
@@ -216,7 +217,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
   }
 
   dynamic "context_spec" {
-    for_each = var.memory_bank_config != null ? { 1 = 1 } : {}
+    for_each = var.memory_bank_config == null ? {} : { 1 = 1 }
 
     content {
       memory_bank_config {
@@ -224,7 +225,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
 
         dynamic "generation_config" {
           for_each = (
-            var.memory_bank_config.generation_config != null ? { 1 = 1 } : {}
+            var.memory_bank_config.generation_config == null ? {} : { 1 = 1 }
           )
           content {
             model = lookup(
@@ -237,7 +238,9 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
 
         dynamic "similarity_search_config" {
           for_each = (
-            var.memory_bank_config.similarity_search_config != null ? { 1 = 1 } : {}
+            var.memory_bank_config.similarity_search_config == null
+            ? {}
+            : { 1 = 1 }
           )
           content {
             embedding_model = lookup(
@@ -250,7 +253,7 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
 
         dynamic "ttl_config" {
           for_each = (
-            var.memory_bank_config.ttl_config != null ? { 1 = 1 } : {}
+            var.memory_bank_config.ttl_config == null ? {} : { 1 = 1 }
           )
           content {
             default_ttl                 = var.memory_bank_config.ttl_config.default_ttl
@@ -258,9 +261,9 @@ resource "google_vertex_ai_reasoning_engine" "managed" {
 
             dynamic "granular_ttl_config" {
               for_each = (
-                var.memory_bank_config.ttl_config.granular_ttl_config != null
-                ? { 1 = 1 }
-                : {}
+                var.memory_bank_config.ttl_config.granular_ttl_config == null
+                ? {}
+                : { 1 = 1 }
               )
               content {
                 create_ttl = (

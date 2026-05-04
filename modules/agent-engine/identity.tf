@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,20 @@
  */
 
 locals {
+  _effective_identity = coalesce(
+    try(google_vertex_ai_reasoning_engine.managed[0].spec[0].effective_identity, null),
+    try(google_vertex_ai_reasoning_engine.unmanaged[0].spec[0].effective_identity, null)
+  )
+  effective_identity = (
+    local._effective_identity == null
+    ? "principal://${local._effective_identity}"
+    : null
+  )
+  identity = coalesce(
+    local.effective_identity,
+    local.service_account_email,
+    "service-{your_project_number}@gcp-sa-aiplatform-re.iam.gserviceaccount.com"
+  )
   service_account_email = (
     var.service_account_config.create
     ? try(google_service_account.service_account[0].email, null) # use managed SA, when creating
@@ -47,7 +61,7 @@ resource "google_service_account" "service_account" {
   )
 }
 
-resource "google_project_iam_member" "default" {
+resource "google_project_iam_member" "iam_member_sa" {
   for_each = (
     var.service_account_config.create
     && var.agent_engine_config.identity_type == "SERVICE_ACCOUNT"
@@ -59,15 +73,13 @@ resource "google_project_iam_member" "default" {
   member  = google_service_account.service_account[0].member
 }
 
-resource "google_project_iam_member" "default" {
+resource "google_project_iam_member" "iam_member_identity" {
   for_each = (
-    var.service_account_config.create
-    && var.agent_engine_config.identity_type == "AGENT_IDENTITY"
+    var.agent_engine_config.identity_type == "AGENT_IDENTITY"
     ? toset(local.roles)
     : toset([])
   )
   role    = each.key
   project = local.project_id
-  # TBD once agent identity can be retrieved from Agent Engine
-  member = "xxx"
+  member  = local.effective_identity
 }

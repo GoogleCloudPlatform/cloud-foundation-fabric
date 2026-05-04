@@ -18,7 +18,7 @@ The module creates Agent Engine and related dependencies.
 - [Minimal deployment](#minimal-deployment)
 - [Serialized Object Deployment](#serialized-object-deployment)
 - [Unmanaged deployments](#unmanaged-deployments)
-- [Service accounts](#service-accounts)
+- [Identities](#identities)
 - [Private networking: setup PSC-I](#private-networking-setup-psc-i)
 - [Specify an encryption key](#specify-an-encryption-key)
 - [Define environment variables and use secrets](#define-environment-variables-and-use-secrets)
@@ -72,6 +72,7 @@ module "agent_engine" {
   deployment_config = {
     source_files_config = {
       source_path = "assets/src/source.tar.gz"
+      python_spec = null
       image_spec = {
         build_args = {
           "ENV" = "production"
@@ -159,9 +160,11 @@ module "agent_engine" {
 # tftest inventory=unmanaged.yaml
 ```
 
-## Service accounts
+## Identities
 
-You can choose to use a custom service account or let the module create one for you.
+By default, the module creates agents with unique **agent identities**.
+
+If you want, you can choose instead to use a custom service account, by changing the `identity_type` to `SERVICE_ACCOUNT`.
 
 ```hcl
 module "agent_engine" {
@@ -181,7 +184,7 @@ module "agent_engine" {
     }
   }
 }
-# tftest inventory=sa-default.yaml
+# tftest inventory=sa-create.yaml
 ```
 
 Using a custom service account.
@@ -209,7 +212,7 @@ module "agent_engine" {
     email  = "my-agent@project-id.iam.gserviceaccount.com"
   }
 }
-# tftest inventory=sa-custom.yaml
+# tftest inventory=sa-external.yaml
 ```
 
 ## Private networking: setup PSC-I
@@ -357,6 +360,7 @@ module "agent_engine" {
     }
   }
 }
+#tftest inventory=memory-bank.yaml
 ```
 
 ## Getting values from context
@@ -447,19 +451,19 @@ module "agent_engine" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L187) | The name of the agent. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L206) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L212) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L178) | The name of the agent. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L197) | The id of the project where to deploy the agent. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L203) | The region where to deploy the agent. | <code>string</code> | ✓ |  |
 | [agent_engine_config](variables.tf#L17) | The agent configuration. Supported values for agent_framework: 'google-adk', 'langchain', 'langgraph', 'ag2', 'llama-index', 'custom'. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [bucket_config](variables.tf#L50) | The GCS bucket configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L61) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [deployment_config](variables.tf#L77) | The deployment configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L137) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [enable_deletion_protection](variables.tf#L144) | Whether deletion protection should be enabled. | <code>bool</code> |  | <code>true</code> |
-| [encryption_key](variables.tf#L151) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
-| [managed](variables.tf#L157) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
-| [memory_bank_config](variables.tf#L164) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [networking_config](variables.tf#L193) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L128) | The Agent Engine description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [enable_deletion_protection](variables.tf#L135) | Whether deletion protection should be enabled. | <code>bool</code> |  | <code>true</code> |
+| [encryption_key](variables.tf#L142) | The full resource name of the Cloud KMS CryptoKey. | <code>string</code> |  | <code>null</code> |
+| [managed](variables.tf#L148) | Whether the Terraform module should control the code updates. | <code>bool</code> |  | <code>true</code> |
+| [memory_bank_config](variables.tf#L155) | Configuration for the memory bank. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [networking_config](variables.tf#L184) | Networking configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [service_account_config](variables-serviceaccount.tf#L18) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
@@ -468,5 +472,5 @@ module "agent_engine" {
 |---|---|:---:|
 | [agent](outputs.tf#L17) | The Agent Engine object. |  |
 | [id](outputs.tf#L22) | Fully qualified Agent Engine id. |  |
-| [service_account](outputs.tf#L27) | Service account resource. |  |
+| [identity](outputs.tf#L27) | The agent identity. |  |
 <!-- END TFDOC -->
