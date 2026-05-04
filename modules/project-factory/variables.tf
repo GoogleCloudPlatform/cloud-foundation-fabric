@@ -168,11 +168,14 @@ variable "data_overrides" {
 }
 
 variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
+  description = "Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder."
   type = object({
     basepath = string
     budgets = optional(object({
       billing_account = optional(string)
+    }), {})
+    exclusions = optional(object({
+      projects = optional(list(string), [])
     }), {})
     paths = optional(object({
       budgets           = optional(string, "budgets")
