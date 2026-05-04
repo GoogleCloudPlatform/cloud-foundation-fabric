@@ -469,6 +469,9 @@ module "project-factory" {
     budgets = {
       billing_account = var.billing_account_id
     }
+    exclusions = {
+      projects = ["staging/"]
+    }
   }
   notification_channels = {
     billing-default = {
@@ -480,7 +483,7 @@ module "project-factory" {
     }
   }
 }
-# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10 inventory=example.yaml
+# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10,99 inventory=example.yaml
 ```
 
 A project template for GKE projects:
@@ -609,6 +612,16 @@ workload_identity_pools:
             template: github
 
 # tftest-file id=5 path=data/folders/teams-iac-0.yaml schema=project.schema.json
+```
+
+A project definition ignored via `factories_config.exclusions.projects`.
+
+```yaml
+billing_account: 012345-67890A-BCDEF0
+services:
+  - container.googleapis.com
+  - storage.googleapis.com
+# tftest-file id=99 path=data/projects/staging/unused-0.yaml schema=project.schema.json
 ```
 
 More traditional project definitions via the project factory data:
@@ -881,7 +894,7 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L170) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L170) | Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_defaults](variables.tf#L47) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_merges](variables.tf#L112) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |

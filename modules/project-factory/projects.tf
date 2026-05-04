@@ -31,7 +31,12 @@ locals {
       try(local._templates_raw[v.project_template], {}),
       v
     )
+    # apply exclusions
+    if alltrue([
+      for x in var.factories_config.exclusions.projects : !startswith(k, x)
+    ])
   }
+  # project data from projects folder
   _projects_raw = {
     for f in try(fileset(local.paths.projects, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local.paths.projects}/${f}"))
