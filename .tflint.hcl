@@ -33,8 +33,4 @@ rule "terraform_naming_convention" {
   module {
     format = "kebab"
   }
-
-  variable {
-    format = "private_snake"
-  }
 }
