@@ -118,6 +118,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `gcp.resourceLocations` | Restrict resource locations. |  |
 | `gcp.restrictCmekCryptoKeyProjects` | Prevent the use of CMEKs from unauthorized projects. |  |
 | `gcp.restrictNonCmekServices` | Ensure That All BigQuery Tables Are Encrypted With Customer-Managed Encryption Key (CMEK) | **CIS for GCP 3.0**: 7.2<br>**CIS Controls 8.0**: 3.11<br>**PCI-DSS 4.0**: 3.1.1, 3.3.2, 3.3.3, 3.5.1, 3.5.1.2, 3.5.1.3, 8.3.2<br>**NIST 800-53 R5**: IA-5, SC-28<br>**NIST Cybersecurity Framework 1.0**: PR-DS-1<br>**ISO-2700-1 v2022**: A.5.33<br>**HIPAA**: 164.312(a)(2)(iv), 164.312(e)(2)(ii)<br>**Cloud Controls Matrix 4**: CEK-03 |
+| `gcp.restrictServiceUsage` | Restrict the list of services that can be enabled in the organization. |  |
 | `gcp.restrictTLSCipherSuites` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
 | `gcp.restrictTLSVersion` | Prevent the use of weak cipher suites and TLS versions on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9<br>**NIST 800-53 R4**: SC-7<br>**ISO-2700-1 v2013**: A.14.1.3 |
 | `iam.allowedPolicyMemberDomains` | Restrict domain sharing to authorized domains. | **CIS for GCP 3.0**: 1.1<br>**NIST 800-53 R4**: AC-3<br>**ISO-2700-1 v2013**: A.9.2.3 |
@@ -126,6 +127,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `iam.disableServiceAccountKeyCreation` | Enforce the use of only GCP-managed service account keys. | **CIS for GCP 3.0**: 1.4 |
 | `iam.disableServiceAccountKeyUpload` | Prevent the uploading of service account keys. |  |
 | `iam.managed.disableServiceAccountApiKeyCreation` | Prevent the creation of service account API key bindings. |  |
+| `iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts` | Prevent default service accounts from being granted privileged basic roles (Owner, Editor). |  |
 | `iam.serviceAccountKeyExposureResponse` | Enforce Google to disable the service keys if a service account linked key is detected to be exposed publicly. |  |
 | `iam.workloadIdentityPoolAwsAccounts` | Prevent creation of workload identity pools using AWS accounts, except if expliicitely allowed. |  |
 | `iam.workloadIdentityPoolProviders` | Prevent creation of any workload identity pools except if expliicitely allowed. |  |
@@ -160,6 +162,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `cloudsqlRequireHighAvailability` | Ensure Cloud SQL instances are configured for high availability. |  |
 | `cloudsqlRequireMySQLDatabaseFlags` | Ensure ‘Skip_show_database’ Database Flag for Cloud SQL MySQL Instance Is Set to ‘On’ | **CIS for GCP 3.0**: 6.1.2<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `cloudsqlRequirePointInTimeRecovery` | Enforce point-in-time recovery for all Cloud SQL backup configurations. |  |
+| `cloudsqlRequirePostgreSQLDatabaseAdditionalFlags` | Ensure Cloud SQL for PostgreSQL instance database flags are set correctly (e.g log_checkpoints, log_executor_stats, log_lock_waits). |  |
 | `cloudsqlRequirePostgreSQLDatabaseFlags` | Ensure That the ‘Log_connections’ Database Flag for Cloud SQL PostgreSQL Instance Is Set to ‘On’ | **CIS for GCP 3.0**: 6.2.2<br>**CIS Controls 8.0**: 8.5<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.2, 10.2.1.5, 9.4.5<br>**NIST 800-53 R5**: AU-12, AU-3, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, DE-CM-1<br>**ISO-2700-1 v2022**: A.5.28, A.8.15<br>**SOC2 v2017**: CC5.2.3, CC7.2.1, CC7.2.2, CC7.2.3<br>**Cloud Controls Matrix 4**: DSP-17 |
 | `cloudsqlRequireRootPassword` | Ensure That a MySQL Database Instance Does Not Allow Anyone To Connect With Administrative Privileges | **CIS for GCP 3.0**: 6.1.1<br>**NIST 800-53 R4**: AC-3<br>**ISO-2700-1 v2013**: A.8.2.3, A.9.4.2<br>**ISO-2700-1 v2022**: A.8.5 |
 | `cloudsqlRequireSQLServerDatabaseFlags` | Ensure 'external scripts enabled' database flag for Cloud SQL SQL Server instance is set to 'off' | **CIS for GCP 3.0**: 6.3.1<br>**CIS Controls 8.0**: 2.7<br>**PCI-DSS 4.0**: 1.2.5, 2.2.4, 6.4.3<br>**NIST 800-53 R5**: CM-7, SI-7<br>**NIST Cybersecurity Framework 1.0**: PR-IP-1, PR-PT-3<br>**SOC2 v2017**: CC5.2.1, CC5.2.2, CC5.2.3, CC5.2.4 |
@@ -220,7 +223,12 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `gkeRequireRegionalClusters` | Enforce the creation of regional GKE clusters |  |
 | `gkeRequireSecureBoot` | Enforce that GKE nodes are configured with secure boot enabled | **CIS for GKE 1.5**: 5.5.7 |
 | `gkeRequireVPCNativeCluster` | Enforce that GKE clusters are created with VPC-native  | **CIS for GKE 1.5**: 5.6.2<br>**PCI-DSS 4.0**: 1.4.3 |
+| `iamAllowedMembers` | Ensure no binding are done with members outside the organization domain. |  |
+| `iamDisableAdminServiceAccount` | Ensure no use of the legacy basic roles (owner and editor), basic roles (admin, writer) and usage of admin roles for service account. |  |
+| `iamDisableBasicRoles` | Ensure no use of the legacy basic roles (viewer, editor and owner) and basic roles (reader, writer and admin). |  |
+| `iamDisableProjectServiceAccountImpersonationRoles` | Ensure that IAM Users are not assigned the service account user or service account token creator roles. |  |
 | `iamDisablePublicBindings` | Ensure That BigQuery Datasets Are Not Anonymously or Publicly Accessible | **CIS for GCP 3.0**: 7.1<br>**CIS Controls 8.0**: 3.3<br>**PCI-DSS 4.0**: 1.3.1<br>**NIST 800-53 R4**: AC-2<br>**NIST 800-53 R5**: AC-3, AC-5, AC-6, MP-2<br>**NIST Cybersecurity Framework 1.0**: PR-AC-4<br>**ISO-2700-1 v2013**: A.14.1.3, A.8.2.3<br>**ISO-2700-1 v2022**: A.5.10, A.5.15, A.8.3, A.8.4<br>**SOC2 v2017**: CC5.2.3, CC6.1.3, CC6.1.7<br>**HIPAA**: 164.308(a)(3)(i), 164.308(a)(3)(ii), 164.312(a)(1)<br>**Cloud Controls Matrix 4**: DSP-17 |
+| `iamDisableRedisAdminRoles` | Ensure no use of the basic roles (viewer, editor and owner). |  |
 | `networkDisableTargetHTTPProxy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkDisableWeakSSLPolicy` | Prevent the use of weak SSL policies on HTTPS and SSL Proxy load balancers. | **CIS for GCP 3.0**: 3.9 |
 | `networkRequireBackendServiceLogging` | Enforce the enablement of logging for all HTTP(S) load balancers. | **CIS for GCP 3.0**: 2.16<br>**CIS Controls 8.0**: 8.2<br>**PCI-DSS 4.0**: 10.2.1, 10.2.1.1, 10.2.1.2, 10.2.1.3, 10.2.1.4, 10.2.1.5, 10.2.1.6, 10.2.1.7, 10.2.2, 5.3.4, 6.4.1, 6.4.2<br>**NIST 800-53 R5**: AU-12, AU-2, AU-7<br>**NIST Cybersecurity Framework 1.0**: DE-AE-3, PR-PT-1<br>**ISO-2700-1 v2022**: A.8.15, A.8.20<br>**HIPAA**: 164.312(b) |
