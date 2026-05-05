@@ -1038,7 +1038,7 @@ values:
     description: Production.
     short_name: production
     timeouts: null
-  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-healthchecks"]:
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom_rules["ingress-default-allow-healthchecks"]:
     allow:
     - ports: []
       protocol: all
@@ -1062,7 +1062,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-iap"]:
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom_rules["ingress-default-allow-iap"]:
     allow:
     - ports: []
       protocol: all
@@ -1083,7 +1083,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-icmp"]:
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom_rules["ingress-default-allow-icmp"]:
     allow:
     - ports: []
       protocol: icmp
@@ -1104,7 +1104,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-healthchecks"]:
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom_rules["ingress-default-allow-healthchecks"]:
     allow:
     - ports: []
       protocol: all
@@ -1128,7 +1128,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-iap"]:
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom_rules["ingress-default-allow-iap"]:
     allow:
     - ports: []
       protocol: all
@@ -1149,7 +1149,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-icmp"]:
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom_rules["ingress-default-allow-icmp"]:
     allow:
     - ports: []
       protocol: icmp

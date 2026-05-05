@@ -14,11 +14,11 @@
 
 values:
   # the following 4 rules are already tested by simple.yaml
-  module.firewall.google_compute_firewall.allow-admins[0]: {}
-  module.firewall.google_compute_firewall.allow-tag-http[0]: {}
-  module.firewall.google_compute_firewall.allow-tag-https[0]: {}
-  module.firewall.google_compute_firewall.allow-tag-ssh[0]: {}
-  module.firewall.google_compute_firewall.custom-rules["allow-egress-rfc1918"]:
+  module.firewall.google_compute_firewall.allow_admins[0]: {}
+  module.firewall.google_compute_firewall.allow_tag_http[0]: {}
+  module.firewall.google_compute_firewall.allow_tag_https[0]: {}
+  module.firewall.google_compute_firewall.allow_tag_ssh[0]: {}
+  module.firewall.google_compute_firewall.custom_rules["allow-egress-rfc1918"]:
     allow:
     - ports: []
       protocol: all
@@ -40,7 +40,7 @@ values:
     source_tags: null
     target_service_accounts: null
     target_tags: null
-  module.firewall.google_compute_firewall.custom-rules["allow-egress-tag"]:
+  module.firewall.google_compute_firewall.custom_rules["allow-egress-tag"]:
     allow:
     - ports: []
       protocol: all
@@ -61,7 +61,7 @@ values:
     target_service_accounts: null
     target_tags:
     - target-tag
-  module.firewall.google_compute_firewall.custom-rules["allow-ingress-ntp"]:
+  module.firewall.google_compute_firewall.custom_rules["allow-ingress-ntp"]:
     allow:
     - ports:
       - '123'
@@ -82,7 +82,7 @@ values:
     target_service_accounts: null
     target_tags:
     - ntp-svc
-  module.firewall.google_compute_firewall.custom-rules["allow-ingress-tag"]:
+  module.firewall.google_compute_firewall.custom_rules["allow-ingress-tag"]:
     allow:
     - ports: []
       protocol: all
@@ -102,7 +102,7 @@ values:
     target_service_accounts: null
     target_tags:
     - target-tag
-  module.firewall.google_compute_firewall.custom-rules["deny-egress-all"]:
+  module.firewall.google_compute_firewall.custom_rules["deny-egress-all"]:
     allow: []
     deny:
     - ports: []
