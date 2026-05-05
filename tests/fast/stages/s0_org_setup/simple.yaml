@@ -2558,15 +2558,15 @@ values:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/orgpolicy.policyViewer
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["audit-logs"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["audit-logs"]:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["iam"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["iam"]:
     condition:
     - title: iam bucket writer
     role: roles/logging.bucketWriter
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["vpc-sc"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["vpc-sc"]:
     condition:
     - title: vpc-sc bucket writer
     role: roles/logging.bucketWriter

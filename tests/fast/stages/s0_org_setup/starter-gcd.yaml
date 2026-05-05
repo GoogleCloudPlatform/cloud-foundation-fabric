@@ -987,7 +987,7 @@ values:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.tagUser
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["audit-logs"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["audit-logs"]:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter

@@ -90,10 +90,10 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
     uniform_bucket_level_access: true
-  module.org.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
+  module.org.google_bigquery_dataset_iam_member.bq_sinks_binding["info"]:
     condition: []
     role: roles/bigquery.dataEditor
-  module.org.google_logging_organization_exclusion.logging-exclusion["no-gce-instances"]:
+  module.org.google_logging_organization_exclusion.logging_exclusion["no-gce-instances"]:
     description: no-gce-instances (Terraform-managed).
     disabled: null
     filter: resource.type=gce_instance
@@ -163,15 +163,15 @@ values:
     intercept_children: false
     name: warnings
     org_id: '1122334455'
-  module.org.google_project_iam_member.bucket-sinks-binding["debug"]:
+  module.org.google_project_iam_member.bucket_sinks_binding["debug"]:
     condition:
     - title: debug bucket writer
     role: roles/logging.bucketWriter
-  module.org.google_project_iam_member.project-sinks-binding["alert"]:
+  module.org.google_project_iam_member.project_sinks_binding["alert"]:
     condition: []
     project: projects/test-dest-prj
     role: roles/logging.logWriter
-  module.org.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
+  module.org.google_pubsub_topic_iam_member.pubsub_sinks_binding["notice"]:
     condition: []
     project: project-id
     role: roles/pubsub.publisher

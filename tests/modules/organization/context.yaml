@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  google_bigquery_dataset_iam_member.bq-sinks-binding["test-bq"]:
+  google_bigquery_dataset_iam_member.bq_sinks_binding["test-bq"]:
     condition: []
     dataset_id: logs
     project: test-prod-audit-logs-0
@@ -203,17 +203,17 @@ values:
       unstructured:
       - {}
     timeouts: null
-  google_project_iam_member.bucket-sinks-binding["test-logging"]:
+  google_project_iam_member.bucket_sinks_binding["test-logging"]:
     condition:
     - expression: resource.name.endsWith('projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs')
       title: test-logging bucket writer
     project: test-prod-audit-logs-0
     role: roles/logging.bucketWriter
-  google_project_iam_member.project-sinks-binding["test-project"]:
+  google_project_iam_member.project_sinks_binding["test-project"]:
     condition: []
     project: projects/test-prod-audit-logs-0
     role: roles/logging.logWriter
-  google_pubsub_topic_iam_member.pubsub-sinks-binding["test-pubsub"]:
+  google_pubsub_topic_iam_member.pubsub_sinks_binding["test-pubsub"]:
     condition: []
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
