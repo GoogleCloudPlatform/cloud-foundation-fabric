@@ -930,18 +930,18 @@ values:
     member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     timeouts: null
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
   : condition: []
     role: roles/iam.serviceAccountUser
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
   : condition: []
     role: roles/iam.serviceAccountUser
     service_account_id: projects/test-pf-dev-ta-app0-be/serviceAccounts/app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.bindings["test"]
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.bindings["test"]
   : condition: []
     member: group:team-a-admins@example.org
     role: roles/iam.serviceAccountUser
-  ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  ? module.project-factory.module.service-accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
     members:
     - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com

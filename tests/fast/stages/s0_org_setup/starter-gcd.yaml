@@ -1320,7 +1320,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  terraform_data.precondition-cicd:
+  terraform_data.precondition_cicd:
     input: null
     output: null
     triggers_replace: null
