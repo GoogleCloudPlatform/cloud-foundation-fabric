@@ -33,7 +33,12 @@ module "project" {
   ]
 }
 
-module "application_service_account" {
+moved {
+  from = module.application_service_account
+  to   = module.application-service-account
+}
+
+module "application-service-account" {
   source     = "../../../modules/iam-service-account"
   project_id = var.project_id
   name       = "application"
@@ -53,7 +58,12 @@ resource "google_iap_client" "iap_client" {
   brand        = google_iap_brand.iap_brand.name
 }
 
-module "backend_service" {
+moved {
+  from = module.backend_service
+  to   = module.backend-service
+}
+
+module "backend-service" {
   source     = "../../../modules/cloud-run-v2"
   project_id = module.project.id
   name       = "backend"
@@ -132,7 +142,7 @@ resource "google_iap_web_backend_service_iam_binding" "iam_bindings" {
   members = concat(
     var.accessors,
     [
-      module.application_service_account.iam_email
+      module.application-service-account.iam_email
   ])
 }
 

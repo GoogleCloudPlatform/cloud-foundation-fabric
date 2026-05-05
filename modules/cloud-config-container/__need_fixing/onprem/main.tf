@@ -45,9 +45,9 @@ locals {
     vpn_dynamic_config = var.vpn_dynamic_config
   }
   netblocks = concat(
-    data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4,
-    data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4,
-    data.google_netblock_ip_ranges.restricted-googleapis.cidr_blocks_ipv4
+    data.google_netblock_ip_ranges.dns_forwarders.cidr_blocks_ipv4,
+    data.google_netblock_ip_ranges.private_googleapis.cidr_blocks_ipv4,
+    data.google_netblock_ip_ranges.restricted_googleapis.cidr_blocks_ipv4
   )
   vpn_config = merge(var.vpn_config, {
     peer_ip_wildcard  = "%${var.vpn_config.peer_ip}"
@@ -55,14 +55,29 @@ locals {
   })
 }
 
-data "google_netblock_ip_ranges" "dns-forwarders" {
+moved {
+  from = data.google_netblock_ip_ranges.dns-forwarders
+  to   = data.google_netblock_ip_ranges.dns_forwarders
+}
+
+data "google_netblock_ip_ranges" "dns_forwarders" {
   range_type = "dns-forwarders"
 }
 
-data "google_netblock_ip_ranges" "private-googleapis" {
+moved {
+  from = data.google_netblock_ip_ranges.private-googleapis
+  to   = data.google_netblock_ip_ranges.private_googleapis
+}
+
+data "google_netblock_ip_ranges" "private_googleapis" {
   range_type = "private-googleapis"
 }
 
-data "google_netblock_ip_ranges" "restricted-googleapis" {
+moved {
+  from = data.google_netblock_ip_ranges.restricted-googleapis
+  to   = data.google_netblock_ip_ranges.restricted_googleapis
+}
+
+data "google_netblock_ip_ranges" "restricted_googleapis" {
   range_type = "restricted-googleapis"
 }
