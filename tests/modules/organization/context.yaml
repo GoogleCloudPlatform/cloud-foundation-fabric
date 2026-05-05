@@ -218,7 +218,7 @@ values:
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
     topic: audit-logs
-  google_storage_bucket_iam_member.storage-sinks-binding["test-storage"]:
+  google_storage_bucket_iam_member.storage_sinks_binding["test-storage"]:
     bucket: test-prod-logs-audit-0
     condition: []
     role: roles/storage.objectCreator

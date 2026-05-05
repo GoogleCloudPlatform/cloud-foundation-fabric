@@ -176,11 +176,11 @@ values:
     project: project-id
     role: roles/pubsub.publisher
     topic: pubsub_sink
-  module.org.google_storage_bucket_iam_member.storage-sinks-binding["audit"]:
+  module.org.google_storage_bucket_iam_member.storage_sinks_binding["audit"]:
     bucket: test-prod-log-audit-0
     condition: []
     role: roles/storage.objectCreator
-  module.org.google_storage_bucket_iam_member.storage-sinks-binding["warnings"]:
+  module.org.google_storage_bucket_iam_member.storage_sinks_binding["warnings"]:
     bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator
