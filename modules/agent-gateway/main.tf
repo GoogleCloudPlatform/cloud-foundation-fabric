@@ -24,11 +24,11 @@ locals {
   location = lookup(
     local.ctx.locations, var.region, var.region
   )
-  network_attachment_id = lookup(
+  network_attachment_id = try(lookup(
     local.ctx.psc_network_attachments,
     var.networking_config.psc_i_network_attachment_id,
     var.networking_config.psc_i_network_attachment_id
-  )
+  ), null)
   project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
   )
@@ -58,10 +58,7 @@ resource "google_network_services_agent_gateway" "default" {
   }
 
   dynamic "network_config" {
-    for_each = (
-      try(local.network_attachment_id, null) == null
-      ? [] : [""]
-    )
+    for_each = local.network_attachment_id == null ? [] : [""]
 
     content {
       egress {
