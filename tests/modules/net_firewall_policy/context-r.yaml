@@ -13,20 +13,20 @@
 # limitations under the License.
 
 values:
-  google_compute_region_network_firewall_policy.net-regional[0]:
+  google_compute_region_network_firewall_policy.net_regional[0]:
     description: null
     name: test-1
     project: foo-test-0
     region: europe-west8
     timeouts: null
-  google_compute_region_network_firewall_policy_association.net-regional["test"]:
+  google_compute_region_network_firewall_policy_association.net_regional["test"]:
     attachment_target: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
     firewall_policy: test-1
     name: test-1-test
     project: foo-test-0
     region: europe-west8
     timeouts: null
-  google_compute_region_network_firewall_policy_rule.net-regional["egress/smtp"]:
+  google_compute_region_network_firewall_policy_rule.net_regional["egress/smtp"]:
     action: deny
     description: null
     direction: EGRESS
@@ -65,7 +65,7 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     timeouts: null
     tls_inspect: null
-  google_compute_region_network_firewall_policy_rule.net-regional["ingress/icmp"]:
+  google_compute_region_network_firewall_policy_rule.net_regional["ingress/icmp"]:
     action: allow
     description: null
     direction: INGRESS

@@ -45,7 +45,7 @@ values:
     threat_prevention_profile: null
     timeouts: null
     url_filtering_profile: null
-  module.firewall-policy.google_compute_network_firewall_policy.net-global[0]:
+  module.firewall-policy.google_compute_network_firewall_policy.net_global[0]:
     description: null
     name: test-mirroring
     project: my-project

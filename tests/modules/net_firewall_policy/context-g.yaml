@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  google_compute_network_firewall_policy.net-global[0]:
+  google_compute_network_firewall_policy.net_global[0]:
     description: null
     name: test-1
     project: foo-test-0

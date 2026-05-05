@@ -49,7 +49,7 @@ values:
     service_label: null
     source_ip_ranges: null
     timeouts: null
-  module.vpn.google_compute_forwarding_rule.udp-4500:
+  module.vpn.google_compute_forwarding_rule.udp_4500:
     all_ports: null
     allow_global_access: null
     allow_psc_global_access: null
@@ -70,7 +70,7 @@ values:
     service_label: null
     source_ip_ranges: null
     timeouts: null
-  module.vpn.google_compute_forwarding_rule.udp-500:
+  module.vpn.google_compute_forwarding_rule.udp_500:
     all_ports: null
     allow_global_access: null
     allow_psc_global_access: null
