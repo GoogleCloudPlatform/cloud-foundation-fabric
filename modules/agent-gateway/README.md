@@ -3,12 +3,17 @@
 The module facilitates the deployments of Agent Gateways.
 
 <!-- BEGIN TOC -->
+- [API](#api)
 - [Minimal Gateway deployment](#minimal-gateway-deployment)
 - [PSC-I: attach to an existing service attachment](#psc-i-attach-to-an-existing-service-attachment)
 - [Connect to self-managed proxies](#connect-to-self-managed-proxies)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
+
+## API
+
+In order to use this module you first need to enable the `networkservices.googleapis.com` API.
 
 ## Minimal Gateway deployment
 
