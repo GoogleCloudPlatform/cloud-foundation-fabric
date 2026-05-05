@@ -16,11 +16,11 @@ values:
   module.firewall-policy.google_compute_network_firewall_policy.net_global[0]:
     name: test-1
     project: my-project
-  module.firewall-policy.google_compute_network_firewall_policy_association.net-global["my-vpc"]:
+  module.firewall-policy.google_compute_network_firewall_policy_association.net_global["my-vpc"]:
     firewall_policy: test-1
     name: test-1-my-vpc
     project: my-project
-  module.firewall-policy.google_compute_network_firewall_policy_rule.net-global["egress/smtp"]:
+  module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["egress/smtp"]:
     action: deny
     direction: EGRESS
     disabled: false
@@ -48,7 +48,7 @@ values:
     rule_name: smtp
     target_secure_tags: []
     target_service_accounts: null
-  module.firewall-policy.google_compute_network_firewall_policy_rule.net-global["ingress/icmp"]:
+  module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["ingress/icmp"]:
     action: allow
     direction: INGRESS
     disabled: false
@@ -75,7 +75,7 @@ values:
     rule_name: icmp
     target_secure_tags: []
     target_service_accounts: null
-  module.firewall-policy.google_compute_network_firewall_policy_rule.net-global["ingress/mgmt"]:
+  module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["ingress/mgmt"]:
     action: allow
     direction: INGRESS
     disabled: false
@@ -102,7 +102,7 @@ values:
     rule_name: mgmt
     target_secure_tags: []
     target_service_accounts: null
-  module.firewall-policy.google_compute_network_firewall_policy_rule.net-global["ingress/ssh"]:
+  module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["ingress/ssh"]:
     action: allow
     direction: INGRESS
     disabled: false
