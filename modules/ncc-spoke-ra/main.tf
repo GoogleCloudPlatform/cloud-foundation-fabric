@@ -34,7 +34,7 @@ resource "google_network_connectivity_hub" "hub" {
 }
 
 moved {
-  from = google_network_connectivity_spoke.spoke_ra
+  from = google_network_connectivity_spoke.spoke-ra
   to   = google_network_connectivity_spoke.spoke_ra
 }
 
