@@ -55,27 +55,12 @@ locals {
   })
 }
 
-moved {
-  from = data.google_netblock_ip_ranges.dns-forwarders
-  to   = data.google_netblock_ip_ranges.dns_forwarders
-}
-
 data "google_netblock_ip_ranges" "dns_forwarders" {
   range_type = "dns-forwarders"
 }
 
-moved {
-  from = data.google_netblock_ip_ranges.private-googleapis
-  to   = data.google_netblock_ip_ranges.private_googleapis
-}
-
 data "google_netblock_ip_ranges" "private_googleapis" {
   range_type = "private-googleapis"
-}
-
-moved {
-  from = data.google_netblock_ip_ranges.restricted-googleapis
-  to   = data.google_netblock_ip_ranges.restricted_googleapis
 }
 
 data "google_netblock_ip_ranges" "restricted_googleapis" {

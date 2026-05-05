@@ -120,11 +120,6 @@ module "apigee" {
   }
 }
 
-moved {
-  from = module.ext_lb
-  to   = module.ext-lb
-}
-
 module "ext-lb" {
   source     = "../../../modules/net-lb-app-ext"
   name       = "glb"
@@ -200,11 +195,6 @@ module "addresses" {
   global_addresses = {
     apigee = {}
   }
-}
-
-moved {
-  from = module.nginx-vm
-  to   = module.nginx-vm
 }
 
 module "nginx-vm" {

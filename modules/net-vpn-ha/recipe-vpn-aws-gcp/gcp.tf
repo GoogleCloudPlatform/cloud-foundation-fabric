@@ -33,11 +33,6 @@ module "vpc" {
   name       = "vpc"
 }
 
-moved {
-  from = module.gcp_vpn
-  to   = module.gcp-vpn
-}
-
 module "gcp-vpn" {
   source     = "../../../modules/net-vpn-ha"
   project_id = module.project.project_id

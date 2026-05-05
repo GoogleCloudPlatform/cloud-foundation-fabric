@@ -33,11 +33,6 @@ module "project" {
   ]
 }
 
-moved {
-  from = module.application_service_account
-  to   = module.application-service-account
-}
-
 module "application-service-account" {
   source     = "../../../modules/iam-service-account"
   project_id = var.project_id
@@ -56,11 +51,6 @@ resource "google_iap_brand" "iap_brand" {
 resource "google_iap_client" "iap_client" {
   display_name = "Test Client"
   brand        = google_iap_brand.iap_brand.name
-}
-
-moved {
-  from = module.backend_service
-  to   = module.backend-service
 }
 
 module "backend-service" {
