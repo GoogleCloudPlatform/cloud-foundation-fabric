@@ -34,6 +34,11 @@ rule "terraform_naming_convention" {
     format = "kebab"
   }
 
+  resource {
+    # format = "snake_case"
+    # format = "kebab"
+    format = "none" # TBC
+  }
   variable {
     format = "private_snake"
   }
