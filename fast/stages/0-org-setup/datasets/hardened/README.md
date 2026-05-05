@@ -129,8 +129,8 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `iam.managed.disableServiceAccountApiKeyCreation` | Prevent the creation of service account API key bindings. |  |
 | `iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts` | Prevent default service accounts from being granted privileged basic roles (Owner, Editor). |  |
 | `iam.serviceAccountKeyExposureResponse` | Enforce Google to disable the service keys if a service account linked key is detected to be exposed publicly. |  |
-| `iam.workloadIdentityPoolAwsAccounts` | Prevent creation of workload identity pools using AWS accounts, except if expliicitely allowed. |  |
-| `iam.workloadIdentityPoolProviders` | Prevent creation of any workload identity pools except if expliicitely allowed. |  |
+| `iam.workloadIdentityPoolAwsAccounts` | Prevent creation of workload identity pools using AWS accounts, except if explicitly allowed. |  |
+| `iam.workloadIdentityPoolProviders` | Prevent creation of any workload identity pools except if explicitly allowed. |  |
 | `run.allowedBinaryAuthorizationPolicies` | Restrict Cloud Run services and jobs to an authorized list of Binary Authorization policies. |  |
 | `run.allowedIngress` | Ensure Cloud Run services only allow internal and load balancer traffic. |  |
 | `run.allowedVPCEgress` | Ensure all egress traffic from Cloud Run services and jobs is routed through a VPC network. |  |
@@ -223,7 +223,7 @@ In that case, the controls placed in the `organization/scc-sha-custom-modules` f
 | `gkeRequireRegionalClusters` | Enforce the creation of regional GKE clusters |  |
 | `gkeRequireSecureBoot` | Enforce that GKE nodes are configured with secure boot enabled | **CIS for GKE 1.5**: 5.5.7 |
 | `gkeRequireVPCNativeCluster` | Enforce that GKE clusters are created with VPC-native  | **CIS for GKE 1.5**: 5.6.2<br>**PCI-DSS 4.0**: 1.4.3 |
-| `iamAllowedMembers` | Ensure no binding are done with members outside the organization domain. |  |
+| `iamAllowedMembers` | Ensure no bindings are done with members outside the organization domain. |  |
 | `iamDisableAdminServiceAccount` | Ensure no use of the legacy basic roles (owner and editor), basic roles (admin, writer) and usage of admin roles for service account. |  |
 | `iamDisableBasicRoles` | Ensure no use of the legacy basic roles (viewer, editor and owner) and basic roles (reader, writer and admin). |  |
 | `iamDisableProjectServiceAccountImpersonationRoles` | Ensure that IAM Users are not assigned the service account user or service account token creator roles. |  |
