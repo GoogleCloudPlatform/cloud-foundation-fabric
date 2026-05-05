@@ -64,14 +64,14 @@ A sample testing session using `tmux`:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L48) | Prefix used for resource names. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L57) | Existing project id. | <code>string</code> | ✓ |  |
-| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [ilb_right_enable](variables.tf#L27) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
-| [ilb_session_affinity](variables.tf#L33) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
-| [ip_ranges](variables.tf#L39) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [region](variables.tf#L62) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [zones](variables.tf#L68) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
+| [prefix](variables.tf#L49) | Prefix used for resource names. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L58) | Existing project id. | <code>string</code> | ✓ |  |
+| [_testing](variables.tf#L18) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [ilb_right_enable](variables.tf#L28) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
+| [ilb_session_affinity](variables.tf#L34) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
+| [ip_ranges](variables.tf#L40) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [region](variables.tf#L63) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [zones](variables.tf#L69) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
 
 ## Outputs
 

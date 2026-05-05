@@ -29,12 +29,12 @@ This recipe addresses common requirements of backends protected by IAP:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L39) | Project ID. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L44) | Region. | <code>string</code> | ✓ |  |
-| [support_email](variables.tf#L49) | Support email for IAP brand. | <code>string</code> | ✓ |  |
-| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [accessors](variables.tf#L27) | List of identities able to access the service via IAP (e.g. group:mygroup@myorg.com). | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [impersonators](variables.tf#L33) | List of identities able to impersonate the service account for programmatica access. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [project_id](variables.tf#L40) | Project ID. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L45) | Region. | <code>string</code> | ✓ |  |
+| [support_email](variables.tf#L50) | Support email for IAP brand. | <code>string</code> | ✓ |  |
+| [_testing](variables.tf#L18) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [accessors](variables.tf#L28) | List of identities able to access the service via IAP (e.g. group:mygroup@myorg.com). | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [impersonators](variables.tf#L34) | List of identities able to impersonate the service account for programmatica access. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
