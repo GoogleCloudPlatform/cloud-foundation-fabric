@@ -1176,7 +1176,7 @@ values:
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
     user_project: null
-  module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
+  module.factory.module.projects-iam["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
     dry_run_spec: []
     name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
     parent: projects/ft0-prod-iac-core-0
