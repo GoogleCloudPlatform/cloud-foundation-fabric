@@ -13,16 +13,16 @@
 # limitations under the License.
 
 values:
-  module.firewall-policy.google_compute_region_network_firewall_policy.net-regional[0]:
+  module.firewall-policy.google_compute_region_network_firewall_policy.net_regional[0]:
     name: test-1
     project: my-project
     region: europe-west8
-  module.firewall-policy.google_compute_region_network_firewall_policy_association.net-regional["my-vpc"]:
+  module.firewall-policy.google_compute_region_network_firewall_policy_association.net_regional["my-vpc"]:
     firewall_policy: test-1
     name: test-1-my-vpc
     project: my-project
     region: europe-west8
-  module.firewall-policy.google_compute_region_network_firewall_policy_rule.net-regional["egress/smtp"]:
+  module.firewall-policy.google_compute_region_network_firewall_policy_rule.net_regional["egress/smtp"]:
     action: deny
     direction: EGRESS
     disabled: false
@@ -51,7 +51,7 @@ values:
     rule_name: smtp
     target_secure_tags: []
     target_service_accounts: null
-  module.firewall-policy.google_compute_region_network_firewall_policy_rule.net-regional["ingress/icmp"]:
+  module.firewall-policy.google_compute_region_network_firewall_policy_rule.net_regional["ingress/icmp"]:
     action: allow
     direction: INGRESS
     disabled: false

@@ -847,15 +847,15 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
   : condition: []
     project: $project_ids:dev-spoke-0
     role: roles/compute.networkUser
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/monitoring.metricWriter
@@ -872,15 +872,15 @@ values:
   module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_tags_tag_binding.binding["context"]:
     tag_value: $tag_values:context/project-factory
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project_roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
   : condition: []
     project: $project_ids:dev-spoke-0
     role: roles/compute.networkUser
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/monitoring.metricWriter
@@ -894,11 +894,11 @@ values:
     member: serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-0-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-0-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-0
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-0-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-0-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-0
     role: roles/monitoring.metricWriter
@@ -912,11 +912,11 @@ values:
     member: serviceAccount:vm-default@test-pf-dev-tb-app0-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-1-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-1-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-1
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-1-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-1-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-1
     role: roles/monitoring.metricWriter
@@ -930,18 +930,18 @@ values:
     member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     timeouts: null
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
   : condition: []
     role: roles/iam.serviceAccountUser
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
   : condition: []
     role: roles/iam.serviceAccountUser
     service_account_id: projects/test-pf-dev-ta-app0-be/serviceAccounts/app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.bindings["test"]
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.bindings["test"]
   : condition: []
     member: group:team-a-admins@example.org
     role: roles/iam.serviceAccountUser
-  ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  ? module.project-factory.module.service-accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
   : condition: []
     members:
     - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
@@ -950,7 +950,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  module.project-factory.terraform_data.project-preconditions:
+  module.project-factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null

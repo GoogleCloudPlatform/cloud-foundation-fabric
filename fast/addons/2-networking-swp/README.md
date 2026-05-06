@@ -151,22 +151,22 @@ terraform apply
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation](variables-fast.tf#L28) | Automation resources created by the bootstrap stage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
+| [automation](variables-fast.tf#L29) | Automation resources created by the bootstrap stage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>0-bootstrap</code> |
 | [certificate_authority](variables.tf#L17) | Optional Certificate Authority Service pool and CA used by SWP. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [project_id](variables.tf#L143) | Project where the resources will be created. | <code>string</code> | ✓ |  |  |
-| [_fast_debug](variables-fast.tf#L19) | Internal FAST variable used for testing and debugging. Do not use. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [_fast_debug](variables-fast.tf#L20) | Internal FAST variable used for testing and debugging. Do not use. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [enable_services](variables.tf#L95) | Configure project by enabling services required for this add-on. | <code>bool</code> |  | <code>false</code> |  |
 | [factories_config](variables.tf#L102) | SWP factories configuration paths. Keys in the `swp_configs` variable will be appended to derive individual SWP factory paths. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [host_project_ids](variables-fast.tf#L36) | Networking stage host project id aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [host_project_ids](variables-fast.tf#L37) | Networking stage host project id aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [locations](variables.tf#L112) | Regions where the resources will be created. Keys are used as short names appended to resource names. Interpolation with FAST region names is supported. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [name](variables.tf#L119) | Name used for resource names. | <code>string</code> |  | <code>&#34;swp&#34;</code> |  |
 | [outputs_location](variables.tf#L126) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
 | [policy_rules_contexts](variables.tf#L132) | Replacement contexts for policy rules matcher arguments. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [regions](variables-fast.tf#L44) | Networking stage region aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-| [subnet_self_links](variables-fast.tf#L52) | VPC subnetwork self links. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [regions](variables-fast.tf#L45) | Networking stage region aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [subnet_self_links](variables-fast.tf#L53) | VPC subnetwork self links. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [swp_configs](variables.tf#L149) | Secure Web Proxy configuration, one per region. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [tls_inspection_policy](variables.tf#L179) | TLS inspection policy configuration. If a CA pool is not specified a local one must be created via the `certificate_authority` variable. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [vpc_self_links](variables-fast.tf#L60) | VPC network self links. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
+| [vpc_self_links](variables-fast.tf#L61) | VPC network self links. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 
 ## Outputs
 

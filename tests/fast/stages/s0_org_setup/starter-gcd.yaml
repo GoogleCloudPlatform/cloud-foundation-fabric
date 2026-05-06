@@ -835,7 +835,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  module.factory.terraform_data.project-preconditions:
+  module.factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -987,7 +987,7 @@ values:
     - serviceAccount:iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/resourcemanager.tagUser
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["audit-logs"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["audit-logs"]:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter
@@ -1038,7 +1038,7 @@ values:
     description: Production.
     short_name: production
     timeouts: null
-  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-healthchecks"]:
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom_rules["ingress-default-allow-healthchecks"]:
     allow:
     - ports: []
       protocol: all
@@ -1062,7 +1062,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-iap"]:
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom_rules["ingress-default-allow-iap"]:
     allow:
     - ports: []
       protocol: all
@@ -1083,7 +1083,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["dev"].google_compute_firewall.custom-rules["ingress-default-allow-icmp"]:
+  module.vpcs.module.firewall["dev"].google_compute_firewall.custom_rules["ingress-default-allow-icmp"]:
     allow:
     - ports: []
       protocol: icmp
@@ -1104,7 +1104,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-healthchecks"]:
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom_rules["ingress-default-allow-healthchecks"]:
     allow:
     - ports: []
       protocol: all
@@ -1128,7 +1128,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-iap"]:
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom_rules["ingress-default-allow-iap"]:
     allow:
     - ports: []
       protocol: all
@@ -1149,7 +1149,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  module.vpcs.module.firewall["prod"].google_compute_firewall.custom-rules["ingress-default-allow-icmp"]:
+  module.vpcs.module.firewall["prod"].google_compute_firewall.custom_rules["ingress-default-allow-icmp"]:
     allow:
     - ports: []
       protocol: icmp
@@ -1320,7 +1320,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  terraform_data.precondition-cicd:
+  terraform_data.precondition_cicd:
     input: null
     output: null
     triggers_replace: null

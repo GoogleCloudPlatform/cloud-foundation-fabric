@@ -95,7 +95,12 @@ locals {
   ]...)
 }
 
-resource "terraform_data" "project-preconditions" {
+moved {
+  from = terraform_data.project-preconditions
+  to   = terraform_data.project_preconditions
+}
+
+resource "terraform_data" "project_preconditions" {
   lifecycle {
     precondition {
       condition = alltrue([

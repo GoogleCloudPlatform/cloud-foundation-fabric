@@ -10,15 +10,15 @@ The architecture deployed by this recipe is the one depicted below:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [aws_asn](variables.tf#L27) | AWS ASN. | <code>string</code> | ✓ |  |
-| [aws_region](variables.tf#L32) | AWS Region. | <code>string</code> | ✓ |  |
-| [aws_vpc_cidr_block](variables.tf#L37) | CIDR block. | <code>string</code> | ✓ |  |
-| [gcp_asn](variables.tf#L42) | Google ASN. | <code>string</code> | ✓ |  |
-| [gcp_region](variables.tf#L47) | GCP Region. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L52) | Project ID. | <code>string</code> | ✓ |  |
-| [shared_secret](variables.tf#L63) | Shared secret. | <code>string</code> | ✓ |  |
-| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [propagate_routes](variables.tf#L57) | Flag indicating whether routed received by AWS's Virtual Private Gateway should be propagated to main route table. | <code>bool</code> |  | <code>false</code> |
+| [aws_asn](variables.tf#L28) | AWS ASN. | <code>string</code> | ✓ |  |
+| [aws_region](variables.tf#L33) | AWS Region. | <code>string</code> | ✓ |  |
+| [aws_vpc_cidr_block](variables.tf#L38) | CIDR block. | <code>string</code> | ✓ |  |
+| [gcp_asn](variables.tf#L43) | Google ASN. | <code>string</code> | ✓ |  |
+| [gcp_region](variables.tf#L48) | GCP Region. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L53) | Project ID. | <code>string</code> | ✓ |  |
+| [shared_secret](variables.tf#L64) | Shared secret. | <code>string</code> | ✓ |  |
+| [_testing](variables.tf#L18) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [propagate_routes](variables.tf#L58) | Flag indicating whether routed received by AWS's Virtual Private Gateway should be propagated to main route table. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
 

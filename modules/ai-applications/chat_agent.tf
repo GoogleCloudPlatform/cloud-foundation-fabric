@@ -86,7 +86,12 @@ resource "google_dialogflow_cx_security_settings" "default" {
   }
 }
 
-module "audio_export_settings_bucket" {
+moved {
+  from = module.audio_export_settings_bucket
+  to   = module.audio-export-settings-bucket
+}
+
+module "audio-export-settings-bucket" {
   count = (
     var.chat_agent_security_configs.audio_export_settings == null
     || try(var.chat_agent_security_configs.audio_export_settings.id, null) != null

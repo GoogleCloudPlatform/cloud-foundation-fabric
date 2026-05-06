@@ -1607,19 +1607,19 @@ values:
     member: serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     timeouts: null
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
   : condition: []
     role: roles/iam.serviceAccountTokenCreator
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"]
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
   : condition: []
     role: roles/iam.serviceAccountTokenCreator
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"]
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"]
   : condition: []
     role: roles/iam.workloadIdentityUser
     service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
@@ -1627,7 +1627,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  module.factory.terraform_data.project-preconditions:
+  module.factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -2558,15 +2558,15 @@ values:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/orgpolicy.policyViewer
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["audit-logs"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["audit-logs"]:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["iam"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["iam"]:
     condition:
     - title: iam bucket writer
     role: roles/logging.bucketWriter
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["vpc-sc"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["vpc-sc"]:
     condition:
     - title: vpc-sc bucket writer
     role: roles/logging.bucketWriter
@@ -2826,7 +2826,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  terraform_data.precondition-cicd:
+  terraform_data.precondition_cicd:
     input: null
     output: null
     triggers_replace: null
