@@ -1676,7 +1676,7 @@ values:
   module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-billing-exp-0
     user_project: null
-  module.factory.module.projects["billing-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+  module.factory.module.projects-iam["billing-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
     dry_run_spec: []
     name: projects/ft0-prod-billing-exp-0/policies/gcp.restrictCmekCryptoKeyProjects
     parent: projects/ft0-prod-billing-exp-0
@@ -1759,7 +1759,7 @@ values:
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
     user_project: null
-  module.factory.module.projects["iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+  module.factory.module.projects-iam["iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
     dry_run_spec: []
     name: projects/ft0-prod-iac-core-0/policies/gcp.restrictCmekCryptoKeyProjects
     parent: projects/ft0-prod-iac-core-0
@@ -1774,7 +1774,7 @@ values:
         parameters: null
         values: []
     timeouts: null
-  module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
+  module.factory.module.projects-iam["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
     dry_run_spec: []
     name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
     parent: projects/ft0-prod-iac-core-0
@@ -2050,7 +2050,7 @@ values:
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
-  module.factory.module.projects["log-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+  module.factory.module.projects-iam["log-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
     dry_run_spec: []
     name: projects/ft0-prod-audit-logs-0/policies/gcp.restrictCmekCryptoKeyProjects
     parent: projects/ft0-prod-audit-logs-0
