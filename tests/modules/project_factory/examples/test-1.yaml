@@ -209,7 +209,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  module.project-factory.terraform_data.project-preconditions:
+  module.project-factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null

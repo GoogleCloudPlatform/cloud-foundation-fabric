@@ -140,7 +140,7 @@ values:
       unstructured:
       - {}
     timeouts: null
-  google_pubsub_topic_iam_member.pubsub-sinks-binding["test-pubsub"]:
+  google_pubsub_topic_iam_member.pubsub_sinks_binding["test-pubsub"]:
     condition: []
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher

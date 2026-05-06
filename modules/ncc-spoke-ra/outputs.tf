@@ -29,7 +29,7 @@ output "router" {
   value       = google_compute_router.cr
 }
 
-output "spoke-ra" {
+output "spoke_ra" {
   description = "NCC spoke resource."
-  value       = google_network_connectivity_spoke.spoke-ra
+  value       = google_network_connectivity_spoke.spoke_ra
 }

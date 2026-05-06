@@ -14,24 +14,39 @@
  * limitations under the License.
  */
 
-resource "google_compute_network_firewall_policy" "net-global" {
+moved {
+  from = google_compute_network_firewall_policy.net-global
+  to   = google_compute_network_firewall_policy.net_global
+}
+
+resource "google_compute_network_firewall_policy" "net_global" {
   count       = !local.use_hierarchical && !local.use_regional ? 1 : 0
   project     = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
   name        = var.name
   description = var.description
 }
 
-resource "google_compute_network_firewall_policy_association" "net-global" {
+moved {
+  from = google_compute_network_firewall_policy_association.net-global
+  to   = google_compute_network_firewall_policy_association.net_global
+}
+
+resource "google_compute_network_firewall_policy_association" "net_global" {
   for_each = (
     !local.use_hierarchical && !local.use_regional ? var.attachments : {}
   )
   project           = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
   name              = "${var.name}-${each.key}"
   attachment_target = lookup(local.ctx.networks, each.value, each.value)
-  firewall_policy   = google_compute_network_firewall_policy.net-global[0].name
+  firewall_policy   = google_compute_network_firewall_policy.net_global[0].name
 }
 
-resource "google_compute_network_firewall_policy_rule" "net-global" {
+moved {
+  from = google_compute_network_firewall_policy_rule.net-global
+  to   = google_compute_network_firewall_policy_rule.net_global
+}
+
+resource "google_compute_network_firewall_policy_rule" "net_global" {
   # Terraform's type system barfs in the condition if we use the locals map
   for_each = toset(
     !local.use_hierarchical && !local.use_regional
@@ -39,7 +54,7 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
     : []
   )
   project         = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
-  firewall_policy = google_compute_network_firewall_policy.net-global[0].name
+  firewall_policy = google_compute_network_firewall_policy.net_global[0].name
   rule_name       = local.rules[each.key].name
   action          = local.rules[each.key].action
   description     = local.rules[each.key].description
@@ -147,7 +162,12 @@ resource "google_compute_network_firewall_policy_rule" "net-global" {
   }
 }
 
-resource "google_compute_network_firewall_policy_packet_mirroring_rule" "net-global" {
+moved {
+  from = google_compute_network_firewall_policy_packet_mirroring_rule.net-global
+  to   = google_compute_network_firewall_policy_packet_mirroring_rule.net_global
+}
+
+resource "google_compute_network_firewall_policy_packet_mirroring_rule" "net_global" {
   provider = google-beta
   for_each = toset(
     !local.use_hierarchical && !local.use_regional
@@ -155,7 +175,7 @@ resource "google_compute_network_firewall_policy_packet_mirroring_rule" "net-glo
     : []
   )
   project         = lookup(local.ctx.project_ids, var.parent_id, var.parent_id)
-  firewall_policy = google_compute_network_firewall_policy.net-global[0].name
+  firewall_policy = google_compute_network_firewall_policy.net_global[0].name
   rule_name       = local.mirroring_rules[each.key].name
   action          = local.mirroring_rules[each.key].action
   description     = local.mirroring_rules[each.key].description

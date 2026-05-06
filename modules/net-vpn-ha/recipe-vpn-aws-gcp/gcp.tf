@@ -33,7 +33,7 @@ module "vpc" {
   name       = "vpc"
 }
 
-module "gcp_vpn" {
+module "gcp-vpn" {
   source     = "../../../modules/net-vpn-ha"
   project_id = module.project.project_id
   region     = var.gcp_region

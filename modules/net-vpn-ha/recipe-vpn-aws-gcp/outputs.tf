@@ -16,15 +16,15 @@
 
 output "external_gateway" {
   description = "External VPN gateway resource."
-  value       = module.gcp_vpn.external_gateway
+  value       = module.gcp-vpn.external_gateway
 }
 
 output "gateway" {
   description = "VPN gateway resource (only if auto-created)."
-  value       = module.gcp_vpn.gateway
+  value       = module.gcp-vpn.gateway
 }
 
 output "id" {
   description = "Fully qualified VPN gateway id."
-  value       = module.gcp_vpn.id
+  value       = module.gcp-vpn.id
 }

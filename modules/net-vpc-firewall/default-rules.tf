@@ -24,7 +24,12 @@ locals {
   }
 }
 
-resource "google_compute_firewall" "allow-admins" {
+moved {
+  from = google_compute_firewall.allow-admins
+  to   = google_compute_firewall.allow_admins
+}
+
+resource "google_compute_firewall" "allow_admins" {
   count       = length(local.default_rules.admin_ranges) > 0 ? 1 : 0
   project     = local.project_id
   network     = local.network
@@ -36,7 +41,12 @@ resource "google_compute_firewall" "allow-admins" {
   allow { protocol = "all" }
 }
 
-resource "google_compute_firewall" "allow-tag-http" {
+moved {
+  from = google_compute_firewall.allow-tag-http
+  to   = google_compute_firewall.allow_tag_http
+}
+
+resource "google_compute_firewall" "allow_tag_http" {
   count       = length(local.default_rules.http_ranges) > 0 ? 1 : 0
   project     = local.project_id
   network     = local.network
@@ -52,7 +62,12 @@ resource "google_compute_firewall" "allow-tag-http" {
   }
 }
 
-resource "google_compute_firewall" "allow-tag-https" {
+moved {
+  from = google_compute_firewall.allow-tag-https
+  to   = google_compute_firewall.allow_tag_https
+}
+
+resource "google_compute_firewall" "allow_tag_https" {
   count       = length(local.default_rules.https_ranges) > 0 ? 1 : 0
   project     = local.project_id
   network     = local.network
@@ -68,7 +83,12 @@ resource "google_compute_firewall" "allow-tag-https" {
   }
 }
 
-resource "google_compute_firewall" "allow-tag-ssh" {
+moved {
+  from = google_compute_firewall.allow-tag-ssh
+  to   = google_compute_firewall.allow_tag_ssh
+}
+
+resource "google_compute_firewall" "allow_tag_ssh" {
   count       = length(local.default_rules.ssh_ranges) > 0 ? 1 : 0
   project     = local.project_id
   network     = local.network

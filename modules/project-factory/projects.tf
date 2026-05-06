@@ -95,7 +95,12 @@ locals {
   ]...)
 }
 
-resource "terraform_data" "project-preconditions" {
+moved {
+  from = terraform_data.project-preconditions
+  to   = terraform_data.project_preconditions
+}
+
+resource "terraform_data" "project_preconditions" {
   lifecycle {
     precondition {
       condition = alltrue([
@@ -141,6 +146,7 @@ module "projects" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
+    if k != "org_policies"
   }
   kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
@@ -152,7 +158,6 @@ module "projects" {
   logging_metrics       = try(each.value.logging_metrics, null)
   logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
-  org_policies          = each.value.org_policies
   quotas                = each.value.quotas
   services = distinct(concat(
     each.value.services,
@@ -168,10 +173,11 @@ module "projects" {
 }
 
 module "projects-iam" {
-  source   = "../project"
-  for_each = local.projects_input
-  name     = each.value.name
-  prefix   = each.value.prefix
+  source       = "../project"
+  for_each     = local.projects_input
+  name         = each.value.name
+  prefix       = each.value.prefix
+  org_policies = each.value.org_policies
   project_reuse = {
     use_data_source = false
     attributes = {
@@ -181,11 +187,21 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
+    condition_vars = merge(
+      local.ctx.condition_vars, {
+        folder_ids = {
+          for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
+        }
+        projects = {
+          for k, v in module.projects : k => v.project_id
+        }
+      }
+    )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
     }
-    folder_ids = local.ctx.folder_ids
+    folder_ids = local.ctx_folder_ids
     kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
     iam_principals = merge(
       local.ctx_iam_principals,
@@ -203,6 +219,11 @@ module "projects-iam" {
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    org_policies = lookup(each.value.factories_config, "org_policies", null) == null ? null : try(pathexpand(
+      var.factories_config.basepath == null || startswith(each.value.factories_config.org_policies, "/") || startswith(each.value.factories_config.org_policies, ".")
+      ? each.value.factories_config.org_policies :
+      "${var.factories_config.basepath}/${each.value.factories_config.org_policies}"
+    ), null)
   }
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
