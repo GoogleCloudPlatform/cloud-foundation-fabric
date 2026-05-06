@@ -25,7 +25,12 @@ variable "backend_service_configs" {
     connection_draining_timeout_sec = optional(number)
     enable_cdn                      = optional(bool)
     health_checks                   = optional(list(string), ["default"])
-    log_sample_rate                 = optional(number)
+    log_config = optional(object({
+      enable          = optional(bool)
+      sample_rate     = optional(number)
+      optional_mode   = optional(string)
+      optional_fields = optional(list(string))
+    }))
     port_name                       = optional(string)
     project_id                      = optional(string)
     protocol                        = optional(string)

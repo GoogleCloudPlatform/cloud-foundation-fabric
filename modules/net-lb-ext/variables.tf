@@ -29,7 +29,12 @@ variable "backend_service_config" {
       ratio                     = optional(number)
     }))
     locality_lb_policy = optional(string)
-    log_sample_rate    = optional(number)
+    log_config = optional(object({
+      enable          = optional(bool)
+      sample_rate     = optional(number)
+      optional_mode   = optional(string)
+      optional_fields = optional(list(string))
+    }))
     name               = optional(string)
     description        = optional(string, "Terraform managed.")
     port_name          = optional(string)
