@@ -35,12 +35,12 @@ variable "backend_service_config" {
       optional_mode   = optional(string)
       optional_fields = optional(list(string))
     }))
-    name               = optional(string)
-    description        = optional(string, "Terraform managed.")
-    port_name          = optional(string)
-    protocol           = optional(string, "UNSPECIFIED")
-    session_affinity   = optional(string)
-    timeout_sec        = optional(number)
+    name             = optional(string)
+    description      = optional(string, "Terraform managed.")
+    port_name        = optional(string)
+    protocol         = optional(string, "UNSPECIFIED")
+    session_affinity = optional(string)
+    timeout_sec      = optional(number)
   })
   default  = {}
   nullable = false

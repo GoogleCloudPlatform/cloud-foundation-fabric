@@ -31,13 +31,13 @@ variable "backend_service_configs" {
       optional_mode   = optional(string)
       optional_fields = optional(list(string))
     }))
-    port_name                       = optional(string)
-    project_id                      = optional(string)
-    protocol                        = optional(string)
-    security_policy                 = optional(string)
-    session_affinity                = optional(string)
-    locality_lb_policy              = optional(string)
-    timeout_sec                     = optional(number)
+    port_name          = optional(string)
+    project_id         = optional(string)
+    protocol           = optional(string)
+    security_policy    = optional(string)
+    session_affinity   = optional(string)
+    locality_lb_policy = optional(string)
+    timeout_sec        = optional(number)
     backends = list(object({
       # group renamed to backend
       backend         = string

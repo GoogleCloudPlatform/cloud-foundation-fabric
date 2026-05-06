@@ -34,10 +34,10 @@ variable "backend_service_config" {
       optional_mode   = optional(string)
       optional_fields = optional(list(string))
     }))
-    port_name                       = optional(string)
-    project_id                      = optional(string)
-    session_affinity                = optional(string, "NONE")
-    timeout_sec                     = optional(number)
+    port_name        = optional(string)
+    project_id       = optional(string)
+    session_affinity = optional(string, "NONE")
+    timeout_sec      = optional(number)
     backends = optional(list(object({
       group           = string
       balancing_mode  = optional(string, "UTILIZATION")

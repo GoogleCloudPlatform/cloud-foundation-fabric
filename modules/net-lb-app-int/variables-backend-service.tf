@@ -31,12 +31,12 @@ variable "backend_service_configs" {
       optional_mode   = optional(string)
       optional_fields = optional(list(string))
     }))
-    port_name                       = optional(string)
-    project_id                      = optional(string)
-    protocol                        = optional(string)
-    session_affinity                = optional(string)
-    timeout_sec                     = optional(number)
-    security_policy                 = optional(string)
+    port_name        = optional(string)
+    project_id       = optional(string)
+    protocol         = optional(string)
+    session_affinity = optional(string)
+    timeout_sec      = optional(number)
+    security_policy  = optional(string)
     backends = list(object({
       group           = string
       balancing_mode  = optional(string, "UTILIZATION")
