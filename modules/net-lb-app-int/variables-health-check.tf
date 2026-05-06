@@ -24,6 +24,7 @@ variable "health_check_configs" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
+    is_regional         = optional(bool, false)
     project_id          = optional(string)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
