@@ -157,7 +157,6 @@ module "projects" {
   logging_metrics       = try(each.value.logging_metrics, null)
   logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
-  org_policies          = each.value.org_policies
   quotas                = each.value.quotas
   services = distinct(concat(
     each.value.services,
@@ -173,10 +172,11 @@ module "projects" {
 }
 
 module "projects-iam" {
-  source   = "../project"
-  for_each = local.projects_input
-  name     = each.value.name
-  prefix   = each.value.prefix
+  source       = "../project"
+  for_each     = local.projects_input
+  name         = each.value.name
+  prefix       = each.value.prefix
+  org_policies = each.value.org_policies
   project_reuse = {
     use_data_source = false
     attributes = {
@@ -186,6 +186,13 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
+    condition_vars = merge(
+      local.ctx.condition_vars, {
+        projects = {
+          for k, v in module.projects : k => v.project_id
+        }
+      }
+    )
     tag_vars = {
       projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
       organization = try(local.ctx.tag_vars.organization, {})
