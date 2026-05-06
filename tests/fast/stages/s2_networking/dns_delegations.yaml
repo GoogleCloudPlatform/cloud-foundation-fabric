@@ -17,15 +17,18 @@ counts:
   google_compute_route: 3
   google_compute_shared_vpc_host_project: 1
   google_compute_subnetwork: 1
+  google_dns_keys: 1
   google_dns_managed_zone: 4
+  google_dns_managed_zone_iam_binding: 2
   google_dns_record_set: 3
+  google_logging_project_settings: 1
   google_project: 1
   google_project_iam_member: 8
   google_project_service: 10
   google_project_service_identity: 8
   google_storage_bucket_object: 2
   modules: 9
-  resources: 46
+  resources: 48
   terraform_data: 2
 values:
   module.dns-delegations["net-core-0/pub-parent"].google_dns_record_set.dns_record_set["NS child.example.com."]:
@@ -49,3 +52,15 @@ values:
     routing_policy: []
     ttl: 300
     type: DS
+  module.dns-zones["net-core-0/pub-child"].google_dns_managed_zone_iam_binding.iam_bindings["$custom_roles:dns_resource_record_sets_adder"]:
+    condition: []
+    members:
+      - serviceAccount:config-plane-dev-rw@fast-config-plane-dev.iam.gserviceaccount.com
+    project: fast-prod-net-core-0
+    role: organizations/123456789012/roles/DNSResourceRecordSetsAdder
+  module.dns-zones["net-core-0/pub-child"].google_dns_managed_zone_iam_binding.iam_bindings["roles/dns.reader"]:
+    condition: []
+    members:
+      - serviceAccount:config-plane-dev-rw@fast-config-plane-dev.iam.gserviceaccount.com
+    project: fast-prod-net-core-0
+    role: roles/dns.reader
