@@ -159,7 +159,7 @@ module "spoke-ra" {
 | [hub](outputs.tf#L17) | NCC hub resource (only if auto-created). |  |
 | [id](outputs.tf#L22) | Fully qualified hub id. |  |
 | [router](outputs.tf#L27) | Cloud Router resource. |  |
-| [spoke-ra](outputs.tf#L32) | NCC spoke resource. |  |
+| [spoke_ra](outputs.tf#L32) | NCC spoke resource. |  |
 
 ## Fixtures
 

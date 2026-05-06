@@ -44,7 +44,12 @@ resource "google_compute_forwarding_rule" "esp" {
   ip_protocol = "ESP"
 }
 
-resource "google_compute_forwarding_rule" "udp-500" {
+moved {
+  from = google_compute_forwarding_rule.udp-500
+  to   = google_compute_forwarding_rule.udp_500
+}
+
+resource "google_compute_forwarding_rule" "udp_500" {
   name        = "vpn-${var.name}-udp-500"
   project     = var.project_id
   region      = var.region
@@ -54,7 +59,12 @@ resource "google_compute_forwarding_rule" "udp-500" {
   port_range  = "500"
 }
 
-resource "google_compute_forwarding_rule" "udp-4500" {
+moved {
+  from = google_compute_forwarding_rule.udp-4500
+  to   = google_compute_forwarding_rule.udp_4500
+}
+
+resource "google_compute_forwarding_rule" "udp_4500" {
   name        = "vpn-${var.name}-udp-4500"
   project     = var.project_id
   region      = var.region
