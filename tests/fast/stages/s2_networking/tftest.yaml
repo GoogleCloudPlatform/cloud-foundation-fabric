@@ -22,6 +22,11 @@ tests:
       - dns_delegations.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s2_networking/data-testdns-delegation
+  static_ips_nat:
+    inventory:
+      - static_ips_nat.yaml
+    extra_dirs:
+      - ../../../tests/fast/stages/s2_networking/data-teststatic-ips-nat
   ncc:
   nva:
   vlan_attachments:

@@ -1,0 +1,78 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+counts:
+  google_compute_address: 3
+  google_compute_network: 1
+  google_compute_route: 3
+  google_compute_router: 1
+  google_compute_router_nat: 1
+  google_compute_shared_vpc_host_project: 1
+  google_compute_subnetwork: 1
+  google_logging_project_settings: 1
+  google_project: 1
+  google_project_iam_member: 8
+  google_project_service: 10
+  google_project_service_identity: 8
+  google_storage_bucket_object: 2
+  modules: 7
+  resources: 43
+  terraform_data: 2
+values:
+  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-0"]:
+    address_type: EXTERNAL
+    description: 'Terraform managed.'
+    name: core-nat-static-ip-0
+    project: fast-prod-net-core-0
+    region: europe-west1
+  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-1"]:
+    address_type: EXTERNAL
+    description: 'Terraform managed.'
+    name: core-nat-static-ip-1
+    project: fast-prod-net-core-0
+    region: europe-west1
+  module.addresses["core/nat-static"].google_compute_address.external["core-nat-static-ip-2"]:
+    address_type: EXTERNAL
+    description: 'Terraform managed.'
+    name: core-nat-static-ip-2
+    project: fast-prod-net-core-0
+    region: europe-west1
+  module.nat["core/nat-static"].google_compute_router.router[0]:
+    name: core-nat-static-nat
+    project: fast-prod-net-core-0
+    region: europe-west1
+  module.nat["core/nat-static"].google_compute_router_nat.nat:
+    enable_dynamic_port_allocation: False
+    enable_endpoint_independent_mapping: True
+    icmp_idle_timeout_sec: 30
+    log_config:
+      - enable: False
+        filter: ALL
+    max_ports_per_vm: 65536
+    name: core-nat-static
+    nat64_subnetwork: []
+    project: fast-prod-net-core-0
+    region: europe-west1
+    router: core-nat-static-nat
+    rules: []
+    source_subnetwork_ip_ranges_to_nat: LIST_OF_SUBNETWORKS
+    subnetwork:
+      - secondary_ip_range_names: []
+        source_ip_ranges_to_nat:
+          - 'ALL_IP_RANGES'
+    tcp_established_idle_timeout_sec: 1200
+    tcp_time_wait_timeout_sec: 120
+    tcp_transitory_idle_timeout_sec: 30
+    type: PUBLIC
+    udp_idle_timeout_sec: 30
