@@ -18,9 +18,9 @@ Once deployed do the following to see that it works:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L27) | Identifier of the project. | <code>string</code> | ✓ |  |
-| [regions](variables.tf#L32) | List of regions to deploy the proxy in. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_id](variables.tf#L28) | Identifier of the project. | <code>string</code> | ✓ |  |
+| [regions](variables.tf#L33) | List of regions to deploy the proxy in. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [_testing](variables.tf#L18) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

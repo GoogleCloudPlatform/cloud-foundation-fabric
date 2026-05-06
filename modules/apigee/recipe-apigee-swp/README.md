@@ -24,11 +24,11 @@ Once the terraform configuration is applied you can verify that all is working b
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [analytics_region](variables.tf#L27) | Region. | <code>string</code> | ✓ |  |
-| [instance_region](variables.tf#L32) | Region. | <code>string</code> | ✓ |  |
-| [network_config](variables.tf#L37) | Network configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L46) | Project ID. | <code>string</code> | ✓ |  |
-| [_testing](variables.tf#L17) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [analytics_region](variables.tf#L28) | Region. | <code>string</code> | ✓ |  |
+| [instance_region](variables.tf#L33) | Region. | <code>string</code> | ✓ |  |
+| [network_config](variables.tf#L38) | Network configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L47) | Project ID. | <code>string</code> | ✓ |  |
+| [_testing](variables.tf#L18) | Populate this variable to avoid triggering the data source. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

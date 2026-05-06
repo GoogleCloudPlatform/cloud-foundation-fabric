@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.firewall.google_compute_firewall.allow-admins[0]:
+  module.firewall.google_compute_firewall.allow_admins[0]:
     allow:
     - ports: []
       protocol: all
@@ -30,7 +30,7 @@ values:
     source_tags: null
     target_service_accounts: null
     target_tags: null
-  module.firewall.google_compute_firewall.allow-tag-http[0]:
+  module.firewall.google_compute_firewall.allow_tag_http[0]:
     allow:
     - ports:
       - '80'
@@ -52,7 +52,7 @@ values:
     target_service_accounts: null
     target_tags:
     - http-server
-  module.firewall.google_compute_firewall.allow-tag-https[0]:
+  module.firewall.google_compute_firewall.allow_tag_https[0]:
     allow:
     - ports:
       - '443'
@@ -74,7 +74,7 @@ values:
     target_service_accounts: null
     target_tags:
     - https-server
-  module.firewall.google_compute_firewall.allow-tag-ssh[0]:
+  module.firewall.google_compute_firewall.allow_tag_ssh[0]:
     allow:
     - ports:
       - '22'

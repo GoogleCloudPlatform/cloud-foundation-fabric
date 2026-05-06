@@ -120,7 +120,7 @@ module "apigee" {
   }
 }
 
-module "ext_lb" {
+module "ext-lb" {
   source     = "../../../modules/net-lb-app-ext"
   name       = "glb"
   project_id = module.project.id
@@ -178,7 +178,7 @@ module "swp" {
     allowed-hosts = {
       priority        = 1000
       allow           = true
-      session_matcher = "host() == '${module.nginx_vm.internal_ip}'"
+      session_matcher = "host() == '${module.nginx-vm.internal_ip}'"
     }
   }
 }
@@ -197,7 +197,7 @@ module "addresses" {
   }
 }
 
-module "nginx_vm" {
+module "nginx-vm" {
   source     = "../../../modules/compute-vm"
   project_id = module.project.project_id
   zone       = "${var.instance_region}-b"
@@ -223,7 +223,7 @@ module "nginx_vm" {
 
 resource "local_file" "target_endpoint_file" {
   content = templatefile("${path.module}/templates/targets/default.xml.tpl", {
-    ip_address = module.nginx_vm.internal_ip
+    ip_address = module.nginx-vm.internal_ip
   })
   filename        = "${path.module}/bundle/apiproxy/targets/default.xml"
   file_permission = "0644"
