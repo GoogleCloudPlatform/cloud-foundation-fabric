@@ -37,9 +37,14 @@ locals {
       for k, v in google_compute_region_network_endpoint.internet : k => v.id
     }
   )
-  hc_ids = {
-    for k, v in google_compute_health_check.default : k => v.id
-  }
+  hc_ids = merge(
+    {
+      for k, v in google_compute_health_check.default : k => v.id
+    },
+    {
+      for k, v in google_compute_region_health_check.default : k => v.id
+    }
+  )
 }
 
 resource "google_compute_region_backend_service" "default" {
