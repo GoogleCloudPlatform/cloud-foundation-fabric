@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/artifact-registry
-
-tests:
-  context:
-  universe:
-  remote_maven_common:
+values:
+  google_artifact_registry_repository.registry:
+    format: MAVEN
+    mode: REMOTE_REPOSITORY
+    location: europe-west1
+    project: my-project
+    repository_id: maven-remote
+    remote_repository_config:
+    - common_repository:
+      - uri: https://repo1.maven.org/maven2/
