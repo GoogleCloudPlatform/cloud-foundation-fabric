@@ -270,6 +270,21 @@ resource "google_container_cluster" "cluster" {
     managed_prometheus {
       enabled = var.monitoring_config.enable_managed_prometheus
     }
+    dynamic "advanced_datapath_observability_config" {
+      for_each = (
+        var.monitoring_config.advanced_datapath_observability == null
+        ? []
+        : [""]
+      )
+      content {
+        enable_metrics = (
+          var.monitoring_config.advanced_datapath_observability.enable_metrics
+        )
+        enable_relay = (
+          var.monitoring_config.advanced_datapath_observability.enable_relay
+        )
+      }
+    }
   }
   dynamic "notification_config" {
     for_each = var.enable_features.upgrade_notifications != null ? [""] : []

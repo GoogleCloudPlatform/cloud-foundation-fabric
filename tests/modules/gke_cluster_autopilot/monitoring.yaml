@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2025 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/gke-cluster-autopilot
+values:
+  google_container_cluster.cluster:
+    monitoring_config:
+    - advanced_datapath_observability_config:
+      - enable_metrics: true
+        enable_relay: true
 
-tests:
-  network_tags:
-  monitoring:
+counts:
+  google_container_cluster: 1
