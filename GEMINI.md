@@ -270,5 +270,6 @@ Run the specific `pytest` plan test. The test will fail, and the captured output
 - For targeted edits or appending to a single file, ALWAYS use the native `replace` tool. (To append, match the last few lines of the file and replace them with the same lines plus your new content).
 - **EXCEPTION (Pattern/Bulk Edits):** You MAY use shell commands (like `sed -i`, `perl -pi`, or `find ... xargs sed`) ONLY for regex-based or pattern-based replacements, particularly across multiple files, where the exact-match `replace` tool is not feasible.
 - **Ambiguity & Paths:** When encountering unfamiliar or unexpected repository structures, paths, or tool executions, always pause and offer the user the choice to either explain or authorize further independent investigation, rather than making assumptions or guessing paths.
+- **CRITICAL (LINTING & FORMATTING):** You MUST ALWAYS run all formatting and linting checks (`terraform fmt`, `check_documentation.py`, `yamllint`, `check_boilerplate.py` as described in [Formatting & Linting](#1-formatting--linting)) on all modified or new files BEFORE staging, committing, or pushing changes.
 
 To run specific FAST stage tests, use the syntax `pytest tests/fast/stages/s<stage_num>_<stage_name>/tftest.yaml::<test_name>`. For example: `pytest tests/fast/stages/s0_org_setup/tftest.yaml::starter-gcd`.

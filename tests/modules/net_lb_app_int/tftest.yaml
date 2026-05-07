@@ -29,6 +29,7 @@ tests:
   health-checks-ssl:
   health-checks-tcp:
   https:
+  logging:
   negs:
   ssl:
   urlmaps:

@@ -628,6 +628,18 @@ module "ilb-l7" {
       backends = [{
         group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-2"
       }]
+      log_config = {
+        enable      = true
+        sample_rate = 0.5
+      }
+    }
+    audio = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-3"
+      }]
+      log_config = {
+        enable = false
+      }
     }
   }
   urlmap_config = {
@@ -639,10 +651,16 @@ module "ilb-l7" {
     path_matchers = {
       pathmap = {
         default_service = "default"
-        path_rules = [{
-          paths   = ["/video", "/video/*"]
-          service = "video"
-        }]
+        path_rules = [
+          {
+            paths   = ["/video", "/video/*"]
+            service = "video"
+          },
+          {
+            paths   = ["/audio", "/audio/*"]
+            service = "audio"
+          }
+        ]
       }
     }
   }
@@ -652,7 +670,7 @@ module "ilb-l7" {
   }
 }
 
-# tftest modules=1 resources=6
+# tftest modules=1 resources=7 inventory=urlmap.yaml
 ```
 
 ### SSL Certificates
