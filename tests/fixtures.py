@@ -42,12 +42,15 @@ def _prepare_root_module(path):
   # directories that are automatically read by terraform. Useful
   # to avoid surprises if, for example, you have an active fast
   # deployment with links to configs)
-  ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
-                                           '*.auto.tfvars.json',
-                                           '[0-9]-*-providers.tf',
-                                           'terraform.tfstate*',
-                                           '.terraform.lock.hcl',
-                                           'terraform.tfvars', '.terraform')
+  _ignore = shutil.ignore_patterns('*.auto.tfvars', '*.auto.tfvars.json',
+                                   '[0-9]-*-providers.tf', 'terraform.tfstate*',
+                                   '.terraform.lock.hcl', 'terraform.tfvars',
+                                   '.terraform', '.git')
+
+  def ignore_patterns(src, names):
+    ignored = set(_ignore(src, names))
+    ignored.update([n for n in names if not (Path(src) / n).exists()])
+    return list(ignored)
 
   with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
     tmp_path = Path(tmp_path)
@@ -330,10 +333,8 @@ def get_tfvars_for_e2e():
   missing_vars = set([f'TFTEST_E2E_{k}' for k in _variables]) - set(
       os.environ.keys())
   if missing_vars:
-    raise RuntimeError(
-        f'Missing environment variables: {missing_vars} required to run E2E tests. '
-        f'Consult CONTRIBUTING.md to understand how to set them up. '
-        f'If you want to skip E2E tests add -k "not examples_e2e" to your pytest call'
+    pytest.skip(
+        f'Missing environment variables: {missing_vars} required to run E2E tests.'
     )
   tf_vars = {k: os.environ.get(f'TFTEST_E2E_{k}') for k in _variables}
   if tf_vars['region'] == tf_vars['region_secondary']:

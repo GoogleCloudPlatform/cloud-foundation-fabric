@@ -138,6 +138,7 @@ pytest 'tests/modules/project/tftest.yaml::context' --tb=short -s
 
 *   **Branching:** Use `username/feature-name`.
 *   **Commits:** Atomic commits with clear messages.
+*   **PR Titles:** Avoid semantic commit prefixes. Use Title Case for the first word.
 *   **Docs:** Do not manually edit the variables/outputs tables in READMEs; use `tfdoc.py`.
 
 ## Adding Context Support to a Module

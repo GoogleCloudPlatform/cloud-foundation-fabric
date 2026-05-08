@@ -72,7 +72,12 @@ def _test_terraform_example(plan_validator, example):
                     directive.kwargs.get('fixtures'))
     elif example.type == 'tfvars':
       (tmp_path / 'terraform.auto.tfvars').write_text(example.code)
-      shutil.copytree(example.module, tmp_path, dirs_exist_ok=True)
+
+      def ignore_missing(src, names):
+        return [n for n in names if not (Path(src) / n).exists()]
+
+      shutil.copytree(example.module, tmp_path, dirs_exist_ok=True,
+                      ignore=ignore_missing)
       tf_var_files = [(tmp_path / 'terraform.auto.tfvars').resolve()]
 
     inventory = []
