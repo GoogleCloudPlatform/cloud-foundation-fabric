@@ -150,10 +150,11 @@ variable "gcp_deletion_protection" {
 variable "insights_config" {
   description = "Query Insights configuration. Defaults to null which disables Query Insights."
   type = object({
-    query_string_length     = optional(number, 1024)
-    record_application_tags = optional(bool, false)
-    record_client_address   = optional(bool, false)
-    query_plans_per_minute  = optional(number, 5)
+    query_string_length             = optional(number, 1024)
+    record_application_tags         = optional(bool, false)
+    record_client_address           = optional(bool, false)
+    query_plans_per_minute          = optional(number, 5)
+    enhanced_query_insights_enabled = optional(bool, false)
   })
   default = null
 }
