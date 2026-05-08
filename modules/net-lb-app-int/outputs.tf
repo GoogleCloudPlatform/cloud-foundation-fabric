@@ -90,3 +90,8 @@ output "service_attachment_id" {
     google_compute_service_attachment.default[0].id, null
   )
 }
+
+output "url_map_id" {
+  description = "Fully qualified URL map ID (resource path) for use in IAM conditions and API calls."
+  value = google_compute_region_url_map.default.id
+}
