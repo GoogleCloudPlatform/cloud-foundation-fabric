@@ -971,6 +971,7 @@ module "org" {
           }
         }
         oidc-full = {
+          scim_usage = "ENABLED_FOR_GROUPS"
           attribute_mapping = {
             "google.subject" = "assertion.sub"
           }
@@ -985,12 +986,12 @@ module "org" {
               }
             }
           }
-          oauth2_client_config = {
-            extra_attributes = {
-              issuer_uri      = "https://login.microsoftonline.com/abcd01234/v2.0"
-              client_id       = "client-id"
-              client_secret   = "client-secret"
-              attributes_type = "AZURE_AD_GROUPS_MAIL"
+          scim_tenant = {
+            scim_tenant_id = "my-scim-tenant"
+            display_name   = "My SCIM Tenant"
+            claim_mapping = {
+              "google.subject" = "user.externalId"
+              "google.group"   = "group.externalId"
             }
           }
         }
@@ -1009,7 +1010,7 @@ module "org" {
 |---|---|---|
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_organization_feed</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> |
-| [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> |
+| [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> · <code>google_iam_workforce_pool_provider_scim_tenant</code> |
 | [logging.tf](./logging.tf) | Log sinks and data access logs. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_settings</code> · <code>google_logging_organization_sink</code> · <code>google_organization_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> |
 | [org-policy-custom-constraints.tf](./org-policy-custom-constraints.tf) | None | <code>google_org_policy_custom_constraint</code> |
@@ -1080,6 +1081,7 @@ module "org" {
 | [organization_policies_ids](outputs.tf#L113) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
 | [scc_custom_sha_modules_ids](outputs.tf#L118) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
 | [scc_mute_configs](outputs.tf#L123) | SCC mute configurations. |  |
+| [scim_tenants](outputs.tf#L185) | Workforce Identity provider SCIM tenants. |  |
 | [service_agents](outputs.tf#L128) | Identities of all organization-level service agents. |  |
 | [sink_writer_identities](outputs.tf#L136) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L144) | Tag key resources. |  |

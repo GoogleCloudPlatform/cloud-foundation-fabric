@@ -181,3 +181,17 @@ output "workforce_identity_providers" {
     }
   }
 }
+
+output "scim_tenants" {
+  description = "Workforce Identity provider SCIM tenants."
+  value = {
+    for k, v in google_iam_workforce_pool_provider_scim_tenant.default : k => {
+      id            = v.id
+      pool          = v.workforce_pool_id
+      provider      = v.provider_id
+      state         = v.state
+      base_uri      = v.base_uri
+      service_agent = v.service_agent
+    }
+  }
+}
