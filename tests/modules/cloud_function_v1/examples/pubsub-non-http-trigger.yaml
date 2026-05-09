@@ -33,7 +33,7 @@ values:
     labels: null
     max_instances: 1
     min_instances: null
-    name: test-cf-http
+    name: test-test-cf-http
     on_deploy_update_policy: []
     project: project-id
     region: europe-west9

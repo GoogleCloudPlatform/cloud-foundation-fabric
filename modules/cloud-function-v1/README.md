@@ -57,6 +57,7 @@ module "cf-http" {
   source      = "./fabric/modules/cloud-function-v1"
   project_id  = var.project_id
   region      = var.regions.secondary
+  prefix      = var.prefix
   name        = "test-cf-http"
   bucket_name = var.bucket
   bundle_config = {
