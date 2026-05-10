@@ -424,6 +424,10 @@
                     "disabled": {
                       "type": "boolean"
                     },
+                    "detailed_audit_logging": {
+                      "type": "boolean",
+                      "default": false
+                    },
                     "identity_provider": {
                       "type": "object",
                       "oneOf": [

@@ -78,13 +78,14 @@ resource "google_iam_workforce_pool" "default" {
 }
 
 resource "google_iam_workforce_pool_provider" "default" {
-  for_each            = local.wfif_providers
-  provider_id         = each.value.provider_id
-  attribute_condition = each.value.attribute_condition
-  description         = each.value.description
-  disabled            = each.value.disabled
-  display_name        = each.value.display_name
-  scim_usage          = each.value.scim_usage
+  for_each               = local.wfif_providers
+  provider_id            = each.value.provider_id
+  attribute_condition    = each.value.attribute_condition
+  description            = each.value.description
+  disabled               = each.value.disabled
+  detailed_audit_logging = each.value.detailed_audit_logging
+  display_name           = each.value.display_name
+  scim_usage             = each.value.scim_usage
   attribute_mapping = merge(
     try(local.wfif_attribute_mappings[each.value.attribute_mapping_template], {}),
     each.value.attribute_mapping

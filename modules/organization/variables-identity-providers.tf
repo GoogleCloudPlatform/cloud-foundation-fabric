@@ -34,6 +34,7 @@ variable "workforce_identity_pools" {
       attribute_mapping          = optional(map(string), {})
       attribute_mapping_template = optional(string)
       disabled                   = optional(bool, false)
+      detailed_audit_logging     = optional(bool, false)
       scim_usage                 = optional(string)
       identity_provider = object({
         oidc = optional(object({

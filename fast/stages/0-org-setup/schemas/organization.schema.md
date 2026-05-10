@@ -124,6 +124,7 @@
         - **attribute_mapping_template**: *string*
           <br>*enum: ['azuread', 'okta']*
         - **disabled**: *boolean*
+        - **detailed_audit_logging**: *boolean*
         - **identity_provider**: *object*
         - **oauth2_client_config**: *object*
           <br>*additional properties: false*
