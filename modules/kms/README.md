@@ -57,7 +57,7 @@ module "kms" {
         key-b-iam1 = {
           key    = "key-b"
           member = "group:${var.group_email}"
-          role   = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+          role   = "roles/cloudkms.viewer"
         }
       }
     }

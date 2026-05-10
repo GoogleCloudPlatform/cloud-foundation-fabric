@@ -318,7 +318,6 @@ module "vm-disk-options-example" {
       }
     }
     data2 = {
-      mode = "READ_ONLY"
       initialize_params = {
         type = "hyperdisk-balanced"
         hyperdisk = {
