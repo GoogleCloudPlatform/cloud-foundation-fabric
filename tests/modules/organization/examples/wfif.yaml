@@ -28,11 +28,18 @@ values:
     attribute_mapping:
       google.subject: assertion.sub
     description: null
-    detailed_audit_logging: null
+    detailed_audit_logging: false
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
-    extra_attributes_oauth2_client: []
+    extra_attributes_oauth2_client:
+    - attributes_type: AZURE_AD_GROUPS_MAIL
+      client_id: client-id
+      client_secret:
+      - value:
+        - plain_text: client-secret
+      issuer_uri: https://login.microsoftonline.com/abcd01234/v2.0
+      query_parameters: []
     location: global
     oidc:
     - client_id: https://analysis.windows.net/powerbi/connector/GoogleBigQuery
@@ -60,7 +67,7 @@ values:
       google.groups: assertion.attributes.groups
       google.subject: assertion.subject
     description: null
-    detailed_audit_logging: null
+    detailed_audit_logging: false
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
@@ -78,7 +85,7 @@ values:
     attribute_mapping:
       google.subject: assertion.sub
     description: null
-    detailed_audit_logging: null
+    detailed_audit_logging: false
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []

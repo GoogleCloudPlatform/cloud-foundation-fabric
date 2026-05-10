@@ -986,6 +986,14 @@ module "org" {
               }
             }
           }
+          oauth2_client_config = {
+            extra_attributes = {
+              issuer_uri      = "https://login.microsoftonline.com/abcd01234/v2.0"
+              client_id       = "client-id"
+              client_secret   = "client-secret"
+              attributes_type = "AZURE_AD_GROUPS_MAIL"
+            }
+          }
           scim_tenant = {
             id           = "my-scim-tenant"
             display_name = "My SCIM Tenant"
