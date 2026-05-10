@@ -45,7 +45,7 @@ def _prepare_root_module(path):
   _ignore = shutil.ignore_patterns('*.auto.tfvars', '*.auto.tfvars.json',
                                    '[0-9]-*-providers.tf', 'terraform.tfstate*',
                                    '.terraform.lock.hcl', 'terraform.tfvars',
-                                   '.terraform', '.git')
+                                   '.terraform', '.git', 'pytest-*')
 
   def ignore_patterns(src, names):
     ignored = set(_ignore(src, names))
