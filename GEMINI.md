@@ -113,6 +113,9 @@ pytest tests
 # Run specific module examples
 pytest -k 'modules and <module-name>:' tests/examples
 
+# Run a single specific example test (useful for debugging)
+pytest -s 'tests/examples/test_plan.py::test_example[terraform:modules/<module-name>:Heading Name:Index]'
+
 # Automatically generate an inventory file from a successful plan
 pytest -s 'tests/examples/test_plan.py::test_example[terraform:modules/<module-name>:Heading Name:Index]'
 ```
