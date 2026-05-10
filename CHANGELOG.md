@@ -14,7 +14,6 @@ All notable changes to this project will be documented in this file.
 - `terraform-google-provider-beta`: version updated to 7.29 which includes track_client_address field support for AlloyDB [[#3916](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3916)]
 - `modules`: Bump minimum OpenTofu version to 1.11.00 [[#3918](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3918)]
 
-- [[#3949](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3949)] Fix random test failures by ignoring .git in copytree ([ludoo](https://github.com/ludoo)) <!-- 2026-05-08 18:57:41+00:00 -->
 
 ### FAST
 
@@ -55,6 +54,7 @@ All notable changes to this project will be documented in this file.
 ### TOOLS
 
 - [[#3954](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3954)] Fix test race condition by ignoring pytest-* directories ([ludoo](https://github.com/ludoo)) <!-- 2026-05-10 15:33:31+00:00 -->
+- [[#3949](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3949)] Fix random test failures by ignoring .git in copytree ([ludoo](https://github.com/ludoo)) <!-- 2026-05-08 18:57:41+00:00 -->
 - [[#3875](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3875)] Add Agent Engine identity type ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-05-05 08:22:22+00:00 -->
 - [[#3925](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3925)] Let `tfdoc.py` understand sensitive variables ([juliocc](https://github.com/juliocc)) <!-- 2026-05-01 19:59:59+00:00 -->
 - [[#3916](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3916)] Add track_client_address field to `modules/alloydb` ([SamuPert](https://github.com/SamuPert)) <!-- 2026-04-28 07:40:26+00:00 -->
