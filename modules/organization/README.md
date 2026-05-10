@@ -987,8 +987,8 @@ module "org" {
             }
           }
           scim_tenant = {
-            scim_tenant_id = "my-scim-tenant"
-            display_name   = "My SCIM Tenant"
+            id           = "my-scim-tenant"
+            display_name = "My SCIM Tenant"
             claim_mapping = {
               "google.subject" = "user.externalId"
               "google.group"   = "group.externalId"
@@ -999,7 +999,7 @@ module "org" {
     }
   }
 }
-# tftest modules=1 resources=4 inventory=wfif.yaml
+# tftest inventory=wfif.yaml
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -1081,12 +1081,12 @@ module "org" {
 | [organization_policies_ids](outputs.tf#L113) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
 | [scc_custom_sha_modules_ids](outputs.tf#L118) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
 | [scc_mute_configs](outputs.tf#L123) | SCC mute configurations. |  |
-| [scim_tenants](outputs.tf#L185) | Workforce Identity provider SCIM tenants. |  |
-| [service_agents](outputs.tf#L128) | Identities of all organization-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L136) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L144) | Tag key resources. |  |
-| [tag_values](outputs.tf#L153) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L161) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L168) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L175) | Workforce Identity provider attributes. |  |
+| [scim_tenants](outputs.tf#L128) | Workforce Identity provider SCIM tenants. |  |
+| [service_agents](outputs.tf#L142) | Identities of all organization-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L150) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L158) | Tag key resources. |  |
+| [tag_values](outputs.tf#L167) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L175) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L182) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L189) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->

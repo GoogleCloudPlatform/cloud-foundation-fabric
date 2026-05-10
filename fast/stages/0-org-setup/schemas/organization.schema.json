@@ -527,6 +527,44 @@
                           "$ref": "#/$defs/wfif_oauth2_client_attrs"
                         }
                       }
+                    },
+                    "scim_tenant": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "claim_mapping"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "claim_mapping": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "location": {
+                          "type": "string",
+                          "default": "global"
+                        },
+                        "display_name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "hard_delete": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "scim_usage": {
+                      "type": "string",
+                      "enum": [
+                        "ENABLED_FOR_GROUPS"
+                      ]
                     }
                   }
                 }

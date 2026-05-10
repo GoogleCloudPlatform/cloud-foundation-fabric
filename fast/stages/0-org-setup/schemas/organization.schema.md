@@ -129,6 +129,18 @@
           <br>*additional properties: false*
           - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
           - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+        - **scim_tenant**: *object*
+          <br>*additional properties: false*
+          - ⁺**id**: *string*
+          - ⁺**claim_mapping**: *object*
+            <br>*additional properties: string*
+          - **location**: *string*
+            <br>*default: global*
+          - **display_name**: *string*
+          - **description**: *string*
+          - **hard_delete**: *boolean*
+        - **scim_usage**: *string*
+          <br>*enum: ['ENABLED_FOR_GROUPS']*
 
 ## Definitions
 
