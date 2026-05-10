@@ -97,27 +97,36 @@ You can create the release either automatically via the GitHub CLI or manually v
 
 ### Option A: Automated via GitHub CLI (Recommended)
 
-This script extracts any "BREAKING CHANGES" from the changelog, converts the heading to Title Case, and prepends them to the automatically generated release notes.
+This script extracts any "BREAKING CHANGES" from the changelog and converts the heading to Title Case.
 
 ```bash
 # 1. Extract the section for the new release from CHANGELOG.md
 # We use awk to grab everything from the new release header until the next release header
-RELEASE_NOTES=$(awk "/^## \[$NEW_RELEASE\]/{flag=1; next} /^## \[v/{flag=0} flag" CHANGELOG.md)
+RELEASE_NOTES=$(awk "/^## \[v$NEW_RELEASE\]/{flag=1; next} /^## \[v/{flag=0} flag" CHANGELOG.md)
 
 # 2. Extract just the BREAKING CHANGES section (if any)
 BREAKING_CHANGES=$(echo "$RELEASE_NOTES" | awk '/^### BREAKING CHANGES/{flag=1; print; next} /^### /{flag=0} flag')
 
-# 3. Create the release
+# 3. Format breaking changes
 if [ -n "$(echo "$BREAKING_CHANGES" | tr -d '[:space:]')" ]; then
   # Convert "### BREAKING CHANGES" to "### Breaking Changes"
   FORMATTED_BREAKING_CHANGES=$(echo "$BREAKING_CHANGES" | sed 's/^### BREAKING CHANGES/### Breaking Changes/')
-
-  # Prepend breaking changes to the generated notes
-  gh release create "$NEW_RELEASE" --title "$NEW_RELEASE" --generate-notes --notes "$FORMATTED_BREAKING_CHANGES"
-else
-  # Otherwise, just generate the standard notes
-  gh release create "$NEW_RELEASE" --title "$NEW_RELEASE" --generate-notes
+  echo "$FORMATTED_BREAKING_CHANGES"
 fi
+```
+
+> **CRITICAL:** Show the extracted and formatted breaking changes to the user and wait for their approval before proceeding to create the release.
+
+Once approved, run the appropriate command to create the release.
+
+If there were breaking changes:
+```bash
+gh release create "$NEW_RELEASE" --title "$NEW_RELEASE" --generate-notes --notes "$FORMATTED_BREAKING_CHANGES"
+```
+
+If there were no breaking changes:
+```bash
+gh release create "$NEW_RELEASE" --title "$NEW_RELEASE" --generate-notes
 ```
 
 ### Option B: Manual via GitHub UI
