@@ -16,7 +16,7 @@
 
 # tfdoc:file:description Aspect types resources.
 
-module "aspect_types" {
+module "aspect-types" {
   source = "../dataplex-aspect-types"
   for_each = {
     for k, v in local.projects_input : k => v

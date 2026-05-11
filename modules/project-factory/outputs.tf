@@ -26,7 +26,7 @@ locals {
       aspect_types = (
         v.factories_config.aspect_types == null
         ? {}
-        : module.aspect_types[k].ids
+        : module.aspect-types[k].ids
       )
       automation = {
         bucket = try(
