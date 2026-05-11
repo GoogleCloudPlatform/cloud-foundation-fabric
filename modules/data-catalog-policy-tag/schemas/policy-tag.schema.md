@@ -1,4 +1,4 @@
-# Dataplex Aspect Type
+# None
 
 <!-- markdownlint-disable MD036 -->
 
@@ -6,13 +6,20 @@
 
 *additional properties: false*
 
+- **activated_policy_types**: *array*
+  - items: *string*
 - **description**: *string*
-- **display_name**: *string*
-- **labels**: *object*
-- **metadata_template**: *string*
 - **iam**: *reference([iam](#refs-iam))*
 - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
 - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+- **tags**: *object*
+  <br>*additional properties: false*
+  - **`^.+$`**: *object*
+    <br>*additional properties: false*
+    - **description**: *string*
+    - **iam**: *reference([iam](#refs-iam))*
+    - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
+    - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
 
 ## Definitions
 
@@ -20,15 +27,15 @@
   <br>*additional properties: false*
   - **`^(?:roles/|\$custom_roles:)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
+      <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
     <br>*additional properties: false*
-    - **members**: *array*
+    - ⁺**members**: *array*
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
-    - **role**: *string*
+    - ⁺**role**: *string*
       <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
@@ -39,9 +46,9 @@
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
     <br>*additional properties: false*
-    - **member**: *string*
+    - ⁺**member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
-    - **role**: *string*
+    - ⁺**role**: *string*
       <br>*pattern: ^(?:roles/|\$custom_roles:)*
     - **condition**: *object*
       <br>*additional properties: false*
