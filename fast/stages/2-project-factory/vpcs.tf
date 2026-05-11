@@ -19,7 +19,10 @@
 module "vpc-factory" {
   source = "../../../modules/net-vpc-factory"
   factories_config = {
-    vpcs = try(local.paths.vpcs, null)
+    basepath = var.factories_config.dataset
+    paths = {
+      vpcs = var.factories_config.paths.vpcs
+    }
   }
   context = merge(local.context, {
     project_ids = merge(
