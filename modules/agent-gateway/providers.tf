@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-output "agent_gateway" {
-  description = "The Agent Gateway object."
-  value       = google_network_services_agent_gateway.default
+provider "google" {
+  network_services_custom_endpoint = "https://networkservices.googleapis.com/v1alpha1/"
 }
 
-output "id" {
-  description = "The Agent Gateway id."
-  value       = google_network_services_agent_gateway.default.id
+provider "google-beta" {
+  network_services_custom_endpoint = "https://networkservices.googleapis.com/v1alpha1/"
 }

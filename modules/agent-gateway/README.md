@@ -86,6 +86,5 @@ module "agent-gateway" {
 | name | description | sensitive |
 |---|---|:---:|
 | [agent_gateway](outputs.tf#L17) | The Agent Gateway object. |  |
-| [agent_gateway_card](outputs.tf#L22) | The Agent Gateway card, including information about mTLS endpoints, root certificates and service extension service account. |  |
-| [id](outputs.tf#L27) | The Agent Gateway id. |  |
+| [id](outputs.tf#L22) | The Agent Gateway id. |  |
 <!-- END TFDOC -->

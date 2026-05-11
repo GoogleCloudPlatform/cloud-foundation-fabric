@@ -35,6 +35,7 @@ locals {
 }
 
 resource "google_network_services_agent_gateway" "default" {
+  provider    = google-beta
   project     = local.project_id
   location    = local.location
   name        = var.name
