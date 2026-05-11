@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-<<<<<<<< HEAD:fast/stages/2-project-factory/datasets/data-platform/vpcs/domain-0/.config.yaml
 name: domain-0
 project_id: $project_ids:shared-0
 subnets:
   - name: example-subnet-0
     ip_cidr_range: 10.0.0.0/24
     region: $locations:primary
-========
-# yaml-language-server: $schema=../../../../schemas/folder.schema.json
-
-name: Production
-tag_bindings:
-  environment: $tag_values:environment/production
->>>>>>>> origin/master:fast/stages/0-org-setup/datasets/starter-gcd/folders/prod/.config.yaml
