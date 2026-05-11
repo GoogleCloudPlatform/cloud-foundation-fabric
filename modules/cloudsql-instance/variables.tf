@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 variable "activation_policy" {
   description = "This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS."
   type        = string
@@ -31,8 +32,8 @@ variable "availability_type" {
 }
 
 variable "backup_configuration" {
-  description = "Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas."
-  nullable    = false
+  description = "Backup settings for primary instance. Set to null to leave existing GCP backup settings unmanaged. When set, all fields are managed by Terraform including disabling backups when enabled=false."
+  nullable    = true
   type = object({
     enabled                        = optional(bool, false)
     binary_log_enabled             = optional(bool, false)
@@ -44,20 +45,10 @@ variable "backup_configuration" {
     retain_backups_on_delete       = optional(bool)
     final_backup = optional(object({
       enabled        = optional(bool, false)
-      retention_days = optional(number, 7)
+      retention_days = optional(number)
     }))
   })
-  default = {
-    enabled                        = false
-    binary_log_enabled             = false
-    start_time                     = "23:00"
-    location                       = null
-    log_retention_days             = 7
-    point_in_time_recovery_enabled = null
-    retention_count                = 7
-    retain_backups_on_delete       = null
-    final_backup                   = null
-  }
+  default = null
 }
 
 variable "collation" {
@@ -70,6 +61,29 @@ variable "connector_enforcement" {
   description = "Specifies if connections must use Cloud SQL connectors."
   type        = string
   default     = null
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    kms_keys    = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "data_api_access" {
+  description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
+  type        = string
+  default     = null
+  nullable    = true
+  validation {
+    condition     = var.data_api_access == null || contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
+    error_message = "The data_api_access must be one of 'ALLOW_DATA_API' or 'DISALLOW_DATA_API'."
+  }
 }
 
 variable "data_cache" {
@@ -136,10 +150,11 @@ variable "gcp_deletion_protection" {
 variable "insights_config" {
   description = "Query Insights configuration. Defaults to null which disables Query Insights."
   type = object({
-    query_string_length     = optional(number, 1024)
-    record_application_tags = optional(bool, false)
-    record_client_address   = optional(bool, false)
-    query_plans_per_minute  = optional(number, 5)
+    query_string_length             = optional(number, 1024)
+    record_application_tags         = optional(bool, false)
+    record_client_address           = optional(bool, false)
+    query_plans_per_minute          = optional(number, 5)
+    enhanced_query_insights_enabled = optional(bool, false)
   })
   default = null
 }

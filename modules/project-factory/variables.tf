@@ -25,6 +25,7 @@ variable "context" {
     kms_keys              = optional(map(string), {})
     locations             = optional(map(string), {})
     log_buckets           = optional(map(string), {})
+    networks              = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     project_numbers       = optional(map(string), {})
@@ -32,8 +33,12 @@ variable "context" {
     storage_buckets       = optional(map(string), {})
     tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})
-    vpc_host_projects     = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
+    vpc_host_projects = optional(map(string), {})
+    vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -163,11 +168,14 @@ variable "data_overrides" {
 }
 
 variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
+  description = "Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder."
   type = object({
     basepath = string
     budgets = optional(object({
       billing_account = optional(string)
+    }), {})
+    exclusions = optional(object({
+      projects = optional(list(string), [])
     }), {})
     paths = optional(object({
       budgets           = optional(string, "budgets")

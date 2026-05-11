@@ -25,7 +25,7 @@ locals {
 
 resource "google_compute_url_map" "default" {
   provider    = google-beta
-  project     = var.project_id
+  project     = local.project_id
   name        = var.name
   description = var.urlmap_config.description
   default_service = (

@@ -38,8 +38,8 @@ resource "google_apigee_organization" "organization" {
       dynamic "property" {
         for_each = var.organization.properties
         content {
-          name  = properties.key
-          value = properties.value
+          name  = property.key
+          value = property.value
         }
       }
     }

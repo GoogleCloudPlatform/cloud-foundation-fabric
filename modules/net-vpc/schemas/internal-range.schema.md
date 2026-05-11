@@ -35,5 +35,3 @@
 - **immutable**: *boolean*
 
 ## Definitions
-
-

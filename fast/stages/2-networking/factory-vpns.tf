@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,24 +18,45 @@
 
 locals {
   _vpns_files = try(
-    fileset(local.paths.vpcs, "**/vpns/*.yaml"),
-    []
+    merge([
+      for vpc_key, vpc in local.vpcs : {
+        for f in try(fileset(
+          try(
+            startswith(vpc.factories_config.vpns, "/") || startswith(vpc.factories_config.vpns, ".") ? vpc.factories_config.vpns :
+            "${vpc.factory_basepath}/${vpc.factories_config.vpns}",
+            "${vpc.factory_basepath}/vpns"
+          ),
+          "**/*.yaml"
+        ), []) :
+        "${vpc_key}-${replace(f, ".yaml", "")}" => {
+          vpc_key  = vpc_key
+          filename = f
+          path = try(
+            startswith(vpc.factories_config.vpns, "/") || startswith(vpc.factories_config.vpns, ".")
+            ? "${vpc.factories_config.vpns}/${f}"
+            : "${vpc.factory_basepath}/${vpc.factories_config.vpns}/${f}",
+            "${vpc.factory_basepath}/vpns/${f}"
+          )
+        }
+      }
+    ]...),
+    {}
   )
-  _vpns_preprocess = [
-    for f in local._vpns_files : merge(
-      yamldecode(file("${coalesce(local.paths.vpcs, "-")}/${f}")),
+  _vpns_preprocess = {
+    for k, v in local._vpns_files : k => merge(
+      yamldecode(file(v.path)),
       {
-        factory_basepath = dirname(dirname(f))
+        vpc_name = v.vpc_key
       }
     )
-  ]
+  }
   ctx_gateways = { for k, v in google_compute_ha_vpn_gateway.default : k => v.id }
   vpns = {
-    for v in local._vpns_preprocess : "${v.factory_basepath}/${v.name}" => merge(v, {
-      vpc_name = v.factory_basepath
+    for k, v in local._vpns_preprocess : "${v.vpc_name}/${v.name}" => merge(v, {
+      vpc_name = v.vpc_name
       # TODO: discuss - this is pushing context at any cost, as project could be easily resolved
-      # as module.vpcs[v.factory_basepath].project_id
-      project_id    = local.vpcs[v.factory_basepath].project_id
+      # as module.vpcs[v.vpc_name].project_id
+      project_id    = local.vpcs[v.vpc_name].project_id
       router_config = try(v.router_config, {})
       region        = try(v.region, local.defaults.vpcs.region)
       peer_gateways = try(v.peer_gateways, {})
@@ -86,7 +107,7 @@ module "vpn-ha" {
   }
   context = {
     locations    = local.ctx.locations
-    network      = local.ctx_vpcs.names
+    networks     = local.ctx_vpcs.names
     project_ids  = local.ctx_projects.project_ids
     routers      = local.ctx_routers.names
     vpn_gateways = local.ctx_gateways

@@ -97,13 +97,13 @@ terraform apply
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [factories_config](variables.tf#L17) | Configuration for the resource factories. | <code title="object&#40;&#123;&#10;  instances        &#61; optional&#40;string, &#34;data&#47;instances&#34;&#41;&#10;  service_accounts &#61; optional&#40;string, &#34;data&#47;service-accounts&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L17) | Configuration for the resource factories. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [host_project_ids](variables-fast.tf#L19) | Networking stage host project id aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [name](variables.tf#L27) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;test&#34;</code> |  |
 | [regions](variables-fast.tf#L27) | Region aliases. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [subnet_self_links](variables-fast.tf#L35) | Subnet self links. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
-| [test_instances](variables.tf#L34) | Test instances to be created. | <code title="map&#40;object&#40;&#123;&#10;  project_id      &#61; string&#10;  network_id      &#61; string&#10;  service_account &#61; string&#10;  subnet_id       &#61; string&#10;  image           &#61; optional&#40;string&#41;&#10;  metadata        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tags            &#61; optional&#40;list&#40;string&#41;, &#91;&#34;ssh&#34;&#93;&#41;&#10;  type            &#61; optional&#40;string, &#34;e2-micro&#34;&#41;&#10;  user_data_file  &#61; optional&#40;string&#41;&#10;  zones           &#61; optional&#40;list&#40;string&#41;, &#91;&#34;b&#34;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [test_service_accounts](variables.tf#L52) | Service accounts used by instances. | <code title="map&#40;object&#40;&#123;&#10;  project_id        &#61; string&#10;  display_name      &#61; optional&#40;string&#41;&#10;  iam_project_roles &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [test_instances](variables.tf#L34) | Test instances to be created. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [test_service_accounts](variables.tf#L52) | Service accounts used by instances. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [vpc_self_links](variables-fast.tf#L43) | VPC network self links. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 
 ## Outputs

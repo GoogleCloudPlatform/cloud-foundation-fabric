@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,52 @@ locals {
       local.ctx.folder_ids,
       module.factory.folder_ids
     )
-    iam_principals = local.iam_principals
+    iam_principals = merge(
+      local.iam_principals,
+      {
+        for k, v in module.organization[0].service_agents :
+        "service_agents/org/${k}" => v.iam_email
+      }
+    )
     project_ids = merge(
       local.ctx.project_ids,
       module.factory.project_ids
     )
     storage_buckets = module.factory.storage_buckets
+    tag_keys = merge(
+      local.ctx.tag_keys,
+      local.org_tag_keys
+    )
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
     )
+    tag_vars = {
+      projects = merge([
+        for k, v in module.factory.projects : {
+          (k) = { for kk, vv in v.tag_vars : kk => vv }
+        } if length(v.tag_vars) > 0
+      ]...)
+      organization = {
+        for k, v in module.organization[0].tag_keys :
+        # the provider returns allowed_values_regex set to "" not null
+        k => v.namespaced_name if try(v.allowed_values_regex, "") != ""
+      }
+    }
   })
+  of_logging_sinks = {
+    # Include project_id in the destination if supported (omitted for
+    # "storage" sinks).
+    for k, v in module.organization-iam[0].logging_sinks :
+    k => merge(
+      v,
+      (
+        strcontains(v.destination, "projects/")
+        ? { project_id = split("/", v.destination)[2] }
+        : {}
+      )
+    )
+  }
   of_outputs_bucket = (
     local.output_files.storage_bucket == null
     ? null
@@ -92,19 +127,26 @@ locals {
       automation = {
         outputs_bucket = local.of_outputs_bucket
       }
-      custom_roles   = local.of_ctx.custom_roles
-      folder_ids     = local.of_ctx.folder_ids
-      iam_principals = local.of_ctx.iam_principals
-      logging = {
-        writer_identities = module.organization-iam[0].sink_writer_identities
-        project_number    = module.factory.project_numbers["log-0"]
+      custom_roles     = local.of_ctx.custom_roles
+      folder_ids       = local.of_ctx.folder_ids
+      iam_principals   = local.of_ctx.iam_principals
+      logging_sinks    = local.of_logging_sinks
+      project_ids      = local.of_ctx.project_ids,
+      project_numbers  = module.factory.project_numbers
+      service_accounts = module.factory.service_account_emails
+      storage_buckets  = module.factory.storage_buckets
+      subnet_ips = {
+        for k, v in module.vpcs.vpcs : k => v.subnet_ips
       }
-      project_ids     = local.of_ctx.project_ids,
-      project_numbers = module.factory.project_numbers
-      # project_numbers = module.factory.project_numbers
-      service_accounts             = module.factory.service_account_emails
-      storage_buckets              = module.factory.storage_buckets
-      tag_values                   = local.of_ctx.tag_values
+      subnet_self_links = {
+        for k, v in module.vpcs.vpcs : k => v.subnet_ids
+      }
+      tag_keys   = local.of_ctx.tag_keys
+      tag_values = local.of_ctx.tag_values
+      tag_vars   = local.of_ctx.tag_vars
+      vpc_self_links = {
+        for k, v in module.vpcs.vpcs : k => v.id
+      }
       workload_identity_providers  = local.workload_identity_providers
       workforce_identity_providers = module.organization[0].workforce_identity_providers
     }

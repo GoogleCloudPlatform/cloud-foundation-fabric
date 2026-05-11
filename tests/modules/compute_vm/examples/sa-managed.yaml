@@ -21,7 +21,7 @@ values:
     - auto_delete: true
       disk_encryption_key_raw: null
       initialize_params:
-      - image: projects/debian-cloud/global/images/family/debian-11
+      - image: debian-cloud/debian-13
         resource_manager_tags: null
         size: 10
         type: pd-balanced
@@ -33,7 +33,7 @@ values:
     enable_display: false
     hostname: null
     labels: null
-    machine_type: f1-micro
+    machine_type: e2-micro
     metadata: null
     metadata_startup_script: null
     name: test2

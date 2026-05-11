@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ module: modules/net-lb-app-int
 common_tfvars:
   - common.tfvars
 tests:
+  context:
   defaults:
   groups:
   health-checks-custom:
@@ -24,9 +25,11 @@ tests:
   health-checks-http:
   health-checks-http2:
   health-checks-https:
+  health-checks-regional:
   health-checks-ssl:
   health-checks-tcp:
   https:
+  logging:
   negs:
   ssl:
   urlmaps:

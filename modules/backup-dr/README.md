@@ -178,7 +178,6 @@ module "dr_example" {
 }
 # tftest inventory=server.yaml
 ```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -186,11 +185,11 @@ module "dr_example" {
 |---|---|:---:|:---:|:---:|
 | [location](variables.tf#L47) | Location for the Backup Vault and Plans (e.g. us-central1). | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L71) | Project ID. | <code>string</code> | ✓ |  |
-| [backup_plans](variables.tf#L17) | Map of Backup Plans to create in this Vault. | <code title="map&#40;object&#40;&#123;&#10;  resource_type &#61; string&#10;  description   &#61; optional&#40;string&#41;&#10;  backup_rules &#61; list&#40;object&#40;&#123;&#10;    rule_id               &#61; string&#10;    backup_retention_days &#61; number&#10;    standard_schedule &#61; object&#40;&#123;&#10;      recurrence_type  &#61; string&#10;      hourly_frequency &#61; optional&#40;number&#41;&#10;      days_of_week     &#61; optional&#40;list&#40;string&#41;&#41;&#10;      days_of_month    &#61; optional&#40;list&#40;number&#41;&#41;&#10;      months           &#61; optional&#40;list&#40;string&#41;&#41;&#10;      week_day_of_month &#61; optional&#40;object&#40;&#123;&#10;        week_of_month &#61; string&#10;        day_of_week   &#61; string&#10;      &#125;&#41;&#41;&#10;      time_zone &#61; string&#10;      backup_window &#61; object&#40;&#123;&#10;        start_hour_of_day &#61; number&#10;        end_hour_of_day   &#61; number&#10;      &#125;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [management_server_config](variables.tf#L52) | Configuration to create a Management Server. If null, no server is created. | <code title="object&#40;&#123;&#10;  name &#61; string&#10;  type &#61; optional&#40;string, &#34;BACKUP_RESTORE&#34;&#41;&#10;  network_config &#61; optional&#40;object&#40;&#123;&#10;    network      &#61; string&#10;    peering_mode &#61; optional&#40;string, &#34;PRIVATE_SERVICE_ACCESS&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [backup_plans](variables.tf#L17) | Map of Backup Plans to create in this Vault. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [management_server_config](variables.tf#L52) | Configuration to create a Management Server. If null, no server is created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [name](variables.tf#L65) | Name of the Backup Vault to create. Leave null if reusing an existing vault via `vault_reuse`. | <code>string</code> |  | <code>null</code> |
-| [vault_config](variables.tf#L76) | Configuration for the Backup Vault. Only used if `vault_reuse` is null. | <code title="object&#40;&#123;&#10;  description                                &#61; optional&#40;string&#41;&#10;  labels                                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  annotations                                &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  access_restriction                         &#61; optional&#40;string&#41;&#10;  backup_minimum_enforced_retention_duration &#61; optional&#40;string, &#34;100000s&#34;&#41;&#10;  backup_retention_inheritance               &#61; optional&#40;string&#41;&#10;  force_update                               &#61; optional&#40;bool, false&#41;&#10;  ignore_inactive_datasources                &#61; optional&#40;bool, false&#41;&#10;  ignore_backup_plan_references              &#61; optional&#40;bool, false&#41;&#10;  allow_missing                              &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [vault_reuse](variables.tf#L93) | Configuration to reuse an existing Backup Vault. | <code title="object&#40;&#123;&#10;  vault_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vault_config](variables.tf#L76) | Configuration for the Backup Vault. Only used if `vault_reuse` is null. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [vault_reuse](variables.tf#L93) | Configuration to reuse an existing Backup Vault. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

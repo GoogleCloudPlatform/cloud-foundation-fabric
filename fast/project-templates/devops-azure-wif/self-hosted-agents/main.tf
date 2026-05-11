@@ -68,17 +68,19 @@ module "secret" {
 }
 
 module "instance" {
-  source        = "../../../../modules/compute-vm"
-  count         = local.create_instance ? 1 : 0
-  project_id    = var.project_id
-  zone          = "${var.location}-${var.instance_config.zone}"
-  name          = "${var.name}-agent"
-  instance_type = "e2-micro"
+  source       = "../../../../modules/compute-vm"
+  count        = local.create_instance ? 1 : 0
+  project_id   = var.project_id
+  zone         = "${var.location}-${var.instance_config.zone}"
+  name         = "${var.name}-agent"
+  machine_type = "e2-micro"
   boot_disk = {
     auto_delete = false
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-117-lts"
-      size  = 10
+    }
+    initialize_params = {
+      size = 10
     }
   }
   network_interfaces = [{

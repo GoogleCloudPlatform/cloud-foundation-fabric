@@ -149,8 +149,8 @@ variable "cross_region_replication" {
     error_message = "Please choose to either promote secondary cluster or align an existing cluster after switchover."
   }
   validation {
-    condition     = contains([2, 4, 8, 16, 32, 64, 96, 128], try(var.cross_region_replication.secondary_machine_config.cpu_count, 2))
-    error_message = "The number of CPU's in the VM instance must be one of [2, 4, 8, 16, 32, 64, 96, 128]"
+    condition     = contains([1, 2, 4, 8, 16, 32, 64, 72, 96, 128], try(var.cross_region_replication.secondary_machine_config.cpu_count, 2))
+    error_message = "The number of CPU's in the VM instance must be one of [1, 2, 4, 8, 16, 32, 64, 72, 96, 128]"
   }
 }
 
@@ -235,8 +235,8 @@ variable "machine_config" {
   nullable = false
   default  = {}
   validation {
-    condition     = contains([2, 4, 8, 16, 32, 64, 96, 128], var.machine_config.cpu_count)
-    error_message = "The number of CPU's in the VM instance must be one of [2, 4, 8, 16, 32, 64, 96, 128]"
+    condition     = contains([1, 2, 4, 8, 16, 32, 64, 72, 96, 128], var.machine_config.cpu_count)
+    error_message = "The number of CPU's in the VM instance must be one of [1, 2, 4, 8, 16, 32, 64, 72, 96, 128]"
   }
 }
 
@@ -290,6 +290,22 @@ variable "network_config" {
   }
 }
 
+variable "observability_config" {
+  description = "Advanced query insights config for AlloyDB. Mutually exclusive with query_insights_config."
+  type = object({
+    enabled                       = optional(bool, false)
+    preserve_comments             = optional(bool, false)
+    track_wait_events             = optional(bool, true)
+    max_query_string_length       = optional(number, 10240)
+    record_application_tags       = optional(bool, false)
+    query_plans_per_minute        = optional(number, 20)
+    track_active_queries          = optional(bool, false)
+    track_client_address          = optional(bool, false)
+    assistive_experiences_enabled = optional(bool, false)
+  })
+  default = null
+}
+
 variable "prefix" {
   description = "Optional prefix used to generate instance names."
   type        = string
@@ -312,7 +328,7 @@ variable "project_number" {
 }
 
 variable "query_insights_config" {
-  description = "Query insights config."
+  description = "Query insights config. Mutually exclusive with observability_config. It will be ignored if observability_config is enabled."
   type = object({
     query_string_length     = optional(number, 1024)
     record_application_tags = optional(bool, true)
@@ -348,15 +364,26 @@ variable "read_pool" {
       record_client_address   = optional(bool, true)
       query_plans_per_minute  = optional(number, 5)
     }))
+    observability_config = optional(object({
+      enabled                       = optional(bool, false)
+      preserve_comments             = optional(bool, false)
+      track_wait_events             = optional(bool, true)
+      max_query_string_length       = optional(number, 10240)
+      record_application_tags       = optional(bool, false)
+      query_plans_per_minute        = optional(number, 20)
+      track_active_queries          = optional(bool, false)
+      track_client_address          = optional(bool, false)
+      assistive_experiences_enabled = optional(bool, false)
+    }), null)
   }))
   nullable = false
   default  = {}
   validation {
     condition = alltrue([
       for k, v in var.read_pool :
-      contains([2, 4, 8, 16, 32, 64, 96, 128], v.machine_config.cpu_count)
+      contains([1, 2, 4, 8, 16, 32, 64, 72, 96, 128], v.machine_config.cpu_count)
     ])
-    error_message = "The number of CPU's in the VM instance must be one of [2, 4, 8, 16, 32, 64, 96, 128]"
+    error_message = "The number of CPU's in the VM instance must be one of [1, 2, 4, 8, 16, 32, 64, 72, 96, 128]"
   }
   validation {
     condition = alltrue([

@@ -2,6 +2,9 @@ context = {
   bigquery_datasets = {
     test = "projects/test-prod-audit-logs-0/datasets/logs"
   }
+  kms_keys = {
+    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
+  }
   condition_vars = {
     organization = {
       id = 1234567890
@@ -137,6 +140,7 @@ logging_sinks = {
   }
 }
 logging_settings = {
+  kms_key_name     = "$kms_keys:test"
   storage_location = "$locations:default"
 }
 pam_entitlements = {
@@ -145,8 +149,13 @@ pam_entitlements = {
     manual_approvals = {
       require_approver_justification = true
       steps = [{
-        approvers = ["$iam_principals:mygroup"]
+        approvers                 = ["$iam_principals:mygroup"]
+        approver_email_recipients = ["$email_addresses:default"]
       }]
+    }
+    additional_notification_targets = {
+      admin_email_recipients     = ["$email_addresses:default"]
+      requester_email_recipients = ["$email_addresses:default"]
     }
     eligible_users = ["$iam_principals:mygroup"]
     privileged_access = [

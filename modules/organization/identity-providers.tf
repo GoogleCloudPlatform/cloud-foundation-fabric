@@ -35,23 +35,40 @@ locals {
       "attribute.user_email" = "assertion.attributes.email[0]"
     }
   }
+
+  wfif_providers = merge([
+    for k, v in var.workforce_identity_pools : {
+      for pk, pv in v.providers : "${k}/${pk}" => merge(pv, {
+        provider_id = pk
+        pool        = k
+      })
+    }
+  ]...)
+
+  wfif_scim_tenants = {
+    for k, v in local.wfif_providers : k => merge(v.scim_tenant, {
+      provider_id = v.provider_id
+      pool        = v.pool
+    })
+    if try(v.scim_tenant, null) != null
+  }
 }
 
 resource "google_iam_workforce_pool" "default" {
-  count             = var.workforce_identity_config == null ? 0 : 1
+  for_each          = var.workforce_identity_pools
   parent            = var.organization_id
   location          = "global"
-  workforce_pool_id = var.workforce_identity_config.pool_name
-  description       = var.workforce_identity_config.description
-  disabled          = var.workforce_identity_config.disabled
-  display_name      = var.workforce_identity_config.display_name
-  session_duration  = var.workforce_identity_config.session_duration
+  workforce_pool_id = each.key
+  description       = each.value.description
+  disabled          = each.value.disabled
+  display_name      = each.value.display_name
+  session_duration  = each.value.session_duration
   dynamic "access_restrictions" {
-    for_each = var.workforce_identity_config.access_restrictions != null ? [""] : []
+    for_each = each.value.access_restrictions != null ? [""] : []
     content {
-      disable_programmatic_signin = var.workforce_identity_config.access_restrictions.disable_programmatic_signin
+      disable_programmatic_signin = each.value.access_restrictions.disable_programmatic_signin
       dynamic "allowed_services" {
-        for_each = coalesce(var.workforce_identity_config.access_restrictions.allowed_services, [])
+        for_each = coalesce(each.value.access_restrictions.allowed_services, [])
         content {
           domain = allowed_services.value.domain
         }
@@ -61,18 +78,22 @@ resource "google_iam_workforce_pool" "default" {
 }
 
 resource "google_iam_workforce_pool_provider" "default" {
-  for_each            = try(var.workforce_identity_config.providers, {})
-  provider_id         = each.key
-  attribute_condition = each.value.attribute_condition
-  description         = each.value.description
-  disabled            = each.value.disabled
-  display_name        = each.value.display_name
+  for_each               = local.wfif_providers
+  provider_id            = each.value.provider_id
+  attribute_condition    = each.value.attribute_condition
+  description            = each.value.description
+  disabled               = each.value.disabled
+  detailed_audit_logging = each.value.detailed_audit_logging
+  display_name           = each.value.display_name
+  scim_usage             = each.value.scim_usage
   attribute_mapping = merge(
     try(local.wfif_attribute_mappings[each.value.attribute_mapping_template], {}),
     each.value.attribute_mapping
   )
-  location          = google_iam_workforce_pool.default[0].location
-  workforce_pool_id = google_iam_workforce_pool.default[0].workforce_pool_id
+  location = "global"
+  workforce_pool_id = (
+    google_iam_workforce_pool.default[each.value.pool].workforce_pool_id
+  )
   dynamic "saml" {
     for_each = each.value.identity_provider.saml == null ? [] : [""]
     content {
@@ -181,4 +202,16 @@ resource "google_iam_workforce_pool_provider" "default" {
       }
     }
   }
+}
+
+resource "google_iam_workforce_pool_provider_scim_tenant" "default" {
+  for_each          = local.wfif_scim_tenants
+  location          = each.value.location
+  workforce_pool_id = google_iam_workforce_pool.default[each.value.pool].workforce_pool_id
+  provider_id       = google_iam_workforce_pool_provider.default[each.key].provider_id
+  scim_tenant_id    = each.value.id
+  display_name      = each.value.display_name
+  description       = each.value.description
+  claim_mapping     = each.value.claim_mapping
+  hard_delete       = each.value.hard_delete
 }

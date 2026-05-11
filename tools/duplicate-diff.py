@@ -21,6 +21,12 @@ import os
 
 # List of folders and files that are expected to have same content
 duplicates = [
+    # factory policies
+    [
+        "tests/modules/folder/factory/policies",
+        "tests/modules/organization/factory/policies",
+        "tests/modules/project/factory/policies",
+    ],
     # schemas
     [
         "fast/stages/1-vpcsc/schemas/access-level.schema.json",
@@ -55,15 +61,17 @@ duplicates = [
         "modules/vpc-sc/schemas/egress-policy.schema.json",
     ],
     [
+        "fast/stages/0-org-setup/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking/schemas/firewall-rules.schema.json",
+        "modules/net-vpc-factory/schemas/firewall-rules.schema.json",
         "modules/net-vpc-firewall/schemas/firewall-rules.schema.json",
     ],
     [
+        "modules/project-factory/schemas/folder.schema.json",
         "fast/stages/0-org-setup/schemas/folder.schema.json",
         "fast/stages/2-networking/schemas/folder.schema.json",
         "fast/stages/2-project-factory/schemas/folder.schema.json",
         "fast/stages/2-security/schemas/folder.schema.json",
-        "modules/project-factory/schemas/folder.schema.json",
     ],
     [
         "fast/stages/0-org-setup/schemas/observability.schema.json",
@@ -101,8 +109,14 @@ duplicates = [
         "modules/organization/schemas/scc-sha-custom-modules.schema.json",
     ],
     [
+        "fast/stages/0-org-setup/schemas/subnet.schema.json",
         "fast/stages/2-networking/schemas/subnet.schema.json",
+        "modules/net-vpc-factory/schemas/subnet.schema.json",
         "modules/net-vpc/schemas/subnet.schema.json",
+    ],
+    [
+        "fast/stages/0-org-setup/schemas/vpc-factory.schema.json",
+        "modules/net-vpc-factory/schemas/vpc-factory.schema.json",
     ],
     [
         "fast/stages/0-org-setup/schemas/tags.schema.json",
@@ -115,7 +129,6 @@ duplicates = [
         "modules/cloud-function-v2/bundle.tf",
     ],
     [
-        "modules/agent-engine/serviceaccount.tf",
         "modules/cloud-function-v1/serviceaccount.tf",
         "modules/cloud-function-v2/serviceaccount.tf",
         "modules/cloud-run-v2/serviceaccount.tf",
@@ -187,13 +200,11 @@ for group in duplicates:
     if is_dir:
       dcmp = filecmp.dircmp(first, second)
       if check_dir_diff(dcmp):
-        print(
-            f"[DIFF] Found differences between directories {first} and {second}"
-        )
+        print(f"[DIFF] Found differences between directories {first} {second}")
         has_diff = True
     else:
       if not filecmp.cmp(first, second, shallow=False):
-        print(f"[DIFF] Files are different: {first} and {second}")
+        print(f"[DIFF] Files are different: {first} {second}")
         has_diff = True
 
 if has_diff:

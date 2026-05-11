@@ -6,6 +6,13 @@
 
 *additional properties: false*
 
+- **asset_search**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**asset_types**: *array*
+      - items: *string*
+    - **query**: *string*
 - **asset_feeds**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
@@ -75,6 +82,26 @@
       - **exempted_members**: *array*
         - items: *string*
 - **deletion_protection**: *boolean*
+- **id**: *string*
+  <br>*pattern: ^(folders/[0-9]+|\$folder_ids:[a-z0-9_/-]+)$*
+- **firewall_policy**: *object*
+  <br>*additional properties: false*
+  - ⁺**name**: *string*
+  - ⁺**policy**: *string*
+- **logging**: *object*
+  <br>*additional properties: false*
+  - **kms_key_name**: *string*
+  - **storage_location**: *string*
+  - **sinks**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9-_]+$`**: *object*
+      <br>*additional properties: false*
+      - **description**: *string*
+      - **destination**: *string*
+      - **exclusions**: *object*
+      - **filter**: *string*
+      - **type**: *string*
+        <br>*default: logging*, *enum: ['bigquery', 'logging', 'project', 'pubsub', 'storage']*
 - **factories_config**: *object*
   <br>*additional properties: false*
   - **org_policies**: *string*
@@ -146,7 +173,7 @@
   - **versioning**: *boolean*
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|\$custom_roles:)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -157,7 +184,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -170,7 +197,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -180,7 +207,7 @@
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:)`**: *object*
@@ -192,7 +219,7 @@
       - **description**: *string*
     - ⁺**roles**: *array*
       - items: *string*
-        <br>*pattern: ^(?:roles/|\$custom_roles:)*
+        <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*
@@ -253,7 +280,7 @@
 - **assured_workload_config**<a name="refs-assured_workload_config"></a>: *object*
   <br>*additional properties: false*
   - ⁺**compliance_regime**: *string*
-    <br>*enum: ['ASSURED_WORKLOADS_FOR_PARTNERS', 'AU_REGIONS_AND_US_SUPPORT', 'CA_PROTECTED_B', 'CA_REGIONS_AND_SUPPORT', 'CJIS', 'COMPLIANCE_REGIME_UNSPECIFIED', 'EU_REGIONS_AND_SUPPORT', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS', 'HIPAA', 'HITRUST', 'IL2', 'IL4', 'IL5', 'IRS_1075', 'ISR_REGIONS_AND_SUPPORT', 'ISR_REGIONS', 'ITAR', 'JP_REGIONS_AND_SUPPORT', 'KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS', 'REGIONAL_CONTROLS', 'US_REGIONAL_ACCESS']*
+    <br>*enum: ['ASSURED_WORKLOADS_FOR_PARTNERS', 'AU_REGIONS_AND_US_SUPPORT', 'AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT', 'CA_PROTECTED_B', 'CA_REGIONS_AND_SUPPORT', 'CANADA_CONTROLLED_GOODS', 'CANADA_DATA_BOUNDARY_AND_SUPPORT', 'CJIS', 'COMPLIANCE_REGIME_UNSPECIFIED', 'DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS', 'DATA_BOUNDARY_FOR_CANADA_PROTECTED_B', 'DATA_BOUNDARY_FOR_CJIS', 'DATA_BOUNDARY_FOR_FEDRAMP_HIGH', 'DATA_BOUNDARY_FOR_FEDRAMP_MODERATE', 'DATA_BOUNDARY_FOR_IL2', 'DATA_BOUNDARY_FOR_IL4', 'DATA_BOUNDARY_FOR_IL5', 'DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075', 'DATA_BOUNDARY_FOR_ITAR', 'EU_DATA_BOUNDARY_AND_SUPPORT', 'EU_REGIONS_AND_SUPPORT', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT', 'HIPAA', 'HITRUST', 'IL2', 'IL4', 'IL5', 'IRS_1075', 'ISR_REGIONS', 'ISR_REGIONS_AND_SUPPORT', 'ISRAEL_DATA_BOUNDARY_AND_SUPPORT', 'ITAR', 'JAPAN_DATA_BOUNDARY', 'JP_REGIONS_AND_SUPPORT', 'KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS', 'KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS', 'REGIONAL_CONTROLS', 'REGIONAL_DATA_BOUNDARY', 'US_DATA_BOUNDARY_AND_SUPPORT', 'US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES', 'US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT', 'US_REGIONAL_ACCESS']*
   - ⁺**display_name**: *string*
   - ⁺**location**: *string*
   - ⁺**organization**: *string*

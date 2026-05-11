@@ -681,7 +681,7 @@ CI/CD support is implemented via two different sets of configurations:
 The default approach is to define a Workload Identity provider in the `iac-0` project, or in an additional project dedicated to this task. This is achieved by adding a `workload_identity_pools` block to the project configuration, like in the following example.
 
 ```yaml
-# projects/iac-0.yaml
+# projects/core/iac-0.yaml
 
 workload_identity_pools:
   default:
@@ -703,6 +703,34 @@ workload_identity_pools:
 
 The above configuration can be easily extended to support multiple pools and providers, and is not limited to OpenId Connect but can also leverage other provider types. Check the project module or project schema for the full interface.
 
+In the `iac-0` project you can find a sample configuration for 0-org-setup stage service accounts dedicated for CI/CD operations:
+
+```yaml
+# projects/core/iac-0.yaml
+
+service_accounts:
+  # IaC service accounts for this stage
+  iac-org-ro:
+    display_name: IaC service account for org setup (read-only).
+  iac-org-rw:
+    display_name: IaC service account for org setup (read-write).
+  # CI/CD service accounts for this stage
+  iac-org-cicd-ro:
+    display_name: IaC service account for org setup CI/CD (read-only).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-ro:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+  iac-org-cicd-rw:
+    display_name: IaC service account for org setup CI/CD (read-write).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-rw:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+```
+
+You need to extend this configuration to all other stages that you plan to use in your deployment and add permissions to IaC service account dedicated for specific stage.
+
 Once one or more providers have been defined they can be referenced in the CI/CD configuration file. The following example defines a workflow configuration for this stage.
 
 ```yaml
@@ -711,7 +739,7 @@ Once one or more providers have been defined they can be referenced in the CI/CD
 org-setup:
   provider_files:
     apply: 0-org-setup-providers.tf
-    plan: 0-org-setup-providers-ro.tf
+    plan: 0-org-setup-ro-providers.tf
   repository:
     name: example/0-org-setup
     type: github
@@ -871,7 +899,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
 | [cicd-workflows-preconditions.tf](./cicd-workflows-preconditions.tf) | None |  | <code>terraform_data</code> |
 | [cicd-workflows.tf](./cicd-workflows.tf) | None | <code>iam-service-account</code> | <code>google_storage_bucket_object</code> · <code>local_file</code> |
-| [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
+| [factory.tf](./factory.tf) | None | <code>net-vpc-factory</code> · <code>project-factory</code> |  |
 | [identity-providers-defs.tf](./identity-providers-defs.tf) | None |  |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
@@ -885,9 +913,9 @@ Define values for the `var.environments` variable in a tfvars file.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles                &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids                  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations                   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids                 &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values                  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  workload_identity_pools     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  workload_identity_providers &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L40) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  dataset &#61; optional&#40;string, &#34;datasets&#47;classic&#34;&#41;&#10;  paths &#61; optional&#40;object&#40;&#123;&#10;    billing_accounts  &#61; optional&#40;string, &#34;billing-accounts&#34;&#41;&#10;    cicd_workflows    &#61; optional&#40;string&#41;&#10;    defaults          &#61; optional&#40;string, &#34;defaults.yaml&#34;&#41;&#10;    folders           &#61; optional&#40;string, &#34;folders&#34;&#41;&#10;    observability     &#61; optional&#40;string, &#34;observability&#34;&#41;&#10;    organization      &#61; optional&#40;string, &#34;organization&#34;&#41;&#10;    project_templates &#61; optional&#40;string, &#34;templates&#34;&#41;&#10;    projects          &#61; optional&#40;string, &#34;projects&#34;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L59) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L61) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
@@ -895,5 +923,8 @@ Define values for the `var.environments` variable in a tfvars file.
 |---|---|:---:|
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
 | [projects](outputs.tf#L22) | Attributes for managed projects. |  |
-| [tfvars](outputs.tf#L27) | Stage tfvars. | ✓ |
+| [subnet_ips](outputs.tf#L27) | Map of subnet address ranges keyed by VPC and subnet name. |  |
+| [subnet_self_links](outputs.tf#L34) | Map of subnet self links keyed by VPC and subnet name. |  |
+| [tfvars](outputs.tf#L41) | Stage tfvars. | ✓ |
+| [vpc_self_links](outputs.tf#L47) | Map of VPC self links keyed by VPC name. |  |
 <!-- END TFDOC -->

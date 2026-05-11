@@ -80,6 +80,11 @@ jobs:
         run: |
           python3 tools/check_documentation.py --show-diffs --no-show-summary modules fast
 
+      - name: Check schema docs
+        id: schema-docs
+        run: |
+          python3 tools/check_schema_docs.py --show-diffs --no-show-summary modules fast blueprints
+
       - name: Check documentation links
         id: documentation-links-fabric
         run: |

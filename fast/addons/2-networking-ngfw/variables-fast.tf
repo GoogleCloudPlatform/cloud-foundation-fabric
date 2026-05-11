@@ -16,6 +16,7 @@
 
 # tfdoc:file:description FAST stage interface.
 
+# tflint-ignore: terraform_naming_convention
 variable "_fast_debug" {
   description = "Internal FAST variable used for testing and debugging. Do not use."
   type = object({
@@ -70,4 +71,3 @@ variable "vpc_self_links" {
   nullable    = false
   default     = {}
 }
-

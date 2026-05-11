@@ -57,17 +57,17 @@ network_config = {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [network_config](variables.tf#L72) | VPC and subnet for the cluster. | <code title="object&#40;&#123;&#10;  network              &#61; string&#10;  subnetwork           &#61; string&#10;  psc_endpoint_address &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [network_config](variables.tf#L72) | VPC and subnet for the cluster. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [project_id](variables.tf#L92) | Project id where the cluster will be created. | <code>string</code> | ✓ |  |
 | [annotations](variables.tf#L17) | Workstation cluster annotations. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L23) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations      &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  subnetworks    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L23) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [display_name](variables.tf#L38) | Display name. | <code>string</code> |  | <code>null</code> |
 | [domain](variables.tf#L44) | Domain. | <code>string</code> |  | <code>null</code> |
-| [factories_config](variables.tf#L50) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  workstation_configs &#61; optional&#40;string, &#34;data&#47;workstation-configs&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L50) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [id](variables.tf#L59) | Workstation cluster ID. | <code>string</code> |  | <code>&#34;ws-cluster-0&#34;</code> |
 | [labels](variables.tf#L66) | Workstation cluster labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [private_cluster_config](variables.tf#L82) | Private cluster config. | <code title="object&#40;&#123;&#10;  allowed_projects        &#61; optional&#40;list&#40;string&#41;&#41;&#10;  enable_private_endpoint &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_accounts](variables.tf#L98) | Project factory managed service accounts to populate context. | <code title="map&#40;object&#40;&#123;&#10;  email &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [private_cluster_config](variables.tf#L82) | Private cluster config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts](variables.tf#L98) | Project factory managed service accounts to populate context. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

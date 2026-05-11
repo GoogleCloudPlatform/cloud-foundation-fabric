@@ -16,6 +16,9 @@ context = {
   folder_ids = {
     default = "organizations/1234567890"
   }
+  kms_keys = {
+    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
+  }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
@@ -26,6 +29,13 @@ context = {
   }
   tag_values = {
     "test/one" = "tagValues/1234567890"
+  }
+  tag_vars = {
+    projects = {
+      "test-00" = {
+        test = "foo-test-0/dynamic_test"
+      }
+    }
   }
 }
 asset_feeds = {
@@ -95,6 +105,9 @@ logging_data_access = {
     DATA_READ = {}
   }
 }
+logging_settings = {
+  kms_key_name = "$kms_keys:test"
+}
 logging_sinks = {
   test-pubsub = {
     destination = "$pubsub_topics:test"
@@ -120,5 +133,7 @@ pam_entitlements = {
   }
 }
 tag_bindings = {
-  foo = "$tag_values:test/one"
+  bar = "tagValues/1234567891"
+  baz = "$tag_values:test/one"
+  foo = "$${projects[\"test-00\"].test}/cc-123"
 }

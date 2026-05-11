@@ -60,11 +60,15 @@ resource "google_logging_organization_settings" "default" {
   count                = var.logging_settings != null ? 1 : 0
   organization         = local.organization_id_numeric
   disable_default_sink = var.logging_settings.disable_default_sink
-  kms_key_name         = var.logging_settings.kms_key_name
-  storage_location = lookup(
-    local.ctx.locations,
-    coalesce(var.logging_settings.storage_location, ""),
-    var.logging_settings.storage_location
+  kms_key_name = (
+    var.logging_settings.kms_key_name == null
+    ? null
+    : lookup(local.ctx.kms_keys, var.logging_settings.kms_key_name, var.logging_settings.kms_key_name)
+  )
+  storage_location = (
+    var.logging_settings.storage_location == null
+    ? null
+    : lookup(local.ctx.locations, var.logging_settings.storage_location, var.logging_settings.storage_location)
   )
 }
 
@@ -115,14 +119,24 @@ resource "google_logging_organization_sink" "sink" {
   ]
 }
 
-resource "google_storage_bucket_iam_member" "storage-sinks-binding" {
+moved {
+  from = google_storage_bucket_iam_member.storage-sinks-binding
+  to   = google_storage_bucket_iam_member.storage_sinks_binding
+}
+
+resource "google_storage_bucket_iam_member" "storage_sinks_binding" {
   for_each = local.sink_bindings["storage"]
   bucket   = each.value.destination
   role     = "roles/storage.objectCreator"
   member   = google_logging_organization_sink.sink[each.key].writer_identity
 }
 
-resource "google_bigquery_dataset_iam_member" "bq-sinks-binding" {
+moved {
+  from = google_bigquery_dataset_iam_member.bq-sinks-binding
+  to   = google_bigquery_dataset_iam_member.bq_sinks_binding
+}
+
+resource "google_bigquery_dataset_iam_member" "bq_sinks_binding" {
   for_each   = local.sink_bindings["bigquery"]
   project    = split("/", each.value.destination)[1]
   dataset_id = split("/", each.value.destination)[3]
@@ -130,7 +144,12 @@ resource "google_bigquery_dataset_iam_member" "bq-sinks-binding" {
   member     = google_logging_organization_sink.sink[each.key].writer_identity
 }
 
-resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
+moved {
+  from = google_pubsub_topic_iam_member.pubsub-sinks-binding
+  to   = google_pubsub_topic_iam_member.pubsub_sinks_binding
+}
+
+resource "google_pubsub_topic_iam_member" "pubsub_sinks_binding" {
   for_each = local.sink_bindings["pubsub"]
   project  = split("/", each.value.destination)[1]
   topic    = split("/", each.value.destination)[3]
@@ -138,7 +157,12 @@ resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
   member   = google_logging_organization_sink.sink[each.key].writer_identity
 }
 
-resource "google_project_iam_member" "bucket-sinks-binding" {
+moved {
+  from = google_project_iam_member.bucket-sinks-binding
+  to   = google_project_iam_member.bucket_sinks_binding
+}
+
+resource "google_project_iam_member" "bucket_sinks_binding" {
   for_each = local.sink_bindings["logging"]
   project  = split("/", each.value.destination)[1]
   role     = "roles/logging.bucketWriter"
@@ -150,14 +174,24 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
   }
 }
 
-resource "google_project_iam_member" "project-sinks-binding" {
+moved {
+  from = google_project_iam_member.project-sinks-binding
+  to   = google_project_iam_member.project_sinks_binding
+}
+
+resource "google_project_iam_member" "project_sinks_binding" {
   for_each = local.sink_bindings["project"]
   project  = each.value.destination
   role     = "roles/logging.logWriter"
   member   = google_logging_organization_sink.sink[each.key].writer_identity
 }
 
-resource "google_logging_organization_exclusion" "logging-exclusion" {
+moved {
+  from = google_logging_organization_exclusion.logging-exclusion
+  to   = google_logging_organization_exclusion.logging_exclusion
+}
+
+resource "google_logging_organization_exclusion" "logging_exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
   org_id      = local.organization_id_numeric

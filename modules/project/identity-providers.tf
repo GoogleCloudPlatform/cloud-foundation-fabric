@@ -81,4 +81,3 @@ resource "google_iam_workload_identity_pool_provider" "default" {
     }
   }
 }
-

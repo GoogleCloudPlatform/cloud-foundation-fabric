@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,8 @@ locals {
   }
   vpcs = {
     for k, v in local._vpcs : k => merge(
-      local.vpc_defaults, v,
+      local.vpc_defaults.defaults,
+      v,
       {
         project_id                        = v.project_id
         description                       = try(v.description, "Terraform managed")
@@ -55,14 +56,24 @@ locals {
         subnets_psc                       = try(v.subnets_psc, [])
         subnets                           = try(v.subnets, [])
         subnets_factory_config = {
-          subnets_folder = "${v.factory_basepath}/subnets"
+          subnets_folder = try(
+            startswith(v.factories_config.subnets, "/") || startswith(v.factories_config.subnets, ".") ? v.factories_config.subnets :
+            "${v.factory_basepath}/${v.factories_config.subnets}",
+            "${v.factory_basepath}/subnets"
+          )
         }
         firewall_factory_config = {
-          rules_folder = "${v.factory_basepath}/firewall-rules"
+          rules_folder = try(
+            startswith(v.factories_config.firewall_rules, "/") || startswith(v.factories_config.firewall_rules, ".") ? v.factories_config.firewall_rules :
+            "${v.factory_basepath}/${v.factories_config.firewall_rules}",
+            "${v.factory_basepath}/firewall-rules"
+          )
         }
-        peering_config = try(v.peering_config, {})
-        vpn_config     = try(v.vpn_config, {})
-      }
+        factories_config = try(v.factories_config, {})
+        peering_config   = try(v.peering_config, {})
+        vpn_config       = try(v.vpn_config, {})
+      },
+      local.vpc_defaults.overrides
     )
   }
   ctx_vpcs = {
@@ -89,8 +100,13 @@ moved {
 }
 
 module "vpc-factory" {
-  source           = "../../../modules/net-vpc-factory"
-  factories_config = local.paths
+  source         = "../../../modules/net-vpc-factory"
+  data_defaults  = local.vpc_defaults.defaults
+  data_overrides = local.vpc_defaults.overrides
+  factories_config = {
+    basepath = var.factories_config.dataset
+    paths    = var.factories_config.paths
+  }
   context = {
     project_ids = local.ctx_projects.project_ids
     locations   = local.ctx.locations

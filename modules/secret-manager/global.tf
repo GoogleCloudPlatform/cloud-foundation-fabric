@@ -127,5 +127,5 @@ resource "google_tags_tag_binding" "binding" {
     local.tag_project,
     google_secret_manager_secret.default[each.value.secret].secret_id
   )
-  tag_value = lookup(local.ctx.tag_values, each.value.tag, each.value.tag)
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

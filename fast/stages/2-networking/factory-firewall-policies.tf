@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,12 @@ locals {
   }
 }
 
-module "firewall_policies" {
+moved {
+  from = module.firewall_policies
+  to   = module.firewall-policies
+}
+
+module "firewall-policies" {
   source        = "../../../modules/net-firewall-policy"
   for_each      = local.firewall_policies
   attachments   = each.value.attachments

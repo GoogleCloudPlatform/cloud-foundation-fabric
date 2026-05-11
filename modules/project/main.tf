@@ -36,7 +36,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   ctx_p = "$"
   descriptive_name = (
@@ -197,7 +197,7 @@ resource "google_essential_contacts_contact" "contact" {
 resource "google_monitoring_monitored_project" "primary" {
   provider      = google-beta
   for_each      = toset(var.metric_scopes)
-  metrics_scope = each.value
+  metrics_scope = lookup(local.ctx.project_ids, each.value, each.value)
   name          = local.project.project_id
 }
 

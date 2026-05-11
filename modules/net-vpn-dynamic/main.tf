@@ -44,7 +44,12 @@ resource "google_compute_forwarding_rule" "esp" {
   ip_protocol = "ESP"
 }
 
-resource "google_compute_forwarding_rule" "udp-500" {
+moved {
+  from = google_compute_forwarding_rule.udp-500
+  to   = google_compute_forwarding_rule.udp_500
+}
+
+resource "google_compute_forwarding_rule" "udp_500" {
   name        = "vpn-${var.name}-udp-500"
   project     = var.project_id
   region      = var.region
@@ -54,7 +59,12 @@ resource "google_compute_forwarding_rule" "udp-500" {
   port_range  = "500"
 }
 
-resource "google_compute_forwarding_rule" "udp-4500" {
+moved {
+  from = google_compute_forwarding_rule.udp-4500
+  to   = google_compute_forwarding_rule.udp_4500
+}
+
+resource "google_compute_forwarding_rule" "udp_4500" {
   name        = "vpn-${var.name}-udp-4500"
   project     = var.project_id
   region      = var.region
@@ -152,7 +162,31 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   ike_version        = each.value.ike_version
   shared_secret      = coalesce(each.value.shared_secret, local.secret)
   target_vpn_gateway = google_compute_vpn_gateway.gateway.self_link
-  depends_on         = [google_compute_forwarding_rule.esp]
+
+  dynamic "cipher_suite" {
+    for_each = each.value.cipher_suite != null ? [each.value.cipher_suite] : []
+    content {
+      dynamic "phase1" {
+        for_each = [cipher_suite.value.phase1]
+        content {
+          dh         = try(phase1.value.dh, null)
+          encryption = try(phase1.value.encryption, null)
+          integrity  = try(phase1.value.integrity, null)
+          prf        = try(phase1.value.prf, null)
+        }
+      }
+      dynamic "phase2" {
+        for_each = [cipher_suite.value.phase2]
+        content {
+          encryption = try(phase2.value.encryption, null)
+          integrity  = try(phase2.value.integrity, null)
+          pfs        = try(phase2.value.pfs, null)
+        }
+      }
+    }
+  }
+
+  depends_on = [google_compute_forwarding_rule.esp]
 }
 
 resource "random_id" "secret" {

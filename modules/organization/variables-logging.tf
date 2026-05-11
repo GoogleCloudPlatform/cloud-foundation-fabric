@@ -35,7 +35,6 @@ variable "logging_exclusions" {
 variable "logging_settings" {
   description = "Default settings for logging resources."
   type = object({
-    # TODO: add support for CMEK
     disable_default_sink = optional(bool)
     kms_key_name         = optional(string)
     storage_location     = optional(string)

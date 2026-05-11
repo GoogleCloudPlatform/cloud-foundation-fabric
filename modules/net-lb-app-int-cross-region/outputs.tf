@@ -78,3 +78,8 @@ output "regional_neg_ids" {
     for k, v in google_compute_region_network_endpoint_group.default : k => v.id
   }
 }
+
+output "url_map_id" {
+  description = "Fully qualified URL map ID (resource path) for use in IAM conditions and API calls."
+  value       = google_compute_url_map.default.id
+}

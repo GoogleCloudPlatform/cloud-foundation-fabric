@@ -12,7 +12,7 @@ As usual, consider this a guideline with no guarantees. Migrations between FAST 
 
 > v44.0.0 and v45.0.0 deprecated several legacy stages, refer to those releases or branches for legacy upgrading instructions. Upgrades from legacy to current stages are not directly supported.
 
-> v52.0.0 moves creation of custom constraints to `module.organization-iam` (from `module.organization`) in stage `0-org-setup`. As `moved` block is not possible and supported for this change, manual state migration is required to avoid destroying existing constraints. 
+> v52.0.0 moves creation of custom constraints to `module.organization-iam` (from `module.organization`) in stage `0-org-setup`. As `moved` block is not possible and supported for this change, manual state migration is required to avoid destroying existing constraints.
 > This can be done executing this in stage `0-org-setup`:
 > ```bash
 > constraints=$(terraform state list | grep 'module.organization\[0\].google_org_policy_custom_constraint.constraint')
@@ -25,4 +25,3 @@ As usual, consider this a guideline with no guarantees. Migrations between FAST 
 
 <!-- BEGIN TOC -->
 <!-- END TOC -->
-

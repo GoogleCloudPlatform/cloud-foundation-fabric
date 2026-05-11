@@ -85,6 +85,10 @@ module "service-accounts" {
   description  = each.value.description
   display_name = each.value.display_name
   context = merge(local.ctx, {
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     project_ids = local.ctx_project_ids
     tag_values  = local.ctx_tag_values
   })
@@ -97,7 +101,12 @@ module "service-accounts" {
   tag_bindings = each.value.tag_bindings
 }
 
-module "service_accounts-iam" {
+moved {
+  from = module.service_accounts-iam
+  to   = module.service-accounts-iam
+}
+
+module "service-accounts-iam" {
   source = "../iam-service-account"
   for_each = {
     for k in local.projects_service_accounts :
@@ -117,6 +126,8 @@ module "service_accounts-iam" {
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails,
+      local.projects_service_agents,
+      lookup(local.per_project_service_agents, each.value.project_key, {}),
       lookup(local.self_sas_iam_emails, each.value.project_key, {})
     )
     service_account_ids = merge(

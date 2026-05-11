@@ -15,28 +15,17 @@
  */
 
 locals {
-  _vpcs_path = try(
-    pathexpand(var.factories_config.vpcs), null
-  )
+  ctx = var.context
   _vpcs_files = try(
-    fileset(local._vpcs_path, "**/.config.yaml"),
+    fileset(local.paths.vpcs, "**/.config.yaml"),
     []
   )
-  _defaults = try(
-    yamldecode(file(var.factories_config.defaults)), {}
-  )
-  context = {
-    locations        = merge(var.context.locations, try(local._defaults.context.locations, {}))
-    project_ids      = merge(var.context.project_ids, try(local._defaults.context.project_ids, {}))
-    cidr_ranges_sets = try(local._defaults.context.cidr_ranges_sets, {})
-    iam_principals   = try(local._defaults.context.iam_principals, {})
-  }
   _vpcs_preprocess = [
     for f in local._vpcs_files : merge(
-      yamldecode(file("${coalesce(local._vpcs_path, "-")}/${f}")),
+      yamldecode(file("${coalesce(local.paths.vpcs, "-")}/${f}")),
       {
         factory_dirname  = dirname(f)
-        factory_basepath = "${local._vpcs_path}/${dirname(f)}"
+        factory_basepath = "${local.paths.vpcs}/${dirname(f)}"
       }
     )
     if f != "defaults.yaml"
@@ -44,18 +33,32 @@ locals {
   _vpcs = {
     for v in local._vpcs_preprocess : v.factory_dirname => v
   }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+  }
   vpcs = {
     for k, v in local._vpcs : k => merge(
-      try(local._defaults.vpcs, {}),
       { for k, v in var.data_defaults : k => v if v != null },
       v,
       { for k, v in var.data_overrides : k => v if v != null },
       {
         subnets_factory_config = {
-          subnets_folder = "${v.factory_basepath}/subnets"
+          subnets_folder = try(
+            startswith(v.factories_config.subnets, "/") || startswith(v.factories_config.subnets, ".") ? v.factories_config.subnets :
+            "${v.factory_basepath}/${v.factories_config.subnets}",
+            "${v.factory_basepath}/subnets"
+          )
         }
         firewall_factory_config = {
-          rules_folder = "${v.factory_basepath}/firewall-rules"
+          rules_folder = try(
+            startswith(v.factories_config.firewall_rules, "/") || startswith(v.factories_config.firewall_rules, ".") ? v.factories_config.firewall_rules :
+            "${v.factory_basepath}/${v.factories_config.firewall_rules}",
+            "${v.factory_basepath}/firewall-rules"
+          )
         }
       }
     )
@@ -65,6 +68,7 @@ locals {
 module "vpcs" {
   source                            = "../net-vpc"
   for_each                          = local.vpcs
+  context                           = local.ctx
   project_id                        = try(each.value.project_id, null)
   name                              = try(each.value.name, null)
   auto_create_subnetworks           = try(each.value.auto_create_subnetworks, null)
@@ -79,7 +83,6 @@ module "vpcs" {
   network_attachments               = try(each.value.network_attachments, {})
   psa_configs                       = try(each.value.psa_configs, [])
   routing_mode                      = try(each.value.routing_mode, "GLOBAL")
-  context                           = local.context
 }
 
 module "firewall" {
@@ -87,12 +90,10 @@ module "firewall" {
   for_each = {
     for k, v in local.vpcs : k => v if v.firewall_factory_config != null
   }
+  context              = local.ctx
   project_id           = each.value.project_id
   network              = each.value.name
   factories_config     = each.value.firewall_factory_config
   default_rules_config = { disabled = true }
-  context = {
-    project_ids = local.context.project_ids
-  }
-  depends_on = [module.vpcs]
+  depends_on           = [module.vpcs]
 }

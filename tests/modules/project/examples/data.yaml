@@ -124,7 +124,7 @@ values:
   module.project.data.google_storage_project_service_account.gcs_sa[0]:
     project: test-project
     user_project: null
-  module.project.google_bigquery_dataset_iam_member.bq-sinks-binding["info"]:
+  module.project.google_bigquery_dataset_iam_member.bq_sinks_binding["info"]:
     condition: []
     role: roles/bigquery.dataEditor
   module.project.google_compute_shared_vpc_service_project.shared_vpc_service[0]:
@@ -138,7 +138,7 @@ values:
   module.project.google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]:
     condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
-  module.project.google_logging_project_exclusion.logging-exclusion["no-gce-instances"]:
+  module.project.google_logging_project_exclusion.logging_exclusion["no-gce-instances"]:
     description: no-gce-instances (Terraform-managed).
     disabled: null
     filter: resource.type=gce_instance
@@ -372,7 +372,7 @@ values:
     member: group:organization-admins@example.org
     project: test-project
     role: roles/owner
-  module.project.google_project_iam_member.bucket-sinks-binding["debug"]:
+  module.project.google_project_iam_member.bucket_sinks_binding["debug"]:
     condition:
     - title: debug bucket writer
     role: roles/logging.bucketWriter
@@ -478,12 +478,12 @@ values:
     project: test-project
     service: run.googleapis.com
     timeouts: null
-  module.project.google_pubsub_topic_iam_member.pubsub-sinks-binding["notice"]:
+  module.project.google_pubsub_topic_iam_member.pubsub_sinks_binding["notice"]:
     condition: []
     project: project-id
     role: roles/pubsub.publisher
     topic: pubsub_sink
-  module.project.google_storage_bucket_iam_member.gcs-sinks-binding["warnings"]:
+  module.project.google_storage_bucket_iam_member.gcs_sinks_binding["warnings"]:
     bucket: test-gcs_sink
     condition: []
     role: roles/storage.objectCreator

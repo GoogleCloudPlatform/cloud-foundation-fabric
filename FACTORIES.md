@@ -17,7 +17,6 @@ The following table provides a granular overview of modules that implement facto
 | :--- | :--- | :--- | :--- | :--- |
 | **analytics-hub** | Analytics Hub Exchange | `listings` | Analytics Hub Listings | `project_id`, `region` |
 | **billing-account** | Billing Account (Config) | `budgets_data_path` | Billing Budgets | `id` (Billing Account ID) |
-| **data-catalog-policy-tag** | Data Catalog Taxonomy | `taxonomy` | Policy Tags | `project_id`, `location`, `name` (Taxonomy Name) |
 | **data-catalog-tag** | N/A | `tags` | Data Catalog Tags | `tags` (Merged with factory data) |
 | **data-catalog-tag-template** | N/A | `tag_templates` | Tag Templates | `project_id`, `region` |
 | **dataplex-aspect-types** | N/A | `aspect_types` | Aspect Types | `project_id`, `location` |
@@ -76,18 +75,18 @@ The following table details how FAST stages implement factory patterns.
 | Stage | Factory (Key/Feature) | Implementation Type | Underlying Module/Resource |
 | :--- | :--- | :--- | :--- |
 | **0-org-setup** | `projects`, `folders`, `budgets` | Module-Backed (Factory) | `project-factory` |
-| **1-vpcsc** | `access_levels`, `perimeters`, `policies` | Module-Backed (Factory) | `vpc-sc` |
+| **1-vpcsc** | `access_levels`, `egress_policies`, `ingress_policies`, `perimeters` | Module-Backed (Factory) | `vpc-sc` |
 | **2-networking** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **2-networking** | `projects` | Module-Backed (Factory) | `project-factory` |
 | **2-networking** | `dns` (Zones) | Stage-Implemented (Module) | `dns` |
 | **2-networking** | `dns_response_policies` | Stage-Implemented (Module) | `dns-response-policy` |
 | **2-networking** | `firewall_policies` | Stage-Implemented (Module) | `net-firewall-policy` |
 | **2-networking** | `vpns` | Stage-Implemented (Module) | `net-vpn-ha` |
+| **2-networking** | `vlan_attachments` | Stage-Implemented (Module) | `net-vlan-attachment` |
 | **2-networking** | `ncc_hubs` | Stage-Implemented (Resource) | `google_network_connectivity_hub` |
 | **2-networking** | `ncc_groups` | Stage-Implemented (Resource) | `google_network_connectivity_group` |
 | **2-networking** | `nvas` | Native (Complex) | `compute-vm`, `net-lb-int` |
 | **2-project-factory** | `projects`, `folders`, `budgets` | Module-Backed (Factory) | `project-factory` |
-| **2-project-factory** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **2-security** | `projects` | Module-Backed (Factory) | `project-factory` |
 | **2-security** | `certificate_authorities` | Stage-Implemented (Module) | `certificate-authority-service` |
 | **2-security** | `keyrings` (KMS) | Stage-Implemented (Module) | `kms` |

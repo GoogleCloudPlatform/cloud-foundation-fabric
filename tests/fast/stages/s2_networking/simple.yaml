@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ counts:
   google_dns_response_policy: 1
   google_dns_response_policy_rule: 42
   google_project: 3
-  google_project_iam_member: 21
-  google_project_service: 27
-  google_project_service_identity: 21
+  google_project_iam_member: 24
+  google_project_service: 30
+  google_project_service_identity: 24
   google_service_networking_connection: 1
   google_service_networking_peered_dns_domain: 1
   google_storage_bucket_object: 2
   modules: 28
   random_id: 3
-  resources: 185
+  resources: 197
   terraform_data: 2

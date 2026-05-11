@@ -41,8 +41,7 @@ values:
     labels: null
     location: europe-west8
     network: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
-    private_cluster_config:
-    - enable_private_endpoint: false
+    private_cluster_config: []
     project: dev-test-0
     subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/default
     tags: null

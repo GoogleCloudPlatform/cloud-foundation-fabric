@@ -31,7 +31,12 @@ locals {
       try(local._templates_raw[v.project_template], {}),
       v
     )
+    # apply exclusions
+    if alltrue([
+      for x in var.factories_config.exclusions.projects : !startswith(k, x)
+    ])
   }
+  # project data from projects folder
   _projects_raw = {
     for f in try(fileset(local.paths.projects, "**/*.yaml"), []) :
     trimsuffix(f, ".yaml") => yamldecode(file("${local.paths.projects}/${f}"))
@@ -63,6 +68,19 @@ locals {
       }
     ]...) : k => v
   })
+  tag_vars_projects = {
+    for k, v in local.projects_input : v.name => {
+      for kk, vv in module.projects[k].tag_keys :
+      kk => vv.namespaced_name
+      if vv.allowed_values_regex != null
+    }
+  }
+  per_project_service_agents = {
+    for k, v in module.projects : k => {
+      for kk, vv in v.service_agents :
+      "service_agents/_self_/${kk}" => vv.iam_email
+    }
+  }
   project_ids = {
     for k, v in module.projects : k => v.project_id
   }
@@ -87,7 +105,12 @@ locals {
   ]...)
 }
 
-resource "terraform_data" "project-preconditions" {
+moved {
+  from = terraform_data.project-preconditions
+  to   = terraform_data.project_preconditions
+}
+
+resource "terraform_data" "project_preconditions" {
   lifecycle {
     precondition {
       condition = alltrue([
@@ -129,23 +152,23 @@ module "projects" {
   default_service_account = try(each.value.default_service_account, "keep")
   # postpone factories that might leverage context
   factories_config = {
-    for k, v in each.value.factories_config :
-    k => v if !contains(["aspect_types", "pam_entitlements"], k)
+    for k, v in each.value.factories_config : k => try(pathexpand(
+      var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.basepath}/${v}"
+    ), null)
+    if !contains(["aspect_types", "org_policies"], k)
   }
   kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
     each.value.labels, var.data_merges.labels
   )
-  lien_reason        = try(each.value.lien_reason, null)
-  log_scopes         = try(each.value.log_scopes, null)
-  logging_exclusions = try(each.value.logging_exclusions, {})
-  logging_metrics    = try(each.value.logging_metrics, null)
-  logging_sinks      = try(each.value.logging_sinks, {})
-  metric_scopes = distinct(concat(
-    each.value.metric_scopes, var.data_merges.metric_scopes
-  ))
+  lien_reason           = try(each.value.lien_reason, null)
+  log_scopes            = try(each.value.log_scopes, null)
+  logging_exclusions    = try(each.value.logging_exclusions, {})
+  logging_metrics       = try(each.value.logging_metrics, null)
+  logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
-  org_policies          = each.value.org_policies
   quotas                = each.value.quotas
   services = distinct(concat(
     each.value.services,
@@ -161,10 +184,11 @@ module "projects" {
 }
 
 module "projects-iam" {
-  source   = "../project"
-  for_each = local.projects_input
-  name     = each.value.name
-  prefix   = each.value.prefix
+  source       = "../project"
+  for_each     = local.projects_input
+  name         = each.value.name
+  prefix       = each.value.prefix
+  org_policies = each.value.org_policies
   project_reuse = {
     use_data_source = false
     attributes = {
@@ -174,10 +198,25 @@ module "projects-iam" {
     }
   }
   context = merge(local.ctx, {
-    folder_ids = local.ctx.folder_ids
+    condition_vars = merge(
+      local.ctx.condition_vars, {
+        folder_ids = {
+          for k, v in local.ctx_folder_ids : replace(k, "$folder_ids:", "") => v
+        }
+        projects = {
+          for k, v in module.projects : k => v.project_id
+        }
+      }
+    )
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
+    folder_ids = local.ctx_folder_ids
     kms_keys   = merge(local.ctx.kms_keys, local.kms_keys)
     iam_principals = merge(
       local.ctx_iam_principals,
+      lookup(local.per_project_service_agents, each.key, {}),
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
     )
@@ -190,8 +229,13 @@ module "projects-iam" {
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
-    aspect_types     = each.value.factories_config.aspect_types
-    pam_entitlements = each.value.factories_config.pam_entitlements
+    aspect_types     = try(each.value.factories_config.aspect_types, null)
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    org_policies = lookup(each.value.factories_config, "org_policies", null) == null ? null : try(pathexpand(
+      var.factories_config.basepath == null || startswith(each.value.factories_config.org_policies, "/") || startswith(each.value.factories_config.org_policies, ".")
+      ? each.value.factories_config.org_policies :
+      "${var.factories_config.basepath}/${each.value.factories_config.org_policies}"
+    ), null)
   }
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
@@ -200,7 +244,10 @@ module "projects-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   logging_data_access           = lookup(each.value, "logging_data_access", {})
-  pam_entitlements              = try(each.value.pam_entitlements, {})
+  metric_scopes = distinct(concat(
+    each.value.metric_scopes, var.data_merges.metric_scopes
+  ))
+  pam_entitlements = try(each.value.pam_entitlements, {})
   service_agents_config = {
     create_primary_agents = false
     grant_default_roles   = false

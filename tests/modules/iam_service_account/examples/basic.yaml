@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 values:
-  module.myproject-default-service-accounts.google_project_iam_member.project-roles["project-id-roles/logging.logWriter"]:
+  module.myproject-default-service-accounts.google_project_iam_member.project_roles["project-id-roles/logging.logWriter"]:
     condition: []
     project: project-id
     role: roles/logging.logWriter
-  module.myproject-default-service-accounts.google_project_iam_member.project-roles["project-id-roles/monitoring.metricWriter"]:
+  module.myproject-default-service-accounts.google_project_iam_member.project_roles["project-id-roles/monitoring.metricWriter"]:
     condition: []
     project: project-id
     role: roles/monitoring.metricWriter

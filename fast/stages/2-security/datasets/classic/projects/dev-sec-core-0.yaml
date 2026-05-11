@@ -28,7 +28,6 @@ iam_bindings:
   key_delegated:
     members:
       - $iam_principals:service_accounts/iac-0/iac-pf-rw
-      - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
     role: roles/cloudkms.admin
     condition:
       title: Delegated IAM grant on keys.

@@ -218,7 +218,7 @@ write_files:
       %{~ if vpn_config.type == "dynamic" ~}
       mark=%unique
       %{~ endif ~}
-      
+
     conn gcp2
       %{~ if vpn_config.type == "dynamic" ~}
       leftupdown="/var/lib/strongswan/ipsec-vti.sh 1 ${vpn_dynamic_config.peer_bgp_address2}/30 ${vpn_dynamic_config.local_bgp_address2}/30"
@@ -248,7 +248,7 @@ write_files:
       %{~ endif ~}
 
  %{~ if vpn_config.type == "dynamic" ~}
-    
+
 # Charon configuration
 - path: /var/lib/docker-compose/onprem/ipsec/vti.conf
   owner: root:root
