@@ -23,6 +23,8 @@ Its architecture is designed to be reliable, robust, and scalable, facilitating 
     - [Data Platform Folder](#data-platform-folder)
     - [Networking](#networking)
     - [Security](#security)
+  - [Output Files and Provider Generation](#output-files-and-provider-generation)
+  - [Environment File and Linking](#environment-file-and-linking)
 - [Customization Guide](#customization-guide)
     - [1. IAM Principals and Context](#1-iam-principals-and-context)
     - [2. Data Governance Assets](#2-data-governance-assets)
@@ -247,6 +249,47 @@ iam_bindings:
           'roles/cloudkms.cryptoKeyEncrypterDecrypter',
           'roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation'
         ]) && resource.type == 'cloudkms.googleapis.com/CryptoKey'
+```
+
+### Output Files and Provider Generation
+
+To automatically generate the provider files for this stage, you need to configure the `output_files` section in your Stage 0 `defaults.yaml` file (e.g., `fast/stages/0-org-setup/datasets/classic/defaults.yaml`).
+
+Add the following entries under `output_files.providers`:
+
+```yaml
+    2-data-platform:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-data-platform
+      service_account: $iam_principals:service_accounts/iac-0/iac-dp-rw
+    2-data-platform-ro:
+      bucket: $storage_buckets:iac-0/iac-stage-state
+      prefix: 2-data-platform
+      service_account: $iam_principals:service_accounts/iac-0/iac-dp-ro
+```
+
+This configuration instructs Stage 0 to generate `2-data-platform-providers.tf` and `2-data-platform-ro-providers.tf` files in the outputs folder and/or bucket.
+
+### Environment File and Linking
+
+To use these generated files in your custom stage directory (e.g., `custom-stages/2-project-factory-dp`), you need to configure the `.fast-stage.env` file in that directory.
+
+Set `FAST_STAGE_NAME` to `data-platform`:
+
+```text
+FAST_STAGE_DESCRIPTION="data platform"
+FAST_STAGE_LEVEL=2
+FAST_STAGE_NAME=data-platform
+FAST_STAGE_DEPS="0-globals 0-org-setup"
+FAST_STAGE_OPTIONAL="1-vpcsc 2-networking 2-security"
+```
+
+This allows the `fast-links.sh` script to correctly identify and link the data platform specific provider and tfvars files.
+
+To create the links, run the script from inside your stage folder:
+
+```bash
+../../fast/stages/fast-links.sh path/to/your/fast-config or gs://automation_bucket_name
 ```
 
 ## Customization Guide
