@@ -219,11 +219,6 @@ module "projects-iam" {
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
-    aspect_types = lookup(each.value.factories_config, "aspect_types", null) == null ? null : try(pathexpand(
-      var.factories_config.basepath == null || startswith(each.value.factories_config.aspect_types, "/") || startswith(each.value.factories_config.aspect_types, ".")
-      ? each.value.factories_config.aspect_types :
-      "${var.factories_config.basepath}/${each.value.factories_config.aspect_types}"
-    ), null)
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
     org_policies = lookup(each.value.factories_config, "org_policies", null) == null ? null : try(pathexpand(
       var.factories_config.basepath == null || startswith(each.value.factories_config.org_policies, "/") || startswith(each.value.factories_config.org_policies, ".")

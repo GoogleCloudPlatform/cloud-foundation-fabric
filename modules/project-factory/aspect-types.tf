@@ -24,7 +24,11 @@ module "aspect-types" {
   }
   project_id = module.projects[each.key].project_id
   factories_config = {
-    aspect_types = each.value.factories_config.aspect_types
+    aspect_types = lookup(each.value.factories_config, "aspect_types", null) == null ? null : try(pathexpand(
+      var.factories_config.basepath == null || startswith(each.value.factories_config.aspect_types, "/") || startswith(each.value.factories_config.aspect_types, ".")
+      ? each.value.factories_config.aspect_types :
+      "${var.factories_config.basepath}/${each.value.factories_config.aspect_types}"
+    ), null)
   }
   context = merge(local.ctx, {
     iam_principals = merge(
