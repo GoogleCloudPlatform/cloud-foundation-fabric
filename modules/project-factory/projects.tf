@@ -87,17 +87,7 @@ locals {
   project_numbers = {
     for k, v in module.projects : k => v.number
   }
-  projects_input = {
-    for k, v in merge(var.projects, local._projects_output) : k => merge(v, {
-      factories_config = {
-        for kk, vv in v.factories_config : kk => try(pathexpand(
-          var.factories_config.basepath == null || startswith(vv, "/") || startswith(vv, ".")
-          ? vv :
-          "${var.factories_config.basepath}/${vv}"
-        ), null)
-      }
-    })
-  }
+  projects_input = merge(var.projects, local._projects_output)
   projects_service_agents = merge([
     for k, v in module.projects : {
       for kk, vv in v.service_agents : "service_agents/${k}/${kk}" => vv.iam_email
@@ -229,13 +219,13 @@ module "projects-iam" {
   })
   factories_config = {
     # we do anything that can refer to IAM and custom roles in this call
-    aspect_types     = try(each.value.factories_config.aspect_types, null)
-    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
-    org_policies = lookup(each.value.factories_config, "org_policies", null) == null ? null : try(pathexpand(
-      var.factories_config.basepath == null || startswith(each.value.factories_config.org_policies, "/") || startswith(each.value.factories_config.org_policies, ".")
-      ? each.value.factories_config.org_policies :
-      "${var.factories_config.basepath}/${each.value.factories_config.org_policies}"
+    aspect_types = lookup(each.value.factories_config, "aspect_types", null) == null ? null : try(pathexpand(
+      var.factories_config.basepath == null || startswith(each.value.factories_config.aspect_types, "/") || startswith(each.value.factories_config.aspect_types, ".")
+      ? each.value.factories_config.aspect_types :
+      "${var.factories_config.basepath}/${each.value.factories_config.aspect_types}"
     ), null)
+    pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
+    org_policies     = try(each.value.factories_config.org_policies, null)
   }
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
