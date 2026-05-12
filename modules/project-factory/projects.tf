@@ -225,7 +225,11 @@ module "projects-iam" {
       "${var.factories_config.basepath}/${each.value.factories_config.aspect_types}"
     ), null)
     pam_entitlements = try(each.value.factories_config.pam_entitlements, null)
-    org_policies     = try(each.value.factories_config.org_policies, null)
+    org_policies = lookup(each.value.factories_config, "org_policies", null) == null ? null : try(pathexpand(
+      var.factories_config.basepath == null || startswith(each.value.factories_config.org_policies, "/") || startswith(each.value.factories_config.org_policies, ".")
+      ? each.value.factories_config.org_policies :
+      "${var.factories_config.basepath}/${each.value.factories_config.org_policies}"
+    ), null)
   }
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
