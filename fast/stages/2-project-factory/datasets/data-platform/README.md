@@ -4,6 +4,35 @@ This dataset configures an opinionated Data Platform architecture based on Googl
 
 Its architecture is designed to be reliable, robust, and scalable, facilitating the continuous onboarding of new Data Products (or data workloads).
 
+<!-- BEGIN TOC -->
+- [Design Overview and Choices](#design-overview-and-choices)
+  - [Data Platform Architecture](#data-platform-architecture)
+  - [Folder and Project Structure](#folder-and-project-structure)
+    - [Central Shared Services (Federated Governance)](#central-shared-services-federated-governance)
+    - [Data Domains (Domain-Driven Ownership)](#data-domains-domain-driven-ownership)
+    - [Data Products (DaaP)](#data-products-daap)
+  - [Delegated Automation Model](#delegated-automation-model)
+  - [Teams and Personas](#teams-and-personas)
+    - [Central Data Platform Team](#central-data-platform-team)
+    - [Data Domain Team](#data-domain-team)
+    - [Data Product Team](#data-product-team)
+- [Stage Prerequisites](#stage-prerequisites)
+  - [Service Accounts](#service-accounts)
+  - [Storage](#storage)
+  - [IAM Bindings](#iam-bindings)
+    - [Data Platform Folder](#data-platform-folder)
+    - [Networking](#networking)
+    - [Security](#security)
+- [Customization Guide](#customization-guide)
+    - [1. IAM Principals and Context](#1-iam-principals-and-context)
+    - [2. Data Governance Assets](#2-data-governance-assets)
+    - [3. Adding Domains and Products](#3-adding-domains-and-products)
+- [Deployment Choices](#deployment-choices)
+  - [Shared VPCs (Default)](#shared-vpcs-default)
+  - [Project-Local VPCs](#project-local-vpcs)
+- [Usage](#usage)
+<!-- END TOC -->
+
 ## Design Overview and Choices
 
 ### Data Platform Architecture
