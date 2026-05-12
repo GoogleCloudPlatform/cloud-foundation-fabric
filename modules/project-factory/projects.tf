@@ -56,7 +56,7 @@ locals {
     for k, v in merge([
       for pk, pv in local.projects_input : {
         for tk, tv in module.projects[pk].tag_keys :
-        "${pv.name}/${tk}" => tv.id
+        "${pk}/${tk}" => tv.id
       }
     ]...) : k => v
   })
