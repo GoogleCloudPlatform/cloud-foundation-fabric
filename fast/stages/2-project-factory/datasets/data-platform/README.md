@@ -8,7 +8,7 @@ Its architecture is designed to be reliable, robust, and scalable, facilitating 
 
 ### Data Platform Architecture
 
-The following diagram represent the high-level architecture of the Data Platform related projects and their associated resources managed by this dataset:
+The following diagram represents the high-level architecture of the Data Platform related projects and their associated resources managed by this dataset:
 
 <p align="center">
   <img src="diagram-data-platform.png" alt="High level diagram.">
@@ -45,6 +45,16 @@ Within each Data Domain, a corresponding Google Cloud "Data Domain" project serv
 
 Each Data Product within a Data Domain is encapsulated in its own dedicated Google Cloud Project. This separation is key to achieving modularity, scalability, flexibility, and distinct ownership for each product.
 
+### Delegated Automation Model
+
+To enable domain-driven ownership and self-service, the dataset implements a multi-tiered automation model using the Project Factory's `automation` feature:
+
+1.  **Central Platform**: Managed by the main Stage 0 service accounts (or the principal running the stage).
+2.  **Data Domains**: The Domain project (`projects/domain-0/shared-0.yaml`) creates its own automation service accounts (read-only and read-write) in the Central project (`prod-dp-core-0`).
+3.  **Data Products**: The Product project (`projects/domain-0/product-0.yaml`) uses the Domain's read-write service account for its automation, and stores its state in a bucket within the Domain project.
+
+This structure allows central teams to bootstrap domains, and then delegate the management of products within a domain to the respective domain team, using their specific service accounts.
+
 ### Teams and Personas
 
 Effective data mesh operation relies on well-defined roles and responsibilities.
@@ -67,18 +77,171 @@ Aligned with specific business areas (e.g., customer, finance, distribution), th
 
 This team is responsible for the end-to-end lifecycle of a specific Data Product. They develop, operate, and maintain their assigned Data Product, including ingestion, transformation, and exposure.
 
-## Usage with Project Factory
+## Stage Prerequisites
 
-To deploy this dataset using `2-project-factory`:
+When using this dataset as an additional project factory (separate from the main `2-project-factory` stage), you need to configure Stage 0 to provision the necessary automation resources and IAM permissions.
 
-1.  Set `factories_config.dataset` to `"datasets/data-platform"`.
-2.  Ensure `factories_config.paths.vpcs` is configured (or relies on module defaults).
+This typically involves adding a new set of service accounts and a dedicated state bucket folder for the data platform automation.
 
-```bash
-terraform apply -var 'factories_config={dataset="datasets/data-platform"}'
+### Service Accounts
+
+Add the following service accounts to your Stage 0 configuration (e.g., in `projects/core/iac-0.yaml`):
+
+```yaml
+service_accounts:
+  iac-dp-ro:
+    display_name: IaC service account for data platform (read-only).
+  iac-dp-rw:
+    display_name: IaC service account for data platform (read-write).
 ```
 
-The YAML configuration files for this dataset are located in this directory (`datasets/data-platform`).
+### Storage
+
+Configure a dedicated managed folder for the data platform state in the Stage 0 state bucket, and grant access to the service accounts:
+
+```yaml
+buckets:
+  iac-stage-state:
+    managed_folders:
+      2-data-platform:
+        iam:
+          roles/storage.admin:
+            - $iam_principals:service_accounts/iac-0/iac-dp-rw
+          $custom_roles:storage_viewer:
+            - $iam_principals:service_accounts/iac-0/iac-dp-ro
+```
+
+Also, ensure the data platform service accounts have access to the `iac-outputs` bucket:
+
+```yaml
+  iac-outputs:
+    iam:
+      roles/storage.admin:
+        - $iam_principals:service_accounts/iac-0/iac-dp-rw
+      $custom_roles:storage_viewer:
+        - $iam_principals:service_accounts/iac-0/iac-dp-ro
+```
+
+### IAM Bindings
+
+Grant the necessary permissions to the data platform service accounts on the folders they will manage.
+
+#### Data Platform Folder
+
+Since the Data Platform folder is not part of the default dataset, you need to create a new folder configuration file.
+
+Create a file named `.config.yaml` for the folder. You can place it:
+- Directly under the organization by creating `folders/data-platform/.config.yaml` in your Stage 0 dataset directory.
+- Within an existing folder, for example under `teams`, by creating `folders/teams/data-platform/.config.yaml`.
+
+Here is the complete `.config.yaml` content:
+
+```yaml
+name: Data Platform
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-dp-rw:
+    - roles/logging.admin
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/compute.xpnAdmin
+  $iam_principals:service_accounts/iac-0/iac-dp-ro:
+    - roles/viewer
+    - roles/resourcemanager.folderViewer
+```
+
+#### Networking
+
+This configuration is used if you rely on the centralized network stage, and access to share networking resources is required from the data platform. Grant the following roles on the `networking` folder.
+
+> [!NOTE]
+> These prerequisites are only required if you are using the default Shared VPCs model described in the [Deployment Choices](#deployment-choices) section.
+
+```yaml
+iam_bindings:
+  dp_rw:
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-rw
+    role: $custom_roles:service_project_network_admin
+  dp_ro:
+    role: roles/compute.networkViewer
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-ro
+```
+
+And to delegate IAM project administration for networking resources:
+
+```yaml
+iam_bindings:
+  dp_delegated_iam:
+    role: roles/resourcemanager.projectIamAdmin
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-rw
+    condition:
+      title: Data platform delegated IAM grant.
+      expression: |
+        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(
+[
+          '${custom_roles.service_project_network_admin}'
+        ])
+```
+
+#### Security
+
+This configuration is used if you rely on the centralized security stage, and access to manage security resources (like KMS keys) is required from the data platform. Grant the following roles on the `security` folder (or the specific project hosting the keys):
+
+```yaml
+iam_bindings:
+  dp_rw_viewer:
+    role: roles/cloudkms.viewer
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-rw
+  dp_ro_viewer:
+    role: roles/cloudkms.viewer
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-ro
+```
+
+And to delegate IAM project administration for KMS resources (allow granting encrypt/decrypt roles on keys):
+
+```yaml
+iam_bindings:
+  dp_delegated_kms:
+    role: roles/cloudkms.admin
+    members:
+      - $iam_principals:service_accounts/iac-0/iac-dp-rw
+    condition:
+      title: Data platform delegated KMS grant.
+      expression: |
+        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(
+[
+          'roles/cloudkms.cryptoKeyEncrypterDecrypter',
+          'roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation'
+        ]) && resource.type == 'cloudkms.googleapis.com/CryptoKey'
+```
+
+## Customization Guide
+
+You can customize the deployment by modifying the YAML files in this directory:
+
+#### 1. IAM Principals and Context
+In `defaults.yaml`, update the `context.iam_principals` map with the actual groups or users for your organization:
+- `dp-platform`: Central data platform team.
+- `dp-domain-a`: Data domain team members.
+- `dp-product-a-0`: Data product team members.
+- `data-consumer-bi`: Consumers of public data.
+
+#### 2. Data Governance Assets
+The Central project (`projects/core-0.yaml`) is configured to load data governance assets from the following directories:
+- `aspect-types/`: Define Dataplex Catalog Aspect Types.
+- `tags/`: Define Resource Manager tags.
+- `taxonomies/`: Define Data Catalog taxonomies and policy tags (e.g., `taxonomies/tags.yaml`).
+
+#### 3. Adding Domains and Products
+The provided `domain-0` directory is a template. To add new domains or products:
+1.  Replicate or modify the folder structure under `projects/`.
+2.  Update the `parent` and `name` attributes in the new YAML files.
+3.  Ensure the `automation` block references the correct parent project and service accounts.
 
 ## Deployment Choices
 
@@ -119,5 +282,15 @@ factories_config = {
   paths = {
     vpcs = "vpcs"
   }
+}
+```
+
+## Usage
+
+To deploy this dataset, configure your `2-project-factory` stage to use this directory by setting the `dataset` attribute in `factories_config`:
+
+```hcl
+factories_config = {
+  dataset = "datasets/data-platform"
 }
 ```
