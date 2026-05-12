@@ -24,7 +24,11 @@ module "taxonomies" {
   }
   project_id = module.projects[each.key].project_id
   factories_config = {
-    taxonomy = each.value.factories_config.data_catalog_taxonomy
+    taxonomy = lookup(each.value.factories_config, "data_catalog_taxonomy", null) == null ? null : try(pathexpand(
+      var.factories_config.basepath == null || startswith(each.value.factories_config.data_catalog_taxonomy, "/") || startswith(each.value.factories_config.data_catalog_taxonomy, ".")
+      ? each.value.factories_config.data_catalog_taxonomy :
+      "${var.factories_config.basepath}/${each.value.factories_config.data_catalog_taxonomy}"
+    ), null)
   }
   name     = "taxonomy"
   location = try(each.value.locations.storage, "europe-west1")
