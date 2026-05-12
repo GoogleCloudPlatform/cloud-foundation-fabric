@@ -272,6 +272,11 @@ The provided `domain-0` directory is a template. To add new domains or products:
 2.  Update the `parent` and `name` attributes in the new YAML files.
 3.  Ensure the `automation` block references the correct parent project and service accounts.
 
+> [!TIP]
+> **Project Templates**: For data products that follow a similar configuration, you can use the project templates feature by placing template files in the `project-templates/` directory. This dataset provides a simple example in `project-templates/data-product.yaml`.
+>
+> Note that the project template feature implements a **shallow merge**, meaning that top-level keys defined in your specific project YAML file will completely overwrite the corresponding top-level keys from the template.
+
 ## Deployment Choices
 
 The Data Platform dataset allows for flexibility in networking models, supporting both Shared VPCs (standard enterprise pattern) and Project-Local VPCs (isolated workloads).
