@@ -53,7 +53,7 @@ locals {
   ctx_project_numbers = merge(local.ctx.project_numbers, local.project_numbers)
   # cross-project tag contexts, keyed on project name
   ctx_tag_keys = merge(local.ctx.tag_keys, {
-    for k, v in merge([
+    for k, v in merge({}, [
       for pk, pv in local.projects_input : {
         for tk, tv in module.projects[pk].tag_keys :
         "${pk}/${tk}" => tv.id
@@ -61,7 +61,7 @@ locals {
     ]...) : k => v
   })
   ctx_tag_values = merge(local.ctx.tag_values, {
-    for k, v in merge([
+    for k, v in merge({}, [
       for pk, pv in local.projects_input : {
         for tk, tv in module.projects[pk].tag_values :
         "${pk}/${tk}" => tv.id

@@ -61,7 +61,7 @@ locals {
       }
     ]
   ])
-  tags_iam_bindings = merge([
+  tags_iam_bindings = merge({}, [
     for k, v in local.tags : {
       for bk, bv in v.iam_bindings : "${k}.${bk}" => merge(bv, {
         tag = k
@@ -69,7 +69,7 @@ locals {
       })
     }
   ]...)
-  tags_iam_bindings_additive = merge([
+  tags_iam_bindings_additive = merge({}, [
     for k, v in local.tags : {
       for bk, bv in v.iam_bindings_additive : "${k}.${bk}" => merge(bv, {
         tag = k
