@@ -366,7 +366,7 @@
   - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
-- **[iam_bindings](#refs-iam_bindings_ex)**<a name="refs-iam_bindingse"></a>: *object*
+- **[iam_bindings](#refs-iam_bindings_ex)**<a name="refs-iam_bindings"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9_-]+$`**: *object*
     <br>*additional properties: false*
@@ -577,7 +577,7 @@
 |**billing_account** | The financial account linked to pay for usage. | Financial: If invalid, services will stop. | "01A2B3-XYZ987" | Assigning a corporate credit card to a specific research project.|
 |**services** | List of specific Google features to activate. | Feature Level: Turns on specific tools/utilities. | ["compute.googleapis.com"] | Turning on the "Electricity" (Power) so you can run servers.|
 |**iam** | iam: Defines authoritative role assignments (meaning it overwrites existing ones) for users, groups, or service accounts at the current resource level. reference(iam). | Project-Wide: High-level security control. <a name="refs-iam_ex"></a>| {"roles/owner": ["user:admin@co.com"]} | A new Director taking over and issuing a brand new access list.|
-|**iam_bindings**  |iam_billing_roles: Assigns IAM roles specifically to manage or view the GCP Billing Account. reference(iam_billing_roles). <a name="refs-iam_bindings_ex"></a> | {"dev-group": ["roles/viewer"]} reference([iam_bindings](#refs-iam_bindingse)) | Giving the "Accounting Team" a keycard for the "Records" room.|
+|**iam_bindings**  |iam_billing_roles: Assigns IAM roles specifically to manage or view the GCP Billing Account. reference(iam_billing_roles). <a name="refs-iam_bindings_ex"></a> | {"dev-group": ["roles/viewer"]} | Giving the "Accounting Team" a keycard for the "Records" room.|
 |**iam_bindings_additive** | iam_bindings_additive: Safely appends new IAM permissions without deleting or overwriting existing bindings (ideal for shared resources). reference(iam_bindings_additive)| Individual Level: Precise access for one person. | {"consultant": ["roles/editor"]} <a name="refs-iam_additive_ex"></a>| Giving a temporary visitor pass to a specific contractor.|
 |**service_accounts**  | Identities used by software for automated tasks. | Functional: For apps rather  than humans.<a name="refs-service_account_ex"></a> | "cleanup-bot@project.iam.gserviceaccount.com" | An automated robot that copies files to backup every night.|
 |**iam_folder_roles** |iam_folder_roles: Grants IAM roles that automatically cascade down to all projects within a specific Folder. reference(iam_folder_roles)|<a name="refs-iam_folder_roles_ex"></a>. Hierarchy Level: Multi-project inherited access. | {"folder/123": ["roles/viewer"]} |
