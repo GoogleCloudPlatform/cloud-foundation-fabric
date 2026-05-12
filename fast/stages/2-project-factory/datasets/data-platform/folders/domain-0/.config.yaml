@@ -28,7 +28,7 @@ name: Data Domain 0
 #     condition:
 #       title: exposure
 #       description: Expose via secure tag.
-#       expression: resource.matchTagId('$tag_values:prod-dp-core-0/exposure/public')
+#       expression: resource.matchTagId('$tag_values:core-0/exposure/public')
 #   dataplex_catalog_viewer:
 #     members:
 #       - $iam_principals:dp-platform
@@ -39,4 +39,4 @@ name: Data Domain 0
 #     condition:
 #       title: exposure
 #       description: Expose via secure tag.
-#       expression: resource.matchTagId('$tag_values:prod-dp-core-0/exposure/public')
+#       expression: resource.matchTagId('$tag_values:core-0/exposure/public')
