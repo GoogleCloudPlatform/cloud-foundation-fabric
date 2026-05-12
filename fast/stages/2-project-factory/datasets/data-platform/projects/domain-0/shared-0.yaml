@@ -26,7 +26,7 @@ services:
   - storage.googleapis.com
   - composer.googleapis.com
 automation:
-  project: prod-dp-core-0
+  project: $project_ids:core-0
   service_accounts:
     iac-ro:
       display_name: Domain 0 (ro)
@@ -57,15 +57,16 @@ iam_by_principals:
 service_accounts:
   composer: {}
 
-shared_vpc_service_config:
-  host_project: $project_ids:net-dev-0
-  service_agent_iam:
-    roles/composer.sharedVpcAgent:
-      - $service_agents:composer
-    roles/compute.networkUser:
-      - $service_agents:composer
-  network_users:
-    - $iam_principals:service_accounts/_self_/composer
+# TODO: Uncomment the following block if you want to use Shared VPC instead of local VPCs.
+# shared_vpc_service_config:
+#   host_project: $project_ids:net-dev-0
+#   service_agent_iam:
+#     roles/composer.sharedVpcAgent:
+#       - $service_agents:composer
+#     roles/compute.networkUser:
+#       - $service_agents:composer
+#   network_users:
+#     - $iam_principals:service_accounts/_self_/composer
 
 # If this project contains a local VPC, it should be configured as a Shared VPC host.
 # shared_vpc_host_config:

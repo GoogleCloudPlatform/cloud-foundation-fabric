@@ -28,7 +28,7 @@ services:
   - monitoring.googleapis.com
   - storage.googleapis.com
 automation:
-  project: prod-dp-dd-0
+  project: $project_ids:shared-0
   service_accounts:
     iac-ro:
       display_name: Product 0/0 (ro)

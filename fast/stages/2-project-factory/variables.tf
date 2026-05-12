@@ -47,9 +47,9 @@ variable "factories_config" {
       defaults          = optional(string, "defaults.yaml")
       folders           = optional(string, "folders")
       projects          = optional(string, "projects")
-      project_templates = optional(string)
+      project_templates = optional(string, "project-templates")
       budgets           = optional(string)
-      vpcs              = optional(string)
+      vpcs              = optional(string, "vpcs")
     }), {})
   })
   nullable = false

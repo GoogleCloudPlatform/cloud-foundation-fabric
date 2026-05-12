@@ -23,6 +23,7 @@ Its architecture is designed to be reliable, robust, and scalable, facilitating 
     - [Data Platform Folder](#data-platform-folder)
     - [Networking](#networking)
     - [Security](#security)
+    - [Organization Level (VPC-SC)](#organization-level-vpc-sc)
   - [Output Files and Provider Generation](#output-files-and-provider-generation)
   - [Environment File and Linking](#environment-file-and-linking)
 - [Customization Guide](#customization-guide)
@@ -31,7 +32,7 @@ Its architecture is designed to be reliable, robust, and scalable, facilitating 
     - [3. Adding Domains and Products](#3-adding-domains-and-products)
     - [4. VPC-SC Perimeter](#4-vpc-sc-perimeter)
 - [Deployment Choices](#deployment-choices)
-  - [Shared VPCs (Default)](#shared-vpcs-default)
+  - [Networking Models](#networking-models)
   - [Project-Local VPCs](#project-local-vpcs)
 - [Usage](#usage)
 <!-- END TOC -->
@@ -256,6 +257,18 @@ iam_bindings:
         ]) && resource.type == 'cloudkms.googleapis.com/CryptoKey'
 ```
 
+#### Organization Level (VPC-SC)
+
+If you are using VPC-SC and need this stage to manage perimeters or add projects to them, you must grant the following roles at the organization level to the data platform service accounts:
+
+```yaml
+iam_by_principals:
+  $iam_principals:service_accounts/iac-0/iac-dp-rw:
+    - roles/accesscontextmanager.policyEditor
+  $iam_principals:service_accounts/iac-0/iac-dp-ro:
+    - roles/accesscontextmanager.policyReader
+```
+
 ### Output Files and Provider Generation
 
 To automatically generate the provider files for this stage, you need to configure the `output_files` section in your Stage 0 `defaults.yaml` file (e.g., `fast/stages/0-org-setup/datasets/classic/defaults.yaml`).
@@ -340,13 +353,14 @@ projects:
 
 The Data Platform dataset allows for flexibility in networking models, supporting both Shared VPCs (standard enterprise pattern) and Project-Local VPCs (isolated workloads).
 
-### Shared VPCs (Default)
+### Networking Models
 
-The default and recommended networking model for the Data Platform uses Shared VPCs managed in the `2-networking` stage.
-In this mode, Data Domain and Data Product projects are attached as service projects to the Shared VPC host projects defined in `host_project_ids` variable.
+The Data Platform dataset supports two networking models, which can also be used together:
 
-This approach centralizes network management, simplifies connectivity between domains, and aligns with the typical FAST landing zone architecture.
-Projects automatically inherit network connectivity based on the `shared_vpc_service_config` in their YAML definitions or defaults.
+1.  **Project-Local VPCs (Default)**: By default, this dataset creates project-local VPCs using the VPC factory (reading from the `vpcs` directory).
+2.  **Shared VPCs**: To attach projects to a Shared VPC managed in the `2-networking` stage, you must:
+    *   Delete the files in the `vpcs` directory (or set `factories_config.paths.vpcs` to a non-existent path).
+    *   Uncomment the `shared_vpc_service_config` block in the project YAML files (e.g., `projects/domain-0/shared-0.yaml`).
 
 ### Project-Local VPCs
 
