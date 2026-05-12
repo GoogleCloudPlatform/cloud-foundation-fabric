@@ -226,6 +226,12 @@ resource "google_container_node_pool" "nodepool" {
         local_ssd_count = var.node_config.ephemeral_ssd_count
       }
     }
+    dynamic "ephemeral_storage_local_ssd_config" {
+      for_each = var.node_config.ephemeral_storage_local_ssd_count != null ? [""] : []
+      content {
+        local_ssd_count = var.node_config.ephemeral_storage_local_ssd_count
+      }
+    }
     dynamic "gcfs_config" {
       for_each = var.node_config.gcfs && local.image.is_cos_containerd ? [""] : []
       content {

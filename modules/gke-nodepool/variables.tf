@@ -96,11 +96,12 @@ variable "node_config" {
       provisioned_iops       = optional(number)
       provisioned_throughput = optional(number)
     }))
-    boot_disk_kms_key   = optional(string)                # usage of this is discouraged
-    disk_size_gb        = optional(number)                # usage of this is discouraged
-    disk_type           = optional(string, "pd-balanced") # usage of this is discouraged
-    ephemeral_ssd_count = optional(number)
-    gcfs                = optional(bool, false)
+    boot_disk_kms_key                 = optional(string)                # usage of this is discouraged
+    disk_size_gb                      = optional(number)                # usage of this is discouraged
+    disk_type                         = optional(string, "pd-balanced") # usage of this is discouraged
+    ephemeral_ssd_count               = optional(number)
+    ephemeral_storage_local_ssd_count = optional(number)
+    gcfs                              = optional(bool, false)
     guest_accelerator = optional(object({
       count = number
       type  = string
