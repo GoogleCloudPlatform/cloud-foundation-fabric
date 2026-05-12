@@ -29,6 +29,7 @@ Its architecture is designed to be reliable, robust, and scalable, facilitating 
     - [1. IAM Principals and Context](#1-iam-principals-and-context)
     - [2. Data Governance Assets](#2-data-governance-assets)
     - [3. Adding Domains and Products](#3-adding-domains-and-products)
+    - [4. VPC-SC Perimeter](#4-vpc-sc-perimeter)
 - [Deployment Choices](#deployment-choices)
   - [Shared VPCs (Default)](#shared-vpcs-default)
   - [Project-Local VPCs](#project-local-vpcs)
@@ -211,11 +212,15 @@ iam_bindings:
     condition:
       title: Data platform delegated IAM grant.
       expression: |
-        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly(
-[
-          '${custom_roles.service_project_network_admin}'
+        api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([
+          'roles/compute.networkUser', 'roles/composer.sharedVpcAgent',
+          'roles/container.hostServiceAgentUser', 'roles/vpcaccess.user',
+          '${custom_roles["dns_zone_binder"]}'
         ])
 ```
+
+> [!TIP]
+> If your Stage 0 configuration already includes a `project_factory` delegated IAM grant with these roles (e.g., for the main Project Factory stage), you can simply add the data platform service account (`iac-dp-rw`) to the members list of that existing binding instead of creating a new `dp_delegated_iam` binding. This applies to both networking and security configurations if similar delegations are needed.
 
 #### Security
 
@@ -319,6 +324,17 @@ The provided `domain-0` directory is a template. To add new domains or products:
 > **Project Templates**: For data products that follow a similar configuration, you can use the project templates feature by placing template files in the `project-templates/` directory. This dataset provides a simple example in `project-templates/data-product.yaml`.
 >
 > Note that the project template feature implements a **shallow merge**, meaning that top-level keys defined in your specific project YAML file will completely overwrite the corresponding top-level keys from the template.
+
+#### 4. VPC-SC Perimeter
+If you are using VPC-SC, you can add projects to a perimeter by specifying it in `defaults.yaml` under `projects.defaults`:
+
+```yaml
+projects:
+  defaults:
+    vpc_sc:
+      perimeter_name: $vpc_sc_perimeters:default
+      is_dry_run: false
+```
 
 ## Deployment Choices
 
