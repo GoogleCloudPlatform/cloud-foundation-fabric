@@ -17,7 +17,9 @@
 # tfdoc:file:description VPC factory.
 
 module "vpc-factory" {
-  source = "../../../modules/net-vpc-factory"
+  source         = "../../../modules/net-vpc-factory"
+  data_defaults  = local.vpc_defaults.defaults
+  data_overrides = local.vpc_defaults.overrides
   factories_config = {
     basepath = var.factories_config.dataset
     paths = {
