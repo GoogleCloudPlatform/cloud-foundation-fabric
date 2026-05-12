@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ values:
     contexts: []
     customer_encryption: []
     deletion_policy: null
+    detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
     metadata: null
@@ -77,15 +78,15 @@ values:
   : bucket: test-product-0-tf-state
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw
+    - serviceAccount:product-0-iac-rw@prod-dp-dd-0.iam.gserviceaccount.com
     role: roles/storage.admin
     timeouts: null
   ? module.factory.module.automation-bucket["product-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
   : bucket: test-product-0-tf-state
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro
     - group:dp-product-a-0@example.com
+    - serviceAccount:product-0-iac-ro@prod-dp-dd-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
     timeouts: null
   module.factory.module.automation-bucket["shared-0/automation/tf-state"].google_storage_bucket.bucket[0]:
@@ -119,15 +120,15 @@ values:
   : bucket: test-shared-0-tf-state
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-rw
+    - serviceAccount:shared-0-iac-rw@prod-dp-core-0.iam.gserviceaccount.com
     role: roles/storage.admin
     timeouts: null
   ? module.factory.module.automation-bucket["shared-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
   : bucket: test-shared-0-tf-state
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-ro
     - group:dp-product-a-0@example.com
+    - serviceAccount:shared-0-iac-ro@prod-dp-core-0.iam.gserviceaccount.com
     role: roles/storage.objectViewer
     timeouts: null
   module.factory.module.automation-service-accounts["product-0/automation/iac-ro"].google_service_account.service_account[0]:
@@ -308,7 +309,7 @@ values:
   module.factory.module.folder-1["domain-0"].google_folder.folder[0]:
     deletion_protection: false
     display_name: Data Domain 0
-    parent: $folder_ids:default
+    parent: folders/1234567890
     tags: null
     timeouts: null
   module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/bigquery.dataEditor"]:
@@ -350,7 +351,7 @@ values:
   module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw
+    - serviceAccount:product-0-iac-rw@prod-dp-dd-0.iam.gserviceaccount.com
     project: test-prod-dp-dd0-p0
     role: roles/owner
   module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/storage.bucketViewer"]:
@@ -368,44 +369,44 @@ values:
   module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro
+    - serviceAccount:product-0-iac-ro@prod-dp-dd-0.iam.gserviceaccount.com
     project: test-prod-dp-dd0-p0
     role: roles/viewer
   module.factory.module.projects-iam["shared-0"].google_compute_shared_vpc_service_project.shared_vpc_service[0]:
     deletion_policy: null
-    host_project: $project_ids:net-dev-0
+    host_project: projects/net-dev-0
     service_project: test-prod-dp-dd-0
     timeouts: null
   module.factory.module.projects-iam["shared-0"].google_project_iam_binding.authoritative["roles/composer.worker"]:
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd-0/composer
+    - serviceAccount:composer@test-prod-dp-dd-0.iam.gserviceaccount.com
     project: test-prod-dp-dd-0
     role: roles/composer.worker
   module.factory.module.projects-iam["shared-0"].google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-rw
+    - serviceAccount:shared-0-iac-rw@prod-dp-core-0.iam.gserviceaccount.com
     project: test-prod-dp-dd-0
     role: roles/owner
   module.factory.module.projects-iam["shared-0"].google_project_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-ro
+    - serviceAccount:shared-0-iac-ro@prod-dp-core-0.iam.gserviceaccount.com
     project: test-prod-dp-dd-0
     role: roles/viewer
+  ? module.factory.module.projects-iam["shared-0"].google_project_iam_member.shared_vpc_host_iam["$iam_principals:service_accounts/_self_/composer"]
+  : condition: []
+    member: serviceAccount:composer@test-prod-dp-dd-0.iam.gserviceaccount.com
+    project: projects/net-dev-0
+    role: roles/compute.networkUser
   ? module.factory.module.projects-iam["shared-0"].google_project_iam_member.shared_vpc_host_robots["roles/composer.sharedVpcAgent:composer"]
   : condition: []
-    project: $project_ids:net-dev-0
+    project: projects/net-dev-0
     role: roles/composer.sharedVpcAgent
-  ? module.factory.module.projects-iam["shared-0"].google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:$iam_principals:service_accounts/_self_/composer"]
-  : condition: []
-    member: $iam_principals:service_accounts/_self_/composer
-    project: $project_ids:net-dev-0
-    role: roles/compute.networkUser
   ? module.factory.module.projects-iam["shared-0"].google_project_iam_member.shared_vpc_host_robots["roles/compute.networkUser:composer"]
   : condition: []
-    project: $project_ids:net-dev-0
+    project: projects/net-dev-0
     role: roles/compute.networkUser
   module.factory.module.projects["core-0"].data.google_bigquery_default_service_account.bq_sa[0]:
     project: test-prod-dp-core-0
@@ -688,7 +689,7 @@ values:
   ? module.factory.module.service-accounts-iam["product-0/processing"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
   : condition: []
     members:
-    - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw
+    - serviceAccount:product-0-iac-rw@prod-dp-dd-0.iam.gserviceaccount.com
     role: roles/iam.serviceAccountUser
   module.factory.module.service-accounts["product-0/processing"].google_service_account.service_account[0]:
     account_id: processing
@@ -831,4 +832,3 @@ counts:
 outputs:
   projects: __missing__
   vpcs: __missing__
-

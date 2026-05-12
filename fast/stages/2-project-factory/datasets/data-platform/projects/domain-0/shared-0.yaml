@@ -42,17 +42,17 @@ automation:
     name: tf-state
     iam:
       roles/storage.admin:
-        - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-rw
+        - $iam_principals:service_accounts/shared-0/automation/iac-rw
       roles/storage.objectViewer:
-        - $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-ro
+        - $iam_principals:service_accounts/shared-0/automation/iac-ro
         - $iam_principals:dp-product-a-0
     versioning: true
 iam_by_principals:
-  $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-rw:
+  $iam_principals:service_accounts/shared-0/automation/iac-rw:
     - roles/owner
-  $iam_principals:service_accounts/prod-dp-dd-0/automation/iac-ro:
+  $iam_principals:service_accounts/shared-0/automation/iac-ro:
     - roles/viewer
-  $iam_principals:service_accounts/prod-dp-dd-0/composer:
+  $iam_principals:service_accounts/_self_/composer:
     - roles/composer.worker
 service_accounts:
   composer: {}
@@ -64,7 +64,8 @@ shared_vpc_service_config:
       - $service_agents:composer
     roles/compute.networkUser:
       - $service_agents:composer
-      - $iam_principals:service_accounts/_self_/composer
+  network_users:
+    - $iam_principals:service_accounts/_self_/composer
 
 # If this project contains a local VPC, it should be configured as a Shared VPC host.
 # shared_vpc_host_config:

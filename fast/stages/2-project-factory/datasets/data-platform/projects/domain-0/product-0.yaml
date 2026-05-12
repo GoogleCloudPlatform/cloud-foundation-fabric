@@ -44,9 +44,9 @@ automation:
     name: tf-state
     iam:
       roles/storage.admin:
-        - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw
+        - $iam_principals:service_accounts/product-0/automation/iac-rw
       roles/storage.objectViewer:
-        - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro
+        - $iam_principals:service_accounts/product-0/automation/iac-ro
         - $iam_principals:dp-product-a-0
     versioning: true
 
@@ -55,7 +55,7 @@ service_accounts:
     display_name: Processing service account.
     iam:
       roles/iam.serviceAccountUser:
-        - $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw
+        - $iam_principals:service_accounts/product-0/automation/iac-rw
 
 datasets:
   # TODO: this dataset is exposed to consumers via the 'exposure/public' tag
@@ -64,7 +64,7 @@ datasets:
       roles/bigquery.dataViewer:
         - $iam_principals:data-consumer-bi
     tag_bindings:
-      exposure: $tag_values:prod-dp-core-0/exposure/public
+      exposure: $tag_values:core-0/exposure/public
 
   # TODO: this dataset is internal/private
   private: {}
@@ -76,15 +76,15 @@ buckets:
       roles/storage.objectViewer:
         - $iam_principals:data-consumer-bi
     tag_bindings:
-      exposure: $tag_values:prod-dp-core-0/exposure/public
+      exposure: $tag_values:core-0/exposure/public
 
   # TODO: this bucket is internal/private
   private: {}
 
 iam_by_principals:
-  $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-rw:
+  $iam_principals:service_accounts/product-0/automation/iac-rw:
     - roles/owner
-  $iam_principals:service_accounts/prod-dp-dd0-p0/automation/iac-ro:
+  $iam_principals:service_accounts/product-0/automation/iac-ro:
     - roles/viewer
   $iam_principals:service_accounts/_self_/processing:
     - roles/bigquery.dataEditor

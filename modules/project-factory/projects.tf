@@ -64,7 +64,7 @@ locals {
     for k, v in merge([
       for pk, pv in local.projects_input : {
         for tk, tv in module.projects[pk].tag_values :
-        "${pv.name}/${tk}" => tv.id
+        "${pk}/${tk}" => tv.id
       }
     ]...) : k => v
   })
@@ -140,14 +140,16 @@ module "projects" {
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
-  # postpone factories that might leverage context
+  # Exclude factories that are either:
+  # a) Handled in parallel by calling specific modules (e.g., aspect_types, data_catalog_taxonomy)
+  # b) Handled in the projects-iam call to leverage expanded context (e.g., org_policies)
   factories_config = {
     for k, v in each.value.factories_config : k => try(pathexpand(
       var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if !contains(["aspect_types", "org_policies"], k)
+    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies"], k)
   }
   kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(

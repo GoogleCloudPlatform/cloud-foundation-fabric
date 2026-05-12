@@ -8,6 +8,9 @@ billing_account = {
 folder_ids = {
   data-platform = "folders/1234567890"
 }
+project_ids = {
+  net-dev-0 = "projects/net-dev-0"
+}
 tag_values = {
   "environment/development" = "tagValues/1234567890"
   "environment/production"  = "tagValues/2345678901"
