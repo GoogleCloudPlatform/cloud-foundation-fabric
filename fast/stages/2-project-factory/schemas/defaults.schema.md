@@ -247,7 +247,7 @@
 
 ## Definitions
 
-- **[iam](#ref-iam_ex)**<a name="refs-iam"></a>: *object*
+- **[iam](#ref-iam)**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
