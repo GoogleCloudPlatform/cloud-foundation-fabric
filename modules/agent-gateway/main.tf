@@ -49,7 +49,7 @@ resource "google_network_services_agent_gateway" "default" {
 
     content {
       governed_access_path = (
-        lower(var.access_path) == "ingress"
+        try(lower(var.access_path), "") == "ingress"
         || var.access_path == "CLIENT_TO_AGENT"
         ? "CLIENT_TO_AGENT"
         : "AGENT_TO_ANYWHERE"

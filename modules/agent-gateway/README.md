@@ -7,6 +7,7 @@ The module facilitates the deployments of Agent Gateways.
 - [Minimal Gateway deployment](#minimal-gateway-deployment)
 - [PSC-I: attach to an existing service attachment](#psc-i-attach-to-an-existing-service-attachment)
 - [Connect to self-managed proxies](#connect-to-self-managed-proxies)
+- [Context](#context)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -62,6 +63,35 @@ module "agent-gateway" {
   proxy_uri         = "my-proxy-uri"
 }
 # tftest inventory=proxy.yaml
+```
+
+## Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "agent-gateway" {
+  source      = "./fabric/modules/agent-gateway"
+  name        = "my-gateway"
+  project_id  = "$project_ids:main"
+  region      = "$locations:primary"
+  access_path = "AGENT_TO_ANYWHERE"
+  networking_config = {
+    psc_i_network_attachment_id = "$psc_network_attachments:my-sa"
+  }
+  context = {
+    locations = {
+      primary = "europe-west1"
+    }
+    project_ids = {
+      main = "my-prj-id"
+    }
+    psc_network_attachments = {
+      my-sa = "projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa"
+    }
+  }
+}
+# tftest inventory=context.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables
