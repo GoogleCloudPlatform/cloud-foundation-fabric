@@ -305,6 +305,21 @@
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
+    "service_agents_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_agents": {
+          "type": "boolean"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "tags": {
       "type": "object",
       "additionalProperties": {
