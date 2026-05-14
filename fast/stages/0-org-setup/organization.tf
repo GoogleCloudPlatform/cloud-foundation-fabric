@@ -126,7 +126,7 @@ module "organization-iam" {
       module.factory.iam_principals,
       {
         for k, v in module.organization[0].service_agents :
-        "service_agents:${k}" => v.iam_email
+        "service_agents/${k}" => v.iam_email
       }
     )
     log_buckets = module.factory.log_buckets

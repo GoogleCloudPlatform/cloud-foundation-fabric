@@ -51,7 +51,7 @@ iam_by_principals:
     - roles/resourcemanager.projectMover
     - roles/resourcemanager.tagAdmin
     - roles/resourcemanager.tagUser
-  "$iam_principals:service_agents:pam":
+  "$iam_principals:service_agents/pam":
     - roles/viewer
 logging:
   sinks:
