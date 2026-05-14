@@ -212,6 +212,10 @@ module "projects-iam" {
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
     )
+    custom_roles = merge(
+      try(local.ctx.custom_roles, {}),
+      module.projects[each.key].custom_role_id
+    )
     project_ids = merge(
       local.ctx.project_ids,
       { for k, v in module.projects : k => v.project_id }
