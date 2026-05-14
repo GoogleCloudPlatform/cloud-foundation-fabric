@@ -51,16 +51,56 @@ locals {
         local.data_defaults.defaults.contacts
       )
       factories_config = {
-        aspect_types           = try(v.factories_config.aspect_types, null)
-        custom_roles           = try(v.factories_config.custom_roles, null)
-        data_catalog_taxonomy  = try(v.factories_config.data_catalog_taxonomy, null)
-        observability          = try(v.factories_config.observability, null)
-        org_policies           = try(v.factories_config.org_policies, null)
-        pam_entitlements       = try(v.factories_config.pam_entitlements, null)
-        quotas                 = try(v.factories_config.quotas, null)
-        scc_mute_configs       = try(v.factories_config.scc_mute_configs, null)
-        scc_sha_custom_modules = try(v.factories_config.scc_sha_custom_modules, null)
-        tags                   = try(v.factories_config.tags, null)
+        aspect_types = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.aspect_types, null),
+          try(v.factories_config.aspect_types, null),
+          try(local.data_defaults.defaults.factories_config.aspect_types, null),
+        ), null)
+        custom_roles = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.custom_roles, null),
+          try(v.factories_config.custom_roles, null),
+          try(local.data_defaults.defaults.factories_config.custom_roles, null),
+        ), null)
+        data_catalog_taxonomy = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.data_catalog_taxonomy, null),
+          try(v.factories_config.data_catalog_taxonomy, null),
+          try(local.data_defaults.defaults.factories_config.data_catalog_taxonomy, null),
+        ), null)
+        observability = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.observability, null),
+          try(v.factories_config.observability, null),
+          try(local.data_defaults.defaults.factories_config.observability, null),
+        ), null)
+        org_policies = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.org_policies, null),
+          try(v.factories_config.org_policies, null),
+          try(local.data_defaults.defaults.factories_config.org_policies, null),
+        ), null)
+        pam_entitlements = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.pam_entitlements, null),
+          try(v.factories_config.pam_entitlements, null),
+          try(local.data_defaults.defaults.factories_config.pam_entitlements, null),
+        ), null)
+        quotas = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.quotas, null),
+          try(v.factories_config.quotas, null),
+          try(local.data_defaults.defaults.factories_config.quotas, null),
+        ), null)
+        scc_mute_configs = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.scc_mute_configs, null),
+          try(v.factories_config.scc_mute_configs, null),
+          try(local.data_defaults.defaults.factories_config.scc_mute_configs, null),
+        ), null)
+        scc_sha_custom_modules = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.scc_sha_custom_modules, null),
+          try(v.factories_config.scc_sha_custom_modules, null),
+          try(local.data_defaults.defaults.factories_config.scc_sha_custom_modules, null),
+        ), null)
+        tags = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.tags, null),
+          try(v.factories_config.tags, null),
+          try(local.data_defaults.defaults.factories_config.tags, null),
+        ), null)
       }
       iam                           = try(v.iam, {})                           # type: map(list(string))
       iam_bindings                  = try(v.iam_bindings, {})                  # type: map(object({...}))
