@@ -52,8 +52,6 @@ buckets:
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
-      $custom_roles:storage_viewer:
-        - $iam_principals:service_accounts/iac-0/iac-org-ro
   iac-outputs:
     description: Terraform state for the org-level automation.
     versioning: true
