@@ -577,6 +577,19 @@
           }
         }
       }
+    },
+    "service_agents_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z-]+\\.googleapis\\.com$"
+          }
+        }
+      }
     }
   },
   "$defs": {

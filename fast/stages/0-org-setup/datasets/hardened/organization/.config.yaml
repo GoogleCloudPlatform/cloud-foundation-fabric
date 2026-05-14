@@ -61,6 +61,7 @@ iam_by_principals:
     - roles/iam.workforcePoolAdmin
     - roles/logging.admin
     - roles/orgpolicy.policyAdmin
+    - roles/privilegedaccessmanager.admin
     - roles/resourcemanager.folderAdmin
     - roles/resourcemanager.organizationAdmin
     - roles/resourcemanager.projectCreator
@@ -115,6 +116,10 @@ iam_by_principals:
   # Uncomment if you want to use PAM.
   # $service_agents:pam:
   #   - roles/privilegedaccessmanager.serviceAgent
+service_agents_config:
+  services:
+    - privilegedaccessmanager.googleapis.com
+
 data_access_logs:
   allServices:
     ADMIN_READ: {}

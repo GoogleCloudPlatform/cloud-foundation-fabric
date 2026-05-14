@@ -168,4 +168,5 @@ module "organization-iam" {
   tags_config = {
     force_context_ids = true
   }
+  service_agents_config = try(local.organization.service_agents_config, {})
 }

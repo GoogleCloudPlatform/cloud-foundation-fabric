@@ -8392,8 +8392,9 @@ counts:
   google_org_policy_custom_constraint: 89
   google_org_policy_policy: 167
   google_organization_iam_audit_config: 1
-  google_organization_iam_binding: 40
+  google_organization_iam_binding: 41
   google_organization_iam_custom_role: 14
+  google_organization_service_identity: 1
   google_project: 3
   google_project_iam_binding: 64
   google_project_iam_member: 17
@@ -8415,7 +8416,7 @@ counts:
   google_tags_tag_value_iam_binding: 4
   local_file: 9
   modules: 54
-  resources: 671
+  resources: 673
   terraform_data: 4
 
 outputs:
