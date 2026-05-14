@@ -143,6 +143,7 @@ variable "node_config" {
       enable_secure_boot          = optional(bool)
     }))
     spot                          = optional(bool)
+    flex_start                    = optional(bool)
     workload_metadata_config_mode = optional(string)
   })
   default  = {}

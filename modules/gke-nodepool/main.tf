@@ -217,6 +217,7 @@ resource "google_container_node_pool" "nodepool" {
     spot = (
       var.node_config.spot == true && var.node_config.preemptible != true
     )
+    flex_start            = var.node_config.flex_start
     tags                  = var.tags
     resource_manager_tags = var.resource_manager_tags
 

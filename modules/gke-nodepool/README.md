@@ -218,7 +218,7 @@ module "cluster-1-nodepool-hyperdisk" {
 |---|---|:---:|:---:|:---:|
 | [cluster_name](variables.tf#L23) | Cluster name. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L48) | Cluster location. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L224) | Cluster project id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L225) | Cluster project id. | <code>string</code> | ✓ |  |
 | [cluster_id](variables.tf#L17) | Cluster id. Optional, but providing cluster_id is recommended to prevent cluster misconfiguration in some of the edge cases. | <code>string</code> |  | <code>null</code> |
 | [gke_version](variables.tf#L28) | Kubernetes nodes version. Ignored if auto_upgrade is set in management_config. | <code>string</code> |  | <code>null</code> |
 | [k8s_labels](variables.tf#L34) | Kubernetes labels applied to each node. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -227,15 +227,15 @@ module "cluster-1-nodepool-hyperdisk" {
 | [name](variables.tf#L59) | Optional nodepool name. | <code>string</code> |  | <code>null</code> |
 | [network_config](variables.tf#L65) | Network configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [node_config](variables.tf#L89) | Node-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [node_count](variables.tf#L170) | Number of nodes per instance group. Initial value can only be changed by recreation, current is ignored when autoscaling is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [node_locations](variables.tf#L182) | Node locations. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [nodepool_config](variables.tf#L188) | Nodepool-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [reservation_affinity](variables.tf#L229) | Configuration of the desired reservation which instances could take capacity from. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [resource_manager_tags](variables.tf#L239) | A map of resource manager tag keys and values to be attached to the nodes for managing Compute Engine firewalls using Network Firewall Policies. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [service_account](variables.tf#L245) | Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [sole_tenant_nodegroup](variables.tf#L257) | Sole tenant node group. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L263) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [taints](variables.tf#L269) | Kubernetes taints applied to all nodes. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [node_count](variables.tf#L171) | Number of nodes per instance group. Initial value can only be changed by recreation, current is ignored when autoscaling is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [node_locations](variables.tf#L183) | Node locations. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [nodepool_config](variables.tf#L189) | Nodepool-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [reservation_affinity](variables.tf#L230) | Configuration of the desired reservation which instances could take capacity from. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [resource_manager_tags](variables.tf#L240) | A map of resource manager tag keys and values to be attached to the nodes for managing Compute Engine firewalls using Network Firewall Policies. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [service_account](variables.tf#L246) | Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [sole_tenant_nodegroup](variables.tf#L258) | Sole tenant node group. | <code>string</code> |  | <code>null</code> |
+| [tags](variables.tf#L264) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [taints](variables.tf#L270) | Kubernetes taints applied to all nodes. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
