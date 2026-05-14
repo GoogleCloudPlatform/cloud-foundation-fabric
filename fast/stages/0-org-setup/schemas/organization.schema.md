@@ -96,6 +96,11 @@
           - **location**: *string*
           - **title**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
+- **service_agents_config**: *object*
+  <br>*additional properties: false*
+  - **create_agents**: *boolean*
+  - **services**: *array*
+    - items: *string*
 - **tags**: *object*
   <br>*additional properties: object*
 - **workforce_identity_pools**: *object*
