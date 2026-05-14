@@ -331,6 +331,7 @@ variable "users" {
     password         = optional(string)
     password_version = optional(number)
     type             = optional(string, "BUILT_IN")
+    database_roles   = optional(list(string))
   }))
   default  = {}
   nullable = false

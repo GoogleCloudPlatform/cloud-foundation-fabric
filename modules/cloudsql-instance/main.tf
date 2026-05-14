@@ -369,13 +369,14 @@ resource "random_password" "root_password" {
 }
 
 resource "google_sql_user" "users" {
-  for_each = local.users
-  project  = local.project_id
-  instance = google_sql_database_instance.primary.name
-  name     = each.value.name
-  host     = each.value.host
-  password = each.value.password
-  type     = each.value.type
+  for_each       = local.users
+  project        = local.project_id
+  instance       = google_sql_database_instance.primary.name
+  name           = each.value.name
+  host           = each.value.host
+  password       = each.value.password
+  type           = each.value.type
+  database_roles = each.value.database_roles
 }
 
 moved {
