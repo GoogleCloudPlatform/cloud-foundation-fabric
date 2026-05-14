@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,38 +41,6 @@ values:
     force_empty_content_type: null
     metadata: null
     name: providers/0-org-setup-providers.tf
-    retention: []
-    source: null
-    temporary_hold: null
-    timeouts: null
-  google_storage_bucket_object.providers["0-org-setup-ro"]:
-    bucket: ft0-prod-iac-core-0-iac-outputs
-    cache_control: null
-    content: "/**\n * Copyright 2022 Google LLC\n *\n * Licensed under the Apache\
-      \ License, Version 2.0 (the \"License\");\n * you may not use this file except\
-      \ in compliance with the License.\n * You may obtain a copy of the License at\n\
-      \ *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required\
-      \ by applicable law or agreed to in writing, software\n * distributed under\
-      \ the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR\
-      \ CONDITIONS OF ANY KIND, either express or implied.\n * See the License for\
-      \ the specific language governing permissions and\n * limitations under the\
-      \ License.\n */\n\nterraform {\n  backend \"gcs\" {\n    bucket            \
-      \          = \"ft0-prod-iac-core-0-iac-org-state\"\n    impersonate_service_account\
-      \ = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\n  }\n}\nprovider\
-      \ \"google\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\nprovider \"google-beta\" {\n  impersonate_service_account = \"iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com\"\
-      \n}\n"
-    content_disposition: null
-    content_encoding: null
-    content_language: null
-    contexts: []
-    customer_encryption: []
-    deletion_policy: null
-    detect_md5hash: null
-    event_based_hold: null
-    force_empty_content_type: null
-    metadata: null
-    name: providers/0-org-setup-ro-providers.tf
     retention: []
     source: null
     temporary_hold: null
@@ -236,11 +204,6 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: true
-  ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["$custom_roles:storage_viewer"]
-  : bucket: ft0-prod-iac-core-0-iac-org-state
-    condition: []
-    role: $custom_roles:storage_viewer
-    timeouts: null
   ? module.factory.module.buckets["iac-0/iac-org-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]
   : bucket: ft0-prod-iac-core-0-iac-org-state
     condition: []
@@ -991,34 +954,6 @@ values:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter
-  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagUser"]
-  : condition: []
-    members:
-    - $iam_principals:service_accounts/iac-0/iac-networking-rw
-    - $iam_principals:service_accounts/iac-0/iac-pf-rw
-    - $iam_principals:service_accounts/iac-0/iac-security-rw
-    role: roles/resourcemanager.tagUser
-  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/development:roles/resourcemanager.tagViewer"]
-  : condition: []
-    members:
-    - $iam_principals:service_accounts/iac-0/iac-networking-ro
-    - $iam_principals:service_accounts/iac-0/iac-pf-ro
-    - $iam_principals:service_accounts/iac-0/iac-security-ro
-    role: roles/resourcemanager.tagViewer
-  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagUser"]
-  : condition: []
-    members:
-    - $iam_principals:service_accounts/iac-0/iac-networking-rw
-    - $iam_principals:service_accounts/iac-0/iac-pf-rw
-    - $iam_principals:service_accounts/iac-0/iac-security-rw
-    role: roles/resourcemanager.tagUser
-  ? module.organization-iam[0].google_tags_tag_value_iam_binding.default["environment/production:roles/resourcemanager.tagViewer"]
-  : condition: []
-    members:
-    - $iam_principals:service_accounts/iac-0/iac-networking-ro
-    - $iam_principals:service_accounts/iac-0/iac-pf-ro
-    - $iam_principals:service_accounts/iac-0/iac-security-ro
-    role: roles/resourcemanager.tagViewer
   module.organization[0].google_logging_organization_settings.default[0]:
     organization: '1234567890'
     timeouts: null
@@ -1324,6 +1259,7 @@ values:
     input: null
     output: null
     triggers_replace: null
+
 counts:
   google_bigquery_dataset: 1
   google_bigquery_default_service_account: 3
@@ -1346,16 +1282,15 @@ counts:
   google_project_service_identity: 14
   google_service_account: 1
   google_storage_bucket: 2
-  google_storage_bucket_iam_binding: 3
+  google_storage_bucket_iam_binding: 2
   google_storage_bucket_object: 5
   google_storage_project_service_account: 3
   google_tags_tag_binding: 2
   google_tags_tag_key: 1
   google_tags_tag_value: 2
-  google_tags_tag_value_iam_binding: 4
   local_file: 4
   modules: 27
-  resources: 173
+  resources: 168
   terraform_data: 4
 
 outputs:
