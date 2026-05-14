@@ -150,6 +150,10 @@ tag_bindings:
 
 The `data` folder in this stage contains factory files that can be used as examples to implement the team-based design shown above. Before running `terraform apply` check the YAML files, as project names and other attributes will need basic editing to match your desired setup.
 
+💡**YAML Configuration Reference**
+While you can point your IDE to the JSON schema files in the `schemas/` directory for strict validation and auto-complete, we have also provided a consolidated, human-readable cheat sheet. 
+👉 **[View the complete YAML Reference Guide](YAML-REFERENCE.md)** to see all available properties, descriptions, and examples for Projects, Folders, Tags, and Budgets.
+
 ### Data Platform Dataset
 
 A specialized dataset for Data Platform workloads is available in [`datasets/data-platform`](./datasets/data-platform/). It includes configuration for projects, VPCs, tags, and taxonomies tailored for data analytics. To use it, set the `factories_config.dataset` variable to `datasets/data-platform`.
