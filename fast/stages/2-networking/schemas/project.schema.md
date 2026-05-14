@@ -37,6 +37,7 @@
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
       <br>*additional properties: false*
+      - **display_name**: *string*
       - **description**: *string*
       - **prefix**: *string*
       - **iam**: *reference([iam](#refs-iam))*
@@ -95,7 +96,9 @@
   <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
 - **factories_config**: *object*
   <br>*additional properties: false*
+  - **aspect_types**: *string*
   - **custom_roles**: *string*
+  - **data_catalog_taxonomy**: *string*
   - **observability**: *string*
   - **org_policies**: *string*
   - **quotas**: *string*

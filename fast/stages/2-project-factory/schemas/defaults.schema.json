@@ -472,10 +472,231 @@
         }
       }
     },
+    "vpcs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "defaults": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "auto_create_subnetworks": {
+              "type": "boolean"
+            },
+            "delete_default_routes_on_create": {
+              "type": "boolean"
+            },
+            "mtu": {
+              "type": "number",
+              "minimum": 1460,
+              "maximum": 1500
+            },
+            "routing_mode": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "REGIONAL"
+              ]
+            },
+            "firewall_policy_enforcement_order": {
+              "type": "string",
+              "enum": [
+                "BEFORE_CLASSIC_FIREWALL",
+                "AFTER_CLASSIC_FIREWALL"
+              ]
+            },
+            "create_googleapis_routes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "directpath": {
+                  "type": "boolean"
+                },
+                "directpath-6": {
+                  "type": "boolean"
+                },
+                "private": {
+                  "type": "boolean"
+                },
+                "private-6": {
+                  "type": "boolean"
+                },
+                "restricted": {
+                  "type": "boolean"
+                },
+                "restricted-6": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "dns_policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "inbound": {
+                  "type": "boolean"
+                },
+                "logging": {
+                  "type": "boolean"
+                },
+                "outbound": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "private_ns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "public_ns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "ipv6_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enable_ula_internal": {
+                  "type": "boolean"
+                },
+                "internal_range": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "overrides": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "project_id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "auto_create_subnetworks": {
+              "type": "boolean"
+            },
+            "delete_default_routes_on_create": {
+              "type": "boolean"
+            },
+            "mtu": {
+              "type": "number",
+              "minimum": 1460,
+              "maximum": 1500
+            },
+            "routing_mode": {
+              "type": "string",
+              "enum": [
+                "GLOBAL",
+                "REGIONAL"
+              ]
+            },
+            "firewall_policy_enforcement_order": {
+              "type": "string",
+              "enum": [
+                "BEFORE_CLASSIC_FIREWALL",
+                "AFTER_CLASSIC_FIREWALL"
+              ]
+            },
+            "create_googleapis_routes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "directpath": {
+                  "type": "boolean"
+                },
+                "directpath-6": {
+                  "type": "boolean"
+                },
+                "private": {
+                  "type": "boolean"
+                },
+                "private-6": {
+                  "type": "boolean"
+                },
+                "restricted": {
+                  "type": "boolean"
+                },
+                "restricted-6": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "dns_policy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "inbound": {
+                  "type": "boolean"
+                },
+                "logging": {
+                  "type": "boolean"
+                },
+                "outbound": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "private_ns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "public_ns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "ipv6_config": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enable_ula_internal": {
+                  "type": "boolean"
+                },
+                "internal_range": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "context": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "cidr_ranges_sets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
         "custom_roles": {
           "type": "object",
           "additionalProperties": {

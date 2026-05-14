@@ -9,6 +9,7 @@
     - [Organization IAM](#organization-iam)
     - [Parent folder](#parent-folder)
   - [Factory configuration](#factory-configuration)
+  - [Data Platform Dataset](#data-platform-dataset)
   - [Stage provider and Terraform variables](#stage-provider-and-terraform-variables)
 - [Managing folders and projects](#managing-folders-and-projects)
   - [Project defaults and overrides](#project-defaults-and-overrides)
@@ -148,6 +149,10 @@ tag_bindings:
 ### Factory configuration
 
 The `data` folder in this stage contains factory files that can be used as examples to implement the team-based design shown above. Before running `terraform apply` check the YAML files, as project names and other attributes will need basic editing to match your desired setup.
+
+### Data Platform Dataset
+
+A specialized dataset for Data Platform workloads is available in [`datasets/data-platform`](./datasets/data-platform/). It includes configuration for projects, VPCs, tags, and taxonomies tailored for data analytics. To use it, set the `factories_config.dataset` variable to `datasets/data-platform`.
 
 ### Stage provider and Terraform variables
 
@@ -473,6 +478,7 @@ Pattern-based files make specific assumptions:
 | [variables-fast.tf](./variables-fast.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
+| [vpcs.tf](./vpcs.tf) | VPC factory. | <code>net-vpc-factory</code> |  |
 
 ## Variables
 
@@ -487,7 +493,7 @@ Pattern-based files make specific assumptions:
 | [data_defaults](variables-projects.tf#L17) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [data_merges](variables-projects.tf#L93) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [data_overrides](variables-projects.tf#L112) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [factories_config](variables.tf#L41) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [factories_config](variables.tf#L42) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |  |
 | [folder_ids](variables-fast.tf#L42) | Folders created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [host_project_ids](variables-fast.tf#L58) | Host project for the shared VPC. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [iam_principals](variables-fast.tf#L50) | IAM-format principals. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
@@ -495,7 +501,7 @@ Pattern-based files make specific assumptions:
 | [perimeters](variables-fast.tf#L84) | Optional VPC-SC perimeter ids. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>1-vpcsc</code> |
 | [project_ids](variables-fast.tf#L102) | Projects created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [service_accounts](variables-fast.tf#L110) | Service accounts created in the bootstrap stage. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
-| [stage_name](variables.tf#L62) | FAST stage name. Used to separate output files across different factories. | <code>string</code> |  | <code>&#34;2-project-factory&#34;</code> |  |
+| [stage_name](variables.tf#L65) | FAST stage name. Used to separate output files across different factories. | <code>string</code> |  | <code>&#34;2-project-factory&#34;</code> |  |
 | [subnet_self_links](variables-fast.tf#L118) | Shared VPC subnet IDs. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>2-networking</code> |
 | [tag_values](variables-fast.tf#L126) | FAST-managed resource manager tag values. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
 | [tag_vars](variables-fast.tf#L134) | FAST-managed resource manager tag key namespaced names. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> | <code>0-org-setup</code> |
@@ -506,4 +512,5 @@ Pattern-based files make specific assumptions:
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
 | [projects](outputs.tf#L17) | Attributes for managed projects. |  |  |
+| [vpcs](outputs.tf#L22) | VPCs. |  |  |
 <!-- END TFDOC -->

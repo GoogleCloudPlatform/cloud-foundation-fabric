@@ -12,6 +12,8 @@ This module simplifies the creation of repositories using Google Cloud Artifact 
 - [IAM](#iam)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Tests](#tests)
+  - [Legacy Custom Repository (Deprecated)](#legacy-custom-repository-deprecated)
 <!-- END TOC -->
 
 ## Simple Docker Repository
@@ -121,7 +123,7 @@ module "registry-mirror" {
   format = {
     docker = {
       remote = {
-        custom_repository = "https://example.com"
+        common_repository = "https://example.com"
         upstream_credentials = {
           username                = "myuser"
           password_secret_version = "${module.secret-manager.ids["example-com-password"]}/versions/latest"
@@ -368,9 +370,9 @@ module "additive_iam" {
 |---|---|:---:|:---:|:---:|
 | [cleanup_policies](variables.tf#L17) | Object containing details about the cleanup policies for an Artifact Registry repository. | <code>map&#40;object&#40;&#123;&#8230;default &#61; null</code> | ✓ |  |
 | [format](variables.tf#L83) | Repository format. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [location](variables.tf#L233) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L238) | Registry name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L243) | Registry project id. | <code>string</code> | ✓ |  |
+| [location](variables.tf#L236) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L241) | Registry name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L246) | Registry project id. | <code>string</code> | ✓ |  |
 | [cleanup_policy_dry_run](variables.tf#L38) | If true, the cleanup pipeline is prevented from deleting versions in this repository. | <code>bool</code> |  | <code>null</code> |
 | [context](variables.tf#L44) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L65) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
@@ -380,9 +382,9 @@ module "additive_iam" {
 | [iam_bindings](variables-iam.tf#L43) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L58) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L73) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L227) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L248) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables.tf#L255) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L230) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L251) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables.tf#L258) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -393,3 +395,28 @@ module "additive_iam" {
 | [repository](outputs.tf#L54) | Repository object. |  |
 | [url](outputs.tf#L64) | Repository URL. |  |
 <!-- END TFDOC -->
+## Tests
+
+These tests are used to verify specific behaviors and backward compatibility. They are not intended as general examples.
+
+### Legacy Custom Repository (Deprecated)
+
+This test ensures that the deprecated `custom_repository` configuration still works for backward compatibility. It should be removed once support for `custom_repository` is fully dropped.
+
+```hcl
+module "legacy_custom_repo" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = "myproject"
+  location   = "europe-west1"
+  name       = "legacy-custom"
+  format = {
+    maven = {
+      remote = {
+        custom_repository = "https://example.com"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=1 inventory=legacy-custom.yaml
+```
+

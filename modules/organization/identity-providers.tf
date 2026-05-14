@@ -44,6 +44,14 @@ locals {
       })
     }
   ]...)
+
+  wfif_scim_tenants = {
+    for k, v in local.wfif_providers : k => merge(v.scim_tenant, {
+      provider_id = v.provider_id
+      pool        = v.pool
+    })
+    if try(v.scim_tenant, null) != null
+  }
 }
 
 resource "google_iam_workforce_pool" "default" {
@@ -70,12 +78,14 @@ resource "google_iam_workforce_pool" "default" {
 }
 
 resource "google_iam_workforce_pool_provider" "default" {
-  for_each            = local.wfif_providers
-  provider_id         = each.value.provider_id
-  attribute_condition = each.value.attribute_condition
-  description         = each.value.description
-  disabled            = each.value.disabled
-  display_name        = each.value.display_name
+  for_each               = local.wfif_providers
+  provider_id            = each.value.provider_id
+  attribute_condition    = each.value.attribute_condition
+  description            = each.value.description
+  disabled               = each.value.disabled
+  detailed_audit_logging = each.value.detailed_audit_logging
+  display_name           = each.value.display_name
+  scim_usage             = each.value.scim_usage
   attribute_mapping = merge(
     try(local.wfif_attribute_mappings[each.value.attribute_mapping_template], {}),
     each.value.attribute_mapping
@@ -192,4 +202,16 @@ resource "google_iam_workforce_pool_provider" "default" {
       }
     }
   }
+}
+
+resource "google_iam_workforce_pool_provider_scim_tenant" "default" {
+  for_each          = local.wfif_scim_tenants
+  location          = each.value.location
+  workforce_pool_id = google_iam_workforce_pool.default[each.value.pool].workforce_pool_id
+  provider_id       = google_iam_workforce_pool_provider.default[each.key].provider_id
+  scim_tenant_id    = each.value.id
+  display_name      = each.value.display_name
+  description       = each.value.description
+  claim_mapping     = each.value.claim_mapping
+  hard_delete       = each.value.hard_delete
 }

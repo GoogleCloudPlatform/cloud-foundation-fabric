@@ -131,6 +131,7 @@ variable "format" {
     maven = optional(object({
       remote = optional(object({
         public_repository = optional(string)
+        common_repository = optional(string)
         custom_repository = optional(string)
 
         disable_upstream_validation = optional(bool)
@@ -151,6 +152,7 @@ variable "format" {
     npm = optional(object({
       remote = optional(object({
         public_repository = optional(string)
+        common_repository = optional(string)
         custom_repository = optional(string)
 
         disable_upstream_validation = optional(bool)
@@ -168,6 +170,7 @@ variable "format" {
     python = optional(object({
       remote = optional(object({
         public_repository = optional(string)
+        common_repository = optional(string)
         custom_repository = optional(string)
 
         disable_upstream_validation = optional(bool)

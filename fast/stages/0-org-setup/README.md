@@ -406,7 +406,7 @@ The default paths point to the dataset in the `datasets/classic` folder which de
 - **billing_accounts** (`[dataset]/billing-accounts`) \
   folder-level factory where each YAML file defines billing-account level IAM for one billing account; only used for externally managed accounts
 - **organization** (`[dataset]/organization/.config.yaml`) \
-  file-level factory to define organization IAM and log sinks
+  file-level factory to define organization IAM, service agents, and log sinks
   - **custom roles** (`[dataset]/organization/custom-roles`) \
     folder-level factory to define organization-level custom roles
   - **org policies** (`[dataset]/organization/org-policies`) \
@@ -515,7 +515,7 @@ logging_sinks:
 
 ### Organization configuration
 
-The default dataset implements a classic FAST design, recreating the required custom roles, IAM bindings, org policies, tags, and log sinks via the factories described in a previous section.
+The default dataset implements a classic FAST design, recreating the required custom roles, IAM bindings, org policies, tags, service agents, and log sinks via the factories described in a previous section.
 
 Compared to classic FAST this approach makes org-level configuration explicit, allowing easy customization of IAM and all other attributes. Before running this stage, check that the data files match your expected design.
 

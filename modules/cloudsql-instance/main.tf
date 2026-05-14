@@ -213,11 +213,12 @@ resource "google_sql_database_instance" "primary" {
     dynamic "insights_config" {
       for_each = var.insights_config != null ? [1] : []
       content {
-        query_insights_enabled  = true
-        query_string_length     = var.insights_config.query_string_length
-        record_application_tags = var.insights_config.record_application_tags
-        record_client_address   = var.insights_config.record_client_address
-        query_plans_per_minute  = var.insights_config.query_plans_per_minute
+        query_insights_enabled          = true
+        query_string_length             = var.insights_config.query_string_length
+        record_application_tags         = var.insights_config.record_application_tags
+        record_client_address           = var.insights_config.record_client_address
+        query_plans_per_minute          = var.insights_config.query_plans_per_minute
+        enhanced_query_insights_enabled = var.insights_config.enhanced_query_insights_enabled
       }
     }
 
