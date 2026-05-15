@@ -1,0 +1,59 @@
+values:
+  module.project.google_iam_deny_policy.default["prevent-core-bucket-deletion"]:
+    display_name: Prevent core bucket deletion
+    name: prevent-core-bucket-deletion
+    parent: cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project
+    rules:
+    - deny_rule:
+      - denial_condition:
+        - description: Applies only to buckets starting with 'core-'.
+          expression: resource.name.startsWith("projects/-/buckets/core-")
+          location: null
+          title: core_buckets_only
+        denied_permissions:
+        - storage.googleapis.com/buckets.delete
+        denied_principals:
+        - principalSet://goog/public:all
+        exception_permissions: []
+        exception_principals: []
+      description: Deny deletion of any Cloud Storage bucket with the 'core-' prefix.
+    timeouts: null
+  module.project.google_iam_deny_policy.default["prevent-kms-destruction"]:
+    display_name: Prevent KMS Key destruction
+    name: prevent-kms-destruction
+    parent: cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project
+    rules:
+    - deny_rule:
+      - denial_condition: []
+        denied_permissions:
+        - cloudkms.googleapis.com/cryptoKeyVersions.destroy
+        denied_principals:
+        - principalSet://goog/public:all
+        exception_permissions: []
+        exception_principals:
+        - principalSet://goog/group/gcp-kms-admins@example.com
+      description: Deny destroying KMS key versions to all except the key admins group.
+    timeouts: null
+  module.project.google_project.project[0]:
+    auto_create_network: false
+    billing_account: 123456-123456-123456
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '1122334455'
+    labels: null
+    name: my-project
+    org_id: null
+    project_id: my-project
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+
+counts:
+  google_iam_deny_policy: 2
+  google_project: 1
+  modules: 1
+  resources: 3
+
+outputs: {}

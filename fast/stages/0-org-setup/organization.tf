@@ -173,4 +173,7 @@ module "organization-iam" {
   tags_config = {
     force_context_ids = true
   }
+  iam_deny_policies = lookup(
+    local.organization, "iam_deny_policies", {}
+  )
 }

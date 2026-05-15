@@ -104,6 +104,7 @@ module "folder-1-iam" {
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
@@ -181,6 +182,7 @@ module "folder-2-iam" {
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
@@ -261,6 +263,7 @@ module "folder-3-iam" {
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
@@ -344,6 +347,7 @@ module "folder-4-iam" {
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
   tag_bindings                  = lookup(each.value, "tag_bindings", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id

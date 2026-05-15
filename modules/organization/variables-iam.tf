@@ -94,3 +94,24 @@ variable "iam_by_principals_conditional" {
     error_message = "IAM bindings with the same condition title must have identical expressions and descriptions."
   }
 }
+
+variable "iam_deny_policies" {
+  description = "IAM Deny policies to be applied to the organization."
+  type = map(object({
+    display_name = optional(string)
+    rules = list(object({
+      description        = optional(string)
+      denied_principals  = list(string)
+      denied_permissions = list(string)
+      denial_condition = optional(object({
+        expression  = string
+        title       = optional(string)
+        description = optional(string)
+        location    = optional(string)
+      }))
+      exception_principals  = optional(list(string), [])
+      exception_permissions = optional(list(string), [])
+    }))
+  }))
+  default = null
+}
