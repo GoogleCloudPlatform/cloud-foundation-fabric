@@ -145,6 +145,10 @@ variable "node_config" {
     spot                          = optional(bool)
     flex_start                    = optional(bool)
     workload_metadata_config_mode = optional(string)
+    advanced_machine_features = optional(object({
+      enable_nested_virtualization = optional(bool)
+      threads_per_core             = optional(number)
+    }))
   })
   default  = {}
   nullable = false
