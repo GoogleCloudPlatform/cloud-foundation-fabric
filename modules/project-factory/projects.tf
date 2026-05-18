@@ -53,18 +53,18 @@ locals {
   ctx_project_numbers = merge(local.ctx.project_numbers, local.project_numbers)
   # cross-project tag contexts, keyed on project name
   ctx_tag_keys = merge(local.ctx.tag_keys, {
-    for k, v in merge([
+    for k, v in merge({}, [
       for pk, pv in local.projects_input : {
         for tk, tv in module.projects[pk].tag_keys :
-        "${pv.name}/${tk}" => tv.id
+        "${pk}/${tk}" => tv.id
       }
     ]...) : k => v
   })
   ctx_tag_values = merge(local.ctx.tag_values, {
-    for k, v in merge([
+    for k, v in merge({}, [
       for pk, pv in local.projects_input : {
         for tk, tv in module.projects[pk].tag_values :
-        "${pv.name}/${tk}" => tv.id
+        "${pk}/${tk}" => tv.id
       }
     ]...) : k => v
   })
@@ -140,13 +140,16 @@ module "projects" {
     folder_ids = local.ctx_folder_ids
   })
   default_service_account = try(each.value.default_service_account, "keep")
+  # Exclude factories that are either:
+  # a) Handled in parallel by calling specific modules (e.g., aspect_types, data_catalog_taxonomy)
+  # b) Handled in the projects-iam call to leverage expanded context (e.g., org_policies)
   factories_config = {
     for k, v in each.value.factories_config : k => try(pathexpand(
       var.factories_config.basepath == null || startswith(v, "/") || startswith(v, ".")
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if k != "org_policies"
+    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies"], k)
   }
   kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
@@ -208,6 +211,10 @@ module "projects-iam" {
       lookup(local.per_project_service_agents, each.key, {}),
       lookup(local.self_sas_iam_emails, each.key, {}),
       local.projects_service_agents
+    )
+    custom_roles = merge(
+      try(local.ctx.custom_roles, {}),
+      module.projects[each.key].custom_role_id
     )
     project_ids = merge(
       local.ctx.project_ids,

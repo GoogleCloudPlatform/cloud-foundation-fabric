@@ -240,7 +240,9 @@ variable "projects" {
       threat_detector_provider = optional(string)
     }), {})
     factories_config = optional(object({
+      aspect_types           = optional(string)
       custom_roles           = optional(string)
+      data_catalog_taxonomy  = optional(string)
       observability          = optional(string)
       org_policies           = optional(string)
       pam_entitlements       = optional(string)

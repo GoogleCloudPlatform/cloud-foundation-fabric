@@ -111,6 +111,9 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
+                "display_name": {
+                  "type": "string"
+                },
                 "description": {
                   "type": "string"
                 },
@@ -297,7 +300,13 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "aspect_types": {
+          "type": "string"
+        },
         "custom_roles": {
+          "type": "string"
+        },
+        "data_catalog_taxonomy": {
           "type": "string"
         },
         "observability": {

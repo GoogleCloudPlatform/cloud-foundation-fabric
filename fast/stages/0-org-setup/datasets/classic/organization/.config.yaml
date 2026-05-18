@@ -61,6 +61,8 @@ iam_by_principals:
     - roles/iam.workforcePoolAdmin
     - roles/logging.admin
     - roles/orgpolicy.policyAdmin
+    # Uncomment to allow managing PAM entitlements.
+    # - roles/privilegedaccessmanager.admin
     - roles/resourcemanager.folderAdmin
     - roles/resourcemanager.organizationAdmin
     - roles/resourcemanager.projectCreator
@@ -74,6 +76,8 @@ iam_by_principals:
     - roles/iam.workforcePoolViewer
     - roles/logging.viewer
     - roles/orgpolicy.policyViewer
+    # Uncomment to allow viewing PAM entitlements.
+    # - roles/privilegedaccessmanager.viewer
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
     - roles/serviceusage.serviceUsageViewer

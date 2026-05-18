@@ -64,6 +64,10 @@ locals {
       }
     )
   }
+  vpc_defaults = {
+    defaults  = try(local.defaults.vpcs.defaults, {})
+    overrides = try(local.defaults.vpcs.overrides, {})
+  }
   subnet_self_links = flatten([
     for net, subnets in var.subnet_self_links : [
       for subnet_name, subnet_link in subnets : {
