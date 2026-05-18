@@ -47,16 +47,18 @@ locals {
     for k, v in var.users : k =>
     local.is_mysql
     ? {
-      name     = v.type == "BUILT_IN" ? split("@", k)[0] : k
-      host     = v.type == "BUILT_IN" ? try(split("@", k)[1], null) : null
-      password = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = v.type
+      name           = v.type == "BUILT_IN" ? split("@", k)[0] : k
+      host           = v.type == "BUILT_IN" ? try(split("@", k)[1], null) : null
+      password       = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type           = v.type
+      database_roles = v.database_roles
     }
     : {
-      name     = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
-      host     = null
-      password = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = v.type
+      name           = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
+      host           = null
+      password       = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type           = v.type
+      database_roles = v.database_roles
     }
   }
 }
@@ -370,13 +372,14 @@ resource "random_password" "root_password" {
 }
 
 resource "google_sql_user" "users" {
-  for_each = local.users
-  project  = local.project_id
-  instance = google_sql_database_instance.primary.name
-  name     = each.value.name
-  host     = each.value.host
-  password = each.value.password
-  type     = each.value.type
+  for_each       = local.users
+  project        = local.project_id
+  instance       = google_sql_database_instance.primary.name
+  name           = each.value.name
+  host           = each.value.host
+  password       = each.value.password
+  type           = each.value.type
+  database_roles = each.value.database_roles
 }
 
 moved {

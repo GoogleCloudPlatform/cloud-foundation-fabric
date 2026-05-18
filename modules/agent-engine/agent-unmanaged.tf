@@ -155,17 +155,15 @@ resource "google_vertex_ai_reasoning_engine" "unmanaged" {
 
     dynamic "source_code_spec" {
       for_each = (
-        var.deployment_config.source_files_config == null ?
-        {}
-        : { 1 = 1 }
+        var.deployment_config.source_files_config == null ? {} : { 1 = 1 }
       )
 
       content {
         dynamic "inline_source" {
           for_each = (
             try(var.deployment_config.source_files_config.source_path, null) == null
-            ? { 1 = 1 }
-            : {}
+            ? {}
+            : { 1 = 1 }
           )
           content {
             source_archive = filebase64(var.deployment_config.source_files_config.source_path)
