@@ -149,6 +149,44 @@ variable "node_config" {
       enable_nested_virtualization = optional(bool)
       threads_per_core             = optional(number)
     }))
+    containerd_config = optional(object({
+      private_registry_access_config = optional(object({
+        enabled = bool
+        certificate_authority_domain_config = optional(list(object({
+          fqdns = list(string)
+          gcp_secret_manager_certificate_config = object({
+            secret_uri = string
+          })
+        })), [])
+      }))
+      writable_cgroups = optional(object({
+        enabled = bool
+      }))
+      registry_hosts = optional(list(object({
+        server = string
+        hosts = optional(list(object({
+          host          = string
+          capabilities  = optional(list(string))
+          override_path = optional(bool)
+          dial_timeout  = optional(string)
+          header = optional(list(object({
+            key   = string
+            value = list(string)
+          })), [])
+          ca = optional(list(object({
+            gcp_secret_manager_secret_uri = optional(string)
+          })), [])
+          client = optional(list(object({
+            cert = object({
+              gcp_secret_manager_secret_uri = optional(string)
+            })
+            key = optional(object({
+              gcp_secret_manager_secret_uri = optional(string)
+            }))
+          })), [])
+        })), [])
+      })), [])
+    }))
   })
   default  = {}
   nullable = false

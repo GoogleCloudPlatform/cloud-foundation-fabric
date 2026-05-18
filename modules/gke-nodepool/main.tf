@@ -345,5 +345,73 @@ resource "google_container_node_pool" "nodepool" {
         threads_per_core             = var.node_config.advanced_machine_features.threads_per_core
       }
     }
+    dynamic "containerd_config" {
+      for_each = var.node_config.containerd_config != null ? [""] : []
+      content {
+        dynamic "private_registry_access_config" {
+          for_each = try(var.node_config.containerd_config.private_registry_access_config, null) != null ? [""] : []
+          content {
+            enabled = var.node_config.containerd_config.private_registry_access_config.enabled
+            dynamic "certificate_authority_domain_config" {
+              for_each = try(var.node_config.containerd_config.private_registry_access_config.certificate_authority_domain_config, [])
+              content {
+                fqdns = certificate_authority_domain_config.value.fqdns
+                gcp_secret_manager_certificate_config {
+                  secret_uri = certificate_authority_domain_config.value.gcp_secret_manager_certificate_config.secret_uri
+                }
+              }
+            }
+          }
+        }
+        dynamic "writable_cgroups" {
+          for_each = try(var.node_config.containerd_config.writable_cgroups, null) != null ? [""] : []
+          content {
+            enabled = var.node_config.containerd_config.writable_cgroups.enabled
+          }
+        }
+        dynamic "registry_hosts" {
+          for_each = try(var.node_config.containerd_config.registry_hosts, [])
+          content {
+            server = registry_hosts.value.server
+            dynamic "hosts" {
+              for_each = try(registry_hosts.value.hosts, [])
+              content {
+                host          = hosts.value.host
+                capabilities  = hosts.value.capabilities
+                override_path = hosts.value.override_path
+                dial_timeout  = hosts.value.dial_timeout
+                dynamic "header" {
+                  for_each = try(hosts.value.header, [])
+                  content {
+                    key   = header.value.key
+                    value = header.value.value
+                  }
+                }
+                dynamic "ca" {
+                  for_each = try(hosts.value.ca, [])
+                  content {
+                    gcp_secret_manager_secret_uri = ca.value.gcp_secret_manager_secret_uri
+                  }
+                }
+                dynamic "client" {
+                  for_each = try(hosts.value.client, [])
+                  content {
+                    cert {
+                      gcp_secret_manager_secret_uri = client.value.cert.gcp_secret_manager_secret_uri
+                    }
+                    dynamic "key" {
+                      for_each = client.value.key != null ? [""] : []
+                      content {
+                        gcp_secret_manager_secret_uri = client.value.key.gcp_secret_manager_secret_uri
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
