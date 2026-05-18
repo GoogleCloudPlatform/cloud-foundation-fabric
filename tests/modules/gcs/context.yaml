@@ -117,7 +117,7 @@ values:
   google_tags_location_tag_binding.binding["foo"]:
     location: europe-west8
     parent: //storage.googleapis.com/projects/_/buckets/mybucket
-    tag_value: tagValues/1234567890
+    tag_value: dev-test-00/dynamic_test/cc-123
     timeouts: null
 
 counts:
@@ -127,9 +127,9 @@ counts:
   google_storage_managed_folder: 1
   google_storage_managed_folder_iam_binding: 3
   google_storage_managed_folder_iam_member: 1
-  google_tags_location_tag_binding: 1
+  google_tags_location_tag_binding: 3
   modules: 0
-  resources: 14
+  resources: 16
 
 outputs:
   bucket: __missing__

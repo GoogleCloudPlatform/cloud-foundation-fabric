@@ -139,6 +139,10 @@ variable "context" {
     project_ids    = optional(map(string), {})
     subnets        = optional(map(string), {})
     tag_values     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   default  = {}
   nullable = false
@@ -285,7 +289,7 @@ variable "lifecycle_config" {
   type = object({
     allow_stopping_for_update  = optional(bool, true)
     deletion_protection        = optional(bool, false)
-    key_revocation_action_type = optional(string, "NONE")
+    key_revocation_action_type = optional(string)
     graceful_shutdown = optional(object({
       enabled           = optional(bool, false)
       max_duration_secs = optional(number)

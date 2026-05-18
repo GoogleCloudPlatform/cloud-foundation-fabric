@@ -29,6 +29,8 @@ locals {
           config_timeouts           = try(nat_config.config_timeouts, {})
           endpoint_types            = try(nat_config.endpoint_types, null)
           logging_filter            = try(nat_config.logging_filter, null)
+          num_nat_ips               = try(nat_config.num_nat_ips, 0)
+          region                    = try(nat_config.region, null)
           router_asn                = try(nat_config.router_asn, null)
           router_create             = try(nat_config.router_create, true)
           router_network            = module.vpc-factory.vpcs[vpc_key].id
@@ -40,12 +42,25 @@ locals {
   ])...)
 }
 
+module "addresses" {
+  source     = "../../../modules/net-address"
+  for_each   = { for k, v in local.nat_configs : k => v if tonumber(v.num_nat_ips) > 0 }
+  project_id = each.value.project_id
+  external_addresses = {
+    for i in range(tonumber(each.value.num_nat_ips)) : "${each.value.name}-ip-${i}" => { region = each.value.region }
+  }
+  context = merge(local.ctx, {
+    project_ids = local.ctx_projects.project_ids
+    locations   = local.ctx.locations
+  })
+}
+
 module "nat" {
   source                    = "../../../modules/net-cloudnat"
   for_each                  = local.nat_configs
   project_id                = each.value.project_id
   name                      = each.value.name
-  addresses                 = each.value.addresses
+  addresses                 = concat(each.value.addresses, [for a in try(module.addresses[each.key].external_addresses, {}) : a.self_link])
   config_port_allocation    = each.value.config_port_allocation
   config_source_subnetworks = each.value.config_source_subnetworks
   config_timeouts           = each.value.config_timeouts
@@ -58,8 +73,9 @@ module "nat" {
   rules                     = each.value.rules
   type                      = each.value.type
   context = merge(local.ctx, {
-    project_ids    = local.ctx_projects.project_ids
-    vpc_self_links = local.ctx_vpcs.self_links
-    locations      = local.ctx.locations
+    project_ids = local.ctx_projects.project_ids
+    networks    = local.ctx_vpcs.self_links
+    locations   = local.ctx.locations
+    subnets     = local.ctx_vpcs.subnets_by_vpc
   })
 }

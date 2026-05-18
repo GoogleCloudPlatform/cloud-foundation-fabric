@@ -57,4 +57,3 @@ variable "iam_bindings_additive" {
   nullable = false
   default  = {}
 }
-

@@ -161,6 +161,7 @@ module "alloydb" {
         record_application_tags       = true
         query_plans_per_minute        = 30
         track_active_queries          = true
+        track_client_address          = true
         assistive_experiences_enabled = true
       }
     }
@@ -174,6 +175,7 @@ module "alloydb" {
     record_application_tags       = true
     query_plans_per_minute        = 30
     track_active_queries          = true
+    track_client_address          = true
     assistive_experiences_enabled = true
   }
 

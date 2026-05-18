@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/blob/master/fast/stages/2-networking/schemas/attachment-groups.schema.json",
+  "title": "Attachment Groups schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "availability_sla": {
+          "type": "string",
+          "enum": [
+            "NO_SLA",
+            "PRODUCTION_NON_CRITICAL",
+            "PRODUCTION_CRITICAL",
+            "AVAILABILITY_SLA_UNSPECIFIED"
+          ],
+          "default": "NO_SLA"
+        }
+      }
+    },
+    "attachments": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9-_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "attachment"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "attachment": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

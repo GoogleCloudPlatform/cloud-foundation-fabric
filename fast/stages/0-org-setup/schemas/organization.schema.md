@@ -96,6 +96,11 @@
           - **location**: *string*
           - **title**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
+- **service_agents_config**: *object*
+  <br>*additional properties: false*
+  - **create_agents**: *boolean*
+  - **services**: *array*
+    - items: *string*
 - **tags**: *object*
   <br>*additional properties: object*
 - **workforce_identity_pools**: *object*
@@ -124,17 +129,30 @@
         - **attribute_mapping_template**: *string*
           <br>*enum: ['azuread', 'okta']*
         - **disabled**: *boolean*
+        - **detailed_audit_logging**: *boolean*
         - **identity_provider**: *object*
         - **oauth2_client_config**: *object*
           <br>*additional properties: false*
           - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
           - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+        - **scim_tenant**: *object*
+          <br>*additional properties: false*
+          - ⁺**id**: *string*
+          - ⁺**claim_mapping**: *object*
+            <br>*additional properties: string*
+          - **location**: *string*
+            <br>*default: global*
+          - **display_name**: *string*
+          - **description**: *string*
+          - **hard_delete**: *boolean*
+        - **scim_usage**: *string*
+          <br>*enum: ['ENABLED_FOR_GROUPS']*
 
 ## Definitions
 
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|$custom_roles:|organizations/|projects/)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:\$[a-z_-]+:|domain:|group:|mdb:|serviceAccount:|user:|principal:|principalSet:)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -145,7 +163,7 @@
       - items: *string*
         <br>*pattern: ^(?:\$[a-z_-]+:|domain:|group:|mdb:|serviceAccount:|user:|principal:|principalSet:)*
     - ⁺**role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -168,7 +186,7 @@
   <br>*additional properties: false*
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *object*
@@ -180,7 +198,7 @@
       - **description**: *string*
     - ⁺**roles**: *array*
       - items: *string*
-        <br>*pattern: ^(?:roles/|\$custom_roles:)*
+        <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*

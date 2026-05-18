@@ -20,9 +20,20 @@ values:
     project: my-project
     region: europe-west8
     settings:
-    - ip_configuration:
+    - insights_config:
+      - enhanced_query_insights_enabled: true
+        query_insights_enabled: true
+        query_plans_per_minute: 10
+        query_string_length: 2048
+        record_application_tags: true
+        record_client_address: true
+      ip_configuration:
       - ipv4_enabled: false
         private_network: projects/myprj/global/networks/myvpc
+        psc_config:
+        - allowed_consumer_projects:
+          - my-project
+          psc_enabled: true
 
 counts:
   google_sql_database_instance: 1

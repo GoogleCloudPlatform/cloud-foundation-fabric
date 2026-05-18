@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   bucket = (
     var.bucket_config == null
@@ -58,6 +58,17 @@ resource "google_cloudfunctions2_function" "function" {
     entry_point           = var.function_config.entry_point
     environment_variables = var.build_environment_variables
     docker_repository     = var.docker_repository_id
+
+    dynamic "automatic_update_policy" {
+      for_each = try(var.function_config.automatic_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
+    dynamic "on_deploy_update_policy" {
+      for_each = try(var.function_config.on_deploy_update_policy, null) == true ? [""] : []
+      content {}
+    }
+
     source {
       storage_source {
         bucket = local.bucket
@@ -101,7 +112,7 @@ resource "google_cloudfunctions2_function" "function" {
     ingress_settings                 = var.ingress_settings
     max_instance_count               = var.function_config.instance_count
     max_instance_request_concurrency = var.function_config.max_instance_request_concurrency
-    min_instance_count               = 0
+    min_instance_count               = var.function_config.min_instance_count
     service_account_email            = local.service_account_email
     timeout_seconds                  = var.function_config.timeout_seconds
     vpc_connector                    = local.vpc_connector

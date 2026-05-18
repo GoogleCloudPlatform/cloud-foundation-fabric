@@ -90,7 +90,8 @@ module "organization" {
     email_addresses = local.ctx.email_addresses
     locations       = local.ctx.locations
   }
-  contacts = lookup(local.organization, "contacts", {})
+  contacts              = lookup(local.organization, "contacts", {})
+  service_agents_config = lookup(local.organization, "service_agents_config", {})
   factories_config = {
     custom_roles           = "${local.paths.organization}/custom-roles"
     tags                   = "${local.paths.organization}/tags"
@@ -122,7 +123,11 @@ module "organization-iam" {
     )
     iam_principals = merge(
       local.ctx.iam_principals,
-      module.factory.iam_principals
+      module.factory.iam_principals,
+      {
+        for k, v in module.organization[0].service_agents :
+        "service_agents/${k}" => v.iam_email
+      }
     )
     log_buckets = module.factory.log_buckets
     project_ids = merge(

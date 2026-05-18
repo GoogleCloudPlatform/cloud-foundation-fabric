@@ -4,6 +4,9 @@ automation = {
 billing_account = {
   id = "000000-111111-222222"
 }
+custom_roles = {
+  dns_resource_record_sets_adder = "organizations/123456789012/roles/DNSResourceRecordSetsAdder"
+}
 factories_config = {
   dataset = "./data-testdns-delegation"
   paths = {
@@ -32,4 +35,3 @@ tag_values = {
   "environment/development" = "tagValues/12345"
   "environment/production"  = "tagValues/12346"
 }
-

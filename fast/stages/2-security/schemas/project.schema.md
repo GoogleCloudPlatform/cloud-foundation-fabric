@@ -37,6 +37,7 @@
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
       <br>*additional properties: false*
+      - **display_name**: *string*
       - **description**: *string*
       - **prefix**: *string*
       - **iam**: *reference([iam](#refs-iam))*
@@ -95,7 +96,9 @@
   <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
 - **factories_config**: *object*
   <br>*additional properties: false*
+  - **aspect_types**: *string*
   - **custom_roles**: *string*
+  - **data_catalog_taxonomy**: *string*
   - **observability**: *string*
   - **org_policies**: *string*
   - **quotas**: *string*
@@ -149,6 +152,16 @@
   - items: *string*
 - **name**: *string*
 - **descriptive_name**: *string*
+- **dns_threat_detector**: *object*
+  <br>*additional properties: false*
+  - **enabled**: *boolean*
+  - **excluded_networks**: *array*
+    - items: *string*
+  - **labels**: *object*
+  - **location**: *string*
+  - **name**: *string*
+  - **threat_detector_provider**: *string*
+    <br>*enum: ['INFOBLOX']*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*
@@ -353,7 +366,7 @@
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|\$custom_roles:)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -364,7 +377,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -377,7 +390,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -387,7 +400,7 @@
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)`**: *object*
@@ -399,7 +412,7 @@
       - **description**: *string*
     - ⁺**roles**: *array*
       - items: *string*
-        <br>*pattern: ^(?:roles/|\$custom_roles:)*
+        <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*

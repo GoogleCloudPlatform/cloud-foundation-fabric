@@ -23,6 +23,10 @@ on:
     branches:
       - master
       - fast-dev
+
+permissions:
+  contents: read
+
 jobs:
   linting:
     runs-on: ubuntu-latest

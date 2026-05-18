@@ -108,7 +108,12 @@ locals {
   }
 }
 
-resource "google_compute_firewall" "custom-rules" {
+moved {
+  from = google_compute_firewall.custom-rules
+  to   = google_compute_firewall.custom_rules
+}
+
+resource "google_compute_firewall" "custom_rules" {
   for_each    = local.rules
   project     = local.project_id
   network     = local.network

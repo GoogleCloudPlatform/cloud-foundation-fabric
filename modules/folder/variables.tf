@@ -185,6 +185,10 @@ variable "context" {
     pubsub_topics     = optional(map(string), {})
     storage_buckets   = optional(map(string), {})
     tag_values        = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   default  = {}
   nullable = false
@@ -281,6 +285,16 @@ variable "parent" {
     )
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id, or map to a context variable via $folder_ids:."
   }
+}
+
+variable "service_agents_config" {
+  description = "Service agents configuration."
+  type = object({
+    services      = optional(list(string), [])
+    create_agents = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "tag_bindings" {

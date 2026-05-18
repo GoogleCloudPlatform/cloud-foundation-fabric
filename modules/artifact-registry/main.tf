@@ -18,9 +18,12 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
-  ctx_p         = "$"
+  ctx_p = "$"
+  _tag_bindings = {
+    for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
   format_obj    = one([for k, v in var.format : v if v != null])
   format_string = one([for k, v in var.format : k if v != null])
   location      = lookup(local.ctx.locations, var.location, var.location)
@@ -131,7 +134,8 @@ resource "google_artifact_registry_repository" "registry" {
       }
       dynamic "common_repository" {
         for_each = (
-          local.format_string == "docker" && try(local.format_obj.remote.common_repository, null) != null
+          contains(["docker", "maven", "npm", "python"], local.format_string) &&
+          try(local.format_obj.remote.common_repository, null) != null
           ? [""] : []
         )
         content {
@@ -154,7 +158,10 @@ resource "google_artifact_registry_repository" "registry" {
         }
       }
       dynamic "maven_repository" {
-        for_each = local.format_string == "maven" ? [""] : []
+        for_each = (
+          local.format_string == "maven" && try(local.format_obj.remote.common_repository, null) == null
+          ? [""] : []
+        )
         content {
           public_repository = local.format_obj.remote.public_repository
           dynamic "custom_repository" {
@@ -166,7 +173,10 @@ resource "google_artifact_registry_repository" "registry" {
         }
       }
       dynamic "npm_repository" {
-        for_each = local.format_string == "npm" ? [""] : []
+        for_each = (
+          local.format_string == "npm" && try(local.format_obj.remote.common_repository, null) == null
+          ? [""] : []
+        )
         content {
           public_repository = local.format_obj.remote.public_repository
           dynamic "custom_repository" {
@@ -178,7 +188,10 @@ resource "google_artifact_registry_repository" "registry" {
         }
       }
       dynamic "python_repository" {
-        for_each = local.format_string == "python" ? [""] : []
+        for_each = (
+          local.format_string == "python" && try(local.format_obj.remote.common_repository, null) == null
+          ? [""] : []
+        )
         content {
           public_repository = local.format_obj.remote.public_repository
           dynamic "custom_repository" {
@@ -240,5 +253,5 @@ resource "google_tags_location_tag_binding" "binding" {
   for_each  = var.tag_bindings
   parent    = "//artifactregistry.googleapis.com/${google_artifact_registry_repository.registry.id}"
   location  = local.location
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

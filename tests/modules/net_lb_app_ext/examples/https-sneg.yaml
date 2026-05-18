@@ -32,4 +32,3 @@ counts:
   google_compute_region_network_endpoint_group: 1
   google_compute_target_https_proxy: 1
   google_compute_url_map: 1
-

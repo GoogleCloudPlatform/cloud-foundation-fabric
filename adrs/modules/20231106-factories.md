@@ -99,4 +99,3 @@ With notable exceptions (currently only the `cidrs.yaml` file consumed by firewa
 - Files in a directory should be parsed together and flattened into a single dictionary
 
 This allows developers to implement multiple resources in a single file or to use one file per resource, as they see fit.
-

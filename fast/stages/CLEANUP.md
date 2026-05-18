@@ -58,7 +58,7 @@ for x in $(terraform state list | grep google_logging_project_bucket_config); do
   terraform state rm "$x";
 done
 
-# remove custom constraint to avoid future issue during reprovisionnning. 
+# remove custom constraint to avoid future issue during reprovisionnning.
 # comment this part if permanent removed is needed
 for x in $(terraform state list | grep google_org_policy_custom_constraint); do
   terraform state rm "$x";

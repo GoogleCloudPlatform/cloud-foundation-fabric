@@ -12,6 +12,7 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
   - [PSC service attachments](#psc-service-attachments)
   - [Regional health check](#regional-health-check)
   - [End to end example](#end-to-end-example)
+  - [Context](#context)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Issues](#issues)
 - [Recipes](#recipes)
@@ -378,6 +379,62 @@ module "ilb" {
 # tftest modules=3 resources=7 e2e
 ```
 
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "ilb" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = "$project_ids:my-prj"
+  region        = "$locations:primary-region"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  forwarding_rules_config = {
+    default = {
+      address = "$addresses:lb-ip-addr"
+    }
+  }
+  vpc_config = {
+    network    = "$networks:shared-vpc"
+    subnetwork = "$subnets:my-subnet"
+  }
+  group_configs = {
+    my-group = {
+      zone = "$locations:primary-zone"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  health_check_config = {
+    http = {
+      port = 80
+    }
+  }
+  context = {
+    addresses = {
+      lb-ip-addr = "192.168.0.1"
+    }
+    locations = {
+      primary-region = "us-central1"
+      primary-zone   = "us-central1-b"
+    }
+    networks = {
+      shared-vpc = "projects/prj-host/global/networks/shared-vpc"
+    }
+    project_ids = {
+      my-prj = "my-project-1"
+    }
+    subnets = {
+      my-subnet = "projects/prj-host/regions/us-central1/subnetworks/sub-1"
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=context.yaml
+```
+
 ## Deploying changes to load balancer configurations
 
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
@@ -402,21 +459,21 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L203) | Name used for all resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L208) | Project id where resources will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L213) | GCP region. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L239) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L208) | Name used for all resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L213) | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L218) | GCP region. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L244) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [backends](variables.tf#L53) | Load balancer backends. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [context](variables.tf#L64) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L77) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [forwarding_rules_config](variables.tf#L83) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [group_configs](variables.tf#L99) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L112) | Name of existing health check to use, disables auto-created health check. Also set `health_check_config = null` when cross-referencing an health check from another load balancer module to avoid a Terraform error. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L118) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L197) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_attachments](variables.tf#L218) | PSC service attachments, keyed by forwarding rule. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [service_label](variables.tf#L233) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
+| [backends](variables.tf#L58) | Load balancer backends. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L69) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L82) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [forwarding_rules_config](variables.tf#L88) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L104) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L117) | Name of existing health check to use, disables auto-created health check. Also set `health_check_config = null` when cross-referencing an health check from another load balancer module to avoid a Terraform error. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L123) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L202) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_attachments](variables.tf#L223) | PSC service attachments, keyed by forwarding rule. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [service_label](variables.tf#L238) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

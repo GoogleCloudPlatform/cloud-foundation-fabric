@@ -45,7 +45,7 @@ variable "backup_configuration" {
     retain_backups_on_delete       = optional(bool)
     final_backup = optional(object({
       enabled        = optional(bool, false)
-      retention_days = optional(number, 7)
+      retention_days = optional(number)
     }))
   })
   default = null
@@ -73,6 +73,17 @@ variable "context" {
   })
   default  = {}
   nullable = false
+}
+
+variable "data_api_access" {
+  description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
+  type        = string
+  default     = null
+  nullable    = true
+  validation {
+    condition     = var.data_api_access == null || contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
+    error_message = "The data_api_access must be one of 'ALLOW_DATA_API' or 'DISALLOW_DATA_API'."
+  }
 }
 
 variable "data_cache" {
@@ -139,10 +150,11 @@ variable "gcp_deletion_protection" {
 variable "insights_config" {
   description = "Query Insights configuration. Defaults to null which disables Query Insights."
   type = object({
-    query_string_length     = optional(number, 1024)
-    record_application_tags = optional(bool, false)
-    record_client_address   = optional(bool, false)
-    query_plans_per_minute  = optional(number, 5)
+    query_string_length             = optional(number, 1024)
+    record_application_tags         = optional(bool, false)
+    record_client_address           = optional(bool, false)
+    query_plans_per_minute          = optional(number, 5)
+    enhanced_query_insights_enabled = optional(bool, false)
   })
   default = null
 }
@@ -320,6 +332,7 @@ variable "users" {
     password         = optional(string)
     password_version = optional(number)
     type             = optional(string, "BUILT_IN")
+    database_roles   = optional(list(string))
   }))
   default  = {}
   nullable = false

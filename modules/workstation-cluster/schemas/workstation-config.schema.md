@@ -79,5 +79,3 @@
   <br>*additional properties: object*
 
 ## Definitions
-
-

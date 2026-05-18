@@ -46,7 +46,7 @@ resource "google_compute_backend_service" "default" {
   for_each = var.backend_service_configs
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
   name                            = coalesce(each.value.name, "${var.name}-${each.key}")
@@ -209,10 +209,12 @@ resource "google_compute_backend_service" "default" {
   }
 
   dynamic "log_config" {
-    for_each = each.value.log_sample_rate == null ? [] : [""]
+    for_each = each.value.log_config == null ? [] : [""]
     content {
-      enable      = true
-      sample_rate = each.value.log_sample_rate
+      enable          = each.value.log_config.enable
+      sample_rate     = each.value.log_config.sample_rate
+      optional_mode   = each.value.log_config.optional_mode
+      optional_fields = each.value.log_config.optional_fields
     }
   }
 

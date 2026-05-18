@@ -111,6 +111,9 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
+                "display_name": {
+                  "type": "string"
+                },
                 "description": {
                   "type": "string"
                 },
@@ -297,7 +300,13 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "aspect_types": {
+          "type": "string"
+        },
         "custom_roles": {
+          "type": "string"
+        },
+        "data_catalog_taxonomy": {
           "type": "string"
         },
         "observability": {
@@ -480,6 +489,36 @@
     },
     "descriptive_name": {
       "type": "string"
+    },
+    "dns_threat_detector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "excluded_networks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "type": "object"
+        },
+        "location": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "threat_detector_provider": {
+          "type": "string",
+          "enum": [
+            "INFOBLOX"
+          ]
+        }
+      }
     },
     "org_policies": {
       "type": "object",
@@ -804,6 +843,9 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "allowed_values_regex": {
+            "type": "string"
+          },
           "description": {
             "type": "string"
           },
@@ -843,7 +885,23 @@
               }
             }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "allowed_values_regex"
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "values"
+                ]
+              }
+            }
+          }
+        ]
       }
     },
     "tag_bindings": {
@@ -1259,7 +1317,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:roles/|\\$custom_roles:)": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
@@ -1285,7 +1343,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -1324,7 +1382,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -1357,7 +1415,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
           }
         }
       }
@@ -1397,7 +1455,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:roles/|\\$custom_roles:)"
+                "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
               }
             }
           }

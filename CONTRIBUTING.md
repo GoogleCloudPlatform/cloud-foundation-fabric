@@ -82,6 +82,8 @@ pytest tests/examples
 
 Once everything looks good, add/commit any pending changes then push and open a PR on GitHub. We typically enforce a set of design and style conventions, so please make sure you have familiarized yourself with the following sections and implemented them in your code, to avoid lengthy review cycles.
 
+When naming your Pull Request, do not use Conventional Commits guidelines (e.g., do not use `feat(net-vpc): add NCC support`). Instead, use short, capitalized, imperative titles with no trailing dot, such as "Add NCC support to `modules/net-vpc`". Keep the title concise and explain the details of the change in the PR description.
+
 HINT: if you work on high-latency or low-bandwidth network use `TF_PLUGIN_CACHE_DIR` environment variable to dramatically speed up the tests, for example:
 
 ```bash
@@ -451,7 +453,7 @@ labels:
 
 #### Context-based interpolation
 
-When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name). 
+When designing factories, a common challenge is referencing resources that will be created at runtime or are managed externally (e.g., assigning a service account created in one project to a role in another, or referencing a folder ID by a mnemonic name).
 
 To solve this, a **context-based interpolation** system is implemented. A `context` object variable is introduced containing maps of known resource IDs (like `project_ids`, `folder_ids`, `iam_principals`), and a `$` prefix convention is used in the YAML strings to instruct the module to look up the actual ID at plan time.
 
@@ -914,7 +916,15 @@ pytest -k 'modules and gke-cluster-autopilot: and monitoring and :2' tests/examp
 
 #### Generating the inventory automatically
 
-Building an inventory file by hand is difficult. To simplify this task, the default test runner for examples prints the inventory for the full plan if it succeeds. Therefore, you can start without an inventory and then run a test to get the full plan and extract the pieces you want to build the inventory file.
+Building an inventory file by hand is difficult. To simplify this task, you can use the unified tool `tools/generate_plan_summary.py` to generate the inventory. This script parses the README, extracts any embedded files or fixtures, and runs the plan. It can also automatically save the inventory to the correct location if you pass the `--save` flag and have specified `inventory=filename.yaml` in the `# tftest` directive in the README.
+
+```bash
+uv run tools/generate_plan_summary.py modules/dns/README.md "Private Zone" --save
+```
+
+#### Alternative: Generating the inventory via `pytest` (Legacy)
+
+The default test runner for examples also prints the inventory for the full plan if it succeeds. Therefore, you can start without an inventory and then run a test to get the full plan and extract the pieces you want to build the inventory file.
 
 Suppose you want to generate the inventory for the last DNS example above (the one creating the recordsets from a YAML file). Assuming that example is the first code block under the "Private Zone" section in the README for the `dns` module, you can run the following command to build the inventory:
 
@@ -1063,9 +1073,9 @@ tests:
       - test-plan-extra.tfvars
     inventory:
       - test-plan.yaml
-  # You can use `extra_files` to include additional tf files outside 
+  # You can use `extra_files` to include additional tf files outside
   # the module's path before running the test.
-  # extra_files:  
+  # extra_files:
   #   - ../plugin-x/*.tf
 
   # You can omit the tfvars and inventory sections and they will
@@ -1083,7 +1093,7 @@ A good example of tests showing different ways of leveraging our framework is in
 
 ### Debugging Terraform Context & Locals
 
-When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`. 
+When troubleshooting how variables, context, or locals are being evaluated during a `plan` (especially within factories or FAST stages), do not rely solely on `pytest` failure outputs or `grep`.
 
 **ALWAYS** use a fast-failing `terraform_data` precondition to dump the exact runtime state of the data structure. Inject this snippet temporarily into the module being debugged:
 
@@ -1092,7 +1102,7 @@ resource "terraform_data" "debug_dump" {
   lifecycle {
     precondition {
       # The condition is intentionally designed to fail to trigger the error_message
-      condition     = local.target_variable == null 
+      condition     = local.target_variable == null
       error_message = yamlencode(local.target_variable)
     }
   }
@@ -1103,58 +1113,24 @@ Run the specific `pytest` plan test. The test will fail, and the captured output
 
 #### Generating the inventory for `tftest`-based tests
 
-Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests. Currently the process relies on an additional tool (`tools/plan_summary.py`) but but we have plans to unify both cases in the future.
+Just as you can generate an initial inventory for example-based tests, you can do the same for `tftest`-based tests using the unified tool `tools/generate_plan_summary.py`.
 
-As an example, if you want to generate the inventory for the `organization` module using the `common.tfvars` and `audit_config.tfvars` found in `tests/modules/organization/`, simply run `plan_summary.py` as follows:
-
-```bash
-$ python tools/plan_summary.py modules/organization \
-   tests/modules/organization/common.tfvars \
-   tests/modules/organization/audit_config.tfvars
-
-values:
-  google_organization_iam_audit_config.config["allServices"]:
-    audit_log_config:
-    - exempted_members:
-      - user:me@example.org
-      log_type: DATA_WRITE
-    - exempted_members: []
-      log_type: DATA_READ
-    org_id: '1234567890'
-    service: allServices
-
-counts:
-  google_organization_iam_audit_config: 1
-  modules: 0
-  resources: 1
-
-outputs:
-  custom_role_id: {}
-  custom_roles: {}
-  firewall_policies: {}
-  firewall_policy_id: {}
-  network_tag_keys: {}
-  network_tag_values: {}
-  organization_id: organizations/1234567890
-  sink_writer_identities: {}
-  tag_keys: {}
-  tag_values: {}
-
-```
-
-You can now use this output to create the inventory file for your test. As mentioned before, please only use those values relevant to your test scenario.
-
-You can optionally pass to the command additional files that your plan might need to properly execute.
-
-In this example we pass in two extra files from the organization folder.
+As an example, if you want to generate the inventory for the `organization` module for the test case `audit_config` defined in its `tftest.yaml`, simply run:
 
 ```bash
-$ python tools/plan_summary.py modules/organization \
-   tests/modules/organization/common.tfvars \
-   tests/modules/organization/audit_config.tfvars \
-   --extra-files ../my-file-1.tf \
-   --extra-files ../my-file-2.yaml
+uv run tools/generate_plan_summary.py tests/modules/organization/tftest.yaml audit_config
 ```
+
+If you want to automatically save the generated inventory to the correct location (e.g., `tests/modules/organization/audit_config.yaml`), add the `--save` flag:
+
+```bash
+uv run tools/generate_plan_summary.py tests/modules/organization/tftest.yaml audit_config --save
+```
+
+This will generate the inventory file with the correct structure and a valid license header.
+
+If your test requires extra files or directories, you should specify them in the `tftest.yaml` file under the specific test case (using `extra_files` or `extra_dirs`), rather than passing them via command line flags.
+
 
 ### Running end-to-end tests
 
@@ -1404,58 +1380,4 @@ The tool can also be run so that it prints the generated output on standard outp
 
 ## Cutting a new release
 
-Cutting a new release is mostly about updating `CHANGELOG.md` - luckily the [changelog tool](./tools/changelog.py) will do the heavy lifting for you.
-
-In order to use it, you will need to generate a [Github Token](https://github.com/settings/tokens/). The token does not require any scope, so if you're purposely generating one, make sure to avoid adding any. Store the token in your favourite secret manager for future usage.
-
-Also make sure to work in a `venv` where all the [requirements for the fabric tools](./tools/requirements.txt) are installed.
-
-```bash
-cd cloud-foundation-fabric
-git checkout master
-git pull
-./tools/changelog.py --write --token $YOURGITHUBTOKEN
-```
-
-After ~1 minute, the [CHANGELOG.md](./CHANGELOG.md) file will be updated by the tool - review any change by running `git diff` and make sure no unlabeled PR is listed. If you find unlabeled PRs, visit their link and add the relevant labels (e.g. on:FAST, on:blueprints, on:module, ...), and finally run again
-
-```bash
-./tools/changelog.py --write --token $YOURGITHUBTOKEN
-```
-
-Now open the up-to-date CHANGELOG.md in your favorite editor, and append the new release H2 after the `## [Unreleased]` header you see at the top - e.g. if the latest version is `29.0.0`, add an header for `30.0.0` and mark todays date as follows:
-
-```md
-[...]
-## [Unreleased]
-<!-- None < 2024-03-20 13:57:56+00:00 -->
-
-## [30.0.0] - 2024-03-20
-
-## [29.0.0] - 2024-01-24
-
-```
-
-Now scroll to the bottom section of the document, and update the release links by adding `30.0.0` and updating `Unreleased` as follows:
-
-```md
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v30.0.0...HEAD
-[30.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v29.0.0...v30.0.0
-[29.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v28.0.0...v29.0.0
-```
-
-Once done, add, commit and push changes to master.
-
-As CHANGELOG.md is now ready, [create a new release from the Github UI](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/new), and use `vXX.Y.Z` as the release tag and title (don't forget the `v` in front!).
-
-As a description, copy the whole content added to [CHANGELOG.md](./CHANGELOG.md) for the current release, and then click the 'Publish release' button.
-
-As a last cleanup for the CHANGELOG.md file, run
-
-```bash
-git pull
-./tools/changelog.py --write --token $TOKEN --release-to vXX.Y.Z
-git diff
-```
-
-And add / commit / push any change in case of a diff.
+The release process has been codified into a Gemini CLI skill. Please refer to the [Release Process Skill](skills/maintenance/release-process/SKILL.md) for detailed instructions on how to cut a new release.

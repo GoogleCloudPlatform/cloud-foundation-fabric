@@ -25,6 +25,9 @@
         "firewall_rules": {
           "type": "string"
         },
+        "attachment_groups": {
+          "type": "string"
+        },
         "subnets": {
           "type": "string"
         },
@@ -194,6 +197,9 @@
           "properties": {
             "region": {
               "type": "string"
+            },
+            "num_nat_ips": {
+              "type": "number"
             }
           }
         }
