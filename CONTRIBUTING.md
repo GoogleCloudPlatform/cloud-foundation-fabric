@@ -525,9 +525,9 @@ Similarly to our design principles above, we evolved a set of style conventions 
 
 #### Group logical resources or modules in separate files
 
-Over time and as our codebase got larger, we switched away from the canonical `main.tf`/`outputs.tf`/`variables.tf` triplet of file names and now tend to prefer descriptive file names that refer to the logical entities (resources or modules) they contain.
+Over time and as our codebase got larger, we switched away from the canonical `main.tf` naming and now tend to prefer descriptive file names that refer to the logical entities (resources or modules) they contain.
 
-We still use traditional names for variables and outputs, but tend to use main only for top-level locals or resources (e.g. the project resource in the `project` module), or for those resources that would end up in very small files.
+We still use traditional names for variables and outputs, but tend to use main only for top-level locals or resources (e.g. the project resource in the `project` module), or for those resources that would end up in very small files. For smaller modules, a single `variables.tf` and `outputs.tf` is usually enough, however larger modules tend to group variables and outputs in multiple files, for example `variables-iam.tf` in `modules/project`. 
 
 While some older modules and examples are still using three files, we are slowly bringing all code up to date and any new development should use descriptive file names.
 
