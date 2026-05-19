@@ -338,5 +338,12 @@ resource "google_container_node_pool" "nodepool" {
         mode = var.node_config.workload_metadata_config_mode
       }
     }
+    dynamic "advanced_machine_features" {
+      for_each = var.node_config.advanced_machine_features != null ? [""] : []
+      content {
+        enable_nested_virtualization = var.node_config.advanced_machine_features.enable_nested_virtualization
+        threads_per_core             = var.node_config.advanced_machine_features.threads_per_core
+      }
+    }
   }
 }
