@@ -11,17 +11,17 @@ resource "google_iam_deny_policy" "default" {
       deny_rule {
         denied_principals = rule.value.denied_principals
         dynamic "denial_condition" {
-          for_each = try(rule.value.denial_condition, null) == null ? [] : [""]
+          for_each = rule.value.denial_condition == null ? [] : [""]
           content {
-            title       = try(rule.value.denial_condition.title, null)
-            expression  = rule.value.denial_condition.expression
-            description = try(rule.value.denial_condition.description, null)
-            location    = try(rule.value.denial_condition.location, null)
+            title       = rule.value.denial_condition.title
+            expression  = templatestring(rule.value.denial_condition.expression, var.context.condition_vars)
+            description = rule.value.denial_condition.description
+            location    = rule.value.denial_condition.location
           }
         }
         denied_permissions    = rule.value.denied_permissions
-        exception_principals  = try(rule.value.exception_principals, [])
-        exception_permissions = try(rule.value.exception_permissions, [])
+        exception_principals  = rule.value.exception_principals
+        exception_permissions = rule.value.exception_permissions
       }
     }
   }

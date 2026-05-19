@@ -113,5 +113,6 @@ variable "iam_deny_policies" {
       exception_permissions = optional(list(string), [])
     }))
   }))
-  default = null
+  default  = {}
+  nullable = false
 }
