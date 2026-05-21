@@ -1,10 +1,10 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,20 +34,26 @@ values:
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
   module.looker.google_looker_instance.looker:
     admin_settings:
-      - allowed_email_domains:
-          - google.com
+    - allowed_email_domains:
+      - google.com
+    controlled_egress_config: []
+    controlled_egress_enabled: null
     custom_domain: []
     deny_maintenance_period: []
     encryption_config:
-      - {}
+    - {}
+    fips_enabled: null
+    gemini_enabled: null
     maintenance_window: []
     name: looker
     oauth_config:
-      - client_id: xxxxxxxxx
-        client_secret: xxxxxxxx
+    - client_id: xxxxxxxxx
+      client_secret: xxxxxxxx
+    periodic_export_config: []
     platform_edition: LOOKER_CORE_ENTERPRISE_ANNUAL
     private_ip_enabled: true
     project: test-looker
+    psc_enabled: false
     public_ip_enabled: false
     region: europe-west8
     reserved_range: null
@@ -56,7 +62,6 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     folder_id: '1122334455'
@@ -64,6 +69,7 @@ values:
     name: test-looker
     org_id: null
     project_id: test-looker
+    tags: null
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -136,11 +142,14 @@ values:
     timeouts: null
   module.vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
     delete_default_routes_on_create: false
     description: Terraform-managed.
     enable_ula_internal_ipv6: null
     name: my-network
     network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
     project: test-looker
     routing_mode: GLOBAL
     timeouts: null
@@ -159,6 +168,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: test-looker
     tags: null
@@ -172,14 +182,14 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: test-looker
     tags: null
     timeouts: null
   module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
-    deletion_policy: null
     reserved_peering_ranges:
-      - servicenetworking-googleapis-com-looker
+    - servicenetworking-googleapis-com-looker
     service: servicenetworking.googleapis.com
     timeouts: null
     update_on_creation_fail: null
