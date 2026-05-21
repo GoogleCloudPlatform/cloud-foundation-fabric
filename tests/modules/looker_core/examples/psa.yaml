@@ -18,7 +18,6 @@ values:
     controlled_egress_config: []
     controlled_egress_enabled: null
     custom_domain: []
-    deletion_policy: DEFAULT
     deny_maintenance_period: []
     fips_enabled: null
     gemini_enabled: null
@@ -40,7 +39,6 @@ values:
   module.project.google_project.project[0]:
     auto_create_network: false
     billing_account: 123456-123456-123456
-    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     folder_id: '1122334455'
@@ -99,7 +97,6 @@ values:
     auto_create_subnetworks: false
     delete_bgp_always_compare_med: false
     delete_default_routes_on_create: false
-    deletion_policy: DELETE
     description: Terraform-managed.
     enable_ula_internal_ipv6: null
     name: my-network
@@ -115,6 +112,20 @@ values:
     network: my-network
     project: test-looker
     timeouts: null
+  module.vpc.google_compute_route.gateway["directpath-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: my-network-directpath-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: test-looker
+    tags: null
+    timeouts: null
   module.vpc.google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
@@ -124,6 +135,7 @@ values:
     next_hop_ilb: null
     next_hop_instance: null
     next_hop_vpn_tunnel: null
+    params: []
     priority: 1000
     project: test-looker
     tags: null
@@ -143,7 +155,6 @@ values:
     tags: null
     timeouts: null
   module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
-    deletion_policy: DELETE
     reserved_peering_ranges:
     - servicenetworking-googleapis-com-looker
     service: servicenetworking.googleapis.com
