@@ -1,5 +1,5 @@
 resource "google_iam_deny_policy" "default" {
-  for_each     = var.iam_deny_policies == null ? {} : var.iam_deny_policies
+  for_each     = var.iam_deny_policies
   parent       = urlencode("cloudresourcemanager.googleapis.com/folders/${local.folder_number}")
   name         = each.key
   display_name = each.value.display_name
