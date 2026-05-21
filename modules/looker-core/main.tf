@@ -126,9 +126,5 @@ resource "google_looker_instance" "looker" {
       }
     }
   }
-  lifecycle {
-    ignore_changes = [
-      oauth_config # do not replace target oauth client updated on the console with default one
-    ]
-  }
+
 }
