@@ -13,8 +13,10 @@ resource "google_iam_deny_policy" "default" {
         dynamic "denial_condition" {
           for_each = rule.value.denial_condition == null ? [] : [""]
           content {
-            title       = rule.value.denial_condition.title
-            expression  = templatestring(rule.value.denial_condition.expression, var.context.condition_vars)
+            title = rule.value.denial_condition.title
+            expression = templatestring(
+              rule.value.denial_condition.expression, var.context.condition_vars
+            )
             description = rule.value.denial_condition.description
             location    = rule.value.denial_condition.location
           }
