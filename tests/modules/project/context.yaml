@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ values:
     billing_project: test-project
     condition: []
     content_type: null
+    deletion_policy: DELETE
     feed_id: test
     feed_output_config:
     - pubsub_destination:
@@ -40,6 +41,26 @@ values:
     - ALL
     parent: projects/my-project
     timeouts: null
+  google_iam_deny_policy.default["test-policy"]:
+    display_name: Test Deny Policy
+    name: test-policy
+    parent: cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-project
+    rules:
+    - deny_rule:
+      - denial_condition:
+        - description: null
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: null
+          title: Test Condition
+        denied_permissions:
+        - compute.googleapis.com/instances.create
+        denied_principals:
+        - user:test-user@example.com
+        exception_permissions: []
+        exception_principals:
+        - group:test-group@example.com
+      description: Test Rule
+    timeouts: null
   google_kms_crypto_key_iam_member.service_agent_cmek["key-0.compute-system"]:
     condition: []
     crypto_key_id: projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute
@@ -47,6 +68,7 @@ values:
   google_logging_metric.metrics["test-metric"]:
     bucket_name: logging.googleapis.com/projects/my-project/locations/global/buckets/audit-bucket
     bucket_options: []
+    deletion_policy: DELETE
     description: null
     disabled: null
     filter: resource.type="gce_instance"
@@ -57,6 +79,7 @@ values:
     value_extractor: null
   google_logging_project_sink.sink["test-pubsub"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: test-pubsub (Terraform-managed).
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
@@ -86,6 +109,7 @@ values:
         threshold_value: null
         trigger: []
       display_name: test-condition
+    deletion_policy: DELETE
     display_name: Test Alert
     documentation: []
     enabled: true
@@ -96,6 +120,7 @@ values:
     timeouts: null
     user_labels: null
   google_monitoring_notification_channel.channels["new-email"]:
+    deletion_policy: DELETE
     description: null
     display_name: null
     enabled: true
@@ -108,6 +133,7 @@ values:
     type: email
     user_labels: null
   google_monitoring_notification_channel.channels["new-pubsub"]:
+    deletion_policy: DELETE
     description: null
     display_name: null
     enabled: true
@@ -264,6 +290,7 @@ values:
     project: test-vpc-host
     role: roles/compute.networkUser
   google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: my-project
@@ -323,6 +350,7 @@ counts:
   google_cloud_asset_project_feed: 1
   google_compute_shared_vpc_service_project: 1
   google_essential_contacts_contact: 1
+  google_iam_deny_policy: 1
   google_kms_crypto_key_iam_member: 1
   google_logging_metric: 1
   google_logging_project_sink: 1
@@ -341,4 +369,36 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 38
+  resources: 39
+
+outputs:
+  alert_ids: __missing__
+  asset_search_results: {}
+  bigquery_reservations:
+    assignments: {}
+    reservations: {}
+  custom_role_id: {}
+  custom_roles: {}
+  default_service_accounts: __missing__
+  id: my-project
+  kms_autokeys: {}
+  name: my-project
+  network_tag_keys: {}
+  network_tag_values: {}
+  notification_channel_names: __missing__
+  notification_channels: __missing__
+  number: __missing__
+  organization_policies_ids: {}
+  project_id: my-project
+  quota_configs: {}
+  quotas: {}
+  scc_custom_sha_modules_ids: {}
+  service_agents: __missing__
+  services:
+  - compute.googleapis.com
+  sink_writer_identities: __missing__
+  tag_keys: {}
+  tag_values: {}
+  workload_identity_pool_ids: {}
+  workload_identity_provider_ids: {}
+  workload_identity_providers: {}
