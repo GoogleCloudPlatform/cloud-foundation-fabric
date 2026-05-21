@@ -260,7 +260,8 @@ module "projects-iam" {
   tags_config = {
     force_context_ids = true
   }
-  universe = each.value.universe
+  iam_deny_policies = lookup(each.value, "iam_deny_policies", {})
+  universe          = each.value.universe
   # we use explicit depends_on as this allows us passing name and prefix
   depends_on = [
     module.projects

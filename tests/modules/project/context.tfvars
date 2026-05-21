@@ -254,3 +254,21 @@ tags = {
 vpc_sc = {
   perimeter_name = "$vpc_sc_perimeters:default"
 }
+
+iam_deny_policies = {
+  test-policy = {
+    display_name = "Test Deny Policy"
+    rules = [
+      {
+        description          = "Test Rule"
+        denied_principals    = ["$iam_principals:myuser"]
+        denied_permissions   = ["compute.googleapis.com/instances.create"]
+        exception_principals = ["$iam_principals:mygroup"]
+        denial_condition = {
+          title      = "Test Condition"
+          expression = "resource.matchTag('$${organization.id}/environment', 'development')"
+        }
+      }
+    ]
+  }
+}

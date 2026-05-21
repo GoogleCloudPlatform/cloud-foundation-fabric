@@ -1,0 +1,58 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.organization.google_iam_deny_policy.default["conditional-key-deny"]:
+    display_name: Conditional SA Key Deny
+    name: conditional-key-deny
+    parent: cloudresourcemanager.googleapis.com%2Forganizations%2F1122334455
+    rules:
+    - deny_rule:
+      - denial_condition:
+        - description: Restrict access to specific IP ranges
+          expression: '!inIpRange(request.auth.access_levels, ''accessPolicies/123456789/accessLevels/trusted_ips'')'
+          location: null
+          title: ip-restriction
+        denied_permissions:
+        - iam.serviceAccountKeys.create
+        denied_principals:
+        - principalSet://goog/public:all
+        exception_permissions: []
+        exception_principals: []
+      description: Deny key creation outside of authorized IPs using a condition.
+    timeouts: null
+  module.organization.google_iam_deny_policy.default["prevent-sa-token-creation"]:
+    display_name: Prevent SA token creation
+    name: prevent-sa-token-creation
+    parent: cloudresourcemanager.googleapis.com%2Forganizations%2F1122334455
+    rules:
+    - deny_rule:
+      - denial_condition: []
+        denied_permissions:
+        - iam.serviceAccounts.getAccessToken
+        denied_principals:
+        - principalSet://goog/public:all
+        exception_permissions: []
+        exception_principals:
+        - principalSet://goog/group/gcp-admins@example.com
+      description: Deny service account token creation to all except the central admin
+        group.
+    timeouts: null
+
+counts:
+  google_iam_deny_policy: 2
+  modules: 1
+  resources: 2
+
+outputs: {}
