@@ -143,7 +143,8 @@ def test_e2e_hybrid_tuning_loop(tmp_path):
     '''
   fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
   skill_dir = os.path.join(fixtures_dir, 'mock-conversation-skill')
-  playbook_path = os.path.join(fixtures_dir, 'playbook_scripted_env_substitution.yaml')
+  playbook_path = os.path.join(fixtures_dir,
+                               'playbook_scripted_env_substitution.yaml')
   env_file_path = os.path.join(fixtures_dir, '.env.test')
 
   # Load env to prime the os.environ
@@ -171,7 +172,8 @@ def test_e2e_autonomous_tuning_loop(tmp_path):
   '''
   fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
   skill_dir = os.path.join(fixtures_dir, 'mock-conversation-skill')
-  playbook_path = os.path.join(fixtures_dir, 'playbook_autonomous_conversation.yaml')
+  playbook_path = os.path.join(fixtures_dir,
+                               'playbook_autonomous_conversation.yaml')
   env_file_path = os.path.join(fixtures_dir, '.env.test')
 
   harness.load_env_file(env_file_path)
@@ -195,7 +197,8 @@ def test_e2e_tool_calls_contain(tmp_path):
   '''
   fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
   skill_dir = os.path.join(fixtures_dir, 'mock-tool-use-skill')
-  playbook_path = os.path.join(fixtures_dir, 'playbook_autonomous_tool_use.yaml')
+  playbook_path = os.path.join(fixtures_dir,
+                               'playbook_autonomous_tool_use.yaml')
 
   result = harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
                                           skill_src=skill_dir)
@@ -214,11 +217,11 @@ def test_e2e_working_dir(tmp_path):
   '''
   fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
   skill_dir = os.path.join(fixtures_dir, 'mock-tool-use-skill')
-  
+
   # Create a specific subdirectory in tmp_path
   workdir_target = tmp_path / "workdir_target"
   workdir_target.mkdir()
-  
+
   # Dynamically create a playbook YAML file
   playbook_content = f"""# yaml-language-server: $schema=../../playbooks/playbook.schema.json
 name: "Tool Test with Workdir"
@@ -230,7 +233,8 @@ steps:
   playbook_path = tmp_path / "playbook_workdir.yaml"
   playbook_path.write_text(playbook_content)
 
-  result = harness.run_hybrid_tuning_loop(str(playbook_path), log_dir=str(tmp_path),
+  result = harness.run_hybrid_tuning_loop(str(playbook_path),
+                                          log_dir=str(tmp_path),
                                           skill_src=skill_dir)
 
   assert result is True
