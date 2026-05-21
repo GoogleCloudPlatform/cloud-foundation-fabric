@@ -330,7 +330,7 @@ def check_files_contain(files_contain: dict, workspace_dir: str) -> bool:
   '''Checks if specified files contain expected literal strings.
 
     Args:
-      files_contain: A dictionary mapping relative file paths to expected strings.
+      files_contain: A dictionary mapping relative file paths to a list of expected strings.
       workspace_dir: The temporary workspace directory path.
 
     Returns:
@@ -347,11 +347,12 @@ def check_files_contain(files_contain: dict, workspace_dir: str) -> bool:
     else:
       with open(full_path, 'r') as f:
         content = f.read()
-        if expected_content not in content:
-          print(
-              f"❌ [CHECK FAILED]: Expected content '{expected_content}' not found in '{file_path}'."
-          )
-          passed = False
+        for expected in expected_content:
+          if expected not in content:
+            print(
+                f"❌ [CHECK FAILED]: Expected content '{expected}' not found in '{file_path}'."
+            )
+            passed = False
   return passed
 
 
@@ -649,9 +650,9 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
             ] for k, v in success_criteria.get('tool_calls_contain', {}).items()
         },
         'files_contain': {
-            string.Template(k).safe_substitute(env_context):
-                string.Template(v).safe_substitute(env_context)
-            for k, v in success_criteria.get('files_contain', {}).items()
+            string.Template(k).safe_substitute(env_context): [
+                string.Template(item).safe_substitute(env_context) for item in v
+            ] for k, v in success_criteria.get('files_contain', {}).items()
         }
     }
 

@@ -31,10 +31,10 @@ Guide the user through the following sequence strictly in order. **Before starti
 - **Step 4:** Baseline Information Gathering (Org ID, Billing ID, Billing Access Scenarios)
 
 ### Phase 3: Bootstrap Project & IAM
-*Description:* Set up a temporary project for API quota tracking and assign the necessary organization-level IAM roles.\
+*Description:* Assign the necessary organization-level IAM roles and set up a temporary project for API quota tracking.\
 *Reference: [Bootstrap Project & IAM](references/phase3-bootstrap-and-iam.md)*
-- **Step 5:** Bootstrap Project Setup (Creation and API enablement)
-- **Step 6:** IAM Role Assignments
+- **Step 5:** IAM Role Assignments
+- **Step 6:** Bootstrap Project Setup (Creation and API enablement)
 
 ### Phase 4: Configuration & Wrap-up
 *Description:* Generate the FAST dataset configuration, handle existing organization policies, and prepare for the final Terraform apply.\

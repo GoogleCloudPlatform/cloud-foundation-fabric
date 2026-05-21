@@ -52,7 +52,10 @@ steps:
     expected_outcome: "The agent should ask the user about their access level to the selected Billing Account (e.g., scenarios 1, 2, or 3)."
 
   - user_input: "Scenario 2 (Billing User)"
-    expected_outcome: "The agent should note the limitations of this access level (no billing.admin role assigned) and ask if the user has a pre-existing project to use as the bootstrap project."
+    expected_outcome: "The agent should note the limitations of this access level (no billing.admin role assigned) and propose the IAM role assignments to be made."
+
+  - user_input: "Looks good, go ahead and assign the roles."
+    expected_outcome: "The agent should execute the IAM role assignments and then ask if the user has a pre-existing project to use as the bootstrap project."
 
   - user_input: "Yes, I have a pre-existing project."
     expected_outcome: "The agent should ask if the pre-existing project is already set as the active project in gcloud."
@@ -61,10 +64,7 @@ steps:
     expected_outcome: "The agent should fetch the current active Project ID, ask for confirmation, and offer to check/enable required APIs."
 
   - user_input: "Yes, that's the correct project. Yes, please check which services are enabled."
-    expected_outcome: "The agent should check and enable necessary APIs, then propose the IAM role assignments to be made."
-
-  - user_input: "Looks good, go ahead and assign the roles."
-    expected_outcome: "The agent should execute the IAM role assignments and then ask the user to select a configuration Dataset."
+    expected_outcome: "The agent should check and enable necessary APIs, and then ask the user to select a configuration Dataset."
 
   - user_input: "I'll use the classic dataset."
     expected_outcome: "The agent should ask the user for a base location for the resources and if there are any overrides."

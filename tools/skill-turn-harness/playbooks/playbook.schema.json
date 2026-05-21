@@ -108,10 +108,13 @@
             },
             "files_contain": {
               "type": "object",
-              "description": "A mapping of file paths to strings that must be found within them.",
+              "description": "A mapping of file paths to a list of strings that must be found within them.",
               "patternProperties": {
                 ".*": {
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               }
             },
