@@ -94,3 +94,39 @@ variable "iam_by_principals_conditional" {
     error_message = "IAM bindings with the same condition title must have identical expressions and descriptions."
   }
 }
+
+variable "iam_deny_policies" {
+  description = "IAM Deny policies to be applied to the project."
+  type = map(object({
+    display_name = optional(string)
+    rules = list(object({
+      description        = optional(string)
+      denied_principals  = list(string)
+      denied_permissions = list(string)
+      denial_condition = optional(object({
+        expression  = string
+        title       = optional(string)
+        description = optional(string)
+        location    = optional(string)
+      }))
+      exception_principals  = optional(list(string), [])
+      exception_permissions = optional(list(string), [])
+    }))
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    # Ensure denied_principals and denied_permissions are explicitly not null
+    # (to prevent HCL evaluation errors in loops) and contain at least one
+    # element (required by the GCP API).
+    condition = alltrue(flatten([
+      for k, v in var.iam_deny_policies : [
+        for r in v.rules : (
+          try(length(r.denied_principals) > 0, false) &&
+          try(length(r.denied_permissions) > 0, false)
+        )
+      ]
+    ]))
+    error_message = "Each rule in iam_deny_policies must have at least one denied principal and one denied permission."
+  }
+}

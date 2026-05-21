@@ -47,6 +47,7 @@ This module implements the creation and management of one GCP project including 
 - [Observability](#observability)
 - [Observability factory](#observability-factory)
 - [Workload Identity Federation](#workload-identity-federation)
+- [IAM Deny Policies](#iam-deny-policies)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -2245,6 +2246,55 @@ module "project" {
 # tftest modules=1 resources=7 inventory=wif.yaml
 ```
 
+## IAM Deny Policies
+
+[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions within the project, regardless of the roles they have been granted. 
+
+You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny. You can optionally define exception principals, exception permissions, and conditions to tailor the restriction.
+
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`). The module automatically leverages context interpolation for principal formatting if they are defined in your `var.context.iam_principals` mapping.
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "my-project"
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+
+  iam_deny_policies = {
+    "prevent-kms-destruction" = {
+      display_name = "Prevent KMS Key destruction"
+      rules = [
+        {
+          description        = "Deny destroying KMS key versions to all except the key admins group."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["cloudkms.googleapis.com/cryptoKeyVersions.destroy"]
+          exception_principals = [
+            "principalSet://goog/group/gcp-kms-admins@example.com"
+          ]
+        }
+      ]
+    }
+    "prevent-core-bucket-deletion" = {
+      display_name = "Prevent core bucket deletion"
+      rules = [
+        {
+          description        = "Deny deletion of any Cloud Storage bucket with the 'core-' prefix."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["storage.googleapis.com/buckets.delete"]
+          denial_condition = {
+            title       = "core_buckets_only"
+            description = "Applies only to buckets starting with 'core-'."
+            expression  = "resource.name.startsWith(\"projects/-/buckets/core-\")"
+          }
+        }
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=iam-deny-policies.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -2255,6 +2305,7 @@ module "project" {
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_project_feed</code> |
 | [bigquery-reservation.tf](./bigquery-reservation.tf) | None | <code>google_bigquery_reservation</code> · <code>google_bigquery_reservation_assignment</code> |
 | [cmek.tf](./cmek.tf) | Service Agent IAM Bindings for CMEK | <code>google_kms_crypto_key_iam_member</code> |
+| [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_project_iam_binding</code> · <code>google_project_iam_custom_role</code> · <code>google_project_iam_member</code> |
 | [identity-providers-defs.tf](./identity-providers-defs.tf) | Workload Identity provider definitions. |  |
 | [identity-providers.tf](./identity-providers.tf) | None | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
@@ -2308,6 +2359,7 @@ module "project" {
 | [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the project. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_autokeys](variables.tf#L221) | KMS Autokey key handles. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L239) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [lien_reason](variables.tf#L246) | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>null</code> |

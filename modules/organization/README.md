@@ -40,6 +40,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Tags](#tags)
   - [Tags Factory](#tags-factory)
 - [Workforce Identity](#workforce-identity)
+- [IAM Deny Policies](#iam-deny-policies)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1010,6 +1011,53 @@ module "org" {
 # tftest inventory=wfif.yaml
 ```
 
+## IAM Deny Policies
+
+[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions, regardless of the roles they have been granted. 
+
+You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny, and optionally allows you to define exception principals, exception permissions, and conditions.
+
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`).
+
+```hcl
+module "organization" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+
+  iam_deny_policies = {
+    "prevent-sa-token-creation" = {
+      display_name = "Prevent SA token creation"
+      rules = [
+        {
+          description        = "Deny service account token creation to all except the central admin group."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["iam.serviceAccounts.getAccessToken"]
+          exception_principals = [
+            "principalSet://goog/group/gcp-admins@example.com"
+          ]
+        }
+      ]
+    }
+    "conditional-key-deny" = {
+      display_name = "Conditional SA Key Deny"
+      rules = [
+        {
+          description        = "Deny key creation outside of authorized IPs using a condition."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["iam.serviceAccountKeys.create"]
+          denial_condition = {
+            title       = "ip-restriction"
+            description = "Restrict access to specific IP ranges"
+            expression  = "!inIpRange(request.auth.access_levels, 'accessPolicies/123456789/accessLevels/trusted_ips')"
+          }
+        }
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=iam-deny-policies.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -1017,6 +1065,7 @@ module "org" {
 | name | description | resources |
 |---|---|---|
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_organization_feed</code> |
+| [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> |
 | [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> · <code>google_iam_workforce_pool_provider_scim_tenant</code> |
 | [logging.tf](./logging.tf) | Log sinks and data access logs. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_settings</code> · <code>google_logging_organization_sink</code> · <code>google_organization_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
@@ -1056,6 +1105,7 @@ module "org" {
 | [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_data_access](variables-logging.tf#L17) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

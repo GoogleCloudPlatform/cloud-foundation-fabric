@@ -187,7 +187,7 @@ Note that the stage doesn't force you to create projects; factories also allow y
 
 The VPC factory allows for the definition of an arbitrary number of VPCs, along with their subnets, routes, firewall rules, and connectivity settings, all through YAML files.
 
-VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory of a dataset. This file contains the VPC's main configuration. Subnets, firewall rules, and VPNs are defined in subdirectories within each VPC's folder.
+VPCs are defined in `.config.yaml` files within the `vpcs/[vpc-name]` directory of a dataset. This file contains the VPC's main configuration. Subnets, firewall rules, VPNs, and VLAN attachments are defined in subdirectories within each VPC's folder. An optional `addresses.yaml` file can be placed in the VPC directory to define arbitrary addresses (external, internal, global, PSC).
 
 ### DNS
 
@@ -372,6 +372,7 @@ Internally created resources are mapped to context namespaces, and use specific 
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [factory-addresses.tf](./factory-addresses.tf) | Arbitrary addresses factory. | <code>net-address</code> |  |
 | [factory-cloudnat.tf](./factory-cloudnat.tf) | Cloud NAT factory. | <code>net-address</code> · <code>net-cloudnat</code> |  |
 | [factory-dns.tf](./factory-dns.tf) | DNS zones and RPZ factory. | <code>dns</code> · <code>dns-response-policy</code> |  |
 | [factory-firewall-policies.tf](./factory-firewall-policies.tf) | Firewall policies factory. | <code>net-firewall-policy</code> |  |
