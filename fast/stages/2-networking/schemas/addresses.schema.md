@@ -6,15 +6,15 @@
 
 *additional properties: false*
 
-- **external_addresses**: *object*
+- **external**: *object*
   <br>*additional properties: object*
-- **global_addresses**: *object*
+- **global**: *object*
   <br>*additional properties: object*
-- **internal_addresses**: *object*
+- **internal**: *object*
   <br>*additional properties: object*
-- **psa_addresses**: *object*
+- **psa**: *object*
   <br>*additional properties: object*
-- **psc_addresses**: *object*
+- **psc**: *object*
   <br>*additional properties: object*
 - **network_attachments**: *object*
   <br>*additional properties: object*

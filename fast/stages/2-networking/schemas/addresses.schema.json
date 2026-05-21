@@ -4,7 +4,7 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "external_addresses": {
+    "external": {
       "type": "object",
       "additionalProperties": {
         "type": "object",
@@ -28,7 +28,7 @@
         }
       }
     },
-    "global_addresses": {
+    "global": {
       "type": "object",
       "additionalProperties": {
         "type": "object",
@@ -40,7 +40,7 @@
         }
       }
     },
-    "internal_addresses": {
+    "internal": {
       "type": "object",
       "additionalProperties": {
         "type": "object",
@@ -58,7 +58,7 @@
         }
       }
     },
-    "psa_addresses": {
+    "psa": {
       "type": "object",
       "additionalProperties": {
         "type": "object",
@@ -73,7 +73,7 @@
         }
       }
     },
-    "psc_addresses": {
+    "psc": {
       "type": "object",
       "additionalProperties": {
         "type": "object",

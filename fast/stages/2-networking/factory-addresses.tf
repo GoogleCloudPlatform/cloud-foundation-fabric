@@ -16,17 +16,17 @@
 
 # tfdoc:file:description Arbitrary addresses factory.
 
-module "vpc_addresses" {
+module "vpc-addresses" {
   source   = "../../../modules/net-address"
   for_each = { for k, v in local.vpcs : k => v if length(v.addresses) > 0 }
 
   project_id = each.value.project_id
 
-  external_addresses  = try(each.value.addresses.external_addresses, {})
-  global_addresses    = try(each.value.addresses.global_addresses, {})
-  internal_addresses  = try(each.value.addresses.internal_addresses, {})
-  psa_addresses       = try(each.value.addresses.psa_addresses, {})
-  psc_addresses       = try(each.value.addresses.psc_addresses, {})
+  external_addresses  = try(each.value.addresses.external, {})
+  global_addresses    = try(each.value.addresses.global, {})
+  internal_addresses  = try(each.value.addresses.internal, {})
+  psa_addresses       = try(each.value.addresses.psa, {})
+  psc_addresses       = try(each.value.addresses.psc, {})
   network_attachments = try(each.value.addresses.network_attachments, {})
 
   context = {

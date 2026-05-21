@@ -14,19 +14,19 @@
 
 # yaml-language-server: $schema=../../../../schemas/addresses.schema.json
 
-external_addresses:
+external:
   test-ext:
     region: $locations:primary
 
-global_addresses:
+global:
   test-global: {}
 
-internal_addresses:
+internal:
   test-int:
     region: $locations:primary
     subnetwork: $subnets:core/europe-west1/core-default
 
-psc_addresses:
+psc:
   # 1. Regional PSC Address only
   psc-reg:
     region: $locations:primary
