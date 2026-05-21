@@ -14,9 +14,19 @@
       "type": "string",
       "description": "The model the test harness uses to grade the test and simulate the user (e.g., gemini-2.5-flash)."
     },
-    "working_dir": {
-      "type": "string",
-      "description": "The directory where the Gemini CLI should be executed. If omitted, a temporary isolated workspace is created."
+    "tmpdir": {
+      "type": "object",
+      "description": "Configuration for running in a temporary isolated workspace with optional symlinks.",
+      "properties": {
+        "link_paths": {
+          "type": "array",
+          "description": "Relative paths to symlink from the host repository (current CWD) into the temporary workspace.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "timeout": {
       "type": "integer",

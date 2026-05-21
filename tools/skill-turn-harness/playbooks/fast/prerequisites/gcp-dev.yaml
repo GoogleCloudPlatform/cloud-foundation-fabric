@@ -1,4 +1,14 @@
 # yaml-language-server: $schema=../../playbook.schema.json
+tmpdir:
+  link_paths:
+    - fast
+    - modules
+    - tools
+    - .yamllint
+    - GEMINI.md
+    - AGENTS.md
+    - README.md
+    - FACTORIES.md
 env:
   - BILLING_KEYWORD
   - GROUP

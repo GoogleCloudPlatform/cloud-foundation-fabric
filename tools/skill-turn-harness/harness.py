@@ -1,4 +1,18 @@
 #!/usr/bin/env python3
+
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 '''Hybrid Python/CLI Test Harness for Gemini Skills.
 
 This module provides a testing framework that executes Gemini CLI skills in an
@@ -457,6 +471,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   Returns:
     True if the playbook passes completely, False if any step fails.
   '''
+  log_dir = os.path.abspath(log_dir)
   os.makedirs(log_dir, exist_ok=True)
   with open(playbook_path, 'r') as f:
     playbook = yaml.safe_load(f)
@@ -490,13 +505,31 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     subprocess.run(['gemini', 'skills', 'link', skill_src, '--consent'],
                    check=True, capture_output=True)
 
-  working_dir = playbook.get('working_dir')
-  is_working_dir = bool(working_dir)
-  if working_dir:
-    workspace_dir = os.path.abspath(working_dir)
-  else:
+  tmpdir_config = playbook.get('tmpdir')
+  is_tmpdir = tmpdir_config is not None
+  original_cwd = os.getcwd()
+
+  if is_tmpdir:
     workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
     open(os.path.join(workspace_dir, '.project_root'), 'w').close()
+
+    link_paths = tmpdir_config.get('link_paths', [])
+    for path in link_paths:
+      src_abs = os.path.abspath(os.path.join(original_cwd, path))
+      dst_abs = os.path.join(workspace_dir, path)
+      os.makedirs(os.path.dirname(dst_abs), exist_ok=True)
+      try:
+        os.symlink(src_abs, dst_abs)
+        print(f'🔗 Symlinked: {path} -> {dst_abs}')
+      except Exception as e:
+        print(f'❌ [SETUP ERROR]: Failed to symlink {path}: {e}',
+              file=sys.stderr)
+        shutil.rmtree(workspace_dir)
+        sys.exit(1)
+
+    os.chdir(workspace_dir)
+  else:
+    workspace_dir = original_cwd
   print(f'--- Tuning: {playbook_name} | Workspace: {workspace_dir} ---')
   interaction_log = []
   log_prefix = generate_log_prefix(playbook_path)
@@ -753,13 +786,12 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       shutil.copy2(session_files[0], session_log_path)
       print(f'📄 Session JSON saved to: {session_log_path}')
 
-    if not keep_workspace and not is_working_dir:
-      # Cleanup the temporary workspace
-      shutil.rmtree(workspace_dir)
-    elif is_working_dir:
-      print(f'📁 Working directory preserved: {workspace_dir}')
-    else:
-      print(f'📁 Workspace preserved at: {workspace_dir}')
+    if is_tmpdir:
+      os.chdir(original_cwd)
+      if not keep_workspace:
+        shutil.rmtree(workspace_dir)
+      else:
+        print(f'📁 Workspace preserved at: {workspace_dir}')
 
     if skill_name:
       print(f'🧹 Unlinking local skill: {skill_name}')
