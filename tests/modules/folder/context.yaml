@@ -31,7 +31,6 @@ values:
     - ALL
     timeouts: null
   google_folder.folder[0]:
-    deletion_policy: DELETE
     deletion_protection: false
     display_name: Test Context
     parent: organizations/1234567890
@@ -120,7 +119,6 @@ values:
     kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
     timeouts: null
   google_logging_folder_sink.sink["test-pubsub"]:
-    deletion_policy: DELETE
     description: test-pubsub (Terraform-managed).
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false

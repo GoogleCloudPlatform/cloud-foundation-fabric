@@ -22,7 +22,6 @@ values:
     billing_project: test-project
     condition: []
     content_type: null
-    deletion_policy: DELETE
     feed_id: test
     feed_output_config:
     - pubsub_destination:
@@ -30,7 +29,6 @@ values:
     project: my-project
     timeouts: null
   google_compute_shared_vpc_service_project.shared_vpc_service[0]:
-    deletion_policy: null
     host_project: test-vpc-host
     service_project: my-project
     timeouts: null
@@ -68,7 +66,6 @@ values:
   google_logging_metric.metrics["test-metric"]:
     bucket_name: logging.googleapis.com/projects/my-project/locations/global/buckets/audit-bucket
     bucket_options: []
-    deletion_policy: DELETE
     description: null
     disabled: null
     filter: resource.type="gce_instance"
@@ -79,7 +76,6 @@ values:
     value_extractor: null
   google_logging_project_sink.sink["test-pubsub"]:
     custom_writer_identity: null
-    deletion_policy: DELETE
     description: test-pubsub (Terraform-managed).
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
@@ -109,7 +105,6 @@ values:
         threshold_value: null
         trigger: []
       display_name: test-condition
-    deletion_policy: DELETE
     display_name: Test Alert
     documentation: []
     enabled: true
@@ -120,7 +115,6 @@ values:
     timeouts: null
     user_labels: null
   google_monitoring_notification_channel.channels["new-email"]:
-    deletion_policy: DELETE
     description: null
     display_name: null
     enabled: true
@@ -133,7 +127,6 @@ values:
     type: email
     user_labels: null
   google_monitoring_notification_channel.channels["new-pubsub"]:
-    deletion_policy: DELETE
     description: null
     display_name: null
     enabled: true
@@ -182,7 +175,6 @@ values:
   google_project.project[0]:
     auto_create_network: false
     billing_account: null
-    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     folder_id: '6789012345'
@@ -290,7 +282,6 @@ values:
     project: test-vpc-host
     role: roles/compute.networkUser
   google_project_service.project_services["compute.googleapis.com"]:
-    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: my-project
