@@ -11,6 +11,7 @@ This module allows reserving Compute Engine external, global, and internal addre
   - [PSC addresses](#psc-addresses)
   - [IPSec Interconnect addresses](#ipsec-interconnect-addresses)
   - [PSC Network Attachments](#psc-network-attachments)
+  - [Use contexts](#use-contexts)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -216,6 +217,7 @@ module "addresses" {
   project_id = var.project_id
   network_attachments = {
     gce-0 = {
+      region = "europe-west8"
       subnet_self_link = (
         "projects/net-host/regions/europe-west8/subnetworks/gce"
       )
@@ -225,19 +227,66 @@ module "addresses" {
 }
 # tftest modules=1 resources=1 inventory=network-attachments.yaml
 ```
+
+### Use contexts
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "addresses" {
+  source     = "./fabric/modules/net-address"
+  project_id = "$project_ids:my-prj"
+  context = {
+    locations = {
+      primary-region   = "us-central1"
+      secondary-region = "europe-west1"
+    }
+    networks = {
+      shared-vpc = "projects/prj-host/global/networks/shared-vpc"
+    }
+    project_ids = {
+      my-prj = "my-project-1"
+    }
+    subnets = {
+      subnet-primary   = "projects/prj-host/regions/us-central1/subnetworks/sub-1"
+      subnet-secondary = "projects/prj-host/regions/europe-west1/subnetworks/sub-2"
+    }
+  }
+  internal_addresses = {
+    ilb-1 = {
+      purpose    = "SHARED_LOADBALANCER_VIP"
+      region     = "$locations:primary-region"
+      subnetwork = "$subnets:subnet-primary"
+    }
+    ilb-2 = {
+      address    = "10.0.16.102"
+      region     = "$locations:secondary-region"
+      subnetwork = "$subnets:subnet-secondary"
+    }
+  }
+  psc_addresses = {
+    one = {
+      address = "10.0.0.32"
+      network = "$networks:shared-vpc"
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=context.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L97) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
-| [external_addresses](variables.tf#L17) | Map of external addresses, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [global_addresses](variables.tf#L40) | List of global addresses to create. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [internal_addresses](variables.tf#L50) | Map of internal addresses to create, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ipsec_interconnect_addresses](variables.tf#L65) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [network_attachments](variables.tf#L84) | PSC network attachments, names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psa_addresses](variables.tf#L102) | Map of internal addresses used for Private Service Access. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psc_addresses](variables.tf#L114) | Map of internal addresses used for Private Service Connect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_id](variables.tf#L106) | Project where the addresses will be created. | <code>string</code> | ✓ |  |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [external_addresses](variables.tf#L29) | Map of external addresses, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [global_addresses](variables.tf#L55) | List of global addresses to create. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [internal_addresses](variables.tf#L65) | Map of internal addresses to create, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ipsec_interconnect_addresses](variables.tf#L80) | Map of internal addresses used for HPA VPN over Cloud Interconnect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_attachments](variables.tf#L93) | PSC network attachments, names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psa_addresses](variables.tf#L111) | Map of internal addresses used for Private Service Access. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [psc_addresses](variables.tf#L123) | Map of internal addresses used for Private Service Connect. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

@@ -6,7 +6,7 @@
 
 *additional properties: false*
 
-- **`^[a-z-]+[a-zA-Z0-9\.]+$`**: *object*
+- **`^(dry_run:)?[a-z-]+[a-zA-Z0-9\.]+$`**: *object*
   <br>*additional properties: false*
   - **inherit_from_parent**: *boolean*
   - **reset**: *boolean*

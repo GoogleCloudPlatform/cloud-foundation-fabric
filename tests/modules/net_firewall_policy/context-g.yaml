@@ -13,18 +13,18 @@
 # limitations under the License.
 
 values:
-  google_compute_network_firewall_policy.net-global[0]:
+  google_compute_network_firewall_policy.net_global[0]:
     description: null
     name: test-1
     project: foo-test-0
     timeouts: null
-  google_compute_network_firewall_policy_association.net-global["test"]:
+  google_compute_network_firewall_policy_association.net_global["test"]:
     attachment_target: projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0
     firewall_policy: test-1
     name: test-1-test
     project: foo-test-0
     timeouts: null
-  google_compute_network_firewall_policy_rule.net-global["egress/smtp"]:
+  google_compute_network_firewall_policy_rule.net_global["egress/smtp"]:
     action: deny
     description: null
     direction: EGRESS
@@ -62,7 +62,7 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     timeouts: null
     tls_inspect: null
-  google_compute_network_firewall_policy_rule.net-global["ingress/icmp"]:
+  google_compute_network_firewall_policy_rule.net_global["ingress/icmp"]:
     action: allow
     description: null
     direction: INGRESS

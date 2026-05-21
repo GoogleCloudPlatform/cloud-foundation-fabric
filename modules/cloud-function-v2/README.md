@@ -16,6 +16,7 @@ Cloud Function management, with support for IAM roles, optional bucket creation 
   - [Mounting secrets from Secret Manager](#mounting-secrets-from-secret-manager)
 - [VPC Access Connector](#vpc-access-connector)
   - [Direct VPC Egress](#direct-vpc-egress)
+- [Update Strategies](#update-strategies)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -350,7 +351,7 @@ module "cf_http" {
 # tftest fixtures=fixtures/vpc-connector.tf inventory=service-vpc-access-connector.yaml
 ```
 
-If creation of the VPC Access Connector is required, use the `vpc_connector.create` and `vpc_connector_create` variable which also supports optional attributes like number of instances, machine type, or throughput.
+If creation of the VPC Access Connector is required, set `vpc_connector_create` to configure the connector with optional attributes like number of instances, machine type, or throughput.
 
 ```hcl
 module "cf_http" {
@@ -361,9 +362,6 @@ module "cf_http" {
   bucket_name = var.bucket
   bundle_config = {
     path = "assets/sample-function/"
-  }
-  vpc_connector = {
-    create = true
   }
   vpc_connector_create = {
     ip_cidr_range = "10.10.10.0/28"
@@ -388,9 +386,6 @@ module "cf_http" {
   bucket_name = var.bucket
   bundle_config = {
     path = "assets/sample-function/"
-  }
-  vpc_connector = {
-    create = true
   }
   vpc_connector_create = {
     machine_type = "e2-standard-4"
@@ -430,6 +425,32 @@ module "cf_http" {
 }
 # tftest inventory=direct-vpc-egress.yaml
 ```
+
+## Update Strategies
+
+Cloud Functions v2 supports applying security updates to the underlying runtime automatically (`automatic_update_policy`) or only upon deployment (`on_deploy_update_policy`).
+
+These two policies are mutually exclusive and are exposed via the `function_config.automatic_update_policy` and `function_config.on_deploy_update_policy` boolean fields. Set at most one of these to `true`. If neither is provided, the provider defaults apply.
+
+```hcl
+module "cf-http" {
+  source      = "./fabric/modules/cloud-function-v2"
+  project_id  = var.project_id
+  region      = var.region
+  name        = "test-cf-http"
+  bucket_name = var.bucket
+  bundle_config = {
+    path = "assets/sample-function/"
+  }
+  function_config = {
+    automatic_update_policy = true
+  }
+  depends_on = [
+    google_project_iam_member.bucket_default_compute_account_grant,
+  ]
+}
+# tftest inventory=automatic-update-policy.yaml fixtures=fixtures/functions-default-sa-iam-grants.tf
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -437,9 +458,9 @@ module "cf_http" {
 |---|---|:---:|:---:|:---:|
 | [bucket_name](variables.tf#L27) | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
 | [bundle_config](variables.tf#L51) | Cloud function source. Path can point to a GCS object URI, or a local path. A local path to a zip archive will generate a GCS object using its basename, a folder will be zipped and the GCS object name inferred when not specified. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [name](variables.tf#L186) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L201) | Project id used for all resources. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L206) | Region used for all resources. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L190) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L205) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L210) | Region used for all resources. | <code>string</code> | ✓ |  |
 | [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [build_environment_variables](variables.tf#L33) | A set of key/value environment variable pairs available during build time. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [build_service_account](variables.tf#L39) | Build service account email. | <code>string</code> |  | <code>null</code> |
@@ -449,16 +470,16 @@ module "cf_http" {
 | [direct_vpc_egress](variables.tf#L108) | Direct VPC egress configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [docker_repository_id](variables.tf#L126) | User managed repository created in Artifact Registry. | <code>string</code> |  | <code>null</code> |
 | [environment_variables](variables.tf#L132) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [function_config](variables.tf#L140) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [iam](variables.tf#L162) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_settings](variables.tf#L168) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
-| [kms_key](variables.tf#L174) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key. | <code>string</code> |  | <code>null</code> |
-| [labels](variables.tf#L180) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L191) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| [secrets](variables.tf#L211) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [function_config](variables.tf#L140) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L166) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_settings](variables.tf#L172) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
+| [kms_key](variables.tf#L178) | Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources in key id format. If specified, you must also provide an artifact registry repository using the docker_repository_id field that was created with the same KMS crypto key. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L184) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L195) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| [secrets](variables.tf#L215) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account_config](variables-serviceaccount.tf#L17) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [trigger_config](variables.tf#L223) | Function trigger configuration. Leave null for HTTP trigger. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L241) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [trigger_config](variables.tf#L227) | Function trigger configuration. Leave null for HTTP trigger. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L245) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_connector_create](variables-vpcconnector.tf#L17) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs

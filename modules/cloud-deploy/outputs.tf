@@ -34,4 +34,3 @@ output "target_ids" {
   description = "Target ids."
   value       = values(google_clouddeploy_target.default)[*].id
 }
-

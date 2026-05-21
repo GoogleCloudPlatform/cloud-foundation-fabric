@@ -305,6 +305,21 @@
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
+    "service_agents_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_agents": {
+          "type": "boolean"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "tags": {
       "type": "object",
       "additionalProperties": {
@@ -424,6 +439,10 @@
                     "disabled": {
                       "type": "boolean"
                     },
+                    "detailed_audit_logging": {
+                      "type": "boolean",
+                      "default": false
+                    },
                     "identity_provider": {
                       "type": "object",
                       "oneOf": [
@@ -527,6 +546,44 @@
                           "$ref": "#/$defs/wfif_oauth2_client_attrs"
                         }
                       }
+                    },
+                    "scim_tenant": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "claim_mapping"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "claim_mapping": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "location": {
+                          "type": "string",
+                          "default": "global"
+                        },
+                        "display_name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "hard_delete": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "scim_usage": {
+                      "type": "string",
+                      "enum": [
+                        "ENABLED_FOR_GROUPS"
+                      ]
                     }
                   }
                 }
@@ -542,7 +599,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:roles/|$custom_roles:|organizations/|projects/)": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
@@ -572,7 +629,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -648,7 +705,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
           }
         }
       }
@@ -688,7 +745,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:roles/|\\$custom_roles:)"
+                "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
               }
             }
           }

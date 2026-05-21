@@ -20,7 +20,7 @@ values:
     exclusions: []
     filter: null
     name: all
-  module.billing-account.google_project_iam_member.bucket-sinks-binding["all"]:
+  module.billing-account.google_project_iam_member.bucket_sinks_binding["all"]:
     condition:
     - title: all bucket writer
     role: roles/logging.bucketWriter

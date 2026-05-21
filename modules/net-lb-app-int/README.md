@@ -23,6 +23,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
   - [SSL Certificates](#ssl-certificates)
   - [Backend Authenticated TLS](#backend-authenticated-tls)
   - [PSC service attachment](#psc-service-attachment)
+  - [Context](#context)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Files](#files)
@@ -627,6 +628,18 @@ module "ilb-l7" {
       backends = [{
         group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-2"
       }]
+      log_config = {
+        enable      = true
+        sample_rate = 0.5
+      }
+    }
+    audio = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-3"
+      }]
+      log_config = {
+        enable = false
+      }
     }
   }
   urlmap_config = {
@@ -638,10 +651,16 @@ module "ilb-l7" {
     path_matchers = {
       pathmap = {
         default_service = "default"
-        path_rules = [{
-          paths   = ["/video", "/video/*"]
-          service = "video"
-        }]
+        path_rules = [
+          {
+            paths   = ["/video", "/video/*"]
+            service = "video"
+          },
+          {
+            paths   = ["/audio", "/audio/*"]
+            service = "audio"
+          }
+        ]
       }
     }
   }
@@ -651,7 +670,7 @@ module "ilb-l7" {
   }
 }
 
-# tftest modules=1 resources=6
+# tftest modules=1 resources=7 inventory=urlmap.yaml
 ```
 
 ### SSL Certificates
@@ -775,6 +794,167 @@ module "ilb-l7" {
   }
 }
 # tftest modules=3 resources=10 fixtures=fixtures/compute-vm-group-bc.tf e2e
+```
+
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-lb-app-int"
+  name       = "ilb-test-0"
+  project_id = "$project_ids:test"
+  region     = "$locations:ew8"
+  vpc_config = {
+    network    = "$networks:test"
+    subnetwork = "$subnets:test"
+  }
+  address = "$addresses:test"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { group = "projects/foo-test-0/zones/europe-west8-b/instanceGroups/ig-b" },
+        { group = "ig-c" }
+      ]
+    }
+    neg-cloudrun = {
+      backends      = [{ group = "neg-cloudrun" }]
+      health_checks = []
+    }
+    neg-gce = {
+      backends       = [{ group = "neg-gce" }]
+      balancing_mode = "RATE"
+      max_rate       = { per_endpoint = 10 }
+    }
+    neg-hybrid = {
+      backends       = [{ group = "neg-hybrid" }]
+      balancing_mode = "RATE"
+      max_rate       = { per_endpoint = 10 }
+    }
+    neg-internet = {
+      backends      = [{ group = "neg-internet" }]
+      health_checks = []
+    }
+    neg-psc = {
+      backends      = [{ group = "neg-psc" }]
+      health_checks = []
+    }
+  }
+  group_configs = {
+    ig-c = {
+      zone = "$locations:ew8-c"
+      instances = [
+        "projects/foo-test-0/zones/europe-west8-c/instances/vm-c"
+      ]
+      named_ports = { http = 80 }
+    }
+  }
+  health_check_configs = {
+    default = {
+      http = {
+        host               = "hello.example.org"
+        port_specification = "USE_SERVING_PORT"
+      }
+    }
+  }
+  neg_configs = {
+    neg-cloudrun = {
+      cloudrun = {
+        region = "$locations:ew8"
+        target_service = {
+          name = "hello"
+        }
+      }
+    }
+    neg-gce = {
+      gce = {
+        network    = "$networks:test"
+        subnetwork = "$subnets:test"
+        zone       = "$locations:ew8-b"
+        endpoints = {
+          e-0 = {
+            instance   = "nginx-ew8-b"
+            ip_address = "$addresses:test"
+            port       = 80
+          }
+        }
+      }
+    }
+    neg-hybrid = {
+      hybrid = {
+        network = "$networks:test"
+        zone    = "$locations:ew8-b"
+        endpoints = {
+          e-0 = {
+            ip_address = "$addresses:test-hybrid"
+            port       = 80
+          }
+        }
+      }
+    }
+    neg-internet = {
+      internet = {
+        region   = "$locations:ew8"
+        use_fqdn = true
+        endpoints = {
+          e-0 = {
+            destination = "hello.example.org"
+            port        = 80
+          }
+        }
+      }
+    }
+    neg-psc = {
+      psc = {
+        region         = "$locations:ew8"
+        target_service = "projects/foo-test-0/regions/europe-west8/serviceAttachments/sa"
+        network        = "$networks:test"
+        subnetwork     = "$subnets:test"
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [
+          { paths = ["/cloudrun", "/cloudrun/*"], service = "neg-cloudrun" },
+          { paths = ["/gce", "/gce/*"], service = "neg-gce" },
+          { paths = ["/hybrid", "/hybrid/*"], service = "neg-hybrid" },
+          { paths = ["/internet", "/internet/*"], service = "neg-internet" },
+          { paths = ["/psc", "/psc/*"], service = "neg-psc" },
+        ]
+      }
+    }
+  }
+  context = {
+    addresses = {
+      test        = "10.0.0.10"
+      test-hybrid = "192.168.0.3"
+    }
+    locations = {
+      ew8   = "europe-west8"
+      ew8-b = "europe-west8-b"
+      ew8-c = "europe-west8-c"
+    }
+    networks = {
+      test = "projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0"
+    }
+    project_ids = {
+      test = "foo-test-0"
+    }
+    subnets = {
+      test = "projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce"
+    }
+  }
+}
+# tftest modules=1 resources=19 inventory=context.yaml
 ```
 
 ### Complex example
@@ -917,7 +1097,7 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 |---|---|---|
 | [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_region_backend_service</code> |
 | [groups.tf](./groups.tf) | None | <code>google_compute_instance_group</code> |
-| [health-check.tf](./health-check.tf) | Health check resource. | <code>google_compute_health_check</code> |
+| [health-check.tf](./health-check.tf) | Health check resources. | <code>google_compute_health_check</code> · <code>google_compute_region_health_check</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_forwarding_rule</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint</code> · <code>google_compute_region_network_endpoint_group</code> · <code>google_compute_region_ssl_certificate</code> · <code>google_compute_region_target_http_proxy</code> · <code>google_compute_region_target_https_proxy</code> · <code>google_compute_service_attachment</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [urlmap.tf](./urlmap.tf) | URL map resources. | <code>google_compute_region_url_map</code> |
@@ -964,11 +1144,12 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 | [forwarding_rule](outputs.tf#L36) | Forwarding rule resource. |  |
 | [group_ids](outputs.tf#L41) | Autogenerated instance group ids. |  |
 | [health_check_ids](outputs.tf#L48) | Autogenerated health check ids. |  |
-| [id](outputs.tf#L55) | Fully qualified forwarding rule id. |  |
-| [neg_ids](outputs.tf#L61) | Autogenerated network endpoint group ids. |  |
-| [psc_neg_ids](outputs.tf#L68) | Autogenerated PSC network endpoint group ids. |  |
-| [regional_neg_ids](outputs.tf#L75) | Autogenerated regional network endpoint group ids. |  |
-| [service_attachment_id](outputs.tf#L82) | Id of the service attachment. |  |
+| [id](outputs.tf#L60) | Fully qualified forwarding rule id. |  |
+| [neg_ids](outputs.tf#L66) | Autogenerated network endpoint group ids. |  |
+| [psc_neg_ids](outputs.tf#L73) | Autogenerated PSC network endpoint group ids. |  |
+| [regional_neg_ids](outputs.tf#L80) | Autogenerated regional network endpoint group ids. |  |
+| [service_attachment_id](outputs.tf#L87) | Id of the service attachment. |  |
+| [url_map_id](outputs.tf#L94) | Fully qualified URL map ID (resource path) for use in IAM conditions and API calls. |  |
 
 ## Fixtures
 

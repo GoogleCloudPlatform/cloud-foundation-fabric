@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,10 +134,12 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "log_config" {
-    for_each = var.backend_service_config.log_sample_rate == null ? [] : [""]
+    for_each = var.backend_service_config.log_config == null ? [] : [""]
     content {
-      enable      = true
-      sample_rate = var.backend_service_config.log_sample_rate
+      enable          = var.backend_service_config.log_config.enable
+      sample_rate     = var.backend_service_config.log_config.sample_rate
+      optional_mode   = var.backend_service_config.log_config.optional_mode
+      optional_fields = var.backend_service_config.log_config.optional_fields
     }
   }
 

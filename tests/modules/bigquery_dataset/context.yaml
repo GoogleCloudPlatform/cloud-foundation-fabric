@@ -48,14 +48,22 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     project: foo-test-0
     role: roles/viewer
-  google_tags_location_tag_binding.binding["foo"]:
+  google_tags_location_tag_binding.binding["bar"]:
+    location: europe-west8
+    tag_value: tagValues/1234567891
+    timeouts: null
+  google_tags_location_tag_binding.binding["baz"]:
     location: europe-west8
     tag_value: tagValues/1234567890
+    timeouts: null
+  google_tags_location_tag_binding.binding["foo"]:
+    location: europe-west8
+    tag_value: foo-test-0/dynamic_test/cc-123
     timeouts: null
 
 counts:
   google_bigquery_dataset: 1
   google_bigquery_dataset_iam_binding: 2
-  google_tags_location_tag_binding: 1
+  google_tags_location_tag_binding: 3
   modules: 0
-  resources: 4
+  resources: 6

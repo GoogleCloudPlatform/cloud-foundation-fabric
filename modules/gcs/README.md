@@ -417,42 +417,42 @@ module "bucket" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L224) | Bucket name suffix. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L228) | Bucket name suffix. | <code>string</code> | ✓ |  |
 | [autoclass](variables.tf#L17) | Enable autoclass to automatically transition objects to appropriate storage classes based on their access pattern. If set to true, storage_class must be set to STANDARD. Defaults to false. | <code>bool</code> |  | <code>null</code> |
 | [bucket_create](variables.tf#L23) | Create bucket. | <code>bool</code> |  | <code>true</code> |
 | [context](variables.tf#L30) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [cors](variables.tf#L46) | CORS configuration for the bucket. Defaults to null. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [custom_placement_config](variables.tf#L57) | The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [default_event_based_hold](variables.tf#L63) | Enable event based hold to new objects added to specific bucket, defaults to false. | <code>bool</code> |  | <code>null</code> |
-| [enable_hierarchical_namespace](variables.tf#L69) | Enables hierarchical namespace. | <code>bool</code> |  | <code>null</code> |
-| [enable_object_retention](variables.tf#L75) | Enables object retention on a storage bucket. | <code>bool</code> |  | <code>null</code> |
-| [encryption_key](variables.tf#L81) | KMS key that will be used for encryption. | <code>string</code> |  | <code>null</code> |
-| [force_destroy](variables.tf#L87) | Optional map to set force destroy keyed by name, defaults to false. | <code>bool</code> |  | <code>false</code> |
+| [cors](variables.tf#L50) | CORS configuration for the bucket. Defaults to null. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [custom_placement_config](variables.tf#L61) | The bucket's custom location configuration, which specifies the individual regions that comprise a dual-region bucket. If the bucket is designated as REGIONAL or MULTI_REGIONAL, the parameters are empty. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [default_event_based_hold](variables.tf#L67) | Enable event based hold to new objects added to specific bucket, defaults to false. | <code>bool</code> |  | <code>null</code> |
+| [enable_hierarchical_namespace](variables.tf#L73) | Enables hierarchical namespace. | <code>bool</code> |  | <code>null</code> |
+| [enable_object_retention](variables.tf#L79) | Enables object retention on a storage bucket. | <code>bool</code> |  | <code>null</code> |
+| [encryption_key](variables.tf#L85) | KMS key that will be used for encryption. | <code>string</code> |  | <code>null</code> |
+| [force_destroy](variables.tf#L91) | Optional map to set force destroy keyed by name, defaults to false. | <code>bool</code> |  | <code>false</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L23) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L38) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L53) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ip_filter](variables.tf#L93) | The bucket's IP filter configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [kms_autokeys](variables.tf#L104) | KMS Autokey key handles. If location is not specified the bucket location will be used. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L122) | Labels to be attached to all buckets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [lifecycle_rules](variables.tf#L128) | Bucket lifecycle rule. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [location](variables.tf#L177) | Bucket location. | <code>string</code> |  | <code>null</code> |
-| [logging_config](variables.tf#L187) | Bucket logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [managed_folders](variables.tf#L196) | Managed folders to create within the bucket in {PATH => CONFIG} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [notification_config](variables.tf#L229) | GCS Notification configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [objects_to_upload](variables.tf#L247) | Objects to be uploaded to bucket. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L273) | Optional prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
-| [project_id](variables.tf#L283) | Bucket project id. Only required when creating buckets, or notification config topics. | <code>string</code> |  | <code>null</code> |
-| [public_access_prevention](variables.tf#L302) | Prevents public access to the bucket. | <code>string</code> |  | <code>null</code> |
-| [requester_pays](variables.tf#L312) | Enables Requester Pays on a storage bucket. | <code>bool</code> |  | <code>null</code> |
-| [retention_policy](variables.tf#L318) | Bucket retention policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [rpo](variables.tf#L327) | Bucket recovery point objective. | <code>string</code> |  | <code>null</code> |
-| [soft_delete_retention](variables.tf#L337) | The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable. | <code>number</code> |  | <code>null</code> |
-| [storage_class](variables.tf#L343) | Bucket storage class. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
-| [tag_bindings](variables.tf#L353) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [uniform_bucket_level_access](variables.tf#L360) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
-| [versioning](variables.tf#L366) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>null</code> |
-| [website](variables.tf#L372) | Bucket website. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [ip_filter](variables.tf#L97) | The bucket's IP filter configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [kms_autokeys](variables.tf#L108) | KMS Autokey key handles. If location is not specified the bucket location will be used. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L126) | Labels to be attached to all buckets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [lifecycle_rules](variables.tf#L132) | Bucket lifecycle rule. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L181) | Bucket location. | <code>string</code> |  | <code>null</code> |
+| [logging_config](variables.tf#L191) | Bucket logging configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [managed_folders](variables.tf#L200) | Managed folders to create within the bucket in {PATH => CONFIG} format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [notification_config](variables.tf#L233) | GCS Notification configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [objects_to_upload](variables.tf#L251) | Objects to be uploaded to bucket. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L277) | Optional prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
+| [project_id](variables.tf#L287) | Bucket project id. Only required when creating buckets, or notification config topics. | <code>string</code> |  | <code>null</code> |
+| [public_access_prevention](variables.tf#L306) | Prevents public access to the bucket. | <code>string</code> |  | <code>null</code> |
+| [requester_pays](variables.tf#L316) | Enables Requester Pays on a storage bucket. | <code>bool</code> |  | <code>null</code> |
+| [retention_policy](variables.tf#L322) | Bucket retention policy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [rpo](variables.tf#L331) | Bucket recovery point objective. | <code>string</code> |  | <code>null</code> |
+| [soft_delete_retention](variables.tf#L341) | The duration in seconds that soft-deleted objects in the bucket will be retained and cannot be permanently deleted. Set to 0 to override the default and disable. | <code>number</code> |  | <code>null</code> |
+| [storage_class](variables.tf#L347) | Bucket storage class. | <code>string</code> |  | <code>&#34;STANDARD&#34;</code> |
+| [tag_bindings](variables.tf#L357) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [uniform_bucket_level_access](variables.tf#L364) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
+| [versioning](variables.tf#L370) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>null</code> |
+| [website](variables.tf#L376) | Bucket website. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

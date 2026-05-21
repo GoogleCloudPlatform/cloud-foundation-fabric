@@ -34,6 +34,8 @@ variable "workforce_identity_pools" {
       attribute_mapping          = optional(map(string), {})
       attribute_mapping_template = optional(string)
       disabled                   = optional(bool, false)
+      detailed_audit_logging     = optional(bool, false)
+      scim_usage                 = optional(string)
       identity_provider = object({
         oidc = optional(object({
           issuer_uri    = string
@@ -67,70 +69,101 @@ variable "workforce_identity_pools" {
           query_filter    = optional(string)
         }))
       }), {})
+      scim_tenant = optional(object({
+        id            = string
+        claim_mapping = map(string)
+        location      = optional(string, "global")
+        display_name  = optional(string)
+        description   = optional(string)
+        hard_delete   = optional(bool)
+      }))
     })), {})
   }))
   nullable = false
   default  = {}
   validation {
-    condition = alltrue([
-      for v in try(var.workforce_identity_pools.providers, {}) : contains(
-        ["azuread", "okta"],
-        coalesce(v.attribute_mapping_template, "azuread")
-      )
-    ])
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) : (
+          prov.attribute_mapping_template == null || contains(
+            ["azuread", "okta"],
+            prov.attribute_mapping_template
+          )
+        )
+      ]
+    ]))
     error_message = "Supported mapping templates are: azuread, okta."
   }
   validation {
-    condition = alltrue([
-      for v in try(var.workforce_identity_pools.providers, {}) : (
-        (try(v.identity_provider.oidc, null) == null ? 0 : 1) +
-        (try(v.identity_provider.saml, null) == null ? 0 : 1)
-      ) == 1
-    ])
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) : (
+          (try(prov.identity_provider.oidc, null) == null ? 0 : 1) +
+          (try(prov.identity_provider.saml, null) == null ? 0 : 1)
+        ) == 1
+      ]
+    ]))
     error_message = "Only one of identity_provider.oidc or identity_provider.saml can be defined."
   }
   validation {
-    condition = alltrue([
-      for v in try(var.workforce_identity_pools.providers, {}) : contains(
-        ["CODE", "ID_TOKEN"],
-        coalesce(try(
-          v.identity_provider.oidc.web_sso_config.response_type, null
-        ), "CODE")
-      )
-    ])
-    error_message = "Invalid OIDC web SSO config response type."
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) : (
+          try(prov.identity_provider.oidc.web_sso_config.response_type, null) == null || contains(
+            ["CODE", "ID_TOKEN"],
+            try(prov.identity_provider.oidc.web_sso_config.response_type, null)
+          )
+        )
+      ]
+    ]))
+    error_message = "Supported OIDC web SSO config response types are: CODE, ID_TOKEN."
   }
   validation {
-    condition = alltrue([
-      for v in try(var.workforce_identity_pools.providers, {}) : contains(
-        ["MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS", "ONLY_ID_TOKEN_CLAIMS"],
-        coalesce(try(
-          v.identity_provider.oidc.web_sso_config.assertion_claims_behavior, null
-        ), "MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS")
-      )
-    ])
-    error_message = "Invalid OIDC web SSO config assertion claims behavior."
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) : (
+          try(prov.identity_provider.oidc.web_sso_config.assertion_claims_behavior, null) == null || contains(
+            ["MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS", "ONLY_ID_TOKEN_CLAIMS"],
+            try(prov.identity_provider.oidc.web_sso_config.assertion_claims_behavior, null)
+          )
+        )
+      ]
+    ]))
+    error_message = "Supported OIDC web SSO config assertion claims behaviors are: MERGE_USER_INFO_OVER_ID_TOKEN_CLAIMS, ONLY_ID_TOKEN_CLAIMS."
   }
   validation {
-    condition = alltrue([
-      for v in try(var.workforce_identity_pools.providers, {}) : contains(
-        ["AZURE_AD_GROUPS_MAIL", "AZURE_AD_GROUPS_ID"],
-        coalesce(try(
-          v.oauth2_client_config.extended_attributes.attributes_type, null
-        ), "AZURE_AD_GROUPS_MAIL")
-      )
-    ])
-    error_message = "Invalid AzureAD attribute type in OAuth 2.0 client extended attributes.."
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) : (
+          try(prov.oauth2_client_config.extended_attributes.attributes_type, null) == null || contains(
+            ["AZURE_AD_GROUPS_MAIL", "AZURE_AD_GROUPS_ID"],
+            try(prov.oauth2_client_config.extended_attributes.attributes_type, null)
+          )
+        )
+      ]
+    ]))
+    error_message = "Supported AzureAD attribute types in OAuth 2.0 client extended attributes are: AZURE_AD_GROUPS_MAIL, AZURE_AD_GROUPS_ID."
   }
   validation {
-    condition = alltrue([
-      for v in try(var.workforce_identity_pools.providers, {}) : contains(
-        ["AZURE_AD_GROUPS_MAIL", "AZURE_AD_GROUPS_ID"],
-        coalesce(try(
-          v.oauth2_client_config.extra_attributes.attributes_type, null
-        ), "AZURE_AD_GROUPS_MAIL")
-      )
-    ])
-    error_message = "Invalid AzureAD attribute type in OAuth 2.0 client extra attributes.."
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) : (
+          try(prov.oauth2_client_config.extra_attributes.attributes_type, null) == null || contains(
+            ["AZURE_AD_GROUPS_MAIL", "AZURE_AD_GROUPS_ID"],
+            try(prov.oauth2_client_config.extra_attributes.attributes_type, null)
+          )
+        )
+      ]
+    ]))
+    error_message = "Supported AzureAD attribute types in OAuth 2.0 client extra attributes are: AZURE_AD_GROUPS_MAIL, AZURE_AD_GROUPS_ID."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for pool in values(var.workforce_identity_pools) : [
+        for prov in values(pool.providers) :
+        prov.scim_usage == null || prov.scim_usage == "ENABLED_FOR_GROUPS"
+      ]
+    ]))
+    error_message = "Supported scim_usage values are: ENABLED_FOR_GROUPS."
   }
 }

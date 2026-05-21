@@ -18,27 +18,25 @@
 
 locals {
   _sa_raw = yamldecode(file("${path.module}/service-agents.yaml"))
-  _sa0 = {
+  service_agents = {
     for agent in local._sa_raw :
     agent.name => {
-      create_command = (
-        "gcloud beta services identity create --service=${agent.api} --organization=${local.organization_id_numeric}"
-      )
+      name         = agent.name
+      api          = agent.api
       display_name = agent.display_name
-      email = templatestring(agent.identity, {
-        organization_number = local.organization_id_numeric
-      })
-
-    }
-  }
-  service_agents = {
-    for k, v in local._sa0 :
-    k => merge(v, {
-      iam_email = "serviceAccount:${v.email}"
-    })
+      email        = templatestring(agent.identity, { organization_number = local.organization_id_numeric })
+      iam_email    = "serviceAccount:${templatestring(agent.identity, { organization_number = local.organization_id_numeric })}"
+    } if contains(var.service_agents_config.services, agent.api)
   }
   service_agents_ctx = {
     for k, v in local.service_agents :
     "$service_agents:${k}" => v.iam_email
   }
+}
+
+resource "google_organization_service_identity" "default" {
+  provider     = google-beta
+  for_each     = var.service_agents_config.create_agents ? local.service_agents : {}
+  organization = local.organization_id_numeric
+  service      = each.value.api
 }

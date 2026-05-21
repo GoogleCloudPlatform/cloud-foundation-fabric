@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,12 @@ variable "backend_service_config" {
       drop_traffic_if_unhealthy = optional(bool)
       ratio                     = optional(number)
     }))
-    log_sample_rate  = optional(number)
+    log_config = optional(object({
+      enable          = optional(bool)
+      sample_rate     = optional(number)
+      optional_mode   = optional(string)
+      optional_fields = optional(list(string))
+    }))
     name             = optional(string)
     description      = optional(string, "Terraform managed.")
     protocol         = optional(string, "UNSPECIFIED")

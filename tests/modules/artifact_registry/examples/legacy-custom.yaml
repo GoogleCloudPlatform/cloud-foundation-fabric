@@ -1,0 +1,57 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.legacy_custom_repo.google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    description: Terraform-managed registry
+    docker_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    format: MAVEN
+    kms_key_name: null
+    labels: null
+    location: europe-west1
+    maven_config: []
+    mode: REMOTE_REPOSITORY
+    project: myproject
+    remote_repository_config:
+    - apt_repository: []
+      common_repository: []
+      description: null
+      disable_upstream_validation: null
+      docker_repository: []
+      maven_repository:
+      - custom_repository:
+        - uri: https://example.com
+        public_repository: null
+      npm_repository: []
+      python_repository: []
+      upstream_credentials: []
+      yum_repository: []
+    repository_id: legacy-custom
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    virtual_repository_config: []
+    vulnerability_scanning_config:
+    - enablement_config: null
+
+counts:
+  google_artifact_registry_repository: 1
+  modules: 1
+  resources: 1
+
+outputs: {}

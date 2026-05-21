@@ -65,11 +65,9 @@ module "folder-1" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["org_policies", "scc_sha_custom_modules"], k)
+    if contains(["scc_sha_custom_modules"], k)
   }
-  org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -88,6 +86,7 @@ module "folder-1-iam" {
   id            = module.folder-1[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  org_policies  = lookup(each.value, "org_policies", {})
   # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
     for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
@@ -95,18 +94,25 @@ module "folder-1-iam" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["pam_entitlements"], k)
+    if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
@@ -132,11 +138,9 @@ module "folder-2" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["org_policies", "scc_sha_custom_modules"], k)
+    if contains(["scc_sha_custom_modules"], k)
   }
-  org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -160,6 +164,7 @@ module "folder-2-iam" {
   id            = module.folder-2[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  org_policies  = lookup(each.value, "org_policies", {})
   # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
     for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
@@ -167,21 +172,28 @@ module "folder-2-iam" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["pam_entitlements"], k)
+    if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-1 : k => v.id
     })
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
@@ -207,11 +219,9 @@ module "folder-3" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["org_policies", "scc_sha_custom_modules"], k)
+    if contains(["scc_sha_custom_modules"], k)
   }
-  org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -235,6 +245,7 @@ module "folder-3-iam" {
   id            = module.folder-3[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  org_policies  = lookup(each.value, "org_policies", {})
   # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
     for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
@@ -242,21 +253,28 @@ module "folder-3-iam" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["pam_entitlements"], k)
+    if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
   iam_by_principals             = lookup(each.value, "iam_by_principals", {})
   iam_by_principals_additive    = lookup(each.value, "iam_by_principals_additive", {})
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-2 : k => v.id
     })
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids
@@ -282,11 +300,9 @@ module "folder-4" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["org_policies", "scc_sha_custom_modules"], k)
+    if contains(["scc_sha_custom_modules"], k)
   }
-  org_policies            = lookup(each.value, "org_policies", {})
   pam_entitlements        = lookup(each.value, "pam_entitlements", {})
-  tag_bindings            = lookup(each.value, "tag_bindings", {})
   assured_workload_config = lookup(each.value, "assured_workload_config", null)
   logging_settings = anytrue([
     try(each.value.logging.storage_location, null) != null,
@@ -310,6 +326,7 @@ module "folder-4-iam" {
   id            = module.folder-4[each.key].id
   asset_feeds   = lookup(each.value, "asset_feeds", {})
   asset_search  = lookup(each.value, "asset_search", {})
+  org_policies  = lookup(each.value, "org_policies", {})
   # we do anything that can refer to IAM and custom roles in this call
   factories_config = {
     for k, v in lookup(each.value, "factories_config", {}) : k => try(pathexpand(
@@ -317,9 +334,10 @@ module "folder-4-iam" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if contains(["pam_entitlements"], k)
+    if contains(["pam_entitlements", "org_policies"], k)
   }
   autokey_config                = lookup(each.value, "autokey_config", null)
+  contacts                      = lookup(each.value, "contacts", {})
   iam                           = lookup(each.value, "iam", {})
   iam_bindings                  = lookup(each.value, "iam_bindings", {})
   iam_bindings_additive         = lookup(each.value, "iam_bindings_additive", {})
@@ -328,10 +346,16 @@ module "folder-4-iam" {
   iam_by_principals_conditional = lookup(each.value, "iam_by_principals_conditional", {})
   logging_data_access           = lookup(each.value, "data_access_logs", {})
   logging_sinks                 = try(each.value.logging.sinks, {})
+  tag_bindings                  = lookup(each.value, "tag_bindings", {})
+  iam_deny_policies             = lookup(each.value, "iam_deny_policies", {})
   context = merge(local.ctx, {
     folder_ids = merge(local.ctx.folder_ids, {
       for k, v in module.folder-3 : k => v.id
     })
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     iam_principals  = local.ctx_iam_principals
     kms_keys        = merge(local.ctx.kms_keys, local.kms_keys)
     project_ids     = local.ctx_project_ids

@@ -1,0 +1,36 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../schemas/project.schema.json
+
+parent: $folder_ids:data-platform
+name: prod-dp-core-0
+services:
+  - bigquery.googleapis.com
+  - datacatalog.googleapis.com
+  - logging.googleapis.com
+  - monitoring.googleapis.com
+  - storage.googleapis.com
+  # Uncomment the following lines to enable a centralized Composer environment
+  # - composer.googleapis.com
+# service_accounts:
+  # Uncomment the following lines to enable a centralized Composer environment
+  # composer:
+  #   iam_project_roles:
+  #     roles/composer.worker:
+  #       - $iam_principals:service_accounts/_self_/composer
+factories_config:
+  aspect_types: aspect-types/core-0
+  tags: tags/core-0
+  data_catalog_taxonomy: taxonomies/tags.yaml

@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
+locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
+  project_id = lookup(
+    local.ctx.project_ids, var.project_id, var.project_id
+  )
+}
+
 resource "google_compute_global_address" "global" {
   for_each    = var.global_addresses
-  project     = var.project_id
+  project     = local.project_id
   name        = coalesce(each.value.name, each.key)
   description = each.value.description
   ip_version  = each.value.ipv6 != null ? "IPV6" : "IPV4"
@@ -25,7 +37,7 @@ resource "google_compute_global_address" "global" {
 resource "google_compute_address" "external" {
   provider           = google-beta
   for_each           = var.external_addresses
-  project            = var.project_id
+  project            = local.project_id
   name               = coalesce(each.value.name, each.key)
   address_type       = "EXTERNAL"
   description        = each.value.description
@@ -33,14 +45,20 @@ resource "google_compute_address" "external" {
   ipv6_endpoint_type = try(each.value.ipv6.endpoint_type, null)
   labels             = each.value.labels
   network_tier       = each.value.tier
-  region             = each.value.region
-  subnetwork         = each.value.subnetwork
+  region = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
+  subnetwork = try(lookup(
+    local.ctx.subnets,
+    each.value.subnetwork,
+    each.value.subnetwork
+  ), null)
 }
 
 resource "google_compute_address" "internal" {
   provider     = google-beta
   for_each     = var.internal_addresses
-  project      = var.project_id
+  project      = local.project_id
   name         = coalesce(each.value.name, each.key)
   address      = each.value.address
   address_type = "INTERNAL"
@@ -48,33 +66,41 @@ resource "google_compute_address" "internal" {
   ip_version   = each.value.ipv6 != null ? "IPV6" : "IPV4"
   labels       = coalesce(each.value.labels, {})
   purpose      = each.value.purpose
-  region       = each.value.region
-  subnetwork   = each.value.subnetwork
+  region = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
+  subnetwork = lookup(
+    local.ctx.subnets, each.value.subnetwork, each.value.subnetwork
+  )
 }
 
 resource "google_compute_global_address" "psa" {
-  for_each      = var.psa_addresses
-  project       = var.project_id
-  name          = coalesce(each.value.name, each.key)
-  description   = each.value.description
-  address       = each.value.address
-  address_type  = "INTERNAL"
-  network       = each.value.network
+  for_each     = var.psa_addresses
+  project      = local.project_id
+  name         = coalesce(each.value.name, each.key)
+  description  = each.value.description
+  address      = each.value.address
+  address_type = "INTERNAL"
+  network = lookup(
+    local.ctx.networks, each.value.network, each.value.network
+  )
   prefix_length = each.value.prefix_length
   purpose       = "VPC_PEERING"
-  # labels       = lookup(var.internal_address_labels, each.key, {})
 }
 
 resource "google_compute_address" "ipsec_interconnect" {
-  for_each      = var.ipsec_interconnect_addresses
-  project       = var.project_id
-  name          = coalesce(each.value.name, each.key)
-  description   = each.value.description
-  address       = each.value.address
-  address_type  = "INTERNAL"
-  region        = each.value.region
-  network       = each.value.network
+  for_each     = var.ipsec_interconnect_addresses
+  project      = local.project_id
+  name         = coalesce(each.value.name, each.key)
+  description  = each.value.description
+  address      = each.value.address
+  address_type = "INTERNAL"
+  network = lookup(
+    local.ctx.networks, each.value.network, each.value.network
+  )
   prefix_length = each.value.prefix_length
   purpose       = "IPSEC_INTERCONNECT"
+  region = lookup(
+    local.ctx.locations, each.value.region, each.value.region
+  )
 }
-

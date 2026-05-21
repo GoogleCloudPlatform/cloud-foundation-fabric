@@ -5,12 +5,15 @@ This module simplifies the creation of repositories using Google Cloud Artifact 
 <!-- BEGIN TOC -->
 - [Simple Docker Repository](#simple-docker-repository)
 - [Remote and Virtual Repositories](#remote-and-virtual-repositories)
+- [Remote Docker registry with credentials](#remote-docker-registry-with-credentials)
 - [Additional Docker and Maven Options](#additional-docker-and-maven-options)
 - [Other Formats](#other-formats)
 - [Cleanup Policies](#cleanup-policies)
 - [IAM](#iam)
 - [Variables](#variables)
 - [Outputs](#outputs)
+- [Tests](#tests)
+  - [Legacy Custom Repository (Deprecated)](#legacy-custom-repository-deprecated)
 <!-- END TOC -->
 
 ## Simple Docker Repository
@@ -95,6 +98,60 @@ module "registry-virtual" {
 }
 
 # tftest modules=3 resources=3 inventory=remote-virtual.yaml
+```
+
+## Remote Docker registry with credentials
+
+```hcl
+
+module "project" {
+  source          = "./fabric/modules/project"
+  name            = "ar"
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  parent          = var.folder_id
+  services = [
+    "artifactregistry.googleapis.com",
+  ]
+}
+
+module "registry-mirror" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = module.project.id
+  location   = "europe-west1"
+  name       = "mirror"
+  format = {
+    docker = {
+      remote = {
+        common_repository = "https://example.com"
+        upstream_credentials = {
+          username                = "myuser"
+          password_secret_version = "${module.secret-manager.ids["example-com-password"]}/versions/latest"
+        }
+      }
+    }
+  }
+}
+
+
+module "secret-manager" {
+  source     = "./fabric/modules/secret-manager"
+  project_id = module.project.id
+  secrets = {
+    example-com-password = {
+      global_replica_locations = {
+        europe-west1 = null
+      }
+      iam = {
+        "roles/secretmanager.secretAccessor" = [
+          module.project.service_agents["artifactregistry"].iam_email
+        ]
+      }
+    }
+  }
+}
+
+# tftest modules=3 resources=7 inventory=remote-credentials.yaml
 ```
 
 ## Additional Docker and Maven Options
@@ -312,22 +369,22 @@ module "additive_iam" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [cleanup_policies](variables.tf#L17) | Object containing details about the cleanup policies for an Artifact Registry repository. | <code>map&#40;object&#40;&#123;&#8230;default &#61; null</code> | ✓ |  |
-| [format](variables.tf#L79) | Repository format. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [location](variables.tf#L229) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L234) | Registry name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L239) | Registry project id. | <code>string</code> | ✓ |  |
+| [format](variables.tf#L83) | Repository format. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L236) | Registry location. Use `gcloud beta artifacts locations list' to get valid values. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L241) | Registry name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L246) | Registry project id. | <code>string</code> | ✓ |  |
 | [cleanup_policy_dry_run](variables.tf#L38) | If true, the cleanup pipeline is prevented from deleting versions in this repository. | <code>bool</code> |  | <code>null</code> |
 | [context](variables.tf#L44) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L61) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
-| [enable_vulnerability_scanning](variables.tf#L67) | Whether vulnerability scanning should be enabled in the repository. | <code>bool</code> |  | <code>null</code> |
-| [encryption_key](variables.tf#L73) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
+| [description](variables.tf#L65) | An optional description for the repository. | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
+| [enable_vulnerability_scanning](variables.tf#L71) | Whether vulnerability scanning should be enabled in the repository. | <code>bool</code> |  | <code>null</code> |
+| [encryption_key](variables.tf#L77) | The KMS key name to use for encryption at rest. | <code>string</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L36) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L43) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L58) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L73) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid cycle errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L223) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L244) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables.tf#L251) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L230) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L251) | Tag bindings for this repository, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [universe](variables.tf#L258) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -338,3 +395,28 @@ module "additive_iam" {
 | [repository](outputs.tf#L54) | Repository object. |  |
 | [url](outputs.tf#L64) | Repository URL. |  |
 <!-- END TFDOC -->
+## Tests
+
+These tests are used to verify specific behaviors and backward compatibility. They are not intended as general examples.
+
+### Legacy Custom Repository (Deprecated)
+
+This test ensures that the deprecated `custom_repository` configuration still works for backward compatibility. It should be removed once support for `custom_repository` is fully dropped.
+
+```hcl
+module "legacy_custom_repo" {
+  source     = "./fabric/modules/artifact-registry"
+  project_id = "myproject"
+  location   = "europe-west1"
+  name       = "legacy-custom"
+  format = {
+    maven = {
+      remote = {
+        custom_repository = "https://example.com"
+      }
+    }
+  }
+}
+# tftest modules=1 resources=1 inventory=legacy-custom.yaml
+```
+

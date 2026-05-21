@@ -64,5 +64,3 @@ resource "google_monitoring_notification_channel" "channels" {
     }
   }
 }
-
-

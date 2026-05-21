@@ -140,7 +140,7 @@ For production/airgapped usage, customers may also mirror modules to a private r
 ## Should you choose Fabric or CFT?
 
 > You/Your organization is knowledgeable in Terraform and interested in forking and owning a collection of modules.
-  
+
   Fabric is a better choice as it bootstraps you with a collection of modules out of the box that can be customized exactly to fit your organization needs.
 
 > You/Your organization is getting started with Terraform and interested in GCP best practices out of the box.
@@ -148,11 +148,11 @@ For production/airgapped usage, customers may also mirror modules to a private r
   CFT is a better choice as it allows you to directly reference specific modules from the registry and provide opinionated configuration by default.
 
 > You/Your organization is looking to rapidly prototype some functionality on GCP.
-  
+
   Fabric is a better choice. Being a mono repo it allows you to get started quickly with all your source code in one place for easier debugging.
 
 > You/Your organization has existing infrastructure and processes but want to start adopting IaC gradually.
-  
+
   CFT is designed to be modular and off the shelf, providing higher level abstractions to product groups which allows certain teams to adopt Terraform without maintenance burden while allowing others to follow existing practices.
 
 ## Using Fabric and CFT together

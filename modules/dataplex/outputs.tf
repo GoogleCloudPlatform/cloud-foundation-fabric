@@ -33,4 +33,3 @@ output "zones" {
   description = "The zone name of Dataplex Lake."
   value       = distinct(local.zone_assets[*]["zone_name"])
 }
-

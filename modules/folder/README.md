@@ -9,6 +9,7 @@ This module allows the creation and management of folders, including support for
 - [Assured Workload Folder](#assured-workload-folder)
 - [Privileged Access Manager (PAM) Entitlements](#privileged-access-manager-pam-entitlements)
   - [Privileged Access Manager (PAM) Entitlements Factory](#privileged-access-manager-pam-entitlements-factory)
+- [Service Agents](#service-agents)
 - [Organization policies](#organization-policies)
   - [Organization Policy Factory](#organization-policy-factory)
 - [Hierarchical Firewall Policy Attachments](#hierarchical-firewall-policy-attachments)
@@ -22,6 +23,7 @@ This module allows the creation and management of folders, including support for
 - [Cloud Asset Search](#cloud-asset-search)
 - [Cloud Asset Inventory Feeds](#cloud-asset-inventory-feeds)
 - [Tags](#tags)
+- [IAM Deny Policies](#iam-deny-policies)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -135,7 +137,7 @@ module "folder" {
 
 Note that using PAM entitlements requires specific roles to be granted to the users and groups that will be using them. For more information, see the [official documentation](https://cloud.google.com/iam/docs/pam-permissions-and-setup#before-you-begin).
 
-Additionally, the Privileged Access Manager Service Agent must be created and granted the `roles/privilegedaccessmanager.folderServiceAgent` role. The service agent is not created automatically, and you can find the `gcloud` command to create it in the `service_agents` output of this module. For more information on service agents, see the [official documentation](https://cloud.google.com/iam/docs/service-agents). Refer to the [organization module's documentation](../organization/README.md#privileged-access-manager-pam-entitlements) for an example on how to grant the required role.
+Additionally, the Privileged Access Manager Service Agent must be created and granted the `roles/privilegedaccessmanager.folderServiceAgent` role. The service agent can be created automatically by adding `privilegedaccessmanager.googleapis.com` to the `services` list in the `service_agents_config` variable. Refer to the [organization module's documentation](../organization/README.md#privileged-access-manager-pam-entitlements) for an example on how to grant the required role.
 
 ```hcl
 module "folder" {
@@ -177,6 +179,26 @@ module "folder" {
     pam_entitlements = "configs/pam-entitlements/"
   }
 }
+```
+
+## Service Agents
+
+The module allows managing service agents at the folder level. Service agent creation is triggered by adding them to the `service_agents_config.services` variable.
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+  service_agents_config = {
+    services = [
+      "osconfig.googleapis.com",
+      "privilegedaccessmanager.googleapis.com",
+      "progressiverollout.googleapis.com"
+    ]
+  }
+}
+# tftest inventory=agents.yaml
 ```
 
 ## Organization policies
@@ -705,6 +727,54 @@ module "folder" {
 # tftest modules=2 resources=5 inventory=tags.yaml e2e serial
 ```
 
+## IAM Deny Policies
+
+[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions within the folder and all of its descendants, regardless of the roles they have been granted. 
+
+You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny. You can optionally define exception principals, exception permissions, and conditions to tailor the restriction.
+
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`). 
+
+```hcl
+module "folder" {
+  source = "./fabric/modules/folder"
+  parent = var.folder_id
+  name   = "Folder name"
+
+  iam_deny_policies = {
+    "prevent-key-creation" = {
+      display_name = "Prevent SA key creation"
+      rules = [
+        {
+          description        = "Deny service account key creation to all except the folder admin group."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["iam.googleapis.com/serviceAccountKeys.create"]
+          exception_principals = [
+            "principalSet://goog/group/gcp-folder-admins@example.com"
+          ]
+        }
+      ]
+    }
+    "conditional-delete-deny" = {
+      display_name = "Conditional instance deletion deny"
+      rules = [
+        {
+          description        = "Deny deletion of compute instances based on resource tags."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["compute.googleapis.com/instances.delete"]
+          denial_condition = {
+            title       = "prevent_prod_deletion"
+            description = "Prevent deletion of instances tagged as production."
+            expression  = "resource.matchTag('123456789012/environment', 'prod')"
+          }
+        }
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=iam-deny-policies.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -712,6 +782,7 @@ module "folder" {
 | name | description | resources |
 |---|---|---|
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_folder_feed</code> |
+| [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_folder_iam_audit_config</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_settings</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_assured_workloads_workload</code> · <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> · <code>google_folder</code> · <code>google_kms_autokey_config</code> |
@@ -720,7 +791,7 @@ module "folder" {
 | [pam.tf](./pam.tf) | None | <code>google_privileged_access_manager_entitlement</code> |
 | [scc-mute-configs.tf](./scc-mute-configs.tf) | Folder-level SCC mute configurations. | <code>google_scc_v2_folder_mute_config</code> |
 | [scc-sha-custom-modules.tf](./scc-sha-custom-modules.tf) | Folder-level Custom modules with Security Health Analytics. | <code>google_scc_management_folder_security_health_analytics_custom_module</code> |
-| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. |  |
+| [service-agents.tf](./service-agents.tf) | Service agents supporting resources. | <code>google_folder_service_identity</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables-iam.tf](./variables-iam.tf) | None |  |
 | [variables-logging.tf](./variables-logging.tf) | None |  |
@@ -739,28 +810,30 @@ module "folder" {
 | [autokey_config](variables.tf#L144) | Enable autokey support for this folder's children. Project accepts either project id or number. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [contacts](variables.tf#L153) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L172) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [deletion_protection](variables.tf#L193) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
-| [factories_config](variables.tf#L199) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy](variables.tf#L211) | Hierarchical firewall policy to associate to this folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [folder_create](variables.tf#L222) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
+| [deletion_protection](variables.tf#L197) | Deletion protection setting for this folder. | <code>bool</code> |  | <code>false</code> |
+| [factories_config](variables.tf#L203) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy](variables.tf#L215) | Hierarchical firewall policy to associate to this folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [folder_create](variables.tf#L226) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [id](variables.tf#L232) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
+| [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the folder. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [id](variables.tf#L236) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
 | [logging_data_access](variables-logging.tf#L17) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the folder. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L238) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [org_policies](variables.tf#L244) | Organization policies applied to this folder keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L242) | Folder name. | <code>string</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L248) | Organization policies applied to this folder keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [parent](variables.tf#L272) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [parent](variables.tf#L276) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L27) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L286) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [service_agents_config](variables.tf#L290) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L300) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -774,5 +847,5 @@ module "folder" {
 | [organization_policies_ids](outputs.tf#L54) | Map of ORGANIZATION_POLICIES => ID in the folder. |  |
 | [scc_custom_sha_modules_ids](outputs.tf#L59) | Map of SCC CUSTOM SHA MODULES => ID in the folder. |  |
 | [service_agents](outputs.tf#L64) | Identities of all folder-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L69) | Writer identities created for each sink. |  |
+| [sink_writer_identities](outputs.tf#L72) | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

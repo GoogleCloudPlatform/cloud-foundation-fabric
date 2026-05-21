@@ -106,6 +106,28 @@ variable "folders" {
         description = optional(string)
       })
     })), {})
+    org_policies = optional(map(object({
+      inherit_from_parent = optional(bool)
+      reset               = optional(bool)
+      rules = optional(list(object({
+        allow = optional(object({
+          all    = optional(bool)
+          values = optional(list(string))
+        }))
+        deny = optional(object({
+          all    = optional(bool)
+          values = optional(list(string))
+        }))
+        enforce = optional(bool)
+        condition = optional(object({
+          description = optional(string)
+          expression  = optional(string)
+          location    = optional(string)
+          title       = optional(string)
+        }), {})
+        parameters = optional(string)
+      })), [])
+    })), {})
     pam_entitlements = optional(map(object({
       max_request_duration = string
       eligible_users       = list(string)

@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ values:
     attribute_mapping:
       google.subject: assertion.sub
     description: null
-    detailed_audit_logging: null
+    detailed_audit_logging: false
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
@@ -54,7 +54,7 @@ values:
         response_type: CODE
     provider_id: oidc-full
     saml: []
-    scim_usage: null
+    scim_usage: ENABLED_FOR_GROUPS
     timeouts: null
     workforce_pool_id: test-pool
   module.org.google_iam_workforce_pool_provider.default["test-pool/saml-basic"]:
@@ -67,7 +67,7 @@ values:
       google.groups: assertion.attributes.groups
       google.subject: assertion.subject
     description: null
-    detailed_audit_logging: null
+    detailed_audit_logging: false
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
@@ -85,7 +85,7 @@ values:
     attribute_mapping:
       google.subject: assertion.sub
     description: null
-    detailed_audit_logging: null
+    detailed_audit_logging: false
     disabled: false
     display_name: null
     extended_attributes_oauth2_client: []
@@ -106,9 +106,24 @@ values:
     scim_usage: null
     timeouts: null
     workforce_pool_id: test-pool
+  module.org.google_iam_workforce_pool_provider_scim_tenant.default["test-pool/oidc-full"]:
+    claim_mapping:
+      google.group: group.externalId
+      google.subject: user.externalId
+    description: null
+    display_name: My SCIM Tenant
+    hard_delete: false
+    location: global
+    provider_id: oidc-full
+    scim_tenant_id: my-scim-tenant
+    timeouts: null
+    workforce_pool_id: test-pool
 
 counts:
   google_iam_workforce_pool: 1
   google_iam_workforce_pool_provider: 3
+  google_iam_workforce_pool_provider_scim_tenant: 1
   modules: 1
-  resources: 4
+  resources: 5
+
+outputs: {}
