@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../schemas/vpc.schema.json
+project_id: $project_ids:net-core-0
+name: core-0
+delete_default_routes_on_create: true

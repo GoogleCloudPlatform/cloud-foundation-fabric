@@ -1,0 +1,13 @@
+counts:
+  google_compute_address: 4
+  google_compute_forwarding_rule: 1
+  google_compute_global_address: 3
+  google_compute_global_forwarding_rule: 1
+  google_compute_network: 1
+  google_compute_network_attachment: 1
+  google_compute_route: 3
+  google_compute_subnetwork: 1
+  google_storage_bucket_object: 2
+  modules: 4
+  resources: 19
+  terraform_data: 2

@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=../../../../schemas/addresses.schema.json
+
+external_addresses:
+  test-ext:
+    region: $locations:primary
+
+global_addresses:
+  test-global: {}
+
+internal_addresses:
+  test-int:
+    region: $locations:primary
+    subnetwork: $subnets:core/europe-west1/core-default
+
+psc_addresses:
+  # 1. Regional PSC Address only
+  psc-reg:
+    region: $locations:primary
+    subnet_self_link: $subnets:core/europe-west1/core-default
+
+  # 2. Regional PSC Address + Forwarding Rule
+  psc-reg-fr:
+    region: $locations:primary
+    subnet_self_link: $subnets:core/europe-west1/core-default
+    service_attachment:
+      psc_service_attachment_link: projects/producer-project/regions/europe-west1/serviceAttachments/my-sa
+
+  # 3. Global PSC Address only
+  psc-global:
+    network: $networks:core
+    address: "10.0.0.32"
+
+  # 4. Global PSC Address + Forwarding Rule
+  psc-global-fr:
+    network: $networks:core
+    address: "10.0.0.33"
+    service_attachment:
+      psc_service_attachment_link: projects/producer-project/global/serviceAttachments/my-global-sa
+
+network_attachments:
+  # 5. PSC Network Attachment (Producer side)
+  test-na:
+    subnet_self_link: projects/test-project/regions/europe-west1/subnetworks/core-default

@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../schemas/defaults.schema.json
+context:
+  locations:
+    primary: europe-west1
+    secondary: europe-west3
+  iam_principals: {}
+projects:
+  defaults:
+    locations:
+      storage: eu
+vpcs:
+  auto_create_subnetworks: false
+  delete_default_routes_on_create: true
+  mtu: 1500
+output_files:
+  storage_bucket: $storage_buckets:iac-0/iac-outputs
