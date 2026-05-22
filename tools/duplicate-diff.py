@@ -42,6 +42,12 @@ duplicates = [
         "modules/project-factory/schemas/taxonomy.schema.json",
     ],
     [
+        "modules/project-factory/schemas/iam-role-set.schema.json",
+        "fast/stages/2-project-factory/schemas/iam-role-set.schema.json",
+        "fast/stages/2-networking/schemas/iam-role-set.schema.json",
+        "fast/stages/2-security/schemas/iam-role-set.schema.json",
+    ],
+    [
         "fast/stages/2-project-factory/schemas/budget.schema.json",
         "fast/stages/0-org-setup/schemas/budget.schema.json",
         "modules/billing-account/schemas/budget.schema.json",

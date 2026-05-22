@@ -22,6 +22,7 @@ variable "context" {
     custom_roles    = optional(map(string), {})
     folder_ids      = optional(map(string), {})
     iam_principals  = optional(map(string), {})
+    iam_role_sets   = optional(map(list(string)), {})
     locations       = optional(map(string), {})
     project_ids     = optional(map(string), {})
     storage_buckets = optional(map(string), {})
@@ -45,6 +46,7 @@ variable "factories_config" {
       certificate_authorities = optional(string) # "certificate-authorities"
       defaults                = optional(string, "defaults.yaml")
       folders                 = optional(string, "folders")
+      iam_role_sets           = optional(string)
       keyrings                = optional(string, "keyrings")
       projects                = optional(string, "projects")
     }), {})

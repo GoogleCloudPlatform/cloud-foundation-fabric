@@ -27,6 +27,18 @@ values:
     - serviceAccount:tag-test@test-1.iam.gserviceaccount.com
     - user:user1@example.com
     role: roles/resourcemanager.tagUser
+  ? module.project-factory.module.projects-iam["test-1"].google_project_iam_binding.authoritative["roles/storage.objectViewer"]
+  : condition: []
+    members:
+    - user:engineer@example.com
+    project: test-1
+    role: roles/storage.objectViewer
+  module.project-factory.module.projects-iam["test-1"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - user:engineer@example.com
+    project: test-1
+    role: roles/viewer
   module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["org-level"]:
     tag_value: tagValues/1234567890
     timeouts: null
@@ -216,6 +228,7 @@ values:
 
 counts:
   google_project: 3
+  google_project_iam_binding: 2
   google_project_iam_member: 6
   google_project_service: 10
   google_project_service_identity: 3
@@ -226,5 +239,7 @@ counts:
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
   modules: 7
-  resources: 31
+  resources: 33
   terraform_data: 2
+
+outputs: {}

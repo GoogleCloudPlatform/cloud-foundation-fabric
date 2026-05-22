@@ -230,22 +230,24 @@ Add `iam_role_sets` to `context` properties to support defining them in `default
 ## Verification Plan
 
 ### Automated Tests
-We will add test scenarios to verify the expansion logic in both modules and factory.
+We will verify the expansion logic by augmenting existing context tests rather than creating separate test files. This keeps tests compact and exercises the feature in realistic scenarios that combine role sets with other context features like `$iam_principals` and `$custom_roles`.
 
-1.  **Project Module Test**:
-    *   Create `tests/modules/project/context_role_sets.tfvars` with a `context.iam_role_sets` block and use role sets in `iam_by_principals`.
-    *   Create `tests/modules/project/context_role_sets.yaml` (inventory) to assert that the plan contains the fully expanded roles for the principals.
-    *   Add the test to `tests/modules/project/tftest.yaml`.
-2.  **Folder Module Test**:
-    *   Create `tests/modules/folder/context_role_sets.tfvars` and `tests/modules/folder/context_role_sets.yaml` with similar logic.
-    *   Add the test to `tests/modules/folder/tftest.yaml`.
-3.  **Project Factory Test**:
-    *   Create a test case verifying that `project-factory` correctly loads role sets from files and applies them.
-    *   Create `tests/modules/project-factory/test_data/iam-role-sets/engineer.yaml` (example role set).
-    *   Verify the plan output.
+1.  **Project Module Context Test**:
+    *   Modify `tests/modules/project/context.tfvars` to add a `context.iam_role_sets` block and use role set references (`$iam_role_sets:...`) in `iam_by_principals`, `iam_by_principals_additive`, and `iam_by_principals_conditional` — ideally reusing existing `$iam_principals` entries.
+    *   Update `tests/modules/project/context.yaml` to assert that the plan contains the fully expanded roles for the principals.
+2.  **Folder Module Context Test**:
+    *   Same approach as project: modify `tests/modules/folder/context.tfvars` and `tests/modules/folder/context.yaml`.
+3.  **Project Factory README Test**:
+    *   Modify one existing README example in `modules/project-factory/README.md` to configure `factories_config.paths.iam_role_sets` and add an external test file (e.g., `iam-role-sets/engineer.yaml` with `# tftest-file`) containing a role set.
+    *   Update the corresponding project data YAML (e.g., `data/projects/test-1.yaml`) to use `$iam_role_sets:engineer` in an `iam_by_principals` entry.
+    *   Update the inventory YAML and resource counts in the `# tftest` directive.
+
+### README Examples
+In addition to tests, we will modify one existing README example in each of the `project`, `folder`, and `project-factory` modules to demonstrate the feature. The resolved values should match the existing inventory YAML so no inventory changes are needed for module-level READMEs (the factory README requires inventory updates due to the additional test file and bindings).
 
 Run tests:
 ```bash
-pytest tests/modules/project/tftest.yaml
-pytest tests/modules/folder/tftest.yaml
+pytest 'tests/modules/project/tftest.yaml::context' --tb=short -s
+pytest 'tests/modules/folder/tftest.yaml::context' --tb=short -s
+pytest -k 'modules and project-factory:' tests/examples
 ```

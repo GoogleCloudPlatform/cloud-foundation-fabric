@@ -141,6 +141,7 @@ variable "context" {
     email_addresses       = optional(map(string), {})
     folder_ids            = optional(map(string), {})
     iam_principals        = optional(map(string), {})
+    iam_role_sets         = optional(map(list(string)), {})
     kms_keys              = optional(map(string), {})
     log_buckets           = optional(map(string), {})
     notification_channels = optional(map(string), {})

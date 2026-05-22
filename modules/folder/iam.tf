@@ -17,10 +17,31 @@
 # tfdoc:file:description IAM bindings.
 
 locals {
-  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  # Expanded iam_by_principals (resolves role set references)
+  _iam_by_principals_expanded = {
+    for principal, roles in var.iam_by_principals : principal => distinct(flatten([
+      for r in roles : lookup(local.ctx.iam_role_sets, r, [r])
+    ]))
+  }
+  # Expanded iam_by_principals_additive
+  _iam_by_principals_additive_expanded = {
+    for principal, roles in var.iam_by_principals_additive : principal => distinct(flatten([
+      for r in roles : lookup(local.ctx.iam_role_sets, r, [r])
+    ]))
+  }
+  # Expanded iam_by_principals_conditional
+  _iam_by_principals_conditional_expanded = {
+    for principal, v in var.iam_by_principals_conditional : principal => {
+      roles = distinct(flatten([
+        for r in v.roles : lookup(local.ctx.iam_role_sets, r, [r])
+      ]))
+      condition = v.condition
+    }
+  }
+  _iam_principal_roles = distinct(flatten(values(local._iam_by_principals_expanded)))
   _iam_principals = {
     for r in local._iam_principal_roles : r => [
-      for k, v in var.iam_by_principals :
+      for k, v in local._iam_by_principals_expanded :
       k if try(index(v, r), null) != null
     ]
   }
@@ -40,7 +61,7 @@ locals {
   iam_bindings_additive = merge(
     var.iam_bindings_additive,
     [
-      for principal, roles in var.iam_by_principals_additive : {
+      for principal, roles in local._iam_by_principals_additive_expanded : {
         for role in roles :
         "iam-bpa:${principal}-${role}" => {
           member    = principal
@@ -52,7 +73,7 @@ locals {
   )
   # convert all the iam_by_principals_conditional into a flat list of bindings
   _iam_bindings_conditional = flatten([
-    for principal, config in var.iam_by_principals_conditional : [
+    for principal, config in local._iam_by_principals_conditional_expanded : [
       for role in config.roles : {
         principal = principal
         role      = role

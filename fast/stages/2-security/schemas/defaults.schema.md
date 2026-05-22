@@ -132,6 +132,8 @@
     <br>*additional properties: string*
   - **iam_principals**: *object*
     <br>*additional properties: string*
+  - **iam_role_sets**: *object*
+    <br>*additional properties: array*
   - **locations**: *object*
     <br>*additional properties: string*
   - **notification_channels**: *object*

@@ -898,11 +898,11 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L194) | Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L195) | Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_defaults](variables.tf#L47) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_merges](variables.tf#L124) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_overrides](variables.tf#L143) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_defaults](variables.tf#L48) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_merges](variables.tf#L125) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L144) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folders](variables-folders.tf#L17) | Folders data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-billing.tf#L17) | Notification channels used by budget alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [projects](variables-projects.tf#L17) | Projects data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -966,9 +966,12 @@ module "project-factory" {
   }
   factories_config = {
     basepath = "data"
+    paths = {
+      iam_role_sets = "iam-role-sets"
+    }
   }
 }
-# tftest modules=7 resources=31 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=7 resources=33 files=test-0,test-1,test-2,role-set-eng inventory=test-1.yaml
 ```
 
 ```yaml
@@ -1008,6 +1011,9 @@ services:
   - contactcenteraiplatform.googleapis.com
 service_accounts:
   tag-test: {}
+iam_by_principals:
+  "user:engineer@example.com":
+    - "$iam_role_sets:engineer"
 tag_bindings:
   org-level: $tag_values:context/project-factory
   project-level: $tag_values:test-0/context/project-factory
@@ -1022,4 +1028,11 @@ services:
   - iam.googleapis.com
   - storage.googleapis.com
 # tftest-file id=test-2 path=data/projects/test-2.yaml
+```
+
+```yaml
+roles:
+  - roles/viewer
+  - roles/storage.objectViewer
+# tftest-file id=role-set-eng path=data/iam-role-sets/engineer.yaml
 ```

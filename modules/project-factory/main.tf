@@ -17,7 +17,24 @@
 # tfdoc:file:description Projects and billing budgets factory resources.
 
 locals {
-  ctx = var.context
+  _iam_role_sets_path = try(local.paths.iam_role_sets, null)
+  _iam_role_sets_raw = (
+    local._iam_role_sets_path == null
+    ? {}
+    : {
+      for f in try(fileset(local._iam_role_sets_path, "*.yaml"), []) :
+      replace(f, ".yaml", "") => yamldecode(
+        file("${local._iam_role_sets_path}/${f}")
+      )
+    }
+  )
+  _iam_role_sets = {
+    for k, v in local._iam_role_sets_raw :
+    coalesce(try(v.name, null), k) => lookup(v, "roles", [])
+  }
+  ctx = merge(var.context, {
+    iam_role_sets = merge(try(var.context.iam_role_sets, {}), local._iam_role_sets)
+  })
   ctx_iam_principals = merge(
     local.ctx.iam_principals,
     local.iam_principals

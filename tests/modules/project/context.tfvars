@@ -14,13 +14,19 @@ context = {
   folder_ids = {
     "test/prod" = "folders/6789012345"
   }
-  kms_keys = {
-    compute-prod-ew1 = "projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute"
+  iam_role_sets = {
+    engineer = [
+      "roles/compute.admin",
+      "roles/storage.objectAdmin"
+    ]
   }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
     myuser  = "user:test-user@example.com"
+  }
+  kms_keys = {
+    compute-prod-ew1 = "projects/kms-central-prj/locations/europe-west1/keyRings/my-keyring/cryptoKeys/ew1-compute"
   }
   project_ids = {
     vpc-host = "test-vpc-host"
@@ -112,6 +118,9 @@ iam_by_principals = {
     "roles/owner",
     "$custom_roles:myrole_one"
   ]
+  "$iam_principals:mysa" = [
+    "$iam_role_sets:engineer"
+  ]
 }
 iam_bindings = {
   myrole_two = {
@@ -124,6 +133,9 @@ iam_bindings = {
       expression = "resource.matchTag('$${organization.id}/environment', 'development')"
     }
   }
+}
+iam_by_principals_additive = {
+  "$iam_principals:mysa" = ["$iam_role_sets:engineer"]
 }
 iam_bindings_additive = {
   myrole_two = {
@@ -203,6 +215,16 @@ iam_by_principals_conditional = {
       title       = "expires_after_2020_12_31"
       description = "Expiring at midnight of 2020-12-31"
       expression  = "request.time < timestamp(\"2021-01-01T00:00:00Z\")"
+    }
+  }
+  "$iam_principals:mygroup" = {
+    roles = [
+      "$iam_role_sets:engineer"
+    ]
+    condition = {
+      title       = "region_limited"
+      description = "Limited to europe-west1"
+      expression  = "resource.attr\"compute.googleapis.com/zone\".contains(\"europe-west1\")"
     }
   }
 }

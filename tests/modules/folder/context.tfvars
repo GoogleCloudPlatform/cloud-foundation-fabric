@@ -16,13 +16,19 @@ context = {
   folder_ids = {
     default = "organizations/1234567890"
   }
-  kms_keys = {
-    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
+  iam_role_sets = {
+    engineer = [
+      "roles/compute.admin",
+      "roles/storage.objectAdmin"
+    ]
   }
   iam_principals = {
     mygroup = "group:test-group@example.com"
     mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
     myuser  = "user:test-user@example.com"
+  }
+  kms_keys = {
+    test = "projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test"
   }
   pubsub_topics = {
     test = "projects/test-prod-audit-logs-0/topics/audit-logs"
@@ -64,6 +70,9 @@ iam_by_principals = {
     "roles/owner",
     "$custom_roles:myrole_one"
   ]
+  "$iam_principals:mysa" = [
+    "$iam_role_sets:engineer"
+  ]
 }
 iam_by_principals_conditional = {
   "$iam_principals:myuser" = {
@@ -78,6 +87,16 @@ iam_by_principals_conditional = {
       expression  = "request.time < timestamp(\"2021-01-01T00:00:00Z\")"
     }
   }
+  "$iam_principals:mygroup" = {
+    roles = [
+      "$iam_role_sets:engineer"
+    ]
+    condition = {
+      title       = "region_limited"
+      description = "Limited to europe-west1"
+      expression  = "resource.attr\"compute.googleapis.com/zone\".contains(\"europe-west1\")"
+    }
+  }
 }
 iam_bindings = {
   myrole_two = {
@@ -90,6 +109,9 @@ iam_bindings = {
       expression = "resource.matchTag('$${organization.id}/environment', 'development')"
     }
   }
+}
+iam_by_principals_additive = {
+  "$iam_principals:mysa" = ["$iam_role_sets:engineer"]
 }
 iam_bindings_additive = {
   myrole_two = {

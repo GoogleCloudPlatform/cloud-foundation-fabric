@@ -202,12 +202,24 @@ values:
     - user:test-user@example.com
     project: my-project
     role: organizations/366118655033/roles/myRoleOne
+  google_project_iam_binding.authoritative["roles/compute.admin"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    project: my-project
+    role: roles/compute.admin
   google_project_iam_binding.authoritative["roles/owner"]:
     condition: []
     members:
     - group:test-group@example.com
     project: my-project
     role: roles/owner
+  google_project_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:test@test-project.iam.gserviceaccount.com
+    project: my-project
+    role: roles/storage.objectAdmin
   google_project_iam_binding.authoritative["roles/viewer"]:
     condition: []
     members:
@@ -232,6 +244,15 @@ values:
     - user:test-user@example.com
     project: my-project
     role: organizations/366118655033/roles/myRoleTwo
+  google_project_iam_binding.bindings["iam-bpc:roles/compute.admin-region_limited"]:
+    condition:
+    - description: Limited to europe-west1
+      expression: resource.attr"compute.googleapis.com/zone".contains("europe-west1")
+      title: region_limited
+    members:
+    - group:test-group@example.com
+    project: my-project
+    role: roles/compute.admin
   google_project_iam_binding.bindings["iam-bpc:roles/storage.admin-expires_after_2020_12_31"]:
     condition:
     - description: Expiring at midnight of 2020-12-31
@@ -241,6 +262,15 @@ values:
     - user:test-user@example.com
     project: my-project
     role: roles/storage.admin
+  google_project_iam_binding.bindings["iam-bpc:roles/storage.objectAdmin-region_limited"]:
+    condition:
+    - description: Limited to europe-west1
+      expression: resource.attr"compute.googleapis.com/zone".contains("europe-west1")
+      title: region_limited
+    members:
+    - group:test-group@example.com
+    project: my-project
+    role: roles/storage.objectAdmin
   google_project_iam_binding.bindings["myrole_two"]:
     condition:
     - description: null
@@ -250,6 +280,16 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     project: my-project
     role: organizations/366118655033/roles/myRoleTwo
+  google_project_iam_member.bindings["iam-bpa:$iam_principals:mysa-roles/compute.admin"]:
+    condition: []
+    member: serviceAccount:test@test-project.iam.gserviceaccount.com
+    project: my-project
+    role: roles/compute.admin
+  google_project_iam_member.bindings["iam-bpa:$iam_principals:mysa-roles/storage.objectAdmin"]:
+    condition: []
+    member: serviceAccount:test@test-project.iam.gserviceaccount.com
+    project: my-project
+    role: roles/storage.objectAdmin
   google_project_iam_member.bindings["myrole_two"]:
     condition: []
     member: user:test-user@example.com
@@ -350,8 +390,8 @@ counts:
   google_privileged_access_manager_entitlement: 1
   google_project: 1
   google_project_iam_audit_config: 1
-  google_project_iam_binding: 7
-  google_project_iam_member: 7
+  google_project_iam_binding: 11
+  google_project_iam_member: 9
   google_project_service: 1
   google_pubsub_topic_iam_member: 1
   google_tags_tag_binding: 3
@@ -360,7 +400,7 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 39
+  resources: 45
 
 outputs:
   alert_ids: __missing__

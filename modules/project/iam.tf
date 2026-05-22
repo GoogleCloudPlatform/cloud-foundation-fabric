@@ -29,12 +29,33 @@ locals {
       file("${local._custom_roles_path}/${f}")
     )
   }
+  # Expanded iam_by_principals (resolves role set references)
+  _iam_by_principals_expanded = {
+    for principal, roles in var.iam_by_principals : principal => distinct(flatten([
+      for r in roles : lookup(local.ctx.iam_role_sets, r, [r])
+    ]))
+  }
+  # Expanded iam_by_principals_additive
+  _iam_by_principals_additive_expanded = {
+    for principal, roles in var.iam_by_principals_additive : principal => distinct(flatten([
+      for r in roles : lookup(local.ctx.iam_role_sets, r, [r])
+    ]))
+  }
+  # Expanded iam_by_principals_conditional
+  _iam_by_principals_conditional_expanded = {
+    for principal, v in var.iam_by_principals_conditional : principal => {
+      roles = distinct(flatten([
+        for r in v.roles : lookup(local.ctx.iam_role_sets, r, [r])
+      ]))
+      condition = v.condition
+    }
+  }
   # get the set of IAM by principals roles
-  _iam_principal_roles = distinct(flatten(values(var.iam_by_principals)))
+  _iam_principal_roles = distinct(flatten(values(local._iam_by_principals_expanded)))
   # recompose the principals under each role
   _iam_principals = {
     for r in local._iam_principal_roles : r => [
-      for k, v in var.iam_by_principals :
+      for k, v in local._iam_by_principals_expanded :
       k if try(index(v, r), null) != null
     ]
   }
@@ -86,7 +107,7 @@ locals {
   iam_bindings_additive = merge(
     var.iam_bindings_additive,
     [
-      for principal, roles in var.iam_by_principals_additive : {
+      for principal, roles in local._iam_by_principals_additive_expanded : {
         for role in roles :
         "iam-bpa:${principal}-${role}" => {
           member    = principal
@@ -97,7 +118,7 @@ locals {
     ]...
   )
   _iam_bindings_conditional = flatten([
-    for principal, config in var.iam_by_principals_conditional : [
+    for principal, config in local._iam_by_principals_conditional_expanded : [
       for role in config.roles : {
         principal = principal
         role      = role

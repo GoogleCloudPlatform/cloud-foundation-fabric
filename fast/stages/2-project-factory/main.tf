@@ -101,6 +101,7 @@ module "factory" {
       },
       local.context.iam_principals
     )
+    iam_role_sets         = local.context.iam_role_sets
     kms_keys              = merge(var.kms_keys, local.context.kms_keys)
     locations             = local.context.locations
     notification_channels = local.context.notification_channels

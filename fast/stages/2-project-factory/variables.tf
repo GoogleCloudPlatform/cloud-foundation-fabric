@@ -23,6 +23,7 @@ variable "context" {
     email_addresses       = optional(map(string), {})
     folder_ids            = optional(map(string), {})
     iam_principals        = optional(map(string), {})
+    iam_role_sets         = optional(map(list(string)), {})
     kms_keys              = optional(map(string), {})
     locations             = optional(map(string), {})
     notification_channels = optional(map(string), {})
@@ -46,6 +47,7 @@ variable "factories_config" {
     paths = optional(object({
       defaults          = optional(string, "defaults.yaml")
       folders           = optional(string, "folders")
+      iam_role_sets     = optional(string)
       projects          = optional(string, "projects")
       project_templates = optional(string, "project-templates")
       budgets           = optional(string)
