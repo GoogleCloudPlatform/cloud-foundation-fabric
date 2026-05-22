@@ -2251,7 +2251,7 @@ module "project" {
 
 ## IAM Deny Policies
 
-[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions within the project, regardless of the roles they have been granted. 
+[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions within the project, regardless of the roles they have been granted.
 
 You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny. You can optionally define exception principals, exception permissions, and conditions to tailor the restriction.
 

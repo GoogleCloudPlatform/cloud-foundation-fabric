@@ -419,4 +419,3 @@ module "legacy_custom_repo" {
 }
 # tftest modules=1 resources=1 inventory=legacy-custom.yaml
 ```
-
