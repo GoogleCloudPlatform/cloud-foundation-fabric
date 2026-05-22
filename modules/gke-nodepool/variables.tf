@@ -162,13 +162,11 @@ variable "node_config" {
       writable_cgroups = optional(object({
         enabled = bool
       }))
-      registry_hosts = optional(list(object({
-        server = string
-        hosts = optional(list(object({
-          host          = string
-          capabilities  = optional(list(string))
-          override_path = optional(bool)
-          dial_timeout  = optional(string)
+      registry_hosts = optional(map(object({
+        hosts = optional(map(object({
+          capabilities  = optional(list(string), ["HOST_CAPABILITY_PULL", "HOST_CAPABILITY_RESOLVE"])
+          override_path = optional(bool, false)
+          dial_timeout  = optional(string, "30s")
           header = optional(list(object({
             key   = string
             value = list(string)
@@ -184,8 +182,8 @@ variable "node_config" {
               gcp_secret_manager_secret_uri = optional(string)
             }))
           })), [])
-        })), [])
-      })), [])
+        })), {})
+      })), {})
     }))
   })
   default  = {}

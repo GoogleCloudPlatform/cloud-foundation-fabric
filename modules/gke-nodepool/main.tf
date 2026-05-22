@@ -370,13 +370,13 @@ resource "google_container_node_pool" "nodepool" {
           }
         }
         dynamic "registry_hosts" {
-          for_each = try(var.node_config.containerd_config.registry_hosts, [])
+          for_each = try(var.node_config.containerd_config.registry_hosts, {})
           content {
-            server = registry_hosts.value.server
+            server = registry_hosts.key
             dynamic "hosts" {
-              for_each = try(registry_hosts.value.hosts, [])
+              for_each = registry_hosts.value.hosts
               content {
-                host          = hosts.value.host
+                host          = hosts.key
                 capabilities  = hosts.value.capabilities
                 override_path = hosts.value.override_path
                 dial_timeout  = hosts.value.dial_timeout

@@ -235,7 +235,7 @@ module "cluster-1-nodepool-advanced-machine-features" {
 
 ### Containerd registry mirror configuration
 
-This example shows how to configure a private registry mirror for containerd on each node, useful for air-gapped environments or when pulling images through an internal registry proxy. It also demonstrates custom request headers and capability restrictions on the mirror host.
+This example shows how to configure a private registry mirror for containerd on each node, useful for air-gapped environments or when pulling images through an internal registry proxy.
 
 ```hcl
 module "cluster-1-nodepool-containerd" {
@@ -247,22 +247,13 @@ module "cluster-1-nodepool-containerd" {
   node_config = {
     machine_type = "n2-standard-4"
     containerd_config = {
-      registry_hosts = [
-        {
-          server = "registry.example.com"
-          hosts = [
-            {
-              host = "mirror.example.com"
-              header = [
-                {
-                  key   = "Authorization"
-                  value = ["Bearer mytoken"]
-                }
-              ]
-            }
-          ]
+      registry_hosts = {
+        "registry.example.com" = {
+          hosts = {
+            "mirror.example.com" = {}
+          }
         }
-      ]
+      }
     }
   }
 }
