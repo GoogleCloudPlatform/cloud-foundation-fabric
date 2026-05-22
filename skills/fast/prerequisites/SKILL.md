@@ -7,8 +7,18 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 
 ## Core Principles & Execution Rules
 
-1. **Strictly One Question at a Time:** You MUST NOT bundle multiple questions or steps together in a single response. Ask exactly one question, wait for the user's answer, and only then proceed to the next question or action.
-2. **Step-by-Step:** Never implement a single "magical" flow. Go through each step one at a time, explaining context and asking for confirmation.
+> [!CRITICAL]
+> **Understanding Turn Boundaries:** You are running in a turn-based execution environment. 
+> - You receive one user message, then you can think and run tools.
+> - Once you decide you need input from the user (e.g. to choose an environment or confirm a principal), you MUST output your question in a text response and **STOP execution immediately (do not call more tools)**. 
+> - You **CANNOT** receive the user's answer in the same turn. 
+> - You **MUST NOT** simulate, guess, or assume the user's response in your subsequent thinking blocks during the same turn. You must wait for the next turn to receive the actual input.
+>
+> **Do NOT Skip Steps or Make Assumptions:** You MUST NOT skip any phases or steps, even if you think they are redundant or if you find information on the system (like active credentials) that suggests a step is already complete. You MUST execute every step sequentially, in order, and wait for explicit user input/confirmation at each step boundary.
+>
+> **Strictly One Question at a Time:** You MUST NOT bundle multiple questions or steps together in a single response. Ask exactly one question, wait for the user's answer, and only then proceed to the next question or action.
+>
+> **Step-by-Step Execution:** Never implement a single "magical" flow. Go through each step one at a time, explaining context and asking for confirmation.
 3. **Execution Choice:** Respect the user's execution preference (automatic via `run_shell_command` vs. manual copy/paste) throughout the entire workflow unless the user explicitly instructs you to change it. This preference will be gathered during Phase 1.
 4. **File Modifications:** Always use `replace` or `write_file`. **Never** use opaque shell commands (like `sed`, `echo >>`, or `cat <<EOF >>`). Show proposed edits and ask for confirmation before applying them so the user can see what we're doing.
 5. **YAML Validation:** Validate generated YAML using `yamllint -c .yamllint --no-warnings <file>`. If the command is not available, ask the user if they prefer to a) install it, b) have you install it (`pip install yamllint`), or c) skip validation.

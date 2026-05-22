@@ -15,7 +15,8 @@
 import os
 import json
 import subprocess
-from unittest.mock import patch, MagicMock
+import asyncio
+from unittest.mock import patch, MagicMock, AsyncMock, PropertyMock
 import pytest
 from dataclasses import asdict
 
@@ -103,33 +104,96 @@ def test_dump_failed_log(tmp_path):
 # --- Phase B: Execution Unit Tests (Mocked) ---
 
 
-@patch('harness.subprocess.run')
-def test_invoke_skill_cli_success(mock_run):
-  mock_result = MagicMock()
-  mock_result.returncode = 0
-  mock_result.stdout = (
-      'Warning: YOLO mode is enabled\nLoading extension: foo\nActual response')
-  mock_run.return_value = mock_result
-  response = harness.invoke_skill_cli('hello', is_first_step=True,
-                                      workspace_dir='/tmp',
-                                      gemini_cmd_list=['gemini',
-                                                       '-y'], timeout=60)
-  # Check command construction
-  mock_run.assert_called_once()
-  args = mock_run.call_args[0][0]
-  assert args == ['gemini', '-y', '-p', 'hello']
-  # Check output cleaning
-  assert response == 'Actual response'
+@patch('harness.genai.Client')
+@patch('harness.Agent')
+def test_run_hybrid_tuning_loop_mocked_success(mock_agent_class,
+                                               mock_client_class, tmp_path):
+  # Mock Conversation
+  mock_conversation = MagicMock()
+  mock_conversation.send = AsyncMock()
+
+  async def mock_receive_steps():
+    yield harness.agy_types.Step(type=harness.agy_types.StepType.TEXT_RESPONSE,
+                                 source=harness.agy_types.StepSource.MODEL,
+                                 target=harness.agy_types.StepTarget.USER,
+                                 status=harness.agy_types.StepStatus.DONE,
+                                 content="Mocked Agent Response")
+
+  mock_conversation.receive_steps.return_value = mock_receive_steps()
+  type(mock_conversation).last_response = PropertyMock(
+      return_value="Mocked Agent Response")
+
+  # Mock Agent
+  mock_agent = MagicMock()
+  mock_agent.conversation = mock_conversation
+  mock_agent_class.return_value.__aenter__.return_value = mock_agent
+
+  # Mock Evaluator
+  mock_eval_client = MagicMock()
+  mock_client_class.return_value = mock_eval_client
+  mock_eval_response = MagicMock()
+  mock_eval_response.text = '{"passed": true, "reasoning": "Mocked pass"}'
+  mock_eval_client.models.generate_content.return_value = mock_eval_response
+
+  # Playbook
+  playbook_content = """
+name: "Mocked Playbook"
+steps:
+  - user_input: "Hello"
+    expected_outcome: "Greet"
+"""
+  playbook_file = tmp_path / "playbook.yaml"
+  playbook_file.write_text(playbook_content)
+
+  import asyncio
+  result = asyncio.run(
+      harness.run_hybrid_tuning_loop(str(playbook_file), log_dir=str(tmp_path)))
+
+  assert result is True
+  mock_conversation.send.assert_called_once_with("Hello")
+  mock_eval_client.models.generate_content.assert_called_once()
 
 
-@patch('harness.subprocess.run')
-def test_invoke_skill_cli_timeout(mock_run):
-  mock_run.side_effect = subprocess.TimeoutExpired(cmd='gemini', timeout=60)
-  response = harness.invoke_skill_cli('hello', is_first_step=False,
-                                      workspace_dir='/tmp',
-                                      gemini_cmd_list=['gemini',
-                                                       '-y'], timeout=60)
-  assert response == 'SYSTEM_ERROR: Timeout'
+@patch('harness.genai.Client')
+@patch('harness.Agent')
+def test_run_hybrid_tuning_loop_mocked_timeout(mock_agent_class,
+                                               mock_client_class, tmp_path):
+  # Mock genai.Client
+  mock_client_class.return_value = MagicMock()
+  import asyncio
+  mock_conversation = MagicMock()
+  mock_conversation.send = AsyncMock(side_effect=asyncio.TimeoutError())
+
+  async def empty_gen():
+    if False:
+      yield
+
+  mock_conversation.receive_steps.return_value = empty_gen()
+
+  mock_agent = MagicMock()
+  mock_agent.conversation = mock_conversation
+  mock_agent_class.return_value.__aenter__.return_value = mock_agent
+
+  # Playbook
+  playbook_content = """
+name: "Mocked Playbook"
+steps:
+  - user_input: "Hello"
+    expected_outcome: "Greet"
+"""
+  playbook_file = tmp_path / "playbook.yaml"
+  playbook_file.write_text(playbook_content)
+
+  result = asyncio.run(
+      harness.run_hybrid_tuning_loop(str(playbook_file), log_dir=str(tmp_path)))
+
+  assert result is False
+  mock_conversation.send.assert_called_once_with("Hello")
+
+  log_files = list(tmp_path.glob('*_log.md'))
+  assert len(log_files) == 1
+  content = log_files[0].read_text()
+  assert 'SYSTEM_ERROR: Timeout' in content
 
 
 # --- Phase C: E2E Test ---
@@ -150,8 +214,9 @@ def test_e2e_hybrid_tuning_loop(tmp_path):
   # Load env to prime the os.environ
   harness.load_env_file(env_file_path)
 
-  result = harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
-                                          skill_src=skill_dir)
+  result = asyncio.run(
+      harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
+                                     skill_src=skill_dir))
   assert result is True
   # Verify the log file was created in the temporary directory
   log_files = list(tmp_path.glob('*_log.md'))
@@ -178,8 +243,9 @@ def test_e2e_autonomous_tuning_loop(tmp_path):
 
   harness.load_env_file(env_file_path)
 
-  result = harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
-                                          skill_src=skill_dir)
+  result = asyncio.run(
+      harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
+                                     skill_src=skill_dir))
   assert result is True
   log_files = list(tmp_path.glob('*_log.md'))
   assert len(log_files) == 1
@@ -200,8 +266,9 @@ def test_e2e_tool_calls_contain(tmp_path):
   playbook_path = os.path.join(fixtures_dir,
                                'playbook_autonomous_tool_use.yaml')
 
-  result = harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
-                                          skill_src=skill_dir)
+  result = asyncio.run(
+      harness.run_hybrid_tuning_loop(playbook_path, log_dir=str(tmp_path),
+                                     skill_src=skill_dir))
 
   assert result is True
   # Verify that the session JSON was saved
@@ -233,9 +300,9 @@ steps:
   playbook_path = tmp_path / "playbook_workdir.yaml"
   playbook_path.write_text(playbook_content)
 
-  result = harness.run_hybrid_tuning_loop(str(playbook_path),
-                                          log_dir=str(tmp_path),
-                                          skill_src=skill_dir)
+  result = asyncio.run(
+      harness.run_hybrid_tuning_loop(str(playbook_path), log_dir=str(tmp_path),
+                                     skill_src=skill_dir))
 
   assert result is True
   # Verify that output.txt was created INSIDE workdir_target

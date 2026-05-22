@@ -18,6 +18,7 @@ tmpdir:
     - fast
     - modules
     - tools
+    - skills
     - .yamllint
     - GEMINI.md
     - AGENTS.md

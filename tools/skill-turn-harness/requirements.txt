@@ -3,3 +3,4 @@ pydantic
 pyyaml
 click
 jsonschema
+google-antigravity

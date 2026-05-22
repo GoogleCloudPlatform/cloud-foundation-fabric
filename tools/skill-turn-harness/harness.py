@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+# /// script
+# dependencies = [
+#   "google-antigravity",
+#   "google-genai",
+#   "pydantic",
+#   "pyyaml",
+#   "click",
+#   "jsonschema",
+# ]
+# ///
+
 # Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +34,7 @@ structured Pydantic schemas.
 # Standard library imports
 import glob
 import json
+import logging
 import os
 import re
 import shutil
@@ -43,6 +55,10 @@ import yaml
 from google import genai
 from google.genai import types
 from pydantic import BaseModel
+from google.antigravity import Agent, LocalAgentConfig
+from google.antigravity import types as agy_types
+from google.antigravity.hooks import policy
+import asyncio
 
 
 def load_env_file(env_file_path: str):
@@ -119,45 +135,58 @@ if 'GEMINI_API_KEY' not in os.environ:
           os.environ['GEMINI_API_KEY'] = line.strip().split('=', 1)[1]
           break
 
-evaluator_client = genai.Client()
+C_GRAY = '\033[90m'
+C_BLUE = '\033[94m'
+C_PINK = '\033[95m'
+C_GREEN = '\033[92m'
+C_RED = '\033[91m'
+C_YELLOW = '\033[93m'
+C_LIGHT_GRAY = '\033[37m'
+C_BOLD_WHITE = '\033[1;37m'
 
 
-def invoke_skill_cli(user_input: str, is_first_step: bool, workspace_dir: str,
-                     gemini_cmd_list: list, timeout: int) -> str:
-  '''Invokes the Gemini CLI using a subprocess.
+def format_color(text: str, color: str) -> str:
+  """Formats text with ANSI color if stdout is a TTY."""
+  if sys.stdout.isatty():
+    return f"{color}{text}\033[0m"
+  return text
 
-    Args:
-      user_input: The simulated text input from the user.
-      is_first_step: True if this is the first step in a playbook, False otherwise.
-      workspace_dir: The isolated temporary directory to run the CLI within.
-      gemini_cmd_list: The base command list (e.g. ['gemini', '-y']).
-      timeout: The subprocess timeout in seconds.
 
-    Returns:
-      The stdout of the CLI response, or a SYSTEM_ERROR string on failure.
-    '''
-  command = gemini_cmd_list.copy()
-  if not is_first_step:
-    command.extend(['--resume', 'latest'])
-  command.extend(['-p', user_input])
-  try:
-    # Run inside the isolated workspace_dir so it maps to a unique project ID in projects.json
-    result = subprocess.run(command, capture_output=True, text=True,
-                            timeout=timeout, cwd=workspace_dir)
-    if result.returncode != 0:
-      print(f'⚠️ [CLI ERROR]: {result.stderr}', file=sys.stderr)
-      return f'SYSTEM_ERROR: {result.stderr}'
-    # Clean up output (remove YOLO warnings etc)
-    stdout_lines = result.stdout.strip().split('\n')
-    clean_lines = [
-        line for line in stdout_lines if not line.startswith('Warning:') and
-        not line.startswith('YOLO mode is enabled') and
-        not line.startswith('Loading extension:')
-    ]
-    return '\n'.join(clean_lines).strip()
-  except subprocess.TimeoutExpired:
-    print(f'⚠️ [CLI TIMEOUT] ({timeout}s)', file=sys.stderr)
-    return 'SYSTEM_ERROR: Timeout'
+class StreamingTrimmer:
+  """Buffers streaming deltas to strip leading/trailing whitespace dynamically."""
+
+  def __init__(self):
+    self.started = False
+    self.whitespace_buffer = ""
+
+  def process_delta(self, delta: str) -> str:
+    if not delta:
+      return ""
+
+    out = ""
+    if not self.started:
+      stripped = delta.lstrip()
+      if not stripped:
+        return ""
+      self.started = True
+      delta = stripped
+
+    rstripped = delta.rstrip()
+    trailing_ws = delta[len(rstripped):]
+
+    if rstripped:
+      out = self.whitespace_buffer + rstripped
+      self.whitespace_buffer = trailing_ws
+    else:
+      self.whitespace_buffer += trailing_ws
+
+    if out:
+      out = re.sub(r'\n{3,}', '\n\n', out)
+    return out
+
+  def flush_remaining(self) -> None:
+    self.started = False
+    self.whitespace_buffer = ""
 
 
 def init_markdown_log(md_log_path: str, playbook_name: str):
@@ -453,18 +482,88 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
   return passed
 
 
-def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
-                           skill_src: str = None, gemini_cmd: str = 'gemini',
-                           keep_workspace: bool = False,
-                           cli_agent_model: str = None,
-                           cli_evaluator_model: str = None):
+def _view_file_directory_check(args: dict) -> bool:
+  """Predicate to check if the target of view_file is actually a directory."""
+  path = args.get('AbsolutePath') or args.get('file_path') or args.get('path')
+  if path:
+    return os.path.isdir(path)
+  return False
+
+
+async def run_turn(agent: Agent, user_input: str) -> None:
+  """Sends user input and streams steps in real-time, logging tool calls and errors."""
+  await agent.conversation.send(user_input)
+  printed_calls = set()
+  need_newline = False
+  at_start_of_line = True
+  trimmer = StreamingTrimmer()
+  async for step_obj in agent.conversation.receive_steps():
+    if step_obj.thinking_delta:
+      to_print = trimmer.process_delta(step_obj.thinking_delta)
+      if to_print:
+        if not need_newline:
+          print(f"  {format_color('🧠 Thinking:', C_GRAY)}", flush=True)
+          need_newline = True
+          at_start_of_line = True
+
+        parts = to_print.split('\n')
+        for i, part in enumerate(parts):
+          if i > 0:
+            print('\n', end='')
+            at_start_of_line = True
+          if part:
+            if at_start_of_line:
+              print('  ', end='')
+              at_start_of_line = False
+            print(format_color(part, C_GRAY), end='', flush=True)
+
+    if step_obj.type == agy_types.StepType.TOOL_CALL:
+      for tc in step_obj.tool_calls:
+        if tc.id not in printed_calls:
+          printed_calls.add(tc.id)
+          if need_newline:
+            trimmer.flush_remaining()
+            print()
+            need_newline = False
+          cleaned_args = {
+              k: v for k, v in tc.args.items() if k not in {
+                  "output",
+                  "results",
+                  "num_results",
+                  "diff_block",
+                  "exit_code",
+                  "combined_output",
+                  "image_name",
+              }
+          }
+          args_str = ", ".join(f"{k}={v}" for k, v in cleaned_args.items())
+          print(
+              f"  🛠️ {format_color(f'[Tool Call]: {tc.name}({args_str})', C_GRAY)}"
+          )
+    if step_obj.status == agy_types.StepStatus.ERROR:
+      if need_newline:
+        trimmer.flush_remaining()
+        print()
+        need_newline = False
+      error_msg = step_obj.error or "Unknown step error"
+      print(f"  ❌ [Error]: {error_msg}")
+
+  if need_newline:
+    trimmer.flush_remaining()
+    print()
+
+
+async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
+                                 skill_src: str = None,
+                                 keep_workspace: bool = False,
+                                 cli_agent_model: str = None,
+                                 cli_evaluator_model: str = None):
   '''Executes the test playbook and evaluates the agent's responses.
 
   Args:
     playbook_path: The file path to the YAML playbook.
     log_dir: The directory where logs and failed JSON dumps should be written.
-    skill_src: Optional path to a local unpacked skill to link before testing.
-    gemini_cmd: Command and arguments to invoke the CLI.
+    skill_src: Optional path to a local unpacked skill to run.
     keep_workspace: Preserve the temporary workspace directory.
     cli_agent_model: Override for the agent model.
     cli_evaluator_model: Override for the evaluator model.
@@ -472,6 +571,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   Returns:
     True if the playbook passes completely, False if any step fails.
   '''
+  evaluator_client = genai.Client()
   log_dir = os.path.abspath(log_dir)
   os.makedirs(log_dir, exist_ok=True)
   with open(playbook_path, 'r') as f:
@@ -486,25 +586,11 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   evaluator_model = cli_evaluator_model or playbook.get('evaluator_model',
                                                         'gemini-2.5-flash')
 
-  gemini_cmd_list = gemini_cmd.split()
-  if '-y' not in gemini_cmd_list and '--yolo' not in gemini_cmd_list:
-    gemini_cmd_list.append('-y')
-
-  if agent_model:
-    gemini_cmd_list.extend(['--model', agent_model])
-
   playbook_name = playbook.get('name', 'Unknown Playbook')
   playbook_steps = playbook.get('steps', [])
   persona = playbook.get('persona')
 
   env_context = parse_and_validate_env(playbook)
-
-  skill_name = None
-  if skill_src:
-    skill_name = get_skill_name(skill_src)
-    print(f'🔗 Linking local skill: {skill_name} from {skill_src}')
-    subprocess.run(['gemini', 'skills', 'link', skill_src, '--consent'],
-                   check=True, capture_output=True)
 
   tmpdir_config = playbook.get('tmpdir')
   is_tmpdir = tmpdir_config is not None
@@ -520,11 +606,19 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       dst_abs = os.path.join(workspace_dir, path)
       os.makedirs(os.path.dirname(dst_abs), exist_ok=True)
       try:
-        os.symlink(src_abs, dst_abs)
-        print(f'🔗 Symlinked: {path} -> {dst_abs}')
+        if os.path.isdir(src_abs):
+          shutil.copytree(
+              src_abs, dst_abs,
+              ignore=shutil.ignore_patterns('.terraform', '.git', '.venv',
+                                            'venv', '__pycache__',
+                                            '.pytest_cache',
+                                            'skill-turn-harness'))
+          print(f'📁 Copied directory: {path} -> {dst_abs}')
+        else:
+          shutil.copy2(src_abs, dst_abs)
+          print(f'📄 Copied file: {path} -> {dst_abs}')
       except Exception as e:
-        print(f'❌ [SETUP ERROR]: Failed to symlink {path}: {e}',
-              file=sys.stderr)
+        print(f'❌ [SETUP ERROR]: Failed to copy {path}: {e}', file=sys.stderr)
         shutil.rmtree(workspace_dir)
         sys.exit(1)
 
@@ -542,232 +636,314 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   step_index = 0
   fallback_to_persona = False
 
+  # Configure SDK Agent
+  skills_paths = []
+  if skill_src:
+    skills_paths.append(os.path.abspath(skill_src))
+
+  # Allow all tools to emulate CLI -y/--dangerously-skip-permissions
+  policies = [
+      policy.deny(
+          agy_types.BuiltinTools.VIEW_FILE.value,
+          when=_view_file_directory_check, name=
+          "Rejection: Path is a directory, not a file. Use list_directory to inspect it."
+      ),
+      policy.allow_all()
+  ]
+
+  standard_instructions = (
+      "GUIDELINES:\n"
+      "- Always check if a path is a directory before trying to view it. "
+      "Use list_directory to inspect directories, never view_file.")
+
+  config = LocalAgentConfig(
+      model=agent_model,
+      api_key=os.environ.get('GEMINI_API_KEY'),
+      skills_paths=skills_paths,
+      policies=policies,
+      workspaces=[workspace_dir],
+      save_dir=log_dir,  # Use log_dir for raw state too
+      system_instructions=standard_instructions,
+  )
+
   try:
-    # --- PHASE 1: SCRIPTED STEPS ---
-    for step_dict in playbook_steps:
-      raw_user_input = step_dict['user_input']
-      raw_expected_outcome = step_dict['expected_outcome']
+    async with Agent(config) as agent:
+      # --- PHASE 1: SCRIPTED STEPS ---
+      for step_dict in playbook_steps:
+        raw_user_input = step_dict['user_input']
+        raw_expected_outcome = step_dict['expected_outcome']
 
-      subbed_user_input = string.Template(raw_user_input).safe_substitute(
-          env_context)
-      subbed_expected_outcome = string.Template(
-          raw_expected_outcome).safe_substitute(env_context)
+        subbed_user_input = string.Template(raw_user_input).safe_substitute(
+            env_context)
+        subbed_expected_outcome = string.Template(
+            raw_expected_outcome).safe_substitute(env_context)
 
-      step = StepData(step_index=step_index, user_input=subbed_user_input,
-                      expected_outcome=subbed_expected_outcome)
+        step = StepData(step_index=step_index, user_input=subbed_user_input,
+                        expected_outcome=subbed_expected_outcome)
 
-      print(f'\n[Step {step.step_index + 1}] Input: {step.user_input}')
-      step.skill_response = invoke_skill_cli(step.user_input,
-                                             len(conversation_history) == 0,
-                                             workspace_dir, gemini_cmd_list,
-                                             playbook_timeout)
-      full_stdout += step.skill_response + "\n"
-      print(f'[Step {step.step_index + 1}] Output: {step.skill_response}')
-
-      conversation_history.append({
-          "user": step.user_input,
-          "agent": step.skill_response
-      })
-
-      if step.skill_response.startswith('SYSTEM_ERROR'):
-        print(f'❌ [FAILURE Step {step.step_index + 1}]: System Error.')
-        step.is_system_error = True
-        log_step_to_markdown(md_log_path, **asdict(step))
-        interaction_log.append(asdict(step))
-        dump_failed_log(log_dir, log_prefix, interaction_log)
-        return False
-
-      eval_prompt = f'''
-            OBJECTIVE: {step.expected_outcome}
-            ACTUAL RESPONSE: {step.skill_response}
-            Evaluate if the agent fulfilled the objective.
-            '''
-      eval_response = evaluator_client.models.generate_content(
-          model=evaluator_model,
-          contents=eval_prompt,
-          config=types.GenerateContentConfig(
-              response_mime_type='application/json',
-              response_schema=EvaluationResult,
-              temperature=0.0,
-          ),
-      )
-      step.parsed_eval = json.loads(eval_response.text)
-      interaction_log.append(asdict(step))
-      log_step_to_markdown(md_log_path, **asdict(step))
-
-      if not step.parsed_eval['passed']:
-        if persona:
-          print(
-              f'⚠️ [WARNING Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}'
-          )
-          print('🔄 Scripted step failed. Falling back to autonomous persona...')
-          fallback_to_persona = True
-          break
-        else:
-          print(
-              f'❌ [FAILURE Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}'
-          )
-          dump_failed_log(log_dir, log_prefix, interaction_log)
-          return False
-      else:
+        turn_str = format_color(f'[Step {step.step_index + 1}]', C_BOLD_WHITE)
         print(
-            f'✅ [PASS Step {step.step_index + 1}]: {step.parsed_eval["reasoning"]}'
+            f"\n{turn_str}\n{format_color('Tester:', C_BLUE)}\n{step.user_input.rstrip()}"
         )
 
-      step_index += 1
+        try:
+          await asyncio.wait_for(run_turn(agent, step.user_input),
+                                 timeout=playbook_timeout)
+          step.skill_response = agent.conversation.last_response
+        except asyncio.TimeoutError:
+          print(f'⚠️ [TIMEOUT] ({playbook_timeout}s)', file=sys.stderr)
+          step.skill_response = 'SYSTEM_ERROR: Timeout'
+        except Exception as e:
+          print(f'⚠️ [ERROR]: {e}', file=sys.stderr)
+          step.skill_response = f'SYSTEM_ERROR: {e}'
 
-    # If steps succeeded completely and no persona exists, we're done.
-    if not persona and not fallback_to_persona:
-      print(
-          f'\n✅ [SUCCESS] Scripted Playbook \'{playbook_name}\' completed successfully.'
-      )
-      print(f'📄 Markdown log saved to: {md_log_path}')
-      return True
-
-    # --- PHASE 2: AUTONOMOUS PERSONA ---
-    print("\n--- Entering Autonomous Persona Mode ---")
-    persona_context = string.Template(
-        persona['context']).safe_substitute(env_context)
-
-    # Interpolate success criteria string values
-    success_criteria = persona.get('success_criteria', {})
-    interpolated_success_criteria = {
-        'llm_checks': [
-            string.Template(c).safe_substitute(env_context)
-            for c in success_criteria.get('llm_checks', [])
-        ],
-        'flow_contains': [
-            string.Template(c).safe_substitute(env_context)
-            for c in success_criteria.get('flow_contains', [])
-        ],
-        'files_exist': [
-            string.Template(c).safe_substitute(env_context)
-            for c in success_criteria.get('files_exist', [])
-        ],
-        'tool_calls_contain': {
-            k: [
-                string.Template(item).safe_substitute(env_context) for item in v
-            ] for k, v in success_criteria.get('tool_calls_contain', {}).items()
-        },
-        'files_contain': {
-            string.Template(k).safe_substitute(env_context): [
-                string.Template(item).safe_substitute(env_context) for item in v
-            ] for k, v in success_criteria.get('files_contain', {}).items()
-        }
-    }
-
-    # Determine next input
-    next_input = None
-    if len(conversation_history) == 0:
-      # Pure autonomous start
-      next_input = string.Template(
-          persona['initial_user_input']).safe_substitute(env_context)
-
-    max_turns = persona.get('max_turns', 10)
-
-    for turn in range(max_turns):
-      turn_display = turn + step_index + 1
-
-      if next_input:
-        print(f'\n[Autonomous Turn {turn_display}] Input: {next_input}')
-        agent_response = invoke_skill_cli(next_input,
-                                          len(conversation_history) == 0,
-                                          workspace_dir, gemini_cmd_list,
-                                          playbook_timeout)
-        full_stdout += agent_response + "\n"
-        print(f'[Autonomous Turn {turn_display}] Output: {agent_response}')
-
-        if agent_response.startswith('SYSTEM_ERROR'):
-          print(f'❌ [FAILURE Turn {turn_display}]: System Error.')
-          dump_failed_log(log_dir, log_prefix, interaction_log)
-          return False
+        full_stdout += step.skill_response + "\n"
+        turn_str = format_color(f'[Step {step.step_index + 1}]', C_BOLD_WHITE)
+        print(
+            f"\n{turn_str}\n\n{format_color('Agent:', C_PINK)}\n{step.skill_response.rstrip()}"
+        )
 
         conversation_history.append({
-            "user": next_input,
-            "agent": agent_response
+            "user": step.user_input,
+            "agent": step.skill_response
         })
-        # Log to markdown for autonomous turns (reusing StepData for structure)
-        step_log = StepData(step_index=turn_display - 1, user_input=next_input,
-                            expected_outcome="Autonomous Persona Turn",
-                            skill_response=agent_response)
-        interaction_log.append(asdict(step_log))
-        with open(md_log_path, 'a') as md_file:
-          md_file.write(
-              f'## Autonomous Turn {turn_display}\n\n**User:**\n\n{next_input}\n\n**Agent:**\n\n{agent_response}\n\n---\n\n'
-          )
 
-      # Evaluate state and generate next input
-      llm_checks = "\n".join([
-          f"- {check}"
-          for check in interpolated_success_criteria.get('llm_checks', [])
-      ])
-      history_text = "\n".join([
-          f"USER: {h['user']}\nAGENT: {h['agent']}\n"
-          for h in conversation_history
-      ])
-
-      eval_prompt = f"""
-      You are simulating a user interacting with an AI agent.
-      
-      YOUR PERSONA AND RULES:
-      {persona_context}
-      
-      GOAL (SEMANTIC CHECKS TO VERIFY COMPLETION):
-      {llm_checks}
-      
-      CONVERSATION HISTORY:
-      {history_text}
-      
-      TASK:
-      1. Evaluate if the agent's latest response was helpful, followed the rules, and is moving towards the goal. Set `agent_followed_skill_rules` to false if the agent hallucinated or broke rules.
-      2. Check if the GOAL has been fully achieved based on the conversation so far. If yes, set `test_completed_successfully` to true.
-      3. If the GOAL is not achieved, formulate the exact text you will reply with to advance the conversation, using only your persona knowledge. Put this in `next_user_input`.
-      """
-
-      eval_response = evaluator_client.models.generate_content(
-          model=evaluator_model,
-          contents=eval_prompt,
-          config=types.GenerateContentConfig(
-              response_mime_type='application/json',
-              response_schema=AutonomousTurnResult,
-              temperature=0.0,
-          ),
-      )
-      parsed_eval = json.loads(eval_response.text)
-
-      if not parsed_eval['agent_followed_skill_rules']:
-        print(f"❌ [AUTONOMOUS FAIL]: {parsed_eval['reasoning']}")
-        dump_failed_log(log_dir, log_prefix, interaction_log)
-        return False
-
-      if parsed_eval['test_completed_successfully']:
-        print(f"✅ [AUTONOMOUS SEMANTIC SUCCESS]: {parsed_eval['reasoning']}")
-        print("🔍 Performing deterministic checks...")
-
-        if perform_deterministic_checks(interpolated_success_criteria,
-                                        workspace_dir, full_stdout):
-          if fallback_to_persona:
-            print(
-                f"\n✅ [PASS WITH WARNINGS] Playbook '{playbook_name}' completed via autonomous recovery."
-            )
-          else:
-            print(
-                f"\n✅ [SUCCESS] Autonomous Playbook '{playbook_name}' completed successfully."
-            )
-          print(f'📄 Markdown log saved to: {md_log_path}')
-          return True
-        else:
-          print("❌ [AUTONOMOUS FAIL]: Deterministic checks failed.")
+        if step.skill_response.startswith('SYSTEM_ERROR'):
+          label = format_color(f'[FAILURE Step {step.step_index + 1}]', C_GRAY)
+          msg = format_color('System Error.', C_RED)
+          print(f'❌ {label}: {msg}')
+          step.is_system_error = True
+          log_step_to_markdown(md_log_path, **asdict(step))
+          interaction_log.append(asdict(step))
           dump_failed_log(log_dir, log_prefix, interaction_log)
           return False
 
-      next_input = parsed_eval['next_user_input']
+        eval_prompt = f'''
+              OBJECTIVE: {step.expected_outcome}
+              ACTUAL RESPONSE: {step.skill_response}
+              Evaluate if the agent fulfilled the objective.
+              '''
+        eval_response = evaluator_client.models.generate_content(
+            model=evaluator_model,
+            contents=eval_prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type='application/json',
+                response_schema=EvaluationResult,
+                temperature=0.0,
+            ),
+        )
+        step.parsed_eval = json.loads(eval_response.text)
+        interaction_log.append(asdict(step))
+        log_step_to_markdown(md_log_path, **asdict(step))
 
-    print(
-        f"❌ [AUTONOMOUS FAIL]: Reached max turns ({max_turns}) without completing the goal."
-    )
-    dump_failed_log(log_dir, log_prefix, interaction_log)
-    return False
+        if not step.parsed_eval['passed']:
+          if persona:
+            label = format_color(f'[WARNING Step {step.step_index + 1}]',
+                                 C_GRAY)
+            msg = format_color(step.parsed_eval["reasoning"], C_YELLOW)
+            print(f'⚠️ {label}: {msg}')
+            print(
+                '🔄 Scripted step failed. Falling back to autonomous persona...')
+            fallback_to_persona = True
+            break
+          else:
+            label = format_color(f'[FAILURE Step {step.step_index + 1}]',
+                                 C_GRAY)
+            msg = format_color(step.parsed_eval["reasoning"], C_RED)
+            print(f'❌ {label}: {msg}')
+            dump_failed_log(log_dir, log_prefix, interaction_log)
+            return False
+        else:
+          label = format_color(f'[PASS Step {step.step_index + 1}]', C_GRAY)
+          msg = format_color(step.parsed_eval["reasoning"], C_GREEN)
+          print(f'✅ {label}: {msg}')
+
+        step_index += 1
+
+      # If steps succeeded completely and no persona exists, we're done.
+      if not persona and not fallback_to_persona:
+        label = format_color('[SUCCESS]', C_GRAY)
+        msg = format_color(
+            f"Scripted Playbook '{playbook_name}' completed successfully.",
+            C_GREEN)
+        print(f'\n✅ {label} {msg}')
+        print(f'📄 Markdown log saved to: {md_log_path}')
+        return True
+
+      # --- PHASE 2: AUTONOMOUS PERSONA ---
+      print("\n--- Entering Autonomous Persona Mode ---")
+      persona_context = string.Template(
+          persona['context']).safe_substitute(env_context)
+
+      # Interpolate success criteria string values
+      success_criteria = persona.get('success_criteria', {})
+      interpolated_success_criteria = {
+          'llm_checks': [
+              string.Template(c).safe_substitute(env_context)
+              for c in success_criteria.get('llm_checks', [])
+          ],
+          'flow_contains': [
+              string.Template(c).safe_substitute(env_context)
+              for c in success_criteria.get('flow_contains', [])
+          ],
+          'files_exist': [
+              string.Template(c).safe_substitute(env_context)
+              for c in success_criteria.get('files_exist', [])
+          ],
+          'tool_calls_contain': {
+              k: [
+                  string.Template(item).safe_substitute(env_context)
+                  for item in v
+              ] for k, v in success_criteria.get('tool_calls_contain',
+                                                {}).items()
+          },
+          'files_contain': {
+              string.Template(k).safe_substitute(env_context): [
+                  string.Template(item).safe_substitute(env_context)
+                  for item in v
+              ] for k, v in success_criteria.get('files_contain', {}).items()
+          }
+      }
+
+      # Determine next input
+      next_input = None
+      if len(conversation_history) == 0:
+        # Pure autonomous start
+        next_input = string.Template(
+            persona['initial_user_input']).safe_substitute(env_context)
+
+      max_turns = persona.get('max_turns', 10)
+
+      if next_input:
+        print(f"{format_color('Tester:', C_BLUE)}\n{next_input.rstrip()}")
+
+      for turn in range(max_turns):
+        if next_input:
+          try:
+            await asyncio.wait_for(run_turn(agent, next_input),
+                                   timeout=playbook_timeout)
+            agent_response = agent.conversation.last_response
+          except asyncio.TimeoutError:
+            print(f'⚠️ [TIMEOUT] ({playbook_timeout}s)', file=sys.stderr)
+            agent_response = 'SYSTEM_ERROR: Timeout'
+          except Exception as e:
+            print(f'⚠️ [ERROR]: {e}', file=sys.stderr)
+            agent_response = f'SYSTEM_ERROR: {e}'
+
+          full_stdout += agent_response + "\n"
+          turn_display = len(conversation_history) + 1
+          turn_str = format_color(f'[Autonomous Turn {turn_display}]',
+                                  C_BOLD_WHITE)
+          print(
+              f"\n{turn_str}\n\n{format_color('Agent:', C_PINK)}\n{agent_response.rstrip()}"
+          )
+
+          if agent_response.startswith('SYSTEM_ERROR'):
+            print(f'❌ [FAILURE Turn {turn_display}]: System Error.')
+            dump_failed_log(log_dir, log_prefix, interaction_log)
+            return False
+
+          conversation_history.append({
+              "user": next_input,
+              "agent": agent_response
+          })
+          # Log to markdown for autonomous turns (reusing StepData for structure)
+          step_log = StepData(step_index=turn_display - 1,
+                              user_input=next_input,
+                              expected_outcome="Autonomous Persona Turn",
+                              skill_response=agent_response)
+          interaction_log.append(asdict(step_log))
+          with open(md_log_path, 'a') as md_file:
+            md_file.write(
+                f'## Autonomous Turn {turn_display}\n\n**User:**\n\n{next_input}\n\n**Agent:**\n\n{agent_response}\n\n---\n\n'
+            )
+
+        # Evaluate state and generate next input
+        llm_checks = "\n".join([
+            f"- {check}"
+            for check in interpolated_success_criteria.get('llm_checks', [])
+        ])
+        history_text = "\n".join([
+            f"USER: {h['user']}\nAGENT: {h['agent']}\n"
+            for h in conversation_history
+        ])
+
+        eval_prompt = f"""
+        You are simulating a user interacting with an AI agent.
+
+        YOUR PERSONA AND RULES:
+        {persona_context}
+
+        GOAL (SEMANTIC CHECKS TO VERIFY COMPLETION):
+        {llm_checks}
+
+        CONVERSATION HISTORY:
+        {history_text}
+
+        TASK:
+        1. Evaluate if the agent's latest response was helpful, followed the rules, and is moving towards the goal. Set `agent_followed_skill_rules` to false if the agent hallucinated or broke rules.
+        2. Check if the GOAL has been fully achieved based on the conversation so far. If yes, set `test_completed_successfully` to true.
+        3. If the GOAL is not achieved, formulate the exact text you will reply with to advance the conversation, using only your persona knowledge. Put this in `next_user_input`.
+        """
+
+        eval_response = evaluator_client.models.generate_content(
+            model=evaluator_model,
+            contents=eval_prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type='application/json',
+                response_schema=AutonomousTurnResult,
+                temperature=0.0,
+            ),
+        )
+        parsed_eval = json.loads(eval_response.text)
+
+        if not parsed_eval['agent_followed_skill_rules']:
+          label = format_color('[AUTONOMOUS FAIL]', C_GRAY)
+          msg = format_color(parsed_eval['reasoning'], C_RED)
+          print(f"❌ {label}: {msg}")
+          dump_failed_log(log_dir, log_prefix, interaction_log)
+          return False
+
+        if parsed_eval['test_completed_successfully']:
+          label = format_color('[AUTONOMOUS SEMANTIC SUCCESS]', C_GRAY)
+          msg = format_color(parsed_eval['reasoning'], C_GREEN)
+          print(f"✅ {label}: {msg}")
+          print("🔍 Performing deterministic checks...")
+
+          if perform_deterministic_checks(interpolated_success_criteria,
+                                          workspace_dir, full_stdout):
+            if fallback_to_persona:
+              label = format_color('[PASS WITH WARNINGS]', C_GRAY)
+              msg = format_color(
+                  f"Playbook '{playbook_name}' completed via autonomous recovery.",
+                  C_YELLOW)
+              print(f"\n✅ {label} {msg}")
+            else:
+              label = format_color('[SUCCESS]', C_GRAY)
+              msg = format_color(
+                  f"Autonomous Playbook '{playbook_name}' completed successfully.",
+                  C_GREEN)
+              print(f"\n✅ {label} {msg}")
+            print(f'📄 Markdown log saved to: {md_log_path}')
+            return True
+          else:
+            label = format_color('[AUTONOMOUS FAIL]', C_GRAY)
+            msg = format_color("Deterministic checks failed.", C_RED)
+            print(f"❌ {label}: {msg}")
+            dump_failed_log(log_dir, log_prefix, interaction_log)
+            return False
+
+        next_input = parsed_eval['next_user_input']
+        if next_input:
+          print(f"\n{format_color('Tester:', C_BLUE)}\n{next_input.rstrip()}")
+
+      label = format_color('[AUTONOMOUS FAIL]', C_GRAY)
+      msg = format_color(
+          f"Reached max turns ({max_turns}) without completing the goal.",
+          C_RED)
+      print(f"❌ {label}: {msg}")
+      dump_failed_log(log_dir, log_prefix, interaction_log)
+      return False
 
   except KeyboardInterrupt:
     print('\n🛑 [INTERRUPTED] Shutting down cleanly...')
@@ -775,12 +951,8 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     return False
   finally:
     # Locate and copy the session json to the logs directory
-    workspace_name = os.path.basename(workspace_dir)
-    slugified_name = re.sub(r'[^a-zA-Z0-9]+', '-',
-                            workspace_name).strip('-').lower()
-    session_files = glob.glob(
-        os.path.expanduser(
-            f'~/.gemini/tmp/{slugified_name}/chats/session-*.json'))
+    # The SDK saves it in save_dir/chats/session-*.json
+    session_files = glob.glob(os.path.join(log_dir, 'chats', 'session-*.json'))
     if session_files:
       session_files.sort(key=os.path.getmtime, reverse=True)
       session_log_path = os.path.join(log_dir, f'{log_prefix}_session.json')
@@ -793,11 +965,6 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         shutil.rmtree(workspace_dir)
       else:
         print(f'📁 Workspace preserved at: {workspace_dir}')
-
-    if skill_name:
-      print(f'🧹 Unlinking local skill: {skill_name}')
-      subprocess.run(['gemini', 'skills', 'uninstall', skill_name], check=False,
-                     capture_output=True)
 
 
 @click.command()
@@ -812,19 +979,13 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     '--skill-src',
     type=click.Path(exists=True),
     default=None,
-    help='Path to a local unpacked skill directory to link before testing.',
+    help='Path to a local unpacked skill directory to run.',
 )
 @click.option(
     '--env-file',
     type=click.Path(exists=True),
     default=None,
     help='Path to a .env file containing secrets to substitute in the playbook.',
-)
-@click.option(
-    '--gemini-cmd',
-    type=str,
-    default='gemini',
-    help='Command and initial arguments to invoke the CLI.',
 )
 @click.option(
     '--keep-workspace',
@@ -835,7 +996,7 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     '--agent-model',
     type=str,
     default=None,
-    help='Override the model the Gemini CLI uses (e.g., gemini-2.5-pro).',
+    help='Override the model the agent uses (e.g., gemini-2.5-pro).',
 )
 @click.option(
     '--evaluator-model',
@@ -844,18 +1005,38 @@ def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     help=
     'Override the model the test harness uses to grade (e.g., gemini-2.5-flash).',
 )
-def main(playbook, log_dir, skill_src, env_file, gemini_cmd, keep_workspace,
-         agent_model, evaluator_model):
-  '''Hybrid Python/CLI Test Harness.
+@click.option(
+    '--debug',
+    is_flag=True,
+    help='Enable debug logging for the SDK.',
+)
+def main(playbook, log_dir, skill_src, env_file, keep_workspace, agent_model,
+         evaluator_model, debug):
+  '''Hybrid Python SDK Test Harness.
 
-  Executes a YAML playbook against the Gemini CLI and evaluates the
+  Executes a YAML playbook using the Antigravity SDK and evaluates the
   responses using the Gemini API.
   '''
   if env_file:
     load_env_file(env_file)
 
-  run_hybrid_tuning_loop(playbook, log_dir, skill_src, gemini_cmd,
-                         keep_workspace, agent_model, evaluator_model)
+  if 'GEMINI_API_KEY' not in os.environ:
+    print(
+        '❌ [ERROR]: GEMINI_API_KEY environment variable is not set.',
+        file=sys.stderr,
+    )
+    print(
+        'Please set it in your environment, provide it in a .env file, or store it in ~/.gemini/key.env',
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+  if debug:
+    logging.basicConfig(level=logging.DEBUG)
+
+  asyncio.run(
+      run_hybrid_tuning_loop(playbook, log_dir, skill_src, keep_workspace,
+                             agent_model, evaluator_model))
 
 
 if __name__ == '__main__':
