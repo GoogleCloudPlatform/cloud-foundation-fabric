@@ -29,7 +29,7 @@ When generating Terraform code that consumes Cloud Foundation Fabric modules, yo
 
 ## 5. Style for Root Modules
 - **File Structure:** Make file structure dependent on size. For small configurations, use a single `main.tf`. For larger configurations, split into multiple files grouped by resource type (e.g., `main.tf` for general elements, `networking.tf`, `compute.tf`, etc.).
-- **Variables & Defaults:** 
+- **Variables & Defaults:**
   - Define all variables in `variables.tf`, sorted alphabetically.
   - Set defaults directly in the `default` attribute if a reasonable default exists or if provided by the user.
   - Avoid creating a `terraform.tfvars` file unless explicitly requested by the user.
@@ -60,5 +60,3 @@ provider "google-beta" {
   impersonate_service_account = "${service_account}"
 }
 ```
-
-
