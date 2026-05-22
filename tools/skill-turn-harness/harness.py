@@ -819,6 +819,11 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
       for turn in range(max_turns):
         if next_input:
+          turn_display = len(conversation_history) + 1
+          turn_str = format_color(f'[Autonomous Turn {turn_display}]',
+                                  C_BOLD_WHITE)
+          print(f"\n{turn_str}")
+
           try:
             await asyncio.wait_for(run_turn(agent, next_input),
                                    timeout=playbook_timeout)
@@ -831,12 +836,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
             agent_response = f'SYSTEM_ERROR: {e}'
 
           full_stdout += agent_response + "\n"
-          turn_display = len(conversation_history) + 1
-          turn_str = format_color(f'[Autonomous Turn {turn_display}]',
-                                  C_BOLD_WHITE)
           print(
-              f"\n{turn_str}\n\n{format_color('Agent:', C_PINK)}\n{agent_response.rstrip()}"
-          )
+              f"\n{format_color('Agent:', C_PINK)}\n{agent_response.rstrip()}")
 
           if agent_response.startswith('SYSTEM_ERROR'):
             print(f'❌ [FAILURE Turn {turn_display}]: System Error.')
