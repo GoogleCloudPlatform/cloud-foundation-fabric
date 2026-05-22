@@ -43,6 +43,37 @@ locals {
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   region     = lookup(local.ctx.locations, var.region, var.region)
 
+  ### PSC locals
+  psc_enabled = try(var.network_config.connectivity.psc_config.psc_enabled, false)
+  psc_config_allowed_consumer_projects = (
+    try(var.network_config.connectivity.psc_config.allowed_consumer_projects, null) == null
+    ? null
+    : [
+      for p in try(var.network_config.connectivity.psc_config.allowed_consumer_projects, []) :
+      lookup(local.ctx.project_ids, p, p)
+    ]
+  )
+  # backwards compatibility
+  psc_allowed_consumer_projects = (
+    try(var.network_config.connectivity.psc_allowed_consumer_projects, null) == null
+    ? null
+    : [
+      for p in try(var.network_config.connectivity.psc_allowed_consumer_projects, []) :
+      lookup(local.ctx.project_ids, p, p)
+    ]
+  )
+  psc_resolved_allowed_consumer_projects = (
+    local.psc_allowed_consumer_projects == null && local.psc_config_allowed_consumer_projects == null
+    ? null
+    : toset(compact(concat(
+      coalesce(local.psc_config_allowed_consumer_projects, []),
+      coalesce(local.psc_allowed_consumer_projects, [])
+    )))
+  )
+  psc_network_attachment_uri      = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+  psc_consumer_network            = try(var.network_config.connectivity.psc_config.psc_auto_connections.consumer_network, null)
+  psc_consumer_service_project_id = try(var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id, null)
+
   users = {
     for k, v in var.users : k =>
     local.is_mysql
@@ -113,16 +144,30 @@ resource "google_sql_database_instance" "primary" {
       }
       dynamic "psc_config" {
         for_each = (
-          var.network_config.connectivity.psc_allowed_consumer_projects != null
+          local.psc_enabled || # strongest signal
+          local.psc_resolved_allowed_consumer_projects != null ||
+          local.psc_network_attachment_uri != null ||
+          local.psc_consumer_network != null ||
+          local.psc_consumer_service_project_id != null
           ? [""]
           : []
         )
         content {
-          psc_enabled = true
-          allowed_consumer_projects = [
-            for p in var.network_config.connectivity.psc_allowed_consumer_projects :
-            lookup(local.ctx.project_ids, p, p)
-          ]
+          psc_enabled               = true
+          allowed_consumer_projects = local.psc_resolved_allowed_consumer_projects
+          network_attachment_uri    = local.psc_network_attachment_uri
+
+          dynamic "psc_auto_connections" {
+            for_each = (
+              try(var.network_config.connectivity.psc_config.psc_auto_connections, null) != null
+              ? [""]
+              : []
+            )
+            content {
+              consumer_network            = local.psc_consumer_network
+              consumer_service_project_id = local.psc_consumer_service_project_id
+            }
+          }
         }
       }
     }
@@ -314,16 +359,30 @@ resource "google_sql_database_instance" "replicas" {
       }
       dynamic "psc_config" {
         for_each = (
-          var.network_config.connectivity.psc_allowed_consumer_projects != null
+          local.psc_enabled || # strongest signal
+          local.psc_resolved_allowed_consumer_projects != null ||
+          local.psc_network_attachment_uri != null ||
+          local.psc_consumer_network != null ||
+          local.psc_consumer_service_project_id != null
           ? [""]
           : []
         )
         content {
-          psc_enabled = true
-          allowed_consumer_projects = [
-            for p in var.network_config.connectivity.psc_allowed_consumer_projects :
-            lookup(local.ctx.project_ids, p, p)
-          ]
+          psc_enabled               = true
+          allowed_consumer_projects = local.psc_resolved_allowed_consumer_projects
+          network_attachment_uri    = local.psc_network_attachment_uri
+
+          dynamic "psc_auto_connections" {
+            for_each = (
+              try(var.network_config.connectivity.psc_config.psc_auto_connections, null) != null
+              ? [""]
+              : []
+            )
+            content {
+              consumer_network            = local.psc_consumer_network
+              consumer_service_project_id = local.psc_consumer_service_project_id
+            }
+          }
         }
       }
     }

@@ -228,7 +228,16 @@ variable "network_config" {
           replica = optional(string)
         }))
       }))
-      psc_allowed_consumer_projects    = optional(list(string))
+      psc_allowed_consumer_projects = optional(list(string)) # preserved for backwards compatibility. Use psc_config.allowed_consumer_projects instead.
+      psc_config = optional(object({
+        psc_enabled               = optional(bool)
+        allowed_consumer_projects = optional(list(string))
+        network_attachment_uri    = optional(string)
+        psc_auto_connections = optional(object({
+          consumer_network            = optional(string)
+          consumer_service_project_id = optional(string)
+        }))
+      }))
       enable_private_path_for_services = optional(bool, false)
     })
   })
