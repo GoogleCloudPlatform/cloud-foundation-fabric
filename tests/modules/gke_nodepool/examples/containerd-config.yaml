@@ -27,11 +27,9 @@ values:
         - server: registry.example.com
           hosts:
           - host: mirror.example.com
-            capabilities:
-            - HOST_CAPABILITY_PULL
-            - HOST_CAPABILITY_RESOLVE
-            override_path: false
-            dial_timeout: 30s
+            capabilities: []
+            override_path: null
+            dial_timeout: null
             header: []
             ca: []
             client: []

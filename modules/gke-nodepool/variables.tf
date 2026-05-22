@@ -164,9 +164,9 @@ variable "node_config" {
       }))
       registry_hosts = optional(map(object({
         hosts = optional(map(object({
-          capabilities  = optional(list(string), ["HOST_CAPABILITY_PULL", "HOST_CAPABILITY_RESOLVE"])
-          override_path = optional(bool, false)
-          dial_timeout  = optional(string, "30s")
+          capabilities  = optional(list(string))
+          override_path = optional(bool)
+          dial_timeout  = optional(string)
           header = optional(list(object({
             key   = string
             value = list(string)
