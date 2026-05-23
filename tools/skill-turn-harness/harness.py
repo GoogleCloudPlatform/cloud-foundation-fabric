@@ -594,19 +594,28 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
     open(os.path.join(workspace_dir, '.project_root'), 'w').close()
 
+    def _ignore_symlinks_and_patterns(directory, names):
+      ignore_func = shutil.ignore_patterns('.terraform', '.git', '.venv',
+                                           'venv', '__pycache__',
+                                           '.pytest_cache',
+                                           'skill-turn-harness')
+      ignored = set(ignore_func(directory, names))
+      for name in names:
+        if os.path.islink(os.path.join(directory, name)):
+          ignored.add(name)
+      return list(ignored)
+
     link_paths = tmpdir_config.get('link_paths', [])
     for path in link_paths:
       src_abs = os.path.abspath(os.path.join(original_cwd, path))
       dst_abs = os.path.join(workspace_dir, path)
       os.makedirs(os.path.dirname(dst_abs), exist_ok=True)
       try:
-        if os.path.isdir(src_abs):
-          shutil.copytree(
-              src_abs, dst_abs,
-              ignore=shutil.ignore_patterns('.terraform', '.git', '.venv',
-                                            'venv', '__pycache__',
-                                            '.pytest_cache',
-                                            'skill-turn-harness'))
+        if os.path.islink(src_abs):
+          print(f'🔗 Skipped symlink: {path}')
+        elif os.path.isdir(src_abs):
+          shutil.copytree(src_abs, dst_abs,
+                          ignore=_ignore_symlinks_and_patterns)
           print(f'📁 Copied directory: {path} -> {dst_abs}')
         else:
           shutil.copy2(src_abs, dst_abs)
@@ -633,10 +642,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
   # Configure SDK Agent
   skills_paths = []
-  workspaces = [workspace_dir]
   if skill_src:
     skills_paths.append(os.path.abspath(skill_src))
-    workspaces.append(os.path.abspath(skill_src))
 
   # Allow all tools to emulate CLI -y/--dangerously-skip-permissions
   policies = [
@@ -658,7 +665,7 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       api_key=os.environ.get('GEMINI_API_KEY'),
       skills_paths=skills_paths,
       policies=policies,
-      workspaces=workspaces,
+      workspaces=[workspace_dir],
       save_dir=log_dir,  # Use log_dir for raw state too
       system_instructions=standard_instructions,
   )

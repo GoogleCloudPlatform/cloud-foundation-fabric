@@ -15,7 +15,9 @@
 # yaml-language-server: $schema=../../playbooks/playbook.schema.json
 name: "Tool Call Test Autonomous"
 timeout: 30
-tmpdir: {}
+tmpdir:
+  link_paths:
+    - tools/skill-turn-harness/test/fixtures/mock-tool-use-skill
 persona:
   initial_user_input: "Hi, please activate the tool-test-skill and create the file as instructed."
   context: |
