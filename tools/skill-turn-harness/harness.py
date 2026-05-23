@@ -571,11 +571,11 @@ async def run_turn(
 
 
 def _get_usage_str(agent: Agent) -> str:
-  """Safely retrieves the accumulated token count from the agent's conversation."""
+  """Safely retrieves the active context size from the agent's conversation."""
   try:
-    usage = agent.conversation.total_usage
-    if usage and usage.total_token_count is not None:
-      return f" [Tokens: {usage.total_token_count:,}]"
+    usage = agent.conversation.last_turn_usage
+    if usage and usage.prompt_token_count is not None:
+      return f" [Context: {usage.prompt_token_count:,}]"
   except Exception:
     pass
   return ""

@@ -16,6 +16,8 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 >
 > **Do NOT Skip Steps or Make Assumptions:** You MUST NOT skip any phases or steps, even if you think they are redundant or if you find information on the system (like active credentials) that suggests a step is already complete. You MUST execute every step sequentially, in order, and wait for explicit user input/confirmation at each step boundary.
 >
+> **MANDATORY START POINT (TURN 1):** You MUST explicitly ask the user to choose their target environment (Standard GCP or GCD) in your first turn. Do NOT check active credentials or run background commands to bypass this step. The environment selection is a fundamental gateway that dictates all downstream resources, variables, and configurations. Proceeding without explicitly getting this choice in Turn 1 is a critical failure.
+>
 > **Strictly One Question at a Time:** You MUST NOT bundle multiple questions or steps together in a single response. Ask exactly one question, wait for the user's answer, and only then proceed to the next question or action.
 >
 > **Sandbox Awareness:** You are running inside an isolated, sandboxed temporary workspace (e.g., `/tmp/gemini_harness_*`). Whenever creating local files, configuration directories (like `custom-fast-config` or `fast-config`), or checking defaults, you MUST do so strictly relative to your current workspace directory (CWD). NEVER try to directly read or write to `/home/ludomagno/` or other external folders, as your file tools are sandboxed and will fail with permission errors.
