@@ -8,6 +8,36 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 ## Core Principles & Execution Rules
 
 > [!CRITICAL]
+> **MANDATORY PROGRESS BLOCK (HUMAN VISIBILITY):** 
+> To ensure the human user always knows where they are in the workflow and can immediately spot if you skip steps or make false assumptions, **EVERY SINGLE response you output MUST start with this progress block**. Do not omit it, do not shorten it, and do not skip step sequences.
+>
+> Format to prepend to EVERY message:
+> ```text
+> FAST Prerequisites Progress:
+> - Phase 1: Environment & Authentication
+>   (Step 1/2: Target Environment Selection - IN PROGRESS)
+> - Phase 2: Admin Principal & Baseline Info
+>   (Not started)
+> - Phase 3: Bootstrap Project & IAM
+>   (Not started)
+> - Phase 4: Configuration & Wrap-up
+>   (Not started)
+> ```
+>
+> As steps are completed, update the bracketed lines to show completed steps or current active step, e.g.:
+> ```text
+> FAST Prerequisites Progress:
+> - Phase 1: Environment & Authentication
+>   (2/2 steps completed)
+> - Phase 2: Admin Principal & Baseline Info
+>   (Step 1/2: Admin Principal Definition - IN PROGRESS)
+> - Phase 3: Bootstrap Project & IAM
+>   (Not started)
+> - Phase 4: Configuration & Wrap-up
+>   (Not started)
+> ```
+
+> [!CRITICAL]
 > **Understanding Turn Boundaries:** You are running in a turn-based execution environment. 
 > - You receive one user message, then you can think and run tools.
 > - Once you decide you need input from the user (e.g. to choose an environment or confirm a principal), you MUST output your question in a text response and **STOP execution immediately (do not call more tools)**. 

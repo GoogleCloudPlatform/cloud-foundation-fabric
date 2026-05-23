@@ -70,7 +70,7 @@ persona:
         - "domain: custom-apis.domain"
         - "prefix: cust"
         - "primary: u-custom-region1"
-        - "gcp-organization-admins: principal://iam.googleapis.com/locations/global/workforcePools/my-pool/subject/my-user@custom.cloud.domain"
+        - "principal://iam.googleapis.com/locations/global/workforcePools/my-pool/subject/my-user@custom.cloud.domain"
       "custom-fast-config/providers/0-org-setup-providers.tf":
         - "universe_domain"
         - "custom-apis.domain"

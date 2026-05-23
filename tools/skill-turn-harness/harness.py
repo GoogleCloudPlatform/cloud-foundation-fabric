@@ -585,7 +585,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
                                  skill_src: str = None,
                                  keep_workspace: bool = False,
                                  cli_agent_model: str = None,
-                                 cli_evaluator_model: str = None):
+                                 cli_evaluator_model: str = None,
+                                 max_deviations: int = 3):
   '''Executes the test playbook and evaluates the agent's responses.
 
   Args:
@@ -888,6 +889,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       if next_input:
         print(f"{format_color('Tester:', C_BLUE)}\n{next_input.rstrip()}")
 
+      deviation_count = 0
+
       for turn in range(max_turns):
         if next_input:
           turn_display = len(conversation_history) + 1
@@ -972,13 +975,23 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         parsed_eval = json.loads(eval_response.text)
 
         if not parsed_eval['agent_followed_skill_rules']:
-          label = format_color('[AUTONOMOUS FAIL]', C_GRAY)
-          msg = format_color(parsed_eval['reasoning'], C_RED)
-          print(f"❌ {label}: {msg}")
-          dump_failed_log(log_dir, log_prefix, interaction_log)
-          return False
+          deviation_count += 1
+          label = format_color('[AGENT DEVIATION]', C_YELLOW)
+          msg = format_color(
+              f"{parsed_eval['reasoning']} (Deviation {deviation_count}/{max_deviations})",
+              C_YELLOW)
+          print(f"⚠️ {label}: {msg}")
+          if deviation_count > max_deviations:
+            label_fail = format_color('[AUTONOMOUS FAIL]', C_GRAY)
+            msg_fail = format_color(
+                f"Exceeded max allowed deviations ({max_deviations}). Failing test.",
+                C_RED)
+            print(f"❌ {label_fail}: {msg_fail}")
+            dump_failed_log(log_dir, log_prefix, interaction_log)
+            return False
+          fallback_to_persona = True  # Flag as passed with warning since we recovered from a deviation
 
-        if parsed_eval['test_completed_successfully']:
+        elif parsed_eval['test_completed_successfully']:
           label = format_color('[AUTONOMOUS SEMANTIC SUCCESS]', C_GRAY)
           msg = format_color(parsed_eval['reasoning'], C_GREEN)
           print(f"✅ {label}: {msg}")
@@ -1092,12 +1105,19 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     'Override the model the test harness uses to grade (e.g., gemini-2.5-flash).',
 )
 @click.option(
+    '--max-deviations',
+    type=int,
+    default=3,
+    help=
+    'Number of deviations/mistakes the agent can make before failing (allows human recovery).',
+)
+@click.option(
     '--debug',
     is_flag=True,
     help='Enable debug logging for the SDK.',
 )
 def main(playbook, log_dir, skill_src, env_file, keep_workspace, agent_model,
-         evaluator_model, debug):
+         evaluator_model, max_deviations, debug):
   '''Hybrid Python SDK Test Harness.
 
   Executes a YAML playbook using the Antigravity SDK and evaluates the
@@ -1122,7 +1142,7 @@ def main(playbook, log_dir, skill_src, env_file, keep_workspace, agent_model,
 
   asyncio.run(
       run_hybrid_tuning_loop(playbook, log_dir, skill_src, keep_workspace,
-                             agent_model, evaluator_model))
+                             agent_model, evaluator_model, max_deviations))
 
 
 if __name__ == '__main__':

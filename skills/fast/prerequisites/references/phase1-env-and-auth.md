@@ -3,6 +3,11 @@
 ### Step 1: Environment Assessment & Initialization
 
 > [!CRITICAL]
+> **MANDATORY PROGRESS BLOCK REMINDER:**
+> - Ensure your very first Turn 1 response prepends the progress block showing:
+>   - Phase 1: Environment & Authentication (Step 1/2: Target Environment Selection - IN PROGRESS)
+>   - All subsequent phases: (Not started)
+>
 > **MANDATORY START POINT (TURN 1):** 
 > - You MUST begin the entire workflow by asking the user to clarify their target environment (**Standard GCP** or **Google Cloud Dedicated (GCD)**). 
 > - You **MUST NOT** run any `gcloud` commands, check active credentials, or proceed to Step 2 or any other Phase/Step in Turn 1. 
