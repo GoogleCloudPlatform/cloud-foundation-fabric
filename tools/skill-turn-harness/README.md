@@ -137,15 +137,12 @@ Playbooks are written in YAML. For autocompletion and validation in VS Code, add
 
 If your playbook requires environment variables (e.g., secrets), declare them in the `env` array. You can then reference them in your `steps` using `${VAR_NAME}`. If a variable is declared but not found in the environment (or passed via `--env-file`), the harness will safely halt before execution.
 
-To run the test in a specific directory (e.g., the repository root), specify `working_dir`. If omitted, a temporary isolated workspace is created.
-
 ```yaml
 # yaml-language-server: $schema=../playbooks/playbook.schema.json
 name: "My Test Playbook"
 timeout: 120
 agent_model: "gemini-2.5-pro"
 evaluator_model: "gemini-2.5-flash"
-working_dir: "." # Run in the directory where harness is executed
 env:
   - MY_API_KEY
 steps:

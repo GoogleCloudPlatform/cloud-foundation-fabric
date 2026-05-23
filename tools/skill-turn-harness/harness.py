@@ -386,12 +386,12 @@ def check_files_contain(files_contain: dict, workspace_dir: str) -> bool:
 
 
 def check_tool_calls_contain(tool_calls_criteria: dict,
-                             workspace_dir: str) -> bool:
+                             executed_tool_calls: list) -> bool:
   '''Checks if the agent's tool calls contain expected literal strings in their arguments.
 
     Args:
       tool_calls_criteria: A dictionary mapping tool names to lists of expected strings.
-      workspace_dir: The temporary workspace directory path.
+      executed_tool_calls: A list of recorded tool calls, each being a dict with 'name' and 'args'.
 
     Returns:
       True if all tool calls contain their expected strings, False otherwise.
@@ -400,32 +400,14 @@ def check_tool_calls_contain(tool_calls_criteria: dict,
     return True
 
   passed = True
-  workspace_name = os.path.basename(workspace_dir)
-  slugified_name = re.sub(r'[^a-zA-Z0-9]+', '-',
-                          workspace_name).strip('-').lower()
-
-  session_files = glob.glob(
-      os.path.expanduser(
-          f'~/.gemini/tmp/{slugified_name}/chats/session-*.json'))
-  if not session_files:
-    print(
-        "❌ [CHECK FAILED]: Expected session JSON file not found in workspace for tool validation."
-    )
-    return False
-
-  session_files.sort(key=os.path.getmtime, reverse=True)
   try:
-    with open(session_files[0], 'r') as f:
-      session_data = json.load(f)
-
     extracted_calls: Dict[str, str] = {}
-    for m in session_data.get('messages', []):
-      for tc in m.get('toolCalls', []):
-        name = tc.get('name')
-        args_str = json.dumps(tc.get('args', {}))
-        if name not in extracted_calls:
-          extracted_calls[name] = ""
-        extracted_calls[name] += args_str + "\n"
+    for tc in executed_tool_calls:
+      name = tc['name']
+      args_str = json.dumps(tc['args'])
+      if name not in extracted_calls:
+        extracted_calls[name] = ""
+      extracted_calls[name] += args_str + "\n"
 
     for tool_name, expected_strings in tool_calls_criteria.items():
       if tool_name not in extracted_calls:
@@ -443,19 +425,21 @@ def check_tool_calls_contain(tool_calls_criteria: dict,
           passed = False
 
   except Exception as e:
-    print(f"❌ [CHECK FAILED]: Failed to parse session JSON: {e}")
+    print(f"❌ [CHECK FAILED]: Failed to process tool calls: {e}")
     passed = False
 
   return passed
 
 
 def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
+                                 executed_tool_calls: list,
                                  full_stdout: str) -> bool:
   '''Evaluates the deterministic checks defined in the persona success_criteria.
 
   Args:
     success_criteria: The success_criteria dictionary from the playbook.
     workspace_dir: The temporary workspace directory path.
+    executed_tool_calls: A list of recorded tool calls.
     full_stdout: The combined stdout of all CLI invocations.
 
   Returns:
@@ -468,7 +452,7 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
     passed = False
 
   if not check_tool_calls_contain(
-      success_criteria.get('tool_calls_contain', {}), workspace_dir):
+      success_criteria.get('tool_calls_contain', {}), executed_tool_calls):
     passed = False
 
   if not check_files_exist(success_criteria.get('files_exist', []),
@@ -490,7 +474,8 @@ def _view_file_directory_check(args: dict) -> bool:
   return False
 
 
-async def run_turn(agent: Agent, user_input: str) -> None:
+async def run_turn(agent: Agent, user_input: str,
+                   executed_tool_calls: list) -> None:
   """Sends user input and streams steps in real-time, logging tool calls and errors."""
   await agent.conversation.send(user_input)
   printed_calls = set()
@@ -521,6 +506,7 @@ async def run_turn(agent: Agent, user_input: str) -> None:
       for tc in step_obj.tool_calls:
         if tc.id not in printed_calls:
           printed_calls.add(tc.id)
+          executed_tool_calls.append({'name': tc.name, 'args': dict(tc.args)})
           if need_newline:
             trimmer.flush_remaining()
             print()
@@ -571,6 +557,15 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   Returns:
     True if the playbook passes completely, False if any step fails.
   '''
+  # Initialize all finally-block dependencies at the very top to avoid NameErrors on early failure
+  log_prefix = "unknown_playbook"
+  conversation_history = []
+  executed_tool_calls = []
+  interaction_log = []
+  is_tmpdir = False
+  workspace_dir = os.getcwd()
+  original_cwd = os.getcwd()
+
   evaluator_client = genai.Client()
   log_dir = os.path.abspath(log_dir)
   os.makedirs(log_dir, exist_ok=True)
@@ -594,7 +589,6 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
   tmpdir_config = playbook.get('tmpdir')
   is_tmpdir = tmpdir_config is not None
-  original_cwd = os.getcwd()
 
   if is_tmpdir:
     workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
@@ -633,13 +627,16 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
   full_stdout = ""
   conversation_history = []
+  executed_tool_calls = []
   step_index = 0
   fallback_to_persona = False
 
   # Configure SDK Agent
   skills_paths = []
+  workspaces = [workspace_dir]
   if skill_src:
     skills_paths.append(os.path.abspath(skill_src))
+    workspaces.append(os.path.abspath(skill_src))
 
   # Allow all tools to emulate CLI -y/--dangerously-skip-permissions
   policies = [
@@ -661,7 +658,7 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       api_key=os.environ.get('GEMINI_API_KEY'),
       skills_paths=skills_paths,
       policies=policies,
-      workspaces=[workspace_dir],
+      workspaces=workspaces,
       save_dir=log_dir,  # Use log_dir for raw state too
       system_instructions=standard_instructions,
   )
@@ -687,8 +684,9 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         )
 
         try:
-          await asyncio.wait_for(run_turn(agent, step.user_input),
-                                 timeout=playbook_timeout)
+          await asyncio.wait_for(
+              run_turn(agent, step.user_input, executed_tool_calls),
+              timeout=playbook_timeout)
           step.skill_response = agent.conversation.last_response
         except asyncio.TimeoutError:
           print(f'⚠️ [TIMEOUT] ({playbook_timeout}s)', file=sys.stderr)
@@ -825,8 +823,9 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
           print(f"\n{turn_str}")
 
           try:
-            await asyncio.wait_for(run_turn(agent, next_input),
-                                   timeout=playbook_timeout)
+            await asyncio.wait_for(
+                run_turn(agent, next_input, executed_tool_calls),
+                timeout=playbook_timeout)
             agent_response = agent.conversation.last_response
           except asyncio.TimeoutError:
             print(f'⚠️ [TIMEOUT] ({playbook_timeout}s)', file=sys.stderr)
@@ -912,7 +911,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
           print("🔍 Performing deterministic checks...")
 
           if perform_deterministic_checks(interpolated_success_criteria,
-                                          workspace_dir, full_stdout):
+                                          workspace_dir, executed_tool_calls,
+                                          full_stdout):
             if fallback_to_persona:
               label = format_color('[PASS WITH WARNINGS]', C_GRAY)
               msg = format_color(
@@ -946,19 +946,30 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       dump_failed_log(log_dir, log_prefix, interaction_log)
       return False
 
+  except Exception as e:
+    print(format_color(f'\n💥 [CRASH] Unexpected error: {e}', C_RED),
+          file=sys.stderr)
+    import traceback
+    traceback.print_exc()
+    dump_failed_log(log_dir, log_prefix, interaction_log)
+    return False
   except KeyboardInterrupt:
     print('\n🛑 [INTERRUPTED] Shutting down cleanly...')
     dump_failed_log(log_dir, log_prefix, interaction_log)
     return False
   finally:
-    # Locate and copy the session json to the logs directory
-    # The SDK saves it in save_dir/chats/session-*.json
-    session_files = glob.glob(os.path.join(log_dir, 'chats', 'session-*.json'))
-    if session_files:
-      session_files.sort(key=os.path.getmtime, reverse=True)
-      session_log_path = os.path.join(log_dir, f'{log_prefix}_session.json')
-      shutil.copy2(session_files[0], session_log_path)
+    # Save the session trace json to the logs directory
+    session_log_path = os.path.join(log_dir, f'{log_prefix}_session.json')
+    session_data = {
+        "messages": conversation_history,
+        "toolCalls": executed_tool_calls
+    }
+    try:
+      with open(session_log_path, 'w') as f:
+        json.dump(session_data, f, indent=2)
       print(f'📄 Session JSON saved to: {session_log_path}')
+    except Exception as e:
+      print(f'⚠️ [WARNING] Failed to write session JSON: {e}', file=sys.stderr)
 
     if is_tmpdir:
       os.chdir(original_cwd)
