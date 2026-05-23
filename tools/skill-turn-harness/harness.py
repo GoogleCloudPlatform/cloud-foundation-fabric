@@ -769,9 +769,7 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
           step.skill_response = f'SYSTEM_ERROR: {e}'
 
         full_stdout += step.skill_response + "\n"
-        usage_str_end = _get_usage_str(agent)
-        turn_str = format_color(f'[Step {step.step_index + 1}]{usage_str_end}',
-                                C_BOLD_WHITE)
+        turn_str = format_color(f'[Step {step.step_index + 1}]', C_BOLD_WHITE)
         print(
             f"\n{turn_str}\n\n{format_color('Agent:', C_PINK)}\n{step.skill_response.rstrip()}"
         )
@@ -911,10 +909,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
             agent_response = f'SYSTEM_ERROR: {e}'
 
           full_stdout += agent_response + "\n"
-          usage_str_end = _get_usage_str(agent)
           print(
-              f"\n{format_color('Agent:', C_PINK)} {format_color(usage_str_end, C_GRAY)}\n{agent_response.rstrip()}"
-          )
+              f"\n{format_color('Agent:', C_PINK)}\n{agent_response.rstrip()}")
 
           if agent_response.startswith('SYSTEM_ERROR'):
             print(f'❌ [FAILURE Turn {turn_display}]: System Error.')
