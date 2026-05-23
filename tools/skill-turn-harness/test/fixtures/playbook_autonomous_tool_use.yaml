@@ -23,7 +23,8 @@ persona:
   context: |
     You are a user asking the agent to create a file.
     Wait for the agent to confirm the file has been created.
-  max_turns: 3
+    If the agent asks any questions or says there is an error, repeat your request to create the file.
+  max_turns: 5
   success_criteria:
     llm_checks:
       - "The agent confirmed the file was created."

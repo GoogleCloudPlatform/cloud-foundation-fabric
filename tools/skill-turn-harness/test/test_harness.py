@@ -196,6 +196,49 @@ steps:
   assert 'SYSTEM_ERROR: Timeout' in content
 
 
+@pytest.mark.asyncio
+@patch('harness.Agent')
+async def test_run_turn_generator(mock_agent_class):
+  # Mock steps returned by the SDK
+  async def mock_receive_steps():
+    yield harness.agy_types.Step(type=harness.agy_types.StepType.UNKNOWN,
+                                 status=harness.agy_types.StepStatus.DONE,
+                                 thinking_delta="Thinking about it")
+    yield harness.agy_types.Step(
+        type=harness.agy_types.StepType.TOOL_CALL,
+        status=harness.agy_types.StepStatus.DONE, tool_calls=[
+            harness.agy_types.ToolCall(id="tc-1", name="list_directory",
+                                       args={"path": "/tmp"})
+        ])
+    yield harness.agy_types.Step(type=harness.agy_types.StepType.TEXT_RESPONSE,
+                                 status=harness.agy_types.StepStatus.ERROR,
+                                 error="Something went wrong")
+
+  mock_conversation = MagicMock()
+  mock_conversation.send = AsyncMock()
+  mock_conversation.receive_steps.return_value = mock_receive_steps()
+
+  mock_agent = MagicMock()
+  mock_agent.conversation = mock_conversation
+
+  # Consume our new run_turn async generator
+  events = []
+  async for event in harness.run_turn(mock_agent, "Hi"):
+    events.append(event)
+
+  # Verify correct types and data are yielded
+  assert len(events) == 3
+  assert isinstance(events[0], harness.ThinkingDeltaEvent)
+  assert events[0].text == "Thinking about it"
+
+  assert isinstance(events[1], harness.ToolCallEvent)
+  assert events[1].name == "list_directory"
+  assert events[1].args == {"path": "/tmp"}
+
+  assert isinstance(events[2], harness.ErrorEvent)
+  assert events[2].message == "Something went wrong"
+
+
 # --- Phase C: E2E Test ---
 
 
