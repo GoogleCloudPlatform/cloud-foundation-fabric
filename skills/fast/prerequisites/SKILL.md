@@ -18,6 +18,8 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 >
 > **Strictly One Question at a Time:** You MUST NOT bundle multiple questions or steps together in a single response. Ask exactly one question, wait for the user's answer, and only then proceed to the next question or action.
 >
+> **Sandbox Awareness:** You are running inside an isolated, sandboxed temporary workspace (e.g., `/tmp/gemini_harness_*`). Whenever creating local files, configuration directories (like `custom-fast-config` or `fast-config`), or checking defaults, you MUST do so strictly relative to your current workspace directory (CWD). NEVER try to directly read or write to `/home/ludomagno/` or other external folders, as your file tools are sandboxed and will fail with permission errors.
+>
 > **Step-by-Step Execution:** Never implement a single "magical" flow. Go through each step one at a time, explaining context and asking for confirmation.
 3. **Execution Choice:** Respect the user's execution preference (automatic via `run_shell_command` vs. manual copy/paste) throughout the entire workflow unless the user explicitly instructs you to change it. This preference will be gathered during Phase 1.
 4. **File Modifications:** Always use `replace` or `write_file`. **Never** use opaque shell commands (like `sed`, `echo >>`, or `cat <<EOF >>`). Show proposed edits and ask for confirmation before applying them so the user can see what we're doing.

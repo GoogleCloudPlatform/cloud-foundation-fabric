@@ -694,7 +694,12 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   standard_instructions = (
       "GUIDELINES:\n"
       "- Always check if a path is a directory before trying to view it. "
-      "Use list_directory to inspect directories, never view_file.")
+      "Use list_directory to inspect directories, never view_file.\n"
+      "- You are running inside an isolated, sandboxed temporary workspace (e.g., /tmp/gemini_harness_*). "
+      "Whenever creating local files, configuration directories (like custom-fast-config or fast-config), "
+      "or checking defaults, you MUST do so strictly relative to your current workspace directory (CWD). "
+      "NEVER try to directly read or write to /home/ludomagno/ or other external folders, as your file tools "
+      "are sandboxed and will fail with permission/step errors.")
 
   config = LocalAgentConfig(
       model=agent_model,
