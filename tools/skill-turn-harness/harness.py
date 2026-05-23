@@ -45,7 +45,24 @@ import tempfile
 
 from dataclasses import dataclass, asdict
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, AsyncIterator
+
+
+@dataclass
+class ThinkingDeltaEvent:
+  text: str
+
+
+@dataclass
+class ToolCallEvent:
+  name: str
+  args: dict
+
+
+@dataclass
+class ErrorEvent:
+  message: str
+
 
 # Third-party imports
 import click
@@ -187,6 +204,65 @@ class StreamingTrimmer:
   def flush_remaining(self) -> None:
     self.started = False
     self.whitespace_buffer = ""
+
+
+class ConsoleRenderer:
+  """Handles console formatting and streaming output for interaction turns."""
+
+  def __init__(self):
+    self.trimmer = StreamingTrimmer()
+    self.need_newline = False
+    self.at_start_of_line = True
+
+  def render_thinking(self, text: str):
+    to_print = self.trimmer.process_delta(text)
+    if to_print:
+      if not self.need_newline:
+        print(f"  {format_color('🧠 Thinking:', C_GRAY)}", flush=True)
+        self.need_newline = True
+        self.at_start_of_line = True
+
+      parts = to_print.split('\n')
+      for i, part in enumerate(parts):
+        if i > 0:
+          print('\n', end='')
+          self.at_start_of_line = True
+        if part:
+          if self.at_start_of_line:
+            print('  ', end='')
+            self.at_start_of_line = False
+          print(format_color(part, C_GRAY), end='', flush=True)
+
+  def render_tool_call(self, name: str, args: dict):
+    if self.need_newline:
+      self.trimmer.flush_remaining()
+      print()
+      self.need_newline = False
+    cleaned_args = {
+        k: v for k, v in args.items() if k not in {
+            "output",
+            "results",
+            "num_results",
+            "diff_block",
+            "exit_code",
+            "combined_output",
+            "image_name",
+        }
+    }
+    args_str = ", ".join(f"{k}={v}" for k, v in cleaned_args.items())
+    print(f"  🛠️ {format_color(f'[Tool Call]: {name}({args_str})', C_GRAY)}")
+
+  def render_error(self, message: str):
+    if self.need_newline:
+      self.trimmer.flush_remaining()
+      print()
+      self.need_newline = False
+    print(f"  ❌ [Error]: {message}")
+
+  def finalize(self):
+    if self.need_newline:
+      self.trimmer.flush_remaining()
+      print()
 
 
 def init_markdown_log(md_log_path: str, playbook_name: str):
@@ -474,69 +550,24 @@ def _view_file_directory_check(args: dict) -> bool:
   return False
 
 
-async def run_turn(agent: Agent, user_input: str,
-                   executed_tool_calls: list) -> None:
-  """Sends user input and streams steps in real-time, logging tool calls and errors."""
+async def run_turn(
+    agent: Agent, user_input: str
+) -> AsyncIterator[Union[ThinkingDeltaEvent, ToolCallEvent, ErrorEvent]]:
+  """Sends user input and yields interaction events in real-time."""
   await agent.conversation.send(user_input)
   printed_calls = set()
-  need_newline = False
-  at_start_of_line = True
-  trimmer = StreamingTrimmer()
   async for step_obj in agent.conversation.receive_steps():
     if step_obj.thinking_delta:
-      to_print = trimmer.process_delta(step_obj.thinking_delta)
-      if to_print:
-        if not need_newline:
-          print(f"  {format_color('🧠 Thinking:', C_GRAY)}", flush=True)
-          need_newline = True
-          at_start_of_line = True
-
-        parts = to_print.split('\n')
-        for i, part in enumerate(parts):
-          if i > 0:
-            print('\n', end='')
-            at_start_of_line = True
-          if part:
-            if at_start_of_line:
-              print('  ', end='')
-              at_start_of_line = False
-            print(format_color(part, C_GRAY), end='', flush=True)
+      yield ThinkingDeltaEvent(text=step_obj.thinking_delta)
 
     if step_obj.type == agy_types.StepType.TOOL_CALL:
       for tc in step_obj.tool_calls:
         if tc.id not in printed_calls:
           printed_calls.add(tc.id)
-          executed_tool_calls.append({'name': tc.name, 'args': dict(tc.args)})
-          if need_newline:
-            trimmer.flush_remaining()
-            print()
-            need_newline = False
-          cleaned_args = {
-              k: v for k, v in tc.args.items() if k not in {
-                  "output",
-                  "results",
-                  "num_results",
-                  "diff_block",
-                  "exit_code",
-                  "combined_output",
-                  "image_name",
-              }
-          }
-          args_str = ", ".join(f"{k}={v}" for k, v in cleaned_args.items())
-          print(
-              f"  🛠️ {format_color(f'[Tool Call]: {tc.name}({args_str})', C_GRAY)}"
-          )
-    if step_obj.status == agy_types.StepStatus.ERROR:
-      if need_newline:
-        trimmer.flush_remaining()
-        print()
-        need_newline = False
-      error_msg = step_obj.error or "Unknown step error"
-      print(f"  ❌ [Error]: {error_msg}")
+          yield ToolCallEvent(name=tc.name, args=dict(tc.args))
 
-  if need_newline:
-    trimmer.flush_remaining()
-    print()
+    if step_obj.status == agy_types.StepStatus.ERROR:
+      yield ErrorEvent(message=step_obj.error or "Unknown step error")
 
 
 async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
@@ -643,7 +674,12 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   # Configure SDK Agent
   skills_paths = []
   if skill_src:
-    skills_paths.append(os.path.abspath(skill_src))
+    if is_tmpdir:
+      # If sandboxed in tmpdir, point to the copied skill path inside the sandbox
+      skills_paths.append(
+          os.path.abspath(os.path.join(workspace_dir, skill_src)))
+    else:
+      skills_paths.append(os.path.abspath(skill_src))
 
   # Allow all tools to emulate CLI -y/--dangerously-skip-permissions
   policies = [
@@ -672,6 +708,19 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
   try:
     async with Agent(config) as agent:
+
+      async def _execute_turn(user_input_str: str):
+        renderer = ConsoleRenderer()
+        async for event in run_turn(agent, user_input_str):
+          if isinstance(event, ThinkingDeltaEvent):
+            renderer.render_thinking(event.text)
+          elif isinstance(event, ToolCallEvent):
+            executed_tool_calls.append({'name': event.name, 'args': event.args})
+            renderer.render_tool_call(event.name, event.args)
+          elif isinstance(event, ErrorEvent):
+            renderer.render_error(event.message)
+        renderer.finalize()
+
       # --- PHASE 1: SCRIPTED STEPS ---
       for step_dict in playbook_steps:
         raw_user_input = step_dict['user_input']
@@ -691,9 +740,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         )
 
         try:
-          await asyncio.wait_for(
-              run_turn(agent, step.user_input, executed_tool_calls),
-              timeout=playbook_timeout)
+          await asyncio.wait_for(_execute_turn(step.user_input),
+                                 timeout=playbook_timeout)
           step.skill_response = agent.conversation.last_response
         except asyncio.TimeoutError:
           print(f'⚠️ [TIMEOUT] ({playbook_timeout}s)', file=sys.stderr)
@@ -830,9 +878,8 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
           print(f"\n{turn_str}")
 
           try:
-            await asyncio.wait_for(
-                run_turn(agent, next_input, executed_tool_calls),
-                timeout=playbook_timeout)
+            await asyncio.wait_for(_execute_turn(next_input),
+                                   timeout=playbook_timeout)
             agent_response = agent.conversation.last_response
           except asyncio.TimeoutError:
             print(f'⚠️ [TIMEOUT] ({playbook_timeout}s)', file=sys.stderr)
