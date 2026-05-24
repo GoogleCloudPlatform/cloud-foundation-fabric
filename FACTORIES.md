@@ -101,32 +101,25 @@ The following table details how FAST stages implement factory patterns.
 
 This documentation is maintained to track factory patterns across the `modules` and `fast/stages` directories.
 
-### To Update
+### Discovery & Maintenance Guide
 
-#### 1. Modules Analysis
+To ensure this document never drifts from the actual codebase and to prevent missing any newly introduced factory patterns, use these systematic search commands to discover and audit all factories in the repository:
 
-1.  **Identify Configuration:** Search for `variable "factories_config"` in typically `modules/your-module/variables.tf`.
-2.  **Determine Keys:** Inspect the `factories_config` type (e.g., `object({ ... })`) to identify the keys like `rules`, `vpcs`, `projects`.
-3.  **Find Usage:** Search for `var.factories_config.KEY` in the module's `main.tf` or `factory.tf` to see how the data is used.
-4.  **Classify Resources:** Determine whether the factory logic creates module resources (e.g., `google_project`) or iterates a sub-module.
-5.  **List Dependencies:** Note any module-level variables (e.g., `project_id`, `name`) that are injected into the factory-created resources.
+#### 1. Discovering Module Factories
+To locate all modules supporting factory configurations, run:
+```bash
+grep -rn "variable \"factories_config\"" modules/
+```
+For each discovered module, verify if its keys (defined in `variables.tf` under the `factories_config` type block) are fully documented in the [Modules](#modules) table.
 
-#### 2. FAST Stages Analysis
-
-1.  **Identify Configuration:** Search for `variable "factories_config"` in `fast/stages/your-stage/variables.tf`.
-2.  **Find Usage:** Search for `var.factories_config.KEY` in the stage's implementation (often in `factory*.tf`).
-3.  **Classify Implementation**:
-    *   **Module-Backed (Factory)**: The `factories_config` path is passed directly to an underlying module (e.g., `project-factory`).
-    *   **Stage-Implemented (Module)**: The stage explicitly loads the YAML/files and iterates over a standard module (e.g., `dns` module).
-    *   **Stage-Implemented (Resource)**: The stage explicitly loads the YAML/files and iterates over raw Terraform resources (e.g., `google_network_connectivity_hub`).
-    *   **Native (Complex)**: The stage implements complex logic combining multiple modules/resources (e.g., combining `compute-vm` and `net-lb-int` for NVAs).
+#### 2. Discovering FAST Stage Factories
+To locate all stage-level factory implementations and helper files, run:
+```bash
+find fast/stages/ -name "factory-*.tf"
+```
+Each matching `factory-[name].tf` file indicates a distinct factory feature (e.g., `factory-addresses.tf`, `factory-cloudnat.tf`). Match these files against the [FAST Stages](#fast-stages) table to ensure every implemented feature is documented.
 
 #### 3. Updating the Tables
-
-When adding a new factory-supported module or stage, or modifying an existing one, update this document manually:
-
-1. **Modules Table:**
-   - Insert any new module-backed factory in strict **alphabetical order** by module name.
-   - Document the `Primary Module Resource`, the exact `Factory Key` configured within `factories_config`, the `Factory-Managed Resources` created, and any module-level variables passed as `Dependencies`.
-2. **FAST Stages Table:**
-   - Document stage-level factories, ensuring that you classify their implementation type correctly (e.g., `Module-Backed`, `Stage-Implemented`, or `Native`).
+When updating the tables manually:
+- **Modules Table:** Insert any new module-backed factory in strict **alphabetical order** by module name. Document the `Primary Module Resource`, the exact `Factory Key`, the `Factory-Managed Resources` created, and any module-level `Dependencies` passed.
+- **FAST Stages Table:** Group stage entries by stage name. List all the stage's factory keys and sub-features, classifying their `Implementation Type` and `Underlying Module/Resource` accurately.
