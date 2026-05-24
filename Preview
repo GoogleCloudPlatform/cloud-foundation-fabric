@@ -1,0 +1,59 @@
+Skip to content
+cloud-foundation-fabric
+Repository navigation
+Code
+Issues
+5
+ (5)
+cloud-foundation-fabric/blueprints/third-party-solutions
+/README.md
+simonebruzzechesse
+simonebruzzechesse
+2 years ago
+41 lines (21 loc) · 2.69 KB
+
+Preview
+
+Code
+
+Blame
+Third Party Solutions
+The blueprints in this folder show how to automate installation of specific third party products on GCP, following typical best practices.
+
+Blueprints
+F5 BigIP
+
+
+These examples show how to deploy F5 BigIP-VE load balancers in GCP.
+
+
+Gitlab Runner
+
+
+These example show how to deploy a Gitlab runner in GCP.
+
+
+Gitlab
+
+
+This blueprint shows how to deploy a Gitlab instance in GCP. The architecture is based on the reference described in the official documentation with managed services such as Cloud SQL, Memorystore and Cloud Storage.
+
+
+OpenShift cluster bootstrap on Shared VPC
+
+
+This example shows how to quickly bootstrap an OpenShift 4.7 cluster on GCP, using typical enterprise features like Shared VPC and CMEK for instance disks.
+
+
+Serverless phpIPAM on Cloud Run
+
+
+This example shows how to quickly bootstrap a serverless phpIPAM instance on GCP using Cloud Run. This comes with typical enterprise features like Shared VPC, Cloud Armor with IAP and, possibly, private exposure via Internal Application Load Balancer. Indeed, the script supports deploying the application either publicly via Global Application Load Balancer with restricted access based on IPs (Cloud Armor) and identities (Identity Aware Proxy) or privately via Internal Application Load Balancer.
+
+
+Wordpress deployment on Cloud Run
+
+
+This example shows how to deploy a functioning new Wordpress website exposed to the public internet via CloudRun and Cloud SQL, with minimal technical overhead.
+
+
