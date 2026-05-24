@@ -79,6 +79,8 @@ The following table details how FAST stages implement factory patterns.
 | **1-vpcsc** | `access_levels`, `egress_policies`, `ingress_policies`, `perimeters` | Module-Backed (Factory) | `vpc-sc` |
 | **2-networking** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **2-networking** | `projects` | Module-Backed (Factory) | `project-factory` |
+| **2-networking** | `addresses` (VPC IP Addresses) | Stage-Implemented (Module) | `net-address` |
+| **2-networking** | `cloud_nats` (VPC Cloud NATs) | Stage-Implemented (Module) | `net-cloudnat` |
 | **2-networking** | `dns` (Zones) | Stage-Implemented (Module) | `dns` |
 | **2-networking** | `dns_response_policies` | Stage-Implemented (Module) | `dns-response-policy` |
 | **2-networking** | `firewall_policies` | Stage-Implemented (Module) | `net-firewall-policy` |
@@ -86,6 +88,8 @@ The following table details how FAST stages implement factory patterns.
 | **2-networking** | `vlan_attachments` | Stage-Implemented (Module) | `net-vlan-attachment` |
 | **2-networking** | `ncc_hubs` | Stage-Implemented (Resource) | `google_network_connectivity_hub` |
 | **2-networking** | `ncc_groups` | Stage-Implemented (Resource) | `google_network_connectivity_group` |
+| **2-networking** | `peerings` (VPC Network Peerings) | Stage-Implemented (Resource) | `google_compute_network_peering` |
+| **2-networking** | `routers` (VPC Routers) | Stage-Implemented (Resource) | `google_compute_router` |
 | **2-networking** | `nvas` | Native (Complex) | `compute-vm`, `net-lb-int` |
 | **2-project-factory** | `projects`, `folders`, `budgets` | Module-Backed (Factory) | `project-factory` |
 | **2-security** | `projects` | Module-Backed (Factory) | `project-factory` |
