@@ -45,7 +45,24 @@ import tempfile
 
 from dataclasses import dataclass, asdict
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, AsyncIterator
+
+
+@dataclass
+class ThinkingDeltaEvent:
+  text: str
+
+
+@dataclass
+class ToolCallEvent:
+  name: str
+  args: dict
+
+
+@dataclass
+class ErrorEvent:
+  message: str
+
 
 # Third-party imports
 import click
@@ -187,6 +204,65 @@ class StreamingTrimmer:
   def flush_remaining(self) -> None:
     self.started = False
     self.whitespace_buffer = ""
+
+
+class ConsoleRenderer:
+  """Handles console formatting and streaming output for interaction turns."""
+
+  def __init__(self):
+    self.trimmer = StreamingTrimmer()
+    self.need_newline = False
+    self.at_start_of_line = True
+
+  def render_thinking(self, text: str):
+    to_print = self.trimmer.process_delta(text)
+    if to_print:
+      if not self.need_newline:
+        print(f"  {format_color('🧠 Thinking:', C_GRAY)}", flush=True)
+        self.need_newline = True
+        self.at_start_of_line = True
+
+      parts = to_print.split('\n')
+      for i, part in enumerate(parts):
+        if i > 0:
+          print('\n', end='')
+          self.at_start_of_line = True
+        if part:
+          if self.at_start_of_line:
+            print('  ', end='')
+            self.at_start_of_line = False
+          print(format_color(part, C_GRAY), end='', flush=True)
+
+  def render_tool_call(self, name: str, args: dict):
+    if self.need_newline:
+      self.trimmer.flush_remaining()
+      print()
+      self.need_newline = False
+    cleaned_args = {
+        k: v for k, v in args.items() if k not in {
+            "output",
+            "results",
+            "num_results",
+            "diff_block",
+            "exit_code",
+            "combined_output",
+            "image_name",
+        }
+    }
+    args_str = ", ".join(f"{k}={v}" for k, v in cleaned_args.items())
+    print(f"  🛠️ {format_color(f'[Tool Call]: {name}({args_str})', C_GRAY)}")
+
+  def render_error(self, message: str):
+    if self.need_newline:
+      self.trimmer.flush_remaining()
+      print()
+      self.need_newline = False
+    print(f"  ❌ [Error]: {message}")
+
+  def finalize(self):
+    if self.need_newline:
+      self.trimmer.flush_remaining()
+      print()
 
 
 def init_markdown_log(md_log_path: str, playbook_name: str):
@@ -386,12 +462,12 @@ def check_files_contain(files_contain: dict, workspace_dir: str) -> bool:
 
 
 def check_tool_calls_contain(tool_calls_criteria: dict,
-                             workspace_dir: str) -> bool:
+                             executed_tool_calls: list) -> bool:
   '''Checks if the agent's tool calls contain expected literal strings in their arguments.
 
     Args:
       tool_calls_criteria: A dictionary mapping tool names to lists of expected strings.
-      workspace_dir: The temporary workspace directory path.
+      executed_tool_calls: A list of recorded tool calls, each being a dict with 'name' and 'args'.
 
     Returns:
       True if all tool calls contain their expected strings, False otherwise.
@@ -400,32 +476,14 @@ def check_tool_calls_contain(tool_calls_criteria: dict,
     return True
 
   passed = True
-  workspace_name = os.path.basename(workspace_dir)
-  slugified_name = re.sub(r'[^a-zA-Z0-9]+', '-',
-                          workspace_name).strip('-').lower()
-
-  session_files = glob.glob(
-      os.path.expanduser(
-          f'~/.gemini/tmp/{slugified_name}/chats/session-*.json'))
-  if not session_files:
-    print(
-        "❌ [CHECK FAILED]: Expected session JSON file not found in workspace for tool validation."
-    )
-    return False
-
-  session_files.sort(key=os.path.getmtime, reverse=True)
   try:
-    with open(session_files[0], 'r') as f:
-      session_data = json.load(f)
-
     extracted_calls: Dict[str, str] = {}
-    for m in session_data.get('messages', []):
-      for tc in m.get('toolCalls', []):
-        name = tc.get('name')
-        args_str = json.dumps(tc.get('args', {}))
-        if name not in extracted_calls:
-          extracted_calls[name] = ""
-        extracted_calls[name] += args_str + "\n"
+    for tc in executed_tool_calls:
+      name = tc['name']
+      args_str = json.dumps(tc['args'])
+      if name not in extracted_calls:
+        extracted_calls[name] = ""
+      extracted_calls[name] += args_str + "\n"
 
     for tool_name, expected_strings in tool_calls_criteria.items():
       if tool_name not in extracted_calls:
@@ -443,19 +501,21 @@ def check_tool_calls_contain(tool_calls_criteria: dict,
           passed = False
 
   except Exception as e:
-    print(f"❌ [CHECK FAILED]: Failed to parse session JSON: {e}")
+    print(f"❌ [CHECK FAILED]: Failed to process tool calls: {e}")
     passed = False
 
   return passed
 
 
 def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
+                                 executed_tool_calls: list,
                                  full_stdout: str) -> bool:
   '''Evaluates the deterministic checks defined in the persona success_criteria.
 
   Args:
     success_criteria: The success_criteria dictionary from the playbook.
     workspace_dir: The temporary workspace directory path.
+    executed_tool_calls: A list of recorded tool calls.
     full_stdout: The combined stdout of all CLI invocations.
 
   Returns:
@@ -468,7 +528,7 @@ def perform_deterministic_checks(success_criteria: dict, workspace_dir: str,
     passed = False
 
   if not check_tool_calls_contain(
-      success_criteria.get('tool_calls_contain', {}), workspace_dir):
+      success_criteria.get('tool_calls_contain', {}), executed_tool_calls):
     passed = False
 
   if not check_files_exist(success_criteria.get('files_exist', []),
@@ -490,74 +550,43 @@ def _view_file_directory_check(args: dict) -> bool:
   return False
 
 
-async def run_turn(agent: Agent, user_input: str) -> None:
-  """Sends user input and streams steps in real-time, logging tool calls and errors."""
+async def run_turn(
+    agent: Agent, user_input: str
+) -> AsyncIterator[Union[ThinkingDeltaEvent, ToolCallEvent, ErrorEvent]]:
+  """Sends user input and yields interaction events in real-time."""
   await agent.conversation.send(user_input)
   printed_calls = set()
-  need_newline = False
-  at_start_of_line = True
-  trimmer = StreamingTrimmer()
   async for step_obj in agent.conversation.receive_steps():
     if step_obj.thinking_delta:
-      to_print = trimmer.process_delta(step_obj.thinking_delta)
-      if to_print:
-        if not need_newline:
-          print(f"  {format_color('🧠 Thinking:', C_GRAY)}", flush=True)
-          need_newline = True
-          at_start_of_line = True
-
-        parts = to_print.split('\n')
-        for i, part in enumerate(parts):
-          if i > 0:
-            print('\n', end='')
-            at_start_of_line = True
-          if part:
-            if at_start_of_line:
-              print('  ', end='')
-              at_start_of_line = False
-            print(format_color(part, C_GRAY), end='', flush=True)
+      yield ThinkingDeltaEvent(text=step_obj.thinking_delta)
 
     if step_obj.type == agy_types.StepType.TOOL_CALL:
       for tc in step_obj.tool_calls:
         if tc.id not in printed_calls:
           printed_calls.add(tc.id)
-          if need_newline:
-            trimmer.flush_remaining()
-            print()
-            need_newline = False
-          cleaned_args = {
-              k: v for k, v in tc.args.items() if k not in {
-                  "output",
-                  "results",
-                  "num_results",
-                  "diff_block",
-                  "exit_code",
-                  "combined_output",
-                  "image_name",
-              }
-          }
-          args_str = ", ".join(f"{k}={v}" for k, v in cleaned_args.items())
-          print(
-              f"  🛠️ {format_color(f'[Tool Call]: {tc.name}({args_str})', C_GRAY)}"
-          )
-    if step_obj.status == agy_types.StepStatus.ERROR:
-      if need_newline:
-        trimmer.flush_remaining()
-        print()
-        need_newline = False
-      error_msg = step_obj.error or "Unknown step error"
-      print(f"  ❌ [Error]: {error_msg}")
+          yield ToolCallEvent(name=tc.name, args=dict(tc.args))
 
-  if need_newline:
-    trimmer.flush_remaining()
-    print()
+    if step_obj.status == agy_types.StepStatus.ERROR:
+      yield ErrorEvent(message=step_obj.error or "Unknown step error")
+
+
+def _get_usage_str(agent: Agent) -> str:
+  """Safely retrieves the active context size from the agent's conversation."""
+  try:
+    usage = agent.conversation.last_turn_usage
+    if usage and usage.prompt_token_count is not None:
+      return f" [Context: {usage.prompt_token_count:,}]"
+  except Exception:
+    pass
+  return ""
 
 
 async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
                                  skill_src: str = None,
                                  keep_workspace: bool = False,
                                  cli_agent_model: str = None,
-                                 cli_evaluator_model: str = None):
+                                 cli_evaluator_model: str = None,
+                                 max_deviations: int = 3):
   '''Executes the test playbook and evaluates the agent's responses.
 
   Args:
@@ -571,6 +600,15 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   Returns:
     True if the playbook passes completely, False if any step fails.
   '''
+  # Initialize all finally-block dependencies at the very top to avoid NameErrors on early failure
+  log_prefix = "unknown_playbook"
+  conversation_history = []
+  executed_tool_calls = []
+  interaction_log = []
+  is_tmpdir = False
+  workspace_dir = os.getcwd()
+  original_cwd = os.getcwd()
+
   evaluator_client = genai.Client()
   log_dir = os.path.abspath(log_dir)
   os.makedirs(log_dir, exist_ok=True)
@@ -594,11 +632,21 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
   tmpdir_config = playbook.get('tmpdir')
   is_tmpdir = tmpdir_config is not None
-  original_cwd = os.getcwd()
 
   if is_tmpdir:
     workspace_dir = tempfile.mkdtemp(prefix='gemini_harness_')
     open(os.path.join(workspace_dir, '.project_root'), 'w').close()
+
+    def _ignore_symlinks_and_patterns(directory, names):
+      ignore_func = shutil.ignore_patterns('.terraform', '.git', '.venv',
+                                           'venv', '__pycache__',
+                                           '.pytest_cache',
+                                           'skill-turn-harness')
+      ignored = set(ignore_func(directory, names))
+      for name in names:
+        if os.path.islink(os.path.join(directory, name)):
+          ignored.add(name)
+      return list(ignored)
 
     link_paths = tmpdir_config.get('link_paths', [])
     for path in link_paths:
@@ -606,13 +654,11 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       dst_abs = os.path.join(workspace_dir, path)
       os.makedirs(os.path.dirname(dst_abs), exist_ok=True)
       try:
-        if os.path.isdir(src_abs):
-          shutil.copytree(
-              src_abs, dst_abs,
-              ignore=shutil.ignore_patterns('.terraform', '.git', '.venv',
-                                            'venv', '__pycache__',
-                                            '.pytest_cache',
-                                            'skill-turn-harness'))
+        if os.path.islink(src_abs):
+          print(f'🔗 Skipped symlink: {path}')
+        elif os.path.isdir(src_abs):
+          shutil.copytree(src_abs, dst_abs,
+                          ignore=_ignore_symlinks_and_patterns)
           print(f'📁 Copied directory: {path} -> {dst_abs}')
         else:
           shutil.copy2(src_abs, dst_abs)
@@ -633,13 +679,19 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
   full_stdout = ""
   conversation_history = []
+  executed_tool_calls = []
   step_index = 0
   fallback_to_persona = False
 
   # Configure SDK Agent
   skills_paths = []
   if skill_src:
-    skills_paths.append(os.path.abspath(skill_src))
+    if is_tmpdir:
+      # If sandboxed in tmpdir, point to the copied skill path inside the sandbox
+      skills_paths.append(
+          os.path.abspath(os.path.join(workspace_dir, skill_src)))
+    else:
+      skills_paths.append(os.path.abspath(skill_src))
 
   # Allow all tools to emulate CLI -y/--dangerously-skip-permissions
   policies = [
@@ -654,7 +706,12 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
   standard_instructions = (
       "GUIDELINES:\n"
       "- Always check if a path is a directory before trying to view it. "
-      "Use list_directory to inspect directories, never view_file.")
+      "Use list_directory to inspect directories, never view_file.\n"
+      "- You are running inside an isolated, sandboxed temporary workspace (e.g., /tmp/gemini_harness_*). "
+      "Whenever creating local files, configuration directories (like custom-fast-config or fast-config), "
+      "or checking defaults, you MUST do so strictly relative to your current workspace directory (CWD). "
+      "NEVER try to directly read or write to /home/ludomagno/ or other external folders, as your file tools "
+      "are sandboxed and will fail with permission/step errors.")
 
   config = LocalAgentConfig(
       model=agent_model,
@@ -668,6 +725,19 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
 
   try:
     async with Agent(config) as agent:
+
+      async def _execute_turn(user_input_str: str):
+        renderer = ConsoleRenderer()
+        async for event in run_turn(agent, user_input_str):
+          if isinstance(event, ThinkingDeltaEvent):
+            renderer.render_thinking(event.text)
+          elif isinstance(event, ToolCallEvent):
+            executed_tool_calls.append({'name': event.name, 'args': event.args})
+            renderer.render_tool_call(event.name, event.args)
+          elif isinstance(event, ErrorEvent):
+            renderer.render_error(event.message)
+        renderer.finalize()
+
       # --- PHASE 1: SCRIPTED STEPS ---
       for step_dict in playbook_steps:
         raw_user_input = step_dict['user_input']
@@ -681,13 +751,15 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         step = StepData(step_index=step_index, user_input=subbed_user_input,
                         expected_outcome=subbed_expected_outcome)
 
-        turn_str = format_color(f'[Step {step.step_index + 1}]', C_BOLD_WHITE)
+        usage_str_start = _get_usage_str(agent) if step_index > 0 else ""
+        turn_str = format_color(
+            f'[Step {step.step_index + 1}]{usage_str_start}', C_BOLD_WHITE)
         print(
             f"\n{turn_str}\n{format_color('Tester:', C_BLUE)}\n{step.user_input.rstrip()}"
         )
 
         try:
-          await asyncio.wait_for(run_turn(agent, step.user_input),
+          await asyncio.wait_for(_execute_turn(step.user_input),
                                  timeout=playbook_timeout)
           step.skill_response = agent.conversation.last_response
         except asyncio.TimeoutError:
@@ -817,15 +889,19 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       if next_input:
         print(f"{format_color('Tester:', C_BLUE)}\n{next_input.rstrip()}")
 
+      deviation_count = 0
+
       for turn in range(max_turns):
         if next_input:
           turn_display = len(conversation_history) + 1
-          turn_str = format_color(f'[Autonomous Turn {turn_display}]',
-                                  C_BOLD_WHITE)
+          usage_str_start = _get_usage_str(agent)
+          turn_str = format_color(
+              f'[Autonomous Turn {turn_display}]{usage_str_start}',
+              C_BOLD_WHITE)
           print(f"\n{turn_str}")
 
           try:
-            await asyncio.wait_for(run_turn(agent, next_input),
+            await asyncio.wait_for(_execute_turn(next_input),
                                    timeout=playbook_timeout)
             agent_response = agent.conversation.last_response
           except asyncio.TimeoutError:
@@ -899,20 +975,31 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
         parsed_eval = json.loads(eval_response.text)
 
         if not parsed_eval['agent_followed_skill_rules']:
-          label = format_color('[AUTONOMOUS FAIL]', C_GRAY)
-          msg = format_color(parsed_eval['reasoning'], C_RED)
-          print(f"❌ {label}: {msg}")
-          dump_failed_log(log_dir, log_prefix, interaction_log)
-          return False
+          deviation_count += 1
+          label = format_color('[AGENT DEVIATION]', C_YELLOW)
+          msg = format_color(
+              f"{parsed_eval['reasoning']} (Deviation {deviation_count}/{max_deviations})",
+              C_YELLOW)
+          print(f"⚠️ {label}: {msg}")
+          if deviation_count > max_deviations:
+            label_fail = format_color('[AUTONOMOUS FAIL]', C_GRAY)
+            msg_fail = format_color(
+                f"Exceeded max allowed deviations ({max_deviations}). Failing test.",
+                C_RED)
+            print(f"❌ {label_fail}: {msg_fail}")
+            dump_failed_log(log_dir, log_prefix, interaction_log)
+            return False
+          fallback_to_persona = True  # Flag as passed with warning since we recovered from a deviation
 
-        if parsed_eval['test_completed_successfully']:
+        elif parsed_eval['test_completed_successfully']:
           label = format_color('[AUTONOMOUS SEMANTIC SUCCESS]', C_GRAY)
           msg = format_color(parsed_eval['reasoning'], C_GREEN)
           print(f"✅ {label}: {msg}")
           print("🔍 Performing deterministic checks...")
 
           if perform_deterministic_checks(interpolated_success_criteria,
-                                          workspace_dir, full_stdout):
+                                          workspace_dir, executed_tool_calls,
+                                          full_stdout):
             if fallback_to_persona:
               label = format_color('[PASS WITH WARNINGS]', C_GRAY)
               msg = format_color(
@@ -946,19 +1033,30 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
       dump_failed_log(log_dir, log_prefix, interaction_log)
       return False
 
+  except Exception as e:
+    print(format_color(f'\n💥 [CRASH] Unexpected error: {e}', C_RED),
+          file=sys.stderr)
+    import traceback
+    traceback.print_exc()
+    dump_failed_log(log_dir, log_prefix, interaction_log)
+    return False
   except KeyboardInterrupt:
     print('\n🛑 [INTERRUPTED] Shutting down cleanly...')
     dump_failed_log(log_dir, log_prefix, interaction_log)
     return False
   finally:
-    # Locate and copy the session json to the logs directory
-    # The SDK saves it in save_dir/chats/session-*.json
-    session_files = glob.glob(os.path.join(log_dir, 'chats', 'session-*.json'))
-    if session_files:
-      session_files.sort(key=os.path.getmtime, reverse=True)
-      session_log_path = os.path.join(log_dir, f'{log_prefix}_session.json')
-      shutil.copy2(session_files[0], session_log_path)
+    # Save the session trace json to the logs directory
+    session_log_path = os.path.join(log_dir, f'{log_prefix}_session.json')
+    session_data = {
+        "messages": conversation_history,
+        "toolCalls": executed_tool_calls
+    }
+    try:
+      with open(session_log_path, 'w') as f:
+        json.dump(session_data, f, indent=2)
       print(f'📄 Session JSON saved to: {session_log_path}')
+    except Exception as e:
+      print(f'⚠️ [WARNING] Failed to write session JSON: {e}', file=sys.stderr)
 
     if is_tmpdir:
       os.chdir(original_cwd)
@@ -1007,12 +1105,19 @@ async def run_hybrid_tuning_loop(playbook_path: str, log_dir: str,
     'Override the model the test harness uses to grade (e.g., gemini-2.5-flash).',
 )
 @click.option(
+    '--max-deviations',
+    type=int,
+    default=3,
+    help=
+    'Number of deviations/mistakes the agent can make before failing (allows human recovery).',
+)
+@click.option(
     '--debug',
     is_flag=True,
     help='Enable debug logging for the SDK.',
 )
 def main(playbook, log_dir, skill_src, env_file, keep_workspace, agent_model,
-         evaluator_model, debug):
+         evaluator_model, max_deviations, debug):
   '''Hybrid Python SDK Test Harness.
 
   Executes a YAML playbook using the Antigravity SDK and evaluates the
@@ -1037,7 +1142,7 @@ def main(playbook, log_dir, skill_src, env_file, keep_workspace, agent_model,
 
   asyncio.run(
       run_hybrid_tuning_loop(playbook, log_dir, skill_src, keep_workspace,
-                             agent_model, evaluator_model))
+                             agent_model, evaluator_model, max_deviations))
 
 
 if __name__ == '__main__':

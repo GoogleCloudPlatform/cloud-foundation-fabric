@@ -2,10 +2,19 @@
 
 ### Step 1: Environment Assessment & Initialization
 
-> [!IMPORTANT]
-> **Do NOT Automate Environment Choice**: You MUST explicitly ask the user to clarify their target environment (Standard GCP or GCD) and wait for their response. Do NOT assume or guess based on local config files or active credentials.
+> [!CRITICAL]
+> **MANDATORY PROGRESS BLOCK REMINDER:**
+> - Ensure your very first Turn 1 response prepends the progress block showing:
+>   - Phase 1: Environment & Authentication (Step 1/2: Target Environment Selection - IN PROGRESS)
+>   - All subsequent phases: (Not started)
 >
-> **Do NOT Automate Command Execution Preference**: You MUST ask how they prefer to run commands (automatic vs manual) and wait for their response.
+> **MANDATORY START POINT (TURN 1):** 
+> - You MUST begin the entire workflow by asking the user to clarify their target environment (**Standard GCP** or **Google Cloud Dedicated (GCD)**). 
+> - You **MUST NOT** run any `gcloud` commands, check active credentials, or proceed to Step 2 or any other Phase/Step in Turn 1. 
+> - You **MUST** stop execution immediately after asking this question and wait for the user's response.
+> - Do NOT assume, pre-fill, or guess the environment based on local config files, active credentials, or background command success.
+>
+> **Do NOT Automate Command Execution Preference**: You MUST ask how they prefer to run commands (automatic vs manual) in a subsequent turn and wait for their response.
 
 1. Ask the user to clarify their target environment: **Standard GCP** or **Google Cloud Dedicated (GCD)**. **Wait for their response.**
 2. Once the environment is confirmed, ask how they prefer to run commands: Should you (Gemini CLI) run them automatically, or should you output them for manual execution? **Remember this preference for the rest of the workflow. Wait for their response.**
@@ -27,9 +36,12 @@
 
 ### Step 2: Authentication
 
+> [!CRITICAL]
+> **DO NOT START STEP 2 PREMATURELY:** You MUST NOT check authentication, run `gcloud config list`, or execute Step 2 until Step 1 (Environment Assessment & Initialization) has been completely finished and confirmed by the user in previous turns.
+
 1. Ask the user if they are already authenticated with Google Cloud using the correct principal.
    - *If yes:* Run (or ask the user to run) `gcloud config list account --format="value(core.account)"` to retrieve the current authenticated principal. Show this principal to the user and explicitly ask them to confirm if this is the correct identity they want to use.
-     - *If they confirm:* Proceed directly to Phase 2 (Step 3).
+     - *If they confirm (and Step 1 is already completed):* Proceed directly to Phase 2 (Step 3).
      - *If they do not confirm:* Proceed with the authentication steps below.
    - *If no:* Proceed with the authentication steps below.
 2. *Standard GCP:* Provide or execute the command:

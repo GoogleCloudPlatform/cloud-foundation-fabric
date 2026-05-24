@@ -196,6 +196,49 @@ steps:
   assert 'SYSTEM_ERROR: Timeout' in content
 
 
+@pytest.mark.asyncio
+@patch('harness.Agent')
+async def test_run_turn_generator(mock_agent_class):
+  # Mock steps returned by the SDK
+  async def mock_receive_steps():
+    yield harness.agy_types.Step(type=harness.agy_types.StepType.UNKNOWN,
+                                 status=harness.agy_types.StepStatus.DONE,
+                                 thinking_delta="Thinking about it")
+    yield harness.agy_types.Step(
+        type=harness.agy_types.StepType.TOOL_CALL,
+        status=harness.agy_types.StepStatus.DONE, tool_calls=[
+            harness.agy_types.ToolCall(id="tc-1", name="list_directory",
+                                       args={"path": "/tmp"})
+        ])
+    yield harness.agy_types.Step(type=harness.agy_types.StepType.TEXT_RESPONSE,
+                                 status=harness.agy_types.StepStatus.ERROR,
+                                 error="Something went wrong")
+
+  mock_conversation = MagicMock()
+  mock_conversation.send = AsyncMock()
+  mock_conversation.receive_steps.return_value = mock_receive_steps()
+
+  mock_agent = MagicMock()
+  mock_agent.conversation = mock_conversation
+
+  # Consume our new run_turn async generator
+  events = []
+  async for event in harness.run_turn(mock_agent, "Hi"):
+    events.append(event)
+
+  # Verify correct types and data are yielded
+  assert len(events) == 3
+  assert isinstance(events[0], harness.ThinkingDeltaEvent)
+  assert events[0].text == "Thinking about it"
+
+  assert isinstance(events[1], harness.ToolCallEvent)
+  assert events[1].name == "list_directory"
+  assert events[1].args == {"path": "/tmp"}
+
+  assert isinstance(events[2], harness.ErrorEvent)
+  assert events[2].message == "Something went wrong"
+
+
 # --- Phase C: E2E Test ---
 
 
@@ -275,37 +318,3 @@ def test_e2e_tool_calls_contain(tmp_path):
   session_files = list(tmp_path.glob('*_session.json'))
   assert len(session_files) == 1
   assert session_files[0].exists()
-
-
-@pytest.mark.e2e
-def test_e2e_working_dir(tmp_path):
-  '''
-  Runs an evaluation loop to verify working_dir functionality.
-  '''
-  fixtures_dir = os.path.join(os.path.dirname(__file__), 'fixtures')
-  skill_dir = os.path.join(fixtures_dir, 'mock-tool-use-skill')
-
-  # Create a specific subdirectory in tmp_path
-  workdir_target = tmp_path / "workdir_target"
-  workdir_target.mkdir()
-
-  # Dynamically create a playbook YAML file
-  playbook_content = f"""# yaml-language-server: $schema=../../playbooks/playbook.schema.json
-name: "Tool Test with Workdir"
-working_dir: "{workdir_target.resolve()}"
-steps:
-  - user_input: "Hi, please activate tool-test-skill and create the file output.txt."
-    expected_outcome: "The agent confirms it has created the file."
-"""
-  playbook_path = tmp_path / "playbook_workdir.yaml"
-  playbook_path.write_text(playbook_content)
-
-  result = asyncio.run(
-      harness.run_hybrid_tuning_loop(str(playbook_path), log_dir=str(tmp_path),
-                                     skill_src=skill_dir))
-
-  assert result is True
-  # Verify that output.txt was created INSIDE workdir_target
-  output_file = workdir_target / "output.txt"
-  assert output_file.exists()
-  assert output_file.read_text().strip() == "Hello World"

@@ -1,5 +1,12 @@
 # Phase 2: Admin Principal & Baseline Info
 
+> [!CRITICAL]
+> **MANDATORY PROGRESS BLOCK REMINDER:**
+> - Ensure your responses in Phase 2 prepend the progress block showing:
+>   - Phase 1: Environment & Authentication (2/2 steps completed)
+>   - Phase 2: Admin Principal & Baseline Info (Step 1/2: Admin Principal Definition - IN PROGRESS)
+>   - All subsequent phases: (Not started)
+
 ### Step 3: Admin Principal Definition
 
 1. Explain the concept of the **Admin Principal**. This is the identity (or group of identities) that will be granted the necessary FAST roles to deploy the foundation and manage critical organization-level configurations and policies thereafter.

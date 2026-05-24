@@ -8,6 +8,36 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 ## Core Principles & Execution Rules
 
 > [!CRITICAL]
+> **MANDATORY PROGRESS BLOCK (HUMAN VISIBILITY):** 
+> To ensure the human user always knows where they are in the workflow and can immediately spot if you skip steps or make false assumptions, **EVERY SINGLE response you output MUST start with this progress block**. Do not omit it, do not shorten it, and do not skip step sequences.
+>
+> Format to prepend to EVERY message:
+> ```text
+> FAST Prerequisites Progress:
+> - Phase 1: Environment & Authentication
+>   (Step 1/2: Target Environment Selection - IN PROGRESS)
+> - Phase 2: Admin Principal & Baseline Info
+>   (Not started)
+> - Phase 3: Bootstrap Project & IAM
+>   (Not started)
+> - Phase 4: Configuration & Wrap-up
+>   (Not started)
+> ```
+>
+> As steps are completed, update the bracketed lines to show completed steps or current active step, e.g.:
+> ```text
+> FAST Prerequisites Progress:
+> - Phase 1: Environment & Authentication
+>   (2/2 steps completed)
+> - Phase 2: Admin Principal & Baseline Info
+>   (Step 1/2: Admin Principal Definition - IN PROGRESS)
+> - Phase 3: Bootstrap Project & IAM
+>   (Not started)
+> - Phase 4: Configuration & Wrap-up
+>   (Not started)
+> ```
+
+> [!CRITICAL]
 > **Understanding Turn Boundaries:** You are running in a turn-based execution environment. 
 > - You receive one user message, then you can think and run tools.
 > - Once you decide you need input from the user (e.g. to choose an environment or confirm a principal), you MUST output your question in a text response and **STOP execution immediately (do not call more tools)**. 
@@ -16,7 +46,11 @@ description: Guides the user step-by-step through the prerequisites for the FAST
 >
 > **Do NOT Skip Steps or Make Assumptions:** You MUST NOT skip any phases or steps, even if you think they are redundant or if you find information on the system (like active credentials) that suggests a step is already complete. You MUST execute every step sequentially, in order, and wait for explicit user input/confirmation at each step boundary.
 >
+> **MANDATORY START POINT (TURN 1):** You MUST explicitly ask the user to choose their target environment (Standard GCP or GCD) in your first turn. Do NOT check active credentials or run background commands to bypass this step. The environment selection is a fundamental gateway that dictates all downstream resources, variables, and configurations. Proceeding without explicitly getting this choice in Turn 1 is a critical failure.
+>
 > **Strictly One Question at a Time:** You MUST NOT bundle multiple questions or steps together in a single response. Ask exactly one question, wait for the user's answer, and only then proceed to the next question or action.
+>
+> **Sandbox Awareness:** You are running inside an isolated, sandboxed temporary workspace (e.g., `/tmp/gemini_harness_*`). Whenever creating local files, configuration directories (like `custom-fast-config` or `fast-config`), or checking defaults, you MUST do so strictly relative to your current workspace directory (CWD). NEVER try to directly read or write to `/home/ludomagno/` or other external folders, as your file tools are sandboxed and will fail with permission errors.
 >
 > **Step-by-Step Execution:** Never implement a single "magical" flow. Go through each step one at a time, explaining context and asking for confirmation.
 3. **Execution Choice:** Respect the user's execution preference (automatic via `run_shell_command` vs. manual copy/paste) throughout the entire workflow unless the user explicitly instructs you to change it. This preference will be gathered during Phase 1.

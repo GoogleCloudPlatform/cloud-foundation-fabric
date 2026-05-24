@@ -27,15 +27,17 @@
     - Use `write_file` to create `0-org-setup.auto.tfvars` inside the `local_path` (`<LOCAL_PATH>/0-org-setup.auto.tfvars`).
     - In `0-org-setup.auto.tfvars`, set the `factories_config` variable. The `dataset` should point to the original dataset folder (e.g., `"datasets/classic"`), but the `paths.defaults` must point to the absolute path of the copied defaults file.
     - *If GCD*, also: Create a temporary `0-org-setup-providers.tf` file containing the specific `universe_domain` configuration using `write_file` at `<LOCAL_PATH>/providers/0-org-setup-providers.tf`.
+11. **Present Configuration and Halt:** Briefly tell the user you have created and validated the baseline configuration files. You MUST stop execution immediately, present the generated files, ask the user if they are ready to proceed with **Step 8 (Organization Policy Import Check)**, and wait for their response. Do not proceed to Step 8 or run more tools in this turn.
 
 ### Step 8: Organization Policy Import Check
 
 1. Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
-2. Execute (or provide) the command to list current policies.
+2. Provide (or execute if automatic) the command to list current policies.
    ```bash
    gcloud org-policies list --organization="<ORG_ID>" --format="value(constraint)"
    ```
-3. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
+3. **STOP Execution and Wait:** You MUST stop execution immediately here, ask the user to run the command, and wait for them to paste the output. Do NOT proceed to Step 9 or update any files until the user has explicitly provided the output of this command.
+4. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
 
 ### Step 9: Wrap-up & Apply
 
