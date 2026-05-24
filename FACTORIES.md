@@ -115,3 +115,13 @@ This documentation is maintained to track factory patterns across the `modules` 
     *   **Stage-Implemented (Module)**: The stage explicitly loads the YAML/files and iterates over a standard module (e.g., `dns` module).
     *   **Stage-Implemented (Resource)**: The stage explicitly loads the YAML/files and iterates over raw Terraform resources (e.g., `google_network_connectivity_hub`).
     *   **Native (Complex)**: The stage implements complex logic combining multiple modules/resources (e.g., combining `compute-vm` and `net-lb-int` for NVAs).
+
+#### 3. Updating the Tables
+
+When adding a new factory-supported module or stage, or modifying an existing one, update this document manually:
+
+1. **Modules Table:**
+   - Insert any new module-backed factory in strict **alphabetical order** by module name.
+   - Document the `Primary Module Resource`, the exact `Factory Key` configured within `factories_config`, the `Factory-Managed Resources` created, and any module-level variables passed as `Dependencies`.
+2. **FAST Stages Table:**
+   - Document stage-level factories, ensuring that you classify their implementation type correctly (e.g., `Module-Backed`, `Stage-Implemented`, or `Native`).
