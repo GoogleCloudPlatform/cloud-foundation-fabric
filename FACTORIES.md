@@ -17,6 +17,7 @@ The following table provides a granular overview of modules that implement facto
 | :--- | :--- | :--- | :--- | :--- |
 | **analytics-hub** | Analytics Hub Exchange | `listings` | Analytics Hub Listings | `project_id`, `region` |
 | **billing-account** | Billing Account (Config) | `budgets_data_path` | Billing Budgets | `id` (Billing Account ID) |
+| **data-catalog-policy-tag** | Data Catalog Taxonomy | `taxonomy` | Data Catalog Policy Tags | `project_id`, `location` |
 | **data-catalog-tag** | N/A | `tags` | Data Catalog Tags | `tags` (Merged with factory data) |
 | **data-catalog-tag-template** | N/A | `tag_templates` | Tag Templates | `project_id`, `region` |
 | **dataplex-aspect-types** | N/A | `aspect_types` | Aspect Types | `project_id`, `location` |
