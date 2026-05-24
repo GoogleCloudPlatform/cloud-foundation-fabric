@@ -281,7 +281,7 @@ This example shows how to create and manage internet NEGs:
 ```hcl
 module "ilb-l7" {
   source     = "./fabric/modules/net-lb-proxy-int"
-  project_id = local.project_id
+  project_id = var.project_id
   name       = "ilb-test"
   region     = var.region
   backend_service_config = {
