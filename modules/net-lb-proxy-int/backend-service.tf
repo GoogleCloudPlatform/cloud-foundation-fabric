@@ -36,8 +36,8 @@ locals {
 
 resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
-  project                         = var.project_id
-  region                          = var.region
+  project                         = local.project_id
+  region                          = local.region
   name                            = coalesce(var.backend_service_config.name, var.name)
   description                     = var.backend_service_config.description
   affinity_cookie_ttl_sec         = var.backend_service_config.affinity_cookie_ttl_sec
