@@ -137,7 +137,7 @@ Network Endpoint Groups (NEGs) can be used as backends, by passing their id as t
 module "int-tcp-proxy" {
   source     = "./fabric/modules/net-lb-proxy-int"
   name       = "int-tcp-proxy"
-  project_id = local.project_id
+  project_id = var.project_id
   region     = "europe-west1"
   backend_service_config = {
     backends = [{
