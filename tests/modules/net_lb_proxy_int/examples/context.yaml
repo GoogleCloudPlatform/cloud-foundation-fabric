@@ -18,7 +18,6 @@ values:
     allow_global_access: null
     allow_psc_global_access: null
     backend_service: null
-    deletion_policy: DELETE
     description: Terraform managed.
     ip_address: 10.0.0.10
     ip_collection: null
@@ -39,7 +38,6 @@ values:
     subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
     timeouts: null
   module.tcp-proxy.google_compute_instance_group.default["default"]:
-    deletion_policy: DELETE
     description: Terraform managed.
     instances:
     - projects/myprj/zones/europe-west1-b/instances/vm-a
@@ -72,7 +70,6 @@ values:
     connection_tracking_policy: []
     consistent_hash: []
     custom_metrics: []
-    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     enable_cdn: null
@@ -97,7 +94,6 @@ values:
     tls_settings: []
   module.tcp-proxy.google_compute_region_health_check.default[0]:
     check_interval_sec: 5
-    deletion_policy: DELETE
     description: Terraform managed.
     grpc_health_check: []
     grpc_tls_health_check: []
@@ -120,7 +116,6 @@ values:
     timeouts: null
     unhealthy_threshold: 2
   module.tcp-proxy.google_compute_region_target_tcp_proxy.default:
-    deletion_policy: DELETE
     description: Terraform managed.
     name: ilb-test
     project: foo-test-0
