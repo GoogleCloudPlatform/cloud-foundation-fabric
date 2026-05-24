@@ -31,7 +31,7 @@ An Regional internal proxy Network Load Balancer with a backend service pointing
 module "tcp-proxy" {
   source     = "./fabric/modules/net-lb-proxy-int"
   name       = "ilb-test"
-  project_id = local.project_id
+  project_id = var.project_id
   region     = "europe-west1"
   backend_service_config = {
     backends = [{
