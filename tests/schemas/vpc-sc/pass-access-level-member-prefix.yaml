@@ -1,6 +1,0 @@
-# skip boilerplate check
-# tftest schema=modules/vpc-sc/schemas/access-level.schema.json
-conditions:
-  - members:
-      - "user:user@example.com"
-      - "serviceAccount:group@example.com"

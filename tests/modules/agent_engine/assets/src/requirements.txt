@@ -1,3 +1,0 @@
-google-cloud-aiplatform[agent_engines]>=1.120.0
-google-adk>=1.15.1
-cloudpickle==3.0.0
