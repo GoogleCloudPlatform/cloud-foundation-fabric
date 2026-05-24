@@ -76,6 +76,7 @@ The following table details how FAST stages implement factory patterns.
 | Stage | Factory (Key/Feature) | Implementation Type | Underlying Module/Resource |
 | :--- | :--- | :--- | :--- |
 | **0-org-setup** | `projects`, `folders`, `budgets` | Module-Backed (Factory) | `project-factory` |
+| **0-org-setup** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **1-vpcsc** | `access_levels`, `egress_policies`, `ingress_policies`, `perimeters` | Module-Backed (Factory) | `vpc-sc` |
 | **2-networking** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **2-networking** | `projects` | Module-Backed (Factory) | `project-factory` |
@@ -92,6 +93,7 @@ The following table details how FAST stages implement factory patterns.
 | **2-networking** | `routers` (VPC Routers) | Stage-Implemented (Resource) | `google_compute_router` |
 | **2-networking** | `nvas` | Native (Complex) | `compute-vm`, `net-lb-int` |
 | **2-project-factory** | `projects`, `folders`, `budgets` | Module-Backed (Factory) | `project-factory` |
+| **2-project-factory** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **2-security** | `projects` | Module-Backed (Factory) | `project-factory` |
 | **2-security** | `certificate_authorities` | Stage-Implemented (Module) | `certificate-authority-service` |
 | **2-security** | `keyrings` (KMS) | Stage-Implemented (Module) | `kms` |
