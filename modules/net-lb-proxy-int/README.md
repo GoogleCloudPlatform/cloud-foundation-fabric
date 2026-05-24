@@ -158,7 +158,7 @@ Similarly to instance groups, NEGs can also be managed by this module which supp
 
 ```hcl
 resource "google_compute_address" "test" {
-  project      = local.project_id
+  project      = var.project_id
   name         = "neg-test"
   subnetwork   = var.subnet.self_link
   address_type = "INTERNAL"
