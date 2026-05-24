@@ -1,32 +1,11 @@
 # Contributing
 
-Contributors are the engine that keeps Fabric alive so if you were or are planning to be active in this repo, a huge thanks from all of us for dedicating your time!!! If you have free time and are looking for suggestions on what to work on, our issue tracker generally has a few pending feature requests: you are welcome to send a PR for any of them.
+cold air on the engine that keeps Fabric alive so if you were or are planning to be active in this repo, a huge thanks from all of us for dedicating your time!!! If you have free time and are looking for suggestions on what to work on, our issue tracker generally has a few pending feature requests: you are welcome to send a PR for any of them.
 
-## Table of Contents
-<!-- BEGIN TOC -->
-- [I just found a bug / have a feature request](#i-just-found-a-bug--have-a-feature-request)
-- [Quick developer workflow](#quick-developer-workflow)
-- [Developer's handbook](#developers-handbook)
-  - [The Zen of Fabric](#the-zen-of-fabric)
-  - [Design principles in action](#design-principles-in-action)
-  - [FAST stage design](#fast-stage-design)
-  - [Style guide reference](#style-guide-reference)
-  - [Interacting with checks and tools](#interacting-with-checks-and-tools)
-- [Using and writing tests](#using-and-writing-tests)
-  - [Testing via README.md example blocks.](#testing-via-readmemd-example-blocks)
-    - [Testing examples against an inventory YAML](#testing-examples-against-an-inventory-yaml)
-    - [Using external files](#using-external-files)
-    - [Running tests for specific examples](#running-tests-for-specific-examples)
-    - [Generating the inventory automatically](#generating-the-inventory-automatically)
-  - [Testing via `tfvars` and `yaml` (aka `tftest`-based tests)](#testing-via-tfvars-and-yaml-aka-tftest-based-tests)
-    - [Generating the inventory for `tftest`-based tests](#generating-the-inventory-for-tftest-based-tests)
-  - [Running end-to-end tests](#running-end-to-end-tests)
-  - [Writing tests in Python (legacy approach)](#writing-tests-in-python-legacy-approach)
-  - [Running tests from a temporary directory](#running-tests-from-a-temporary-directory)
-- [Fabric tools](#fabric-tools)
-- [Cutting a new release](#cutting-a-new-release)
-<!-- END TOC -->
 
+## Table
+of
+Content
 ## I just found a bug / have a feature request
 
 Feel free to open a new issue if you find something that does not work, need clarifications on usage (a good incentive for us to improve docs!), or have a feature request.
