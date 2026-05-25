@@ -3,7 +3,19 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v56.0.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v56.1.0...HEAD)
+
+## [v56.1.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v56.1.0) - 2026-05-25 <!-- from: 2026-05-21 10:20:26+00:00 to: 2026-05-25 since: v56.0.0 -->
+
+### MODULES
+
+- [[#3988](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3988)] Add context to net-lb-proxy-int ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-05-24 17:03:57+00:00 -->
+- [[#3981](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3981)] Cosmetic and linter fixes ([sruffilli](https://github.com/sruffilli)) <!-- 2026-05-22 08:28:01+00:00 -->
+
+### TOOLS
+
+- [[#3983](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3983)] Enhance testing harness stability and update repository documentation ([ludoo](https://github.com/ludoo)) <!-- 2026-05-24 10:25:51+00:00 -->
+- [[#3979](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3979)] Add FAST Prerequisites Skill and Gemini Skill Test Harness ([ludoo](https://github.com/ludoo)) <!-- 2026-05-22 17:16:55+00:00 -->
 
 ## [v56.0.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v56.0.0) - 2026-05-21 <!-- from: 2026-05-10 15:54:54+00:00 to: 2026-05-21 since: v55.4.0 -->
 
