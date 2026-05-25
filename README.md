@@ -41,4 +41,8 @@ Currently available modules:
 
 For more information and usage examples see each module's README file.
 
+## Connected Repositories
+
+* [genai-factory](https://github.com/GoogleCloudPlatform/genai-factory) - A collection of end-to-end infrastructure blueprints to deploy generative AI infrastructures in GCP, using IaC and following security best-practices.
+
 <!-- $Id$ -->
