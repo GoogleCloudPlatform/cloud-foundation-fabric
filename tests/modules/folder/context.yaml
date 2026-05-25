@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -96,6 +96,25 @@ values:
     condition: []
     member: user:test-user@example.com
     role: organizations/366118655033/roles/myRoleTwo
+  google_iam_deny_policy.default["test-policy"]:
+    display_name: Test Deny Policy
+    name: test-policy
+    rules:
+    - deny_rule:
+      - denial_condition:
+        - description: null
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: null
+          title: Test Condition
+        denied_permissions:
+        - compute.googleapis.com/instances.create
+        denied_principals:
+        - user:test-user@example.com
+        exception_permissions: []
+        exception_principals:
+        - group:test-group@example.com
+      description: Test Rule
+    timeouts: null
   google_logging_folder_settings.default[0]:
     kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
     timeouts: null
@@ -140,7 +159,7 @@ values:
       unstructured:
       - {}
     timeouts: null
-  google_pubsub_topic_iam_member.pubsub-sinks-binding["test-pubsub"]:
+  google_pubsub_topic_iam_member.pubsub_sinks_binding["test-pubsub"]:
     condition: []
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
@@ -162,10 +181,22 @@ counts:
   google_folder_iam_audit_config: 1
   google_folder_iam_binding: 7
   google_folder_iam_member: 1
+  google_iam_deny_policy: 1
   google_logging_folder_settings: 1
   google_logging_folder_sink: 1
   google_privileged_access_manager_entitlement: 1
   google_pubsub_topic_iam_member: 1
   google_tags_tag_binding: 3
   modules: 0
-  resources: 19
+  resources: 20
+
+outputs:
+  asset_search_results: {}
+  assured_workload: null
+  folder: __missing__
+  id: __missing__
+  name: Test Context
+  organization_policies_ids: {}
+  scc_custom_sha_modules_ids: {}
+  service_agents: {}
+  sink_writer_identities: __missing__

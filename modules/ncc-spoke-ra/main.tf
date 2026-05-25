@@ -35,7 +35,12 @@ resource "google_network_connectivity_hub" "hub" {
   description = var.hub.description
 }
 
-resource "google_network_connectivity_spoke" "spoke-ra" {
+moved {
+  from = google_network_connectivity_spoke.spoke-ra
+  to   = google_network_connectivity_spoke.spoke_ra
+}
+
+resource "google_network_connectivity_spoke" "spoke_ra" {
   project  = var.project_id
   hub      = try(google_network_connectivity_hub.hub[0].id, var.hub.id)
   location = var.region
@@ -113,7 +118,7 @@ resource "google_compute_router_peer" "peer_0" {
   import_policies           = each.value.import_policies
 
   depends_on = [
-    google_network_connectivity_spoke.spoke-ra,
+    google_network_connectivity_spoke.spoke_ra,
     google_compute_router_route_policy.default
   ]
 }
@@ -135,7 +140,7 @@ resource "google_compute_router_peer" "peer_1" {
   import_policies           = each.value.import_policies
 
   depends_on = [
-    google_network_connectivity_spoke.spoke-ra,
+    google_network_connectivity_spoke.spoke_ra,
     google_compute_router_route_policy.default
   ]
 }

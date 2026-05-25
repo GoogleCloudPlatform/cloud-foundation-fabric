@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.net-vpc-factory.module.firewall["data-vpc-0"].google_compute_firewall.custom-rules["allow-iap"]:
+  module.net-vpc-factory.module.firewall["data-vpc-0"].google_compute_firewall.custom_rules["allow-iap"]:
     allow:
     - ports:
       - '22'

@@ -887,11 +887,10 @@ GPU support is available for all types of Cloud Run resources: jobs, services an
 
 ```hcl
 module "job" {
-  source       = "./fabric/modules/cloud-run-v2"
-  project_id   = var.project_id
-  name         = "example-job"
-  region       = var.region
-  launch_stage = "BETA"
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "example-job"
+  region     = var.region
   revision = {
     gpu_zonal_redundancy_disabled = true
     node_selector = {
@@ -950,11 +949,10 @@ module "service" {
 
 ```hcl
 module "worker" {
-  source       = "./fabric/modules/cloud-run-v2"
-  project_id   = var.project_id
-  name         = "worker"
-  region       = var.region
-  launch_stage = "BETA"
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  name       = "worker"
+  region     = var.region
   revision = {
     gpu_zonal_redundancy_disabled = true
     node_selector = {

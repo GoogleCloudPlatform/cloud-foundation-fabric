@@ -13,31 +13,14 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.default["roles/aiplatform.user"]:
+  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
     condition: []
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.default["roles/storage.objectViewer"]:
+  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
     condition: []
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_project_iam_member.default["roles/viewer"]:
-    condition: []
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
-    project: project-id
-    role: roles/viewer
-  module.agent_engine.google_service_account.service_account[0]:
-    account_id: my-agent
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: my-agent
-    email: my-agent@project-id.iam.gserviceaccount.com
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
-    project: project-id
-    timeouts: null
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
     context_spec: []
     deletion_policy: null
@@ -60,24 +43,18 @@ values:
           value: bar
         psc_interface_config: []
         secret_env: []
-      identity_type: null
+      identity_type: AGENT_IDENTITY
       package_spec: []
-      service_account: my-agent@project-id.iam.gserviceaccount.com
+      service_account: null
       source_code_spec: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  module.agent_engine.time_sleep.wait_5_minutes:
-    create_duration: 5m
-    destroy_duration: null
-    triggers: null
 
 counts:
-  google_project_iam_member: 3
-  google_service_account: 1
+  google_project_iam_member: 2
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 6
-  time_sleep: 1
+  resources: 3
 
 outputs: {}

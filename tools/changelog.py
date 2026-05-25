@@ -392,6 +392,14 @@ def main(token, changelog_file='CHANGELOG.md', bump=None, exclude_pull=None,
                   exclude_pull))
     logging.info(f'number of pulls: {len(pulls)}')
     pull_groups = group_pulls(pulls)
+    if pull_groups.get(None):
+      print("Error: Found uncategorized PRs (missing 'on:' label):")
+      for pr in pull_groups[None]:
+        url = f"https://github.com/{ORG}/{REPO}/pull/{pr.id}"
+        print(f"- #{pr.id}: {pr.title} -> {url}")
+      raise SystemExit(
+          "Please apply an 'on:' label to these PRs on GitHub and re-run the script."
+      )
     upgrade_notes = [pr for pr in pulls if pr.upgrade_notes]
     rel_changes = format_release(pull_groups, upgrade_notes, release_as,
                                  release_to, release_from, date_to, date_from)

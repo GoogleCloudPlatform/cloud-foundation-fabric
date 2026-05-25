@@ -13,11 +13,11 @@
 # limitations under the License.
 
 values:
-  google_folder_iam_member.folder-roles["$folder_ids:test-roles/resourcemanager.folderViewer"]:
+  google_folder_iam_member.folder_roles["$folder_ids:test-roles/resourcemanager.folderViewer"]:
     condition: []
     folder: folders/1234567890
     role: roles/resourcemanager.folderViewer
-  google_project_iam_member.project-roles["$project_ids:test-roles/viewer"]:
+  google_project_iam_member.project_roles["$project_ids:test-roles/viewer"]:
     condition: []
     project: prj-test-0
     role: roles/viewer
@@ -63,7 +63,7 @@ values:
     condition: []
     member: user:test-user@example.com
     role: organizations/366118655033/roles/myRoleTwo
-  google_storage_bucket_iam_member.bucket-roles["$storage_buckets:test-roles/storage.admin"]:
+  google_storage_bucket_iam_member.bucket_roles["$storage_buckets:test-roles/storage.admin"]:
     bucket: gcs-test-0
     condition: []
     role: roles/storage.admin

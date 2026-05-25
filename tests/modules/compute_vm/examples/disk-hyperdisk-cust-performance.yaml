@@ -99,7 +99,7 @@ values:
       disk_encryption_key_rsa: null
       disk_encryption_service_account: null
       force_attach: null
-      mode: READ_ONLY
+      mode: READ_WRITE
       source: test-data2
     boot_disk:
     - auto_delete: true

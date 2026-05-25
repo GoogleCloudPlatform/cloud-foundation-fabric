@@ -1,0 +1,66 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# TODO: data access logs
+
+# yaml-language-server: $schema=../../../schemas/organization.schema.json
+
+id: $defaults:organization/id
+service_agents_config:
+  services:
+    - privilegedaccessmanager.googleapis.com
+
+iam_by_principals:
+  $iam_principals:gcp-organization-admins:
+    - roles/cloudasset.owner
+    - roles/cloudsupport.admin
+    - roles/cloudsupport.techSupportEditor
+    - roles/compute.osAdminLogin
+    - roles/compute.osLoginExternalUser
+    - roles/compute.xpnAdmin
+    - roles/orgpolicy.policyAdmin
+    - roles/owner
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.organizationAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.tagAdmin
+    - roles/iam.workforcePoolAdmin
+  $iam_principals:service_accounts/iac-0/iac-org-rw:
+    - roles/accesscontextmanager.policyAdmin
+    - roles/cloudasset.viewer
+    - roles/essentialcontacts.admin
+    - roles/iam.organizationRoleAdmin
+    - roles/iam.workforcePoolAdmin
+    - roles/logging.admin
+    - roles/orgpolicy.policyAdmin
+    - roles/privilegedaccessmanager.admin
+    - roles/resourcemanager.folderAdmin
+    - roles/resourcemanager.organizationAdmin
+    - roles/resourcemanager.projectCreator
+    - roles/resourcemanager.projectMover
+    - roles/resourcemanager.tagAdmin
+    - roles/resourcemanager.tagUser
+  "$iam_principals:service_agents/pam":
+    - roles/viewer
+logging:
+  sinks:
+    audit-logs:
+      destination: $log_buckets:iac-0/audit-logs
+      filter: |
+        log_id("cloudaudit.googleapis.com/activity") OR
+        log_id("cloudaudit.googleapis.com/system_event") OR
+        log_id("cloudaudit.googleapis.com/policy") OR
+        log_id("cloudaudit.googleapis.com/access_transparency")
+iam:
+  roles/billing.creator: []

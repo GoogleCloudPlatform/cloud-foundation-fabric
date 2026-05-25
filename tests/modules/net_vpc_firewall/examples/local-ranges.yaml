@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.firewall.google_compute_firewall.custom-rules["allow-ingress-source-destination-ranges"]:
+  module.firewall.google_compute_firewall.custom_rules["allow-ingress-source-destination-ranges"]:
     allow:
     - ports: []
       protocol: all
@@ -35,7 +35,7 @@ values:
     source_tags: null
     target_service_accounts: null
     target_tags: null
-  module.firewall.google_compute_firewall.custom-rules["deny-egress-source-destination-ranges"]:
+  module.firewall.google_compute_firewall.custom_rules["deny-egress-source-destination-ranges"]:
     allow: []
     deny:
     - ports: []

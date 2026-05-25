@@ -40,6 +40,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
 - [Tags](#tags)
   - [Tags Factory](#tags-factory)
 - [Workforce Identity](#workforce-identity)
+- [IAM Deny Policies](#iam-deny-policies)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -971,6 +972,7 @@ module "org" {
           }
         }
         oidc-full = {
+          scim_usage = "ENABLED_FOR_GROUPS"
           attribute_mapping = {
             "google.subject" = "assertion.sub"
           }
@@ -993,12 +995,67 @@ module "org" {
               attributes_type = "AZURE_AD_GROUPS_MAIL"
             }
           }
+          scim_tenant = {
+            id           = "my-scim-tenant"
+            display_name = "My SCIM Tenant"
+            claim_mapping = {
+              "google.subject" = "user.externalId"
+              "google.group"   = "group.externalId"
+            }
+          }
         }
       }
     }
   }
 }
-# tftest modules=1 resources=4 inventory=wfif.yaml
+# tftest inventory=wfif.yaml
+```
+
+## IAM Deny Policies
+
+[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions, regardless of the roles they have been granted.
+
+You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny, and optionally allows you to define exception principals, exception permissions, and conditions.
+
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`).
+
+```hcl
+module "organization" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+
+  iam_deny_policies = {
+    "prevent-sa-token-creation" = {
+      display_name = "Prevent SA token creation"
+      rules = [
+        {
+          description        = "Deny service account token creation to all except the central admin group."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["iam.serviceAccounts.getAccessToken"]
+          exception_principals = [
+            "principalSet://goog/group/gcp-admins@example.com"
+          ]
+        }
+      ]
+    }
+    "conditional-key-deny" = {
+      display_name = "Conditional SA Key Deny"
+      rules = [
+        {
+          description        = "Deny key creation outside of authorized IPs using a condition."
+          denied_principals  = ["principalSet://goog/public:all"]
+          denied_permissions = ["iam.serviceAccountKeys.create"]
+          denial_condition = {
+            title       = "ip-restriction"
+            description = "Restrict access to specific IP ranges"
+            expression  = "!inIpRange(request.auth.access_levels, 'accessPolicies/123456789/accessLevels/trusted_ips')"
+          }
+        }
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=iam-deny-policies.yaml
 ```
 
 <!-- TFDOC OPTS files:1 -->
@@ -1008,8 +1065,9 @@ module "org" {
 | name | description | resources |
 |---|---|---|
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_organization_feed</code> |
+| [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> |
-| [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> |
+| [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> · <code>google_iam_workforce_pool_provider_scim_tenant</code> |
 | [logging.tf](./logging.tf) | Log sinks and data access logs. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_settings</code> · <code>google_logging_organization_sink</code> · <code>google_organization_iam_audit_config</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_firewall_policy_association</code> · <code>google_essential_contacts_contact</code> |
 | [org-policy-custom-constraints.tf](./org-policy-custom-constraints.tf) | None | <code>google_org_policy_custom_constraint</code> |
@@ -1047,6 +1105,7 @@ module "org" {
 | [iam_by_principals](variables-iam.tf#L61) | Authoritative IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_additive](variables-iam.tf#L54) | Additive IAM binding in {PRINCIPAL => [ROLES]} format. Principals need to be statically defined to avoid errors. Merged internally with the `iam_bindings_additive` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_by_principals_conditional](variables-iam.tf#L68) | Authoritative IAM binding in {PRINCIPAL => {roles = [roles], condition = {cond}}} format. Principals need to be statically defined to avoid errors. Condition is required. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_deny_policies](variables-iam.tf#L98) | IAM Deny policies to be applied to the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_data_access](variables-logging.tf#L17) | Control activation of data access logs. The special 'allServices' key denotes configuration for all services. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_exclusions](variables-logging.tf#L28) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
@@ -1080,11 +1139,12 @@ module "org" {
 | [organization_policies_ids](outputs.tf#L113) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
 | [scc_custom_sha_modules_ids](outputs.tf#L118) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
 | [scc_mute_configs](outputs.tf#L123) | SCC mute configurations. |  |
-| [service_agents](outputs.tf#L128) | Identities of all organization-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L136) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L144) | Tag key resources. |  |
-| [tag_values](outputs.tf#L153) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L161) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L168) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L175) | Workforce Identity provider attributes. |  |
+| [scim_tenants](outputs.tf#L128) | Workforce Identity provider SCIM tenants. |  |
+| [service_agents](outputs.tf#L142) | Identities of all organization-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L150) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L158) | Tag key resources. |  |
+| [tag_values](outputs.tf#L167) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L175) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L182) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L189) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->

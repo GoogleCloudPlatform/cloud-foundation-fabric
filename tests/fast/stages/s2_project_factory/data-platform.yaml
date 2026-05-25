@@ -1,0 +1,815 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_storage_bucket_object.version[0]:
+    bucket: fast2-prod-iac-core-outputs
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: null
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: versions/2-project-factory-version.txt
+    retention: []
+    source: fast_version.txt
+    temporary_hold: null
+    timeouts: null
+  module.factory.module.aspect-types["core-0"].google_dataplex_aspect_type.default["basic"]:
+    aspect_type_id: basic
+    data_classification: null
+    description: null
+    display_name: Basic template
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: global
+    metadata_template: '{"name":"tf-basic-template","recordFields":[{"annotations":{"description":"Specifies
+      the source of data.","displayName":"Source"},"constraints":{"required":true},"index":1,"name":"source","type":"string"},{"annotations":{"description":"Specifies
+      the data owner.","displayName":"Owner"},"constraints":{},"index":2,"name":"owner","type":"string"}],"type":"record"}'
+    project: testorg-prod-dp-core-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.automation-bucket["product-0/automation/tf-state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST1
+    logging: []
+    name: testorg-product-0-tf-state
+    project: testorg-prod-dp-dd-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  ? module.factory.module.automation-bucket["product-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]
+  : bucket: testorg-product-0-tf-state
+    condition: []
+    members:
+    - serviceAccount:product-0-iac-rw@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    role: roles/storage.admin
+    timeouts: null
+  ? module.factory.module.automation-bucket["product-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: testorg-product-0-tf-state
+    condition: []
+    members:
+    - group:dp-product-a-0@example.com
+    - serviceAccount:product-0-iac-ro@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+    timeouts: null
+  module.factory.module.automation-bucket["shared-0/automation/tf-state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST1
+    logging: []
+    name: testorg-shared-0-tf-state
+    project: testorg-prod-dp-core-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: true
+  ? module.factory.module.automation-bucket["shared-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.admin"]
+  : bucket: testorg-shared-0-tf-state
+    condition: []
+    members:
+    - serviceAccount:shared-0-iac-rw@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    role: roles/storage.admin
+    timeouts: null
+  ? module.factory.module.automation-bucket["shared-0/automation/tf-state"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: testorg-shared-0-tf-state
+    condition: []
+    members:
+    - group:dp-product-a-0@example.com
+    - serviceAccount:shared-0-iac-ro@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    role: roles/storage.objectViewer
+    timeouts: null
+  module.factory.module.automation-service-accounts["product-0/automation/iac-ro"].google_service_account.service_account[0]:
+    account_id: product-0-iac-ro
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Product 0/0 (ro)
+    email: product-0-iac-ro@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    member: serviceAccount:product-0-iac-ro@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd-0
+    timeouts: null
+  ? module.factory.module.automation-service-accounts["product-0/automation/iac-ro"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - group:dp-product-a-0@example.com
+    role: roles/iam.serviceAccountTokenCreator
+  module.factory.module.automation-service-accounts["product-0/automation/iac-rw"].google_service_account.service_account[0]:
+    account_id: product-0-iac-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Product 0/0 (rw)
+    email: product-0-iac-rw@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    member: serviceAccount:product-0-iac-rw@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd-0
+    timeouts: null
+  ? module.factory.module.automation-service-accounts["product-0/automation/iac-rw"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - group:dp-product-a-0@example.com
+    role: roles/iam.serviceAccountTokenCreator
+  module.factory.module.automation-service-accounts["shared-0/automation/iac-ro"].google_service_account.service_account[0]:
+    account_id: shared-0-iac-ro
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Domain 0 (ro)
+    email: shared-0-iac-ro@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    member: serviceAccount:shared-0-iac-ro@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-core-0
+    timeouts: null
+  ? module.factory.module.automation-service-accounts["shared-0/automation/iac-ro"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - group:dp-product-a-0@example.com
+    role: roles/iam.serviceAccountTokenCreator
+  module.factory.module.automation-service-accounts["shared-0/automation/iac-rw"].google_service_account.service_account[0]:
+    account_id: shared-0-iac-rw
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Domain 0 (rw)
+    email: shared-0-iac-rw@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    member: serviceAccount:shared-0-iac-rw@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-core-0
+    timeouts: null
+  ? module.factory.module.automation-service-accounts["shared-0/automation/iac-rw"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - group:dp-product-a-0@example.com
+    role: roles/iam.serviceAccountTokenCreator
+  module.factory.module.bigquery-datasets["product-0/private"].google_bigquery_dataset.default:
+    dataset_id: private
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: null
+    labels: null
+    location: europe-west1
+    max_time_travel_hours: '168'
+    project: testorg-prod-dp-dd0-p0
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.bigquery-datasets["product-0/public"].google_bigquery_dataset.default:
+    dataset_id: public
+    default_encryption_configuration: []
+    default_partition_expiration_ms: null
+    default_table_expiration_ms: null
+    delete_contents_on_destroy: false
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    external_catalog_dataset_options: []
+    external_dataset_reference: []
+    friendly_name: null
+    labels: null
+    location: europe-west1
+    max_time_travel_hours: '168'
+    project: testorg-prod-dp-dd0-p0
+    resource_tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  ? module.factory.module.bigquery-datasets["product-0/public"].google_bigquery_dataset_iam_binding.authoritative["roles/bigquery.dataViewer"]
+  : condition: []
+    dataset_id: public
+    members:
+    - group:data-consumer-bi@example.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/bigquery.dataViewer
+  module.factory.module.bigquery-datasets["product-0/public"].google_tags_location_tag_binding.binding["exposure"]:
+    location: europe-west1
+    timeouts: null
+  module.factory.module.buckets["product-0/private"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST1
+    logging: []
+    name: testorg-prod-dp-dd0-p0-private
+    project: testorg-prod-dp-dd0-p0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  module.factory.module.buckets["product-0/public"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EUROPE-WEST1
+    logging: []
+    name: testorg-prod-dp-dd0-p0-public
+    project: testorg-prod-dp-dd0-p0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  ? module.factory.module.buckets["product-0/public"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: testorg-prod-dp-dd0-p0-public
+    condition: []
+    members:
+    - group:data-consumer-bi@example.com
+    role: roles/storage.objectViewer
+    timeouts: null
+  module.factory.module.buckets["product-0/public"].google_tags_location_tag_binding.binding["exposure"]:
+    location: europe-west1
+    parent: //storage.googleapis.com/projects/_/buckets/testorg-prod-dp-dd0-p0-public
+    timeouts: null
+  module.factory.module.folder-1["domain-0"].google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Data Domain 0
+    parent: folders/1234567890
+    tags: null
+    timeouts: null
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/bigquery.dataEditor"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/bigquery.dataEditor
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/bigquery.jobUser"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/bigquery.jobUser
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/dataflow.admin"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/dataflow.admin
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/dataproc.editor"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/dataproc.editor
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/dataproc.worker"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/dataproc.worker
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/iam.serviceAccountUser"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/iam.serviceAccountUser
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:product-0-iac-rw@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/owner
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/storage.bucketViewer"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/storage.bucketViewer
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/storage.objectAdmin"]:
+    condition: []
+    members:
+    - serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/storage.objectAdmin
+  module.factory.module.projects-iam["product-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:product-0-iac-ro@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    role: roles/viewer
+  module.factory.module.projects-iam["shared-0"].google_project_iam_binding.authoritative["roles/composer.worker"]:
+    condition: []
+    members:
+    - serviceAccount:composer@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd-0
+    role: roles/composer.worker
+  module.factory.module.projects-iam["shared-0"].google_project_iam_binding.authoritative["roles/owner"]:
+    condition: []
+    members:
+    - serviceAccount:shared-0-iac-rw@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd-0
+    role: roles/owner
+  module.factory.module.projects-iam["shared-0"].google_project_iam_binding.authoritative["roles/viewer"]:
+    condition: []
+    members:
+    - serviceAccount:shared-0-iac-ro@testorg-prod-dp-core-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd-0
+    role: roles/viewer
+  module.factory.module.projects["core-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: testorg-prod-dp-core-0
+  module.factory.module.projects["core-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: testorg-prod-dp-core-0
+  module.factory.module.projects["core-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: testorg-prod-dp-core-0
+    user_project: null
+  module.factory.module.projects["core-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    folder_id: '1234567890'
+    labels: null
+    name: testorg-prod-dp-core-0
+    org_id: null
+    project_id: testorg-prod-dp-core-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["core-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: testorg-prod-dp-core-0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["core-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-core-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["core-0"].google_project_service.project_services["datacatalog.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-core-0
+    service: datacatalog.googleapis.com
+    timeouts: null
+  module.factory.module.projects["core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-core-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["core-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-core-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["core-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: testorg-prod-dp-core-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["core-0"].google_tags_tag_key.default["exposure"]:
+    allowed_values_regex: null
+    description: Data exposure controls.
+    parent: projects/testorg-prod-dp-core-0
+    purpose: null
+    purpose_data: null
+    short_name: exposure
+    timeouts: null
+  module.factory.module.projects["core-0"].google_tags_tag_value.default["exposure/public"]:
+    description: Data exposure allowed.
+    short_name: public
+    timeouts: null
+  module.factory.module.projects["product-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: testorg-prod-dp-dd0-p0
+  module.factory.module.projects["product-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: testorg-prod-dp-dd0-p0
+  module.factory.module.projects["product-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: testorg-prod-dp-dd0-p0
+    user_project: null
+  module.factory.module.projects["product-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: testorg-prod-dp-dd0-p0
+    org_id: null
+    project_id: testorg-prod-dp-dd0-p0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_iam_member.service_agents["cloudaicompanion"]:
+    condition: []
+    project: testorg-prod-dp-dd0-p0
+    role: roles/cloudaicompanion.serviceAgent
+  module.factory.module.projects["product-0"].google_project_iam_member.service_agents["cloudcomposer-accounts"]:
+    condition: []
+    project: testorg-prod-dp-dd0-p0
+    role: roles/composer.serviceAgent
+  module.factory.module.projects["product-0"].google_project_iam_member.service_agents["dataplex"]:
+    condition: []
+    project: testorg-prod-dp-dd0-p0
+    role: roles/dataplex.serviceAgent
+  module.factory.module.projects["product-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: testorg-prod-dp-dd0-p0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["product-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["cloudaicompanion.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: cloudaicompanion.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["cloudresourcemanager.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: cloudresourcemanager.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["composer.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: composer.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["datacatalog.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: datacatalog.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["datalineage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: datalineage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["dataplex.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: dataplex.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd0-p0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service_identity.default["cloudaicompanion.googleapis.com"]:
+    project: testorg-prod-dp-dd0-p0
+    service: cloudaicompanion.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service_identity.default["composer.googleapis.com"]:
+    project: testorg-prod-dp-dd0-p0
+    service: composer.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service_identity.default["dataplex.googleapis.com"]:
+    project: testorg-prod-dp-dd0-p0
+    service: dataplex.googleapis.com
+    timeouts: null
+  module.factory.module.projects["product-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: testorg-prod-dp-dd0-p0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].data.google_bigquery_default_service_account.bq_sa[0]:
+    project: testorg-prod-dp-dd-0
+  module.factory.module.projects["shared-0"].data.google_logging_project_settings.logging_sa[0]:
+    project: testorg-prod-dp-dd-0
+  module.factory.module.projects["shared-0"].data.google_storage_project_service_account.gcs_sa[0]:
+    project: testorg-prod-dp-dd-0
+    user_project: null
+  module.factory.module.projects["shared-0"].google_project.project[0]:
+    auto_create_network: false
+    billing_account: 000000-111111-222222
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    name: testorg-prod-dp-dd-0
+    org_id: null
+    project_id: testorg-prod-dp-dd-0
+    tags: null
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_iam_member.service_agents["cloudcomposer-accounts"]:
+    condition: []
+    project: testorg-prod-dp-dd-0
+    role: roles/composer.serviceAgent
+  module.factory.module.projects["shared-0"].google_project_iam_member.service_agents["dataplex"]:
+    condition: []
+    project: testorg-prod-dp-dd-0
+    role: roles/dataplex.serviceAgent
+  module.factory.module.projects["shared-0"].google_project_iam_member.service_agents["monitoring-notification"]:
+    condition: []
+    project: testorg-prod-dp-dd-0
+    role: roles/monitoring.notificationServiceAgent
+  module.factory.module.projects["shared-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: bigquery.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service.project_services["composer.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: composer.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service.project_services["datacatalog.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: datacatalog.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service.project_services["datalineage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: datalineage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service.project_services["dataplex.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: dataplex.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service.project_services["logging.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: logging.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service.project_services["storage.googleapis.com"]:
+    disable_dependent_services: false
+    disable_on_destroy: false
+    project: testorg-prod-dp-dd-0
+    service: storage.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service_identity.default["composer.googleapis.com"]:
+    project: testorg-prod-dp-dd-0
+    service: composer.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service_identity.default["dataplex.googleapis.com"]:
+    project: testorg-prod-dp-dd-0
+    service: dataplex.googleapis.com
+    timeouts: null
+  module.factory.module.projects["shared-0"].google_project_service_identity.default["monitoring.googleapis.com"]:
+    project: testorg-prod-dp-dd-0
+    service: monitoring.googleapis.com
+    timeouts: null
+  ? module.factory.module.service-accounts-iam["product-0/processing"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
+  : condition: []
+    members:
+    - serviceAccount:product-0-iac-rw@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountUser
+  module.factory.module.service-accounts["product-0/processing"].google_service_account.service_account[0]:
+    account_id: processing
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Processing service account.
+    email: processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    member: serviceAccount:processing@testorg-prod-dp-dd0-p0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd0-p0
+    timeouts: null
+  module.factory.module.service-accounts["shared-0/composer"].google_service_account.service_account[0]:
+    account_id: composer
+    create_ignore_already_exists: null
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: composer@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    member: serviceAccount:composer@testorg-prod-dp-dd-0.iam.gserviceaccount.com
+    project: testorg-prod-dp-dd-0
+    timeouts: null
+  module.factory.module.taxonomies["core-0"].google_data_catalog_policy_tag.default["high"]:
+    description: High sensitivity data.
+    display_name: high
+    parent_policy_tag: null
+    timeouts: null
+  module.factory.module.taxonomies["core-0"].google_data_catalog_policy_tag.default["low"]:
+    description: Low sensitivity data.
+    display_name: low
+    parent_policy_tag: null
+    timeouts: null
+  module.factory.module.taxonomies["core-0"].google_data_catalog_policy_tag.default["medium"]:
+    description: Medium sensitivity data.
+    display_name: medium
+    parent_policy_tag: null
+    timeouts: null
+  module.factory.module.taxonomies["core-0"].google_data_catalog_taxonomy.default:
+    activated_policy_types:
+    - FINE_GRAINED_ACCESS_CONTROL
+    description: Taxonomy for data platform.
+    display_name: taxonomy
+    project: testorg-prod-dp-core-0
+    region: europe-west1
+    timeouts: null
+  module.factory.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.factory.terraform_data.project_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.vpc-factory.module.vpcs["domain-0"].google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: true
+    description: Terraform managed
+    enable_ula_internal_ipv6: null
+    mtu: 1500
+    name: domain-0
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: testorg-prod-dp-dd-0
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc-factory.module.vpcs["domain-0"].google_compute_route.gateway["directpath-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: domain-0-directpath-googleapis
+    network: domain-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: testorg-prod-dp-dd-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["domain-0"].google_compute_route.gateway["private-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: domain-0-private-googleapis
+    network: domain-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: testorg-prod-dp-dd-0
+    tags: null
+    timeouts: null
+  module.vpc-factory.module.vpcs["domain-0"].google_compute_route.gateway["restricted-googleapis"]:
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: domain-0-restricted-googleapis
+    network: domain-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: testorg-prod-dp-dd-0
+    tags: null
+    timeouts: null
+
+counts:
+  google_bigquery_dataset: 2
+  google_bigquery_dataset_iam_binding: 1
+  google_bigquery_default_service_account: 3
+  google_compute_network: 1
+  google_compute_route: 3
+  google_data_catalog_policy_tag: 3
+  google_data_catalog_taxonomy: 1
+  google_dataplex_aspect_type: 1
+  google_folder: 1
+  google_logging_project_settings: 3
+  google_project: 3
+  google_project_iam_binding: 13
+  google_project_iam_member: 8
+  google_project_service: 23
+  google_project_service_identity: 8
+  google_service_account: 6
+  google_service_account_iam_binding: 5
+  google_storage_bucket: 4
+  google_storage_bucket_iam_binding: 5
+  google_storage_bucket_object: 1
+  google_storage_project_service_account: 3
+  google_tags_location_tag_binding: 2
+  google_tags_tag_key: 1
+  google_tags_tag_value: 1
+  modules: 24
+  resources: 104
+  terraform_data: 2
+
+outputs:
+  projects: __missing__
+  vpcs: __missing__

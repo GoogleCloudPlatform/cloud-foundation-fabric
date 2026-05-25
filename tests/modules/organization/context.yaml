@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  google_bigquery_dataset_iam_member.bq-sinks-binding["test-bq"]:
+  google_bigquery_dataset_iam_member.bq_sinks_binding["test-bq"]:
     condition: []
     dataset_id: logs
     project: test-prod-audit-logs-0
@@ -28,7 +28,7 @@ values:
     feed_output_config:
     - pubsub_destination:
       - topic: projects/test-prod-audit-logs-0/topics/audit-logs
-    org_id: "1234567890"
+    org_id: '1234567890'
     timeouts: null
   google_essential_contacts_contact.contact["$email_addresses:default"]:
     email: foo@example.com
@@ -36,6 +36,26 @@ values:
     notification_category_subscriptions:
     - ALL
     parent: organizations/1234567890
+    timeouts: null
+  google_iam_deny_policy.default["test-policy"]:
+    display_name: Test Deny Policy
+    name: test-policy
+    parent: cloudresourcemanager.googleapis.com%2Forganizations%2F1234567890
+    rules:
+    - deny_rule:
+      - denial_condition:
+        - description: null
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: null
+          title: Test Condition
+        denied_permissions:
+        - compute.googleapis.com/instances.create
+        denied_principals:
+        - user:test-user@example.com
+        exception_permissions: []
+        exception_principals:
+        - group:test-group@example.com
+      description: Test Rule
     timeouts: null
   google_logging_organization_settings.default[0]:
     kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
@@ -203,22 +223,22 @@ values:
       unstructured:
       - {}
     timeouts: null
-  google_project_iam_member.bucket-sinks-binding["test-logging"]:
+  google_project_iam_member.bucket_sinks_binding["test-logging"]:
     condition:
     - expression: resource.name.endsWith('projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs')
       title: test-logging bucket writer
     project: test-prod-audit-logs-0
     role: roles/logging.bucketWriter
-  google_project_iam_member.project-sinks-binding["test-project"]:
+  google_project_iam_member.project_sinks_binding["test-project"]:
     condition: []
     project: projects/test-prod-audit-logs-0
     role: roles/logging.logWriter
-  google_pubsub_topic_iam_member.pubsub-sinks-binding["test-pubsub"]:
+  google_pubsub_topic_iam_member.pubsub_sinks_binding["test-pubsub"]:
     condition: []
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
     topic: audit-logs
-  google_storage_bucket_iam_member.storage-sinks-binding["test-storage"]:
+  google_storage_bucket_iam_member.storage_sinks_binding["test-storage"]:
     bucket: test-prod-logs-audit-0
     condition: []
     role: roles/storage.objectCreator
@@ -266,6 +286,7 @@ counts:
   google_bigquery_dataset_iam_member: 1
   google_cloud_asset_organization_feed: 1
   google_essential_contacts_contact: 1
+  google_iam_deny_policy: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 5
   google_organization_iam_audit_config: 1
@@ -281,4 +302,27 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 30
+  resources: 31
+
+outputs:
+  asset_search_results: {}
+  custom_constraint_ids: {}
+  custom_role_id: {}
+  custom_roles: {}
+  id: organizations/1234567890
+  logging_identities: __missing__
+  logging_sinks: __missing__
+  network_tag_keys: {}
+  network_tag_values: {}
+  organization_id: organizations/1234567890
+  organization_policies_ids: {}
+  scc_custom_sha_modules_ids: {}
+  scc_mute_configs: {}
+  scim_tenants: {}
+  service_agents: {}
+  sink_writer_identities: __missing__
+  tag_keys: {}
+  tag_values: {}
+  workforce_identity_pool_ids: {}
+  workforce_identity_provider_names: {}
+  workforce_identity_providers: {}

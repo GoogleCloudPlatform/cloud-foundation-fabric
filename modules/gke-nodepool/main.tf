@@ -217,6 +217,7 @@ resource "google_container_node_pool" "nodepool" {
     spot = (
       var.node_config.spot == true && var.node_config.preemptible != true
     )
+    flex_start            = var.node_config.flex_start
     tags                  = var.tags
     resource_manager_tags = var.resource_manager_tags
 
@@ -224,6 +225,12 @@ resource "google_container_node_pool" "nodepool" {
       for_each = var.node_config.ephemeral_ssd_count != null ? [""] : []
       content {
         local_ssd_count = var.node_config.ephemeral_ssd_count
+      }
+    }
+    dynamic "ephemeral_storage_local_ssd_config" {
+      for_each = var.node_config.ephemeral_storage_local_ssd_count != null ? [""] : []
+      content {
+        local_ssd_count = var.node_config.ephemeral_storage_local_ssd_count
       }
     }
     dynamic "gcfs_config" {
@@ -329,6 +336,13 @@ resource "google_container_node_pool" "nodepool" {
       for_each = var.node_config.workload_metadata_config_mode != null ? [""] : []
       content {
         mode = var.node_config.workload_metadata_config_mode
+      }
+    }
+    dynamic "advanced_machine_features" {
+      for_each = var.node_config.advanced_machine_features != null ? [""] : []
+      content {
+        enable_nested_virtualization = var.node_config.advanced_machine_features.enable_nested_virtualization
+        threads_per_core             = var.node_config.advanced_machine_features.threads_per_core
       }
     }
   }

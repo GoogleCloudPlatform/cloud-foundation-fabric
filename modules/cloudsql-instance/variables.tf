@@ -150,10 +150,11 @@ variable "gcp_deletion_protection" {
 variable "insights_config" {
   description = "Query Insights configuration. Defaults to null which disables Query Insights."
   type = object({
-    query_string_length     = optional(number, 1024)
-    record_application_tags = optional(bool, false)
-    record_client_address   = optional(bool, false)
-    query_plans_per_minute  = optional(number, 5)
+    query_string_length             = optional(number, 1024)
+    record_application_tags         = optional(bool, false)
+    record_client_address           = optional(bool, false)
+    query_plans_per_minute          = optional(number, 5)
+    enhanced_query_insights_enabled = optional(bool, false)
   })
   default = null
 }
@@ -192,10 +193,10 @@ variable "maintenance_config" {
         var.maintenance_config.maintenance_window.hour <= 23 &&
         # Maintenance window update_track validation below
         try(var.maintenance_config.maintenance_window.update_track, null) == null ? true :
-        contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
+        contains(["canary", "stable", "week5"], var.maintenance_config.maintenance_window.update_track)
       )
     )
-    error_message = "Maintenance window day must be between 1 and 7 or null, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
+    error_message = "Maintenance window day must be between 1 and 7 or null, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable', 'canary', or 'week5'."
   }
 }
 
@@ -331,6 +332,7 @@ variable "users" {
     password         = optional(string)
     password_version = optional(number)
     type             = optional(string, "BUILT_IN")
+    database_roles   = optional(list(string))
   }))
   default  = {}
   nullable = false

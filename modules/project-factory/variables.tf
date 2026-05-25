@@ -53,7 +53,19 @@ variable "data_defaults" {
     }), {})
     contacts        = optional(map(list(string)), {})
     deletion_policy = optional(string)
-    labels          = optional(map(string), {})
+    factories_config = optional(object({
+      aspect_types           = optional(string)
+      custom_roles           = optional(string)
+      data_catalog_taxonomy  = optional(string)
+      observability          = optional(string)
+      org_policies           = optional(string)
+      pam_entitlements       = optional(string)
+      quotas                 = optional(string)
+      scc_mute_configs       = optional(string)
+      scc_sha_custom_modules = optional(string)
+      tags                   = optional(string)
+    }), {})
+    labels = optional(map(string), {})
     locations = optional(object({
       bigquery = optional(string)
       logging  = optional(string)
@@ -138,6 +150,18 @@ variable "data_overrides" {
     }), {})
     contacts        = optional(map(list(string)))
     deletion_policy = optional(string)
+    factories_config = optional(object({
+      aspect_types           = optional(string)
+      custom_roles           = optional(string)
+      data_catalog_taxonomy  = optional(string)
+      observability          = optional(string)
+      org_policies           = optional(string)
+      pam_entitlements       = optional(string)
+      quotas                 = optional(string)
+      scc_mute_configs       = optional(string)
+      scc_sha_custom_modules = optional(string)
+      tags                   = optional(string)
+    }))
     locations = optional(object({
       bigquery = optional(string)
       logging  = optional(string)
@@ -168,11 +192,14 @@ variable "data_overrides" {
 }
 
 variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
+  description = "Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder."
   type = object({
     basepath = string
     budgets = optional(object({
       billing_account = optional(string)
+    }), {})
+    exclusions = optional(object({
+      projects = optional(list(string), [])
     }), {})
     paths = optional(object({
       budgets           = optional(string, "budgets")

@@ -146,6 +146,7 @@ variable "function_config" {
     entry_point                      = optional(string, "main")
     instance_count                   = optional(number, 1)
     max_instance_request_concurrency = optional(number)
+    min_instance_count               = optional(number, 0)
     memory_mb                        = optional(number, 256) # Memory in MB
     on_deploy_update_policy          = optional(bool)
     runtime                          = optional(string, "python310")

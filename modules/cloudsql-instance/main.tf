@@ -47,16 +47,18 @@ locals {
     for k, v in var.users : k =>
     local.is_mysql
     ? {
-      name     = v.type == "BUILT_IN" ? split("@", k)[0] : k
-      host     = v.type == "BUILT_IN" ? try(split("@", k)[1], null) : null
-      password = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = v.type
+      name           = v.type == "BUILT_IN" ? split("@", k)[0] : k
+      host           = v.type == "BUILT_IN" ? try(split("@", k)[1], null) : null
+      password       = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type           = v.type
+      database_roles = v.database_roles
     }
     : {
-      name     = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
-      host     = null
-      password = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
-      type     = v.type
+      name           = local.is_postgres ? try(trimsuffix(k, ".gserviceaccount.com"), k) : k
+      host           = null
+      password       = v.type == "BUILT_IN" ? try(random_password.passwords[k].result, v.password) : null
+      type           = v.type
+      database_roles = v.database_roles
     }
   }
 }
@@ -213,11 +215,12 @@ resource "google_sql_database_instance" "primary" {
     dynamic "insights_config" {
       for_each = var.insights_config != null ? [1] : []
       content {
-        query_insights_enabled  = true
-        query_string_length     = var.insights_config.query_string_length
-        record_application_tags = var.insights_config.record_application_tags
-        record_client_address   = var.insights_config.record_client_address
-        query_plans_per_minute  = var.insights_config.query_plans_per_minute
+        query_insights_enabled          = true
+        query_string_length             = var.insights_config.query_string_length
+        record_application_tags         = var.insights_config.record_application_tags
+        record_client_address           = var.insights_config.record_client_address
+        query_plans_per_minute          = var.insights_config.query_plans_per_minute
+        enhanced_query_insights_enabled = var.insights_config.enhanced_query_insights_enabled
       }
     }
 
@@ -369,13 +372,14 @@ resource "random_password" "root_password" {
 }
 
 resource "google_sql_user" "users" {
-  for_each = local.users
-  project  = local.project_id
-  instance = google_sql_database_instance.primary.name
-  name     = each.value.name
-  host     = each.value.host
-  password = each.value.password
-  type     = each.value.type
+  for_each       = local.users
+  project        = local.project_id
+  instance       = google_sql_database_instance.primary.name
+  name           = each.value.name
+  host           = each.value.host
+  password       = each.value.password
+  type           = each.value.type
+  database_roles = each.value.database_roles
 }
 
 moved {

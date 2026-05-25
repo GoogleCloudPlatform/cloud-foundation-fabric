@@ -27,7 +27,7 @@ locals {
   }
   backends = [
     for region in var.regions : {
-      backend = google_compute_region_network_endpoint_group.serverless-negs[region].id
+      backend = google_compute_region_network_endpoint_group.serverless_negs[region].id
     }
   ]
 }
@@ -136,7 +136,7 @@ module "glb" {
   }
 }
 
-resource "google_compute_region_network_endpoint_group" "serverless-negs" {
+resource "google_compute_region_network_endpoint_group" "serverless_negs" {
   for_each              = toset(var.regions)
   provider              = google-beta
   name                  = "serverless-neg-${module.gateways[each.value].gateway_id}"

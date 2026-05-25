@@ -469,6 +469,9 @@ module "project-factory" {
     budgets = {
       billing_account = var.billing_account_id
     }
+    exclusions = {
+      projects = ["staging/"]
+    }
   }
   notification_channels = {
     billing-default = {
@@ -480,7 +483,7 @@ module "project-factory" {
     }
   }
 }
-# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10 inventory=example.yaml
+# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10,99 inventory=example.yaml
 ```
 
 A project template for GKE projects:
@@ -609,6 +612,16 @@ workload_identity_pools:
             template: github
 
 # tftest-file id=5 path=data/folders/teams-iac-0.yaml schema=project.schema.json
+```
+
+A project definition ignored via `factories_config.exclusions.projects`.
+
+```yaml
+billing_account: 012345-67890A-BCDEF0
+services:
+  - container.googleapis.com
+  - storage.googleapis.com
+# tftest-file id=99 path=data/projects/staging/unused-0.yaml schema=project.schema.json
 ```
 
 More traditional project definitions via the project factory data:
@@ -753,6 +766,8 @@ iam:
     - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
   "roles/viewer":
     - $iam_principals:service_accounts/dev-tb-app0-0/automation/ro
+factories_config:
+  data_catalog_taxonomy: data/taxonomies/sample.yaml
 shared_vpc_host_config:
   enabled: true
 service_accounts:
@@ -858,6 +873,7 @@ compute.disableSerialPortAccess:
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [aspect-types.tf](./aspect-types.tf) | Aspect types resources. | <code>dataplex-aspect-types</code> |  |
 | [automation.tf](./automation.tf) | None | <code>gcs</code> · <code>iam-service-account</code> |  |
 | [budgets.tf](./budgets.tf) | Billing budget factory locals. | <code>billing-account</code> |  |
 | [folders.tf](./folders.tf) | Folder hierarchy factory resources. | <code>folder</code> |  |
@@ -872,6 +888,7 @@ compute.disableSerialPortAccess:
 | [projects-pubsub.tf](./projects-pubsub.tf) | None | <code>pubsub</code> |  |
 | [projects-service-accounts.tf](./projects-service-accounts.tf) | None | <code>iam-service-account</code> |  |
 | [projects.tf](./projects.tf) | None | <code>project</code> | <code>terraform_data</code> |
+| [taxonomies.tf](./taxonomies.tf) | Taxonomy resources. | <code>data-catalog-policy-tag</code> |  |
 | [variables-billing.tf](./variables-billing.tf) | None |  |  |
 | [variables-folders.tf](./variables-folders.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
@@ -881,11 +898,11 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L170) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L194) | Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_defaults](variables.tf#L47) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_merges](variables.tf#L112) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_overrides](variables.tf#L131) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_merges](variables.tf#L124) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L143) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folders](variables-folders.tf#L17) | Folders data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-billing.tf#L17) | Notification channels used by budget alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [projects](variables-projects.tf#L17) | Projects data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -894,20 +911,20 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L102) | Folder ids. |  |
-| [iam_principals](outputs.tf#L107) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L112) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L117) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L124) | Project ids. |  |
-| [project_numbers](outputs.tf#L129) | Project numbers. |  |
-| [projects](outputs.tf#L136) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L141) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L148) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L155) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L162) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L169) | Service account emails. |  |
-| [service_agents](outputs.tf#L174) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L185) | Bucket names. |  |
+| [folder_ids](outputs.tf#L107) | Folder ids. |  |
+| [iam_principals](outputs.tf#L112) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L117) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L122) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L129) | Project ids. |  |
+| [project_numbers](outputs.tf#L134) | Project numbers. |  |
+| [projects](outputs.tf#L141) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L146) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L153) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L160) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L167) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L174) | Service account emails. |  |
+| [service_agents](outputs.tf#L179) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L190) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 

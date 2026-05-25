@@ -9,3 +9,8 @@ domain: child.example.com.
 public:
   dnssec_config:
     state: "off"
+iam:
+  roles/dns.reader:
+    - serviceAccount:config-plane-dev-rw@fast-config-plane-dev.iam.gserviceaccount.com
+  $custom_roles:dns_resource_record_sets_adder:
+    - serviceAccount:config-plane-dev-rw@fast-config-plane-dev.iam.gserviceaccount.com

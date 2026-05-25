@@ -101,7 +101,12 @@ module "service-accounts" {
   tag_bindings = each.value.tag_bindings
 }
 
-module "service_accounts-iam" {
+moved {
+  from = module.service_accounts-iam
+  to   = module.service-accounts-iam
+}
+
+module "service-accounts-iam" {
   source = "../iam-service-account"
   for_each = {
     for k in local.projects_service_accounts :

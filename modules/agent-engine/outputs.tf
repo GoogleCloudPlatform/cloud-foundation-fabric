@@ -24,7 +24,7 @@ output "id" {
   value       = local.resource.id
 }
 
-output "service_account" {
-  description = "Service account resource."
-  value       = try(google_service_account.service_account[0], null)
+output "identity" {
+  description = "The agent identity."
+  value       = local.identity
 }
