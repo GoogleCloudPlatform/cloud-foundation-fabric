@@ -351,22 +351,37 @@ resource "google_container_node_pool" "nodepool" {
         dynamic "private_registry_access_config" {
           for_each = try(var.node_config.containerd_config.private_registry_access_config, null) != null ? [""] : []
           content {
-            enabled = var.node_config.containerd_config.private_registry_access_config.enabled
+            enabled = (
+              length(try(
+                var.node_config.containerd_config
+                .private_registry_access_config
+                .certificate_authority_domain_config,
+                []
+              )) > 0
+            )
             dynamic "certificate_authority_domain_config" {
-              for_each = try(var.node_config.containerd_config.private_registry_access_config.certificate_authority_domain_config, [])
+              for_each = try(
+                var.node_config.containerd_config
+                .private_registry_access_config
+                .certificate_authority_domain_config,
+                []
+              )
               content {
                 fqdns = certificate_authority_domain_config.value.fqdns
                 gcp_secret_manager_certificate_config {
-                  secret_uri = certificate_authority_domain_config.value.gcp_secret_manager_certificate_config.secret_uri
+                  secret_uri = (
+                    certificate_authority_domain_config.value
+                    .gcp_secret_manager_certificate_config_secret_uri
+                  )
                 }
               }
             }
           }
         }
         dynamic "writable_cgroups" {
-          for_each = try(var.node_config.containerd_config.writable_cgroups, null) != null ? [""] : []
+          for_each = var.node_config.containerd_config.writable_cgroups != null ? [""] : []
           content {
-            enabled = var.node_config.containerd_config.writable_cgroups.enabled
+            enabled = var.node_config.containerd_config.writable_cgroups
           }
         }
         dynamic "registry_hosts" {
@@ -381,28 +396,40 @@ resource "google_container_node_pool" "nodepool" {
                 override_path = hosts.value.override_path
                 dial_timeout  = hosts.value.dial_timeout
                 dynamic "header" {
-                  for_each = try(hosts.value.header, [])
+                  for_each = try(hosts.value.header, {})
                   content {
-                    key   = header.value.key
-                    value = header.value.value
+                    key   = header.key
+                    value = header.value
                   }
                 }
                 dynamic "ca" {
-                  for_each = try(hosts.value.ca, [])
+                  for_each = (
+                    hosts.value.ca_gcp_secret_manager_secret_uri != null
+                    ? [hosts.value.ca_gcp_secret_manager_secret_uri]
+                    : []
+                  )
                   content {
-                    gcp_secret_manager_secret_uri = ca.value.gcp_secret_manager_secret_uri
+                    gcp_secret_manager_secret_uri = ca.value
                   }
                 }
                 dynamic "client" {
-                  for_each = try(hosts.value.client, [])
+                  for_each = (
+                    hosts.value.client != null ? [hosts.value.client] : []
+                  )
                   content {
                     cert {
-                      gcp_secret_manager_secret_uri = client.value.cert.gcp_secret_manager_secret_uri
+                      gcp_secret_manager_secret_uri = (
+                        client.value.cert_gcp_secret_manager_secret_uri
+                      )
                     }
                     dynamic "key" {
-                      for_each = client.value.key != null ? [""] : []
+                      for_each = (
+                        client.value.key_gcp_secret_manager_secret_uri != null
+                        ? [client.value.key_gcp_secret_manager_secret_uri]
+                        : []
+                      )
                       content {
-                        gcp_secret_manager_secret_uri = client.value.key.gcp_secret_manager_secret_uri
+                        gcp_secret_manager_secret_uri = key.value
                       }
                     }
                   }

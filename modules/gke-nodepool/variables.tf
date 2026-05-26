@@ -151,37 +151,23 @@ variable "node_config" {
     }))
     containerd_config = optional(object({
       private_registry_access_config = optional(object({
-        enabled = bool
         certificate_authority_domain_config = optional(list(object({
           fqdns = list(string)
-          gcp_secret_manager_certificate_config = object({
-            secret_uri = string
-          })
-        })), [])
+          gcp_secret_manager_certificate_config_secret_uri = string
+        })))
       }))
-      writable_cgroups = optional(object({
-        enabled = bool
-      }))
+      writable_cgroups = optional(bool)
       registry_hosts = optional(map(object({
         hosts = optional(map(object({
           capabilities  = optional(list(string))
           override_path = optional(bool)
           dial_timeout  = optional(string)
-          header = optional(list(object({
-            key   = string
-            value = list(string)
-          })), [])
-          ca = optional(list(object({
-            gcp_secret_manager_secret_uri = optional(string)
-          })), [])
-          client = optional(list(object({
-            cert = object({
-              gcp_secret_manager_secret_uri = optional(string)
-            })
-            key = optional(object({
-              gcp_secret_manager_secret_uri = optional(string)
-            }))
-          })), [])
+          header = optional(map(list(string)))
+          ca_gcp_secret_manager_secret_uri = optional(string)
+          client = optional(object({
+            cert_gcp_secret_manager_secret_uri = string
+            key_gcp_secret_manager_secret_uri  = optional(string)
+          }))
         })), {})
       })), {})
     }))
