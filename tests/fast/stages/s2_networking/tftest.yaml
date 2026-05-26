@@ -40,8 +40,8 @@ tests:
       - addresses.yaml
     extra_dirs:
       - ../../../tests/fast/stages/s2_networking/data-testaddresses
-  regional_fw:
+  fw_policies:
     inventory:
-      - regional_fw.yaml
+      - fw_policies.yaml
     extra_dirs:
-      - ../../../tests/fast/stages/s2_networking/data-testregionalfw
+      - ../../../tests/fast/stages/s2_networking/data-testfw

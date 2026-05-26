@@ -13,7 +13,8 @@
 # limitations under the License.
 
 counts:
+  google_compute_network_firewall_policy: 1
   google_compute_region_network_firewall_policy: 1
-  modules: 2
-  resources: 3
+  modules: 3
+  resources: 4
   terraform_data: 2

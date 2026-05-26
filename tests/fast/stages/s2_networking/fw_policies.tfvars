@@ -5,7 +5,7 @@ billing_account = {
   id = "000000-111111-222222"
 }
 factories_config = {
-  dataset = "data-testregionalfw"
+  dataset = "data-testfw"
 }
 folder_ids = {
   "networking" = "folders/12345678"
