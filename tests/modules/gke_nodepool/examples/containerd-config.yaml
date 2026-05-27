@@ -27,7 +27,7 @@ values:
         - server: registry.example.com
           hosts:
           - host: mirror.example.com
-            capabilities: []
+            capabilities: null
             override_path: null
             dial_timeout: null
             header: []
