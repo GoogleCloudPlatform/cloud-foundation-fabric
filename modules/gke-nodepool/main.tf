@@ -396,7 +396,7 @@ resource "google_container_node_pool" "nodepool" {
                 override_path = hosts.value.override_path
                 dial_timeout  = hosts.value.dial_timeout
                 dynamic "header" {
-                  for_each = try(hosts.value.header, {})
+                  for_each = coalesce(hosts.value.header, {})
                   content {
                     key   = header.key
                     value = header.value
