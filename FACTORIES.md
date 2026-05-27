@@ -17,6 +17,7 @@ The following table provides a granular overview of modules that implement facto
 | :--- | :--- | :--- | :--- | :--- |
 | **analytics-hub** | Analytics Hub Exchange | `listings` | Analytics Hub Listings | `project_id`, `region` |
 | **billing-account** | Billing Account (Config) | `budgets_data_path` | Billing Budgets | `id` (Billing Account ID) |
+| **data-catalog-policy-tag** | Data Catalog Taxonomy | `taxonomy` | Data Catalog Policy Tags | `project_id`, `location` |
 | **data-catalog-tag** | N/A | `tags` | Data Catalog Tags | `tags` (Merged with factory data) |
 | **data-catalog-tag-template** | N/A | `tag_templates` | Tag Templates | `project_id`, `region` |
 | **dataplex-aspect-types** | N/A | `aspect_types` | Aspect Types | `project_id`, `location` |
@@ -75,9 +76,12 @@ The following table details how FAST stages implement factory patterns.
 | Stage | Factory (Key/Feature) | Implementation Type | Underlying Module/Resource |
 | :--- | :--- | :--- | :--- |
 | **0-org-setup** | `projects`, `folders`, `budgets` | Module-Backed (Factory) | `project-factory` |
+| **0-org-setup** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **1-vpcsc** | `access_levels`, `egress_policies`, `ingress_policies`, `perimeters` | Module-Backed (Factory) | `vpc-sc` |
 | **2-networking** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **2-networking** | `projects` | Module-Backed (Factory) | `project-factory` |
+| **2-networking** | `addresses` (VPC IP Addresses) | Stage-Implemented (Module) | `net-address` |
+| **2-networking** | `cloud_nats` (VPC Cloud NATs) | Stage-Implemented (Module) | `net-cloudnat` |
 | **2-networking** | `dns` (Zones) | Stage-Implemented (Module) | `dns` |
 | **2-networking** | `dns_response_policies` | Stage-Implemented (Module) | `dns-response-policy` |
 | **2-networking** | `firewall_policies` | Stage-Implemented (Module) | `net-firewall-policy` |
@@ -85,8 +89,11 @@ The following table details how FAST stages implement factory patterns.
 | **2-networking** | `vlan_attachments` | Stage-Implemented (Module) | `net-vlan-attachment` |
 | **2-networking** | `ncc_hubs` | Stage-Implemented (Resource) | `google_network_connectivity_hub` |
 | **2-networking** | `ncc_groups` | Stage-Implemented (Resource) | `google_network_connectivity_group` |
+| **2-networking** | `peerings` (VPC Network Peerings) | Stage-Implemented (Resource) | `google_compute_network_peering` |
+| **2-networking** | `routers` (VPC Routers) | Stage-Implemented (Resource) | `google_compute_router` |
 | **2-networking** | `nvas` | Native (Complex) | `compute-vm`, `net-lb-int` |
 | **2-project-factory** | `projects`, `folders`, `budgets` | Module-Backed (Factory) | `project-factory` |
+| **2-project-factory** | `vpcs` | Module-Backed (Factory) | `net-vpc-factory` |
 | **2-security** | `projects` | Module-Backed (Factory) | `project-factory` |
 | **2-security** | `certificate_authorities` | Stage-Implemented (Module) | `certificate-authority-service` |
 | **2-security** | `keyrings` (KMS) | Stage-Implemented (Module) | `kms` |
@@ -96,22 +103,25 @@ The following table details how FAST stages implement factory patterns.
 
 This documentation is maintained to track factory patterns across the `modules` and `fast/stages` directories.
 
-### To Update
+### Discovery & Maintenance Guide
 
-#### 1. Modules Analysis
+To ensure this document never drifts from the actual codebase and to prevent missing any newly introduced factory patterns, use these systematic search commands to discover and audit all factories in the repository:
 
-1.  **Identify Configuration:** Search for `variable "factories_config"` in typically `modules/your-module/variables.tf`.
-2.  **Determine Keys:** Inspect the `factories_config` type (e.g., `object({ ... })`) to identify the keys like `rules`, `vpcs`, `projects`.
-3.  **Find Usage:** Search for `var.factories_config.KEY` in the module's `main.tf` or `factory.tf` to see how the data is used.
-4.  **Classify Resources:** Determine whether the factory logic creates module resources (e.g., `google_project`) or iterates a sub-module.
-5.  **List Dependencies:** Note any module-level variables (e.g., `project_id`, `name`) that are injected into the factory-created resources.
+#### 1. Discovering Module Factories
+To locate all modules supporting factory configurations, run:
+```bash
+grep -rn "variable \"factories_config\"" modules/
+```
+For each discovered module, verify if its keys (defined in `variables.tf` under the `factories_config` type block) are fully documented in the [Modules](#modules) table.
 
-#### 2. FAST Stages Analysis
+#### 2. Discovering FAST Stage Factories
+To locate all stage-level factory implementations and helper files, run:
+```bash
+find fast/stages/ -name "factory-*.tf"
+```
+Each matching `factory-[name].tf` file indicates a distinct factory feature (e.g., `factory-addresses.tf`, `factory-cloudnat.tf`). Match these files against the [FAST Stages](#fast-stages) table to ensure every implemented feature is documented.
 
-1.  **Identify Configuration:** Search for `variable "factories_config"` in `fast/stages/your-stage/variables.tf`.
-2.  **Find Usage:** Search for `var.factories_config.KEY` in the stage's implementation (often in `factory*.tf`).
-3.  **Classify Implementation**:
-    *   **Module-Backed (Factory)**: The `factories_config` path is passed directly to an underlying module (e.g., `project-factory`).
-    *   **Stage-Implemented (Module)**: The stage explicitly loads the YAML/files and iterates over a standard module (e.g., `dns` module).
-    *   **Stage-Implemented (Resource)**: The stage explicitly loads the YAML/files and iterates over raw Terraform resources (e.g., `google_network_connectivity_hub`).
-    *   **Native (Complex)**: The stage implements complex logic combining multiple modules/resources (e.g., combining `compute-vm` and `net-lb-int` for NVAs).
+#### 3. Updating the Tables
+When updating the tables manually:
+- **Modules Table:** Insert any new module-backed factory in strict **alphabetical order** by module name. Document the `Primary Module Resource`, the exact `Factory Key`, the `Factory-Managed Resources` created, and any module-level `Dependencies` passed.
+- **FAST Stages Table:** Group stage entries by stage name. List all the stage's factory keys and sub-features, classifying their `Implementation Type` and `Underlying Module/Resource` accurately.

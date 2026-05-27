@@ -1,0 +1,97 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../playbook.schema.json
+tmpdir:
+  link_paths:
+    - fast
+    - modules
+    - tools
+    - skills
+    - .yamllint
+    - GEMINI.md
+    - AGENTS.md
+    - README.md
+    - FACTORIES.md
+env:
+  - BILLING_KEYWORD
+  - GROUP
+  - ORG_KEYWORD
+name: "FAST 0-org-setup Prereqs - Standard GCP Developer Flow"
+steps:
+  - user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
+    expected_outcome: "The agent should confirm the guide's activation and ask the user about their target environment (e.g., Standard GCP vs GCD)."
+
+  - user_input: "Standard GCP"
+    expected_outcome: "The agent should acknowledge the environment and ask for the user's preference on how to execute commands (e.g., automatically vs manually)."
+
+  - user_input: "Automatically"
+    expected_outcome: "The agent should acknowledge the execution preference and ask about the user's current Google Cloud authentication status."
+
+  - user_input: "Yes, I am already authenticated."
+    expected_outcome: "The agent should verify the current authenticated principal (e.g., using gcloud) and ask the user to confirm if it is the correct identity."
+
+  - user_input: "Yes, that is the correct identity."
+    expected_outcome: "The agent should move to the Admin Principal step and ask the user to choose an approach (e.g., Group vs Single User)."
+
+  - user_input: "Approach A, please."
+    expected_outcome: "The agent should ask for the group email address."
+
+  - user_input: "The group is ${GROUP}."
+    expected_outcome: "The agent should explicitly ask the user to confirm that their current identity is already a member of this group."
+
+  - user_input: "Yes, I confirm I am a member."
+    expected_outcome: "The agent should ask the user to provide their Organization ID, offering to list them automatically."
+
+  - user_input: "${ORG_KEYWORD}"
+    expected_outcome: "The agent should list the matching organizations and ask the user to select one."
+
+  - user_input: "1"
+    expected_outcome: "The agent should acknowledge the selected Organization and ask the user to provide their Billing Account ID, offering to list them automatically."
+
+  - user_input: "${BILLING_KEYWORD}"
+    expected_outcome: "The agent should list the matching billing accounts and ask the user to select one."
+
+  - user_input: "1"
+    expected_outcome: "The agent should ask the user about their access level to the selected Billing Account (e.g., scenarios 1, 2, or 3)."
+
+  - user_input: "Scenario 2 (Billing User)"
+    expected_outcome: "The agent should note the limitations of this access level (no billing.admin role assigned) and propose the IAM role assignments to be made."
+
+  - user_input: "Looks good, go ahead and assign the roles."
+    expected_outcome: "The agent should execute the IAM role assignments and then ask if the user has a pre-existing project to use as the bootstrap project."
+
+  - user_input: "Yes, I have a pre-existing project."
+    expected_outcome: "The agent should ask if the pre-existing project is already set as the active project in gcloud."
+
+  - user_input: "Yes, it is."
+    expected_outcome: "The agent should fetch the current active Project ID, ask for confirmation, and offer to check/enable required APIs."
+
+  - user_input: "Yes, that's the correct project. Yes, please check which services are enabled."
+    expected_outcome: "The agent should check and enable necessary APIs, and then ask the user to select a configuration Dataset."
+
+  - user_input: "I'll use the classic dataset."
+    expected_outcome: "The agent should ask the user for a base location for the resources and if there are any overrides."
+
+  - user_input: "europe-west1, no overrides."
+    expected_outcome: "The agent should propose a local path for the output files and ask for confirmation."
+
+  - user_input: "~/custom-fast-config"
+    expected_outcome: "The agent should ask if the user wants to provide any additional static context values."
+
+  - user_input: "No additional context."
+    expected_outcome: "The agent should scaffold the local files (copying defaults, creating tfvars), validate them (e.g., yamllint), and then initiate the Organization Policy Import Check."
+
+  - user_input: "Okay."
+    expected_outcome: "The agent should process any existing org policies and provide the final wrap-up instructions for applying the Terraform."

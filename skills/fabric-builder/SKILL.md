@@ -27,7 +27,7 @@ This skill generates idiomatic Terraform code using Cloud Foundation Fabric (CFF
 ## Guidelines for Output
 
 - **Root Module Output:** Your output must be a complete Terraform root module that calls the appropriate CFF modules to fulfill the user's requirements.
-- **Use Fabric Modules:** Rely on CFF modules instead of raw `google_` resources whenever possible. 
+- **Use Fabric Modules:** Rely on CFF modules instead of raw `google_` resources whenever possible.
 - **Example-based Learning:** Always refer to the module's README (fetched via `scripts/fabric.py`) for correct usage examples.
 - **Module Source:** When generating module calls, use a GitHub source. It should look like this: `source = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref={VERSION}&depth=1"`.
 - **Formatting & Validation:** Ensure the generated code is properly formatted. If possible, run `terraform fmt`, `terraform validate`, and `terraform plan` to check your work.

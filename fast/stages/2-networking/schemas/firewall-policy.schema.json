@@ -22,6 +22,10 @@
       "type": "string",
       "description": "The name of the firewall policy."
     },
+    "region": {
+      "type": "string",
+      "description": "The region of the firewall policy. Use 'global' for global network policy, or omit for hierarchical policy."
+    },
     "ingress_rules": {
       "$ref": "#/$defs/rules",
       "description": "A map of ingress firewall rules."

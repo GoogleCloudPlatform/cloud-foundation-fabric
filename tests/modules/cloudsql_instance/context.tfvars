@@ -27,4 +27,3 @@ insights_config = {
   query_plans_per_minute          = 10
   enhanced_query_insights_enabled = true
 }
-

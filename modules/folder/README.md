@@ -729,11 +729,11 @@ module "folder" {
 
 ## IAM Deny Policies
 
-[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions within the folder and all of its descendants, regardless of the roles they have been granted. 
+[IAM Deny policies](https://cloud.google.com/iam/docs/deny-overview) allow you to set centralized guardrails that prevent principals from using specific permissions within the folder and all of its descendants, regardless of the roles they have been granted.
 
 You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny. You can optionally define exception principals, exception permissions, and conditions to tailor the restriction.
 
-Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`). 
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`).
 
 ```hcl
 module "folder" {

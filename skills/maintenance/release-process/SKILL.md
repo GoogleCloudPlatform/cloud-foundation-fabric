@@ -109,8 +109,8 @@ BREAKING_CHANGES=$(echo "$RELEASE_NOTES" | awk '/^### BREAKING CHANGES/{flag=1; 
 
 # 3. Format breaking changes
 if [ -n "$(echo "$BREAKING_CHANGES" | tr -d '[:space:]')" ]; then
-  # Convert "### BREAKING CHANGES" to "### Breaking Changes"
-  FORMATTED_BREAKING_CHANGES=$(echo "$BREAKING_CHANGES" | sed 's/^### BREAKING CHANGES/### Breaking Changes/')
+  # Convert "### BREAKING CHANGES" to "## Breaking Changes"
+  FORMATTED_BREAKING_CHANGES=$(echo "$BREAKING_CHANGES" | sed 's/^### BREAKING CHANGES/## Breaking Changes/')
   echo "$FORMATTED_BREAKING_CHANGES"
 fi
 ```
@@ -136,6 +136,6 @@ Go to the [GitHub Releases UI](https://github.com/GoogleCloudPlatform/cloud-foun
 1. **Tag:** Create a new tag matching the new version (e.g., `v56.0.0`).
 2. **Title:** Use the exact same version string as the tag.
 3. **Release Notes:** Click the **"Generate release notes"** button.
-4. **Breaking Changes:** If the `CHANGELOG.md` contains a "BREAKING CHANGES" section for this release, copy it, paste it at the **top** of the generated release notes, and change the heading to "Breaking Changes".
+4. **Breaking Changes:** If the `CHANGELOG.md` contains a "BREAKING CHANGES" section for this release, copy it, paste it at the **top** of the generated release notes, and change the heading to "## Breaking Changes".
 
 Click **Publish release**.
