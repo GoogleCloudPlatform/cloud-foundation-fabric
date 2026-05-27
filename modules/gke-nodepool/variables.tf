@@ -152,17 +152,17 @@ variable "node_config" {
     containerd_config = optional(object({
       private_registry_access_config = optional(object({
         certificate_authority_domain_config = optional(list(object({
-          fqdns = list(string)
+          fqdns                                            = list(string)
           gcp_secret_manager_certificate_config_secret_uri = string
         })))
       }))
       writable_cgroups = optional(bool)
       registry_hosts = optional(map(object({
         hosts = optional(map(object({
-          capabilities  = optional(list(string))
-          override_path = optional(bool)
-          dial_timeout  = optional(string)
-          header = optional(map(list(string)))
+          capabilities                     = optional(list(string))
+          override_path                    = optional(bool)
+          dial_timeout                     = optional(string)
+          header                           = optional(map(list(string)))
           ca_gcp_secret_manager_secret_uri = optional(string)
           client = optional(object({
             cert_gcp_secret_manager_secret_uri = string
