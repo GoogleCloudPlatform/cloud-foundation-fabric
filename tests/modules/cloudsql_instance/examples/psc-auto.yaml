@@ -27,7 +27,6 @@ values:
       - ipv4_enabled: false
         private_network: null
         psc_config:
-          psc_enabled: true
           allowed_consumer_projects:
             - project-id
           psc_auto_connections:
