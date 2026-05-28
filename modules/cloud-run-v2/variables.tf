@@ -14,6 +14,38 @@
  * limitations under the License.
  */
 
+variable "binary_authorization" {
+  description = "Binary Authorization configuration. Applies to services, jobs and worker pools. Set `use_default = true` to enforce the project default policy, or `policy` to a custom Cloud Run policy resource path. `breakglass_justification` bypasses Binary Authorization checks for the resource and emits a high-severity audit log entry."
+  type = object({
+    breakglass_justification = optional(string)
+    policy                   = optional(string)
+    use_default              = optional(bool, false)
+  })
+  default = null
+  validation {
+    condition = (
+      var.binary_authorization == null
+      ? true
+      : (
+        var.binary_authorization.use_default
+        || var.binary_authorization.policy != null
+      )
+    )
+    error_message = "Either binary_authorization.use_default must be true or binary_authorization.policy must be set."
+  }
+  validation {
+    condition = (
+      var.binary_authorization == null
+      ? true
+      : !(
+        var.binary_authorization.use_default
+        && var.binary_authorization.policy != null
+      )
+    )
+    error_message = "binary_authorization.use_default and binary_authorization.policy are mutually exclusive."
+  }
+}
+
 variable "containers" {
   description = "Containers in name => attributes format."
   type = map(object({

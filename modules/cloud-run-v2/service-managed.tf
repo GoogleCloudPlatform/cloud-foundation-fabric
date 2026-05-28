@@ -28,6 +28,15 @@ resource "google_cloud_run_v2_service" "service" {
   deletion_protection  = var.deletion_protection
   iap_enabled          = var.service_config.iap_config != null
 
+  dynamic "binary_authorization" {
+    for_each = var.binary_authorization == null ? [] : [""]
+    content {
+      breakglass_justification = var.binary_authorization.breakglass_justification
+      policy                   = var.binary_authorization.policy
+      use_default              = var.binary_authorization.use_default
+    }
+  }
+
   template {
     labels         = var.revision.labels
     encryption_key = var.encryption_key
