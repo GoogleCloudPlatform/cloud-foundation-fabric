@@ -244,7 +244,7 @@ variable "network_config" {
     condition = (
       try(var.network_config.connectivity, null) == null ? true : (
         var.network_config.connectivity.psc_allowed_consumer_projects == null ||
-        var.network_config.connectivity.psc_allowed_consumer_projects == []
+        length(var.network_config.connectivity.psc_allowed_consumer_projects) == 0
       )
     )
     error_message = "network_config.connectivity.psc_allowed_consumer_projects is obsolete. Use network_config.connectivity.psc_config.allowed_consumer_projects instead."
