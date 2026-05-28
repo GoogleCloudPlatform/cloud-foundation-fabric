@@ -64,10 +64,11 @@ locals {
   psc_consumer_service_project_id = (
     try(var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id, null) == null
     ? null
-    : [
-      for p in try(var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id, []) :
-      lookup(local.ctx.project_ids, p, p)
-    ]
+    : lookup(
+      local.ctx.project_ids,
+      var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id,
+      var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id
+    )
   )
 
   users = {
