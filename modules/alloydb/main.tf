@@ -25,7 +25,11 @@ locals {
   authorized_external_networks = toset(try(var.network_config.psa_config.authorized_external_networks, []))
   enable_public_ip             = try(var.network_config.psa_config.enable_public_ip, false) ? true : null
   enable_outbound_public_ip    = try(var.network_config.psa_config.enable_outbound_public_ip, false) ? true : null
-  allowed_consumer_projects    = try(var.network_config.psc_config.allowed_consumer_projects, [])
+  # PSC
+  allowed_consumer_projects       = try(var.network_config.psc_config.allowed_consumer_projects, [])
+  psc_network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+  psc_auto_consumer_network       = try(var.network_config.psc_config.psc_auto_connections.consumer_network, null)
+  psc_auto_consumer_project       = try(var.network_config.psc_config.psc_auto_connections.consumer_project, null)
 
   primary_cluster_name    = "${local.prefix}${var.cluster_name}"
   primary_instance_name   = "${local.prefix}${var.instance_name}"
@@ -172,7 +176,7 @@ resource "google_alloydb_cluster" "primary" {
 
   # psc_config block should exist only when PSC is enabled to prevent Terraform state drift
   dynamic "psc_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       psc_enabled = true
     }
@@ -240,9 +244,24 @@ resource "google_alloydb_instance" "primary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = local.psc_network_attachment_resource
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        content {
+          consumer_network = local.psc_auto_consumer_network
+          consumer_project = local.psc_auto_consumer_project
+        }
+      }
     }
   }
 
@@ -375,7 +394,7 @@ resource "google_alloydb_cluster" "secondary" {
 
   # psc_config block should exist only when PSC is enabled to prevent Terraform state drift
   dynamic "psc_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       psc_enabled = true
     }
@@ -446,9 +465,24 @@ resource "google_alloydb_instance" "secondary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = local.psc_network_attachment_resource
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        content {
+          consumer_network = local.psc_auto_consumer_network
+          consumer_project = local.psc_auto_consumer_project
+        }
+      }
     }
   }
 
@@ -517,9 +551,24 @@ resource "google_alloydb_instance" "read_pool_primary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = local.psc_network_attachment_resource
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        content {
+          consumer_network = local.psc_auto_consumer_network
+          consumer_project = local.psc_auto_consumer_project
+        }
+      }
     }
   }
 
@@ -599,9 +648,24 @@ resource "google_alloydb_instance" "read_pool_secondary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = local.psc_network_attachment_resource
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        content {
+          consumer_network = local.psc_auto_consumer_network
+          consumer_project = local.psc_auto_consumer_project
+        }
+      }
     }
   }
 
