@@ -25,7 +25,7 @@ locals {
   authorized_external_networks = toset(try(var.network_config.psa_config.authorized_external_networks, []))
   enable_public_ip             = try(var.network_config.psa_config.enable_public_ip, false) ? true : null
   enable_outbound_public_ip    = try(var.network_config.psa_config.enable_outbound_public_ip, false) ? true : null
-  allowed_consumer_projects       = try(var.network_config.psc_config.allowed_consumer_projects, [])
+  allowed_consumer_projects    = try(var.network_config.psc_config.allowed_consumer_projects, [])
 
   primary_cluster_name    = "${local.prefix}${var.cluster_name}"
   primary_instance_name   = "${local.prefix}${var.instance_name}"
