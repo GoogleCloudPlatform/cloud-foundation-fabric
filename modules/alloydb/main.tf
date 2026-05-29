@@ -252,10 +252,10 @@ resource "google_alloydb_instance" "primary" {
       }
 
       dynamic "psc_auto_connections" {
-        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
         content {
-          consumer_network = try(var.network_config.psc_config.psc_auto_connections.consumer_network, null)
-          consumer_project = try(var.network_config.psc_config.psc_auto_connections.consumer_project, null)
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
         }
       }
     }
@@ -473,10 +473,10 @@ resource "google_alloydb_instance" "secondary" {
       }
 
       dynamic "psc_auto_connections" {
-        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
         content {
-          consumer_network = try(var.network_config.psc_config.psc_auto_connections.consumer_network, null)
-          consumer_project = try(var.network_config.psc_config.psc_auto_connections.consumer_project, null)
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
         }
       }
     }
@@ -559,10 +559,10 @@ resource "google_alloydb_instance" "read_pool_primary" {
       }
 
       dynamic "psc_auto_connections" {
-        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
         content {
-          consumer_network = try(var.network_config.psc_config.psc_auto_connections.consumer_network, null)
-          consumer_project = try(var.network_config.psc_config.psc_auto_connections.consumer_project, null)
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
         }
       }
     }
@@ -656,10 +656,10 @@ resource "google_alloydb_instance" "read_pool_secondary" {
       }
 
       dynamic "psc_auto_connections" {
-        for_each = (try(var.network_config.psc_config.psc_auto_connections, null) != null ? [""] : [])
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
         content {
-          consumer_network = try(var.network_config.psc_config.psc_auto_connections.consumer_network, null)
-          consumer_project = try(var.network_config.psc_config.psc_auto_connections.consumer_project, null)
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
         }
       }
     }

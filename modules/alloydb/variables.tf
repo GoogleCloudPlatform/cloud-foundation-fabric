@@ -277,13 +277,11 @@ variable "network_config" {
     }))
     psc_config = optional(object({
       allowed_consumer_projects = list(string)
-      psc_interface_configs = optional(object({
-        network_attachment_resource = optional(string)
-      }))
-      psc_auto_connections = optional(object({
+      network_attachment_uri    = optional(string)
+      psc_auto_connections = optional(list(object({
         consumer_project = optional(string)
         consumer_network = optional(string)
-      }))
+      })))
     }))
   })
   nullable = false

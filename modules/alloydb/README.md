@@ -270,6 +270,31 @@ module "alloydb" {
 # tftest modules=1 resources=2 inventory=psc.yaml e2e
 ```
 
+### PSC instance with auto connections
+
+```hcl
+module "alloydb" {
+  source         = "./fabric/modules/alloydb"
+  project_id     = var.project_id
+  project_number = var.project_number
+  cluster_name   = "db"
+  location       = var.region
+  instance_name  = "db"
+  network_config = {
+    psc_config = {
+      allowed_consumer_projects = [var.project_number]
+      psc_auto_connections = [{
+        consumer_project = var.project_id
+        consumer_network = var.vpc.id
+      }]
+    }
+  }
+
+  deletion_protection = false
+}
+# tftest modules=1 resources=2 inventory=psc_auto.yaml e2e
+```
+
 ### Custom flags and users definition
 
 ```hcl
