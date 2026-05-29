@@ -56,7 +56,7 @@ locals {
     for c in coalesce(
       try(var.network_config.connectivity.psc_config.psc_auto_connections, []),
       []
-    ) : {
+      ) : {
       consumer_network = lookup(local.ctx.networks, c.consumer_network, c.consumer_network)
       consumer_service_project_id = (
         c.consumer_service_project_id == null
