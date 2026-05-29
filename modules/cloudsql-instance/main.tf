@@ -52,24 +52,16 @@ locals {
       lookup(local.ctx.project_ids, p, p)
     ]
   )
-  psc_consumer_network = (
-    try(var.network_config.connectivity.psc_config.psc_auto_connections.consumer_network, null) == null
-    ? null
-    : lookup(
-      local.ctx.networks,
-      var.network_config.connectivity.psc_config.psc_auto_connections.consumer_network,
-      var.network_config.connectivity.psc_config.psc_auto_connections.consumer_network
-    )
-  )
-  psc_consumer_service_project_id = (
-    try(var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id, null) == null
-    ? null
-    : lookup(
-      local.ctx.project_ids,
-      var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id,
-      var.network_config.connectivity.psc_config.psc_auto_connections.consumer_service_project_id
-    )
-  )
+  psc_auto_connections = [
+    for c in try(var.network_config.connectivity.psc_config.psc_auto_connections, []) : {
+      consumer_network = lookup(local.ctx.networks, c.consumer_network, c.consumer_network)
+      consumer_service_project_id = (
+        c.consumer_service_project_id == null
+        ? null
+        : lookup(local.ctx.project_ids, c.consumer_service_project_id, c.consumer_service_project_id)
+      )
+    }
+  ]
 
   users = {
     for k, v in var.users : k =>
@@ -151,14 +143,10 @@ resource "google_sql_database_instance" "primary" {
           network_attachment_uri    = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
 
           dynamic "psc_auto_connections" {
-            for_each = (
-              try(var.network_config.connectivity.psc_config.psc_auto_connections, null) != null
-              ? [""]
-              : []
-            )
+            for_each = local.psc_auto_connections
             content {
-              consumer_network            = local.psc_consumer_network
-              consumer_service_project_id = local.psc_consumer_service_project_id
+              consumer_network            = psc_auto_connections.value.consumer_network
+              consumer_service_project_id = psc_auto_connections.value.consumer_service_project_id
             }
           }
         }
