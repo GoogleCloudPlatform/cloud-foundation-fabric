@@ -55,10 +55,10 @@ resource "google_spanner_instance" "spanner_instance" {
     ? var.instance.config.name
     : google_spanner_instance_config.spanner_instance_config[0].name
   )
-  name             = var.instance.name
-  display_name     = coalesce(var.instance.display_name, var.instance.name)
-  num_nodes        = var.instance.num_nodes
-  labels           = var.instance.labels
+  name                         = var.instance.name
+  display_name                 = coalesce(var.instance.display_name, var.instance.name)
+  num_nodes                    = var.instance.num_nodes
+  labels                       = var.instance.labels
   force_destroy                = var.instance.force_destroy
   processing_units             = var.instance.processing_units
   edition                      = var.instance.edition
