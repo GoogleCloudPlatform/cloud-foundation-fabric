@@ -29,7 +29,6 @@ values:
     backupdr_backup: null
     clone: []
     database_version: MYSQL_8_0
-    deletion_policy: DELETE
     deletion_protection: false
     final_backup_description: null
     name: db
