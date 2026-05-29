@@ -509,5 +509,5 @@ module "db" {
 
 ## Fixtures
 
-- [iam-service-account.tf](..\..\tests\fixtures\iam-service-account.tf)
+- [iam-service-account.tf](../../tests/fixtures/iam-service-account.tf)
 <!-- END TFDOC -->
