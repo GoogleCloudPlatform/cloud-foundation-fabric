@@ -22,8 +22,6 @@ values:
       encryption_config: []
       recovery_window_days: 14
     database_version: POSTGRES_15
-    deletion_policy: DEFAULT
-    deletion_protection: false
     display_name: db
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -50,7 +48,6 @@ values:
     annotations: null
     availability_type: REGIONAL
     connection_pool_config: []
-    deletion_policy: DELETE
     display_name: db
     effective_labels:
       goog-terraform-provisioned: 'true'
