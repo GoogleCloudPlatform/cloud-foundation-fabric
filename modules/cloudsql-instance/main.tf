@@ -43,6 +43,29 @@ locals {
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   region     = lookup(local.ctx.locations, var.region, var.region)
 
+  ### PSC locals
+  psc_allowed_consumer_projects = (
+    try(var.network_config.connectivity.psc_config.allowed_consumer_projects, null) == null
+    ? null
+    : [
+      for p in try(var.network_config.connectivity.psc_config.allowed_consumer_projects, []) :
+      lookup(local.ctx.project_ids, p, p)
+    ]
+  )
+  psc_auto_connections = [
+    for c in coalesce(
+      try(var.network_config.connectivity.psc_config.psc_auto_connections, []),
+      []
+      ) : {
+      consumer_network = lookup(local.ctx.networks, c.consumer_network, c.consumer_network)
+      consumer_service_project_id = (
+        c.consumer_service_project_id == null
+        ? null
+        : lookup(local.ctx.project_ids, c.consumer_service_project_id, c.consumer_service_project_id)
+      )
+    }
+  ]
+
   users = {
     for k, v in var.users : k =>
     local.is_mysql
@@ -113,16 +136,22 @@ resource "google_sql_database_instance" "primary" {
       }
       dynamic "psc_config" {
         for_each = (
-          var.network_config.connectivity.psc_allowed_consumer_projects != null
+          try(var.network_config.connectivity.psc_config, null) != null
           ? [""]
           : []
         )
         content {
-          psc_enabled = true
-          allowed_consumer_projects = [
-            for p in var.network_config.connectivity.psc_allowed_consumer_projects :
-            lookup(local.ctx.project_ids, p, p)
-          ]
+          psc_enabled               = true
+          allowed_consumer_projects = local.psc_allowed_consumer_projects
+          network_attachment_uri    = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+
+          dynamic "psc_auto_connections" {
+            for_each = local.psc_auto_connections
+            content {
+              consumer_network            = psc_auto_connections.value.consumer_network
+              consumer_service_project_id = psc_auto_connections.value.consumer_service_project_id
+            }
+          }
         }
       }
     }
@@ -314,16 +343,26 @@ resource "google_sql_database_instance" "replicas" {
       }
       dynamic "psc_config" {
         for_each = (
-          var.network_config.connectivity.psc_allowed_consumer_projects != null
+          try(var.network_config.connectivity.psc_config, null) != null
           ? [""]
           : []
         )
         content {
-          psc_enabled = true
-          allowed_consumer_projects = [
-            for p in var.network_config.connectivity.psc_allowed_consumer_projects :
-            lookup(local.ctx.project_ids, p, p)
-          ]
+          psc_enabled               = true
+          allowed_consumer_projects = local.psc_allowed_consumer_projects
+          network_attachment_uri    = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+
+          dynamic "psc_auto_connections" {
+            for_each = (
+              try(var.network_config.connectivity.psc_config.psc_auto_connections, null) != null
+              ? [""]
+              : []
+            )
+            content {
+              consumer_network            = local.psc_consumer_network
+              consumer_service_project_id = local.psc_consumer_service_project_id
+            }
+          }
         }
       }
     }

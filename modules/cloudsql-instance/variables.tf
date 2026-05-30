@@ -228,10 +228,27 @@ variable "network_config" {
           replica = optional(string)
         }))
       }))
-      psc_allowed_consumer_projects    = optional(list(string))
+      psc_allowed_consumer_projects = optional(list(string)) # OBSOLETE. See validation below.
+      psc_config = optional(object({
+        allowed_consumer_projects = optional(list(string))
+        network_attachment_uri    = optional(string)
+        psc_auto_connections = optional(list(object({
+          consumer_network            = string
+          consumer_service_project_id = optional(string)
+        })))
+      }))
       enable_private_path_for_services = optional(bool, false)
     })
   })
+  validation {
+    condition = (
+      try(var.network_config.connectivity, null) == null ? true : (
+        var.network_config.connectivity.psc_allowed_consumer_projects == null ||
+        length(var.network_config.connectivity.psc_allowed_consumer_projects) == 0
+      )
+    )
+    error_message = "network_config.connectivity.psc_allowed_consumer_projects is obsolete. Use network_config.connectivity.psc_config.allowed_consumer_projects instead."
+  }
 }
 
 variable "password_validation_policy" {
