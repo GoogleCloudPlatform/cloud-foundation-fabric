@@ -17,7 +17,6 @@ values:
     backupdr_backup: null
     clone: []
     database_version: POSTGRES_13
-    deletion_protection: false
     final_backup_description: null
     name: myprefix-db
     point_in_time_restore_context: []
