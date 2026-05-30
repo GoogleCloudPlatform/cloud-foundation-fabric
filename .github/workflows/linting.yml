@@ -18,11 +18,12 @@ on:
   pull_request:
     branches:
       - master
-      - fast-dev
   push:
     branches:
       - master
-      - fast-dev
+  merge_group:
+    branches:
+      - master
 
 permissions:
   contents: read
