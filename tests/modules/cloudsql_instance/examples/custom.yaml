@@ -14,13 +14,11 @@
 
 values:
   module.db.google_sql_database.databases["departments"]:
-    deletion_policy: DELETE
     instance: db
     name: departments
     project: project-id
     timeouts: null
   module.db.google_sql_database.databases["people"]:
-    deletion_policy: DELETE
     instance: db
     name: people
     project: project-id
@@ -81,7 +79,6 @@ values:
     timeouts: null
   module.db.google_sql_user.users["fixture-service-account@project-id.iam.gserviceaccount.com"]:
     database_roles: null
-    deletion_policy: DELETE
     instance: db
     name: fixture-service-account@project-id.iam.gserviceaccount.com
     password: null
@@ -93,7 +90,6 @@ values:
     type: CLOUD_IAM_SERVICE_ACCOUNT
   module.db.google_sql_user.users["user1"]:
     database_roles: null
-    deletion_policy: DELETE
     instance: db
     name: user1
     password_policy: []
@@ -104,7 +100,6 @@ values:
     type: null
   module.db.google_sql_user.users["user2"]:
     database_roles: null
-    deletion_policy: DELETE
     instance: db
     name: user2
     password: mypassword
@@ -130,7 +125,6 @@ values:
   module.iam-service-account.google_service_account.service_account[0]:
     account_id: fixture-service-account
     create_ignore_already_exists: null
-    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Terraform-managed.
