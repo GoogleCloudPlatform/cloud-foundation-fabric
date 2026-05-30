@@ -19,6 +19,7 @@ variable "databases" {
   type = map(object({
     database_dialect       = optional(string)
     ddl                    = optional(list(string), [])
+    default_time_zone      = optional(string)
     deletion_protection    = optional(bool)
     enable_drop_protection = optional(bool)
     iam                    = optional(map(list(string)), {})
@@ -115,12 +116,14 @@ variable "instance" {
         ))
       }))
     }))
-    display_name     = optional(string)
-    labels           = optional(map(string), {})
-    name             = string
-    num_nodes        = optional(number)
-    processing_units = optional(number)
-    force_destroy    = optional(bool)
+    display_name                 = optional(string)
+    edition                      = optional(string)
+    default_backup_schedule_type = optional(string)
+    labels                       = optional(map(string), {})
+    name                         = string
+    num_nodes                    = optional(number)
+    processing_units             = optional(number)
+    force_destroy                = optional(bool)
   })
 }
 
