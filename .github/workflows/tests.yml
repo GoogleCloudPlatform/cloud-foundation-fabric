@@ -18,11 +18,12 @@ on:
   push:
     branches:
       - master
-      - fast-dev
   pull_request:
     branches:
       - master
-      - fast-dev
+  merge_group:
+    branches:
+      - master
   workflow_dispatch:
     inputs:
       terraform_version:
