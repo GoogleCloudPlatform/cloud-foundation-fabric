@@ -35,7 +35,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -54,7 +54,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -72,7 +72,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -90,7 +90,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -142,6 +142,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -161,6 +162,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -193,6 +195,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -225,12 +228,14 @@ values:
   module.factory.module.folder-1-iam["prod"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.factory.module.folder-1["dev"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Development
     parent: organizations/1234567890
     tags: null
     timeouts: null
   module.factory.module.folder-1["prod"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Production
     parent: organizations/1234567890
@@ -251,6 +256,7 @@ values:
     service_project: ft0-dev-app-example-0
     timeouts: null
   module.factory.module.projects-iam["dev-net-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    deletion_policy: DELETE
     project: ft0-dev-net-shared-0
     timeouts: null
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["roles/cloudbuild.builds.editor"]:
@@ -283,6 +289,7 @@ values:
     service_project: ft0-prod-app-example-0
     timeouts: null
   module.factory.module.projects-iam["prod-net-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    deletion_policy: DELETE
     project: ft0-prod-net-shared-0
     timeouts: null
   module.factory.module.projects["dev-app-0"].data.google_bigquery_default_service_account.bq_sa[0]:
@@ -315,30 +322,35 @@ values:
     project: ft0-dev-app-example-0
     role: roles/monitoring.notificationServiceAgent
   module.factory.module.projects["dev-app-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-app-example-0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-app-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-app-example-0
     service: compute.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-app-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-app-example-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-app-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-app-example-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-app-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-app-example-0
@@ -385,36 +397,42 @@ values:
     project: ft0-dev-net-shared-0
     role: roles/monitoring.notificationServiceAgent
   module.factory.module.projects["dev-net-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-net-shared-0
     service: compute.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-net-0"].google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-net-shared-0
     service: container.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-net-0"].google_project_service.project_services["dns.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-net-shared-0
     service: dns.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-net-0"].google_project_service.project_services["iap.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-net-shared-0
     service: iap.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-net-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-net-shared-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-net-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-dev-net-shared-0
@@ -483,114 +501,133 @@ values:
     project: ft0-prod-iac-core-0
     role: roles/pubsub.serviceAgent
   module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: orgpolicy.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["accesscontextmanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: accesscontextmanager.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["bigquerystorage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: bigquerystorage.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudbilling.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudbilling.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudresourcemanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudresourcemanager.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: compute.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: container.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["essentialcontacts.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: essentialcontacts.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["iam.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: iam.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["iamcredentials.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: iamcredentials.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["pubsub.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: pubsub.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["serviceusage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: serviceusage.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["storage-component.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: storage-component.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: storage.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["sts.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
@@ -642,30 +679,35 @@ values:
     project: ft0-prod-app-example-0
     role: roles/monitoring.notificationServiceAgent
   module.factory.module.projects["prod-app-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-app-example-0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-app-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-app-example-0
     service: compute.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-app-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-app-example-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-app-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-app-example-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-app-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-app-example-0
@@ -712,36 +754,42 @@ values:
     project: ft0-prod-net-shared-0
     role: roles/monitoring.notificationServiceAgent
   module.factory.module.projects["prod-net-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-net-shared-0
     service: compute.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-net-0"].google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-net-shared-0
     service: container.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-net-0"].google_project_service.project_services["dns.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-net-shared-0
     service: dns.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-net-0"].google_project_service.project_services["iap.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-net-shared-0
     service: iap.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-net-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-net-shared-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-net-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-net-shared-0
@@ -766,6 +814,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-org-rw"].google_service_account.service_account[0]:
     account_id: iac-org-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for org setup (read-write).
@@ -782,6 +831,7 @@ values:
     output: null
     triggers_replace: null
   module.organization-iam[0].google_logging_organization_sink.sink["audit-logs"]:
+    deletion_policy: DELETE
     description: audit-logs (Terraform-managed).
     disabled: false
     exclusions: []
@@ -972,6 +1022,7 @@ values:
     allow:
     - ports: []
       protocol: all
+    deletion_policy: DELETE
     deny: []
     description: Allow GCP Healthcheck Ranges.
     direction: INGRESS
@@ -996,6 +1047,7 @@ values:
     allow:
     - ports: []
       protocol: all
+    deletion_policy: DELETE
     deny: []
     description: Allow IAP.
     direction: INGRESS
@@ -1017,6 +1069,7 @@ values:
     allow:
     - ports: []
       protocol: icmp
+    deletion_policy: DELETE
     deny: []
     description: Allow ICMP.
     direction: INGRESS
@@ -1038,6 +1091,7 @@ values:
     allow:
     - ports: []
       protocol: all
+    deletion_policy: DELETE
     deny: []
     description: Allow GCP Healthcheck Ranges.
     direction: INGRESS
@@ -1062,6 +1116,7 @@ values:
     allow:
     - ports: []
       protocol: all
+    deletion_policy: DELETE
     deny: []
     description: Allow IAP.
     direction: INGRESS
@@ -1083,6 +1138,7 @@ values:
     allow:
     - ports: []
       protocol: icmp
+    deletion_policy: DELETE
     deny: []
     description: Allow ICMP.
     direction: INGRESS
@@ -1104,6 +1160,7 @@ values:
     auto_create_subnetworks: false
     delete_bgp_always_compare_med: false
     delete_default_routes_on_create: true
+    deletion_policy: DELETE
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
@@ -1115,6 +1172,7 @@ values:
     routing_mode: GLOBAL
     timeouts: null
   module.vpcs.module.vpcs["dev"].google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 34.126.0.0/18
     name: dev-shared-0-directpath-googleapis
@@ -1129,6 +1187,7 @@ values:
     tags: null
     timeouts: null
   module.vpcs.module.vpcs["dev"].google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: dev-shared-0-private-googleapis
@@ -1143,6 +1202,7 @@ values:
     tags: null
     timeouts: null
   module.vpcs.module.vpcs["dev"].google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: dev-shared-0-restricted-googleapis
@@ -1157,6 +1217,7 @@ values:
     tags: null
     timeouts: null
   module.vpcs.module.vpcs["dev"].google_compute_subnetwork.subnetwork["europe-west1/default"]:
+    deletion_policy: DELETE
     description: Default primary-region subnet for dev
     ip_cidr_range: 10.0.0.0/24
     ip_collection: null
@@ -1177,6 +1238,7 @@ values:
     auto_create_subnetworks: false
     delete_bgp_always_compare_med: false
     delete_default_routes_on_create: true
+    deletion_policy: DELETE
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
@@ -1188,6 +1250,7 @@ values:
     routing_mode: GLOBAL
     timeouts: null
   module.vpcs.module.vpcs["prod"].google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 34.126.0.0/18
     name: prod-shared-0-directpath-googleapis
@@ -1202,6 +1265,7 @@ values:
     tags: null
     timeouts: null
   module.vpcs.module.vpcs["prod"].google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: prod-shared-0-private-googleapis
@@ -1216,6 +1280,7 @@ values:
     tags: null
     timeouts: null
   module.vpcs.module.vpcs["prod"].google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: prod-shared-0-restricted-googleapis
@@ -1230,6 +1295,7 @@ values:
     tags: null
     timeouts: null
   module.vpcs.module.vpcs["prod"].google_compute_subnetwork.subnetwork["europe-west1/default"]:
+    deletion_policy: DELETE
     description: Default primary-region subnet for prod
     ip_cidr_range: 10.0.0.0/24
     ip_collection: null

@@ -169,7 +169,7 @@ def handle_readme(readme_path, target, index, save):
 
       assets_path = module_path / 'assets'
       if assets_path.exists():
-        (tmp_path / 'assets').symlink_to(assets_path)
+        (tmp_path / 'assets').symlink_to(assets_path.resolve())
 
       prepare_files(tmp_path, target_example.files, target_example.fixtures,
                     directive.kwargs.get('files'),
