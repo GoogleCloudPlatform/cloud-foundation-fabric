@@ -1,10 +1,10 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
 values:
   module.cloud_run.google_cloud_run_v2_service.service[0]:
     annotations: null
@@ -22,6 +21,7 @@ values:
     client_version: null
     custom_audiences: null
     default_uri_disabled: null
+    deletion_policy: DELETE
     deletion_protection: false
     description: null
     effective_labels:
@@ -30,6 +30,7 @@ values:
     invoker_iam_disabled: false
     labels: null
     location: europe-west8
+    multi_region_settings: []
     name: example-hello
     project: project-id
     template:
@@ -54,14 +55,18 @@ values:
         image: us-docker.pkg.dev/cloudrun/container/hello
         liveness_probe: []
         name: hello
+        readiness_probe: []
+        source_code: []
         volume_mounts: []
         working_dir: null
       encryption_key: null
       execution_environment: EXECUTION_ENVIRONMENT_GEN1
       gpu_zonal_redundancy_disabled: null
+      health_check_disabled: null
       labels: null
       node_selector: []
       revision: null
+      service_account: example-hello@project-id.iam.gserviceaccount.com
       service_mesh: []
       session_affinity: null
       volumes: []
@@ -74,8 +79,30 @@ values:
     members:
     - allUsers
     role: roles/run.invoker
+  module.cloud_run.google_project_iam_member.default["roles/logging.logWriter"]:
+    condition: []
+    member: serviceAccount:example-hello@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/logging.logWriter
+  module.cloud_run.google_project_iam_member.default["roles/monitoring.metricWriter"]:
+    condition: []
+    member: serviceAccount:example-hello@project-id.iam.gserviceaccount.com
+    project: project-id
+    role: roles/monitoring.metricWriter
+  module.cloud_run.google_service_account.service_account[0]:
+    account_id: example-hello
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: example-hello
+    email: example-hello@project-id.iam.gserviceaccount.com
+    member: serviceAccount:example-hello@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
   module.secret-manager.google_secret_manager_secret.default["credentials"]:
     annotations: null
+    deletion_policy: DELETE
     deletion_protection: false
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -103,13 +130,13 @@ values:
     - serviceAccount:project-id@appspot.gserviceaccount.com
     role: roles/secretmanager.secretAccessor
   module.secret-manager.google_secret_manager_secret_version.default["credentials/v1"]:
-    deletion_policy: DELETE
     enabled: true
     is_secret_data_base64: false
     secret_data: manual foo bar spam
     secret_data_wo: null
     secret_data_wo_version: 0
     timeouts: null
+
 counts:
   google_cloud_run_v2_service: 1
   google_cloud_run_v2_service_iam_binding: 1
@@ -118,3 +145,7 @@ counts:
   google_secret_manager_secret_iam_binding: 1
   google_secret_manager_secret_version: 1
   google_service_account: 1
+  modules: 2
+  resources: 8
+
+outputs: {}

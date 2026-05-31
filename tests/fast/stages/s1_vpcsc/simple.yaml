@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -39,7 +39,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -259,3 +259,7 @@ counts:
   local_file: 1
   modules: 1
   resources: 7
+
+outputs:
+  tfvars: __missing__
+  vpc_sc_perimeter_default: __missing__

@@ -20,7 +20,6 @@ body:
       options:
         - label: Fabric modules
         - label: FAST
-        - label: Blueprints
         - label: Other
     validations:
       required: true

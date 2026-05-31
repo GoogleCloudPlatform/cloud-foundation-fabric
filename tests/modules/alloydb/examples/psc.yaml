@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:indentation
 values:
   module.alloydb.google_alloydb_cluster.primary:
     annotations: null
@@ -24,7 +23,10 @@ values:
       recovery_window_days: 14
     database_version: POSTGRES_15
     deletion_policy: DEFAULT
+    deletion_protection: false
     display_name: db
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     encryption_config: []
     etag: null
     initial_user: []
@@ -35,15 +37,23 @@ values:
     psc_config:
     - psc_enabled: true
     restore_backup_source: []
+    restore_backupdr_backup_source: []
+    restore_backupdr_pitr_source: []
     restore_continuous_backup_source: []
     secondary_config: []
     skip_await_major_version_upgrade: true
     subscription_type: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.alloydb.google_alloydb_instance.primary:
     annotations: null
     availability_type: REGIONAL
+    connection_pool_config: []
+    deletion_policy: DELETE
     display_name: db
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     gce_zone: null
     instance_id: db
     instance_type: PRIMARY
@@ -52,13 +62,17 @@ values:
     - cpu_count: 2
     psc_instance_config:
     - allowed_consumer_projects:
-        - '123'
+      - '123'
+      psc_auto_connections: []
+      psc_interface_configs: []
     query_insights_config:
     - query_plans_per_minute: 5
       query_string_length: 1024
       record_application_tags: true
       record_client_address: true
     read_pool_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
 
 counts:

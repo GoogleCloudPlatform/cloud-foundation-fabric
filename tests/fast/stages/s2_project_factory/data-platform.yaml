@@ -21,7 +21,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -34,6 +34,7 @@ values:
   module.factory.module.aspect-types["core-0"].google_dataplex_aspect_type.default["basic"]:
     aspect_type_id: basic
     data_classification: null
+    deletion_policy: DELETE
     description: null
     display_name: Basic template
     effective_labels:
@@ -52,6 +53,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -94,6 +96,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -134,6 +137,7 @@ values:
   module.factory.module.automation-service-accounts["product-0/automation/iac-ro"].google_service_account.service_account[0]:
     account_id: product-0-iac-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Product 0/0 (ro)
@@ -149,6 +153,7 @@ values:
   module.factory.module.automation-service-accounts["product-0/automation/iac-rw"].google_service_account.service_account[0]:
     account_id: product-0-iac-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Product 0/0 (rw)
@@ -164,6 +169,7 @@ values:
   module.factory.module.automation-service-accounts["shared-0/automation/iac-ro"].google_service_account.service_account[0]:
     account_id: shared-0-iac-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Domain 0 (ro)
@@ -179,6 +185,7 @@ values:
   module.factory.module.automation-service-accounts["shared-0/automation/iac-rw"].google_service_account.service_account[0]:
     account_id: shared-0-iac-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Domain 0 (rw)
@@ -197,6 +204,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -217,6 +225,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -239,6 +248,7 @@ values:
     project: testorg-prod-dp-dd0-p0
     role: roles/bigquery.dataViewer
   module.factory.module.bigquery-datasets["product-0/public"].google_tags_location_tag_binding.binding["exposure"]:
+    deletion_policy: DELETE
     location: europe-west1
     timeouts: null
   module.factory.module.buckets["product-0/private"].google_storage_bucket.bucket[0]:
@@ -246,6 +256,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -273,6 +284,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -303,10 +315,12 @@ values:
     role: roles/storage.objectViewer
     timeouts: null
   module.factory.module.buckets["product-0/public"].google_tags_location_tag_binding.binding["exposure"]:
+    deletion_policy: DELETE
     location: europe-west1
     parent: //storage.googleapis.com/projects/_/buckets/testorg-prod-dp-dd0-p0-public
     timeouts: null
   module.factory.module.folder-1["domain-0"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Data Domain 0
     parent: folders/1234567890
@@ -417,30 +431,35 @@ values:
     project: testorg-prod-dp-core-0
     role: roles/monitoring.notificationServiceAgent
   module.factory.module.projects["core-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-core-0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["core-0"].google_project_service.project_services["datacatalog.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-core-0
     service: datacatalog.googleapis.com
     timeouts: null
   module.factory.module.projects["core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-core-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-core-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["core-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-core-0
@@ -500,60 +519,70 @@ values:
     project: testorg-prod-dp-dd0-p0
     role: roles/monitoring.notificationServiceAgent
   module.factory.module.projects["product-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["cloudaicompanion.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: cloudaicompanion.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["cloudresourcemanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: cloudresourcemanager.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["composer.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: composer.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["datacatalog.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: datacatalog.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["datalineage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: datalineage.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["dataplex.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: dataplex.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["product-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd0-p0
@@ -609,48 +638,56 @@ values:
     project: testorg-prod-dp-dd-0
     role: roles/monitoring.notificationServiceAgent
   module.factory.module.projects["shared-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["shared-0"].google_project_service.project_services["composer.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
     service: composer.googleapis.com
     timeouts: null
   module.factory.module.projects["shared-0"].google_project_service.project_services["datacatalog.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
     service: datacatalog.googleapis.com
     timeouts: null
   module.factory.module.projects["shared-0"].google_project_service.project_services["datalineage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
     service: datalineage.googleapis.com
     timeouts: null
   module.factory.module.projects["shared-0"].google_project_service.project_services["dataplex.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
     service: dataplex.googleapis.com
     timeouts: null
   module.factory.module.projects["shared-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["shared-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["shared-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: testorg-prod-dp-dd-0
@@ -676,6 +713,7 @@ values:
   module.factory.module.service-accounts["product-0/processing"].google_service_account.service_account[0]:
     account_id: processing
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Processing service account.
@@ -686,6 +724,7 @@ values:
   module.factory.module.service-accounts["shared-0/composer"].google_service_account.service_account[0]:
     account_id: composer
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Terraform-managed.
@@ -711,6 +750,7 @@ values:
   module.factory.module.taxonomies["core-0"].google_data_catalog_taxonomy.default:
     activated_policy_types:
     - FINE_GRAINED_ACCESS_CONTROL
+    deletion_policy: DELETE
     description: Taxonomy for data platform.
     display_name: taxonomy
     project: testorg-prod-dp-core-0
@@ -728,6 +768,7 @@ values:
     auto_create_subnetworks: false
     delete_bgp_always_compare_med: false
     delete_default_routes_on_create: true
+    deletion_policy: DELETE
     description: Terraform managed
     enable_ula_internal_ipv6: null
     mtu: 1500
@@ -739,6 +780,7 @@ values:
     routing_mode: GLOBAL
     timeouts: null
   module.vpc-factory.module.vpcs["domain-0"].google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 34.126.0.0/18
     name: domain-0-directpath-googleapis
@@ -753,6 +795,7 @@ values:
     tags: null
     timeouts: null
   module.vpc-factory.module.vpcs["domain-0"].google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: domain-0-private-googleapis
@@ -767,6 +810,7 @@ values:
     tags: null
     timeouts: null
   module.vpc-factory.module.vpcs["domain-0"].google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: domain-0-restricted-googleapis

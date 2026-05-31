@@ -1,10 +1,10 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,6 +51,7 @@ values:
     annotations: null
     availability_type: REGIONAL
     connection_pool_config: []
+    deletion_policy: DELETE
     display_name: db
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -77,6 +78,7 @@ values:
   module.alloydb.google_alloydb_instance.read_pool_primary["regional-read-pool"]:
     annotations: null
     connection_pool_config: []
+    deletion_policy: DELETE
     display_name: regional-read-pool
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -125,18 +127,21 @@ values:
     project: test-alloydb
     role: roles/servicenetworking.serviceAgent
   module.project.google_project_service.project_services["alloydb.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-alloydb
     service: alloydb.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["geminicloudassist.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-alloydb
     service: geminicloudassist.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["servicenetworking.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-alloydb
@@ -153,6 +158,7 @@ values:
   module.vpc.google_compute_global_address.psa_ranges["servicenetworking-googleapis-com-alloydb"]:
     address: 10.60.0.0
     address_type: INTERNAL
+    deletion_policy: DELETE
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -169,6 +175,7 @@ values:
     auto_create_subnetworks: false
     delete_bgp_always_compare_med: false
     delete_default_routes_on_create: false
+    deletion_policy: DELETE
     description: Terraform-managed.
     enable_ula_internal_ipv6: null
     name: my-network
@@ -185,6 +192,7 @@ values:
     project: test-alloydb
     timeouts: null
   module.vpc.google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 34.126.0.0/18
     name: my-network-directpath-googleapis
@@ -199,6 +207,7 @@ values:
     tags: null
     timeouts: null
   module.vpc.google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
     name: my-network-private-googleapis
@@ -213,6 +222,7 @@ values:
     tags: null
     timeouts: null
   module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     dest_range: 199.36.153.4/30
     name: my-network-restricted-googleapis
@@ -227,6 +237,7 @@ values:
     tags: null
     timeouts: null
   module.vpc.google_compute_subnetwork.psc["europe-west8/psc"]:
+    deletion_policy: DELETE
     description: Terraform-managed subnet for Private Service Connect (PSC NAT).
     ip_cidr_range: 10.0.3.0/24
     ip_collection: null
@@ -244,7 +255,7 @@ values:
     send_secondary_ip_range_if_empty: null
     timeouts: null
   module.vpc.google_service_networking_connection.psa_connection["servicenetworking.googleapis.com"]:
-    deletion_policy: null
+    deletion_policy: DELETE
     reserved_peering_ranges:
     - servicenetworking-googleapis-com-alloydb
     service: servicenetworking.googleapis.com

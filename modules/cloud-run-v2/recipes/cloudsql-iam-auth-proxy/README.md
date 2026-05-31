@@ -1,3 +1,5 @@
+# Cloud Run with Cloud SQL IAM Auth Proxy
+
 Cloud Run provides shorthand to connect to Cloud SQL database, but that requires connecting using password. In this recipe connection is authorized using IAM
 
 ```hcl
