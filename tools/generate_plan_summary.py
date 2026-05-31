@@ -55,6 +55,7 @@ except ImportError as e:
   sys.exit(1)
 
 FILTERED_ATTRIBUTES = [
+    'filename',
     'source_md5hash',
     'pem_certificate',
 ]
