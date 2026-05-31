@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@ values:
   module.cb_connection.google_cloudbuild_trigger.triggers["my-repository-my-trigger"]:
     bitbucket_server_trigger_config: []
     build: []
+    deletion_policy: DELETE
     description: null
     developer_connect_event_config: []
     disabled: false
@@ -31,11 +32,11 @@ values:
     project: test-my-project
     pubsub_config: []
     repository_event_config:
-      - pull_request: []
-        push:
-          - branch: main
-            invert_regex: null
-            tag: null
+    - pull_request: []
+      push:
+      - branch: main
+        invert_regex: null
+        tag: null
     service_account: null
     source_to_build: []
     substitutions: null
@@ -47,15 +48,16 @@ values:
     annotations: null
     bitbucket_cloud_config: []
     bitbucket_data_center_config: []
+    deletion_policy: DELETE
     disabled: false
     github_config: []
     github_enterprise_config:
-      - app_id: 1234567
-        app_installation_id: 123456789
-        app_slug: https://my-ghe-server.net/settings/apps/app-slug
-        host_uri: https://mmy-ghe-server.net.
-        service_directory_config: []
-        ssl_ca: null
+    - app_id: 1234567
+      app_installation_id: 123456789
+      app_slug: https://my-ghe-server.net/settings/apps/app-slug
+      host_uri: https://mmy-ghe-server.net.
+      service_directory_config: []
+      ssl_ca: null
     gitlab_config: []
     location: europe-west8
     name: my-connection
@@ -65,12 +67,13 @@ values:
     condition: []
     location: europe-west8
     members:
-      - group:organization-admins@example.org
+    - group:organization-admins@example.org
     name: my-connection
     project: test-my-project
     role: roles/cloudbuild.connectionViewer
   module.cb_connection.google_cloudbuildv2_repository.repositories["my-repository"]:
     annotations: null
+    deletion_policy: DELETE
     location: europe-west8
     name: my-repository
     parent_connection: my-connection
@@ -80,6 +83,7 @@ values:
   module.cb_service_account.google_service_account.service_account[0]:
     account_id: cloudbuild
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Terraform-managed.
@@ -92,20 +96,20 @@ values:
     billing_account: 123456-123456-123456
     deletion_policy: DELETE
     effective_labels:
-      goog-terraform-provisioned: "true"
-    folder_id: "1122334455"
+      goog-terraform-provisioned: 'true'
+    folder_id: '1122334455'
     labels: null
     name: test-my-project
     org_id: null
     project_id: test-my-project
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
   module.project.google_project_iam_binding.authoritative["roles/logging.logWriter"]:
     condition: []
     members:
-      - serviceAccount:cloudbuild@test-my-project.iam.gserviceaccount.com
+    - serviceAccount:cloudbuild@test-my-project.iam.gserviceaccount.com
     project: test-my-project
     role: roles/logging.logWriter
   module.project.google_project_iam_member.service_agents["cloudbuild"]:
@@ -117,12 +121,14 @@ values:
     project: test-my-project
     role: roles/cloudbuild.builds.builder
   module.project.google_project_service.project_services["cloudbuild.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-my-project
     service: cloudbuild.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["secretmanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-my-project
@@ -134,20 +140,21 @@ values:
     timeouts: null
   module.secret_manager.google_secret_manager_secret.default["private-key-secret"]:
     annotations: null
+    deletion_policy: DELETE
     deletion_protection: false
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     labels: null
     project: test-my-project
     replication:
-      - auto:
-          - customer_managed_encryption: []
-        user_managed: []
+    - auto:
+      - customer_managed_encryption: []
+      user_managed: []
     rotation: []
     secret_id: private-key-secret
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     topics: []
     ttl: null
@@ -155,33 +162,33 @@ values:
     version_destroy_ttl: null
   module.secret_manager.google_secret_manager_secret.default["webhook-secret"]:
     annotations: null
+    deletion_policy: DELETE
     deletion_protection: false
     effective_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     labels: null
     project: test-my-project
     replication:
-      - auto:
-          - customer_managed_encryption: []
-        user_managed: []
+    - auto:
+      - customer_managed_encryption: []
+      user_managed: []
     rotation: []
     secret_id: webhook-secret
     tags: null
     terraform_labels:
-      goog-terraform-provisioned: "true"
+      goog-terraform-provisioned: 'true'
     timeouts: null
     topics: []
     ttl: null
     version_aliases: null
     version_destroy_ttl: null
-  module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["private-key-secret.roles/secretmanager.secretAccessor"]:
-    condition: []
+  ? module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["private-key-secret.roles/secretmanager.secretAccessor"]
+  : condition: []
     role: roles/secretmanager.secretAccessor
-  module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["webhook-secret.roles/secretmanager.secretAccessor"]:
-    condition: []
+  ? module.secret_manager.google_secret_manager_secret_iam_binding.authoritative["webhook-secret.roles/secretmanager.secretAccessor"]
+  : condition: []
     role: roles/secretmanager.secretAccessor
   module.secret_manager.google_secret_manager_secret_version.default["private-key-secret/v1"]:
-    deletion_policy: DELETE
     enabled: true
     is_secret_data_base64: false
     secret_data: null
@@ -189,7 +196,6 @@ values:
     secret_data_wo_version: 1
     timeouts: null
   module.secret_manager.google_secret_manager_secret_version.default["webhook-secret/v1"]:
-    deletion_policy: DELETE
     enabled: true
     is_secret_data_base64: false
     secret_data: null
@@ -213,3 +219,5 @@ counts:
   google_service_account: 1
   modules: 4
   resources: 18
+
+outputs: {}

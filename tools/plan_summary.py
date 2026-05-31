@@ -40,7 +40,9 @@ except ImportError:
   import fixtures
 
 FILTERED_ATTRIBUTES = [
+    'filename',
     'source_md5hash',
+    'pem_certificate',
 ]
 
 
