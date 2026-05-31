@@ -45,7 +45,7 @@ def _prepare_root_module(path):
   _ignore = shutil.ignore_patterns('*.auto.tfvars', '*.auto.tfvars.json',
                                    '[0-9]-*-providers.tf', 'terraform.tfstate*',
                                    '.terraform.lock.hcl', 'terraform.tfvars',
-                                   '.terraform', '.git', 'pytest-*')
+                                   '.terraform', '.git', 'pytest-*', 'fabric')
 
   def ignore_patterns(src, names):
     ignored = set(_ignore(src, names))
@@ -59,6 +59,10 @@ def _prepare_root_module(path):
     # ~20% slower than when run in a copy made with symlinks=False.
     shutil.copytree(path, tmp_path, dirs_exist_ok=True, symlinks=False,
                     ignore=ignore_patterns)
+    # Recreate the 'fabric' symlink to avoid copying the whole repository
+    # recursively (which happens if followed via symlinks=False)
+    if (path / 'fabric').is_symlink():
+      (tmp_path / 'fabric').symlink_to((path / 'fabric').readlink())
     lockfile = _REPO_ROOT / 'tools' / 'lockfile' / '.terraform.lock.hcl'
     if lockfile.exists():
       shutil.copy(lockfile, tmp_path / '.terraform.lock.hcl')
