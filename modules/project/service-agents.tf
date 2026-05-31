@@ -116,7 +116,12 @@ locals {
       } if alltrue([
         var.service_agents_config.grant_default_roles,
         agent.role != null,
-        !agent.skip_iam
+        # 1. Static Skip (Global): Managed via tools/build_service_agents.py
+        #    Filters out known lazy agents that always fail on API enablement.
+        !agent.skip_iam,
+        # 2. Dynamic Skip (Runtime/Project-level): Managed by the user via skip_iam
+        #    Filters out project-specific overrides or newly introduced lazy agents.
+        !contains(var.service_agents_config.skip_iam, agent.name)
     ])
   }
   services = [

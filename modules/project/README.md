@@ -13,6 +13,7 @@ This module implements the creation and management of one GCP project including 
   - [Additive IAM](#additive-iam)
   - [Service Agents](#service-agents)
     - [Cloudservices Editor Role](#cloudservices-editor-role)
+    - [Skipping Service Agent IAM Grants](#skipping-service-agent-iam-grants)
     - [Service Agent Aliases](#service-agent-aliases)
 - [Shared VPC](#shared-vpc)
 - [Organization Policies](#organization-policies)
@@ -269,6 +270,28 @@ The complete list of Google Cloud service agents, including their names, default
 #### Cloudservices Editor Role
 
 The `cloudservices` service agent is granted `roles/editor` by default, making it easy to accidentally remove this binding when managing the editor role authoritatively. In those cases, the module auto-injects the `cloudservices` service agent to preserve the binding. This behaviour is disabled when the `service_agents_config.grant_service_agent_editor` variable is set to `false`.
+
+#### Skipping Service Agent IAM Grants
+
+In some cases, you might want to prevent the module from automatically granting default roles to specific service agents (for example, if the service agent is created lazily by GCP and does not exist yet). You can do this by listing the agent names in `service_agents_config.skip_iam`:
+
+```hcl
+module "project" {
+  source          = "./fabric/modules/project"
+  billing_account = var.billing_account_id
+  name            = "project"
+  parent          = var.folder_id
+  prefix          = var.prefix
+  services = [
+    "container.googleapis.com",
+    "run.googleapis.com"
+  ]
+  service_agents_config = {
+    skip_iam = ["serverless-robot-prod"]
+  }
+}
+# tftest modules=1 resources=7 inventory=service-agents-skip.yaml
+```
 
 #### Service Agent Aliases
 
@@ -2380,17 +2403,17 @@ module "project" {
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_agents_config](variables.tf#L329) | Automatic service agent configuration options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_config](variables.tf#L340) | Configure service API activation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [service_encryption_key_ids](variables.tf#L352) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L359) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [shared_vpc_host_config](variables.tf#L365) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [shared_vpc_service_config](variables.tf#L375) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [skip_delete](variables.tf#L412) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
+| [service_config](variables.tf#L341) | Configure service API activation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [service_encryption_key_ids](variables.tf#L353) | Service Agents to be granted encryption/decryption permissions over Cloud KMS encryption keys. Format {SERVICE_AGENT => [KEY_ID]}. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L360) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [shared_vpc_host_config](variables.tf#L366) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [shared_vpc_service_config](variables.tf#L376) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L413) | Deprecated. Use deletion_policy. | <code>bool</code> |  | <code>null</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this project, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L171) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [universe](variables.tf#L424) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_sc](variables.tf#L435) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [universe](variables.tf#L425) | GCP universe where to deploy the project. The prefix will be prepended to the project id. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_sc](variables.tf#L436) | VPC-SC configuration for the project, use when `ignore_changes` for resources is set in the VPC-SC module. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [workload_identity_pools](variables-identity-providers.tf#L17) | Workload Identity Federation pools and providers. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
