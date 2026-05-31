@@ -56,6 +56,7 @@ except ImportError as e:
 
 FILTERED_ATTRIBUTES = [
     'source_md5hash',
+    'pem_certificate',
 ]
 
 HEADER = "".join(open(__file__).readlines()[2:15])
