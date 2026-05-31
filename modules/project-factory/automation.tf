@@ -126,9 +126,18 @@ module "automation-bucket" {
 }
 
 module "automation-service-accounts" {
-  source      = "../iam-service-account"
-  for_each    = local.automation_sas
-  project_id  = each.value.automation_project
+  source     = "../iam-service-account"
+  for_each   = local.automation_sas
+  project_id = each.value.automation_project
+  project_number = (
+    each.value.automation_project == null
+    ? null
+    : lookup(
+      local.ctx_project_numbers,
+      trimprefix(each.value.automation_project, "$project_ids:"),
+      null
+    )
+  )
   prefix      = each.value.prefix
   name        = each.value.name
   description = lookup(each.value, "description", null)
@@ -143,6 +152,11 @@ module "automation-service-accounts" {
       local.ctx.iam_principals,
       local.projects_sas_iam_emails
     )
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
+    tag_values = local.ctx_tag_values
   })
   iam                    = lookup(each.value, "iam", {})
   iam_bindings           = lookup(each.value, "iam_bindings", {})
@@ -154,6 +168,7 @@ module "automation-service-accounts" {
   # iam_sa_roles           = lookup(each.value, "iam_sa_roles", {})
   # we don't interpolate buckets here as we can't use a dynamic key
   iam_storage_roles = lookup(each.value, "iam_storage_roles", {})
+  tag_bindings      = lookup(each.value, "tag_bindings", {})
 }
 
 module "automation-service-accounts-iam" {

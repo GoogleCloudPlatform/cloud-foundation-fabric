@@ -146,6 +146,9 @@
                 },
                 "iam_storage_roles": {
                   "$ref": "#/$defs/iam_storage_roles"
+                },
+                "tag_bindings": {
+                  "$ref": "#/$defs/tag_bindings"
                 }
               }
             }

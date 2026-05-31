@@ -968,7 +968,7 @@ module "project-factory" {
     basepath = "data"
   }
 }
-# tftest modules=7 resources=31 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=10 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -995,6 +995,16 @@ tags:
           roles/resourcemanager.tagUser:
             - $iam_principals:tag-test
             - $iam_principals:service_accounts/test-1/tag-test
+service_accounts:
+  tag-test:
+    tag_bindings:
+      project-level: $tag_values:test-0/context/project-factory
+automation:
+  project: test-0
+  service_accounts:
+    auto-tag-test:
+      tag_bindings:
+        project-level: $tag_values:test-0/context/project-factory
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 
