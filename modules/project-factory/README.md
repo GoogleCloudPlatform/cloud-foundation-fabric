@@ -968,7 +968,7 @@ module "project-factory" {
     basepath = "data"
   }
 }
-# tftest modules=11 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=10 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
