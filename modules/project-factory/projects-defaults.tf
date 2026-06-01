@@ -158,6 +158,19 @@ locals {
         try(v.service_encryption_key_ids, null),
         local.data_defaults.defaults.service_encryption_key_ids
       )
+      service_agents_config = (
+        try(v.service_agents_config, null) != null
+        ? merge(
+          {
+            create_primary_agents      = true
+            grant_default_roles        = true
+            grant_service_agent_editor = true
+            skip_iam                   = []
+          },
+          v.service_agents_config
+        )
+        : local.data_defaults.defaults.service_agents_config
+      )
       services = coalesce( # type: list(string)
         local.data_defaults.overrides.services,
         try(v.services, null),
@@ -290,6 +303,15 @@ locals {
             attributes      = null
             }
           )
+        )
+        service_agents_config = merge(
+          {
+            create_primary_agents      = true
+            grant_default_roles        = true
+            grant_service_agent_editor = true
+            skip_iam                   = []
+          },
+          try(local._data_defaults.defaults.service_agents_config, {})
         )
         service_encryption_key_ids = {}
         services                   = []

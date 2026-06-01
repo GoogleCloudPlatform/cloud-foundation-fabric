@@ -162,6 +162,11 @@ module "projects" {
   logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
   quotas                = each.value.quotas
+  service_agents_config = {
+    create_primary_agents      = each.value.service_agents_config.create_primary_agents
+    grant_default_roles        = false
+    grant_service_agent_editor = false
+  }
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -244,8 +249,10 @@ module "projects-iam" {
   ))
   pam_entitlements = try(each.value.pam_entitlements, {})
   service_agents_config = {
-    create_primary_agents = false
-    grant_default_roles   = false
+    create_primary_agents      = false
+    grant_default_roles        = each.value.service_agents_config.grant_default_roles
+    grant_service_agent_editor = each.value.service_agents_config.grant_service_agent_editor
+    skip_iam                   = each.value.service_agents_config.skip_iam
   }
   service_encryption_key_ids = merge(
     each.value.service_encryption_key_ids,

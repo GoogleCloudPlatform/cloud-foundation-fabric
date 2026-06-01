@@ -819,6 +819,27 @@
         }
       }
     },
+    "service_agents_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_primary_agents": {
+          "type": "boolean"
+        },
+        "grant_default_roles": {
+          "type": "boolean"
+        },
+        "grant_service_agent_editor": {
+          "type": "boolean"
+        },
+        "skip_iam": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "service_encryption_key_ids": {
       "type": "object",
       "additionalProperties": false,
