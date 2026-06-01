@@ -83,6 +83,7 @@ python3 tools/check_boilerplate.py --scan-files <files>
 # Schema changes
 # A schema change should be reflected in all the other places that use the same schema.
 # These are documented in and can be checked via tools/duplicate-diff.py.
+# Whenever you modify a `.schema.json` file, you MUST regenerate the corresponding `.schema.md` documentation file using `python3 tools/schema_docs.py`.
 ```
 
 **Common gotcha — unsorted variables (`[SV]` error):** `check_documentation.py` requires variables in `variables.tf` to be in strict alphabetical order. When adding a new variable, insert it at the correct alphabetical position, not at the top of the file.

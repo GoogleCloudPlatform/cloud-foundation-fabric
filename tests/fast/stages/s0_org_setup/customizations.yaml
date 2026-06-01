@@ -118,7 +118,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/0-org-setup-providers.tf
     sensitive_content: null
     source: null
   local_file.tfvars["globals"]:
@@ -126,14 +125,12 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/tfvars/0-globals.auto.tfvars.json
     sensitive_content: null
     source: null
   local_file.tfvars["org-setup"]:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/tfvars/0-org-setup.auto.tfvars.json
     sensitive_content: null
     source: null
   module.factory.module.bigquery-datasets["iac-0/billing_export"].google_bigquery_dataset.default:

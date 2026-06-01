@@ -253,6 +253,13 @@
     - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
     - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
     - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
+- **service_agents_config**: *object*
+  <br>*additional properties: false*
+  - **create_primary_agents**: *boolean*
+  - **grant_default_roles**: *boolean*
+  - **grant_service_agent_editor**: *boolean*
+  - **skip_iam**: *array*
+    - items: *string*
 - **service_encryption_key_ids**: *object*
   <br>*additional properties: false*
   - **`^[a-z-]+\.googleapis\.com$`**: *array*

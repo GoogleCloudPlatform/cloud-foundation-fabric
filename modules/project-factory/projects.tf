@@ -162,6 +162,16 @@ module "projects" {
   logging_sinks         = try(each.value.logging_sinks, {})
   notification_channels = try(each.value.notification_channels, null)
   quotas                = each.value.quotas
+  # Most service agent permissions must be granted in this first pass
+  # to ensure dependencies (like CMEK or Shared VPC) work correctly.
+  # We disable grant_service_agent_editor here because the authoritative
+  # IAM editor role is managed in the second pass (projects-iam).
+  service_agents_config = {
+    create_primary_agents      = each.value.service_agents_config.create_primary_agents
+    grant_default_roles        = each.value.service_agents_config.grant_default_roles
+    grant_service_agent_editor = false
+    skip_iam                   = each.value.service_agents_config.skip_iam
+  }
   services = distinct(concat(
     each.value.services,
     var.data_merges.services
@@ -243,9 +253,13 @@ module "projects-iam" {
     each.value.metric_scopes, var.data_merges.metric_scopes
   ))
   pam_entitlements = try(each.value.pam_entitlements, {})
+  # The second pass handles the authoritative cloudservices editor binding.
+  # We disable primary agents creation and default roles here because they
+  # are already handled in the first pass, avoiding duplicate resource errors.
   service_agents_config = {
-    create_primary_agents = false
-    grant_default_roles   = false
+    create_primary_agents      = false
+    grant_default_roles        = false
+    grant_service_agent_editor = each.value.service_agents_config.grant_service_agent_editor
   }
   service_encryption_key_ids = merge(
     each.value.service_encryption_key_ids,

@@ -86,6 +86,12 @@ variable "data_defaults" {
       display_name   = optional(string, "Terraform-managed.")
       iam_self_roles = optional(list(string))
     })), {})
+    service_agents_config = optional(object({
+      create_primary_agents      = optional(bool, true)
+      grant_default_roles        = optional(bool, true)
+      grant_service_agent_editor = optional(bool, true)
+      skip_iam                   = optional(set(string), [])
+    }), {})
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({

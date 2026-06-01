@@ -395,7 +395,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/0-org-setup-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["0-org-setup-ro"]:
@@ -416,7 +415,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/0-org-setup-ro-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["1-vpcsc"]:
@@ -438,7 +436,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/1-vpcsc-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["2-networking"]:
@@ -460,7 +457,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/2-networking-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["2-project-factory"]:
@@ -482,7 +478,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/2-project-factory-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["2-security"]:
@@ -504,7 +499,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/2-security-providers.tf
     sensitive_content: null
     source: null
   local_file.tfvars["globals"]:
@@ -512,14 +506,12 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/tfvars/0-globals.auto.tfvars.json
     sensitive_content: null
     source: null
   local_file.tfvars["org-setup"]:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/tfvars/0-org-setup.auto.tfvars.json
     sensitive_content: null
     source: null
   local_file.workflows["org-setup"]:
@@ -621,7 +613,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/workflows/org-setup.yaml
     sensitive_content: null
     source: null
   module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"]:
