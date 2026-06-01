@@ -332,6 +332,7 @@ variable "service_agents_config" {
     create_primary_agents      = optional(bool, true)
     grant_default_roles        = optional(bool, true)
     grant_service_agent_editor = optional(bool, true)
+    skip_iam                   = optional(set(string), [])
   })
   default  = {}
   nullable = false
