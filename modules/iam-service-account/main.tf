@@ -101,6 +101,6 @@ resource "google_service_account" "service_account" {
 
 resource "google_tags_tag_binding" "binding" {
   for_each  = local.tag_bindings
-  parent    = "//iam.googleapis.com/projects/${coalesce(var.project_number, var.project_id)}/serviceAccounts/${local.service_account.unique_id}"
+  parent    = "//iam.googleapis.com/projects/${coalesce(var.project_number, local.project_id)}/serviceAccounts/${local.service_account.unique_id}"
   tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

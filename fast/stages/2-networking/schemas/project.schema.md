@@ -49,6 +49,7 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+      - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 - **billing_account**: *string*
 - **billing_budgets**: *array*
   - items: *string*
