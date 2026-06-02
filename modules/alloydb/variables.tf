@@ -87,6 +87,12 @@ variable "cluster_name" {
   nullable    = false
 }
 
+variable "connection_pool_flags" {
+  description = "Map FLAG_NAME=>VALUE for managed connection pooling. Remove the \"connection-pooling-\" prefix and use underscores instead of dashes in the name. For example, \"connection-pooling-pool-mode\" would be \"pool_mode\"."
+  type        = map(string)
+  default     = null
+}
+
 variable "continuous_backup_configuration" {
   description = "Continuous backup settings for cluster."
   type = object({
