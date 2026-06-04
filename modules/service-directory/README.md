@@ -152,7 +152,7 @@ Note that the `network` argument is unusual in that it requires the project numb
 | [id](outputs.tf#L22) | Fully qualified namespace id. |  |
 | [name](outputs.tf#L27) | Namespace name. |  |
 | [namespace](outputs.tf#L32) | Namespace resource. |  |
-| [service_id](outputs.tf#L40) | Service ids (short names). |  |
+| [service_ids](outputs.tf#L40) | Service ids (short names). |  |
 | [service_names](outputs.tf#L50) | Service ids (long names). |  |
 | [services](outputs.tf#L60) | Service resources. |  |
 <!-- END TFDOC -->

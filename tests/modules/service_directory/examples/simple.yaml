@@ -14,10 +14,16 @@
 
 values:
   module.service-directory.google_service_directory_namespace.default:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     labels: null
     location: europe-west1
     namespace_id: sd-1
     project: my-project
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
   module.service-directory.google_service_directory_namespace_iam_binding.default["roles/servicedirectory.editor"]:
     condition: []
     members:

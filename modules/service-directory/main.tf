@@ -15,13 +15,16 @@
  */
 
 locals {
-  endpoint_list = flatten([
+  endpoints_list = flatten([
     for name, attrs in var.services : [
-      for endpoint in attrs.endpoints : { service : name, endpoint : endpoint }
+      for endpoint in attrs.endpoints : {
+        service  = name
+        endpoint = endpoint
+      }
     ]
   ])
   endpoints = {
-    for ep in local.endpoint_list : "${ep.service}/${ep.endpoint}" => ep
+    for ep in local.endpoints_list : "${ep.service}/${ep.endpoint}" => ep
   }
   iam_pairs = var.service_iam == null ? [] : flatten([
     for name, bindings in var.service_iam :
@@ -72,8 +75,8 @@ resource "google_service_directory_endpoint" "default" {
   for_each    = local.endpoints
   endpoint_id = each.value.endpoint
   service     = google_service_directory_service.default[each.value.service].id
-  metadata    = try(var.endpoint_config[each.key].metadata, null)
-  address     = try(var.endpoint_config[each.key].address, null)
-  port        = try(var.endpoint_config[each.key].port, null)
-  network     = try(var.endpoint_config[each.key].network, null)
+  metadata    = try(var.endpoint_config[each.value.endpoint].metadata, null)
+  address     = try(var.endpoint_config[each.value.endpoint].address, null)
+  port        = try(var.endpoint_config[each.value.endpoint].port, null)
+  network     = try(var.endpoint_config[each.value.endpoint].network, null)
 }
