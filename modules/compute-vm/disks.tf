@@ -44,14 +44,14 @@ resource "google_compute_disk" "boot" {
   )
   image                  = var.boot_disk.source.image
   architecture           = var.boot_disk.architecture
-  type                   = var.boot_disk.initialize_params.type
-  size                   = var.boot_disk.initialize_params.size
-  provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
-  provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
-  storage_pool           = var.boot_disk.initialize_params.hyperdisk.storage_pool
+  type                   = local.boot_disk_initialize_params.type
+  size                   = local.boot_disk_initialize_params.size
+  provisioned_iops       = local.boot_disk_initialize_params.hyperdisk.provisioned_iops
+  provisioned_throughput = local.boot_disk_initialize_params.hyperdisk.provisioned_throughput
+  storage_pool           = local.boot_disk_initialize_params.hyperdisk.storage_pool
   labels = merge(var.labels, {
     disk_name = "boot"
-    disk_type = var.boot_disk.initialize_params.type
+    disk_type = local.boot_disk_initialize_params.type
   })
   dynamic "disk_encryption_key" {
     for_each = var.encryption != null ? [""] : []

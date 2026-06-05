@@ -19,6 +19,19 @@ locals {
   advanced_mf = anytrue([
     for k, v in var.machine_features_config : v != null
   ])
+  boot_disk_initialize_params = (
+    var.boot_disk.initialize_params == null
+    ? {
+      size = 10
+      type = "pd-balanced"
+      hyperdisk = {
+        provisioned_iops       = null
+        provisioned_throughput = null
+        storage_pool           = null
+      }
+    }
+    : var.boot_disk.initialize_params
+  )
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv

@@ -108,25 +108,22 @@ resource "google_compute_instance" "default" {
     )
     dynamic "initialize_params" {
       for_each = (
-        var.boot_disk.initialize_params == null
-        ||
-        var.boot_disk.use_independent_disk != null
-        || (
-          var.boot_disk.source.snapshot != null &&
-          var.boot_disk.source.attach != null
-        )
+        var.boot_disk.use_independent_disk != null ||
+        var.boot_disk.source.attach != null ||
+        var.boot_disk.source.disk != null ||
+        var.boot_disk.source.snapshot != null
         ? []
         : [""]
       )
       content {
         architecture           = var.boot_disk.architecture
         image                  = var.boot_disk.source.image
-        size                   = var.boot_disk.initialize_params.size
-        type                   = var.boot_disk.initialize_params.type
+        size                   = local.boot_disk_initialize_params.size
+        type                   = local.boot_disk_initialize_params.type
         resource_manager_tags  = var.tag_bindings_immutable
-        provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
-        provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
-        storage_pool           = var.boot_disk.initialize_params.hyperdisk.storage_pool
+        provisioned_iops       = local.boot_disk_initialize_params.hyperdisk.provisioned_iops
+        provisioned_throughput = local.boot_disk_initialize_params.hyperdisk.provisioned_throughput
+        storage_pool           = local.boot_disk_initialize_params.hyperdisk.storage_pool
       }
     }
   }

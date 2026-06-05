@@ -14,6 +14,7 @@
 
 module: modules/compute-vm
 tests:
+  boot-disk-attach:
   context-template:
   context-template-regional:
   context-vm:

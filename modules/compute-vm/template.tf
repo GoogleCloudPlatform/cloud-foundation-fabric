@@ -61,11 +61,11 @@ resource "google_compute_instance_template" "default" {
     boot                   = true
     architecture           = var.boot_disk.architecture
     auto_delete            = var.boot_disk.auto_delete
-    disk_size_gb           = var.boot_disk.initialize_params.size
-    disk_type              = var.boot_disk.initialize_params.type
+    disk_size_gb           = local.boot_disk_initialize_params.size
+    disk_type              = local.boot_disk_initialize_params.type
     source_image           = var.boot_disk.source.image
-    provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
-    provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
+    provisioned_iops       = local.boot_disk_initialize_params.hyperdisk.provisioned_iops
+    provisioned_throughput = local.boot_disk_initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
 
     dynamic "disk_encryption_key" {
@@ -319,11 +319,11 @@ resource "google_compute_region_instance_template" "default" {
     boot                   = true
     architecture           = var.boot_disk.architecture
     auto_delete            = var.boot_disk.auto_delete
-    disk_size_gb           = var.boot_disk.initialize_params.size
-    disk_type              = var.boot_disk.initialize_params.type
+    disk_size_gb           = local.boot_disk_initialize_params.size
+    disk_type              = local.boot_disk_initialize_params.type
     source_image           = var.boot_disk.source.image
-    provisioned_iops       = var.boot_disk.initialize_params.hyperdisk.provisioned_iops
-    provisioned_throughput = var.boot_disk.initialize_params.hyperdisk.provisioned_throughput
+    provisioned_iops       = local.boot_disk_initialize_params.hyperdisk.provisioned_iops
+    provisioned_throughput = local.boot_disk_initialize_params.hyperdisk.provisioned_throughput
     resource_manager_tags  = var.tag_bindings_immutable
 
     dynamic "disk_encryption_key" {

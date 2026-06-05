@@ -69,7 +69,7 @@ variable "boot_disk" {
         provisioned_throughput = optional(number) # in MiB/s
         storage_pool           = optional(string)
       }), {})
-    }), {})
+    }))
     source = optional(object({
       attach = optional(string)
       disk   = optional(string)
