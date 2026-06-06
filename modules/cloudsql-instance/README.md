@@ -2,7 +2,7 @@
 
 This module manages the creation of Cloud SQL instances with potential read replicas in other regions. It can also create an initial set of users and databases via the `users` and `databases` parameters.
 
-Note that this module assumes that some options are the same for both the primary instance and all the replicas (e.g. tier, disks, labels, flags, etc).
+Note that this module assumes that some options are the same for both the primary instance and all the replicas (e.g. disks, labels, flags, etc). The `tier` can be overridden per-replica via `replicas.<name>.tier`; if unset, replicas inherit the primary's tier.
 
 *Warning:* if you use the `users` field, you terraform state will contain each user's password in plain text.
 
@@ -109,7 +109,7 @@ module "db" {
 
   replicas = {
     replica1 = { region = "europe-west3" }
-    replica2 = { region = "us-central1" }
+    replica2 = { region = "us-central1", tier = "db-custom-2-7680" }
   }
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
@@ -478,7 +478,7 @@ module "db" {
 | [managed_connection_pooling_config](variables.tf#L203) | Configuration for Managed Connection Pooling. NOTE: This feature is only available for PostgreSQL on Enterprise Plus edition instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [password_validation_policy](variables.tf#L254) | Password validation policy configuration for instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L268) | Optional prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
-| [replicas](variables.tf#L288) | Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE} for additional read replicas. Set to null to disable replica creation. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [replicas](variables.tf#L288) | Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE, TIER} for additional read replicas. Set TIER to override the primary's machine type per replica. Set to null to disable replica creation. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [root_password](variables.tf#L299) | Root password of the Cloud SQL instance, or flag to create a random password. Required for MS SQL Server. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ssl](variables.tf#L313) | Setting to enable SSL, set config and certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [terraform_deletion_protection](variables.tf#L328) | Prevent terraform from deleting instances. | <code>bool</code> |  | <code>true</code> |
