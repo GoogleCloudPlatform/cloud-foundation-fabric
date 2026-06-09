@@ -21,6 +21,7 @@ values:
     region: europe-west8
     settings:
     - edition: ENTERPRISE
+      tier: db-g1-small
 
   module.db.google_sql_database_instance.replicas["replica1"]:
     clone: []
@@ -31,6 +32,7 @@ values:
     region: europe-west3
     settings:
     - edition: ENTERPRISE
+      tier: db-g1-small
 
   module.db.google_sql_database_instance.replicas["replica2"]:
     clone: []
@@ -41,6 +43,7 @@ values:
     region: us-central1
     settings:
     - edition: ENTERPRISE
+      tier: db-custom-2-7680
 
 counts:
   google_sql_database_instance: 3
