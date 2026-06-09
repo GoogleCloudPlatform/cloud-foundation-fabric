@@ -281,10 +281,12 @@ variable "neg_configs" {
   }
 }
 
-variable "port" {
-  description = "Port."
-  type        = number
-  default     = 80
+# When specifying multiple ports, you must pass a
+# SHARED_LOADBALANCER_VIP address
+variable "ports" {
+  description = "Ports."
+  type        = list(number)
+  default     = [80]
 }
 
 variable "project_id" {
@@ -307,6 +309,7 @@ variable "service_attachment" {
     description           = optional(string)
     domain_name           = optional(string)
     enable_proxy_protocol = optional(bool, false)
+    forwarding_rule       = optional(string, "80")
     reconcile_connections = optional(bool)
   })
   default = null
