@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,10 +62,10 @@ variable "backend_service_config" {
   validation {
     condition = alltrue([
       for b in var.backend_service_config.backends : contains(
-        ["CONNECTION"], coalesce(b.balancing_mode, "CONNECTION")
+        ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
       )
     ])
-    error_message = "When specified, balancing mode needs to be 'CONNECTION'."
+    error_message = "When specified, balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
   }
 }
 
