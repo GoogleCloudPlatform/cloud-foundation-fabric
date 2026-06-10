@@ -3,7 +3,7 @@
 This module allows managing Cross-region Internal Proxy Network Load Balancers (L4 proxy ILBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, network endpoint groups (NEGs), etc.
 
 > [!IMPORTANT]
-> Cross-region internal proxy Network Load Balancers only support zonal NEGs (`GCE_VM_IP_PORT`) or Hybrid NEGs as backends. Instance groups are **not** supported by GCP for this load balancer type.
+> Cross-region internal proxy Network Load Balancers support Instance Groups (Managed or Unmanaged), zonal NEGs (`GCE_VM_IP_PORT`), and Hybrid NEGs as backends.
 >
 > Proxy-only subnets for cross-region load balancers must be created with the purpose set to `GLOBAL_MANAGED_PROXY` (in the VPC module, set `global = true` in the `subnets_proxy_only` configuration).
 
