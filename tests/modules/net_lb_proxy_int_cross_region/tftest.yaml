@@ -17,3 +17,4 @@ common_tfvars:
 - common.tfvars
 tests:
   health-checks-tcp:
+  context:

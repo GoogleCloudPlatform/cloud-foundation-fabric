@@ -22,20 +22,33 @@ This module allows managing Cross-region Internal Proxy Network Load Balancers (
 
 ### Minimal Example
 
-An internal TCP proxy cross-region load balancer with a backend service pointing to auto-created zonal NEGs:
+An internal TCP proxy cross-region load balancer with a backend service pointing to auto-created zonal NEGs. This example demonstrates the use of the [context pattern](../../adrs/20251013-context-locals.md) for symbolic variable interpolation:
 
 ```hcl
 module "tcp-proxy-cross-region" {
   source     = "./fabric/modules/net-lb-proxy-int-cross-region"
   name       = "ilb-proxy-test"
-  project_id = var.project_id
+  project_id = "$project_ids:my-project"
   port       = 80
 
+  context = {
+    project_ids = {
+      my-project = var.project_id
+    }
+    networks = {
+      my-vpc = var.vpc.self_link
+    }
+    subnets = {
+      my-subnet-1 = var.subnet1.self_link
+      my-subnet-2 = var.subnet2.self_link
+    }
+  }
+
   vpc_config = {
-    network = var.vpc.self_link
+    network = "$networks:my-vpc"
     subnetworks = {
-      europe-west1 = var.subnet1.self_link
-      europe-west4 = var.subnet2.self_link
+      europe-west1 = "$subnets:my-subnet-1"
+      europe-west4 = "$subnets:my-subnet-2"
     }
   }
 
@@ -43,8 +56,8 @@ module "tcp-proxy-cross-region" {
     neg-a = {
       gce = {
         zone       = "europe-west1-b"
-        network    = var.vpc.self_link
-        subnetwork = var.subnet1.self_link
+        network    = "$networks:my-vpc"
+        subnetwork = "$subnets:my-subnet-1"
         endpoints = {
           vm-a = {
             instance   = "my-vm-a"
@@ -57,8 +70,8 @@ module "tcp-proxy-cross-region" {
     neg-b = {
       gce = {
         zone       = "europe-west4-a"
-        network    = var.vpc.self_link
-        subnetwork = var.subnet2.self_link
+        network    = "$networks:my-vpc"
+        subnetwork = "$subnets:my-subnet-2"
         endpoints = {
           vm-b = {
             instance   = "my-vm-b"
