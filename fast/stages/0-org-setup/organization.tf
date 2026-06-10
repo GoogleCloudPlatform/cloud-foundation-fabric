@@ -50,16 +50,10 @@ locals {
     : local.organization.id
   )
   # build map of predefined groups if organization domain is set
-  org_iam_principals = local.organization.domain == null ? {} : {
-    domain                  = "domain:${local.organization.domain}"
-    gcp-billing-admins      = "group:gcp-billing-admins@${local.organization.domain}"
-    gcp-devops              = "group:gcp-devops@${local.organization.domain}"
-    gcp-network-admins      = "group:gcp-network-admins@${local.organization.domain}"
-    gcp-organization-admins = "group:gcp-organization-admins@${local.organization.domain}"
-    gcp-secops-admins       = "group:gcp-secops-admins@${local.organization.domain}"
-    gcp-security-admins     = "group:gcp-security-admins@${local.organization.domain}"
-    gcp-support             = "group:gcp-support@${local.organization.domain}"
-  }
+  org_iam_principals = local.organization.domain == null ? {} : merge(
+    { domain = "domain:${local.organization.domain}" },
+    { for g in var.groups : g => "group:${g}@${local.organization.domain}" }
+  )
   org_logging_identities = merge(
     module.organization[0].logging_identities.kms == null ? {} : {
       "organization/logging/kms" = module.organization[0].logging_identities.kms

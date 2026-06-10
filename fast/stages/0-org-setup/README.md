@@ -900,7 +900,6 @@ Define values for the `var.environments` variable in a tfvars file.
 | [cicd-workflows-preconditions.tf](./cicd-workflows-preconditions.tf) | None |  | <code>terraform_data</code> |
 | [cicd-workflows.tf](./cicd-workflows.tf) | None | <code>iam-service-account</code> | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [factory.tf](./factory.tf) | None | <code>net-vpc-factory</code> · <code>project-factory</code> |  |
-| [identity-providers-defs.tf](./identity-providers-defs.tf) | None |  |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
 | [observability.tf](./observability.tf) | None | <code>project</code> |  |
@@ -915,6 +914,7 @@ Define values for the `var.environments` variable in a tfvars file.
 |---|---|:---:|:---:|:---:|
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [groups](variables.tf#L68) | Predefined group names used to derive the iam_principals lookup map from the organization domain. Set to a subset (or []) to limit which groups are exposed; defaults to the standard FAST set. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#8230;&#93;</code> |
 | [org_policies_imports](variables.tf#L61) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs

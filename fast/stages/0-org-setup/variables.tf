@@ -64,3 +64,18 @@ variable "org_policies_imports" {
   nullable    = false
   default     = []
 }
+
+variable "groups" {
+  description = "Predefined group names used to derive the iam_principals lookup map from the organization domain. Set to a subset (or []) to limit which groups are exposed; defaults to the standard FAST set."
+  type        = list(string)
+  nullable    = false
+  default = [
+    "gcp-billing-admins",
+    "gcp-devops",
+    "gcp-network-admins",
+    "gcp-organization-admins",
+    "gcp-secops-admins",
+    "gcp-security-admins",
+    "gcp-support",
+  ]
+}
