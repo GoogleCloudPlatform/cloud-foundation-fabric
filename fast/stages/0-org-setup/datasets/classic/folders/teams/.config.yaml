@@ -26,5 +26,6 @@ iam_by_principals:
     - roles/viewer
     - roles/resourcemanager.folderViewer
     - roles/resourcemanager.tagViewer
+    - $custom_roles:storage_viewer
 tag_bindings:
   context: $tag_values:context/project-factory
