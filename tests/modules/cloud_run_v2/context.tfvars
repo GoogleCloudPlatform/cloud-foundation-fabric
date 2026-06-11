@@ -67,3 +67,9 @@ tag_bindings = {
   baz = "$tag_values:test/one"
   foo = "$${projects[\"test-00\"].test}/cc-123"
 }
+service_config = {
+  multi_region_settings = {
+    regions = ["$locations:ew8", "europe-west1"]
+  }
+}
+

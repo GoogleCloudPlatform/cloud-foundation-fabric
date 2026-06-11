@@ -29,9 +29,9 @@ resource "google_cloud_run_v2_service" "service" {
   iap_enabled          = var.service_config.iap_config != null
 
   dynamic "multi_region_settings" {
-    for_each = var.service_config.multi_region_settings == null ? [] : [""]
+    for_each = local.multi_region_regions == null ? [] : [""]
     content {
-      regions = var.service_config.multi_region_settings.regions
+      regions = local.multi_region_regions
     }
   }
 
