@@ -68,6 +68,9 @@
   - **hub**: *string*
   - **description**: *string*
   - **labels**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+      <br>*pattern: ^[a-z0-9_-]{0,63}$*
   - **exclude_export_ranges**: *array*
     - items: *string*
   - **include_export_ranges**: *array*

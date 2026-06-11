@@ -33,6 +33,9 @@
     - **ignore_active_certificates_on_deletion**: *boolean*
     - **skip_grace_period**: *boolean*
     - **labels**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **gcs_bucket**: *string*
     - **key_spec**: *object*
       <br>*additional properties: false*

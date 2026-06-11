@@ -11,7 +11,14 @@
       "type": "string"
     },
     "labels": {
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_-]{0,62}$": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]{0,63}$"
+        }
+      }
     },
     "metadata_template": {
       "type": "string"

@@ -540,6 +540,16 @@
     }
   },
   "$defs": {
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_-]{0,62}$": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]{0,63}$"
+        }
+      }
+    },
     "bucket": {
       "type": "object",
       "additionalProperties": false,
@@ -563,10 +573,7 @@
           "type": "boolean"
         },
         "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "$ref": "#/$defs/labels"
         },
         "location": {
           "type": "string"
@@ -1011,10 +1018,7 @@
           "type": "boolean"
         },
         "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "$ref": "#/$defs/labels"
         },
         "partner": {
           "type": "string",

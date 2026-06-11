@@ -294,8 +294,12 @@
             },
             "labels": {
               "type": "object",
-              "additionalProperties": {
-                "type": "string"
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
+                }
               }
             },
             "next_hop_ilb_ip": {
