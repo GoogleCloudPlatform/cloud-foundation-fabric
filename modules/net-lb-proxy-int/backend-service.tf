@@ -42,7 +42,7 @@ resource "google_compute_region_backend_service" "default" {
   description                     = var.backend_service_config.description
   affinity_cookie_ttl_sec         = var.backend_service_config.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
-  health_checks                   = [local.health_check]
+  health_checks                   = local.health_check == null ? null : [local.health_check]
   load_balancing_scheme           = "INTERNAL_MANAGED"
   port_name                       = var.backend_service_config.port_name # defaults to http, not for NEGs
   protocol                        = "TCP"
@@ -102,4 +102,9 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.neg_psc_trigger
+    ]
+  }
 }

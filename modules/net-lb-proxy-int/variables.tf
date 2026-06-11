@@ -203,7 +203,7 @@ variable "health_check_config" {
     error_message = "Only one health check type can be configured at a time."
   }
   validation {
-    condition = alltrue([
+    condition = var.health_check_config == null ? true : alltrue([
       for k, v in var.health_check_config : contains([
         "-", "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"
       ], coalesce(try(v.port_specification, null), "-"))
@@ -263,6 +263,7 @@ variable "neg_configs" {
       region         = string
       target_service = string
       network        = optional(string)
+      producer_port  = optional(number)
       subnetwork     = optional(string)
     }))
   }))

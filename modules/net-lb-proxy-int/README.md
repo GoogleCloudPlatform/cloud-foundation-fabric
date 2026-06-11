@@ -377,7 +377,7 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 | [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_region_backend_service</code> |
 | [groups.tf](./groups.tf) | None | <code>google_compute_instance_group</code> |
 | [health-check.tf](./health-check.tf) | Health check resource. | <code>google_compute_region_health_check</code> |
-| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_forwarding_rule</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint</code> · <code>google_compute_region_network_endpoint_group</code> · <code>google_compute_region_target_tcp_proxy</code> · <code>google_compute_service_attachment</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_forwarding_rule</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint</code> · <code>google_compute_region_network_endpoint_group</code> · <code>google_compute_region_target_tcp_proxy</code> · <code>google_compute_service_attachment</code> · <code>terraform_data</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
@@ -387,9 +387,9 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L221) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L292) | Project id. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L297) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L318) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L293) | Project id. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L298) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L319) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
 | [backend_service_config](variables.tf#L23) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L82) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -400,8 +400,8 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 | [health_check_config](variables.tf#L128) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
 | [labels](variables.tf#L215) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [neg_configs](variables.tf#L226) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ports](variables.tf#L286) | Ports. | <code>list&#40;number&#41;</code> |  | <code>&#91;80&#93;</code> |
-| [service_attachment](variables.tf#L302) | PSC service attachment. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [ports](variables.tf#L287) | Ports. | <code>list&#40;number&#41;</code> |  | <code>&#91;80&#93;</code> |
+| [service_attachment](variables.tf#L303) | PSC service attachment. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

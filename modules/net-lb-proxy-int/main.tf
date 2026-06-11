@@ -37,10 +37,22 @@ locals {
     ]
   ])
   health_check = (
-    var.health_check == null
-    ? google_compute_region_health_check.default[0].self_link
-    : var.health_check
+    local.has_psc_backend
+    ? null
+    : (
+      var.health_check == null
+      ? (
+        var.health_check_config == null
+        ? null
+        : google_compute_region_health_check.default[0].self_link
+      )
+      : var.health_check
+    )
   )
+  has_psc_backend = anytrue([
+    for b in coalesce(var.backend_service_config.backends, []) :
+    try(var.neg_configs[b.group].psc != null, false)
+  ])
   ip_address = (
     var.address == null
     ? null
@@ -153,9 +165,8 @@ resource "google_compute_region_network_endpoint_group" "psc" {
     : try(local.ctx.subnets[each.value.psc.subnetwork], each.value.psc.subnetwork)
   )
 
-  lifecycle {
-    # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
-    ignore_changes = [psc_data]
+  psc_data {
+    producer_port = each.value.psc.producer_port
   }
 }
 
@@ -238,6 +249,17 @@ resource "google_compute_service_attachment" "default" {
     content {
       project_id_or_num = accept.key
       connection_limit  = accept.value
+    }
+  }
+}
+
+resource "terraform_data" "neg_psc_trigger" {
+  triggers_replace = {
+    for k, v in local.neg_regional_psc : k => {
+      target_service = v.psc.target_service
+      network        = v.psc.network
+      subnetwork     = v.psc.subnetwork
+      region         = v.psc.region
     }
   }
 }
