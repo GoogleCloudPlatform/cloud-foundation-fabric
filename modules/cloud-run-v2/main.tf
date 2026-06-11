@@ -48,7 +48,10 @@ locals {
   multi_region_regions = (
     try(var.service_config.multi_region_settings.regions, null) == null
     ? null
-    : [for r in var.service_config.multi_region_settings.regions : lookup(local.ctx.locations, r, r)]
+    : [
+      for r in var.service_config.multi_region_settings.regions :
+      lookup(local.ctx.locations, r, r)
+    ]
   )
 
   revision_name = (
