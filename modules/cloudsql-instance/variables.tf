@@ -45,7 +45,7 @@ variable "backup_configuration" {
     retain_backups_on_delete       = optional(bool)
     final_backup = optional(object({
       enabled        = optional(bool, false)
-      retention_days = optional(number, 7)
+      retention_days = optional(number)
     }))
   })
   default = null
@@ -150,10 +150,11 @@ variable "gcp_deletion_protection" {
 variable "insights_config" {
   description = "Query Insights configuration. Defaults to null which disables Query Insights."
   type = object({
-    query_string_length     = optional(number, 1024)
-    record_application_tags = optional(bool, false)
-    record_client_address   = optional(bool, false)
-    query_plans_per_minute  = optional(number, 5)
+    query_string_length             = optional(number, 1024)
+    record_application_tags         = optional(bool, false)
+    record_client_address           = optional(bool, false)
+    query_plans_per_minute          = optional(number, 5)
+    enhanced_query_insights_enabled = optional(bool, false)
   })
   default = null
 }
@@ -192,10 +193,10 @@ variable "maintenance_config" {
         var.maintenance_config.maintenance_window.hour <= 23 &&
         # Maintenance window update_track validation below
         try(var.maintenance_config.maintenance_window.update_track, null) == null ? true :
-        contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
+        contains(["canary", "stable", "week5"], var.maintenance_config.maintenance_window.update_track)
       )
     )
-    error_message = "Maintenance window day must be between 1 and 7 or null, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
+    error_message = "Maintenance window day must be between 1 and 7 or null, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable', 'canary', or 'week5'."
   }
 }
 
@@ -227,10 +228,27 @@ variable "network_config" {
           replica = optional(string)
         }))
       }))
-      psc_allowed_consumer_projects    = optional(list(string))
+      psc_allowed_consumer_projects = optional(list(string)) # OBSOLETE. See validation below.
+      psc_config = optional(object({
+        allowed_consumer_projects = optional(list(string))
+        network_attachment_uri    = optional(string)
+        psc_auto_connections = optional(list(object({
+          consumer_network            = string
+          consumer_service_project_id = optional(string)
+        })))
+      }))
       enable_private_path_for_services = optional(bool, false)
     })
   })
+  validation {
+    condition = (
+      try(var.network_config.connectivity, null) == null ? true : (
+        var.network_config.connectivity.psc_allowed_consumer_projects == null ||
+        length(var.network_config.connectivity.psc_allowed_consumer_projects) == 0
+      )
+    )
+    error_message = "network_config.connectivity.psc_allowed_consumer_projects is obsolete. Use network_config.connectivity.psc_config.allowed_consumer_projects instead."
+  }
 }
 
 variable "password_validation_policy" {
@@ -268,11 +286,12 @@ variable "region" {
 }
 
 variable "replicas" {
-  description = "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE} for additional read replicas. Set to null to disable replica creation."
+  description = "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE, TIER} for additional read replicas. Set TIER to override the primary's machine type per replica. Set to null to disable replica creation."
   type = map(object({
     region              = string
     encryption_key_name = optional(string)
     availability_type   = optional(string)
+    tier                = optional(string)
   }))
   default  = {}
   nullable = false
@@ -331,6 +350,7 @@ variable "users" {
     password         = optional(string)
     password_version = optional(number)
     type             = optional(string, "BUILT_IN")
+    database_roles   = optional(list(string))
   }))
   default  = {}
   nullable = false

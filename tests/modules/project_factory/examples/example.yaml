@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,14 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
-
 values:
+  module.project-factory.google_network_security_dns_threat_detector.dns_threat_detector["dev-ta-app0-be"]:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    excluded_networks: []
+    labels: null
+    location: global
+    name: test-pf-dev-ta-app0-be
+    project: test-pf-dev-ta-app0-be
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    threat_detector_provider: null
+    timeouts: null
   module.project-factory.module.automation-bucket["dev-tb-app0-0/automation/tf-state"].google_storage_bucket.bucket[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -64,6 +76,7 @@ values:
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/ro"].google_service_account.service_account[0]
   : account_id: dev-tb-app0-0-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: Team B app 0 read-only automation sa.
     disabled: false
     display_name: Service account ro for dev-tb-app0-0.
@@ -74,6 +87,7 @@ values:
   ? module.project-factory.module.automation-service-accounts["dev-tb-app0-0/automation/rw"].google_service_account.service_account[0]
   : account_id: dev-tb-app0-0-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: Team B app 0 read/write automation sa.
     disabled: false
     display_name: Service account rw for dev-tb-app0-0.
@@ -87,6 +101,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -137,6 +152,7 @@ values:
       threshold_percent: 0.75
     timeouts: null
   module.project-factory.module.billing-budgets[0].google_monitoring_notification_channel.default["billing-default"]:
+    deletion_policy: DELETE
     description: null
     display_name: Budget email notification billing-default.
     enabled: true
@@ -153,6 +169,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -176,6 +193,7 @@ values:
     versioning:
     - enabled: false
   module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_tags_location_tag_binding.binding["context"]:
+    deletion_policy: DELETE
     location: europe-west8
     parent: //storage.googleapis.com/projects/_/buckets/test-pf-dev-ta-app0-be-app-0-bucket-a
     tag_value: tagValues/654321
@@ -185,6 +203,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -222,30 +241,28 @@ values:
     - group:team-a-admins@example.org
     role: roles/viewer
   module.project-factory.module.folder-1["team-a"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Team A
     parent: folders/5678901234
     tags: null
     timeouts: null
   module.project-factory.module.folder-1["team-b"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Team B
     parent: folders/5678901234
     tags: null
     timeouts: null
   module.project-factory.module.folder-1["team-c"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Team C
     parent: folders/5678901234
     tags: null
     timeouts: null
-  module.project-factory.module.folder-2["team-a/app-0"].google_folder.folder[0]:
-    deletion_protection: false
-    display_name: App 0
-    tags: null
-    timeouts: null
-  module.project-factory.module.folder-2["team-a/app-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
-    dry_run_spec: []
+  ? module.project-factory.module.folder-2-iam["team-a/app-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]
+  : dry_run_spec: []
     spec:
     - inherit_from_parent: null
       reset: null
@@ -256,6 +273,15 @@ values:
         enforce: 'FALSE'
         parameters: null
         values: []
+    timeouts: null
+  module.project-factory.module.folder-2-iam["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
+    tag_value: tagValues/123456
+    timeouts: null
+  module.project-factory.module.folder-2["team-a/app-0"].google_folder.folder[0]:
+    deletion_policy: DELETE
+    deletion_protection: false
+    display_name: App 0
+    tags: null
     timeouts: null
   ? module.project-factory.module.folder-2["team-a/app-0"].google_privileged_access_manager_entitlement.default["app-0-admins"]
   : additional_notification_targets: []
@@ -286,19 +312,19 @@ values:
       - {}
     timeouts: null
   module.project-factory.module.folder-2["team-b/app-0"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: App 0
     tags: null
     timeouts: null
-  module.project-factory.module.folder-2["team-b/app-0"].google_tags_tag_binding.binding["drs-allow-all"]:
-    tag_value: tagValues/123456
-    timeouts: null
   module.project-factory.module.folder-2["team-c/apps"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Apps
     tags: null
     timeouts: null
   module.project-factory.module.folder-3["team-c/apps/test"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Test
     tags: null
@@ -316,11 +342,13 @@ values:
       - topic: projects/my-cai-feeds-project/topics/feed
     timeouts: null
   module.project-factory.module.folder-4["team-c/apps/test/app-x"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: App X
     tags: null
     timeouts: null
   module.project-factory.module.kms["dev-ta-app0-be/my-keyring"].google_kms_crypto_key.default["my-key"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -337,6 +365,7 @@ values:
     project: test-pf-dev-ta-app0-be
     timeouts: null
   module.project-factory.module.kms["dev-ta-app0-be/my-keyring"].google_tags_location_tag_binding.binding["context"]:
+    deletion_policy: DELETE
     location: europe-west1
     tag_value: $tag_values:context/project-factory
     timeouts: null
@@ -418,6 +447,7 @@ values:
     - user:user@example.com
     role: roles/resourcemanager.tagUser
   module.project-factory.module.projects-iam["dev-tb-app0-0"].google_compute_shared_vpc_host_project.shared_vpc_host[0]:
+    deletion_policy: DELETE
     project: test-pf-dev-tb-app0-0
     timeouts: null
   ? module.project-factory.module.projects-iam["dev-tb-app0-0"].google_project_iam_audit_config.default["storage.googleapis.com"]
@@ -451,6 +481,37 @@ values:
     - serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     role: roles/run.developer
+  ? module.project-factory.module.projects-iam["teams-iac-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]
+  : dry_run_spec: []
+    name: projects/test-pf-teams-iac-0/policies/compute.disableSerialPortAccess
+    parent: projects/test-pf-teams-iac-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: 'FALSE'
+        parameters: null
+        values: []
+    timeouts: null
+  ? module.project-factory.module.projects-iam["teams-iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]
+  : dry_run_spec: []
+    name: projects/test-pf-teams-iac-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/test-pf-teams-iac-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - denied_values: null
+    timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].data.google_storage_project_service_account.gcs_sa[0]:
     project: test-pf-dev-ta-app0-be
     user_project: null
@@ -501,30 +562,35 @@ values:
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.serviceAgent
   module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-ta-app0-be
     service: compute.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["container.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-ta-app0-be
     service: container.googleapis.com
     timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["pubsub.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-ta-app0-be
     service: pubsub.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["stackdriver.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-ta-app0-be
     service: stackdriver.googleapis.com
     timeouts: null
   module.project-factory.module.projects["dev-ta-app0-be"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-ta-app0-be
@@ -586,18 +652,21 @@ values:
     project: test-pf-dev-tb-app0-0
     role: roles/run.serviceAgent
   module.project-factory.module.projects["dev-tb-app0-0"].google_project_service.project_services["run.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-tb-app0-0
     service: run.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["dev-tb-app0-0"].google_project_service.project_services["stackdriver.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-tb-app0-0
     service: stackdriver.googleapis.com
     timeouts: null
   module.project-factory.module.projects["dev-tb-app0-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-tb-app0-0
@@ -649,18 +718,21 @@ values:
     project: test-pf-dev-tb-app0-1
     role: roles/container.defaultNodeServiceAgent
   ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["container.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-tb-app0-1
     service: container.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["stackdriver.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-tb-app0-1
     service: stackdriver.googleapis.com
     timeouts: null
   module.project-factory.module.projects["dev-tb-app0-1"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-dev-tb-app0-1
@@ -681,9 +753,13 @@ values:
     parent: projects/test-pf-teams-iac-0
     timeouts: null
   module.project-factory.module.projects["teams-iac-0"].google_iam_workload_identity_pool.default["test-0"]:
+    attestation_rules: []
+    deletion_policy: DELETE
     description: null
     disabled: null
     display_name: Test pool.
+    inline_certificate_issuance_config: []
+    inline_trust_config: []
     project: test-pf-teams-iac-0
     timeouts: null
     workload_identity_pool_id: test-0
@@ -691,13 +767,18 @@ values:
   : attribute_condition: attribute.repository_owner=="my_org"
     attribute_mapping:
       attribute.actor: assertion.actor
+      attribute.event_name: assertion.event_name
       attribute.fast_sub: '"repo:" + assertion.repository + ":ref:" + assertion.ref'
+      attribute.job_workflow_ref: assertion.job_workflow_ref
+      attribute.pr_review_sub: '"event:" + assertion.event_name + ":workflow:" + assertion.workflow'
       attribute.ref: assertion.ref
       attribute.repository: assertion.repository
       attribute.repository_owner: assertion.repository_owner
       attribute.sub: assertion.sub
+      attribute.workflow: assertion.workflow
       google.subject: assertion.sub
     aws: []
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: GitHub test provider.
@@ -711,37 +792,6 @@ values:
     workload_identity_pool_id: test-0
     workload_identity_pool_provider_id: github-test
     x509: []
-  module.project-factory.module.projects["teams-iac-0"].google_org_policy_policy.default["compute.disableSerialPortAccess"]:
-    dry_run_spec: []
-    name: projects/test-pf-teams-iac-0/policies/compute.disableSerialPortAccess
-    parent: projects/test-pf-teams-iac-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: 'FALSE'
-        parameters: null
-        values: []
-    timeouts: null
-  ? module.project-factory.module.projects["teams-iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]
-  : dry_run_spec: []
-    name: projects/test-pf-teams-iac-0/policies/gcp.restrictCmekCryptoKeyProjects
-    parent: projects/test-pf-teams-iac-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: null
-        parameters: null
-        values:
-        - denied_values: null
-    timeouts: null
   module.project-factory.module.projects["teams-iac-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-67890A-BCDEF0
@@ -769,18 +819,21 @@ values:
     project: test-pf-teams-iac-0
     role: roles/container.defaultNodeServiceAgent
   module.project-factory.module.projects["teams-iac-0"].google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-teams-iac-0
     service: container.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["teams-iac-0"].google_project_service.project_services["stackdriver.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-teams-iac-0
     service: stackdriver.googleapis.com
     timeouts: null
   module.project-factory.module.projects["teams-iac-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-pf-teams-iac-0
@@ -791,6 +844,7 @@ values:
     service: container.googleapis.com
     timeouts: null
   module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-a"].google_pubsub_topic.default:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
@@ -815,6 +869,7 @@ values:
   : bigquery_config: []
     cloud_storage_config: []
     dead_letter_policy: []
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_exactly_once_delivery: false
@@ -833,6 +888,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_topic.default:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
@@ -847,21 +903,38 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
+  : condition: []
+    role: roles/iam.serviceAccountUser
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
+  : condition: []
+    role: roles/iam.serviceAccountUser
+    service_account_id: projects/test-pf-dev-ta-app0-be/serviceAccounts/app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
+  ? module.project-factory.module.service-accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.bindings["test"]
+  : condition: []
+    member: group:team-a-admins@example.org
+    role: roles/iam.serviceAccountUser
+  ? module.project-factory.module.service-accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    members:
+    - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
+    role: roles/iam.serviceAccountTokenCreator
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
   : condition: []
     project: $project_ids:dev-spoke-0
     role: roles/compute.networkUser
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_service_account.service_account[0]:
     account_id: app-0-be
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Backend instances.
@@ -872,21 +945,22 @@ values:
   module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-be"].google_tags_tag_binding.binding["context"]:
     tag_value: $tag_values:context/project-factory
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project_roles["$project_ids:dev-spoke-0-roles/compute.networkUser"]
   : condition: []
     project: $project_ids:dev-spoke-0
     role: roles/compute.networkUser
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project-roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_project_iam_member.project_roles["$project_ids:dev-ta-app0-be-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-ta-app0-be
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-ta-app0-be/app-0-fe"].google_service_account.service_account[0]:
     account_id: app-0-fe
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Frontend instances.
@@ -894,17 +968,18 @@ values:
     member: serviceAccount:app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
     project: test-pf-dev-ta-app0-be
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-0-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-0-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-0
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-0-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-0-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-0
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account.service_account[0]:
     account_id: vm-default
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: VM default service account.
@@ -912,17 +987,18 @@ values:
     member: serviceAccount:vm-default@test-pf-dev-tb-app0-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     timeouts: null
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-1-roles/logging.logWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-1-roles/logging.logWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-1
     role: roles/logging.logWriter
-  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project-roles["$project_ids:dev-tb-app0-1-roles/monitoring.metricWriter"]
+  ? module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_project_iam_member.project_roles["$project_ids:dev-tb-app0-1-roles/monitoring.metricWriter"]
   : condition: []
     project: test-pf-dev-tb-app0-1
     role: roles/monitoring.metricWriter
   module.project-factory.module.service-accounts["dev-tb-app0-1/app-0-be"].google_service_account.service_account[0]:
     account_id: app-0-be
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Backend instances.
@@ -930,27 +1006,20 @@ values:
     member: serviceAccount:app-0-be@test-pf-dev-tb-app0-1.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-1
     timeouts: null
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountUser"]
-  : condition: []
-    role: roles/iam.serviceAccountUser
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.additive["$service_account_ids:_self_/app-0-fe-roles/iam.serviceAccountUser"]
-  : condition: []
-    role: roles/iam.serviceAccountUser
-    service_account_id: projects/test-pf-dev-ta-app0-be/serviceAccounts/app-0-fe@test-pf-dev-ta-app0-be.iam.gserviceaccount.com
-  ? module.project-factory.module.service_accounts-iam["dev-ta-app0-be/app-0-be"].google_service_account_iam_member.bindings["test"]
-  : condition: []
-    member: group:team-a-admins@example.org
-    role: roles/iam.serviceAccountUser
-  ? module.project-factory.module.service_accounts-iam["dev-tb-app0-0/vm-default"].google_service_account_iam_binding.authoritative["roles/iam.serviceAccountTokenCreator"]
-  : condition: []
-    members:
-    - serviceAccount:dev-tb-app0-0-rw@test-pf-teams-iac-0.iam.gserviceaccount.com
-    role: roles/iam.serviceAccountTokenCreator
+  module.project-factory.module.taxonomies["dev-tb-app0-0"].google_data_catalog_taxonomy.default:
+    activated_policy_types:
+    - FINE_GRAINED_ACCESS_CONTROL
+    deletion_policy: DELETE
+    description: Taxonomy - Terraform managed
+    display_name: taxonomy
+    project: test-pf-dev-tb-app0-0
+    region: europe-west1
+    timeouts: null
   module.project-factory.terraform_data.defaults_preconditions:
     input: null
     output: null
     triggers_replace: null
-  module.project-factory.terraform_data.project-preconditions:
+  module.project-factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -962,6 +1031,7 @@ counts:
   google_cloud_asset_folder_feed: 1
   google_compute_shared_vpc_host_project: 1
   google_compute_shared_vpc_service_project: 1
+  google_data_catalog_taxonomy: 1
   google_essential_contacts_contact: 4
   google_folder: 8
   google_folder_iam_audit_config: 1
@@ -972,6 +1042,7 @@ counts:
   google_kms_crypto_key_iam_member: 2
   google_kms_key_ring: 1
   google_monitoring_notification_channel: 1
+  google_network_security_dns_threat_detector: 1
   google_org_policy_policy: 3
   google_privileged_access_manager_entitlement: 2
   google_project: 4
@@ -994,6 +1065,8 @@ counts:
   google_tags_tag_key: 1
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
-  modules: 34
-  resources: 118
+  modules: 38
+  resources: 120
   terraform_data: 2
+
+outputs: {}

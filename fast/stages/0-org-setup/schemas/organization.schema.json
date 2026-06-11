@@ -178,6 +178,85 @@
     "iam_by_principals_additive": {
       "$ref": "#/$defs/iam_by_principals"
     },
+    "iam_deny_policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rules"
+          ],
+          "properties": {
+            "display_name": {
+              "type": "string"
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "denied_permissions",
+                  "denied_principals"
+                ],
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "denied_permissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "denied_principals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "denial_condition": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "expression"
+                    ],
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "exception_permissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exception_principals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "logging": {
       "type": "object",
       "additionalProperties": false,
@@ -305,6 +384,21 @@
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
+    "service_agents_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_agents": {
+          "type": "boolean"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "tags": {
       "type": "object",
       "additionalProperties": {
@@ -424,6 +518,10 @@
                     "disabled": {
                       "type": "boolean"
                     },
+                    "detailed_audit_logging": {
+                      "type": "boolean",
+                      "default": false
+                    },
                     "identity_provider": {
                       "type": "object",
                       "oneOf": [
@@ -527,6 +625,44 @@
                           "$ref": "#/$defs/wfif_oauth2_client_attrs"
                         }
                       }
+                    },
+                    "scim_tenant": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "claim_mapping"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "claim_mapping": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "location": {
+                          "type": "string",
+                          "default": "global"
+                        },
+                        "display_name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "hard_delete": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "scim_usage": {
+                      "type": "string",
+                      "enum": [
+                        "ENABLED_FOR_GROUPS"
+                      ]
                     }
                   }
                 }
@@ -542,7 +678,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:roles/|$custom_roles:|organizations/|projects/)": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
@@ -572,7 +708,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^roles/"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -648,7 +784,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
           }
         }
       }
@@ -688,7 +824,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:roles/|\\$custom_roles:)"
+                "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
               }
             }
           }

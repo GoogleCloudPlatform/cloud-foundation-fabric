@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,47 @@
 # limitations under the License.
 
 values:
+  module.project-factory.module.automation-bucket["test-0/automation/tf-state"].google_storage_bucket.bucket[0]:
+    autoclass: []
+    cors: []
+    custom_placement_config: []
+    default_event_based_hold: null
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    enable_object_retention: null
+    encryption: []
+    force_destroy: false
+    hierarchical_namespace: []
+    ip_filter: []
+    labels: null
+    lifecycle_rule: []
+    location: EU
+    logging: []
+    name: foo-test-0-tf-state
+    project: test-0
+    requester_pays: null
+    retention_policy: []
+    storage_class: STANDARD
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    uniform_bucket_level_access: true
+    versioning:
+    - enabled: false
+  ? module.project-factory.module.automation-service-accounts["test-0/automation/auto-tag-test"].google_service_account.service_account[0]
+  : account_id: test-0-auto-tag-test
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Service account auto-tag-test for test-0.
+    email: test-0-auto-tag-test@test-0.iam.gserviceaccount.com
+    member: serviceAccount:test-0-auto-tag-test@test-0.iam.gserviceaccount.com
+    project: test-0
+    timeouts: null
+  ? module.project-factory.module.automation-service-accounts["test-0/automation/auto-tag-test"].google_tags_tag_binding.binding["project-level"]
+  : timeouts: null
   module.project-factory.module.projects-iam["test-0"].google_project_iam_member.bindings["test_context"]:
     condition:
     - description: null
@@ -31,8 +72,6 @@ values:
     tag_value: tagValues/1234567890
     timeouts: null
   module.project-factory.module.projects-iam["test-1"].google_tags_tag_binding.binding["project-level"]:
-    # tag_value is undefined at plan time as it depends on the tag
-    # tag_value: $tag_values:test-0/context/project-factory
     timeouts: null
   module.project-factory.module.projects["test-0"].google_project.project[0]:
     auto_create_network: false
@@ -65,24 +104,28 @@ values:
     project: foo-test-0
     role: roles/container.defaultNodeServiceAgent
   module.project-factory.module.projects["test-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: foo-test-0
     service: compute.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["test-0"].google_project_service.project_services["contactcenteraiplatform.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: foo-test-0
     service: contactcenteraiplatform.googleapis.com
     timeouts: null
   module.project-factory.module.projects["test-0"].google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: foo-test-0
     service: container.googleapis.com
     timeouts: null
   module.project-factory.module.projects["test-0"].google_project_service.project_services["iam.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: foo-test-0
@@ -131,18 +174,21 @@ values:
     project: test-1
     role: roles/compute.serviceAgent
   module.project-factory.module.projects["test-1"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-1
     service: compute.googleapis.com
     timeouts: null
   ? module.project-factory.module.projects["test-1"].google_project_service.project_services["contactcenteraiplatform.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: test-1
     service: contactcenteraiplatform.googleapis.com
     timeouts: null
   module.project-factory.module.projects["test-1"].google_project_service.project_services["iam.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-1
@@ -178,26 +224,43 @@ values:
     project: bar-test-2
     role: roles/compute.serviceAgent
   module.project-factory.module.projects["test-2"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: bar-test-2
     service: compute.googleapis.com
     timeouts: null
   module.project-factory.module.projects["test-2"].google_project_service.project_services["iam.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: bar-test-2
     service: iam.googleapis.com
     timeouts: null
   module.project-factory.module.projects["test-2"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: bar-test-2
     service: storage.googleapis.com
     timeouts: null
+  module.project-factory.module.service-accounts["test-0/tag-test"].google_service_account.service_account[0]:
+    account_id: tag-test
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: tag-test@foo-test-0.iam.gserviceaccount.com
+    member: serviceAccount:tag-test@foo-test-0.iam.gserviceaccount.com
+    project: foo-test-0
+    timeouts: null
+  module.project-factory.module.service-accounts["test-0/tag-test"].google_tags_tag_binding.binding["project-level"]:
+    timeouts: null
   module.project-factory.module.service-accounts["test-1/tag-test"].google_service_account.service_account[0]:
     account_id: tag-test
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Terraform-managed.
@@ -209,7 +272,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  module.project-factory.terraform_data.project-preconditions:
+  module.project-factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null
@@ -219,12 +282,15 @@ counts:
   google_project_iam_member: 6
   google_project_service: 10
   google_project_service_identity: 3
-  google_service_account: 1
+  google_service_account: 3
+  google_storage_bucket: 1
   google_storage_project_service_account: 1
-  google_tags_tag_binding: 2
+  google_tags_tag_binding: 4
   google_tags_tag_key: 1
   google_tags_tag_value: 1
   google_tags_tag_value_iam_binding: 1
-  modules: 7
-  resources: 31
+  modules: 10
+  resources: 36
   terraform_data: 2
+
+outputs: {}

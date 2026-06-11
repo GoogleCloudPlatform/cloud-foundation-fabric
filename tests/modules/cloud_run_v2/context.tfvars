@@ -24,6 +24,16 @@ context = {
   subnets = {
     test = "projects/foo-dev-net-spoke-0/regions/europe-west1/subnetworks/gce"
   }
+  tag_values = {
+    "test/one" = "tagValues/1234567890"
+  }
+  tag_vars = {
+    projects = {
+      "test-00" = {
+        test = "foo-test-0/dynamic_test"
+      }
+    }
+  }
 }
 kms_key = "$kms_keys:test"
 iam = {
@@ -51,4 +61,9 @@ vpc_connector_create = {
     max = 10
     min = 3
   }
+}
+tag_bindings = {
+  bar = "tagValues/1234567891"
+  baz = "$tag_values:test/one"
+  foo = "$${projects[\"test-00\"].test}/cc-123"
 }

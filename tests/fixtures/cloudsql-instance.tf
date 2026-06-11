@@ -19,7 +19,9 @@ module "cloudsql-instance" {
   project_id = var.project_id
   network_config = {
     connectivity = {
-      psc_allowed_consumer_projects = [var.project_id]
+      psc_config = {
+        allowed_consumer_projects = [var.project_id]
+      }
     }
   }
   ## define a consumer project with an endpoint within the project

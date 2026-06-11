@@ -29,7 +29,7 @@ resource "aws_vpn_gateway" "vpn_gateway" {
 resource "aws_customer_gateway" "customer_gateways" {
   count      = 2
   bgp_asn    = var.gcp_asn
-  ip_address = module.gcp_vpn.gateway.vpn_interfaces[count.index].ip_address
+  ip_address = module.gcp-vpn.gateway.vpn_interfaces[count.index].ip_address
   type       = "ipsec.1"
 
   tags = {

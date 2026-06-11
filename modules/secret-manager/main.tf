@@ -18,7 +18,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   ctx_p       = "$"
   project_id  = lookup(local.ctx.project_ids, var.project_id, var.project_id)
@@ -33,6 +33,9 @@ locals {
     }
     if v.tag_bindings != null
   ]...)
+  _tag_bindings = {
+    for k, v in local.tag_bindings : k => lookup(local.ctx.tag_values, v.tag, v.tag)
+  }
   versions = flatten([
     for k, v in var.secrets : [
       for sk, sv in v.versions : merge(sv, {

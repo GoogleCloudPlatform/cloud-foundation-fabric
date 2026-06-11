@@ -28,11 +28,16 @@ variable "backend_service_config" {
     affinity_cookie_ttl_sec         = optional(number)
     connection_draining_timeout_sec = optional(number)
     health_checks                   = optional(list(string), ["default"])
-    log_sample_rate                 = optional(number)
-    port_name                       = optional(string)
-    project_id                      = optional(string)
-    session_affinity                = optional(string, "NONE")
-    timeout_sec                     = optional(number)
+    log_config = optional(object({
+      enable          = optional(bool)
+      sample_rate     = optional(number)
+      optional_mode   = optional(string)
+      optional_fields = optional(list(string))
+    }))
+    port_name        = optional(string)
+    project_id       = optional(string)
+    session_affinity = optional(string, "NONE")
+    timeout_sec      = optional(number)
     backends = optional(list(object({
       group           = string
       balancing_mode  = optional(string, "UTILIZATION")
@@ -72,6 +77,19 @@ variable "backend_service_config" {
     )])
     error_message = "When specified, balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
   }
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    addresses   = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "description" {

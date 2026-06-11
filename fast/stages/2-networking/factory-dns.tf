@@ -133,8 +133,9 @@ module "dns-zones" {
   zone_config   = each.value.zone_config
   recordsets    = each.value.recordsets
   context = {
-    project_ids = local.ctx_projects.project_ids
-    networks    = local.ctx_vpcs.self_links
+    custom_roles = local.ctx.custom_roles
+    project_ids  = local.ctx_projects.project_ids
+    networks     = local.ctx_vpcs.self_links
   }
   depends_on = [module.vpc-factory]
 }
@@ -146,8 +147,9 @@ module "dns-delegations" {
   name       = replace(each.key, "/", "-")
   recordsets = each.value
   context = {
-    project_ids = local.ctx_projects.project_ids
-    networks    = local.ctx_vpcs.self_links
+    custom_roles = local.ctx.custom_roles
+    project_ids  = local.ctx_projects.project_ids
+    networks     = local.ctx_vpcs.self_links
   }
   depends_on = [module.dns-zones]
 }

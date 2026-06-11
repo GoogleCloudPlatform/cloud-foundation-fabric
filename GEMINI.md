@@ -83,6 +83,7 @@ python3 tools/check_boilerplate.py --scan-files <files>
 # Schema changes
 # A schema change should be reflected in all the other places that use the same schema.
 # These are documented in and can be checked via tools/duplicate-diff.py.
+# Whenever you modify a `.schema.json` file, you MUST regenerate the corresponding `.schema.md` documentation file using `python3 tools/schema_docs.py`.
 ```
 
 **Common gotcha — unsorted variables (`[SV]` error):** `check_documentation.py` requires variables in `variables.tf` to be in strict alphabetical order. When adding a new variable, insert it at the correct alphabetical position, not at the top of the file.
@@ -113,16 +114,35 @@ pytest tests
 # Run specific module examples
 pytest -k 'modules and <module-name>:' tests/examples
 
+# Run a single specific example test (useful for debugging)
+pytest -s 'tests/examples/test_plan.py::test_example[terraform:modules/<module-name>:Heading Name:Index]'
+
 # Automatically generate an inventory file from a successful plan
 pytest -s 'tests/examples/test_plan.py::test_example[terraform:modules/<module-name>:Heading Name:Index]'
 ```
 
 **Note:** `TF_PLUGIN_CACHE_DIR` is recommended to speed up tests.
 
+#### 4. Module-level `tftest.yaml` Tests
+
+Modules with their own `tests/modules/<module_name>/tftest.yaml` define test scenarios (e.g., context resolution, IAM variants) using `tfvars` + YAML inventory pairs. Run them individually:
+
+```bash
+# Run a specific test from a module's tftest.yaml
+pytest 'tests/modules/<module_name>/tftest.yaml::<test_name>' --tb=short -s
+```
+
+For example:
+```bash
+pytest 'tests/modules/organization/tftest.yaml::context' --tb=short -s
+pytest 'tests/modules/project/tftest.yaml::context' --tb=short -s
+```
+
 #### 3. Contributing
 
 *   **Branching:** Use `username/feature-name`.
 *   **Commits:** Atomic commits with clear messages.
+*   **PR Titles:** Avoid semantic commit prefixes. Use Title Case for the first word.
 *   **Docs:** Do not manually edit the variables/outputs tables in READMEs; use `tfdoc.py`.
 
 ## Adding Context Support to a Module
@@ -255,5 +275,6 @@ Run the specific `pytest` plan test. The test will fail, and the captured output
 - For targeted edits or appending to a single file, ALWAYS use the native `replace` tool. (To append, match the last few lines of the file and replace them with the same lines plus your new content).
 - **EXCEPTION (Pattern/Bulk Edits):** You MAY use shell commands (like `sed -i`, `perl -pi`, or `find ... xargs sed`) ONLY for regex-based or pattern-based replacements, particularly across multiple files, where the exact-match `replace` tool is not feasible.
 - **Ambiguity & Paths:** When encountering unfamiliar or unexpected repository structures, paths, or tool executions, always pause and offer the user the choice to either explain or authorize further independent investigation, rather than making assumptions or guessing paths.
+- **CRITICAL (LINTING & FORMATTING):** You MUST ALWAYS run all formatting and linting checks (`terraform fmt`, `check_documentation.py`, `yamllint`, `check_boilerplate.py` as described in [Formatting & Linting](#1-formatting--linting)) on all modified or new files BEFORE staging, committing, or pushing changes.
 
 To run specific FAST stage tests, use the syntax `pytest tests/fast/stages/s<stage_num>_<stage_name>/tftest.yaml::<test_name>`. For example: `pytest tests/fast/stages/s0_org_setup/tftest.yaml::starter-gcd`.

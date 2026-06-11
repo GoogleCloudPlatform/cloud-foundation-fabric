@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -67,7 +67,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -100,7 +100,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -133,7 +133,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -166,7 +166,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -199,7 +199,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -218,7 +218,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -236,7 +236,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -254,7 +254,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -287,7 +287,7 @@ values:
       \ == 'synchronize'\n    permissions:\n      contents: read\n      id-token:\
       \ write\n      issues: write\n      pull-requests: write\n    runs-on: ubuntu-latest\n\
       \    steps:\n      - id: checkout\n        name: Checkout repository\n     \
-      \   uses: actions/checkout@v4\n\n      # set up SSH key authentication to the\
+      \   uses: actions/checkout@v6\n\n      # set up SSH key authentication to the\
       \ modules repository\n\n      - id: ssh-config\n        name: Configure SSH\
       \ authentication\n        run: |\n          ssh-agent -a \"$SSH_AUTH_SOCK\"\
       \ > /dev/null\n          ssh-add - <<< \"${{ secrets.CICD_MODULES_KEY }}\"\n\
@@ -302,16 +302,16 @@ values:
       \n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT}}\" >> \"$GITHUB_ENV\"\
       \n\n      # set up authentication via Workload identity Federation and gcloud\n\
       \n      - id: gcp-auth\n        name: Authenticate to Google Cloud\n       \
-      \ uses: google-github-actions/auth@v2\n        with:\n          workload_identity_provider:\
+      \ uses: google-github-actions/auth@v3\n        with:\n          workload_identity_provider:\
       \ ${{env.FAST_WIF_PROVIDER}}\n          service_account: ${{env.service_account}}\n\
       \          access_token_lifetime: 900s\n\n      - id: gcp-sdk\n        name:\
-      \ Set up Cloud SDK\n        uses: google-github-actions/setup-gcloud@v2\n  \
+      \ Set up Cloud SDK\n        uses: google-github-actions/setup-gcloud@v3\n  \
       \      with:\n          install_components: alpha\n\n      # copy provider file\n\
       \n      - id: tf-config-provider\n        name: Copy Terraform provider file\n\
       \        run: |\n          gcloud storage cp -r \\\n            \"gs://ft0-prod-iac-core-0-iac-outputs/providers/${{env.provider_file}}\"\
       \ ./\n          gcloud storage cp -r \\\n            \"gs://ft0-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars\"\
       \ ./\n\n      - id: tf-setup\n        name: Set up Terraform\n        uses:\
-      \ hashicorp/setup-terraform@v3\n        with:\n          terraform_version:\
+      \ hashicorp/setup-terraform@v4\n        with:\n          terraform_version:\
       \ ${{env.TF_VERSION}}\n\n      # run Terraform init/validate/plan\n\n      -\
       \ id: tf-init\n        name: Terraform init\n        continue-on-error: true\n\
       \        run: |\n          terraform init -no-color\n\n      - id: tf-validate\n\
@@ -325,7 +325,7 @@ values:
       \n      # PR comment with Terraform result from previous steps\n      # length\
       \ is checked and trimmed for length so as to stay within the limit\n\n     \
       \ - id: pr-comment\n        name: Post comment to Pull Request\n        continue-on-error:\
-      \ true\n        uses: actions/github-script@v7\n        if: github.event_name\
+      \ true\n        uses: actions/github-script@v9\n        if: github.event_name\
       \ == 'pull_request'\n        env:\n          PLAN: ${{steps.tf-plan.outputs.stdout}}\\\
       n${{steps.tf-plan.outputs.stderr}}\n        with:\n          script: |\n   \
       \         const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
@@ -343,7 +343,7 @@ values:
       \ context.issue.number,\n              owner: context.repo.owner,\n        \
       \      repo: context.repo.repo,\n              body: output\n            })\n\
       \n      - id: pr-short-comment\n        name: Post comment to Pull Request (abbreviated)\n\
-      \        uses: actions/github-script@v7\n        if: github.event_name == 'pull_request'\
+      \        uses: actions/github-script@v9\n        if: github.event_name == 'pull_request'\
       \ && steps.pr-comment.outcome != 'success'\n        with:\n          script:\
       \ |\n            const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
       `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
@@ -367,7 +367,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -395,7 +395,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/0-org-setup-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["0-org-setup-ro"]:
@@ -416,7 +415,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/0-org-setup-ro-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["1-vpcsc"]:
@@ -438,7 +436,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/1-vpcsc-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["2-networking"]:
@@ -460,7 +457,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/2-networking-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["2-project-factory"]:
@@ -482,7 +478,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/2-project-factory-providers.tf
     sensitive_content: null
     source: null
   local_file.providers["2-security"]:
@@ -504,7 +499,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/providers/2-security-providers.tf
     sensitive_content: null
     source: null
   local_file.tfvars["globals"]:
@@ -512,14 +506,12 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/tfvars/0-globals.auto.tfvars.json
     sensitive_content: null
     source: null
   local_file.tfvars["org-setup"]:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/tfvars/0-org-setup.auto.tfvars.json
     sensitive_content: null
     source: null
   local_file.workflows["org-setup"]:
@@ -543,7 +535,7 @@ values:
       \ == 'synchronize'\n    permissions:\n      contents: read\n      id-token:\
       \ write\n      issues: write\n      pull-requests: write\n    runs-on: ubuntu-latest\n\
       \    steps:\n      - id: checkout\n        name: Checkout repository\n     \
-      \   uses: actions/checkout@v4\n\n      # set up SSH key authentication to the\
+      \   uses: actions/checkout@v6\n\n      # set up SSH key authentication to the\
       \ modules repository\n\n      - id: ssh-config\n        name: Configure SSH\
       \ authentication\n        run: |\n          ssh-agent -a \"$SSH_AUTH_SOCK\"\
       \ > /dev/null\n          ssh-add - <<< \"${{ secrets.CICD_MODULES_KEY }}\"\n\
@@ -558,16 +550,16 @@ values:
       \n          echo \"service_account=${{env.FAST_SERVICE_ACCOUNT}}\" >> \"$GITHUB_ENV\"\
       \n\n      # set up authentication via Workload identity Federation and gcloud\n\
       \n      - id: gcp-auth\n        name: Authenticate to Google Cloud\n       \
-      \ uses: google-github-actions/auth@v2\n        with:\n          workload_identity_provider:\
+      \ uses: google-github-actions/auth@v3\n        with:\n          workload_identity_provider:\
       \ ${{env.FAST_WIF_PROVIDER}}\n          service_account: ${{env.service_account}}\n\
       \          access_token_lifetime: 900s\n\n      - id: gcp-sdk\n        name:\
-      \ Set up Cloud SDK\n        uses: google-github-actions/setup-gcloud@v2\n  \
+      \ Set up Cloud SDK\n        uses: google-github-actions/setup-gcloud@v3\n  \
       \      with:\n          install_components: alpha\n\n      # copy provider file\n\
       \n      - id: tf-config-provider\n        name: Copy Terraform provider file\n\
       \        run: |\n          gcloud storage cp -r \\\n            \"gs://ft0-prod-iac-core-0-iac-outputs/providers/${{env.provider_file}}\"\
       \ ./\n          gcloud storage cp -r \\\n            \"gs://ft0-prod-iac-core-0-iac-outputs/tfvars/0-org-setup.auto.tfvars\"\
       \ ./\n\n      - id: tf-setup\n        name: Set up Terraform\n        uses:\
-      \ hashicorp/setup-terraform@v3\n        with:\n          terraform_version:\
+      \ hashicorp/setup-terraform@v4\n        with:\n          terraform_version:\
       \ ${{env.TF_VERSION}}\n\n      # run Terraform init/validate/plan\n\n      -\
       \ id: tf-init\n        name: Terraform init\n        continue-on-error: true\n\
       \        run: |\n          terraform init -no-color\n\n      - id: tf-validate\n\
@@ -581,7 +573,7 @@ values:
       \n      # PR comment with Terraform result from previous steps\n      # length\
       \ is checked and trimmed for length so as to stay within the limit\n\n     \
       \ - id: pr-comment\n        name: Post comment to Pull Request\n        continue-on-error:\
-      \ true\n        uses: actions/github-script@v7\n        if: github.event_name\
+      \ true\n        uses: actions/github-script@v9\n        if: github.event_name\
       \ == 'pull_request'\n        env:\n          PLAN: ${{steps.tf-plan.outputs.stdout}}\\\
       n${{steps.tf-plan.outputs.stderr}}\n        with:\n          script: |\n   \
       \         const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
@@ -599,7 +591,7 @@ values:
       \ context.issue.number,\n              owner: context.repo.owner,\n        \
       \      repo: context.repo.repo,\n              body: output\n            })\n\
       \n      - id: pr-short-comment\n        name: Post comment to Pull Request (abbreviated)\n\
-      \        uses: actions/github-script@v7\n        if: github.event_name == 'pull_request'\
+      \        uses: actions/github-script@v9\n        if: github.event_name == 'pull_request'\
       \ && steps.pr-comment.outcome != 'success'\n        with:\n          script:\
       \ |\n            const output = `### Terraform Initialization \\`${{steps.tf-init.outcome}}\\\
       `\n\n            ### Terraform Validation \\`${{steps.tf-validate.outcome}}\\\
@@ -621,7 +613,6 @@ values:
     content_base64: null
     directory_permission: '0777'
     file_permission: '0644'
-    filename: /tmp/fast-config/workflows/org-setup.yaml
     sensitive_content: null
     source: null
   module.billing-accounts["default"].google_billing_account_iam_member.bindings["billing_admin_org_admins"]:
@@ -674,6 +665,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: false
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -693,6 +685,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -790,6 +783,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -887,6 +881,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -1098,22 +1093,6 @@ values:
   ? module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.authoritative["roles/serviceusage.serviceUsageViewer"]
   : condition: []
     role: roles/serviceusage.serviceUsageViewer
-  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_ro"]:
-    condition:
-    - description: null
-      expression: 'resource.matchTag(''1234567890/environment'', ''development'')
-
-        '
-      title: Data platform dev network viewer.
-    role: roles/compute.networkViewer
-  module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["dp_dev_rw"]:
-    condition:
-    - description: null
-      expression: 'resource.matchTag(''1234567890/environment'', ''development'')
-
-        '
-      title: Data platform dev service project admin.
-    role: organizations/1234567890/roles/serviceProjectNetworkAdmin
   module.factory.module.folder-1-iam["networking"].google_folder_iam_binding.bindings["project_factory"]:
     condition:
     - description: null
@@ -1261,68 +1240,66 @@ values:
   module.factory.module.folder-1-iam["teams"].google_folder_iam_binding.authoritative["roles/storage.admin"]:
     condition: []
     role: roles/storage.admin
+  module.factory.module.folder-1-iam["teams"].google_tags_tag_binding.binding["context"]:
+    timeouts: null
   module.factory.module.folder-1["networking"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Networking
     parent: organizations/1234567890
     tags: null
     timeouts: null
   module.factory.module.folder-1["security"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Security
     parent: organizations/1234567890
     tags: null
     timeouts: null
   module.factory.module.folder-1["teams"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Teams
     parent: organizations/1234567890
     tags: null
     timeouts: null
-  module.factory.module.folder-1["teams"].google_tags_tag_binding.binding["context"]:
+  module.factory.module.folder-2-iam["networking/dev"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
-  ? module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.authoritative["$custom_roles:project_iam_viewer"]
-  : condition: []
-    role: organizations/1234567890/roles/projectIamViewer
-  module.factory.module.folder-2-iam["networking/dev"].google_folder_iam_binding.bindings["dp_dev"]:
-    condition:
-    - description: null
-      expression: "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([\n\
-        \  'organizations/1234567890/roles/serviceProjectNetworkAdmin'\n])\n"
-      title: Data platform dev delegated IAM grant.
-    role: roles/resourcemanager.projectIamAdmin
+  module.factory.module.folder-2-iam["networking/prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
   ? module.factory.module.folder-2-iam["security/dev"].google_folder_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]
   : condition: []
     role: organizations/1234567890/roles/cloudKmsViewer
+  module.factory.module.folder-2-iam["security/dev"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
+  module.factory.module.folder-2-iam["security/prod"].google_tags_tag_binding.binding["environment"]:
+    timeouts: null
   module.factory.module.folder-2["networking/dev"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Development
     tags: null
-    timeouts: null
-  module.factory.module.folder-2["networking/dev"].google_tags_tag_binding.binding["environment"]:
     timeouts: null
   module.factory.module.folder-2["networking/prod"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Production
     tags: null
     timeouts: null
-  module.factory.module.folder-2["networking/prod"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-2["security/dev"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Development
     tags: null
     timeouts: null
-  module.factory.module.folder-2["security/dev"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.folder-2["security/prod"].google_folder.folder[0]:
+    deletion_policy: DELETE
     deletion_protection: false
     display_name: Production
     tags: null
     timeouts: null
-  module.factory.module.folder-2["security/prod"].google_tags_tag_binding.binding["environment"]:
-    timeouts: null
   module.factory.module.kms["billing-0/ew1"].google_kms_crypto_key.default["bigquery"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -1339,6 +1316,7 @@ values:
     project: ft0-prod-billing-exp-0
     timeouts: null
   module.factory.module.kms["iac-0/ew1"].google_kms_crypto_key.default["storage"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -1355,6 +1333,7 @@ values:
     project: ft0-prod-iac-core-0
     timeouts: null
   module.factory.module.kms["log-0/ew1"].google_kms_crypto_key.default["logging"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -1430,6 +1409,21 @@ values:
   ? module.factory.module.projects-iam["billing-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.bigquery-encryption"]
   : condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.factory.module.projects-iam["billing-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-billing-exp-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/ft0-prod-billing-exp-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
   module.factory.module.projects-iam["billing-0"].google_project_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]:
     condition: []
     project: ft0-prod-billing-exp-0
@@ -1482,6 +1476,41 @@ values:
   ? module.factory.module.projects-iam["iac-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.gs-project-accounts"]
   : condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.factory.module.projects-iam["iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-iac-core-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/ft0-prod-iac-core-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
+  module.factory.module.projects-iam["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
+    parent: projects/ft0-prod-iac-core-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: null
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values:
+        - allowed_values:
+          - https://token.actions.githubusercontent.com
+          - https://gitlab.com
+          - https://app.terraform.io
+          denied_values: null
+    timeouts: null
   module.factory.module.projects-iam["iac-0"].google_project_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]:
     condition: []
     project: ft0-prod-iac-core-0
@@ -1638,6 +1667,21 @@ values:
   module.factory.module.projects-iam["log-0"].google_kms_crypto_key_iam_member.service_agent_cmek["key-0.logging"]:
     condition: []
     role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+  module.factory.module.projects-iam["log-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
+    dry_run_spec: []
+    name: projects/ft0-prod-audit-logs-0/policies/gcp.restrictCmekCryptoKeyProjects
+    parent: projects/ft0-prod-audit-logs-0
+    spec:
+    - inherit_from_parent: null
+      reset: null
+      rules:
+      - allow_all: 'TRUE'
+        condition: []
+        deny_all: null
+        enforce: null
+        parameters: null
+        values: []
+    timeouts: null
   module.factory.module.projects-iam["log-0"].google_project_iam_binding.authoritative["$custom_roles:cloudkms_viewer"]:
     condition: []
     project: ft0-prod-audit-logs-0
@@ -1702,21 +1746,6 @@ values:
   module.factory.module.projects["billing-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-billing-exp-0
     user_project: null
-  module.factory.module.projects["billing-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
-    dry_run_spec: []
-    name: projects/ft0-prod-billing-exp-0/policies/gcp.restrictCmekCryptoKeyProjects
-    parent: projects/ft0-prod-billing-exp-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: 'TRUE'
-        condition: []
-        deny_all: null
-        enforce: null
-        parameters: null
-        values: []
-    timeouts: null
   module.factory.module.projects["billing-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-012345-012345
@@ -1741,30 +1770,35 @@ values:
     project: ft0-prod-billing-exp-0
     role: roles/cloudkms.serviceAgent
   module.factory.module.projects["billing-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["billing-0"].google_project_service.project_services["bigquerydatatransfer.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: bigquerydatatransfer.googleapis.com
     timeouts: null
   module.factory.module.projects["billing-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["billing-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["billing-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-billing-exp-0
@@ -1785,41 +1819,6 @@ values:
   module.factory.module.projects["iac-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-iac-core-0
     user_project: null
-  module.factory.module.projects["iac-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
-    dry_run_spec: []
-    name: projects/ft0-prod-iac-core-0/policies/gcp.restrictCmekCryptoKeyProjects
-    parent: projects/ft0-prod-iac-core-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: 'TRUE'
-        condition: []
-        deny_all: null
-        enforce: null
-        parameters: null
-        values: []
-    timeouts: null
-  module.factory.module.projects["iac-0"].google_org_policy_policy.default["iam.workloadIdentityPoolProviders"]:
-    dry_run_spec: []
-    name: projects/ft0-prod-iac-core-0/policies/iam.workloadIdentityPoolProviders
-    parent: projects/ft0-prod-iac-core-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: null
-        condition: []
-        deny_all: null
-        enforce: null
-        parameters: null
-        values:
-        - allowed_values:
-          - https://token.actions.githubusercontent.com
-          - https://gitlab.com
-          - https://app.terraform.io
-          denied_values: null
-    timeouts: null
   module.factory.module.projects["iac-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-012345-012345
@@ -1876,168 +1875,196 @@ values:
     project: ft0-prod-iac-core-0
     role: roles/servicenetworking.serviceAgent
   module.factory.module.projects["iac-0"].google_project_service.org_policy_service[0]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: orgpolicy.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["accesscontextmanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: accesscontextmanager.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["bigquery.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: bigquery.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["bigqueryreservation.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: bigqueryreservation.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["bigquerystorage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: bigquerystorage.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["billingbudgets.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: billingbudgets.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudasset.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudasset.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudbilling.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudbilling.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudbuild.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudbuild.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudquotas.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudquotas.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["cloudresourcemanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: cloudresourcemanager.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["compute.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: compute.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["container.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: container.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["datacatalog.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: datacatalog.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["essentialcontacts.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: essentialcontacts.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["iam.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: iam.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["iamcredentials.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: iamcredentials.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["networksecurity.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: networksecurity.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["pubsub.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: pubsub.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["securitycentermanagement.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: securitycentermanagement.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["servicenetworking.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: servicenetworking.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["serviceusage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: serviceusage.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["storage-component.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: storage-component.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
     service: storage.googleapis.com
     timeouts: null
   module.factory.module.projects["iac-0"].google_project_service.project_services["sts.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-iac-core-0
@@ -2076,21 +2103,6 @@ values:
   module.factory.module.projects["log-0"].data.google_storage_project_service_account.gcs_sa[0]:
     project: ft0-prod-audit-logs-0
     user_project: null
-  module.factory.module.projects["log-0"].google_org_policy_policy.default["gcp.restrictCmekCryptoKeyProjects"]:
-    dry_run_spec: []
-    name: projects/ft0-prod-audit-logs-0/policies/gcp.restrictCmekCryptoKeyProjects
-    parent: projects/ft0-prod-audit-logs-0
-    spec:
-    - inherit_from_parent: null
-      reset: null
-      rules:
-      - allow_all: 'TRUE'
-        condition: []
-        deny_all: null
-        enforce: null
-        parameters: null
-        values: []
-    timeouts: null
   module.factory.module.projects["log-0"].google_project.project[0]:
     auto_create_network: false
     billing_account: 012345-012345-012345
@@ -2115,24 +2127,28 @@ values:
     project: ft0-prod-audit-logs-0
     role: roles/pubsub.serviceAgent
   module.factory.module.projects["log-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-audit-logs-0
     service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["log-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-audit-logs-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["log-0"].google_project_service.project_services["pubsub.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-audit-logs-0
     service: pubsub.googleapis.com
     timeouts: null
   module.factory.module.projects["log-0"].google_project_service.project_services["storage.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: ft0-prod-audit-logs-0
@@ -2146,9 +2162,26 @@ values:
     project: ft0-prod-audit-logs-0
     service: pubsub.googleapis.com
     timeouts: null
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"]
+  : condition: []
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
+  : condition: []
+    role: roles/iam.serviceAccountTokenCreator
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
+  ? module.factory.module.service-accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"]
+  : condition: []
+    role: roles/iam.workloadIdentityUser
+    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.module.service-accounts["iac-0/iac-networking-ro"].google_service_account.service_account[0]:
     account_id: iac-networking-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for networking (read-only).
@@ -2159,6 +2192,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-networking-rw"].google_service_account.service_account[0]:
     account_id: iac-networking-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for networking (read-write).
@@ -2169,6 +2203,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-org-cicd-ro"].google_service_account.service_account[0]:
     account_id: iac-org-cicd-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for org setup CI/CD (read-only).
@@ -2179,6 +2214,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-org-cicd-rw"].google_service_account.service_account[0]:
     account_id: iac-org-cicd-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for org setup CI/CD (read-write).
@@ -2189,6 +2225,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-org-ro"].google_service_account.service_account[0]:
     account_id: iac-org-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for org setup (read-only).
@@ -2199,6 +2236,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-org-rw"].google_service_account.service_account[0]:
     account_id: iac-org-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for org setup (read-write).
@@ -2209,6 +2247,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-pf-ro"].google_service_account.service_account[0]:
     account_id: iac-pf-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for project factory (read-only).
@@ -2219,6 +2258,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-pf-rw"].google_service_account.service_account[0]:
     account_id: iac-pf-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for project factory (read-write).
@@ -2229,6 +2269,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-security-ro"].google_service_account.service_account[0]:
     account_id: iac-security-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for security (read-only).
@@ -2239,6 +2280,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-security-rw"].google_service_account.service_account[0]:
     account_id: iac-security-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for security (read-write).
@@ -2249,6 +2291,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-vpcsc-ro"].google_service_account.service_account[0]:
     account_id: iac-vpcsc-ro
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for VPC service controls (read-only).
@@ -2259,6 +2302,7 @@ values:
   module.factory.module.service-accounts["iac-0/iac-vpcsc-rw"].google_service_account.service_account[0]:
     account_id: iac-vpcsc-rw
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: IaC service account for VPC service controls (read-write).
@@ -2266,31 +2310,16 @@ values:
     member: serviceAccount:iac-vpcsc-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
     project: ft0-prod-iac-core-0
     timeouts: null
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.serviceAccountTokenCreator"]
-  : condition: []
-    role: roles/iam.serviceAccountTokenCreator
-    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-ro"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-ro-roles/iam.workloadIdentityUser"]
-  : condition: []
-    role: roles/iam.workloadIdentityUser
-    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.serviceAccountTokenCreator"]
-  : condition: []
-    role: roles/iam.serviceAccountTokenCreator
-    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
-  ? module.factory.module.service_accounts-iam["iac-0/iac-org-cicd-rw"].google_service_account_iam_member.additive["$service_account_ids:iac-0/iac-org-rw-roles/iam.workloadIdentityUser"]
-  : condition: []
-    role: roles/iam.workloadIdentityUser
-    service_account_id: projects/ft0-prod-iac-core-0/serviceAccounts/iac-org-rw@ft0-prod-iac-core-0.iam.gserviceaccount.com
   module.factory.terraform_data.defaults_preconditions:
     input: null
     output: null
     triggers_replace: null
-  module.factory.terraform_data.project-preconditions:
+  module.factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null
   module.organization-iam[0].google_logging_organization_sink.sink["audit-logs"]:
+    deletion_policy: DELETE
     description: audit-logs (Terraform-managed).
     disabled: false
     exclusions: []
@@ -2308,6 +2337,7 @@ values:
     name: audit-logs
     org_id: '1234567890'
   module.organization-iam[0].google_logging_organization_sink.sink["iam"]:
+    deletion_policy: DELETE
     description: iam (Terraform-managed).
     disabled: false
     exclusions: []
@@ -2323,6 +2353,7 @@ values:
     name: iam
     org_id: '1234567890'
   module.organization-iam[0].google_logging_organization_sink.sink["vpc-sc"]:
+    deletion_policy: DELETE
     description: vpc-sc (Terraform-managed).
     disabled: false
     exclusions: []
@@ -6766,15 +6797,15 @@ values:
     - serviceAccount:iac-pf-ro@ft0-prod-iac-core-0.iam.gserviceaccount.com
     org_id: '1234567890'
     role: roles/orgpolicy.policyViewer
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["audit-logs"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["audit-logs"]:
     condition:
     - title: audit-logs bucket writer
     role: roles/logging.bucketWriter
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["iam"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["iam"]:
     condition:
     - title: iam bucket writer
     role: roles/logging.bucketWriter
-  module.organization-iam[0].google_project_iam_member.bucket-sinks-binding["vpc-sc"]:
+  module.organization-iam[0].google_project_iam_member.bucket_sinks_binding["vpc-sc"]:
     condition:
     - title: vpc-sc bucket writer
     role: roles/logging.bucketWriter
@@ -6818,6 +6849,7 @@ values:
     storage_location: europe-west1
     timeouts: null
   module.organization[0].google_organization_iam_custom_role.roles["cloudkms_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -6852,6 +6884,7 @@ values:
     stage: GA
     title: Custom role cloudKmsViewer
   module.organization[0].google_organization_iam_custom_role.roles["folder_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -6863,6 +6896,7 @@ values:
     stage: GA
     title: Custom role folderViewer
   module.organization[0].google_organization_iam_custom_role.roles["logging_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -6916,6 +6950,7 @@ values:
     stage: GA
     title: Custom role loggingViewer
   module.organization[0].google_organization_iam_custom_role.roles["network_firewall_policies_admin"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -6929,6 +6964,7 @@ values:
     stage: GA
     title: Custom role networkFirewallPoliciesAdmin
   module.organization[0].google_organization_iam_custom_role.roles["ngfw_enterprise_admin"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -6966,6 +7002,7 @@ values:
     stage: GA
     title: Custom role ngfwEnterpriseAdmin
   module.organization[0].google_organization_iam_custom_role.roles["ngfw_enterprise_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -6989,6 +7026,7 @@ values:
     stage: GA
     title: Custom role ngfwEnterpriseViewer
   module.organization[0].google_organization_iam_custom_role.roles["organization_admin_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7011,6 +7049,7 @@ values:
     stage: GA
     title: Custom role organizationAdminViewer
   module.organization[0].google_organization_iam_custom_role.roles["organization_iam_admin"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7021,6 +7060,7 @@ values:
     stage: GA
     title: Custom role organizationIamAdmin
   module.organization[0].google_organization_iam_custom_role.roles["project_iam_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7033,6 +7073,7 @@ values:
     stage: GA
     title: Custom role projectIamViewer
   module.organization[0].google_organization_iam_custom_role.roles["service_account_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7043,6 +7084,7 @@ values:
     stage: GA
     title: Custom role serviceAccountViewer
   module.organization[0].google_organization_iam_custom_role.roles["service_networking_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7056,6 +7098,7 @@ values:
     stage: GA
     title: Custom role serviceNetworkingViewer
   module.organization[0].google_organization_iam_custom_role.roles["service_project_network_admin"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7073,6 +7116,7 @@ values:
     stage: GA
     title: Custom role serviceProjectNetworkAdmin
   module.organization[0].google_organization_iam_custom_role.roles["storage_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7094,6 +7138,7 @@ values:
     stage: GA
     title: Custom role storageViewer
   module.organization[0].google_organization_iam_custom_role.roles["tag_viewer"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1234567890'
     permissions:
@@ -7530,6 +7575,7 @@ values:
     timeouts: null
   module.projects-observability[0].google_logging_metric.metrics["auditConfigChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: Audit Configuration Changes
     disabled: null
     filter: protoPayload.methodName="SetIamPolicy" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*
@@ -7566,6 +7612,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["binaryAuthorizationPolicyChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: Binary Authorization Policy Changes
     disabled: null
     filter: protoPayload.methodName="google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1.UpdatePolicy"
@@ -7596,6 +7643,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["cloudsqlInstanceChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: Cloud SQL Instance Configuration Changes
     disabled: null
     filter: protoPayload.methodName="cloudsql.instances.update"
@@ -7628,6 +7676,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["customRoleChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: Custom Role Changes
     disabled: null
     filter: "resource.type=\"iam_role\" AND (\n  protoPayload.methodName=\"google.iam.admin.v1.CreateRole\"\
@@ -7666,6 +7715,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["firewallPolicyRuleChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: Network Firewall Policy Rule Changes
     disabled: null
     filter: "resource.labels.method:\"compute.networkFirewallPolicies\" AND (\n  protoPayload.methodName:\"\
@@ -7693,6 +7743,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["firewallRuleChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: VPC Network Firewall Rule Changes
     disabled: null
     filter: resource.type="gce_firewall_rule" AND (protoPayload.methodName:"compute.firewalls.patch"
@@ -7726,6 +7777,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["networkChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: VPC Network Changes
     disabled: null
     filter: "resource.type=\"gce_network\" AND (\n  protoPayload.methodName:\"compute.networks.insert\"\
@@ -7762,6 +7814,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["networkRouteChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: VPC Network Route Changes
     disabled: null
     filter: "resource.type=\"gce_route\" AND (\n  protoPayload.methodName:\"compute.routes.insert\"\
@@ -7795,6 +7848,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["projectOwnershipChange"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: Project Ownership Changes
     disabled: null
     filter: "(protoPayload.serviceName=\"cloudresourcemanager.googleapis.com\") AND\n\
@@ -7836,6 +7890,7 @@ values:
     value_extractor: null
   module.projects-observability[0].google_logging_metric.metrics["storageIamChanges"]:
     bucket_options: []
+    deletion_policy: DELETE
     description: Cloud Storage IAM Permission Changes
     disabled: null
     filter: resource.type="gcs_bucket" AND protoPayload.methodName="storage.setIamPermissions"
@@ -7902,6 +7957,7 @@ values:
         - count: 1
           percent: null
       display_name: 'Log match condition: Audit Configuration Changes'
+    deletion_policy: DELETE
     display_name: Audit Configuration Changes
     documentation:
     - content: 'Log-based alerting policy in project ${project} detected audit configuration
@@ -7960,6 +8016,7 @@ values:
           percent: null
       display_name: 'Log match condition: Binary Authorization policy configuration
         changes'
+    deletion_policy: DELETE
     display_name: Binary Authorization Policy Changes
     documentation:
     - content: 'Log-based alerting policy in project ${project} detected for a change
@@ -8021,6 +8078,7 @@ values:
         - count: 1
           percent: null
       display_name: 'Log match condition: Cloud SQL instance configuration changes'
+    deletion_policy: DELETE
     display_name: Cloud SQL Instance Configuration Changes
     documentation:
     - content: 'Log-based alerting policy in project ${project} detected Cloud SQL
@@ -8076,6 +8134,7 @@ values:
         - count: 1
           percent: null
       display_name: 'Log match condition: custom role changes'
+    deletion_policy: DELETE
     display_name: Custom Role Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected custom IAM\
@@ -8122,6 +8181,7 @@ values:
         - count: 1
           percent: null
       display_name: 'Log match condition: Network Firewall Policy Rule Changes'
+    deletion_policy: DELETE
     display_name: Network Firewall Policy Rule Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected Firewall\
@@ -8171,6 +8231,7 @@ values:
         - count: 1
           percent: null
       display_name: 'Log match condition: VPC Network Firewall Rule Changes'
+    deletion_policy: DELETE
     display_name: VPC Network Firewall Rule Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected VPC Network\
@@ -8219,6 +8280,7 @@ values:
         - count: 1
           percent: null
       display_name: 'Log match condition: VPC Network Changes'
+    deletion_policy: DELETE
     display_name: VPC Network Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected VPC Network\
@@ -8269,6 +8331,7 @@ values:
         - count: 1
           percent: null
       display_name: 'Log match condition: VPC Network Route Changes'
+    deletion_policy: DELETE
     display_name: VPC Network Route Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected VPC Network\
@@ -8317,6 +8380,7 @@ values:
         - count: 1
           percent: null
       display_name: Project Ownership Changes
+    deletion_policy: DELETE
     display_name: Project Ownership Changes
     documentation:
     - content: "Log-based alerting policy in project ${project} detected a project\
@@ -8367,6 +8431,7 @@ values:
         - count: 1
           percent: null
       display_name: Cloud Storage IAM Permission Changes
+    deletion_policy: DELETE
     display_name: Cloud Storage IAM Permission Changes
     documentation:
     - content: 'Log-based alerting policy in project ${project} detected Cloud Storage
@@ -8394,7 +8459,7 @@ values:
     input: null
     output: null
     triggers_replace: null
-  terraform_data.precondition-cicd:
+  terraform_data.precondition_cicd:
     input: null
     output: null
     triggers_replace: null
@@ -8405,7 +8470,7 @@ counts:
   google_billing_account_iam_member: 6
   google_essential_contacts_contact: 1
   google_folder: 7
-  google_folder_iam_binding: 74
+  google_folder_iam_binding: 70
   google_kms_crypto_key: 3
   google_kms_crypto_key_iam_member: 3
   google_kms_key_ring: 3
@@ -8440,8 +8505,8 @@ counts:
   google_tags_tag_value: 6
   google_tags_tag_value_iam_binding: 4
   local_file: 9
-  modules: 52
-  resources: 675
+  modules: 54
+  resources: 671
   terraform_data: 4
 
 outputs:

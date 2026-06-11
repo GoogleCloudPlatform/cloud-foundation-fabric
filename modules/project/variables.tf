@@ -149,7 +149,11 @@ variable "context" {
     storage_buckets       = optional(map(string), {})
     tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
+    vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -328,6 +332,7 @@ variable "service_agents_config" {
     create_primary_agents      = optional(bool, true)
     grant_default_roles        = optional(bool, true)
     grant_service_agent_editor = optional(bool, true)
+    skip_iam                   = optional(set(string), [])
   })
   default  = {}
   nullable = false

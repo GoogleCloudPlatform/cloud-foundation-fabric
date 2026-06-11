@@ -96,14 +96,12 @@ variable "boot_disk" {
   nullable = false
   validation {
     condition = (
-      var.boot_disk.initialize_params == null ||
-      (
-        var.boot_disk.source.attach == null &&
-        var.boot_disk.source.snapshot == null &&
-        var.boot_disk.source.disk == null
-      )
+      var.boot_disk.initialize_params != null ||
+      var.boot_disk.source.attach != null ||
+      var.boot_disk.source.snapshot != null ||
+      var.boot_disk.source.disk != null
     )
-    error_message = "Initialize params cannot be used when attaching an existing disk or creating from a snapshot."
+    error_message = "Either initialize params or one of attach, snapshot, source disk should be specified."
   }
   validation {
     condition = (
@@ -150,6 +148,10 @@ variable "context" {
     project_ids    = optional(map(string), {})
     subnets        = optional(map(string), {})
     tag_values     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   default  = {}
   nullable = false

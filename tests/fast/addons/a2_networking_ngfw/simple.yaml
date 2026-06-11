@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,22 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  google_certificate_manager_trust_config: 1
-  google_network_security_firewall_endpoint: 1
-  google_network_security_firewall_endpoint_association: 1
-  google_network_security_security_profile: 2
-  google_network_security_security_profile_group: 1
-  google_network_security_tls_inspection_policy: 1
-  google_privateca_ca_pool: 1
-  google_privateca_certificate_authority: 1
-  google_storage_bucket_object: 1
-  modules: 1
-  resources: 10
-
 values:
+  google_certificate_manager_trust_config.default["ngfw-0"]:
+    allowlisted_certificates:
+    - {}
+    deletion_policy: DELETE
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    labels: null
+    location: europe-west8
+    name: ngfw-0
+    project: xxx-prod-net-landing-0
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    trust_stores:
+    - intermediate_cas:
+      - {}
+      trust_anchors:
+      - {}
   google_network_security_firewall_endpoint.default["europe-west8-b"]:
     billing_project_id: xxx-prod-net-landing-0
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     endpoint_settings: []
@@ -39,6 +46,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   google_network_security_firewall_endpoint_association.default["europe-west8-b-prod"]:
+    deletion_policy: DELETE
     disabled: false
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -53,6 +61,7 @@ values:
   google_network_security_security_profile.default["ngfw-0"]:
     custom_intercept_profile: []
     custom_mirroring_profile: []
+    deletion_policy: DELETE
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -76,6 +85,7 @@ values:
   google_network_security_security_profile.url_filtering["ngfw-0"]:
     custom_intercept_profile: []
     custom_mirroring_profile: []
+    deletion_policy: DELETE
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -92,6 +102,7 @@ values:
   google_network_security_security_profile_group.default["ngfw-0"]:
     custom_intercept_profile: null
     custom_mirroring_profile: null
+    deletion_policy: DELETE
     description: null
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -104,6 +115,7 @@ values:
     timeouts: null
   google_network_security_tls_inspection_policy.default["ngfw-0"]:
     custom_tls_features: null
+    deletion_policy: DELETE
     description: null
     exclude_public_ca_set: null
     location: europe-west8
@@ -120,7 +132,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: different hash
     event_based_hold: null
     force_empty_content_type: null
@@ -131,6 +143,7 @@ values:
     temporary_hold: null
     timeouts: null
   module.cas["ngfw-0"].google_privateca_ca_pool.default[0]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     encryption_spec: []
@@ -188,6 +201,7 @@ values:
           unknown_extended_key_usages: []
         name_constraints: []
         policy_ids: []
+    deletion_policy: DELETE
     deletion_protection: false
     desired_state: null
     effective_labels:
@@ -209,3 +223,18 @@ values:
     timeouts: null
     type: SELF_SIGNED
     user_defined_access_urls: []
+
+counts:
+  google_certificate_manager_trust_config: 1
+  google_network_security_firewall_endpoint: 1
+  google_network_security_firewall_endpoint_association: 1
+  google_network_security_security_profile: 2
+  google_network_security_security_profile_group: 1
+  google_network_security_tls_inspection_policy: 1
+  google_privateca_ca_pool: 1
+  google_privateca_certificate_authority: 1
+  google_storage_bucket_object: 1
+  modules: 1
+  resources: 10
+
+outputs: {}

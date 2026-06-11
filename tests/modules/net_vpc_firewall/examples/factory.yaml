@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  module.firewall.google_compute_firewall.custom-rules["allow-healthchecks"]:
+  module.firewall.google_compute_firewall.custom_rules["allow-healthchecks"]:
     allow:
     - ports:
       - '80'
@@ -38,7 +38,7 @@ values:
     target_service_accounts: null
     target_tags:
     - lb-backends
-  module.firewall.google_compute_firewall.custom-rules["allow-service-1-to-service-2"]:
+  module.firewall.google_compute_firewall.custom_rules["allow-service-1-to-service-2"]:
     allow:
     - ports:
       - '80'
@@ -59,7 +59,7 @@ values:
     target_service_accounts:
     - service-2
     target_tags: null
-  module.firewall.google_compute_firewall.custom-rules["block-telnet"]:
+  module.firewall.google_compute_firewall.custom_rules["block-telnet"]:
     allow: []
     deny:
     - ports:

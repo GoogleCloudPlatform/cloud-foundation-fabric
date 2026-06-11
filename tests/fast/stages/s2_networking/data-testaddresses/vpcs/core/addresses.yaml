@@ -1,0 +1,57 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../../../schemas/addresses.schema.json
+
+external:
+  test-ext:
+    region: $locations:primary
+
+global:
+  test-global: {}
+
+internal:
+  test-int:
+    region: $locations:primary
+    subnetwork: $subnets:core/europe-west1/core-default
+
+psc:
+  # 1. Regional PSC Address only
+  psc-reg:
+    region: $locations:primary
+    subnet_self_link: $subnets:core/europe-west1/core-default
+
+  # 2. Regional PSC Address + Forwarding Rule
+  psc-reg-fr:
+    region: $locations:primary
+    subnet_self_link: $subnets:core/europe-west1/core-default
+    service_attachment:
+      psc_service_attachment_link: projects/producer-project/regions/europe-west1/serviceAttachments/my-sa
+
+  # 3. Global PSC Address only
+  psc-global:
+    network: $networks:core
+    address: "10.0.0.32"
+
+  # 4. Global PSC Address + Forwarding Rule
+  psc-global-fr:
+    network: $networks:core
+    address: "10.0.0.33"
+    service_attachment:
+      psc_service_attachment_link: projects/producer-project/global/serviceAttachments/my-global-sa
+
+network_attachments:
+  # 5. PSC Network Attachment (Producer side)
+  test-na:
+    subnet_self_link: projects/test-project/regions/europe-west1/subnetworks/core-default

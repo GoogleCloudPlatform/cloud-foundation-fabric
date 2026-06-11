@@ -16,6 +16,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Hybrid NEG creation](#hybrid-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Internet NEG creation](#internet-neg-creation)
+  - [Context](#context)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Files](#files)
 - [Variables](#variables)
@@ -313,6 +314,57 @@ module "ilb-l7" {
 # tftest modules=1 resources=6 inventory=internet-neg.yaml e2e
 ```
 
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "tcp-proxy" {
+  source     = "./fabric/modules/net-lb-proxy-int"
+  name       = "ilb-test"
+  project_id = "$project_ids:test"
+  region     = "$locations:ew8"
+  address    = "$addresses:test"
+  backend_service_config = {
+    backends = [{
+      group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+    }]
+  }
+  group_configs = {
+    default = {
+      zone = "$locations:ew8-b"
+      instances = [
+        "projects/myprj/zones/europe-west1-b/instances/vm-a"
+      ]
+      named_ports = { http = 80 }
+    }
+  }
+  vpc_config = {
+    network    = "$networks:test"
+    subnetwork = "$subnets:test"
+  }
+  context = {
+    addresses = {
+      test = "10.0.0.10"
+    }
+    locations = {
+      ew8   = "europe-west8"
+      ew8-b = "europe-west8-b"
+    }
+    networks = {
+      test = "projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0"
+    }
+    project_ids = {
+      test = "foo-test-0"
+    }
+    subnets = {
+      test = "projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce"
+    }
+  }
+}
+# tftest inventory=context.yaml
+```
+
 ## Deploying changes to load balancer configurations
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
@@ -334,21 +386,22 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L203) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L272) | Project id. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L277) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L297) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L221) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L290) | Project id. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L295) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L315) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
 | [backend_service_config](variables.tf#L23) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L77) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [global_access](variables.tf#L84) | Allow client access from all regions. | <code>bool</code> |  | <code>null</code> |
-| [group_configs](variables.tf#L90) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L104) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L110) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L197) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L208) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [port](variables.tf#L266) | Port. | <code>number</code> |  | <code>80</code> |
-| [service_attachment](variables.tf#L282) | PSC service attachment. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [context](variables.tf#L82) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L95) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [global_access](variables.tf#L102) | Allow client access from all regions. | <code>bool</code> |  | <code>null</code> |
+| [group_configs](variables.tf#L108) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L122) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L128) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L215) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L226) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [port](variables.tf#L284) | Port. | <code>number</code> |  | <code>80</code> |
+| [service_attachment](variables.tf#L300) | PSC service attachment. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

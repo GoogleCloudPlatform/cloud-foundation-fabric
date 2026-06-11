@@ -92,6 +92,8 @@ jobs:
           VERTEX_PROJECT: ${{ vars.REVIEWS_VERTEX_PROJECT }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           python3 tools/pr_review.py \
             --project "$VERTEX_PROJECT" \

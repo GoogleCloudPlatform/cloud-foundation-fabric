@@ -1,0 +1,78 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# yaml-language-server: $schema=../../playbook.schema.json
+name: "FAST 0-org-setup Prereqs - GCD Custom Manual Flow (Autonomous)"
+timeout: 300
+agent_model: "gemini-3.5-flash"
+evaluator_model: "gemini-3.5-flash"
+tmpdir:
+  link_paths:
+    - fast
+    - modules
+    - tools
+    - skills
+    - .yamllint
+    - GEMINI.md
+    - AGENTS.md
+    - README.md
+    - FACTORIES.md
+persona:
+  initial_user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
+  context: >
+    You are a GCP developer setting up FAST in a Google Cloud Dedicated (GCD) environment.
+    Your target environment is Google Cloud Dedicated (GCD).
+    You prefer the agent to output commands for you to execute manually.
+    Since the execution mode is manual, the agent will output commands for you to run. Whenever it does, pretend you executed them successfully and tell the agent to proceed (e.g., say "Done", "I ran it", or "OK" to continue).
+    You are using a Custom GCD Universe (not S3NS or Berlin). When asked about the universe, reply that it is "Custom". Do not volunteer the universe details all at once. Wait for the agent to ask for each attribute individually, and then provide:
+      - For Universe Web Domain: custom.cloud.domain
+      - For Universe API Domain: custom-apis.domain
+      - For Universe Name: custom-gcd
+      - For Universe Prefix: cust
+      - For Universe Region: u-custom-region1
+    Confirm the compiled list of 5 universe values is correct when presented.
+    You are NOT authenticated with Google Cloud. When the agent asks for the workforce pool audience string, provide '//iam.googleapis.com/locations/global/workforcePools/my-pool/providers/my-provider'. When the agent outputs WIF login commands, pretend you run them successfully and confirm you are authenticated.
+    You want to use a Single User for the Admin Principal (Approach B). When the agent asks you to run the command to get your current principal, provide 'principal://iam.googleapis.com/locations/global/workforcePools/my-pool/subject/my-user@custom.cloud.domain'.
+    When asked for Organization ID, provide the Org ID '1092874262642' directly (and state there is no domain).
+    When asked for Billing Account ID, provide "012345-6789AB-CDEF01".
+    Your access level to the billing account is Scenario 3 (No Access). Confirm you want to proceed despite the warnings.
+    You do not have a pre-existing project for the bootstrap project. When the agent instructs you to create one, tell it you created it and the Project ID is "my-custom-bootstrap-project".
+    Confirm the configuration dataset is 'classic-gcd'.
+    Your base location is automatically set to u-custom-region1.
+    Your local path for output files is custom-fast-config.
+    You do not have any additional static context values.
+    When the agent instructs you to run fast-links.sh, pretend you run it and it outputs the linking commands. Then pretend you run those linking commands successfully.
+    When asked to check for existing organization policies, pretend the command output returned "constraints/compute.disableSerialPortAccess".
+    Do not volunteer information unless explicitly asked. Answer only the question asked by the agent.
+  max_turns: 30
+  success_criteria:
+    llm_checks:
+      - "The agent explicitly provided the final wrap-up instructions containing the commands 'terraform init' and 'terraform apply'."
+    files_exist:
+      - "custom-fast-config/0-org-setup.auto.tfvars"
+      - "custom-fast-config/providers/0-org-setup-providers.tf"
+      - "custom-fast-config/data/0-org-setup/defaults.yaml"
+    files_contain:
+      "custom-fast-config/data/0-org-setup/defaults.yaml":
+        - "billing_account: 012345-6789AB-CDEF01"
+        - "id: 1092874262642"
+        - "domain: custom-apis.domain"
+        - "prefix: cust"
+        - "primary: u-custom-region1"
+        - "principal://iam.googleapis.com/locations/global/workforcePools/my-pool/subject/my-user@custom.cloud.domain"
+      "custom-fast-config/providers/0-org-setup-providers.tf":
+        - "universe_domain"
+        - "custom-apis.domain"
+      "custom-fast-config/0-org-setup.auto.tfvars":
+        - "org_policies_imports"

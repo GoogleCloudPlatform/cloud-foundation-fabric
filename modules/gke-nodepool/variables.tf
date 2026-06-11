@@ -96,11 +96,12 @@ variable "node_config" {
       provisioned_iops       = optional(number)
       provisioned_throughput = optional(number)
     }))
-    boot_disk_kms_key   = optional(string)                # usage of this is discouraged
-    disk_size_gb        = optional(number)                # usage of this is discouraged
-    disk_type           = optional(string, "pd-balanced") # usage of this is discouraged
-    ephemeral_ssd_count = optional(number)
-    gcfs                = optional(bool, false)
+    boot_disk_kms_key                 = optional(string)                # usage of this is discouraged
+    disk_size_gb                      = optional(number)                # usage of this is discouraged
+    disk_type                         = optional(string, "pd-balanced") # usage of this is discouraged
+    ephemeral_ssd_count               = optional(number)
+    ephemeral_storage_local_ssd_count = optional(number)
+    gcfs                              = optional(bool, false)
     guest_accelerator = optional(object({
       count = number
       type  = string
@@ -142,7 +143,34 @@ variable "node_config" {
       enable_secure_boot          = optional(bool)
     }))
     spot                          = optional(bool)
+    flex_start                    = optional(bool)
     workload_metadata_config_mode = optional(string)
+    advanced_machine_features = optional(object({
+      enable_nested_virtualization = optional(bool)
+      threads_per_core             = optional(number)
+    }))
+    containerd_config = optional(object({
+      private_registry_access_config = optional(object({
+        certificate_authority_domain_config = optional(list(object({
+          fqdns                                            = list(string)
+          gcp_secret_manager_certificate_config_secret_uri = string
+        })))
+      }))
+      writable_cgroups = optional(bool)
+      registry_hosts = optional(map(object({
+        hosts = optional(map(object({
+          capabilities                     = optional(list(string))
+          override_path                    = optional(bool)
+          dial_timeout                     = optional(string)
+          header                           = optional(map(list(string)))
+          ca_gcp_secret_manager_secret_uri = optional(string)
+          client = optional(object({
+            cert_gcp_secret_manager_secret_uri = string
+            key_gcp_secret_manager_secret_uri  = optional(string)
+          }))
+        })), {})
+      })), {})
+    }))
   })
   default  = {}
   nullable = false

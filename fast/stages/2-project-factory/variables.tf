@@ -17,6 +17,7 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    cidr_ranges_sets      = optional(map(list(string)), {})
     condition_vars        = optional(map(map(string)), {})
     custom_roles          = optional(map(string), {})
     email_addresses       = optional(map(string), {})
@@ -27,8 +28,12 @@ variable "context" {
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     tag_values            = optional(map(string), {})
-    vpc_host_projects     = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
+    vpc_host_projects = optional(map(string), {})
+    vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -39,10 +44,12 @@ variable "factories_config" {
   type = object({
     dataset = optional(string, "datasets/classic")
     paths = optional(object({
-      defaults = optional(string, "defaults.yaml")
-      folders  = optional(string, "folders")
-      projects = optional(string, "projects")
-      budgets  = optional(string)
+      defaults          = optional(string, "defaults.yaml")
+      folders           = optional(string, "folders")
+      projects          = optional(string, "projects")
+      project_templates = optional(string, "project-templates")
+      budgets           = optional(string)
+      vpcs              = optional(string, "vpcs")
     }), {})
   })
   nullable = false

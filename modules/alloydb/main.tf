@@ -172,7 +172,7 @@ resource "google_alloydb_cluster" "primary" {
 
   # psc_config block should exist only when PSC is enabled to prevent Terraform state drift
   dynamic "psc_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       psc_enabled = true
     }
@@ -218,6 +218,14 @@ resource "google_alloydb_instance" "primary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = var.machine_config.cpu_count
     machine_type = var.machine_config.machine_type
@@ -240,9 +248,24 @@ resource "google_alloydb_instance" "primary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 
@@ -259,14 +282,14 @@ resource "google_alloydb_instance" "primary" {
   dynamic "observability_config" {
     for_each = try(var.observability_config.enabled, false) ? [""] : []
     content {
-      enabled                 = var.observability_config.enabled
-      preserve_comments       = var.observability_config.preserve_comments
-      track_wait_events       = var.observability_config.track_wait_events
-      max_query_string_length = var.observability_config.max_query_string_length
-      record_application_tags = var.observability_config.record_application_tags
-      query_plans_per_minute  = var.observability_config.query_plans_per_minute
-      track_active_queries    = var.observability_config.track_active_queries
-      # track_client_address          = var.observability_config.track_client_address # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+      enabled                       = var.observability_config.enabled
+      preserve_comments             = var.observability_config.preserve_comments
+      track_wait_events             = var.observability_config.track_wait_events
+      max_query_string_length       = var.observability_config.max_query_string_length
+      record_application_tags       = var.observability_config.record_application_tags
+      query_plans_per_minute        = var.observability_config.query_plans_per_minute
+      track_active_queries          = var.observability_config.track_active_queries
+      track_client_address          = var.observability_config.track_client_address
       assistive_experiences_enabled = var.observability_config.assistive_experiences_enabled
     }
   }
@@ -313,11 +336,14 @@ resource "google_alloydb_cluster" "secondary" {
 
       weekly_schedule {
         days_of_week = var.automated_backup_configuration.weekly_schedule.days_of_week
-        start_times {
-          hours   = var.automated_backup_configuration.weekly_schedule.start_times.hours
-          minutes = 0
-          seconds = 0
-          nanos   = 0
+        dynamic "start_times" {
+          for_each = var.automated_backup_configuration.weekly_schedule.start_times
+          content {
+            hours   = start_times.value.hours
+            minutes = 0
+            seconds = 0
+            nanos   = 0
+          }
         }
       }
 
@@ -372,7 +398,7 @@ resource "google_alloydb_cluster" "secondary" {
 
   # psc_config block should exist only when PSC is enabled to prevent Terraform state drift
   dynamic "psc_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       psc_enabled = true
     }
@@ -421,6 +447,14 @@ resource "google_alloydb_instance" "secondary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = coalesce(try(var.cross_region_replication.secondary_machine_config.cpu_count, null), var.machine_config.cpu_count)
     machine_type = local.secondary_machine_type
@@ -443,9 +477,24 @@ resource "google_alloydb_instance" "secondary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 
@@ -493,6 +542,14 @@ resource "google_alloydb_instance" "read_pool_primary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = each.value.machine_config.cpu_count
     machine_type = each.value.machine_config.machine_type
@@ -514,9 +571,24 @@ resource "google_alloydb_instance" "read_pool_primary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 
@@ -537,14 +609,14 @@ resource "google_alloydb_instance" "read_pool_primary" {
   dynamic "observability_config" {
     for_each = try(each.value.observability_config.enabled, false) ? [""] : []
     content {
-      enabled                 = each.value.observability_config.enabled
-      preserve_comments       = each.value.observability_config.preserve_comments
-      track_wait_events       = each.value.observability_config.track_wait_events
-      max_query_string_length = each.value.observability_config.max_query_string_length
-      record_application_tags = each.value.observability_config.record_application_tags
-      query_plans_per_minute  = each.value.observability_config.query_plans_per_minute
-      track_active_queries    = each.value.observability_config.track_active_queries
-      # track_client_address          = each.value.observability_config.track_client_address # There is a PR to add this feature to the provider. Tracking it here: https://github.com/GoogleCloudPlatform/magic-modules/pull/17067
+      enabled                       = each.value.observability_config.enabled
+      preserve_comments             = each.value.observability_config.preserve_comments
+      track_wait_events             = each.value.observability_config.track_wait_events
+      max_query_string_length       = each.value.observability_config.max_query_string_length
+      record_application_tags       = each.value.observability_config.record_application_tags
+      query_plans_per_minute        = each.value.observability_config.query_plans_per_minute
+      track_active_queries          = each.value.observability_config.track_active_queries
+      track_client_address          = each.value.observability_config.track_client_address
       assistive_experiences_enabled = each.value.observability_config.assistive_experiences_enabled
     }
   }
@@ -575,6 +647,14 @@ resource "google_alloydb_instance" "read_pool_secondary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = each.value.machine_config.cpu_count
     machine_type = each.value.machine_config.machine_type
@@ -596,9 +676,24 @@ resource "google_alloydb_instance" "read_pool_secondary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 

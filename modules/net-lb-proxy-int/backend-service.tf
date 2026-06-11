@@ -36,8 +36,8 @@ locals {
 
 resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
-  project                         = var.project_id
-  region                          = var.region
+  project                         = local.project_id
+  region                          = local.region
   name                            = coalesce(var.backend_service_config.name, var.name)
   description                     = var.backend_service_config.description
   affinity_cookie_ttl_sec         = var.backend_service_config.affinity_cookie_ttl_sec
@@ -93,10 +93,12 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "log_config" {
-    for_each = var.backend_service_config.log_sample_rate == null ? [] : [""]
+    for_each = var.backend_service_config.log_config == null ? [] : [""]
     content {
-      enable      = true
-      sample_rate = var.backend_service_config.log_sample_rate
+      enable          = var.backend_service_config.log_config.enable
+      sample_rate     = var.backend_service_config.log_config.sample_rate
+      optional_mode   = var.backend_service_config.log_config.optional_mode
+      optional_fields = var.backend_service_config.log_config.optional_fields
     }
   }
 

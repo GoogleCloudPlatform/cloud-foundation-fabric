@@ -111,6 +111,6 @@ terraform apply
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
 | [instance_addresses](outputs.tf#L17) | Instance names and addresses. |  |  |
-| [instance_ssh](outputs.tf#L24) | Instance SSH commands. |  |  |
-| [service_account_emails](outputs.tf#L33) | Service account emails. |  |  |
+| [instance_ssh](outputs.tf#L24) | Instance SSH commands. | ✓ |  |
+| [service_account_emails](outputs.tf#L34) | Service account emails. |  |  |
 <!-- END TFDOC -->

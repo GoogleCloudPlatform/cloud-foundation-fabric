@@ -118,18 +118,18 @@ module "bucket" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L71) | Name of the logging bucket. | <code>string</code> | ✓ |  |
-| [parent](variables.tf#L76) | ID of the parent resource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L75) | Name of the logging bucket. | <code>string</code> | ✓ |  |
+| [parent](variables.tf#L80) | ID of the parent resource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L32) | Human-readable description for the logging bucket. | <code>string</code> |  | <code>null</code> |
-| [kms_key_name](variables.tf#L38) | To enable CMEK for a project logging bucket, set this field to a valid name. The associated service account requires cloudkms.cryptoKeyEncrypterDecrypter roles assigned for the key. | <code>string</code> |  | <code>null</code> |
-| [location](variables.tf#L44) | Location of the bucket. | <code>string</code> |  | <code>&#34;global&#34;</code> |
-| [locked](variables.tf#L50) | Whether the bucket is locked. Locked buckets may only be deleted if they are empty. This can only be set for project-level buckets. | <code>bool</code> |  | <code>null</code> |
-| [log_analytics](variables.tf#L60) | Enable and configure Analytics Log. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [parent_type](variables.tf#L84) | Parent object type for the bucket (project, folder, organization, billing_account). | <code>string</code> |  | <code>&#34;project&#34;</code> |
-| [retention](variables.tf#L91) | Retention time in days for the logging bucket. | <code>number</code> |  | <code>30</code> |
-| [tag_bindings](variables.tf#L97) | Tag bindings for this bucket, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [views](variables.tf#L104) | Log views for this bucket. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L36) | Human-readable description for the logging bucket. | <code>string</code> |  | <code>null</code> |
+| [kms_key_name](variables.tf#L42) | To enable CMEK for a project logging bucket, set this field to a valid name. The associated service account requires cloudkms.cryptoKeyEncrypterDecrypter roles assigned for the key. | <code>string</code> |  | <code>null</code> |
+| [location](variables.tf#L48) | Location of the bucket. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [locked](variables.tf#L54) | Whether the bucket is locked. Locked buckets may only be deleted if they are empty. This can only be set for project-level buckets. | <code>bool</code> |  | <code>null</code> |
+| [log_analytics](variables.tf#L64) | Enable and configure Analytics Log. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [parent_type](variables.tf#L88) | Parent object type for the bucket (project, folder, organization, billing_account). | <code>string</code> |  | <code>&#34;project&#34;</code> |
+| [retention](variables.tf#L95) | Retention time in days for the logging bucket. | <code>number</code> |  | <code>30</code> |
+| [tag_bindings](variables.tf#L101) | Tag bindings for this bucket, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [views](variables.tf#L108) | Log views for this bucket. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

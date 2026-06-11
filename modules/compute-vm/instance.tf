@@ -111,10 +111,8 @@ resource "google_compute_instance" "default" {
         var.boot_disk.initialize_params == null
         ||
         var.boot_disk.use_independent_disk != null
-        || (
-          var.boot_disk.source.snapshot != null &&
-          var.boot_disk.source.attach != null
-        )
+        ||
+        var.boot_disk.source.attach != null
         ? []
         : [""]
       )

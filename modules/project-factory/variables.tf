@@ -25,6 +25,7 @@ variable "context" {
     kms_keys              = optional(map(string), {})
     locations             = optional(map(string), {})
     log_buckets           = optional(map(string), {})
+    networks              = optional(map(string), {})
     notification_channels = optional(map(string), {})
     project_ids           = optional(map(string), {})
     project_numbers       = optional(map(string), {})
@@ -32,8 +33,12 @@ variable "context" {
     storage_buckets       = optional(map(string), {})
     tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})
-    vpc_host_projects     = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
+    vpc_host_projects = optional(map(string), {})
+    vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -48,7 +53,19 @@ variable "data_defaults" {
     }), {})
     contacts        = optional(map(list(string)), {})
     deletion_policy = optional(string)
-    labels          = optional(map(string), {})
+    factories_config = optional(object({
+      aspect_types           = optional(string)
+      custom_roles           = optional(string)
+      data_catalog_taxonomy  = optional(string)
+      observability          = optional(string)
+      org_policies           = optional(string)
+      pam_entitlements       = optional(string)
+      quotas                 = optional(string)
+      scc_mute_configs       = optional(string)
+      scc_sha_custom_modules = optional(string)
+      tags                   = optional(string)
+    }), {})
+    labels = optional(map(string), {})
     locations = optional(object({
       bigquery = optional(string)
       logging  = optional(string)
@@ -69,6 +86,12 @@ variable "data_defaults" {
       display_name   = optional(string, "Terraform-managed.")
       iam_self_roles = optional(list(string))
     })), {})
+    service_agents_config = optional(object({
+      create_primary_agents      = optional(bool, true)
+      grant_default_roles        = optional(bool, true)
+      grant_service_agent_editor = optional(bool, true)
+      skip_iam                   = optional(set(string), [])
+    }), {})
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_service_config = optional(object({
@@ -133,6 +156,18 @@ variable "data_overrides" {
     }), {})
     contacts        = optional(map(list(string)))
     deletion_policy = optional(string)
+    factories_config = optional(object({
+      aspect_types           = optional(string)
+      custom_roles           = optional(string)
+      data_catalog_taxonomy  = optional(string)
+      observability          = optional(string)
+      org_policies           = optional(string)
+      pam_entitlements       = optional(string)
+      quotas                 = optional(string)
+      scc_mute_configs       = optional(string)
+      scc_sha_custom_modules = optional(string)
+      tags                   = optional(string)
+    }))
     locations = optional(object({
       bigquery = optional(string)
       logging  = optional(string)
@@ -163,11 +198,14 @@ variable "data_overrides" {
 }
 
 variable "factories_config" {
-  description = "Path to folder with YAML resource description data files."
+  description = "Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder."
   type = object({
     basepath = string
     budgets = optional(object({
       billing_account = optional(string)
+    }), {})
+    exclusions = optional(object({
+      projects = optional(list(string), [])
     }), {})
     paths = optional(object({
       budgets           = optional(string, "budgets")

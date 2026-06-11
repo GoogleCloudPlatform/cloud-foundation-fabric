@@ -107,7 +107,7 @@ module "vpn-ha" {
   }
   context = {
     locations    = local.ctx.locations
-    network      = local.ctx_vpcs.names
+    networks     = local.ctx_vpcs.names
     project_ids  = local.ctx_projects.project_ids
     routers      = local.ctx_routers.names
     vpn_gateways = local.ctx_gateways

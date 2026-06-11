@@ -37,6 +37,7 @@
     <br>*additional properties: false*
     - **`^[a-z0-9-]+$`**: *object*
       <br>*additional properties: false*
+      - **display_name**: *string*
       - **description**: *string*
       - **prefix**: *string*
       - **iam**: *reference([iam](#refs-iam))*
@@ -48,6 +49,7 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+      - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 - **billing_account**: *string*
 - **billing_budgets**: *array*
   - items: *string*
@@ -95,7 +97,9 @@
   <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
 - **factories_config**: *object*
   <br>*additional properties: false*
+  - **aspect_types**: *string*
   - **custom_roles**: *string*
+  - **data_catalog_taxonomy**: *string*
   - **observability**: *string*
   - **org_policies**: *string*
   - **quotas**: *string*
@@ -107,6 +111,29 @@
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **iam_by_principals_additive**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_deny_policies**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **display_name**: *string*
+    - ⁺**rules**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **description**: *string*
+        - ⁺**denied_permissions**: *array*
+          - items: *string*
+        - ⁺**denied_principals**: *array*
+          - items: *string*
+        - **denial_condition**: *object*
+          <br>*additional properties: false*
+          - ⁺**expression**: *string*
+          - **title**: *string*
+          - **description**: *string*
+          - **location**: *string*
+        - **exception_permissions**: *array*
+          - items: *string*
+        - **exception_principals**: *array*
+          - items: *string*
 - **kms**: *object*
   <br>*additional properties: false*
   - **autokeys**: *object*
@@ -149,6 +176,16 @@
   - items: *string*
 - **name**: *string*
 - **descriptive_name**: *string*
+- **dns_threat_detector**: *object*
+  <br>*additional properties: false*
+  - **enabled**: *boolean*
+  - **excluded_networks**: *array*
+    - items: *string*
+  - **labels**: *object*
+  - **location**: *string*
+  - **name**: *string*
+  - **threat_detector_provider**: *string*
+    <br>*enum: ['INFOBLOX']*
 - **org_policies**: *object*
   <br>*additional properties: false*
   - **`^[a-z]+\.`**: *object*
@@ -216,6 +253,13 @@
     - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
     - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
     - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
+- **service_agents_config**: *object*
+  <br>*additional properties: false*
+  - **create_primary_agents**: *boolean*
+  - **grant_default_roles**: *boolean*
+  - **grant_service_agent_editor**: *boolean*
+  - **skip_iam**: *array*
+    - items: *string*
 - **service_encryption_key_ids**: *object*
   <br>*additional properties: false*
   - **`^[a-z-]+\.googleapis\.com$`**: *array*
@@ -353,7 +397,7 @@
   - **`^[a-z0-9-]+$`**: *reference([bucket](#refs-bucket))*
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|\$custom_roles:)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -364,7 +408,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -377,7 +421,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -387,7 +431,7 @@
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)`**: *object*
@@ -399,7 +443,7 @@
       - **description**: *string*
     - ⁺**roles**: *array*
       - items: *string*
-        <br>*pattern: ^(?:roles/|\$custom_roles:)*
+        <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*

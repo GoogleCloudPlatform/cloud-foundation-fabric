@@ -35,17 +35,24 @@ locals {
   }
 }
 
-module "firewall_policies" {
+moved {
+  from = module.firewall_policies
+  to   = module.firewall-policies
+}
+
+module "firewall-policies" {
   source        = "../../../modules/net-firewall-policy"
   for_each      = local.firewall_policies
   attachments   = each.value.attachments
   name          = each.key
   parent_id     = each.value.parent
+  region        = try(each.value.region, null)
   egress_rules  = each.value.egress_rules
   ingress_rules = each.value.ingress_rules
   context = {
     folder_ids       = local.ctx_folders
     cidr_ranges_sets = local.ctx.cidr_ranges_sets
     tag_values       = local.ctx.tag_values
+    locations        = local.ctx.locations
   }
 }

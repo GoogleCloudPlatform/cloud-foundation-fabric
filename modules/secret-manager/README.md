@@ -214,10 +214,10 @@ module "secret-manager" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L40) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L44) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_number](variables.tf#L45) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. | <code>string</code> |  | <code>null</code> |
-| [secrets](variables.tf#L51) | Map of secrets to manage. Defaults to global secrets unless region is set. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_number](variables.tf#L49) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. | <code>string</code> |  | <code>null</code> |
+| [secrets](variables.tf#L55) | Map of secrets to manage. Defaults to global secrets unless region is set. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

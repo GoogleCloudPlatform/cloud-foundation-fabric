@@ -1,4 +1,4 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -72,7 +72,12 @@ def _test_terraform_example(plan_validator, example):
                     directive.kwargs.get('fixtures'))
     elif example.type == 'tfvars':
       (tmp_path / 'terraform.auto.tfvars').write_text(example.code)
-      shutil.copytree(example.module, tmp_path, dirs_exist_ok=True)
+
+      def ignore_missing(src, names):
+        return [n for n in names if not (Path(src) / n).exists()]
+
+      shutil.copytree(example.module, tmp_path, dirs_exist_ok=True,
+                      ignore=ignore_missing)
       tf_var_files = [(tmp_path / 'terraform.auto.tfvars').resolve()]
 
     inventory = []
@@ -81,8 +86,17 @@ def _test_terraform_example(plan_validator, example):
       inventory = BASE_PATH.parent / python_test_path / 'examples'
       inventory = inventory / directive.kwargs['inventory']
 
-    summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
-                             tf_var_files=tf_var_files)
+    try:
+      summary = plan_validator(module_path=tmp_path, inventory_paths=inventory,
+                               tf_var_files=tf_var_files)
+    except AssertionError:
+      repo_root = BASE_PATH.parents[1]
+      readme_rel = example.readme_path.relative_to(repo_root)
+      index_arg = f" --index {example.index}" if example.index > 1 else ""
+      print(
+          f'To regenerate inventory run:\nuv run tools/generate_plan_summary.py '
+          f'{readme_rel} "{example.header}"{index_arg} --save')
+      raise
 
     print('\n')
     print(yaml.dump({'values': summary.values}))

@@ -71,7 +71,11 @@ resource "google_dns_response_policy_rule" "default" {
   project         = local.project_id
   response_policy = local.policy_name
   rule_name       = each.key
-  dns_name        = each.value.dns_name
+  dns_name = lookup(
+    local.ctx.dns_names,
+    each.value.dns_name,
+    each.value.dns_name
+  )
   behavior = (
     length(each.value.local_data) == 0 ? each.value.behavior : null
   )
@@ -86,10 +90,21 @@ resource "google_dns_response_policy_rule" "default" {
           # so we comply with the console UI and set it to the rule dns name
           # name    = split(" ", data.key)[1]
           # type    = split(" ", data.key)[0]
-          name    = each.value.dns_name
-          type    = data.key
-          ttl     = data.value.ttl
-          rrdatas = data.value.rrdatas
+          name = lookup(
+            local.ctx.dns_names,
+            each.value.dns_name,
+            each.value.dns_name
+          )
+          type = data.key
+          ttl  = data.value.ttl
+          rrdatas = [
+            for rrdata in data.value.rrdatas
+            : lookup(
+              local.ctx.addresses,
+              rrdata,
+              rrdata
+            )
+          ]
         }
       }
     }

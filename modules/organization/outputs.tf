@@ -125,6 +125,20 @@ output "scc_mute_configs" {
   value       = google_scc_v2_organization_mute_config.scc_mute_configs
 }
 
+output "scim_tenants" {
+  description = "Workforce Identity provider SCIM tenants."
+  value = {
+    for k, v in google_iam_workforce_pool_provider_scim_tenant.default : k => {
+      id            = v.id
+      pool          = v.workforce_pool_id
+      provider      = v.provider_id
+      state         = v.state
+      base_uri      = v.base_uri
+      service_agent = v.service_agent
+    }
+  }
+}
+
 output "service_agents" {
   description = "Identities of all organization-level service agents."
   value       = local.service_agents

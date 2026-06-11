@@ -19,7 +19,5 @@ parent: $folder_ids:security
 tag_bindings:
   environment: $tag_values:environment/development
 iam_by_principals:
-  $iam_principals:service_accounts/iac-0/iac-dp-dev-ro:
-    - $custom_roles:cloudkms_viewer
   $iam_principals:service_accounts/iac-0/iac-pf-ro:
     - $custom_roles:cloudkms_viewer

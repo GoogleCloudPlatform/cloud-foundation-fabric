@@ -42,12 +42,15 @@ def _prepare_root_module(path):
   # directories that are automatically read by terraform. Useful
   # to avoid surprises if, for example, you have an active fast
   # deployment with links to configs)
-  ignore_patterns = shutil.ignore_patterns('*.auto.tfvars',
-                                           '*.auto.tfvars.json',
-                                           '[0-9]-*-providers.tf',
-                                           'terraform.tfstate*',
-                                           '.terraform.lock.hcl',
-                                           'terraform.tfvars', '.terraform')
+  _ignore = shutil.ignore_patterns('*.auto.tfvars', '*.auto.tfvars.json',
+                                   '[0-9]-*-providers.tf', 'terraform.tfstate*',
+                                   '.terraform.lock.hcl', 'terraform.tfvars',
+                                   '.terraform', '.git', 'pytest-*', 'fabric')
+
+  def ignore_patterns(src, names):
+    ignored = set(_ignore(src, names))
+    ignored.update([n for n in names if not (Path(src) / n).exists()])
+    return list(ignored)
 
   with tempfile.TemporaryDirectory(dir=path.parent) as tmp_path:
     tmp_path = Path(tmp_path)
@@ -56,6 +59,10 @@ def _prepare_root_module(path):
     # ~20% slower than when run in a copy made with symlinks=False.
     shutil.copytree(path, tmp_path, dirs_exist_ok=True, symlinks=False,
                     ignore=ignore_patterns)
+    # Recreate the 'fabric' symlink to avoid copying the whole repository
+    # recursively (which happens if followed via symlinks=False)
+    if (path / 'fabric').is_symlink():
+      (tmp_path / 'fabric').symlink_to((path / 'fabric').readlink())
     lockfile = _REPO_ROOT / 'tools' / 'lockfile' / '.terraform.lock.hcl'
     if lockfile.exists():
       shutil.copy(lockfile, tmp_path / '.terraform.lock.hcl')
@@ -142,6 +149,26 @@ def plan_summary(module_path, basedir, tf_var_files=None, extra_files=None,
     del tf
 
     return PlanSummary(values, dict(counts), outputs)
+
+
+def filter_plan_values(values, ignored_attributes):
+  """Remove ignored attributes from plan values recursively."""
+  if not ignored_attributes:
+    return values
+
+  def _filter(obj):
+    if isinstance(obj, dict):
+      for attr in ignored_attributes:
+        obj.pop(attr, None)
+      for k, v in obj.items():
+        _filter(v)
+    elif isinstance(obj, list):
+      for item in obj:
+        _filter(item)
+
+  for addr, resource_values in values.items():
+    _filter(resource_values)
+  return values
 
 
 @pytest.fixture(name='plan_summary')
@@ -319,10 +346,8 @@ def get_tfvars_for_e2e():
   missing_vars = set([f'TFTEST_E2E_{k}' for k in _variables]) - set(
       os.environ.keys())
   if missing_vars:
-    raise RuntimeError(
-        f'Missing environment variables: {missing_vars} required to run E2E tests. '
-        f'Consult CONTRIBUTING.md to understand how to set them up. '
-        f'If you want to skip E2E tests add -k "not examples_e2e" to your pytest call'
+    pytest.skip(
+        f'Missing environment variables: {missing_vars} required to run E2E tests.'
     )
   tf_vars = {k: os.environ.get(f'TFTEST_E2E_{k}') for k in _variables}
   if tf_vars['region'] == tf_vars['region_secondary']:

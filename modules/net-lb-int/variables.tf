@@ -29,7 +29,12 @@ variable "backend_service_config" {
       drop_traffic_if_unhealthy = optional(bool)
       ratio                     = optional(number)
     }))
-    log_sample_rate  = optional(number)
+    log_config = optional(object({
+      enable          = optional(bool)
+      sample_rate     = optional(number)
+      optional_mode   = optional(string)
+      optional_fields = optional(list(string))
+    }))
     name             = optional(string)
     description      = optional(string, "Terraform managed.")
     protocol         = optional(string, "UNSPECIFIED")
