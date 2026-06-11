@@ -22,7 +22,8 @@
       <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
     - **labels**: *object*
       <br>*additional properties: false*
-      - **`^[a-z0-9_-]+$`**: *string*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **locations**: *object*
       <br>*additional properties: false*
       - **bigquery**: *string*
@@ -81,7 +82,8 @@
         - items: *string*
     - **labels**: *object*
       <br>*additional properties: false*
-      - **`^[a-z0-9_-]+$`**: *string*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **metric_scopes**: *array*
       - items: *string*
     - **service_encryption_key_ids**: *object*
