@@ -36,6 +36,10 @@ locals {
       })
     ]
   ])
+  forwarding_rule_names = {
+    for k, v in var.forwarding_rules_config :
+    k => k == "" ? var.name : "${var.name}-${k}"
+  }
   health_check = (
     local.has_psc_backend
     ? null
@@ -53,11 +57,6 @@ locals {
     for b in coalesce(var.backend_service_config.backends, []) :
     try(var.neg_configs[b.group].psc != null, false)
   ])
-  ip_address = (
-    var.address == null
-    ? null
-    : lookup(local.ctx.addresses, var.address, var.address)
-  )
   neg_endpoints = {
     for v in local._neg_endpoints : (v.key) => v
   }
@@ -79,22 +78,37 @@ locals {
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  for_each              = toset([for p in var.ports : tostring(p)])
-  provider              = google-beta
-  project               = local.project_id
-  region                = local.region
-  name                  = "${var.name}-${each.key}"
-  description           = var.description
-  ip_address            = local.ip_address
-  ip_protocol           = "TCP"
+  for_each    = var.forwarding_rules_config
+  provider    = google-beta
+  project     = local.project_id
+  region      = local.region
+  name        = coalesce(each.value.name, local.forwarding_rule_names[each.key])
+  description = coalesce(each.value.description, var.description)
+  ip_address  = try(local.ctx.addresses[each.value.address], each.value.address)
+  ip_protocol = "TCP"
+  ip_version = (
+    each.value.address != null
+    ? null
+    : (
+      each.value.ipv6 == true
+      ? "IPV6"
+      : "IPV4" # do not set if address is provided
+    )
+  )
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = local.network
-  port_range            = each.key
+  port_range            = each.value.port
   subnetwork            = local.subnetwork
   labels                = var.labels
   target                = google_compute_region_target_tcp_proxy.default.id
-  # during the preview phase you cannot change this attribute on an existing rule
-  allow_global_access = var.global_access
+  # During the preview phase you cannot change this attribute on an existing rule
+  allow_global_access = each.value.global_access
+
+  lifecycle {
+    replace_triggered_by = [
+      google_compute_region_target_tcp_proxy.default
+    ]
+  }
 }
 
 resource "google_compute_region_target_tcp_proxy" "default" {
@@ -249,17 +263,6 @@ resource "google_compute_service_attachment" "default" {
     content {
       project_id_or_num = accept.key
       connection_limit  = accept.value
-    }
-  }
-}
-
-resource "terraform_data" "neg_psc_trigger" {
-  triggers_replace = {
-    for k, v in local.neg_regional_psc : k => {
-      target_service = v.psc.target_service
-      network        = v.psc.network
-      subnetwork     = v.psc.subnetwork
-      region         = v.psc.region
     }
   }
 }

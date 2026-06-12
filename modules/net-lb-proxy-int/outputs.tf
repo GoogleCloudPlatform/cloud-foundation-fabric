@@ -15,8 +15,11 @@
  */
 
 output "address" {
-  description = "Forwarding rule address."
-  value       = local.ip_address
+  description = "Forwarding rules addresses."
+  value = {
+    for k, v in google_compute_forwarding_rule.default
+    : v.name => v.ip_address
+  }
 }
 
 output "backend_service" {

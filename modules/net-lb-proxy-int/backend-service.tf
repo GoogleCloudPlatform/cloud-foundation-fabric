@@ -34,6 +34,14 @@ locals {
   )
 }
 
+resource "terraform_data" "neg_trigger" {
+  input = {
+    zonal    = { for k, v in google_compute_network_endpoint_group.default : k => v.id }
+    psc      = { for k, v in google_compute_region_network_endpoint_group.psc : k => v.id }
+    internet = { for k, v in google_compute_region_network_endpoint_group.internet : k => v.id }
+  }
+}
+
 resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
   project                         = local.project_id
@@ -102,9 +110,10 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
+
   lifecycle {
     replace_triggered_by = [
-      terraform_data.neg_psc_trigger
+      terraform_data.neg_trigger
     ]
   }
 }

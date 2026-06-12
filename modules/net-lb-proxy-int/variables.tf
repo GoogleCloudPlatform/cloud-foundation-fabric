@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
-
 variable "backend_service_config" {
   description = "Backend service level configuration."
   type = object({
@@ -98,11 +92,20 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-# during the preview phase you cannot change this attribute on an existing rule
-variable "global_access" {
-  description = "Allow client access from all regions."
-  type        = bool
-  default     = null
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address       = optional(string)
+    description   = optional(string)
+    global_access = optional(bool, true)
+    ipv6          = optional(bool, false)
+    name          = optional(string)
+    port          = optional(number, 80)
+    protocol      = optional(string, "TCP")
+  }))
+  default = {
+    "" = {}
+  }
 }
 
 variable "group_configs" {
@@ -282,14 +285,6 @@ variable "neg_configs" {
   }
 }
 
-# When specifying multiple ports, you must pass a
-# SHARED_LOADBALANCER_VIP address
-variable "ports" {
-  description = "Ports."
-  type        = list(number)
-  default     = [80]
-}
-
 variable "project_id" {
   description = "Project id."
   type        = string
@@ -310,7 +305,7 @@ variable "service_attachment" {
     description           = optional(string)
     domain_name           = optional(string)
     enable_proxy_protocol = optional(bool, false)
-    forwarding_rule       = optional(string, "80")
+    forwarding_rule       = optional(string)
     reconcile_connections = optional(bool)
   })
   default = null
