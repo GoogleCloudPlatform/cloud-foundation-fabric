@@ -228,6 +228,7 @@ resource "google_compute_target_https_proxy" "default" {
   http_keep_alive_timeout_sec      = var.https_proxy_config.http_keepalive_timeout
   quic_override                    = var.https_proxy_config.quic_override
   ssl_policy                       = var.https_proxy_config.ssl_policy
+  server_tls_policy                = var.https_proxy_config.server_tls_policy
   url_map                          = google_compute_url_map.default.id
 }
 
