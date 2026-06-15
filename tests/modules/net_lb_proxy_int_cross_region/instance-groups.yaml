@@ -133,6 +133,11 @@ values:
     project: my-project
     proxy_header: NONE
     timeouts: null
+  terraform_data.neg_trigger:
+    input:
+      psc: {}
+      zonal: {}
+    triggers_replace: null
 
 counts:
   google_compute_backend_service: 1
@@ -141,7 +146,8 @@ counts:
   google_compute_instance_group: 1
   google_compute_target_tcp_proxy: 1
   modules: 0
-  resources: 6
+  resources: 7
+  terraform_data: 1
 
 outputs:
   addresses: __missing__

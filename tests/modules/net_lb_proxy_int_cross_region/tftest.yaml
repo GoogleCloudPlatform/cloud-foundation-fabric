@@ -19,3 +19,5 @@ tests:
   health-checks-tcp:
   context:
   instance-groups:
+  multiple-ports:
+  psc:

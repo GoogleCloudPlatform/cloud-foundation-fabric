@@ -37,10 +37,22 @@ locals {
     for k, v in coalesce(var.addresses, {}) : k => lookup(local.ctx.addresses, v, v)
   }
   health_check = (
-    var.health_check != null
-    ? var.health_check
-    : google_compute_health_check.default[0].self_link
+    local.has_psc_backend
+    ? null
+    : (
+      var.health_check == null
+      ? (
+        var.health_check_config == null
+        ? null
+        : google_compute_health_check.default[0].self_link
+      )
+      : var.health_check
+    )
   )
+  has_psc_backend = anytrue([
+    for b in coalesce(var.backend_service_config.backends, []) :
+    try(var.neg_configs[b.group].psc != null, false)
+  ])
   neg_endpoints = {
     for v in local._neg_endpoints : (v.key) => v
   }
@@ -61,22 +73,43 @@ locals {
   subnetworks = {
     for k, v in var.vpc_config.subnetworks : k => lookup(local.ctx.subnets, v, v)
   }
+  _fwd_rules = flatten([
+    for sk, sv in local.subnetworks : [
+      for rk, rv in var.forwarding_rules_config : {
+        subnet_key = sk
+        subnet     = sv
+        rule_key   = rk
+        rule       = rv
+        key        = rk == "" ? sk : "${sk}-${rk}"
+      }
+    ]
+  ])
+  fwd_rules = {
+    for f in local._fwd_rules : f.key => f
+  }
 }
 
 resource "google_compute_global_forwarding_rule" "default" {
-  for_each              = local.subnetworks
+  for_each              = local.fwd_rules
   provider              = google-beta
   project               = local.project_id
-  name                  = "${var.name}-${each.key}"
-  description           = var.description
-  ip_address            = try(local.addresses[each.key], null)
+  name                  = each.value.rule.name != null ? "${each.value.rule.name}-${each.value.subnet_key}" : (each.value.rule_key == "" ? "${var.name}-${each.value.subnet_key}" : "${var.name}-${each.value.subnet_key}-${each.value.rule_key}")
+  description           = coalesce(each.value.rule.description, var.description)
+  ip_address            = try(local.addresses[each.key], local.addresses[each.value.subnet_key], each.value.rule.address, null)
   ip_protocol           = "TCP"
+  ip_version            = each.value.rule.ipv6 == true ? "IPV6" : null
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = local.network
-  port_range            = tostring(var.port)
-  subnetwork            = each.value
+  port_range            = tostring(each.value.rule.port)
+  subnetwork            = each.value.subnet
   labels                = var.labels
   target                = google_compute_target_tcp_proxy.default.id
+
+  lifecycle {
+    replace_triggered_by = [
+      google_compute_target_tcp_proxy.default
+    ]
+  }
 }
 
 resource "google_compute_target_tcp_proxy" "default" {
@@ -124,12 +157,24 @@ resource "google_compute_network_endpoint" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "psc" {
-  for_each              = local.neg_regional_psc
-  project               = coalesce(each.value.project_id, local.project_id)
-  name                  = "${var.name}-${each.key}"
-  region                = lookup(local.ctx.locations, each.value.psc.region, each.value.psc.region)
-  network               = lookup(local.ctx.networks, each.value.psc.network, each.value.psc.network)
-  subnetwork            = lookup(local.ctx.subnets, each.value.psc.subnetwork, each.value.psc.subnetwork)
+  for_each = local.neg_regional_psc
+  project  = coalesce(each.value.project_id, local.project_id)
+  name     = "${var.name}-${each.key}"
+  region   = lookup(local.ctx.locations, each.value.psc.region, each.value.psc.region)
+  network = (
+    each.value.psc.network == null
+    ? null
+    : try(local.ctx.networks[each.value.psc.network], each.value.psc.network)
+  )
+  subnetwork = (
+    each.value.psc.subnetwork == null
+    ? null
+    : try(local.ctx.subnets[each.value.psc.subnetwork], each.value.psc.subnetwork)
+  )
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
+
+  psc_data {
+    producer_port = each.value.psc.producer_port
+  }
 }

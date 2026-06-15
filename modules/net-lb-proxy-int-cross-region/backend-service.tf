@@ -30,6 +30,13 @@ locals {
   )
 }
 
+resource "terraform_data" "neg_trigger" {
+  input = {
+    zonal = { for k, v in google_compute_network_endpoint_group.default : k => v.id }
+    psc   = { for k, v in google_compute_region_network_endpoint_group.psc : k => v.id }
+  }
+}
+
 resource "google_compute_backend_service" "default" {
   provider                        = google-beta
   project                         = local.project_id
@@ -37,12 +44,18 @@ resource "google_compute_backend_service" "default" {
   description                     = var.backend_service_config.description
   affinity_cookie_ttl_sec         = var.backend_service_config.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
-  health_checks                   = [local.health_check]
+  health_checks                   = local.health_check == null ? null : [local.health_check]
   load_balancing_scheme           = "INTERNAL_MANAGED"
   port_name                       = var.backend_service_config.port_name
   protocol                        = "TCP"
   session_affinity                = var.backend_service_config.session_affinity
   timeout_sec                     = var.backend_service_config.timeout_sec
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.neg_trigger
+    ]
+  }
 
   dynamic "backend" {
     for_each = { for b in coalesce(var.backend_service_config.backends, []) : b.group => b }

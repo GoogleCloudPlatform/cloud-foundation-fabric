@@ -16,6 +16,7 @@ This module allows managing Cross-region Internal Proxy Network Load Balancers (
   - [Network Endpoint Groups (NEGs)](#network-endpoint-groups-negs)
     - [Zonal NEG creation](#zonal-neg-creation)
     - [Hybrid NEG creation](#hybrid-neg-creation)
+  - [Multiple Forwarding Rules](#multiple-forwarding-rules)
 - [Variables](#variables)
 - [Outputs](#outputs)
 <!-- END TOC -->
@@ -29,7 +30,6 @@ module "tcp-proxy-cross-region" {
   source     = "./fabric/modules/net-lb-proxy-int-cross-region"
   name       = "ilb-proxy-test"
   project_id = "$project_ids:my-project"
-  port       = 80
 
   context = {
     project_ids = {
@@ -100,7 +100,7 @@ module "tcp-proxy-cross-region" {
     ]
   }
 }
-# tftest modules=1 resources=9
+# tftest modules=1 resources=10
 ```
 
 ### Health Checks
@@ -114,7 +114,6 @@ module "tcp-proxy-cross-region" {
   source     = "./fabric/modules/net-lb-proxy-int-cross-region"
   name       = "ilb-proxy-test"
   project_id = var.project_id
-  port       = 80
 
   vpc_config = {
     network = var.vpc.self_link
@@ -138,7 +137,7 @@ module "tcp-proxy-cross-region" {
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=5
 ```
 
 ### Network Endpoint Groups (NEGs)
@@ -152,7 +151,6 @@ module "tcp-proxy-cross-region" {
   source     = "./fabric/modules/net-lb-proxy-int-cross-region"
   name       = "ilb-proxy-test"
   project_id = var.project_id
-  port       = 80
 
   vpc_config = {
     network = var.vpc.self_link
@@ -180,7 +178,7 @@ module "tcp-proxy-cross-region" {
     }]
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6
 ```
 
 #### Hybrid NEG creation
@@ -192,7 +190,6 @@ module "tcp-proxy-cross-region" {
   source     = "./fabric/modules/net-lb-proxy-int-cross-region"
   name       = "ilb-proxy-test"
   project_id = var.project_id
-  port       = 80
 
   vpc_config = {
     network = var.vpc.self_link
@@ -225,27 +222,66 @@ module "tcp-proxy-cross-region" {
     }]
   }
 }
+# tftest modules=1 resources=7
+```
+
+### Multiple Forwarding Rules
+
+This example shows how to configure multiple ports/forwarding rules on the cross-region proxy load balancer.
+
+```hcl
+module "tcp-proxy-cross-region" {
+  source     = "./fabric/modules/net-lb-proxy-int-cross-region"
+  name       = "ilb-proxy-test"
+  project_id = var.project_id
+
+  vpc_config = {
+    network = var.vpc.self_link
+    subnetworks = {
+      europe-west1 = var.subnet1.self_link
+    }
+  }
+
+  forwarding_rules_config = {
+    web = {
+      port = 80
+    }
+    app = {
+      port = 8080
+    }
+  }
+
+  backend_service_config = {
+    backends = [{
+      group = "projects/my-project/zones/europe-west1-b/networkEndpointGroups/my-neg"
+      max_connections = {
+        per_endpoint = 100
+      }
+    }]
+  }
+}
 # tftest modules=1 resources=6
 ```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L204) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L258) | Project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L274) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L220) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L269) | Project id. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L285) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [addresses](variables.tf#L17) | Optional IP addresses used for the forwarding rules, mapped by subnetwork key. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [backend_service_config](variables.tf#L23) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L72) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [description](variables.tf#L85) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [group_configs](variables.tf#L91) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L105) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L111) | Optional auto-created health check configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L198) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L209) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [port](variables.tf#L252) | Forwarding rule port. Cross-region internal proxy load balancers support a single port. | <code>number</code> |  | <code>80</code> |
-| [target_proxy_config](variables.tf#L263) | Target proxy configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [forwarding_rules_config](variables.tf#L91) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L105) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L119) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L125) | Optional auto-created health check configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L214) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L225) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [target_proxy_config](variables.tf#L274) | Target proxy configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

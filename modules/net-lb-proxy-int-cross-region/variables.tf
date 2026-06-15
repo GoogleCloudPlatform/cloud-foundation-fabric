@@ -88,6 +88,20 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address     = optional(string)
+    description = optional(string)
+    ipv6        = optional(bool, false)
+    name        = optional(string)
+    port        = optional(number, 80)
+  }))
+  default = {
+    "" = {}
+  }
+}
+
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
@@ -176,17 +190,19 @@ variable "health_check_config" {
   }
   validation {
     condition = (
-      (try(var.health_check_config.grpc, null) == null ? 0 : 1) +
-      (try(var.health_check_config.http, null) == null ? 0 : 1) +
-      (try(var.health_check_config.http2, null) == null ? 0 : 1) +
-      (try(var.health_check_config.https, null) == null ? 0 : 1) +
-      (try(var.health_check_config.tcp, null) == null ? 0 : 1) +
-      (try(var.health_check_config.ssl, null) == null ? 0 : 1) <= 1
+      var.health_check_config == null ? true : (
+        (try(var.health_check_config.grpc, null) == null ? 0 : 1) +
+        (try(var.health_check_config.http, null) == null ? 0 : 1) +
+        (try(var.health_check_config.http2, null) == null ? 0 : 1) +
+        (try(var.health_check_config.https, null) == null ? 0 : 1) +
+        (try(var.health_check_config.tcp, null) == null ? 0 : 1) +
+        (try(var.health_check_config.ssl, null) == null ? 0 : 1) <= 1
+      )
     )
     error_message = "Only one health check type can be configured at a time."
   }
   validation {
-    condition = alltrue([
+    condition = var.health_check_config == null ? true : alltrue([
       for k, v in var.health_check_config : contains([
         "-", "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"
       ], coalesce(try(v.port_specification, null), "-"))
@@ -232,6 +248,7 @@ variable "neg_configs" {
       region         = string
       target_service = string
       network        = optional(string)
+      producer_port  = optional(number)
       subnetwork     = optional(string)
     }))
   }))
@@ -247,12 +264,6 @@ variable "neg_configs" {
     ])
     error_message = "Only one type of neg can be configured at a time."
   }
-}
-
-variable "port" {
-  description = "Forwarding rule port. Cross-region internal proxy load balancers support a single port."
-  type        = number
-  default     = 80
 }
 
 variable "project_id" {
