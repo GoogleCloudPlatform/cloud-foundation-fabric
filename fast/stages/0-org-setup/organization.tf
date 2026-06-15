@@ -74,6 +74,10 @@ locals {
   org_tag_values = {
     for k, v in module.organization[0].tag_values : k => v.id
   }
+  org_tag_vars = {
+    for k, v in module.organization[0].tag_keys :
+    k => v.namespaced_name if try(v.allowed_values_regex, "") != ""
+  }
 }
 
 module "organization" {

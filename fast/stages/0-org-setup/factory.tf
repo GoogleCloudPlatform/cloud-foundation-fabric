@@ -61,6 +61,9 @@ module "factory" {
       local.ctx.tag_values,
       local.org_tag_values
     )
+    tag_vars = merge(try(local.ctx.tag_vars, {}), {
+      organization = local.org_tag_vars
+    })
   })
   factories_config = {
     basepath = var.factories_config.dataset
