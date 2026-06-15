@@ -239,8 +239,12 @@
     "labels": {
       "type": "object",
       "description": "Labels for the object (optional).",
-      "additionalProperties": {
-        "type": "string"
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_-]{0,62}$": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]{0,63}$"
+        }
       }
     },
     "max_workstations": {
@@ -397,8 +401,12 @@
           "labels": {
             "type": "object",
             "description": "Labels for the workstation (optional).",
-            "additionalProperties": {
-              "type": "string"
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
             }
           }
         }

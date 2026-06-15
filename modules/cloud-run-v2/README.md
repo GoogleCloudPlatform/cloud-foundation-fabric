@@ -21,6 +21,7 @@ Cloud Run Services and Jobs, with support for IAM roles and Eventarc trigger cre
 - [Tag bindings](#tag-bindings)
 - [IAP Configuration](#iap-configuration)
 - [Adding GPUs](#adding-gpus)
+- [Multi-Region Service](#multi-region-service)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -976,6 +977,30 @@ module "worker" {
 }
 # tftest inventory=gpu-workerpool.yaml e2e
 ```
+
+## Multi-Region Service
+
+```hcl
+module "cloud_run" {
+  source     = "./fabric/modules/cloud-run-v2"
+  project_id = var.project_id
+  region     = "global"
+  name       = "example-mr"
+  containers = {
+    hello = {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+    }
+  }
+  service_config = {
+    ingress = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+    multi_region_settings = {
+      regions = ["europe-west8", "europe-west1"]
+    }
+  }
+  deletion_protection = false
+}
+# tftest inventory=multiregion.yaml
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -996,11 +1021,11 @@ module "worker" {
 | [revision](variables.tf#L197) | Revision template configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_account_config](variables-serviceaccount.tf#L17) | Service account configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_config](variables.tf#L264) | Cloud Run service specific configuration options. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L327) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [type](variables.tf#L334) | Type of Cloud Run resource to deploy: JOB, SERVICE or WORKERPOOL. | <code>string</code> |  | <code>&#34;SERVICE&#34;</code> |
-| [volumes](variables.tf#L344) | Named volumes in containers in name => attributes format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L330) | Tag bindings for this service, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [type](variables.tf#L337) | Type of Cloud Run resource to deploy: JOB, SERVICE or WORKERPOOL. | <code>string</code> |  | <code>&#34;SERVICE&#34;</code> |
+| [volumes](variables.tf#L347) | Named volumes in containers in name => attributes format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [vpc_connector_create](variables-vpcconnector.tf#L17) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [workerpool_config](variables.tf#L378) | Cloud Run Worker Pool specific configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [workerpool_config](variables.tf#L381) | Cloud Run Worker Pool specific configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
