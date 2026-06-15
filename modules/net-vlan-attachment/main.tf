@@ -23,9 +23,12 @@ locals {
   }
   ipsec_enabled = var.vpn_gateways_ip_range == null ? false : true
   network       = lookup(local.ctx.networks, var.network, var.network)
-  project_id    = lookup(local.ctx.project_ids, var.project_id, var.project_id)
-  region        = lookup(local.ctx.locations, var.region, var.region)
-  router_name   = lookup(local.ctx.routers, try(var.router_config.name, ""), try(var.router_config.name, ""))
+  policy_names = {
+    for k, v in try(var.router_config.route_policies, {}) : k => "${k}-${substr(sha256(jsonencode(v)), 0, 8)}"
+  }
+  project_id  = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region      = lookup(local.ctx.locations, var.region, var.region)
+  router_name = lookup(local.ctx.routers, try(var.router_config.name, ""), try(var.router_config.name, ""))
   router = (
     var.router_config.create
     ? local.ipsec_enabled ? try(google_compute_router.encrypted[0].name, null) : try(google_compute_router.unencrypted[0].name, null)
@@ -148,8 +151,8 @@ resource "google_compute_router_peer" "default" {
     : null
   )
 
-  export_policies = try(var.dedicated_interconnect_config.export_policies, null)
-  import_policies = try(var.dedicated_interconnect_config.import_policies, null)
+  export_policies = try(var.bgp_peer.export_policies, null) == null ? null : [for p in var.bgp_peer.export_policies : lookup(local.policy_names, p, p)]
+  import_policies = try(var.bgp_peer.import_policies, null) == null ? null : [for p in var.bgp_peer.import_policies : lookup(local.policy_names, p, p)]
 
   dynamic "advertised_ip_ranges" {
     for_each = var.bgp_peer != null ? try(var.bgp_peer.custom_advertise.ip_ranges, {}) : var.ipsec_gateway_ip_ranges
@@ -209,7 +212,7 @@ resource "google_compute_router_route_policy" "default" {
   project  = var.project_id
   region   = var.region
   router   = local.router
-  name     = each.key
+  name     = local.policy_names[each.key]
   type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
 
   dynamic "terms" {
@@ -229,6 +232,10 @@ resource "google_compute_router_route_policy" "default" {
         location    = try(terms.value.actions.location, null)
       }
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   depends_on = [

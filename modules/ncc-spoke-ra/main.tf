@@ -15,6 +15,9 @@
  */
 
 locals {
+  policy_names = {
+    for k, v in try(var.router_config.route_policies, {}) : k => "${k}-${substr(sha256(jsonencode(v)), 0, 8)}"
+  }
   spoke_vms = [
     for ras in var.router_appliances : {
       ip = ras.internal_ip
@@ -22,8 +25,8 @@ locals {
       vm_name = element(
         split("/", ras.vm_self_link), length(split("/", ras.vm_self_link)) - 1
       )
-      export_policies = try(ras.export_policies, [])
-      import_policies = try(ras.import_policies, [])
+      export_policies = ras.export_policies == null ? null : [for p in ras.export_policies : lookup(local.policy_names, p, p)]
+      import_policies = ras.import_policies == null ? null : [for p in ras.import_policies : lookup(local.policy_names, p, p)]
     }
   ]
 }
@@ -151,7 +154,7 @@ resource "google_compute_router_route_policy" "default" {
   project  = var.project_id
   region   = var.region
   router   = google_compute_router.cr.name
-  name     = each.key
+  name     = local.policy_names[each.key]
   type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
 
   dynamic "terms" {
@@ -171,6 +174,10 @@ resource "google_compute_router_route_policy" "default" {
         location    = try(terms.value.actions.location, null)
       }
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   depends_on = [google_compute_router.cr]

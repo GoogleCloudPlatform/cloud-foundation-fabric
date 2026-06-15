@@ -141,7 +141,7 @@ values:
     service_label: null
     source_ip_ranges: null
     timeouts: null
-  module.vpn-dynamic.google_compute_forwarding_rule.udp-4500:
+  module.vpn-dynamic.google_compute_forwarding_rule.udp_4500:
     all_ports: null
     allow_global_access: null
     allow_psc_global_access: null
@@ -162,7 +162,7 @@ values:
     service_label: null
     source_ip_ranges: null
     timeouts: null
-  module.vpn-dynamic.google_compute_forwarding_rule.udp-500:
+  module.vpn-dynamic.google_compute_forwarding_rule.udp_500:
     all_ports: null
     allow_global_access: null
     allow_psc_global_access: null
@@ -223,10 +223,10 @@ values:
     enable: true
     enable_ipv6: false
     export_policies:
-    - export-policy
+    - export-policy-c4be966d
     import_policies:
-    - import-rfc1918
-    - import-drop-all
+    - import-rfc1918-5baac578
+    - import-drop-all-6f8f7ce1
     interface: gateway-1-remote-1
     md5_authentication_key: []
     name: gateway-1-remote-1
@@ -240,7 +240,7 @@ values:
     zero_advertised_route_priority: null
     zero_custom_learned_route_priority: false
   module.vpn-dynamic.google_compute_router_route_policy.default["export-policy"]:
-    name: export-policy
+    name: export-policy-c4be966d
     project: my-project
     region: europe-west1
     router: vpn-gateway-1
@@ -259,7 +259,7 @@ values:
     timeouts: null
     type: ROUTE_POLICY_TYPE_EXPORT
   module.vpn-dynamic.google_compute_router_route_policy.default["import-drop-all"]:
-    name: import-drop-all
+    name: import-drop-all-6f8f7ce1
     project: my-project
     region: europe-west1
     router: vpn-gateway-1
@@ -278,7 +278,7 @@ values:
     timeouts: null
     type: ROUTE_POLICY_TYPE_IMPORT
   module.vpn-dynamic.google_compute_router_route_policy.default["import-rfc1918"]:
-    name: import-rfc1918
+    name: import-rfc1918-5baac578
     project: my-project
     region: europe-west1
     router: vpn-gateway-1

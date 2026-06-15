@@ -64,6 +64,10 @@ locals {
     for k, v in local._vlan_attachments_preprocess : k => merge(v, {
       region = try(v.region, local.vpc_defaults.region, null)
       mtu    = try(v.mtu, local.vpcs[v.vpc_key].mtu, local.vpc_defaults.mtu, 1500)
+      bgp_peer = try(v.bgp_peer, null) == null ? null : merge(v.bgp_peer, {
+        export_policies = try(v.bgp_peer.export_policies, null) == null ? null : [for p in v.bgp_peer.export_policies : lookup(local.policy_names, "${replace(try(v.router_config.name, null), "$routers:", "")}/${p}", p)]
+        import_policies = try(v.bgp_peer.import_policies, null) == null ? null : [for p in v.bgp_peer.import_policies : lookup(local.policy_names, "${replace(try(v.router_config.name, null), "$routers:", "")}/${p}", p)]
+      })
     })
   }
 

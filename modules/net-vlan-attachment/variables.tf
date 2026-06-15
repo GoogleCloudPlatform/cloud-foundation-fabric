@@ -37,6 +37,8 @@ variable "bgp_peer" {
       multiplier                  = optional(number)
       session_initialization_mode = optional(string, "ACTIVE")
     }))
+    export_policies = optional(list(string))
+    import_policies = optional(list(string))
     md5_authentication_key = optional(object({
       name = string
       key  = optional(string)
@@ -64,8 +66,6 @@ variable "dedicated_interconnect_config" {
     bandwidth                            = optional(string, "BPS_10G")
     bgp_range                            = optional(string)
     bgp_priority                         = optional(number)
-    export_policies                      = optional(list(string))
-    import_policies                      = optional(list(string))
     candidate_cloud_router_ip_address    = optional(string)
     candidate_customer_router_ip_address = optional(string)
     interconnect                         = string

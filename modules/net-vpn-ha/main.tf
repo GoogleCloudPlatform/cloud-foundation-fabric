@@ -34,6 +34,9 @@ locals {
     for k, v in var.peer_gateways :
     k => lookup(local.ctx.vpn_gateways, v.gcp, v.gcp) if v.gcp != null
   }
+  policy_names = {
+    for k, v in try(var.router_config.route_policies, {}) : k => "${k}-${substr(sha256(jsonencode(v)), 0, 8)}"
+  }
   project_id = lookup(
     local.ctx.project_ids, var.project_id, var.project_id
   )
@@ -114,8 +117,8 @@ resource "google_compute_router_peer" "bgp_peer" {
   project                   = local.project_id
   name                      = each.value.bgp_peer.name != null ? each.value.bgp_peer.name : "${var.name}-${each.key}"
   router                    = coalesce(each.value.router, local.router)
-  export_policies           = each.value.bgp_peer.export_policies
-  import_policies           = each.value.bgp_peer.import_policies
+  export_policies           = each.value.bgp_peer.export_policies == null ? null : [for p in each.value.bgp_peer.export_policies : lookup(local.policy_names, p, p)]
+  import_policies           = each.value.bgp_peer.import_policies == null ? null : [for p in each.value.bgp_peer.import_policies : lookup(local.policy_names, p, p)]
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
   advertised_route_priority = each.value.bgp_peer.route_priority
@@ -231,7 +234,7 @@ resource "google_compute_router_route_policy" "default" {
   project  = local.project_id
   region   = local.region
   router   = local.router
-  name     = each.key
+  name     = local.policy_names[each.key]
   type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
 
   dynamic "terms" {
@@ -251,6 +254,10 @@ resource "google_compute_router_route_policy" "default" {
         location    = try(terms.value.actions.location, null)
       }
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   depends_on = [google_compute_router.router]

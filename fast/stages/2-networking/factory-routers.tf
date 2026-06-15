@@ -46,11 +46,15 @@ locals {
           router_name = replace(router_key, "/", "-")
           project     = lookup(local.ctx_projects.project_ids, replace(router_config.project_id, "$project_ids:", ""), router_config.project_id)
           region      = lookup(local.ctx.locations, replace(router_config.region, "$locations:", ""), router_config.region)
-          name        = policy_key
+          name        = "${policy_key}-${substr(sha256(jsonencode(policy_config)), 0, 8)}"
         })
       }
     ]
   ])...)
+
+  policy_names = {
+    for k, v in local.router_route_policies : k => v.name
+  }
 }
 
 resource "google_compute_router" "default" {
@@ -115,6 +119,7 @@ resource "google_compute_router_route_policy" "default" {
   }
 
   lifecycle {
+    create_before_destroy = true
     precondition {
       condition     = contains(["IMPORT", "EXPORT"], each.value.type)
       error_message = "Route policy type must be either 'IMPORT' or 'EXPORT'."

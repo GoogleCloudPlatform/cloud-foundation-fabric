@@ -77,6 +77,10 @@ module "example-va" {
   name        = "vlan-attachment"
   description = "Example vlan attachment"
   peer_asn    = "65000"
+  bgp_peer = {
+    import_policies = ["import-rfc1918", "import-drop-all"]
+    export_policies = ["export-policy"]
+  }
   router_config = {
     create = false
     name   = google_compute_router.interconnect-router.name
@@ -134,8 +138,6 @@ module "example-va" {
     bgp_range       = "169.254.0.0/29"
     interconnect    = "https://www.googleapis.com/compute/v1/projects/my-project/global/interconnects/interconnect-a"
     vlan_tag        = 12345
-    import_policies = ["import-rfc1918", "import-drop-all"]
-    export_policies = ["export-policy"]
   }
 }
 # tftest modules=1 resources=8 inventory=bgp-route-policies.yaml
@@ -757,8 +759,8 @@ module "example-va-b" {
 | [router_config](variables.tf#L135) | Cloud Router configuration for the VPN. If you want to reuse an existing router, set create to false and use name to specify the desired router. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [admin_enabled](variables.tf#L17) | Whether the VLAN attachment is enabled. | <code>bool</code> |  | <code>true</code> |
 | [bgp_peer](variables.tf#L23) | BGP peer configuration for the VLAN attachment. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [context](variables.tf#L48) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [dedicated_interconnect_config](variables.tf#L60) | Dedicated interconnect configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [context](variables.tf#L50) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [dedicated_interconnect_config](variables.tf#L62) | Dedicated interconnect configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [ipsec_gateway_ip_ranges](variables.tf#L86) | IPSec Gateway IP Ranges. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [mtu](variables.tf#L92) | The MTU associated to the VLAN attachment (1440 / 1500). | <code>number</code> |  | <code>1500</code> |
 | [partner_interconnect_config](variables.tf#L108) | Partner interconnect configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

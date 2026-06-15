@@ -20,6 +20,9 @@ locals {
     ? try(google_compute_external_vpn_gateway.default[0].id, null)
     : var.peer_gateway_config.id
   )
+  policy_names = {
+    for k, v in try(var.router_config.route_policies, {}) : k => "${k}-${substr(sha256(jsonencode(v)), 0, 8)}"
+  }
   router = (
     var.router_config.create
     ? try(google_compute_router.default[0].name, null)
@@ -97,8 +100,8 @@ resource "google_compute_router_peer" "default" {
   router                    = local.router
   peer_ip_address           = each.value.bgp_peer.address
   peer_asn                  = each.value.bgp_peer.asn
-  export_policies           = try(each.value.bgp_peer.export_policies, null)
-  import_policies           = try(each.value.bgp_peer.import_policies, null)
+  export_policies           = each.value.bgp_peer.export_policies == null ? null : [for p in each.value.bgp_peer.export_policies : lookup(local.policy_names, p, p)]
+  import_policies           = each.value.bgp_peer.import_policies == null ? null : [for p in each.value.bgp_peer.import_policies : lookup(local.policy_names, p, p)]
   advertised_route_priority = each.value.bgp_peer.route_priority
   advertise_mode = (
     try(each.value.bgp_peer.custom_advertise, null) != null
@@ -163,7 +166,7 @@ resource "google_compute_router_route_policy" "default" {
   project  = var.project_id
   region   = var.region
   router   = local.router
-  name     = each.key
+  name     = local.policy_names[each.key]
   type     = each.value.type == "IMPORT" ? "ROUTE_POLICY_TYPE_IMPORT" : each.value.type == "EXPORT" ? "ROUTE_POLICY_TYPE_EXPORT" : null
 
   dynamic "terms" {
@@ -183,6 +186,10 @@ resource "google_compute_router_route_policy" "default" {
         location    = try(terms.value.actions.location, null)
       }
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   depends_on = [google_compute_router.default]
