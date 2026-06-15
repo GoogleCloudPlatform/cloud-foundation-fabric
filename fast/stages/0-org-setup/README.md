@@ -914,8 +914,8 @@ Define values for the `var.environments` variable in a tfvars file.
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L41) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L61) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [factories_config](variables.tf#L45) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L65) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
