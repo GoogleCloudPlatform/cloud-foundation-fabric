@@ -898,11 +898,11 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L194) | Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L200) | Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_defaults](variables.tf#L47) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_merges](variables.tf#L124) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_overrides](variables.tf#L143) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_merges](variables.tf#L130) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L149) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [folders](variables-folders.tf#L17) | Folders data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [notification_channels](variables-billing.tf#L17) | Notification channels used by budget alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [projects](variables-projects.tf#L17) | Projects data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -968,7 +968,7 @@ module "project-factory" {
     basepath = "data"
   }
 }
-# tftest modules=7 resources=31 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=10 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
@@ -995,6 +995,16 @@ tags:
           roles/resourcemanager.tagUser:
             - $iam_principals:tag-test
             - $iam_principals:service_accounts/test-1/tag-test
+service_accounts:
+  tag-test:
+    tag_bindings:
+      project-level: $tag_values:test-0/context/project-factory
+automation:
+  project: test-0
+  service_accounts:
+    auto-tag-test:
+      tag_bindings:
+        project-level: $tag_values:test-0/context/project-factory
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 

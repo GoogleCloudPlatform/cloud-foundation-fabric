@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
 values:
   google_cloudbuild_worker_pool.pool:
     annotations: null
+    deletion_policy: DELETE
     display_name: null
     location: europe-west9
     name: custom-pool
@@ -24,6 +25,7 @@ values:
     timeouts: null
     worker_config:
     - disk_size_gb: 100
+      enable_nested_virtualization: null
       machine_type: e2-standard-4
       no_external_ip: false
   google_project_iam_member.artifact_writer:
@@ -56,6 +58,7 @@ values:
       - repo_source: []
         storage_source:
         - bucket: bucket
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -70,6 +73,7 @@ values:
       available_cpu: '0.166'
       available_memory: 256M
       binary_authorization_policy: null
+      direct_vpc_network_interface: []
       environment_variables:
         LOG_EXECUTION_ID: 'true'
       ingress_settings: ALLOW_ALL
@@ -97,6 +101,7 @@ values:
   module.cf-http.google_service_account.service_account[0]:
     account_id: test-cf-http
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: test-cf-http
@@ -110,8 +115,9 @@ values:
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -128,3 +134,7 @@ counts:
   google_project_iam_member: 4
   google_service_account: 1
   google_storage_bucket_object: 1
+  modules: 1
+  resources: 9
+
+outputs: {}

@@ -95,7 +95,9 @@
       - **ip_protocol**: *string*
       - **src_range**: *string*
     - **labels**: *object*
-      <br>*additional properties: string*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **next_hop_ilb_ip**: *string*
     - **priority**: *number*
     - **target**: *object*

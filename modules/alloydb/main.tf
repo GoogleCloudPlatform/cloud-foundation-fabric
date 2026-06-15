@@ -172,7 +172,7 @@ resource "google_alloydb_cluster" "primary" {
 
   # psc_config block should exist only when PSC is enabled to prevent Terraform state drift
   dynamic "psc_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       psc_enabled = true
     }
@@ -218,6 +218,14 @@ resource "google_alloydb_instance" "primary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = var.machine_config.cpu_count
     machine_type = var.machine_config.machine_type
@@ -240,9 +248,24 @@ resource "google_alloydb_instance" "primary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 
@@ -375,7 +398,7 @@ resource "google_alloydb_cluster" "secondary" {
 
   # psc_config block should exist only when PSC is enabled to prevent Terraform state drift
   dynamic "psc_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       psc_enabled = true
     }
@@ -424,6 +447,14 @@ resource "google_alloydb_instance" "secondary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = coalesce(try(var.cross_region_replication.secondary_machine_config.cpu_count, null), var.machine_config.cpu_count)
     machine_type = local.secondary_machine_type
@@ -446,9 +477,24 @@ resource "google_alloydb_instance" "secondary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 
@@ -496,6 +542,14 @@ resource "google_alloydb_instance" "read_pool_primary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = each.value.machine_config.cpu_count
     machine_type = each.value.machine_config.machine_type
@@ -517,9 +571,24 @@ resource "google_alloydb_instance" "read_pool_primary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 
@@ -578,6 +647,14 @@ resource "google_alloydb_instance" "read_pool_secondary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = each.value.machine_config.cpu_count
     machine_type = each.value.machine_config.machine_type
@@ -599,9 +676,24 @@ resource "google_alloydb_instance" "read_pool_secondary" {
 
   # psc_instance_config block should exist only when there are PSC allowed consumer projects to prevent Terraform state drift
   dynamic "psc_instance_config" {
-    for_each = length(local.allowed_consumer_projects) > 0 ? [""] : []
+    for_each = (try(var.network_config.psc_config, null) != null ? [""] : [])
     content {
       allowed_consumer_projects = local.allowed_consumer_projects
+
+      dynamic "psc_interface_configs" {
+        for_each = (try(var.network_config.psc_config.psc_interface_configs, null) != null ? [""] : [])
+        content {
+          network_attachment_resource = try(var.network_config.psc_config.psc_interface_configs.network_attachment_resource, null)
+        }
+      }
+
+      dynamic "psc_auto_connections" {
+        for_each = try(var.network_config.psc_config.psc_auto_connections, null) == null ? [] : var.network_config.psc_config.psc_auto_connections
+        content {
+          consumer_network = psc_auto_connections.value.consumer_network
+          consumer_project = psc_auto_connections.value.consumer_project
+        }
+      }
     }
   }
 

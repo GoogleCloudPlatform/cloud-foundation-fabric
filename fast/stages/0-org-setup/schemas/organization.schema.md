@@ -56,6 +56,29 @@
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **iam_by_principals_additive**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_deny_policies**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **display_name**: *string*
+    - ⁺**rules**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **description**: *string*
+        - ⁺**denied_permissions**: *array*
+          - items: *string*
+        - ⁺**denied_principals**: *array*
+          - items: *string*
+        - **denial_condition**: *object*
+          <br>*additional properties: false*
+          - ⁺**expression**: *string*
+          - **title**: *string*
+          - **description**: *string*
+          - **location**: *string*
+        - **exception_permissions**: *array*
+          - items: *string*
+        - **exception_principals**: *array*
+          - items: *string*
 - **logging**: *object*
   <br>*additional properties: false*
   - **kms_key_name**: *string*

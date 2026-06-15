@@ -54,6 +54,7 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+      - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 - **autokey_config**: *object*
   <br>*additional properties: false*
   - **project**: *string*
@@ -171,6 +172,10 @@
 
 ## Definitions
 
+- **labels**<a name="refs-labels"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+    <br>*pattern: ^[a-z0-9_-]{0,63}$*
 - **bucket**<a name="refs-bucket"></a>: *object*
   <br>*additional properties: false*
   - **name**: *string*
@@ -179,8 +184,7 @@
   - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **force_destroy**: *boolean*
-  - **labels**: *object*
-    <br>*additional properties: string*
+  - **labels**: *reference([labels](#refs-labels))*
   - **location**: *string*
   - **managed_folders**: *object*
     <br>*additional properties: false*
@@ -308,8 +312,7 @@
   - ⁺**location**: *string*
   - ⁺**organization**: *string*
   - **enable_sovereign_controls**: *boolean*
-  - **labels**: *object*
-    <br>*additional properties: string*
+  - **labels**: *reference([labels](#refs-labels))*
   - **partner**: *string*
     <br>*enum: ['LOCAL_CONTROLS_BY_S3NS', 'PARTNER_UNSPECIFIED', 'SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM', 'SOVEREIGN_CONTROLS_BY_CNTXT', 'SOVEREIGN_CONTROLS_BY_PSN', 'SOVEREIGN_CONTROLS_BY_SIA_MINSAIT', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']*
   - **partner_permissions**: *object*

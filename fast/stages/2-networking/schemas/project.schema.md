@@ -49,6 +49,7 @@
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
+      - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 - **billing_account**: *string*
 - **billing_budgets**: *array*
   - items: *string*
@@ -166,7 +167,7 @@
             - ⁺**algorithm**: *string*
             - **protection_level**: *string*
               <br>*default: SOFTWARE*, *enum: ['SOFTWARE', 'HSM', 'EXTERNAL', 'EXTERNAL_VPC']*
-- **labels**: *object*
+- **labels**: *reference([labels](#refs-labels))*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
 - **log_buckets**: *object*
   <br>*additional properties: false*
@@ -180,7 +181,7 @@
   - **enabled**: *boolean*
   - **excluded_networks**: *array*
     - items: *string*
-  - **labels**: *object*
+  - **labels**: *reference([labels](#refs-labels))*
   - **location**: *string*
   - **name**: *string*
   - **threat_detector_provider**: *string*
@@ -252,6 +253,13 @@
     - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
     - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
     - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
+- **service_agents_config**: *object*
+  <br>*additional properties: false*
+  - **create_primary_agents**: *boolean*
+  - **grant_default_roles**: *boolean*
+  - **grant_service_agent_editor**: *boolean*
+  - **skip_iam**: *array*
+    - items: *string*
 - **service_encryption_key_ids**: *object*
   <br>*additional properties: false*
   - **`^[a-z-]+\.googleapis\.com$`**: *array*
@@ -319,6 +327,10 @@
 
 ## Definitions
 
+- **labels**<a name="refs-labels"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+    <br>*pattern: ^[a-z0-9_-]{0,63}$*
 - **bucket**<a name="refs-bucket"></a>: *object*
   <br>*additional properties: false*
   - **name**: *string*
@@ -329,8 +341,7 @@
   - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **force_destroy**: *boolean*
-  - **labels**: *object*
-    <br>*additional properties: string*
+  - **labels**: *reference([labels](#refs-labels))*
   - **lifecycle_rules**: *object*
     <br>*additional properties: false*
     - **`^[a-zA-Z0-9_-]+$`**: *object*
@@ -511,8 +522,7 @@
   - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
   - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
   - **kms_key**: *string*
-  - **labels**: *object*
-    <br>*additional properties: string*
+  - **labels**: *reference([labels](#refs-labels))*
   - **message_retention_duration**: *string*
   - **regions**: *array*
     - items: *string*
@@ -533,8 +543,7 @@
       - **iam**: *reference([iam](#refs-iam))*
       - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
       - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
-      - **labels**: *object*
-        <br>*additional properties: string*
+      - **labels**: *reference([labels](#refs-labels))*
       - **message_retention_duration**: *string*
       - **retain_acked_messages**: *boolean*
       - **bigquery**: *object*

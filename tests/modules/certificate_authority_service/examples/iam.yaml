@@ -1,10 +1,10 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,10 +12,104 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.cas.google_privateca_ca_pool.default[0]:
+    deletion_policy: DELETE
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    encryption_spec: []
+    issuance_policy: []
+    labels: null
+    location: europe-west1
+    name: test-ca
+    project: project-id
+    publishing_options: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    tier: DEVOPS
+    timeouts: null
+  module.cas.google_privateca_ca_pool_iam_binding.authoritative["roles/privateca.certificateManager"]:
+    condition: []
+    members:
+    - serviceAccount:sa1@sa.example
+    role: roles/privateca.certificateManager
+  module.cas.google_privateca_ca_pool_iam_member.bindings["cert-manager"]:
+    condition: []
+    member: group:organization-admins@example.org
+    role: roles/privateca.certificateManager
+  module.cas.google_privateca_certificate_authority.default["test-ca"]:
+    certificate_authority_id: test-ca
+    config:
+    - subject_config:
+      - subject:
+        - common_name: test.example.com
+          country_code: null
+          locality: null
+          organization: Test Example
+          organizational_unit: null
+          postal_code: null
+          province: null
+          street_address: null
+        subject_alt_name: []
+      subject_key_id: []
+      x509_config:
+      - additional_extensions: []
+        aia_ocsp_servers: null
+        ca_options:
+        - is_ca: true
+          max_issuer_path_length: null
+          non_ca: null
+          zero_max_issuer_path_length: null
+        key_usage:
+        - base_key_usage:
+          - cert_sign: true
+            content_commitment: false
+            crl_sign: true
+            data_encipherment: false
+            decipher_only: false
+            digital_signature: false
+            encipher_only: false
+            key_agreement: false
+            key_encipherment: true
+          extended_key_usage:
+          - client_auth: false
+            code_signing: false
+            email_protection: false
+            ocsp_signing: false
+            server_auth: true
+            time_stamping: false
+          unknown_extended_key_usages: []
+        name_constraints: []
+        policy_ids: []
+    deletion_policy: DELETE
+    deletion_protection: true
+    desired_state: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    gcs_bucket: null
+    ignore_active_certificates_on_deletion: false
+    key_spec:
+    - algorithm: RSA_PKCS1_2048_SHA256
+      cloud_kms_key_version: null
+    labels: null
+    lifetime: 315360000s
+    location: europe-west1
+    pem_ca_certificate: null
+    project: project-id
+    skip_grace_period: true
+    subordinate_config: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    type: SELF_SIGNED
+    user_defined_access_urls: []
+
 counts:
   google_privateca_ca_pool: 1
-  google_privateca_certificate_authority: 1
   google_privateca_ca_pool_iam_binding: 1
   google_privateca_ca_pool_iam_member: 1
+  google_privateca_certificate_authority: 1
   modules: 1
   resources: 4
+
+outputs: {}

@@ -55,7 +55,9 @@ except ImportError as e:
   sys.exit(1)
 
 FILTERED_ATTRIBUTES = [
+    'filename',
     'source_md5hash',
+    'pem_certificate',
 ]
 
 HEADER = "".join(open(__file__).readlines()[2:15])
@@ -169,7 +171,7 @@ def handle_readme(readme_path, target, index, save):
 
       assets_path = module_path / 'assets'
       if assets_path.exists():
-        (tmp_path / 'assets').symlink_to(assets_path)
+        (tmp_path / 'assets').symlink_to(assets_path.resolve())
 
       prepare_files(tmp_path, target_example.files, target_example.fixtures,
                     directive.kwargs.get('files'),

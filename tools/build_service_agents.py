@@ -56,10 +56,11 @@ ALIASES = {
 
 IGNORED_AGENTS = []
 
+# SKIP_IAM_AGENTS defines the GLOBAL/STATIC skip list.
+# These service agents are known to be created lazily by GCP and will ALWAYS
+# fail on API enablement if Fabric tries to grant default roles automatically.
+# Running this script marks them with `skip_iam: true` in `service-agents.yaml`.
 SKIP_IAM_AGENTS = [
-    # skips IAM role grants to the non-primary agents listed below as
-    # it's failing, possibly because the agents don't exist after API
-    # activation
     'service-PROJECT_NUMBER@gcp-sa-apigateway-mgmt.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-apigateway.iam.gserviceaccount.com',
     'service-PROJECT_NUMBER@gcp-sa-bigqueryspark.iam.gserviceaccount.com',

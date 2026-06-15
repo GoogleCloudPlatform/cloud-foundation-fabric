@@ -45,7 +45,14 @@
               "type": "string"
             },
             "labels": {
-              "type": "string"
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
+                }
+              }
             },
             "purpose": {
               "type": "string",

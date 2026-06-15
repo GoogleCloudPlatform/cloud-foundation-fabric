@@ -146,6 +146,9 @@
                 },
                 "iam_storage_roles": {
                   "$ref": "#/$defs/iam_storage_roles"
+                },
+                "tag_bindings": {
+                  "$ref": "#/$defs/tag_bindings"
                 }
               }
             }
@@ -543,7 +546,7 @@
       }
     },
     "labels": {
-      "type": "object"
+      "$ref": "#/$defs/labels"
     },
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
@@ -583,7 +586,7 @@
           }
         },
         "labels": {
-          "type": "object"
+          "$ref": "#/$defs/labels"
         },
         "location": {
           "type": "string"
@@ -812,6 +815,27 @@
             "tag_bindings": {
               "$ref": "#/$defs/tag_bindings"
             }
+          }
+        }
+      }
+    },
+    "service_agents_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "create_primary_agents": {
+          "type": "boolean"
+        },
+        "grant_default_roles": {
+          "type": "boolean"
+        },
+        "grant_service_agent_editor": {
+          "type": "boolean"
+        },
+        "skip_iam": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -1167,6 +1191,16 @@
     }
   },
   "$defs": {
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_-]{0,62}$": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]{0,63}$"
+        }
+      }
+    },
     "bucket": {
       "type": "object",
       "additionalProperties": false,
@@ -1197,10 +1231,7 @@
           "type": "boolean"
         },
         "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "$ref": "#/$defs/labels"
         },
         "lifecycle_rules": {
           "type": "object",
@@ -1781,10 +1812,7 @@
           "type": "string"
         },
         "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "$ref": "#/$defs/labels"
         },
         "message_retention_duration": {
           "type": "string"
@@ -1847,10 +1875,7 @@
                   "$ref": "#/$defs/iam_bindings_additive"
                 },
                 "labels": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
+                  "$ref": "#/$defs/labels"
                 },
                 "message_retention_duration": {
                   "type": "string"
