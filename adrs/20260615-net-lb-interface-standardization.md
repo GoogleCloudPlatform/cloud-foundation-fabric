@@ -217,7 +217,38 @@ Each module was tested using specific scenarios defined in `tfvars` files. Below
     }
     ```
 
-#### 3. `net-lb-app-int`
+#### 3. `net-lb-proxy-int-cross-region`
+
+*   **Multi-region MIGs (`test-cr-migs.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    name       = "test-ilb-l4-proxy-cr"
+    vpc_config = {
+      network = "$networks:dev"
+      subnetworks = {
+        europe-west1 = "$subnets:dev/europe-west1/gce"
+        europe-west8 = "$subnets:dev/europe-west8/gce"
+      }
+    }
+    backend_service_config = {
+      backends = [
+        { 
+          group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name-ew1"
+          max_connections = {
+            per_group = 100
+          }
+        },
+        { 
+          group = "projects/gce-project-id/zones/europe-west8-b/instanceGroups/mig-name-ew8"
+          max_connections = {
+            per_group = 100
+          }
+        }
+      ]
+    }
+    ```
+
+#### 4. `net-lb-app-int`
 
 *   **MIG with Actions (`test-mig-actions.tfvars`)**
     ```hcl
@@ -249,7 +280,7 @@ Each module was tested using specific scenarios defined in `tfvars` files. Below
     }
     ```
 
-#### 4. `net-lb-app-int-cross-region`
+#### 5. `net-lb-app-int-cross-region`
 
 *   **Multi-region MIGs (`test-cr-migs.tfvars`)**
     ```hcl
@@ -272,7 +303,7 @@ Each module was tested using specific scenarios defined in `tfvars` files. Below
     }
     ```
 
-#### 5. `net-lb-app-ext`
+#### 6. `net-lb-app-ext`
 
 *   **Cloud Run Scenario (`test-run.tfvars`)**
     ```hcl
@@ -303,7 +334,7 @@ Each module was tested using specific scenarios defined in `tfvars` files. Below
     }
     ```
 
-#### 6. `net-lb-app-ext-regional`
+#### 7. `net-lb-app-ext-regional`
 
 *   **MIG Scenario (`test-mig.tfvars`)**
     ```hcl

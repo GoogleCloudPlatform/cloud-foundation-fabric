@@ -27,7 +27,7 @@ locals {
   }
   backends = [
     for region in var.regions : {
-      backend = google_compute_region_network_endpoint_group.serverless_negs[region].id
+      group = google_compute_region_network_endpoint_group.serverless_negs[region].id
     }
   ]
 }
