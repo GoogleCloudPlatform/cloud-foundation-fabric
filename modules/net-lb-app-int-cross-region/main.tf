@@ -50,7 +50,15 @@ locals {
         ? null
         : lookup(local.ctx.project_ids, v.project_id, v.project_id)
       )
-      cloudrun = v.cloudrun
+      cloudrun = (
+        v.cloudrun == null
+        ? null
+        : {
+          region         = lookup(local.ctx.locations, v.cloudrun.region, v.cloudrun.region)
+          target_service = v.cloudrun.target_service
+          target_urlmask = v.cloudrun.target_urlmask
+        }
+      )
       gce = (
         v.gce == null
         ? null
@@ -66,7 +74,7 @@ locals {
             ? null
             : lookup(local.ctx.subnets, v.gce.subnetwork, v.gce.subnetwork)
           )
-          zone = v.gce.zone
+          zone = lookup(local.ctx.locations, v.gce.zone, v.gce.zone)
         }
       )
       hybrid = (
@@ -79,14 +87,14 @@ locals {
             ? null
             : lookup(local.ctx.networks, v.hybrid.network, v.hybrid.network)
           )
-          zone = v.hybrid.zone
+          zone = lookup(local.ctx.locations, v.hybrid.zone, v.hybrid.zone)
         }
       )
       psc = (
         v.psc == null
         ? null
         : {
-          region         = v.psc.region
+          region         = lookup(local.ctx.locations, v.psc.region, v.psc.region)
           target_service = v.psc.target_service
           network = (
             v.psc.network == null
@@ -120,6 +128,7 @@ locals {
         ? null
         : lookup(local.ctx.project_ids, v.project_id, v.project_id)
       )
+      zone = lookup(local.ctx.locations, v.zone, v.zone)
     })
   }
 
@@ -137,7 +146,10 @@ locals {
   _neg_endpoints = flatten([
     for k, v in local.neg_zonal : [
       for kk, vv in v.endpoints : merge(vv, {
-        key = "${k}-${kk}", neg = k, zone = v.zone
+        key        = "${k}-${kk}"
+        neg        = k
+        zone       = v.zone
+        ip_address = try(local.ctx.addresses[vv.ip_address], vv.ip_address)
       })
     ]
   ])

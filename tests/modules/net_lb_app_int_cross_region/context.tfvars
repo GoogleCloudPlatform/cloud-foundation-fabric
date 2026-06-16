@@ -34,10 +34,16 @@ service_attachment = {
   }
 }
 
+group_configs = {
+  default = {
+    zone = "$locations:ew1-z"
+  }
+}
+
 neg_configs = {
   psc-neg = {
     psc = {
-      region         = "europe-west1"
+      region         = "$locations:ew1"
       target_service = "projects/resolved-project/regions/europe-west1/serviceAttachments/sa"
       network        = "$networks:bar"
       subnetwork     = "$subnets:psc"
@@ -48,6 +54,11 @@ neg_configs = {
 context = {
   project_ids = {
     foo = "resolved-project"
+  }
+  locations = {
+    ew1   = "europe-west1"
+    ew4   = "europe-west4"
+    ew1-z = "europe-west1-b"
   }
   networks = {
     bar = "resolved-network"

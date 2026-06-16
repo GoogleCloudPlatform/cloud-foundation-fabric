@@ -48,10 +48,10 @@ group_configs = {
 neg_configs = {
   psc = {
     psc = {
-      region             = "$locations:my-region"
-      target_service     = "test-service"
-      network            = "$networks:default"
-      subnetwork         = "$subnets:my-subnet"
+      region         = "$locations:my-region"
+      target_service = "test-service"
+      network        = "$networks:default"
+      subnetwork     = "$subnets:my-subnet"
     }
   }
 }

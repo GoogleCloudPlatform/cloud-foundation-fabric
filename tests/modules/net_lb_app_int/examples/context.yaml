@@ -79,21 +79,21 @@ values:
   module.ilb-l7.google_compute_network_endpoint.default["neg-gce-e-0"]:
     deletion_policy: DELETE
     instance: nginx-ew8-b
-    ip_address: $addresses:test
+    ip_address: 10.0.0.10
     network_endpoint_group: ilb-test-0-neg-gce
     port: 80
     project: foo-test-0
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.ilb-l7.google_compute_network_endpoint.default["neg-hybrid-e-0"]:
     deletion_policy: DELETE
     instance: null
-    ip_address: $addresses:test-hybrid
+    ip_address: 192.168.0.3
     network_endpoint_group: ilb-test-0-neg-hybrid
     port: 80
     project: foo-test-0
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.ilb-l7.google_compute_network_endpoint_group.default["neg-gce"]:
     default_port: null
     deletion_policy: DELETE
@@ -104,7 +104,7 @@ values:
     project: foo-test-0
     subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.ilb-l7.google_compute_network_endpoint_group.default["neg-hybrid"]:
     default_port: null
     deletion_policy: DELETE
@@ -115,7 +115,7 @@ values:
     project: foo-test-0
     subnetwork: null
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.ilb-l7.google_compute_region_backend_service.default["default"]:
     affinity_cookie_ttl_sec: null
     backend:
@@ -392,7 +392,7 @@ values:
     ip_address: null
     port: 80
     project: foo-test-0
-    region: $locations:ew8
+    region: europe-west8
     region_network_endpoint_group: ilb-test-0-neg-internet
     timeouts: null
   module.ilb-l7.google_compute_region_network_endpoint_group.default["neg-cloudrun"]:
@@ -408,7 +408,7 @@ values:
     network_endpoint_type: SERVERLESS
     project: foo-test-0
     psc_target_service: null
-    region: $locations:ew8
+    region: europe-west8
     subnetwork: null
     timeouts: null
   module.ilb-l7.google_compute_region_network_endpoint_group.internet["neg-internet"]:
@@ -422,7 +422,7 @@ values:
     network_endpoint_type: INTERNET_FQDN_PORT
     project: foo-test-0
     psc_target_service: null
-    region: $locations:ew8
+    region: europe-west8
     subnetwork: null
     timeouts: null
   module.ilb-l7.google_compute_region_network_endpoint_group.psc["neg-psc"]:
@@ -436,7 +436,7 @@ values:
     network_endpoint_type: PRIVATE_SERVICE_CONNECT
     project: foo-test-0
     psc_target_service: projects/foo-test-0/regions/europe-west8/serviceAttachments/sa
-    region: $locations:ew8
+    region: europe-west8
     subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
     timeouts: null
   module.ilb-l7.google_compute_region_target_http_proxy.default[0]:

@@ -313,21 +313,21 @@ values:
   module.glb-0.google_compute_network_endpoint.default["neg-gce-e-0"]:
     deletion_policy: DELETE
     instance: nginx-ew8-b
-    ip_address: $addresses:test
+    ip_address: 10.24.32.25
     network_endpoint_group: glb-test-0-neg-gce
     port: 80
     project: my-project
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_network_endpoint.default["neg-hybrid-e-0"]:
     deletion_policy: DELETE
     instance: null
-    ip_address: $addresses:test-hybrid
+    ip_address: 192.168.0.3
     network_endpoint_group: glb-test-0-neg-hybrid
     port: 80
     project: my-project
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_network_endpoint_group.default["neg-gce"]:
     default_port: null
     deletion_policy: DELETE
@@ -338,7 +338,7 @@ values:
     project: my-project
     subnetwork: projects/my-project/regions/europe-west8/subnetworks/gce
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_network_endpoint_group.default["neg-hybrid"]:
     default_port: null
     deletion_policy: DELETE
@@ -349,7 +349,7 @@ values:
     project: my-project
     subnetwork: null
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_region_network_endpoint_group.serverless["neg-cloudrun"]:
     app_engine: []
     cloud_function: []
@@ -363,7 +363,7 @@ values:
     network_endpoint_type: SERVERLESS
     project: my-project
     psc_target_service: null
-    region: $locations:ew8
+    region: europe-west8
     serverless_deployment: []
     subnetwork: null
     timeouts: null
