@@ -37,7 +37,6 @@ variable "backend_service_config" {
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
-      failover        = optional(bool, false)
       max_connections = optional(object({
         per_endpoint = optional(number)
         per_group    = optional(number)
@@ -45,16 +44,6 @@ variable "backend_service_config" {
       }))
       max_utilization = optional(number)
     })))
-    connection_tracking = optional(object({
-      idle_timeout_sec          = optional(number)
-      persist_conn_on_unhealthy = optional(string)
-      track_per_session         = optional(bool)
-    }))
-    failover_config = optional(object({
-      disable_conn_drain        = optional(bool)
-      drop_traffic_if_unhealthy = optional(bool)
-      ratio                     = optional(number)
-    }))
   })
   default  = {}
   nullable = false

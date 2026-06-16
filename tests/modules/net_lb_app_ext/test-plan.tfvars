@@ -8,26 +8,26 @@ backend_buckets_config = {
 backend_service_configs = {
   default = {
     backends = [
-      { backend = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b" },
-      { backend = "ig-c" }
+      { group = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b" },
+      { group = "ig-c" }
     ]
   }
   neg-cloudrun = {
-    backends      = [{ backend = "neg-cloudrun" }]
+    backends      = [{ group = "neg-cloudrun" }]
     health_checks = []
   }
   neg-gce = {
-    backends       = [{ backend = "neg-gce" }]
+    backends       = [{ group = "neg-gce" }]
     balancing_mode = "RATE"
     max_rate       = { per_endpoint = 10 }
   }
   neg-hybrid = {
-    backends       = [{ backend = "neg-hybrid" }]
+    backends       = [{ group = "neg-hybrid" }]
     balancing_mode = "RATE"
     max_rate       = { per_endpoint = 10 }
   }
   neg-internet = {
-    backends      = [{ backend = "neg-internet" }]
+    backends      = [{ group = "neg-internet" }]
     health_checks = []
   }
 }
