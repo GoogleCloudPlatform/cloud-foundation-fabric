@@ -54,7 +54,7 @@ variable "backend_service_config" {
     error_message = "Invalid session affinity value."
   }
   validation {
-    condition = alltrue([
+    condition = var.backend_service_config.backends == null ? true : alltrue([
       for b in var.backend_service_config.backends : contains(
         ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
     )])
