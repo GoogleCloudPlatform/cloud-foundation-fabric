@@ -54,10 +54,10 @@ locals {
     for k, v in var.neg_configs : k => {
       description = v.description
       endpoints   = v.gce != null ? v.gce.endpoints : v.hybrid.endpoints
-      network     = v.gce != null ? v.gce.network : v.hybrid.network
-      subnetwork  = v.gce != null ? v.gce.subnetwork : null
+      network     = v.gce != null ? lookup(local.ctx.networks, v.gce.network, v.gce.network) : lookup(local.ctx.networks, v.hybrid.network, v.hybrid.network)
+      subnetwork  = v.gce != null ? lookup(local.ctx.subnets, v.gce.subnetwork, v.gce.subnetwork) : null
       type        = v.gce != null ? "GCE_VM_IP_PORT" : "NON_GCP_PRIVATE_IP_PORT"
-      zone        = v.gce != null ? v.gce.zone : v.hybrid.zone
+      zone        = v.gce != null ? lookup(local.ctx.locations, v.gce.zone, v.gce.zone) : lookup(local.ctx.locations, v.hybrid.zone, v.hybrid.zone)
     } if v.gce != null || v.hybrid != null
   }
 
@@ -69,7 +69,7 @@ locals {
           id            = "${neg_key}-${endpoint_key}"
           neg_key       = neg_key
           endpoint_key  = endpoint_key
-          region        = neg.internet.region
+          region        = lookup(local.ctx.locations, neg.internet.region, neg.internet.region)
           fqdn          = try(endpoint.fqdn, null)
           ip_address    = try(endpoint.ip_address, null)
           port          = endpoint.port
@@ -82,7 +82,7 @@ locals {
 
 resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
-  project  = var.project_id
+  project  = local.project_id
   zone     = each.value.zone
   name     = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
@@ -113,12 +113,12 @@ resource "google_compute_network_endpoint" "default" {
 
 resource "google_compute_region_network_endpoint_group" "internet" {
   for_each              = local.neg_regional_internet
-  project               = var.project_id
-  region                = each.value.internet.region
+  project               = local.project_id
+  region                = lookup(local.ctx.locations, each.value.internet.region, each.value.internet.region)
   name                  = "${var.name}-${each.key}"
   description           = coalesce(each.value.description, var.description)
   network_endpoint_type = each.value.endpoint_type
-  network               = each.value.internet.network
+  network               = lookup(local.ctx.networks, each.value.internet.network, each.value.internet.network)
 }
 
 resource "google_compute_region_network_endpoint" "internet" {
@@ -130,19 +130,19 @@ resource "google_compute_region_network_endpoint" "internet" {
   # Only set ip_address if endpoint type is IP_PORT
   ip_address = each.value.endpoint_type == "INTERNET_IP_PORT" ? each.value.ip_address : null
   port       = each.value.port
-  project    = var.project_id
+  project    = local.project_id
 }
 
 resource "google_compute_region_network_endpoint_group" "psc" {
   for_each              = local.neg_regional_psc
-  project               = var.project_id
-  region                = each.value.psc.region
+  project               = local.project_id
+  region                = lookup(local.ctx.locations, each.value.psc.region, each.value.psc.region)
   name                  = "${var.name}-${each.key}"
   description           = coalesce(each.value.description, var.description)
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
-  network               = each.value.psc.network
-  subnetwork            = each.value.psc.subnetwork
+  network               = each.value.psc.network == null ? null : lookup(local.ctx.networks, each.value.psc.network, each.value.psc.network)
+  subnetwork            = each.value.psc.subnetwork == null ? null : lookup(local.ctx.subnets, each.value.psc.subnetwork, each.value.psc.subnetwork)
   lifecycle {
     # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
     ignore_changes = [psc_data]
@@ -153,11 +153,17 @@ resource "google_compute_region_network_endpoint_group" "serverless" {
   for_each = local.neg_regional_serverless
   project = (
     each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
+    ? local.project_id
+    : lookup(local.ctx.project_ids, each.value.project_id, each.value.project_id)
   )
-  region = try(
-    each.value.cloudrun.region, each.value.cloudfunction.region, null
+  region = (
+    try(each.value.cloudrun.region, null) != null
+    ? lookup(local.ctx.locations, each.value.cloudrun.region, each.value.cloudrun.region)
+    : (
+      try(each.value.cloudfunction.region, null) != null
+      ? lookup(local.ctx.locations, each.value.cloudfunction.region, each.value.cloudfunction.region)
+      : null
+    )
   )
   name                  = "${var.name}-${each.key}"
   description           = coalesce(each.value.description, var.description)

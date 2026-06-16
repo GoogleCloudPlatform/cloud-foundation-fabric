@@ -15,6 +15,12 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p = "$"
   fwd_rule_ports = (
     var.protocol == "HTTPS" ? [443] : coalesce(var.ports, [80])
   )
@@ -23,33 +29,39 @@ locals {
     ? google_compute_region_target_https_proxy.default[0].id
     : google_compute_region_target_http_proxy.default[0].id
   )
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),
     [for k, v in google_compute_region_ssl_certificate.default : v.id],
   )
+  region = lookup(local.ctx.locations, var.region, var.region)
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  provider              = google-beta
-  project               = var.project_id
-  name                  = var.name
-  region                = var.region
-  description           = var.description
-  ip_address            = var.address
+  provider    = google-beta
+  project     = local.project_id
+  name        = var.name
+  region      = local.region
+  description = var.description
+  ip_address = (
+    var.address == null
+    ? null
+    : lookup(local.ctx.addresses, var.address, var.address)
+  )
   ip_protocol           = "TCP"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   port_range            = join(",", local.fwd_rule_ports)
   labels                = var.labels
   target                = local.fwd_rule_target
-  network               = var.vpc
+  network               = lookup(local.ctx.networks, var.vpc_config.network, var.vpc_config.network)
   network_tier          = var.network_tier_standard ? "STANDARD" : "PREMIUM"
 }
 
 resource "google_compute_region_ssl_certificate" "default" {
   for_each    = var.ssl_certificates.create_configs
-  project     = var.project_id
+  project     = local.project_id
   name        = coalesce(each.value.name, "${var.name}-${each.key}")
-  region      = var.region
+  region      = local.region
   certificate = trimspace(each.value.certificate)
   private_key = trimspace(each.value.private_key)
   lifecycle {
@@ -59,8 +71,8 @@ resource "google_compute_region_ssl_certificate" "default" {
 
 resource "google_compute_region_target_http_proxy" "default" {
   count       = var.protocol == "HTTPS" ? 0 : 1
-  project     = var.project_id
-  region      = var.region
+  project     = local.project_id
+  region      = local.region
   name        = coalesce(var.http_proxy_config.name, var.name)
   description = var.http_proxy_config.description
   url_map     = google_compute_region_url_map.default.id
@@ -68,12 +80,13 @@ resource "google_compute_region_target_http_proxy" "default" {
 
 resource "google_compute_region_target_https_proxy" "default" {
   count                            = var.protocol == "HTTPS" ? 1 : 0
-  project                          = var.project_id
+  project                          = local.project_id
   name                             = coalesce(var.https_proxy_config.name, var.name)
-  region                           = var.region
+  region                           = local.region
   description                      = var.https_proxy_config.description
   certificate_manager_certificates = var.https_proxy_config.certificate_manager_certificates
   ssl_certificates                 = length(local.proxy_ssl_certificates) == 0 ? null : local.proxy_ssl_certificates
   ssl_policy                       = var.https_proxy_config.ssl_policy
   url_map                          = google_compute_region_url_map.default.id
 }
+
