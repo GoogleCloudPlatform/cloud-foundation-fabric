@@ -133,6 +133,196 @@ The standardization will be carried out across the following modules:
 5.  `net-lb-app-ext`: Rename `backend` -> `group` in variables; remove failover variables.
 6.  `net-lb-app-ext-regional`: Rename `backend` -> `group` in variables; replace `vpc` with `vpc_config`; remove failover variables; implement missing URL map `header_action`; implement context support.
 
+## Testing
+
+Live testing was conducted in a playground environment to verify the standardized interfaces and context resolution.
+
+### Context Variables (Anonymized)
+
+The following context configuration was used to resolve symbolic references (e.g. `"$project_ids:gce"`) to concrete resource IDs:
+
+```json
+{
+  "context": {
+    "addresses": {
+      "ew1_ext": "203.0.113.10",
+      "ew1_int": "192.0.2.50",
+      "ew8_int": "198.51.100.2",
+      "global_ext": "198.51.100.10"
+    },
+    "locations": {
+      "ew1": "europe-west1",
+      "ew8": "europe-west8"
+    },
+    "networks": {
+      "dev": "projects/net-project-id/global/networks/vpc-name"
+    },
+    "project_ids": {
+      "gce": "gce-project-id"
+    },
+    "subnets": {
+      "dev/europe-west1/gce": "projects/net-project-id/regions/europe-west1/subnetworks/subnet-name-ew1",
+      "dev/europe-west8/gce": "projects/net-project-id/regions/europe-west8/subnetworks/subnet-name-ew8"
+    }
+  }
+}
+```
+
+### Test Scenarios (tfvars)
+
+Each module was tested using specific scenarios defined in `tfvars` files. Below are the anonymized configurations used:
+
+#### 1. `net-lb-ext`
+
+*   **MIG Scenario (`test-mig.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    region     = "$locations:ew1"
+    name       = "test-nlb-ext-mig"
+    backends = [
+      { group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name" }
+    ]
+    ```
+
+*   **Context Scenario (`test-context.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    region     = "$locations:ew1"
+    name       = "test-nlb-ext-context"
+    backends = [
+      { group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name" }
+    ]
+    forwarding_rules_config = {
+      "" = {
+        address = "$addresses:ew1_ext"
+      }
+    }
+    ```
+
+#### 2. `net-lb-proxy-int`
+
+*   **MIG Scenario (`test-mig.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    region     = "$locations:ew1"
+    name       = "test-ilb-l4-proxy-mig"
+    vpc_config = {
+      network    = "$networks:dev"
+      subnetwork = "$subnets:dev/europe-west1/gce"
+    }
+    backend_service_config = {
+      backends = [
+        { group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name" }
+      ]
+    }
+    ```
+
+#### 3. `net-lb-app-int`
+
+*   **MIG with Actions (`test-mig-actions.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    region     = "$locations:ew1"
+    name       = "test-ilb-l7-mig"
+    global_access = true
+    vpc_config = {
+      network    = "$networks:dev"
+      subnetwork = "$subnets:dev/europe-west1/gce"
+    }
+    backend_service_configs = {
+      default = {
+        backends = [
+          { group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name" }
+        ]
+      }
+    }
+    urlmap_config = {
+      default_service = "default"
+      header_action = {
+        response_add = {
+          "x-test-header" = {
+            value   = "CFF-Test-Actions"
+            replace = true
+          }
+        }
+      }
+    }
+    ```
+
+#### 4. `net-lb-app-int-cross-region`
+
+*   **Multi-region MIGs (`test-cr-migs.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    name       = "test-ilb-l7-cr"
+    vpc_config = {
+      network    = "$networks:dev"
+      subnetworks = {
+        europe-west1 = "$subnets:dev/europe-west1/gce"
+        europe-west8 = "$subnets:dev/europe-west8/gce"
+      }
+    }
+    backend_service_configs = {
+      default = {
+        backends = [
+          { group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name-ew1" },
+          { group = "projects/gce-project-id/zones/europe-west8-b/instanceGroups/mig-name-ew8" }
+        ]
+      }
+    }
+    ```
+
+#### 5. `net-lb-app-ext`
+
+*   **Cloud Run Scenario (`test-run.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    name       = "test-glb-l7-run"
+    backend_service_configs = {
+      default = {
+        protocol      = "HTTP"
+        health_checks = []
+        backends = [
+          { group = "projects/gce-project-id/regions/europe-west1/networkEndpointGroups/sneg-name" }
+        ]
+      }
+    }
+    ```
+
+*   **MIG Scenario (`test-mig.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    name       = "test-glb-l7-mig"
+    backend_service_configs = {
+      default = {
+        protocol = "HTTP"
+        backends = [
+          { group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name" }
+        ]
+      }
+    }
+    ```
+
+#### 6. `net-lb-app-ext-regional`
+
+*   **MIG Scenario (`test-mig.tfvars`)**
+    ```hcl
+    project_id = "$project_ids:gce"
+    region     = "$locations:ew1"
+    name       = "test-rlb-l7-mig"
+    vpc_config = {
+      network = "$networks:dev"
+    }
+    backend_service_configs = {
+      default = {
+        protocol = "HTTP"
+        backends = [
+          { group = "projects/gce-project-id/zones/europe-west1-b/instanceGroups/mig-name" }
+        ]
+      }
+    }
+    ```
+
 ---
 
 ## Appendix: Interface Examples
