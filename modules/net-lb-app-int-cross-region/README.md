@@ -19,6 +19,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
   - [URL Map](#url-map)
   - [PSC service attachment](#psc-service-attachment)
+  - [mTLS with Server TLS Policy](#mtls-with-server-tls-policy)
   - [Complex example](#complex-example)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Recipes](#recipes)
@@ -634,6 +635,45 @@ module "ilb-l7" {
 # tftest modules=1 resources=9
 ```
 
+
+### mTLS with Server TLS Policy
+
+To enable mutual TLS (mTLS) on a cross-region internal Application Load Balancer,
+attach an existing `ServerTlsPolicy` to the HTTPS proxy via `https_proxy_config.server_tls_policy`.
+The module does not create the trust config or policy; it only attaches an existing one.
+See the [mTLS documentation](https://cloud.google.com/load-balancing/docs/mtls) for details.
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-lb-app-int-cross-region"
+  name       = "ilb-test"
+  project_id = var.project_id
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-ew1"
+        }, {
+        group = "projects/myprj/zones/europe-west4-a/instanceGroups/my-ig-ew4"
+      }]
+    }
+  }
+  protocol = "HTTPS"
+  https_proxy_config = {
+    certificate_manager_certificates = [
+      "projects/myprj/locations/global/certificates/certificate"
+    ]
+    server_tls_policy = "projects/myprj/locations/global/serverTlsPolicies/my-tls-policy"
+  }
+  vpc_config = {
+    network = var.vpc.self_link
+    subnetworks = {
+      europe-west1 = var.subnet1.self_link
+      europe-west4 = var.subnet2.self_link
+    }
+  }
+}
+# tftest modules=1 resources=6
+```
 
 ### Complex example
 
