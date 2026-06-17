@@ -870,9 +870,9 @@ When deploying changes to load balancer configuration please refer to [net-lb-ap
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L88) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L169) | Project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L211) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L89) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L170) | Project id. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L212) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [addresses](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [backend_service_configs](variables-backend-service.tf#L19) | Backend service level configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L23) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -881,12 +881,12 @@ When deploying changes to load balancer configuration please refer to [net-lb-ap
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
 | [http_proxy_config](variables.tf#L57) | HTTP proxy configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [https_proxy_config](variables.tf#L68) | HTTPS proxy configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L82) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L93) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ports](variables.tf#L159) | Optional ports for HTTP load balancer. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [protocol](variables.tf#L174) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
-| [service_attachment](variables.tf#L187) | PSC service attachments. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [service_directory_registration](variables.tf#L202) | Service directory namespace and service used to register this load balancer. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [labels](variables.tf#L83) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L94) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ports](variables.tf#L160) | Optional ports for HTTP load balancer. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [protocol](variables.tf#L175) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
+| [service_attachment](variables.tf#L188) | PSC service attachments. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_directory_registration](variables.tf#L203) | Service directory namespace and service used to register this load balancer. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [urlmap_config](variables-urlmap.tf#L19) | The URL map configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
 
 ## Outputs
