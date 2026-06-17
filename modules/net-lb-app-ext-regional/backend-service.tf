@@ -44,11 +44,11 @@ resource "google_compute_region_backend_service" "default" {
   for_each = var.backend_service_configs
   project = (
     each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
+    ? local.project_id
+    : lookup(local.ctx.project_ids, each.value.project_id, each.value.project_id)
   )
   name                            = coalesce(each.value.name, "${var.name}-${each.key}")
-  region                          = var.region
+  region                          = local.region
   description                     = each.value.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
@@ -72,7 +72,7 @@ resource "google_compute_region_backend_service" "default" {
   timeout_sec        = each.value.timeout_sec
 
   dynamic "backend" {
-    for_each = { for b in coalesce(each.value.backends, []) : b.backend => b }
+    for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
     content {
       group           = lookup(local.group_ids, backend.key, backend.key)
       balancing_mode  = backend.value.balancing_mode # UTILIZATION, RATE

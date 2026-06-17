@@ -57,7 +57,6 @@ values:
       capacity_scaler: 1
       custom_metrics: []
       description: Terraform managed.
-      failover: false
       group: projects/myprj/zones/europe-west1-a/instanceGroups/my-ig
       max_connections: null
       max_connections_per_endpoint: null

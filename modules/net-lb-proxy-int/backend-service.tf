@@ -64,7 +64,6 @@ resource "google_compute_region_backend_service" "default" {
       balancing_mode  = backend.value.balancing_mode
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description
-      failover        = backend.value.failover
       max_connections = try(
         backend.value.max_connections.per_group, null
       )
@@ -75,28 +74,6 @@ resource "google_compute_region_backend_service" "default" {
         backend.value.max_connections.per_instance, null
       )
       max_utilization = backend.value.max_utilization
-    }
-  }
-
-  dynamic "connection_tracking_policy" {
-    for_each = var.backend_service_config.connection_tracking == null ? [] : [""]
-    content {
-      connection_persistence_on_unhealthy_backends = (
-        ar.backend_service_config.connection_tracking.persist_conn_on_unhealthy != null
-        ? ar.backend_service_config.connection_tracking.persist_conn_on_unhealthy
-        : null
-      )
-      idle_timeout_sec = var.backend_service_config.connection_tracking.idle_timeout_sec
-      tracking_mode    = try(local.bs_conntrack.track_per_session ? "PER_SESSION" : "PER_CONNECTION", null)
-    }
-  }
-
-  dynamic "failover_policy" {
-    for_each = var.backend_service_config.failover_config == null ? [] : [""]
-    content {
-      disable_connection_drain_on_failover = var.backend_service_config.failover_config.disable_conn_drain
-      drop_traffic_if_unhealthy            = var.backend_service_config.failover_config.drop_traffic_if_unhealthy
-      failover_ratio                       = var.backend_service_config.failover_config.ratio
     }
   }
 
