@@ -74,6 +74,7 @@ variable "https_proxy_config" {
     http_keepalive_timeout           = optional(string)
     quic_override                    = optional(string)
     ssl_policy                       = optional(string)
+    server_tls_policy                = optional(string)
   })
   default  = {}
   nullable = false
