@@ -32,7 +32,10 @@ locals {
   _neg_endpoints = flatten([
     for k, v in local.neg_zonal : [
       for kk, vv in v.endpoints : merge(vv, {
-        key = "${k}-${kk}", neg = k, zone = v.zone
+        key        = "${k}-${kk}"
+        neg        = k
+        zone       = v.zone
+        ip_address = try(local.ctx.addresses[vv.ip_address], vv.ip_address)
       })
     ]
   ])
@@ -49,22 +52,32 @@ locals {
   }
   neg_regional = {
     for k, v in var.neg_configs :
-    k => merge(v.cloudrun, { project_id = v.project_id }) if v.cloudrun != null
+    k => merge(v.cloudrun, {
+      project_id = v.project_id == null ? null : lookup(local.ctx.project_ids, v.project_id, v.project_id)
+      region     = lookup(local.ctx.locations, v.cloudrun.region, v.cloudrun.region)
+    }) if v.cloudrun != null
   }
   neg_zonal = {
     # we need to rebuild new objects as we cannot merge different types
     for k, v in var.neg_configs : k => {
       endpoints  = v.gce != null ? v.gce.endpoints : v.hybrid.endpoints
-      network    = v.gce != null ? v.gce.network : v.hybrid.network
-      project_id = v.project_id
-      subnetwork = v.gce != null ? v.gce.subnetwork : null
+      network    = v.gce != null ? try(local.ctx.networks[v.gce.network], v.gce.network) : try(local.ctx.networks[v.hybrid.network], v.hybrid.network)
+      project_id = v.project_id == null ? null : try(local.ctx.project_ids[v.project_id], v.project_id)
+      subnetwork = v.gce != null ? try(local.ctx.subnets[v.gce.subnetwork], v.gce.subnetwork) : null
       type       = v.gce != null ? "GCE_VM_IP_PORT" : "NON_GCP_PRIVATE_IP_PORT"
-      zone       = v.gce != null ? v.gce.zone : v.hybrid.zone
+      zone       = v.gce != null ? try(local.ctx.locations[v.gce.zone], v.gce.zone) : try(local.ctx.locations[v.hybrid.zone], v.hybrid.zone)
     } if v.gce != null || v.hybrid != null
   }
   neg_regional_psc = {
-    for k, v in var.neg_configs :
-    k => v if v.psc != null
+    for k, v in var.neg_configs : k => merge(v, {
+      project_id = v.project_id == null ? null : lookup(local.ctx.project_ids, v.project_id, v.project_id)
+      psc = {
+        region         = lookup(local.ctx.locations, v.psc.region, v.psc.region)
+        target_service = v.psc.target_service
+        network        = v.psc.network == null ? null : lookup(local.ctx.networks, v.psc.network, v.psc.network)
+        subnetwork     = v.psc.subnetwork == null ? null : lookup(local.ctx.subnets, v.psc.subnetwork, v.psc.subnetwork)
+      }
+    }) if v.psc != null
   }
   proxy_ssl_certificates = concat(
     coalesce(var.ssl_certificates.certificate_ids, []),
@@ -170,30 +183,17 @@ resource "google_compute_service_attachment" "default" {
 }
 
 resource "google_compute_network_endpoint_group" "default" {
-  for_each = local.neg_zonal
-  project = (
-    each.value.project_id == null
-    ? local.project_id
-    : each.value.project_id
-  )
-  zone = each.value.zone
-  name = "${var.name}-${each.key}"
-  # re-enable once provider properly supports this
-  # default_port = each.value.default_port
+  for_each              = local.neg_zonal
+  project               = coalesce(each.value.project_id, local.project_id)
+  zone                  = each.value.zone
+  name                  = "${var.name}-${each.key}"
   description           = var.description
   network_endpoint_type = each.value.type
-  network = (
-    each.value.network != null
-    ? try(local.ctx.networks[each.value.network], each.value.network)
-    : local.network
-  )
+  network               = coalesce(each.value.network, local.network)
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : coalesce(
-      try(local.ctx.subnets[each.value.subnetwork], each.value.subnetwork),
-      local.subnetwork
-    )
+    : coalesce(each.value.subnetwork, local.subnetwork)
   )
 }
 
@@ -212,12 +212,8 @@ resource "google_compute_network_endpoint" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "default" {
-  for_each = local.neg_regional
-  project = (
-    each.value.project_id == null
-    ? local.project_id
-    : each.value.project_id
-  )
+  for_each              = local.neg_regional
+  project               = coalesce(each.value.project_id, local.project_id)
   region                = each.value.region
   name                  = "${var.name}-${each.key}"
   description           = var.description
@@ -233,26 +229,14 @@ resource "google_compute_region_network_endpoint_group" "default" {
 
 resource "google_compute_region_network_endpoint_group" "psc" {
   for_each = local.neg_regional_psc
-  project = (
-    each.value.project_id == null
-    ? local.project_id
-    : each.value.project_id
-  )
-  region = each.value.psc.region
-  name   = "${var.name}-${each.key}"
+  project  = coalesce(each.value.project_id, local.project_id)
+  region   = each.value.psc.region
+  name     = "${var.name}-${each.key}"
   //description           = coalesce(each.value.description, var.description)
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
-  network = (
-    each.value.psc.network == null
-    ? null
-    : try(local.ctx.networks[each.value.psc.network], each.value.psc.network)
-  )
-  subnetwork = (
-    each.value.psc.subnetwork == null
-    ? null
-    : try(local.ctx.subnets[each.value.psc.subnetwork], each.value.psc.subnetwork)
-  )
+  network               = each.value.psc.network
+  subnetwork            = each.value.psc.subnetwork
   lifecycle {
     # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
     ignore_changes = [psc_data]
@@ -271,18 +255,22 @@ locals {
     for v in local._neg_endpoints_internet : (v.key) => v
   }
   neg_internet = {
-    for k, v in var.neg_configs :
-    k => v if v.internet != null
+    for k, v in var.neg_configs : k => merge(v, {
+      project_id = v.project_id == null ? null : lookup(local.ctx.project_ids, v.project_id, v.project_id)
+      internet = {
+        region    = lookup(local.ctx.locations, v.internet.region, v.internet.region)
+        use_fqdn  = v.internet.use_fqdn
+        endpoints = v.internet.endpoints
+      }
+    }) if v.internet != null
   }
 }
 
 resource "google_compute_region_network_endpoint_group" "internet" {
-  for_each = local.neg_internet
-  project  = local.project_id
-  name     = "${var.name}-${each.key}"
-  region   = each.value.internet.region
-  # re-enable once provider properly supports this
-  # default_port = each.value.default_port
+  for_each    = local.neg_internet
+  project     = coalesce(each.value.project_id, local.project_id)
+  name        = "${var.name}-${each.key}"
+  region      = each.value.internet.region
   description = coalesce(each.value.description, var.description)
   network_endpoint_type = (
     each.value.internet.use_fqdn ? "INTERNET_FQDN_PORT" : "INTERNET_IP_PORT"

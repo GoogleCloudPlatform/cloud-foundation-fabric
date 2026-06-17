@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,15 +13,16 @@
 # limitations under the License.
 
 values:
-  module.tcp-proxy.google_compute_forwarding_rule.default:
+  module.tcp-proxy.google_compute_forwarding_rule.default[""]:
     all_ports: null
-    allow_global_access: null
+    allow_global_access: true
     allow_psc_global_access: null
     backend_service: null
+    deletion_policy: DELETE
     description: Terraform managed.
-    ip_address: 10.0.0.10
     ip_collection: null
     ip_protocol: TCP
+    ip_version: IPV4
     is_mirroring_collector: null
     labels: null
     load_balancing_scheme: INTERNAL_MANAGED
@@ -38,6 +39,7 @@ values:
     subnetwork: projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce
     timeouts: null
   module.tcp-proxy.google_compute_instance_group.default["default"]:
+    deletion_policy: DELETE
     description: Terraform managed.
     instances:
     - projects/myprj/zones/europe-west1-b/instances/vm-a
@@ -55,7 +57,6 @@ values:
       capacity_scaler: 1
       custom_metrics: []
       description: Terraform managed.
-      failover: false
       group: projects/myprj/zones/europe-west1-a/instanceGroups/my-ig
       max_connections: null
       max_connections_per_endpoint: null
@@ -70,6 +71,7 @@ values:
     connection_tracking_policy: []
     consistent_hash: []
     custom_metrics: []
+    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     enable_cdn: null
@@ -94,6 +96,7 @@ values:
     tls_settings: []
   module.tcp-proxy.google_compute_region_health_check.default[0]:
     check_interval_sec: 5
+    deletion_policy: DELETE
     description: Terraform managed.
     grpc_health_check: []
     grpc_tls_health_check: []
@@ -116,12 +119,19 @@ values:
     timeouts: null
     unhealthy_threshold: 2
   module.tcp-proxy.google_compute_region_target_tcp_proxy.default:
+    deletion_policy: DELETE
     description: Terraform managed.
     name: ilb-test
     project: foo-test-0
     proxy_header: NONE
     region: europe-west8
     timeouts: null
+  module.tcp-proxy.terraform_data.neg_trigger:
+    input:
+      internet: {}
+      psc: {}
+      zonal: {}
+    triggers_replace: null
 
 counts:
   google_compute_forwarding_rule: 1
@@ -130,6 +140,7 @@ counts:
   google_compute_region_health_check: 1
   google_compute_region_target_tcp_proxy: 1
   modules: 1
-  resources: 5
+  resources: 6
+  terraform_data: 1
 
 outputs: {}

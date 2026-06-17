@@ -42,16 +42,29 @@ An HTTP load balancer with a backend service pointing to a GCE instance group:
 ```hcl
 module "glb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
-  project_id = var.project_id
+  project_id = "$project_ids:my-project"
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
-  region     = var.region
+  vpc_config = {
+    network = "$networks:default"
+  }
+  region = "$locations:my-region"
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id }
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id }
       ]
+    }
+  }
+  context = {
+    locations = {
+      my-region = var.region
+    }
+    networks = {
+      default = var.vpc.self_link
+    }
+    project_ids = {
+      my-project = var.project_id
     }
   }
 }
@@ -88,13 +101,13 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id }
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id }
       ]
       protocol = "HTTP"
     }
@@ -122,13 +135,13 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id }
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id }
       ]
       protocol = "HTTPS"
     }
@@ -173,7 +186,7 @@ module "ralb-test-0-redirect" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0-redirect"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   address = (
     module.addresses.external_addresses["ralb-test-0"].id
@@ -192,7 +205,7 @@ module "ralb-test-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   address = (
     module.addresses.external_addresses["ralb-test-0"].id
@@ -200,7 +213,7 @@ module "ralb-test-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-b.group.id },
       ]
       protocol = "HTTP"
     }
@@ -228,12 +241,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-b.group.id },
       ]
       tls_settings = {
         sni               = "backend.example.com"
@@ -258,12 +271,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -285,12 +298,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
       health_checks = ["projects/${var.project_id}/regions/${var.region}/healthChecks/custom"]
     }
@@ -311,12 +324,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "default-b" }
+        { group = "default-b" }
       ]
     }
   }
@@ -388,12 +401,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.win-mig.group_manager.instance_group }
+        { group = module.win-mig.group_manager.instance_group }
       ]
     }
   }
@@ -412,13 +425,13 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
         {
-          backend        = "neg-0"
+          group          = "neg-0"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -454,12 +467,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [{
-        backend = "hybrid-neg"
+        group = "hybrid-neg"
         # Balancing mode must be RATE for Hybrid NEG
         balancing_mode = "RATE"
         max_rate = {
@@ -496,13 +509,13 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "internet-neg-fqdn" },
-        { backend = "internet-neg-ip" }
+        { group = "internet-neg-fqdn" },
+        { group = "internet-neg-ip" }
       ]
     }
   }
@@ -541,12 +554,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
     }
@@ -574,12 +587,12 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
     }
@@ -609,7 +622,7 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
 
   backend_service_configs = {
@@ -618,7 +631,7 @@ module "ralb-0" {
 
       backends = [
         {
-          backend = "neg-0"
+          group = "neg-0"
         }
       ]
       health_checks = []
@@ -642,22 +655,30 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = module.compute-vm-group-c.group.id
+        group = module.compute-vm-group-c.group.id
       }]
     }
   }
   urlmap_config = {
     default_service = "default"
+    header_action = {
+      response_add = {
+        strict-transport-security = {
+          value   = "max-age=31536000; includeSubDomains; preload"
+          replace = true
+        }
+      }
+    }
     host_rules = [{
       hosts        = ["*"]
       path_matcher = "pathmap"
@@ -686,26 +707,26 @@ module "ralb-0" {
   source     = "./fabric/modules/net-lb-app-ext-regional"
   project_id = var.project_id
   name       = "ralb-test-0"
-  vpc        = var.vpc.self_link
+  vpc_config = { network = var.vpc.self_link }
   region     = var.region
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "group-zone-b" },
-        { backend = "group-zone-c" },
+        { group = "group-zone-b" },
+        { group = "group-zone-c" },
       ]
     }
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-zone-c"
+        group          = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-hello"
+        group          = "neg-hello"
         max_rate       = { per_endpoint = 10 }
       }]
       health_checks = ["neg"]
@@ -832,23 +853,24 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L73) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L199) | Project id. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L217) | Region where the load balancer is created. | <code>string</code> | ✓ |  |
-| [vpc](variables.tf#L237) | VPC-level configuration. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L86) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L212) | Project id. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L230) | Region where the load balancer is created. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L250) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
 | [backend_service_configs](variables-backend-service.tf#L19) | Backend service level configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L23) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [group_configs](variables.tf#L29) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L23) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L36) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [group_configs](variables.tf#L42) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [health_check_configs](variables-health-check.tf#L19) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [http_proxy_config](variables.tf#L43) | HTTP proxy configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [https_proxy_config](variables.tf#L53) | HTTPS proxy connfiguration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L67) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L78) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [network_tier_standard](variables.tf#L182) | Use standard network tier. | <code>bool</code> |  | <code>true</code> |
-| [ports](variables.tf#L189) | Optional ports for HTTP load balancer. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [protocol](variables.tf#L204) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
-| [ssl_certificates](variables.tf#L222) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [http_proxy_config](variables.tf#L56) | HTTP proxy configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [https_proxy_config](variables.tf#L66) | HTTPS proxy connfiguration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L80) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L91) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [network_tier_standard](variables.tf#L195) | Use standard network tier. | <code>bool</code> |  | <code>true</code> |
+| [ports](variables.tf#L202) | Optional ports for HTTP load balancer. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [protocol](variables.tf#L217) | Protocol supported by this load balancer. | <code>string</code> |  | <code>&#34;HTTP&#34;</code> |
+| [ssl_certificates](variables.tf#L235) | SSL target proxy certificates (only if protocol is HTTPS) for existing, custom, and managed certificates. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [urlmap_config](variables-urlmap.tf#L19) | The URL map configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
 
 ## Outputs

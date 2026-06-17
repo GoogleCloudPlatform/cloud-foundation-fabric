@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ values:
     allow_global_access: null
     allow_psc_global_access: null
     backend_service: null
+    deletion_policy: DELETE
     description: Terraform managed.
     ip_collection: null
     ip_protocol: TCP
@@ -39,6 +40,7 @@ values:
     timeouts: null
   module.ilb-l7.google_compute_health_check.default["default"]:
     check_interval_sec: 5
+    deletion_policy: DELETE
     description: Terraform managed.
     grpc_health_check: []
     grpc_tls_health_check: []
@@ -68,7 +70,6 @@ values:
       capacity_scaler: 1
       custom_metrics: []
       description: Terraform managed.
-      failover: false
       group: projects/myprj/zones/europe-west1-a/instanceGroups/my-ig
       max_connections: null
       max_connections_per_endpoint: null
@@ -83,6 +84,7 @@ values:
     connection_tracking_policy: []
     consistent_hash: []
     custom_metrics: []
+    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     enable_cdn: null
@@ -110,6 +112,7 @@ values:
       - dns_name: backend.example.com
         uniform_resource_identifier: null
   module.ilb-l7.google_compute_region_target_http_proxy.default[0]:
+    deletion_policy: DELETE
     description: Terraform managed.
     http_keep_alive_timeout_sec: null
     name: ilb-test
@@ -119,6 +122,7 @@ values:
   module.ilb-l7.google_compute_region_url_map.default:
     default_route_action: []
     default_url_redirect: []
+    deletion_policy: DELETE
     description: Terraform managed.
     header_action: []
     host_rule: []

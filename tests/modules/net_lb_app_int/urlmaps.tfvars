@@ -28,6 +28,21 @@ backend_service_configs = {
 }
 urlmap_config = {
   default_service = "default"
+  header_action = {
+    request_remove = ["foo"]
+    request_add = {
+      bar = {
+        value   = "baz"
+        replace = true
+      }
+    }
+  }
+  default_route_action = {
+    timeout = {
+      seconds = 10
+      nanos   = 0
+    }
+  }
   host_rules = [{
     hosts        = ["*"]
     path_matcher = "pathmap"
