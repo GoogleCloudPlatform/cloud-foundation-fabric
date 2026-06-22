@@ -147,6 +147,12 @@ module "organization-iam" {
       local.ctx.tag_values,
       local.org_tag_values
     )
+    tag_vars = merge(local.ctx.tag_vars, {
+      organization = merge(
+        try(local.ctx.tag_vars.organization, {}),
+        local.org_tag_vars
+      )
+    })
   })
   factories_config = {
     org_policy_custom_constraints = "${local.paths.organization}/custom-constraints"

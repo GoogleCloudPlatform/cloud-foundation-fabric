@@ -57,12 +57,19 @@ module "factory" {
       },
       local.iam_principals
     )
+    tag_keys = merge(
+      local.ctx.tag_keys,
+      local.org_tag_keys
+    )
     tag_values = merge(
       local.ctx.tag_values,
       local.org_tag_values
     )
-    tag_vars = merge(try(local.ctx.tag_vars, {}), {
-      organization = local.org_tag_vars
+    tag_vars = merge(local.ctx.tag_vars, {
+      organization = merge(
+        try(local.ctx.tag_vars.organization, {}),
+        local.org_tag_vars
+      )
     })
   })
   factories_config = {
