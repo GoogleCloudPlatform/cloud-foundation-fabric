@@ -53,7 +53,7 @@ locals {
         for k in distinct(concat(
           keys(local.ctx.tag_vars.projects),
           [for pk, pv in module.factory.projects : pk if length(pv.tag_vars) > 0]
-        )) : k => merge(
+          )) : k => merge(
           try(local.ctx.tag_vars.projects[k], {}),
           { for kk, vv in try(module.factory.projects[k].tag_vars, {}) : kk => vv }
         )
