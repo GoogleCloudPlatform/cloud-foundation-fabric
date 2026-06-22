@@ -49,16 +49,20 @@ locals {
       local.org_tag_values
     )
     tag_vars = {
-      projects = merge([
-        for k, v in module.factory.projects : {
-          (k) = { for kk, vv in v.tag_vars : kk => vv }
-        } if length(v.tag_vars) > 0
-      ]...)
-      organization = {
+      projects = {
+        for k in distinct(concat(
+          keys(local.ctx.tag_vars.projects),
+          [for pk, pv in module.factory.projects : pk if length(pv.tag_vars) > 0]
+        )) : k => merge(
+          try(local.ctx.tag_vars.projects[k], {}),
+          { for kk, vv in try(module.factory.projects[k].tag_vars, {}) : kk => vv }
+        )
+      }
+      organization = merge(local.ctx.tag_vars.organization, {
         for k, v in module.organization[0].tag_keys :
         # the provider returns allowed_values_regex set to "" not null
         k => v.namespaced_name if try(v.allowed_values_regex, "") != ""
-      }
+      })
     }
   })
   of_logging_sinks = {
