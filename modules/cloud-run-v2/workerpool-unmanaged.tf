@@ -187,6 +187,7 @@ resource "google_cloud_run_v2_worker_pool" "default_unmanaged" {
       client_version,
       template[0].annotations["run.googleapis.com/operation-id"],
       template[0].containers,
+      template[0].volumes,
       template[0].labels
     ]
   }
