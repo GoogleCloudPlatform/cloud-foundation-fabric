@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "address" {
-  description = "Optional IP address used for the forwarding rule."
-  type        = string
-  default     = null
-}
-
 variable "backend_service_config" {
   description = "Backend service level configuration."
   type = object({
@@ -43,7 +37,6 @@ variable "backend_service_config" {
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
-      failover        = optional(bool, false)
       max_connections = optional(object({
         per_endpoint = optional(number)
         per_group    = optional(number)
@@ -51,16 +44,6 @@ variable "backend_service_config" {
       }))
       max_utilization = optional(number)
     })))
-    connection_tracking = optional(object({
-      idle_timeout_sec          = optional(number)
-      persist_conn_on_unhealthy = optional(string)
-      track_per_session         = optional(bool)
-    }))
-    failover_config = optional(object({
-      disable_conn_drain        = optional(bool)
-      drop_traffic_if_unhealthy = optional(bool)
-      ratio                     = optional(number)
-    }))
   })
   default  = {}
   nullable = false
@@ -71,7 +54,7 @@ variable "backend_service_config" {
     error_message = "Invalid session affinity value."
   }
   validation {
-    condition = alltrue([
+    condition = var.backend_service_config.backends == null ? true : alltrue([
       for b in var.backend_service_config.backends : contains(
         ["CONNECTION", "UTILIZATION"], coalesce(b.balancing_mode, "CONNECTION")
     )])
@@ -98,11 +81,20 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-# during the preview phase you cannot change this attribute on an existing rule
-variable "global_access" {
-  description = "Allow client access from all regions."
-  type        = bool
-  default     = null
+variable "forwarding_rules_config" {
+  description = "The optional forwarding rules configuration."
+  type = map(object({
+    address       = optional(string)
+    description   = optional(string)
+    global_access = optional(bool, true)
+    ipv6          = optional(bool, false)
+    name          = optional(string)
+    port          = optional(number, 80)
+    protocol      = optional(string, "TCP")
+  }))
+  default = {
+    "" = {}
+  }
 }
 
 variable "group_configs" {
@@ -203,7 +195,7 @@ variable "health_check_config" {
     error_message = "Only one health check type can be configured at a time."
   }
   validation {
-    condition = alltrue([
+    condition = var.health_check_config == null ? true : alltrue([
       for k, v in var.health_check_config : contains([
         "-", "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"
       ], coalesce(try(v.port_specification, null), "-"))
@@ -263,6 +255,7 @@ variable "neg_configs" {
       region         = string
       target_service = string
       network        = optional(string)
+      producer_port  = optional(number)
       subnetwork     = optional(string)
     }))
   }))
@@ -279,12 +272,6 @@ variable "neg_configs" {
     ])
     error_message = "Only one type of neg can be configured at a time."
   }
-}
-
-variable "port" {
-  description = "Port."
-  type        = number
-  default     = 80
 }
 
 variable "project_id" {
@@ -307,6 +294,7 @@ variable "service_attachment" {
     description           = optional(string)
     domain_name           = optional(string)
     enable_proxy_protocol = optional(bool, false)
+    forwarding_rule       = optional(string)
     reconcile_connections = optional(bool)
   })
   default = null

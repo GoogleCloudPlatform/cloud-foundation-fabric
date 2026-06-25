@@ -178,7 +178,7 @@ resource "google_compute_firewall" "custom_rules" {
   }
 
   dynamic "deny" {
-    for_each = each.value.action == "DENY" ? each.value.rules : {}
+    for_each = { for k, v in each.value.rules : k => v if each.value.action == "DENY" }
     iterator = rule
     content {
       protocol = rule.value.protocol
@@ -187,7 +187,7 @@ resource "google_compute_firewall" "custom_rules" {
   }
 
   dynamic "allow" {
-    for_each = each.value.action == "ALLOW" ? each.value.rules : {}
+    for_each = { for k, v in each.value.rules : k => v if each.value.action == "ALLOW" }
     iterator = rule
     content {
       protocol = rule.value.protocol

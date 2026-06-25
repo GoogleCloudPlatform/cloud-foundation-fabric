@@ -22,6 +22,14 @@ locals {
     ? var.health_check
     : google_compute_region_health_check.default[0].self_link
   )
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = lookup(local.ctx.locations, var.region, var.region)
 }
 
 moved {
@@ -32,11 +40,15 @@ moved {
 resource "google_compute_forwarding_rule" "default" {
   for_each    = var.forwarding_rules_config
   provider    = google-beta
-  project     = var.project_id
-  region      = var.region
+  project     = local.project_id
+  region      = local.region
   name        = coalesce(each.value.name, each.key == "" ? var.name : "${var.name}-${each.key}")
   description = each.value.description
-  ip_address  = each.value.address
+  ip_address = (
+    each.value.address == null
+    ? null
+    : lookup(local.ctx.addresses, each.value.address, each.value.address)
+  )
   ip_protocol = each.value.protocol
   ip_version  = each.value.address != null ? null : each.value.ipv6 == true ? "IPV6" : "IPV4" # do not set if address is provided
   backend_service = (
@@ -46,14 +58,18 @@ resource "google_compute_forwarding_rule" "default" {
   ports                 = each.value.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
   all_ports             = each.value.ports == null ? true : null
   labels                = var.labels
-  subnetwork            = each.value.subnetwork
+  subnetwork = (
+    each.value.subnetwork == null
+    ? null
+    : lookup(local.ctx.subnets, each.value.subnetwork, each.value.subnetwork)
+  )
   # is_mirroring_collector = false
 }
 
 resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
-  project                         = var.project_id
-  region                          = var.region
+  project                         = local.project_id
+  region                          = local.region
   name                            = coalesce(var.backend_service_config.name, var.name)
   description                     = var.backend_service_config.description
   load_balancing_scheme           = "EXTERNAL"

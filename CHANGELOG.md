@@ -3,7 +3,59 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v56.1.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v56.2.0...HEAD)
+
+## [v56.2.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v56.2.0) - 2026-06-17 <!-- from: 2026-05-25 12:50:01+00:00 to: 2026-06-17 since: v56.1.0 -->
+
+### BREAKING CHANGES
+
+- `modules/net-lb-proxy-int`: Removed connection tracking and failover configurations as they are not supported by the underlying resources. [[#4027](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4027)]
+- `modules/net-lb-app-int`: Removed failover configurations. [[#4027](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4027)]
+- `modules/net-lb-app-ext`: Renamed the `backend` key to `group` inside `backend_service_configs` to standardize the backend interface. Removed failover configurations. [[#4027](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4027)]
+- `modules/net-lb-app-ext-regional`: Renamed the `backend` key to `group` inside `backend_service_configs`. Replaced the `vpc` variable with `vpc_config` to match other regional modules. Removed failover configurations. [[#4027](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4027)]
+- `modules/net-lb-proxy-int`: Removes `address` and `port` variables. Introduces the new `forwarding_rules_config` variable [[#4024](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4024)]
+- `modules/cloudsql-instance`: network_config.connectivity.psc_allowed_consumer_projects obsoleted. [[#3982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3982)]
+
+
+### FAST
+
+- [[#4021](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4021)] Standardize label validation in JSON schemas ([sruffilli](https://github.com/sruffilli)) <!-- 2026-06-11 11:15:08+00:00 -->
+- [[#4016](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4016)] Add missing iam_deny_policies to organization schema ([kovagoadam](https://github.com/kovagoadam)) <!-- 2026-06-09 07:58:20+00:00 -->
+- [[#4013](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4013)] Update FAST stages README and cleanup instructions ([sruffilli](https://github.com/sruffilli)) <!-- 2026-06-05 08:21:32+00:00 -->
+- [[#4011](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4011)] Remove 2-secops dependency from 3-secops-dev ([LunnosMp4](https://github.com/LunnosMp4)) <!-- 2026-06-04 11:01:52+00:00 -->
+- [[#4007](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4007)] Support `service_agents_config.skip_iam` in project-factory and fast stages ([juliocc](https://github.com/juliocc)) <!-- 2026-06-01 10:23:37+00:00 -->
+- [[#4006](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4006)] Avoid tag binding permadiffs for project-factory service accounts ([juliocc](https://github.com/juliocc)) <!-- 2026-06-01 04:51:40+00:00 -->
+- [[#4004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4004)] Bump GCP provider version to 7.33.0 ([juliocc](https://github.com/juliocc)) <!-- 2026-05-31 21:22:48+00:00 -->
+- [[#3997](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3997)] Add support for regional firewall policies in 2-networking stage ([sruffilli](https://github.com/sruffilli)) <!-- 2026-05-26 08:18:11+00:00 -->
+
+### MODULES
+
+- [[#4025](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4025)] Add server TLS policy support to net-lb-app-int-cross-region ([LF3551](https://github.com/LF3551)) <!-- 2026-06-17 09:53:54+00:00 -->
+- [[#4027](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4027)] Standardize net-lb family interfaces and features ([ludoo](https://github.com/ludoo)) <!-- 2026-06-16 15:07:14+00:00 -->
+- [[#4024](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4024)] Update and fix module net-lb-proxy-int ([LucaPrete](https://github.com/LucaPrete)) <!-- 2026-06-15 08:27:00+00:00 -->
+- [[#4022](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4022)] Add Multi-Region support to cloud-run-v2 module ([sruffilli](https://github.com/sruffilli)) <!-- 2026-06-11 15:28:33+00:00 -->
+- [[#4021](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4021)] Standardize label validation in JSON schemas ([sruffilli](https://github.com/sruffilli)) <!-- 2026-06-11 11:15:08+00:00 -->
+- [[#4017](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4017)] Add net-lb-proxy-int-cross-region module and tests ([sruffilli](https://github.com/sruffilli)) <!-- 2026-06-11 08:14:00+00:00 -->
+- [[#4014](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4014)] Support per-replica tier override in modules/cloudsql-instance ([mrpawan-gupta](https://github.com/mrpawan-gupta)) <!-- 2026-06-09 08:21:03+00:00 -->
+- [[#4015](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4015)] Fix boot disk validation for attaching existing disk ([ludoo](https://github.com/ludoo)) <!-- 2026-06-07 10:32:41+00:00 -->
+- [[#4009](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4009)] Enable managed connection pooling in modules/alloydb ([btuckVZ](https://github.com/btuckVZ)) <!-- 2026-06-05 09:14:36+00:00 -->
+- [[#4007](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4007)] Support `service_agents_config.skip_iam` in project-factory and fast stages ([juliocc](https://github.com/juliocc)) <!-- 2026-06-01 10:23:37+00:00 -->
+- [[#4005](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4005)] Allow skipping default IAM roles for specific service agents in modules/project ([juliocc](https://github.com/juliocc)) <!-- 2026-06-01 04:54:14+00:00 -->
+- [[#4006](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4006)] Avoid tag binding permadiffs for project-factory service accounts ([juliocc](https://github.com/juliocc)) <!-- 2026-06-01 04:51:40+00:00 -->
+- [[#4004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4004)] Bump GCP provider version to 7.33.0 ([juliocc](https://github.com/juliocc)) <!-- 2026-05-31 21:22:48+00:00 -->
+- [[#3982](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3982)] Enable remaining PSC config options in modules/cloudsql-instance ([btuckVZ](https://github.com/btuckVZ)) <!-- 2026-05-30 17:59:45+00:00 -->
+- [[#4003](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4003)] Bump qs from 6.14.2 to 6.15.2 in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-05-30 15:30:19+00:00 -->
+- [[#4001](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4001)] Add new variables to spanner instance and database ([ajlopezn](https://github.com/ajlopezn)) <!-- 2026-05-30 15:22:03+00:00 -->
+- [[#4000](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4000)] Enable remaining PSC config options in modules/alloydb ([btuckVZ](https://github.com/btuckVZ)) <!-- 2026-05-29 17:56:15+00:00 -->
+- [[#3973](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3973)] Add containerd_config support to gke-nodepool ([iAbhishek91](https://github.com/iAbhishek91)) <!-- 2026-05-27 10:00:27+00:00 -->
+
+### TOOLS
+
+- [[#4005](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4005)] Allow skipping default IAM roles for specific service agents in modules/project ([juliocc](https://github.com/juliocc)) <!-- 2026-06-01 04:54:14+00:00 -->
+- [[#4004](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4004)] Bump GCP provider version to 7.33.0 ([juliocc](https://github.com/juliocc)) <!-- 2026-05-31 21:22:48+00:00 -->
+- [[#4002](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4002)] Enable Merge Queue and Remove Fast-Dev Branch ([juliocc](https://github.com/juliocc)) <!-- 2026-05-30 14:51:19+00:00 -->
+- [[#3996](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3996)] Revert "Add CODEOWNERS with maintainers" ([ludoo](https://github.com/ludoo)) <!-- 2026-05-26 07:52:00+00:00 -->
+- [[#3994](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/3994)] Add CODEOWNERS with maintainers ([ludoo](https://github.com/ludoo)) <!-- 2026-05-26 07:41:09+00:00 -->
 
 ## [v56.1.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v56.1.0) - 2026-05-25 <!-- from: 2026-05-21 10:20:26+00:00 to: 2026-05-25 since: v56.0.0 -->
 

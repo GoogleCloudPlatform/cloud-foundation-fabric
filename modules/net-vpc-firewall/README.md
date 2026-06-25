@@ -194,7 +194,7 @@ module "firewall" {
   }
   default_rules_config = { disabled = true }
 }
-# tftest modules=1 resources=3 files=lbs,cidrs inventory=factory.yaml
+# tftest modules=1 resources=4 files=lbs,cidrs inventory=factory.yaml
 ```
 
 ```yaml
@@ -220,6 +220,16 @@ ingress:
         ports:
           - 80
           - 443
+  allow-admin-mixed:
+    description: Allow ICMP plus SSH/RDP from the admin range (mixed protocols).
+    source_ranges:
+      - 10.0.0.0/8
+    rules:
+      - protocol: icmp
+      - protocol: tcp
+        ports:
+          - 22
+          - 3389
 egress:
   block-telnet:
     description: block outbound telnet
@@ -262,7 +272,7 @@ module "firewall" {
     ]
   }
 }
-# tftest modules=1 resources=3 files=lbs inventory=factory.yaml
+# tftest modules=1 resources=4 files=lbs inventory=factory.yaml
 ```
 <!-- BEGIN TFDOC -->
 ## Variables

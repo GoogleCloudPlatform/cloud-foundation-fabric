@@ -18,3 +18,5 @@ tests:
   context-subnet:
   context-subnet-project:
   vpcconnector:
+  multiregion:
+

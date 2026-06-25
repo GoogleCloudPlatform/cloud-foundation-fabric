@@ -1,0 +1,178 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.address.google_compute_address.internal["ilb"]:
+    address_type: INTERNAL
+    deletion_policy: DELETE
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_collection: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: ilb
+    network: null
+    project: project-id
+    purpose: SHARED_LOADBALANCER_VIP
+    region: europe-west1
+    subnetwork: subnet_self_link
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.int-tcp-proxy.google_compute_forwarding_rule.default["http"]:
+    all_ports: null
+    allow_global_access: true
+    allow_psc_global_access: null
+    backend_service: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    ip_collection: null
+    ip_protocol: TCP
+    ip_version: IPV4
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: int-tcp-proxy-http
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+    no_automate_dns_zone: null
+    port_range: '80'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: subnet_self_link
+    timeouts: null
+  module.int-tcp-proxy.google_compute_forwarding_rule.default["https"]:
+    all_ports: null
+    allow_global_access: true
+    allow_psc_global_access: null
+    backend_service: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    ip_collection: null
+    ip_protocol: TCP
+    ip_version: IPV4
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: int-tcp-proxy-https
+    network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+    no_automate_dns_zone: null
+    port_range: '443'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    subnetwork: subnet_self_link
+    timeouts: null
+  module.int-tcp-proxy.google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    backend:
+    - balancing_mode: UTILIZATION
+      capacity_scaler: 1
+      custom_metrics: []
+      description: Terraform managed.
+      group: projects/myprj/zones/europe-west1-a/instanceGroups/my-ig
+      max_connections: null
+      max_connections_per_endpoint: null
+      max_connections_per_instance: null
+      max_rate: null
+      max_rate_per_endpoint: null
+      max_rate_per_instance: null
+      max_utilization: null
+      traffic_duration: ''
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    custom_metrics: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    dynamic_forwarding: []
+    enable_cdn: null
+    failover_policy: []
+    ha_policy: []
+    ip_address_selection_policy: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    locality_lb_policy: null
+    name: int-tcp-proxy
+    network: null
+    network_pass_through_lb_traffic_policy: []
+    outlier_detection: []
+    params: []
+    project: project-id
+    protocol: TCP
+    region: europe-west1
+    security_policy: null
+    session_affinity: NONE
+    strong_session_affinity_cookie: []
+    subsetting: []
+    timeouts: null
+    tls_settings: []
+  module.int-tcp-proxy.google_compute_region_health_check.default[0]:
+    check_interval_sec: 5
+    deletion_policy: DELETE
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: int-tcp-proxy
+    project: project-id
+    region: europe-west1
+    ssl_health_check: []
+    tcp_health_check:
+    - port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.int-tcp-proxy.google_compute_region_target_tcp_proxy.default:
+    deletion_policy: DELETE
+    description: Terraform managed.
+    name: int-tcp-proxy
+    project: project-id
+    proxy_header: NONE
+    region: europe-west1
+    timeouts: null
+  module.int-tcp-proxy.terraform_data.neg_trigger:
+    input:
+      internet: {}
+      psc: {}
+      zonal: {}
+    triggers_replace: null
+
+counts:
+  google_compute_address: 1
+  google_compute_forwarding_rule: 2
+  google_compute_region_backend_service: 1
+  google_compute_region_health_check: 1
+  google_compute_region_target_tcp_proxy: 1
+  modules: 2
+  resources: 7
+  terraform_data: 1
+
+outputs: {}

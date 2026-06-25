@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ values:
     client_version: null
     custom_audiences: null
     default_uri_disabled: null
+    deletion_policy: DELETE
     deletion_protection: true
     description: null
     effective_labels:
@@ -29,7 +30,10 @@ values:
     invoker_iam_disabled: false
     labels: null
     location: europe-west8
-    multi_region_settings: []
+    multi_region_settings:
+    - regions:
+      - europe-west8
+      - europe-west1
     name: test-run-context
     project: foo-test-0
     template:
@@ -38,6 +42,7 @@ values:
       encryption_key: null
       execution_environment: EXECUTION_ENVIRONMENT_GEN1
       gpu_zonal_redundancy_disabled: null
+      health_check_disabled: null
       labels: null
       node_selector: []
       revision: null
@@ -61,6 +66,7 @@ values:
   google_service_account.service_account[0]:
     account_id: test-run-context
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: test-run-context
@@ -68,7 +74,23 @@ values:
     member: serviceAccount:test-run-context@foo-test-0.iam.gserviceaccount.com
     project: foo-test-0
     timeouts: null
+  google_tags_location_tag_binding.binding["bar"]:
+    deletion_policy: DELETE
+    location: europe-west8
+    tag_value: tagValues/1234567891
+    timeouts: null
+  google_tags_location_tag_binding.binding["baz"]:
+    deletion_policy: DELETE
+    location: europe-west8
+    tag_value: tagValues/1234567890
+    timeouts: null
+  google_tags_location_tag_binding.binding["foo"]:
+    deletion_policy: DELETE
+    location: europe-west8
+    tag_value: foo-test-0/dynamic_test/cc-123
+    timeouts: null
   google_vpc_access_connector.connector[0]:
+    deletion_policy: DELETE
     ip_cidr_range: 10.10.20.0/28
     machine_type: e2-micro
     max_instances: 10
@@ -79,21 +101,27 @@ values:
     region: europe-west8
     subnet: []
     timeouts: null
-  google_tags_location_tag_binding.binding["bar"]:
-    location: europe-west8
-    tag_value: tagValues/1234567891
-    timeouts: null
-  google_tags_location_tag_binding.binding["baz"]:
-    location: europe-west8
-    tag_value: tagValues/1234567890
-    timeouts: null
-  google_tags_location_tag_binding.binding["foo"]:
-    location: europe-west8
-    tag_value: foo-test-0/dynamic_test/cc-123
-    timeouts: null
 
 counts:
   google_cloud_run_v2_service: 1
   google_cloud_run_v2_service_iam_binding: 1
+  google_project_iam_member: 1
+  google_service_account: 1
   google_tags_location_tag_binding: 3
   google_vpc_access_connector: 1
+  modules: 0
+  resources: 8
+
+outputs:
+  id: __missing__
+  invoke_command: __missing__
+  job: null
+  resource: __missing__
+  resource_name: __missing__
+  service: __missing__
+  service_account: __missing__
+  service_account_email: test-run-context@foo-test-0.iam.gserviceaccount.com
+  service_account_iam_email: serviceAccount:test-run-context@foo-test-0.iam.gserviceaccount.com
+  service_name: __missing__
+  service_uri: __missing__
+  vpc_connector: __missing__
