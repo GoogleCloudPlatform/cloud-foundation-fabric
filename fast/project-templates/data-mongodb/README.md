@@ -18,7 +18,7 @@ This Terraform can of course be deployed using any pre-existing project. In that
 Configuration is mostly done via the `atlas_config` and `vpc_config` variables. Note that:
 
 - VPC configuration can be set to reference a Shared VPC Host network like shown below, or an in-project network if that is preferred
-- the PSC CIDR block is used to allocate the required 50 endpoint addresses in the VPC, so it needs to be large enough to accommodate them
+- the PSC CIDR block is used to allocate the single PSC endpoint address in the VPC (port-mapped architecture requires only one address)
 - the Atlas region must match the GCP subnetwork region
 
 Bringing up a cluster and the associated connectivity from scratch will require approximately 30 minutes.
@@ -38,7 +38,6 @@ atlas_config = {
 }
 project_id = "my-prod-shared-mongodb-0"
 vpc_config = {
-  network_name   = "dev-spoke-0"
   subnetwork_id  = "projects/my-dev-net-spoke-0/regions/northamerica-northeast1/subnetworks/gce"
   psc_cidr_block = "10.8.11.192/26"
 }
@@ -50,7 +49,7 @@ vpc_config = {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [atlas_config](variables.tf#L17) | MongoDB Atlas configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L40) | Project id where the registries will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L40) | GCP project id where MongoDB Atlas resources will be created. | <code>string</code> | ✓ |  |
 | [vpc_config](variables.tf#L45) | VPC configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L33) | Prefix used for all resource names. | <code>string</code> |  | <code>&#34;mongodb&#34;</code> |
 
@@ -59,8 +58,8 @@ vpc_config = {
 | name | description | sensitive |
 |---|---|:---:|
 | [atlas_cluster](outputs.tf#L17) | MongoDB Atlas cluster. |  |
-| [atlas_project](outputs.tf#L31) | MongoDB Atlas project. |  |
-| [endpoints](outputs.tf#L40) | MongoDB Atlas endpoints. |  |
+| [atlas_project](outputs.tf#L30) | MongoDB Atlas project. |  |
+| [endpoints](outputs.tf#L39) | MongoDB Atlas PSC endpoint IP address. |  |
 <!-- END TFDOC -->
 ## Test
 
@@ -81,10 +80,9 @@ module "test" {
   }
   project_id = "my-prod-shared-mongodb-0"
   vpc_config = {
-    network_name   = "dev-spoke-0"
     subnetwork_id  = "projects/my-dev-net-spoke-0/regions/northamerica-northeast1/subnetworks/gce"
     psc_cidr_block = "10.8.11.192/26"
   }
 }
-# tftest modules=2 resources=104
+# tftest modules=2 resources=6
 ```
