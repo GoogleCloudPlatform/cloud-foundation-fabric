@@ -52,6 +52,6 @@ automation:
             - $iam_principals:service_accounts/data-mongodb/automation/rw
 # edit or comment shared VPC service host
 shared_vpc_service_config:
-  host_project: $projject_ids:dev-spoke-0
+  host_project: $project_ids:dev-spoke-0
   network_users:
     - $iam_principals:service_accounts/data-mongodb/automation/rw
