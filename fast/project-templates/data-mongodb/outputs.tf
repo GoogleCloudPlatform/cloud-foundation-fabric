@@ -17,14 +17,13 @@
 output "atlas_cluster" {
   description = "MongoDB Atlas cluster."
   value = {
-    id                     = mongodbatlas_cluster.default.cluster_id
-    mongo_uri              = mongodbatlas_cluster.default.mongo_uri
-    mongo_uri_with_options = mongodbatlas_cluster.default.mongo_uri_with_options
-    name                   = mongodbatlas_cluster.default.name
-    project_id             = mongodbatlas_cluster.default.project_id
-    region                 = mongodbatlas_cluster.default.provider_region_name
-    size                   = mongodbatlas_cluster.default.provider_instance_size_name
-    srv_address            = mongodbatlas_cluster.default.srv_address
+    id          = mongodbatlas_advanced_cluster.default.cluster_id
+    mongo_uri   = mongodbatlas_advanced_cluster.default.connection_strings.standard
+    name        = mongodbatlas_advanced_cluster.default.name
+    project_id  = mongodbatlas_advanced_cluster.default.project_id
+    region      = local._cluster_region_config.region_name
+    size        = local._cluster_region_config.electable_specs.instance_size
+    srv_address = mongodbatlas_advanced_cluster.default.connection_strings.standard_srv
   }
 }
 
@@ -38,9 +37,6 @@ output "atlas_project" {
 }
 
 output "endpoints" {
-  description = "MongoDB Atlas endpoints."
-  value = sort([
-    for v in mongodbatlas_privatelink_endpoint_service.default.endpoints :
-    v.ip_address
-  ])
+  description = "MongoDB Atlas PSC endpoint IP address."
+  value       = mongodbatlas_privatelink_endpoint_service.default.private_endpoint_ip_address
 }
