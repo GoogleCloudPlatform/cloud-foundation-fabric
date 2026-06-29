@@ -225,7 +225,8 @@
     <br>*additional properties: false*
     - **projects**: *object*
       <br>*additional properties: object*
-    - **organization**: *string*
+    - **organization**: *object*
+      <br>*additional properties: string*
   - **vpc_host_projects**: *object*
     <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*
