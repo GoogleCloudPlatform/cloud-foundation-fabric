@@ -9,3 +9,5 @@ yamllint
 yapf
 jsonschema
 BeautifulSoup4
+pytest
+tftest

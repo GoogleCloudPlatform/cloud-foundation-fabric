@@ -152,10 +152,10 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "network_pass_through_lb_traffic_policy" {
-    for_each = local.bs_nptlb == null ? [""] : []
+    for_each = local.bs_nptlb != null ? [""] : []
     content {
       dynamic "zonal_affinity" {
-        for_each = local.bs_nptlb.zonal_affinity == null ? [""] : []
+        for_each = local.bs_nptlb.zonal_affinity != null ? [""] : []
         content {
           spillover       = local.bs_nptlb.zonal_affinity.spillover
           spillover_ratio = local.bs_nptlb.zonal_affinity.spillover_ratio
