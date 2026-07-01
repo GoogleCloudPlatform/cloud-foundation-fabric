@@ -35,6 +35,12 @@ variable "backend_service_config" {
       optional_mode   = optional(string)
       optional_fields = optional(list(string))
     }))
+    network_pass_through_lb_traffic_policy = optional(object({
+      zonal_affinity = optional(object({
+        spillover       = optional(string, "ZONAL_AFFINITY_DISABLED")
+        spillover_ratio = optional(number)
+      }))
+    }))
     name             = optional(string)
     description      = optional(string, "Terraform managed.")
     protocol         = optional(string, "UNSPECIFIED")
@@ -52,6 +58,26 @@ variable "backend_service_config" {
       coalesce(var.backend_service_config.session_affinity, "NONE")
     )
     error_message = "Invalid session affinity value."
+  }
+  validation {
+    condition = (
+      try(var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover, null) == null ||
+      contains(
+        ["ZONAL_AFFINITY_DISABLED", "ZONAL_AFFINITY_SPILL_CROSS_ZONE", "ZONAL_AFFINITY_STAY_WITHIN_ZONE"],
+        var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover
+      )
+    )
+    error_message = "network_pass_through_lb_traffic_policy.zonal_affinity.spillover must be one of ZONAL_AFFINITY_DISABLED, ZONAL_AFFINITY_SPILL_CROSS_ZONE, or ZONAL_AFFINITY_STAY_WITHIN_ZONE."
+  }
+  validation {
+    condition = (
+      try(var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio, null) == null
+      || (
+        var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio >= 0 &&
+        var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio <= 1
+      )
+    )
+    error_message = "network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio must be a number between 0 and 1."
   }
 }
 
