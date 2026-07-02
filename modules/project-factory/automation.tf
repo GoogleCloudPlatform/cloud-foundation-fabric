@@ -177,10 +177,9 @@ module "automation-service-accounts-iam" {
     for k, v in local.automation_sas :
     k => v if lookup(v, "iam_sa_roles", null) != null
   }
-  project_id = (
-    module.automation-service-accounts[each.key].service_account.project
-  )
-  name = module.automation-service-accounts[each.key].name
+  project_id = each.value.automation_project
+  prefix     = each.value.prefix
+  name       = each.value.name
   service_account_reuse = {
     use_data_source = false
   }
