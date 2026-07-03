@@ -37,5 +37,6 @@
     "modules/vpc-sc/schemas/ingress-policy.schema.json": [
       "data/**/ingress-policies/**/*yaml"
     ],
+    "https://www.artillery.io/schema.json": []
   }
 }
