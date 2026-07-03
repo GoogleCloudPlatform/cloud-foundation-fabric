@@ -791,6 +791,9 @@ automation:
   service_accounts:
     rw:
       description: Team B app 0 read/write automation sa.
+      iam_sa_roles:
+        $service_account_ids:dev-tb-app0-0/automation/ro:
+          - roles/iam.serviceAccountTokenCreator
     ro:
       description: Team B app 0 read-only automation sa.
   bucket:
