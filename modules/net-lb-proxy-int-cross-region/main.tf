@@ -133,3 +133,25 @@ resource "google_compute_region_network_endpoint_group" "psc" {
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
 }
+
+resource "google_network_services_tls_route" "default" {
+  count    = var.tls_route_config == null ? 0 : 1
+  provider = google-beta
+  project  = local.project_id
+  name     = var.tls_route_config.name
+
+  target_proxies = [
+    google_compute_target_tcp_proxy.default.id
+  ]
+
+  rules {
+    matches {
+      sni_host = var.tls_route_config.sni_host
+    }
+    action {
+      destinations {
+        service_name = google_compute_backend_service.default.id
+      }
+    }
+  }
+}
