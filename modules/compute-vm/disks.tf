@@ -66,9 +66,13 @@ resource "google_compute_disk" "boot" {
   }
 
   # This prevents the VM from being re-created when the image family updates
+  # or when the disk is restored from a snapshot manually.
   lifecycle {
     ignore_changes = [
-      image
+      image,
+      snapshot,
+      source_disk,
+      source_instant_snapshot
     ]
   }
 }
@@ -104,6 +108,15 @@ resource "google_compute_disk" "disks" {
       )
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      image,
+      snapshot,
+      source_disk,
+      source_instant_snapshot
+    ]
+  }
 }
 
 resource "google_compute_region_disk" "disks" {
@@ -138,5 +151,12 @@ resource "google_compute_region_disk" "disks" {
       )
 
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      snapshot,
+      source_disk
+    ]
   }
 }
