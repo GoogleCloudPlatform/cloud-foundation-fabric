@@ -3,13 +3,20 @@
 <!-- BEGIN TOC -->
 - [Quickstart](#quickstart)
   - [Prerequisites](#prerequisites)
+    - [Billing IAM prerequisites](#billing-iam-prerequisites)
+      - [If you cannot manage billing IAM](#if-you-cannot-manage-billing-iam)
+    - [Admin IAM prerequisites](#admin-iam-prerequisites)
   - [Select/configure a factory dataset](#selectconfigure-a-factory-dataset)
   - [Configure defaults](#configure-defaults)
   - [Initial user permissions](#initial-user-permissions)
   - [First apply cycle](#first-apply-cycle)
     - [Default project](#default-project)
+      - [Provider Configuration for edge cases](#provider-configuration-for-edge-cases)
     - [Importing org policies](#importing-org-policies)
     - [Importing existing organization level IAM bindings](#importing-existing-organization-level-iam-bindings)
+      - [IAM by Role (Authoritative)](#iam-by-role-authoritative)
+      - [IAM by Principal (Authoritative)](#iam-by-principal-authoritative)
+      - [IAM by Principal Additive (Non-Authoritative)](#iam-by-principal-additive-non-authoritative)
     - [Local output files storage](#local-output-files-storage)
     - [Init and apply the stage](#init-and-apply-the-stage)
   - [Provider setup and final apply cycle](#provider-setup-and-final-apply-cycle)
@@ -68,16 +75,31 @@ The high-level flow for running this stage is:
 This stage only requires minimal prerequisites:
 
 - one organization
-- credentials with admin access to the organization and one billing account
+- credentials with admin access to the organization
+- one billing account
 
-The organization ideally needs to be empty. If pre-existing resources are present some care needs to be put into preserving their existing IAM and org policies. Ideally, move legacy projects to a dedicated folder where the current org-level configuration can be replicated.
+The organization ideally needs to be empty. If pre-existing resources are present some care needs to be put into preserving their existing IAM and org policies (see [Importing org policies](#importing-org-policies)). Ideally, move legacy projects to a dedicated folder where the current org-level configuration can be replicated.
 
-Billing admin permissions are ideally available on either an org-contained billing account or an external one. If those are unavailable, the YAML configuration files need to be updated to remove billing IAM bindings, and those need to be assigned via an external flow. Refer to the [billing section](#billing-account-iam) for more details or non-standard configurations.
+#### Billing IAM prerequisites
 
-The admin principal is typically a group that includes the user running the first apply, but any kind of principal is supported. More principals (network admins, security admins, etc.) are present in some of the [default factories datasets](#default-factory-datasets), and others can be added if needed by editing the YAML configuration files.
+You have sufficient permissions to manage billing IAM on either:
+  - an Organization-associated / Organization-level Billing Account: owned and managed directly within your Google Cloud Organization
+  - a Cross-Organization Billing or Reseller Billing Subaccount: externally managed billing account
+Get familiar with the [IAM relationship between organizations, projects and Cloud Billing accounts](https://docs.cloud.google.com/billing/docs/how-to/billing-access#relationships-between-resources) and refer to the [billing section](#billing-account-iam) for more details or non-standard configurations.
+
+##### If you cannot manage billing IAM
+
+If you do not have sufficient permissions to manage billing IAM (common in "brownfield" environments or when using External / Reseller Billing Subaccounts), the IAM bindings need to be assigned via an external flow. Therefore, you need to remove billing IAM bindings from the YAML configuration files:
+  1. remove billing IAM bindings (`iam_bindings_additive:`) from file `datasets/[dataset_name]/billing-accounts/default.yaml` and
+  2. remove billing IAM bindings (`iam: > roles/billing.creator:`) from file `datasets/[dataset_name]/organization/.config.yaml`
+
+#### Admin IAM prerequisites
+
+The admin principal (`gcp-organization-admins`) is typically a group that includes the user running the first apply, but any kind of principal is supported. More principals (`gcp-network-admins`, `gcp-security-admins`, etc.) are present in some of the [default factories datasets](#default-factory-datasets), and others can be added if needed by editing the YAML configuration files (`datasets/[dataset_name]/organization/.config.yaml`).
 
 ### Select/configure a factory dataset
 
+Datasets are representations of resources based on directories and YAML files. [Factories](../../README.md#extensive-use-of-factories) consume datasets and deploy cloud resources. This repository contains several pre-configured datasets. See "[Resource Factories: A descriptive approach to Terraform](https://medium.com/google-cloud/resource-factories-a-descriptive-approach-to-terraform-581b3ebb59c)" for more details and the rationale behind factories.
 The `factories_config` variable configures the location for the dataset, and the individual factories within it. Its default values point to the classic FAST compatible fileset in the `datasets/classic` folder.
 
 If this configuration matches requirements, no changes are necessary at this stage. To select a different setup create a `tfvars` file and set paths to the desired data folder, like shown in the example below. The different configurations produced by each fileset are described [later in this document](#default-factory-datasets).
@@ -172,7 +194,7 @@ for role in $FAST_ROLES; do
 done
 ```
 
-If you are using an externally managed billing account, make sure user has Billing Admin role assigned on the account.
+If you are using an externally managed billing account, see [If you cannot manage billing IAM](#if-you-cannot-manage-billing-iam).
 
 ### First apply cycle
 
@@ -190,9 +212,28 @@ gcloud services enable \
   orgpolicy.googleapis.com serviceusage.googleapis.com
 ```
 
+##### Provider Configuration for edge cases
+
+In some cases, i.e: if you are running the bootstrap process from a Google Cloud Compute Engine (GCE VM), rather than your local laptop, the setup behaves differently. The issue is that Terraform detects it is running inside a GCE VM instance and falls back to using the GCE VM management project to track API quota usage. The workaround is to create a temporary `providers.tf` file in the `fast/stages/0-org-setup/` directory to explicitly declare the billing project to be used during bootstrap.
+
+```terraform
+# Temporary providers.tf file to resolve quota project issues during bootstrap
+provider "google" {
+  user_project_override = true
+  billing_project       = "[project id]"
+}
+
+provider "google-beta" {
+  user_project_override = true
+  billing_project       = "[project id]"
+}
+```
+
 #### Importing org policies
 
-If your dataset includes org policies which are already set in the organization, the first apply will fail with a `409 Conflict` error. In this case, you must either comment them out in the relevant YAML files or configure this stage to import them. To figure out which policies are set, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file. The following is an example.
+If your dataset includes org policies which are already set in the organization, the first apply will fail with a `409 Conflict` error. In this case, you must either comment them out in the relevant factory YAML files (`fast/stages/0-org-setup/datasets/<YOUR_CHOSEN_DATASET>/organization/org-policies/*.yaml`) or configure this stage to import them.
+
+To figure out which policies are already set in the organization, run `gcloud org-policies list --organization [your org id]`, then set the `org_policies_imports` variable in your tfvars file (`fast/stages/0-org-setup/0-org-setup.auto.tfvars`). The following is an example.
 
 ```bash
 gcloud org-policies list --organization 1234567890
@@ -202,7 +243,7 @@ compute.disableSerialPortAccess                  -            SET
 ```
 
 ```tfvars
-# create or edit the 0-org-setup.auto.tfvars.file
+# create or edit the 0-org-setup.auto.tfvars file
 # do NOT include the 'constraints/' prefix, use the names matching the YAML files
 org_policies_imports = [
   "compute.managed.restrictProtocolForwardingCreationForTypes",
@@ -215,28 +256,72 @@ org_policies_imports = [
 ]
 ```
 
-Once org policies have been imported, the variable definition can be removed from the tfvars file.
+Once org policies have been imported, the `org_policies_imports` variable definition can be removed from the `0-org-setup.auto.tfvars` file.
 
 #### Importing existing organization level IAM bindings
 
-For brownfield implementations you may need to import existing organization IAM policies. These snippets can help you add existing settings into the YAML file.
+For brownfield implementations you may need to import existing organization IAM policies. These snippets can help you add existing settings into the factory YAML file (`fast/stages/0-org-setup/datasets/<YOUR_CHOSEN_DATASET>/organization/.config.yaml`).
 
 Scripts below require [yq](https://github.com/mikefarah/yq/) in at least version 4. It was tested using yq `v4.47.2`.
 
-To create `iam:` part of the `/organization/.config.yaml` file, you can use following snippet:
+##### IAM by Role (Authoritative)
 
-```shell
+The `iam:` block of the factory YAML file (`/organization/.config.yaml`) is authoritative, meaning that it will overwrite any existing IAM bindings on the resource, removing any binding for any role that is not explicitly listed. It is grouped by role name and contains a list of members.
+
+Example:
+
+```yaml
+iam:
+  roles/resourcemanager.organizationAdmin:
+    - user:alice@example.com
+    - user:bob@example.com
+```
+
+To create `iam:` block of the factory YAML file (`/organization/.config.yaml`), you can use following snippet:
+
+```bash
 gcloud <resource> get-iam-policy <resource name> | yq '.bindings | map({"key": .role, "value": .members}) | from_entries'
 ```
 
-To create `iam_by_principals:` part of the factory YAML file, you can use following snippet:
+##### IAM by Principal (Authoritative)
 
-```shell
-gcloud <resource> get-iam-policy <resource name> |  yq '
+The `iam_by_principals:` block of the factory YAML file (`/organization/.config.yaml`) is authoritative, meaning that it will overwrite any existing IAM bindings on the resource, removing any binfing for any principal that is not explicitly listed. It behaves exactly like `iam:` and is provided as a convenience for those who prefer to group IAM bindings by principal.
+
+Example:
+
+```yaml
+iam_by_principals:
+  user:alice@example.com:
+    - roles/resourcemanager.organizationAdmin
+    - roles/organization.admin
+  user:bob@example.com:
+    - roles/organization.admin
+```
+
+To create `iam_by_principals:` block of the factory YAML file, you can use following snippet:
+
+```bash
+gcloud <resource> get-iam-policy <resource name> | yq '
 [.bindings | .[] | .members[] as $member | { "member": $member, "role": .role}] |
 group_by(.member) | sort_by(.[0].member) | .[] | { .[0].member: map(.role)}
 '
 ```
+
+##### IAM by Principal Additive (Non-Authoritative)
+
+The `iam_by_principals_additive:` block of the factory YAML file (`/organization/.config.yaml`) is non-authoritative, meaning that it will **not** overwrite existing IAM bindings on the resource, instead, it simply adds the specified users to the specified roles and it won't touch any other users who currently have that role.
+
+For brownfield implementations, you may want to merge your existing IAM bindings with the new FAST configuration. You can either merge your existing IAM binding with the authoritative `iam_by_principals:` block, or append a new `iam_by_principals_additive:` block at the end of the factory YAML file.
+
+Example:
+
+```yaml
+iam_by_principals_additive:
+  user:alice@example.com:
+    - roles/resourcemanager.organizationAdmin
+```
+
+To create `iam_by_principals_additive:` block of the factory YAML file (`/organization/.config.yaml`), you can use the same snippet as [`iam_by_principals:`](#iam-by-principal-authoritative).
 
 #### Local output files storage
 
@@ -249,7 +334,7 @@ To enable local output files storage, set the `output_files.local_path` attribut
 ```yaml
 # defaults.yaml
 output_files:
-  local_path: "~/fast-configs/test-0"
+  local_path: "~/fast-config/fast-test-00"
 ```
 
 #### Init and apply the stage
@@ -265,7 +350,7 @@ terraform apply
 
 When the first apply cycle has completed successfully, you are ready to switch Terraform to use the new GCS backend and service account credentials.
 
-The first step is to link the generated provider file, either copying it from the GCS bucket or linking it from the local path if it has been configured in the previous step.
+The first step is to link the generated provider file, either by copying it from the GCS bucket or linking it from the local path if it has been configured in the previous step.
 
 The instructions also assume that you have moved the `0-org-setup.auto.tfvars` file (if you have one) to the GCS bucket or the local config files. This is good practice in order to have the tfvars file persisted, either via GCS or by committing it to a repository with the source code in a dedicated config folder. The file needs to be copied or moved by hand. Alternatively, the last copy/link command can be ignored.
 
@@ -277,10 +362,10 @@ If local output files are available adjust the path, run the script, then copy/p
 # File linking commands for FAST Organization Setup stage
 
 # provider file
-ln -s /home/user/fast-configs/test-0/providers/0-org-setup-providers.tf ./
+ln -s ~/fast-configs/test-0/providers/0-org-setup-providers.tf ./
 
 # conventional location for this stage terraform.tfvars (manually managed)
-ln -s /home/user/fast-configs/test-0/0-org-setup.auto.tfvars ./
+ln -s ~/fast-configs/test-0/0-org-setup.auto.tfvars ./
 ```
 
 If you did not configure local output files use the GCS bucket to fetch output files. The bucket name can be derived from the `tfvars.org_setup.automation.outputs_bucket` Terraform output. Adjust the path, run the script, then copy/paste the resulting commands.
