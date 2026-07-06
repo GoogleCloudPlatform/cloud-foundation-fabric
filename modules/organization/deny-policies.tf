@@ -42,7 +42,7 @@ resource "google_iam_deny_policy" "default" {
           for pf in [
             # standard FAST interpolation first
             for p in rule.value.denied_principals : lookup(local.ctx.iam_principals, p, p)
-          ] : # formating (based on the principal's prefix) comes as the next step
+          ] : # formatting (based on the principal's prefix) comes as the next step
           contains(keys(local.deny_policy_principals_templates), split(":", pf)[0]) ?
           # If YES: Format it using the template found
           format(local.deny_policy_principals_templates[split(":", pf)[0]], split(":", pf)[1]) :
@@ -65,7 +65,7 @@ resource "google_iam_deny_policy" "default" {
           for pf in [
             # standard FAST interpolation first
             for p in rule.value.exception_principals : lookup(local.ctx.iam_principals, p, p)
-          ] : # formating (based on the principal's prefix) comes as the next step
+          ] : # formatting (based on the principal's prefix) comes as the next step
           contains(keys(local.deny_policy_principals_templates), split(":", pf)[0]) ?
           # If YES: Format it using the template found
           format(local.deny_policy_principals_templates[split(":", pf)[0]], split(":", pf)[1]) :
