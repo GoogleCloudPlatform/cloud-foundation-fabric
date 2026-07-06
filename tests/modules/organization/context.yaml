@@ -51,7 +51,7 @@ values:
         denied_permissions:
         - compute.googleapis.com/instances.create
         denied_principals:
-        - principalSet://goog/group/test-user@example.com
+        - principal://goog/subject/test-user@example.com
         exception_permissions: []
         exception_principals:
         - principalSet://goog/group/test-group@example.com
