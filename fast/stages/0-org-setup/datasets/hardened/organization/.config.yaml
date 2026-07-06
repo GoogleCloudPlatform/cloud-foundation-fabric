@@ -113,7 +113,7 @@ iam_by_principals:
     - roles/accesscontextmanager.policyReader
     - roles/cloudasset.viewer
   # Uncomment if you want to use PAM.
-  # $service_agents:pam:
+  # $iam_principals:service_agents/pam:
   #   - roles/privilegedaccessmanager.serviceAgent
 data_access_logs:
   allServices:
