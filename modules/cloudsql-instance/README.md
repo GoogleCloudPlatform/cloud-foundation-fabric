@@ -272,7 +272,7 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   context = {
-    networks = { myvpc = "https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa" }
+    networks = { myvpc = var.vpc.self_link }
   }
   network_config = {
     connectivity = {
