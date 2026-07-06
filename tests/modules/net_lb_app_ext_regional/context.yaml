@@ -1,0 +1,130 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_forwarding_rule.default:
+    all_ports: null
+    allow_global_access: null
+    allow_psc_global_access: null
+    backend_service: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    ip_address: 10.0.0.1
+    ip_collection: null
+    ip_protocol: TCP
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: EXTERNAL_MANAGED
+    name: test-lb
+    network: projects/test-project/global/networks/test-vpc
+    network_tier: STANDARD
+    no_automate_dns_zone: null
+    port_range: '80'
+    ports: null
+    project: test-project
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  google_compute_instance_group.default["default"]:
+    deletion_policy: DELETE
+    description: Terraform managed.
+    name: test-lb-default
+    named_port: []
+    project: test-project
+    timeouts: null
+    zone: europe-west1-b
+  google_compute_region_health_check.default["default"]:
+    check_interval_sec: 5
+    deletion_policy: DELETE
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check:
+    - host: null
+      port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request_path: /
+      response: null
+    https_health_check: []
+    name: test-lb-default
+    project: test-project
+    region: europe-west1
+    ssl_health_check: []
+    tcp_health_check: []
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  google_compute_region_network_endpoint_group.psc["psc"]:
+    app_engine: []
+    cloud_function: []
+    cloud_run: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    name: test-lb-psc
+    network: projects/test-project/global/networks/test-vpc
+    network_endpoint_type: PRIVATE_SERVICE_CONNECT
+    project: test-project
+    psc_target_service: test-service
+    region: europe-west1
+    subnetwork: projects/test-project/regions/europe-west1/subnetworks/test-subnet
+    timeouts: null
+  google_compute_region_target_http_proxy.default[0]:
+    deletion_policy: DELETE
+    description: Terraform managed.
+    http_keep_alive_timeout_sec: null
+    name: test-lb
+    project: test-project
+    region: europe-west1
+    timeouts: null
+  google_compute_region_url_map.default:
+    default_route_action: []
+    default_service: default
+    default_url_redirect: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    header_action: []
+    host_rule: []
+    name: test-lb
+    path_matcher: []
+    project: test-project
+    region: europe-west1
+    test: []
+    timeouts: null
+
+counts:
+  google_compute_forwarding_rule: 1
+  google_compute_instance_group: 1
+  google_compute_region_health_check: 1
+  google_compute_region_network_endpoint_group: 1
+  google_compute_region_target_http_proxy: 1
+  google_compute_region_url_map: 1
+  modules: 0
+  resources: 6
+
+outputs:
+  address: 10.0.0.1
+  backend_service_ids: {}
+  backend_service_names: {}
+  forwarding_rule: __missing__
+  group_ids: __missing__
+  health_check_ids: __missing__
+  id: __missing__
+  neg_ids: __missing__
+  url_map_id: __missing__

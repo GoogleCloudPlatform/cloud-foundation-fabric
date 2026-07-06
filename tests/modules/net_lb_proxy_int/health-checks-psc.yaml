@@ -45,7 +45,6 @@ values:
       capacity_scaler: 1
       custom_metrics: []
       description: Terraform managed.
-      failover: false
       max_connections: null
       max_connections_per_endpoint: null
       max_connections_per_instance: null

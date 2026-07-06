@@ -95,7 +95,7 @@ module "glb" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-backend" }
+        { group = "neg-backend" }
       ]
       health_checks = []
       iap_config = {
