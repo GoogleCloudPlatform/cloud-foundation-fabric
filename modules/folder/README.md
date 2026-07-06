@@ -733,7 +733,7 @@ module "folder" {
 
 You can define Deny policies using the `iam_deny_policies` variable. Each policy requires you to specify the principals and permissions to deny. You can optionally define exception principals, exception permissions, and conditions to tailor the restriction.
 
-Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`).
+Note that IAM Deny policies require a specific prefix for principal definitions (e.g., `principalSet://goog/public:all` or `principalSet://goog/group/group-email@example.com`), and permissions must be prefixed with the service fully qualified domain name (e.g., `iam.googleapis.com/serviceAccountKeys.create`). The framework provides automatic convertion of principals format passed using standard FAST interpolation $iam_principals: to the required format so that within a respective .yaml file the same convention can be used for both: IAM Allow and IAM Deny Policies. Please note that only a simple conversion for a user, a group and a service account (or service agent) is supported, more complicated use cases (eg. domain -> customerId) need to be populated directly with values or via entries in your `var.context.iam_principals` mapping.
 
 ```hcl
 module "folder" {

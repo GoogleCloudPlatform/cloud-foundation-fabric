@@ -16,6 +16,17 @@
 
 # tfdoc:file:description IAM Deny policies.
 
+# simple mapping between principal prefixes used in IAM Allow Policies and corresponding templates in IAM Deny policies
+# Only conversion for a user, a group and a service account (or service agent) is supported, more complicated use cases
+# (eg. domain -> customerId) need to be addressed via entries in iam_principals block inside defaults.yaml
+locals {
+  deny_policy_principals_templates = {
+    "group"          = "principalSet://goog/group/%s"
+    "serviceAccount" = "principal://iam.googleapis.com/projects/-/serviceAccounts/%s"
+    "user"           = "principal://goog/subject/%s"
+  }
+}
+
 resource "google_iam_deny_policy" "default" {
   for_each     = var.iam_deny_policies
   parent       = urlencode("cloudresourcemanager.googleapis.com/organizations/${local.organization_id_numeric}")
@@ -28,7 +39,15 @@ resource "google_iam_deny_policy" "default" {
       description = rule.value.description
       deny_rule {
         denied_principals = [
-          for p in rule.value.denied_principals : lookup(local.ctx.iam_principals, p, p)
+          for pf in [
+            # standard FAST interpolation first
+            for p in rule.value.denied_principals : lookup(local.ctx.iam_principals, p, p)
+          ] : # formating (based on the principal's prefix) comes as the next step
+          contains(keys(local.deny_policy_principals_templates), split(":", pf)[0]) ?
+          # If YES: Format it using the template found
+          format(local.deny_policy_principals_templates[split(":", pf)[0]], split(":", pf)[1]) :
+          # If NO: Fall back safely to the original raw string without breaking format()
+          pf
         ]
         dynamic "denial_condition" {
           for_each = rule.value.denial_condition == null ? [] : [""]
@@ -43,7 +62,15 @@ resource "google_iam_deny_policy" "default" {
         }
         denied_permissions = rule.value.denied_permissions
         exception_principals = [
-          for p in rule.value.exception_principals : lookup(local.ctx.iam_principals, p, p)
+          for pf in [
+            # standard FAST interpolation first
+            for p in rule.value.exception_principals : lookup(local.ctx.iam_principals, p, p)
+          ] : # formating (based on the principal's prefix) comes as the next step
+          contains(keys(local.deny_policy_principals_templates), split(":", pf)[0]) ?
+          # If YES: Format it using the template found
+          format(local.deny_policy_principals_templates[split(":", pf)[0]], split(":", pf)[1]) :
+          # If NO: Fall back safely to the original raw string without breaking format()
+          pf
         ]
         exception_permissions = rule.value.exception_permissions
       }
