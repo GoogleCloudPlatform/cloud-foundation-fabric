@@ -31,6 +31,7 @@ locals {
         iam_bindings           = try(opts.iam_bindings, {})
         iam_bindings_additive  = try(opts.iam_bindings_additive, {})
         iam_billing_roles      = try(opts.iam_billing_roles, {})
+        iam_folder_roles       = try(opts.iam_folder_roles, {})
         iam_organization_roles = try(opts.iam_organization_roles, {})
         iam_sa_roles           = try(opts.iam_sa_roles, {})
         iam_project_roles      = try(opts.iam_project_roles, {})
@@ -93,13 +94,17 @@ module "service-accounts" {
     project_ids = local.ctx_project_ids
     tag_values  = local.ctx_tag_values
   })
+  iam_billing_roles      = each.value.iam_billing_roles
+  iam_folder_roles       = each.value.iam_folder_roles
+  iam_organization_roles = each.value.iam_organization_roles
   iam_project_roles = merge(
     each.value.iam_project_roles,
     {
       "$project_ids:${each.value.project_key}" = each.value.iam_self_roles
     }
   )
-  tag_bindings = each.value.tag_bindings
+  iam_storage_roles = each.value.iam_storage_roles
+  tag_bindings      = each.value.tag_bindings
 }
 
 moved {
