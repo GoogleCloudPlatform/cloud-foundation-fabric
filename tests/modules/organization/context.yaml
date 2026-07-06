@@ -51,10 +51,10 @@ values:
         denied_permissions:
         - compute.googleapis.com/instances.create
         denied_principals:
-        - user:test-user@example.com
+        - principalSet://goog/group/test-user@example.com
         exception_permissions: []
         exception_principals:
-        - group:test-group@example.com
+        - principalSet://goog/group/test-group@example.com
       description: Test Rule
     timeouts: null
   google_logging_organization_settings.default[0]:
