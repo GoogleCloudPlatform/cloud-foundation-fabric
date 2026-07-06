@@ -234,7 +234,7 @@ module "tcp-proxy-cross-region" {
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L204) | Load balancer name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L258) | Project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L274) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [vpc_config](variables.tf#L283) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [addresses](variables.tf#L17) | Optional IP addresses used for the forwarding rules, mapped by subnetwork key. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [backend_service_config](variables.tf#L23) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L72) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -246,6 +246,7 @@ module "tcp-proxy-cross-region" {
 | [neg_configs](variables.tf#L209) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [port](variables.tf#L252) | Forwarding rule port. Cross-region internal proxy load balancers support a single port. | <code>number</code> |  | <code>80</code> |
 | [target_proxy_config](variables.tf#L263) | Target proxy configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tls_route_config](variables.tf#L274) | Optional TLS route configuration. When set, a google_network_services_tls_route is created targeting the load balancer's TCP proxy. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

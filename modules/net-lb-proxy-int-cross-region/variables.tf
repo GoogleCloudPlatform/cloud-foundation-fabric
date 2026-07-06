@@ -271,6 +271,15 @@ variable "target_proxy_config" {
   nullable = false
 }
 
+variable "tls_route_config" {
+  description = "Optional TLS route configuration. When set, a google_network_services_tls_route is created targeting the load balancer's TCP proxy."
+  type = object({
+    name     = string
+    sni_host = list(string)
+  })
+  default = null
+}
+
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
