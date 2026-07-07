@@ -12,16 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-lb-int
-
-tests:
-  context:
-  defaults:
-  forwarding-rule:
-  health-checks-grpc:
-  health-checks-http:
-  health-checks-http2:
-  health-checks-https:
-  health-checks-ssl:
-  health-checks-tcp:
-  zonal-affinity:
+project_id = "my-project"
+region     = "europe-west1"
+name       = "ilb-test"
+vpc_config = {
+  network    = "default"
+  subnetwork = "default"
+}
+backends = [{
+  group = "foo"
+}]
+backend_service_config = {
+  network_pass_through_lb_traffic_policy = {
+    zonal_affinity = {
+      spillover       = "ZONAL_AFFINITY_SPILL_CROSS_ZONE"
+      spillover_ratio = 0.5
+    }
+  }
+}
