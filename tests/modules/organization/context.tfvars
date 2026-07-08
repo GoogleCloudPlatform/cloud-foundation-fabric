@@ -243,7 +243,7 @@ access_levels = {
 
 context_aware_access_bindings = {
   my_binding = {
-    group_key     = "$email_addresses:default"
+    group_key = "$email_addresses:default"
     access_levels = [
       "$access_levels:test",
       "$access_levels:my_level",
