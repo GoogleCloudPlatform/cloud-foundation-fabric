@@ -19,6 +19,7 @@ import hashlib
 import json
 import pathlib
 import shutil
+import ssl
 import sys
 import time
 import urllib.request
@@ -32,6 +33,7 @@ RAW_URL = f"https://raw.githubusercontent.com/{REPO}/master"
 CACHE_DIR = pathlib.Path("/tmp/fabric_cache")
 CACHE_TTL = 6 * 3600
 NO_CACHE = False
+NO_SSL_VERIFY = False
 
 
 def cache_key(url):
@@ -85,7 +87,8 @@ def fetch(url, is_json=False, headers=None):
 
   logging.info(f"Fetching: {url}")
   req = urllib.request.Request(url, headers=headers or {})
-  with urllib.request.urlopen(req, timeout=30) as r:
+  ctx = ssl._create_unverified_context() if NO_SSL_VERIFY else None
+  with urllib.request.urlopen(req, timeout=30, context=ctx) as r:
     raw_data = r.read()
     data = json.loads(raw_data) if is_json else raw_data.decode("utf-8")
 
@@ -204,6 +207,8 @@ def main():
                  help="bypass cache and fetch from source")
   p.add_argument("-v", "--verbose", action="store_true",
                  help="enable verbose logging")
+  p.add_argument("--no-ssl-verify", action="store_true",
+                 help="bypass SSL certificate verification")
 
   fm = sp.add_parser("fetch", help="fetch module files to stdout")
   fsp = fm.add_subparsers(dest="fetch_cmd", required=True)
@@ -226,8 +231,9 @@ def main():
   logging.basicConfig(level=level, format='%(levelname)s: %(message)s',
                       stream=sys.stderr)
 
-  global NO_CACHE
+  global NO_CACHE, NO_SSL_VERIFY
   NO_CACHE = args.no_cache
+  NO_SSL_VERIFY = args.no_ssl_verify
 
   if args.clear_cache:
     cache_clear()
