@@ -31,6 +31,7 @@ duplicates = [
     [
         "fast/stages/1-vpcsc/schemas/access-level.schema.json",
         "modules/vpc-sc/schemas/access-level.schema.json",
+        "modules/organization/schemas/access-level.schema.json",
     ],
     [
         "modules/dataplex-aspect-types/schemas/aspect-type.schema.json",

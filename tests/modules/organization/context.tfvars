@@ -1,4 +1,7 @@
 context = {
+  access_levels = {
+    test = "accessPolicies/1234567890/accessLevels/test"
+  }
   bigquery_datasets = {
     test = "projects/test-prod-audit-logs-0/datasets/logs"
   }
@@ -225,4 +228,30 @@ iam_deny_policies = {
       }
     ]
   }
+}
+
+access_policy = "1234567890"
+
+access_levels = {
+  my_level = {
+    conditions = [{
+      ip_subnetworks = ["10.0.0.0/24"]
+      members        = ["user:test-user@example.com"]
+    }]
+  }
+}
+
+context_aware_access_bindings = {
+  my_binding = {
+    group_key     = "$email_addresses:default"
+    access_levels = [
+      "$access_levels:test",
+      "$access_levels:my_level",
+      "$access_levels:factory_level"
+    ]
+  }
+}
+
+factories_config = {
+  access_levels = "factory-caa/access_levels"
 }

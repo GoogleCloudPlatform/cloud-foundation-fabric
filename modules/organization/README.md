@@ -41,6 +41,7 @@ To manage organization policies, the `orgpolicy.googleapis.com` service should b
   - [Tags Factory](#tags-factory)
 - [Workforce Identity](#workforce-identity)
 - [IAM Deny Policies](#iam-deny-policies)
+- [Context-Aware Access](#context-aware-access)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -1058,6 +1059,35 @@ module "organization" {
 # tftest modules=1 resources=2 inventory=iam-deny-policies.yaml
 ```
 
+## Context-Aware Access
+
+[Context-Aware Access](https://cloud.google.com/access-context-manager/docs/securing-console-and-apis) allows you to secure access to the Google Cloud Console and Google Cloud APIs by enforcing granular access controls based on user identity and request context (such as IP address range or device posture).
+
+The following example demonstrates how to create an Access Level for trusted IP ranges and bind it to a Google Workspace or Cloud Identity group using `context_aware_access_bindings`:
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  access_policy   = "1234567890"
+  access_levels = {
+    trusted_ips = {
+      title = "Trusted Corporate IPs"
+      conditions = [{
+        ip_subnetworks = ["203.0.113.0/24", "198.51.100.0/24"]
+      }]
+    }
+  }
+  context_aware_access_bindings = {
+    developers_binding = {
+      group_key     = "gcp-developers@example.com"
+      access_levels = ["$access_levels:trusted_ips"]
+    }
+  }
+}
+# tftest modules=1 resources=2 inventory=context-aware-access.yaml
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 ## Files
@@ -1065,6 +1095,7 @@ module "organization" {
 | name | description | resources |
 |---|---|---|
 | [assets.tf](./assets.tf) | None | <code>google_cloud_asset_organization_feed</code> |
+| [context_aware_access.tf](./context_aware_access.tf) | Context-Aware Access resources and factory. | <code>google_access_context_manager_access_level</code> · <code>google_access_context_manager_gcp_user_access_binding</code> |
 | [deny-policies.tf](./deny-policies.tf) | IAM Deny policies. | <code>google_iam_deny_policy</code> |
 | [iam.tf](./iam.tf) | IAM bindings. | <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> |
 | [identity-providers.tf](./identity-providers.tf) | Workforce Identity Federation provider definitions. | <code>google_iam_workforce_pool</code> · <code>google_iam_workforce_pool_provider</code> · <code>google_iam_workforce_pool_provider_scim_tenant</code> |
@@ -1091,14 +1122,17 @@ module "organization" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_id](variables.tf#L177) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
-| [asset_feeds](variables.tf#L18) | Cloud Asset Inventory feeds. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [asset_search](variables.tf#L51) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [contacts](variables.tf#L61) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [context](variables.tf#L79) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [custom_roles](variables.tf#L104) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L111) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy](variables.tf#L126) | Hierarchical firewall policies to associate to the organization. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [organization_id](variables.tf#L254) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
+| [access_levels](variables.tf#L18) | Access level definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [access_policy](variables.tf#L69) | Access Policy name or ID, required if creating access levels. | <code>string</code> |  | <code>null</code> |
+| [asset_feeds](variables.tf#L75) | Cloud Asset Inventory feeds. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [asset_search](variables.tf#L108) | Cloud Asset Inventory search configurations. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [contacts](variables.tf#L118) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L136) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context_aware_access_bindings](variables.tf#L162) | GCP User Access Bindings for securing Console and APIs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [custom_roles](variables.tf#L180) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L187) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy](variables.tf#L203) | Hierarchical firewall policies to associate to the organization. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1111,12 +1145,12 @@ module "organization" {
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies](variables.tf#L135) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policy_custom_constraints](variables.tf#L163) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies](variables.tf#L212) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policy_custom_constraints](variables.tf#L240) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L186) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_config](variables.tf#L263) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L171) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1126,25 +1160,27 @@ module "organization" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [asset_search_results](outputs.tf#L17) | Cloud Asset Inventory search results. |  |
-| [custom_constraint_ids](outputs.tf#L24) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
-| [custom_role_id](outputs.tf#L29) | Map of custom role IDs created in the organization. |  |
-| [custom_roles](outputs.tf#L34) | Map of custom roles resources created in the organization. |  |
-| [id](outputs.tf#L39) | Fully qualified organization id. |  |
-| [logging_identities](outputs.tf#L57) | Principals used for logging sinks. |  |
-| [logging_sinks](outputs.tf#L69) | Logging sink resources. |  |
-| [network_tag_keys](outputs.tf#L77) | Tag key resources. |  |
-| [network_tag_values](outputs.tf#L86) | Tag value resources. |  |
-| [organization_id](outputs.tf#L96) | Organization id dependent on module resources. |  |
-| [organization_policies_ids](outputs.tf#L113) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
-| [scc_custom_sha_modules_ids](outputs.tf#L118) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
-| [scc_mute_configs](outputs.tf#L123) | SCC mute configurations. |  |
-| [scim_tenants](outputs.tf#L128) | Workforce Identity provider SCIM tenants. |  |
-| [service_agents](outputs.tf#L142) | Identities of all organization-level service agents. |  |
-| [sink_writer_identities](outputs.tf#L150) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L158) | Tag key resources. |  |
-| [tag_values](outputs.tf#L167) | Tag value resources. |  |
-| [workforce_identity_pool_ids](outputs.tf#L175) | Workforce identity pool ids. |  |
-| [workforce_identity_provider_names](outputs.tf#L182) | Workforce Identity provider names. |  |
-| [workforce_identity_providers](outputs.tf#L189) | Workforce Identity provider attributes. |  |
+| [access_levels](outputs.tf#L17) | Access level resources. |  |
+| [asset_search_results](outputs.tf#L22) | Cloud Asset Inventory search results. |  |
+| [context_aware_access_bindings](outputs.tf#L29) | GCP User Access Bindings for securing Console and APIs. |  |
+| [custom_constraint_ids](outputs.tf#L37) | Map of CUSTOM_CONSTRAINTS => ID in the organization. |  |
+| [custom_role_id](outputs.tf#L42) | Map of custom role IDs created in the organization. |  |
+| [custom_roles](outputs.tf#L47) | Map of custom roles resources created in the organization. |  |
+| [id](outputs.tf#L52) | Fully qualified organization id. |  |
+| [logging_identities](outputs.tf#L70) | Principals used for logging sinks. |  |
+| [logging_sinks](outputs.tf#L82) | Logging sink resources. |  |
+| [network_tag_keys](outputs.tf#L90) | Tag key resources. |  |
+| [network_tag_values](outputs.tf#L99) | Tag value resources. |  |
+| [organization_id](outputs.tf#L109) | Organization id dependent on module resources. |  |
+| [organization_policies_ids](outputs.tf#L126) | Map of ORGANIZATION_POLICIES => ID in the organization. |  |
+| [scc_custom_sha_modules_ids](outputs.tf#L131) | Map of SCC CUSTOM SHA MODULES => ID in the organization. |  |
+| [scc_mute_configs](outputs.tf#L136) | SCC mute configurations. |  |
+| [scim_tenants](outputs.tf#L141) | Workforce Identity provider SCIM tenants. |  |
+| [service_agents](outputs.tf#L155) | Identities of all organization-level service agents. |  |
+| [sink_writer_identities](outputs.tf#L163) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L171) | Tag key resources. |  |
+| [tag_values](outputs.tf#L180) | Tag value resources. |  |
+| [workforce_identity_pool_ids](outputs.tf#L188) | Workforce identity pool ids. |  |
+| [workforce_identity_provider_names](outputs.tf#L195) | Workforce Identity provider names. |  |
+| [workforce_identity_providers](outputs.tf#L202) | Workforce Identity provider attributes. |  |
 <!-- END TFDOC -->
