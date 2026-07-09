@@ -64,6 +64,55 @@ variable "access_levels" {
     ])
     error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:' or 'user:'."
   }
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : alltrue([
+        for condition in v.conditions : (
+          try(
+            condition.device_policy.allowed_encryption_statuses, null
+          ) == null
+          ? true
+          : alltrue([
+            for status in(
+              condition.device_policy.allowed_encryption_statuses
+            ) :
+            contains([
+              "ENCRYPTION_UNSPECIFIED",
+              "ENCRYPTION_UNSUPPORTED",
+              "UNENCRYPTED",
+              "ENCRYPTED"
+            ], status)
+          ])
+        )
+      ])
+    ])
+    error_message = "Invalid `allowed_encryption_statuses` value."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : alltrue([
+        for condition in v.conditions : (
+          try(
+            condition.device_policy.allowed_device_management_levels, null
+          ) == null
+          ? true
+          : alltrue([
+            for level in(
+              condition.device_policy.allowed_device_management_levels
+            ) :
+            contains([
+              "MANAGEMENT_UNSPECIFIED",
+              "NONE",
+              "BASIC",
+              "COMPLETE",
+              "CHROME_ENTERPRISE"
+            ], level)
+          ])
+        )
+      ])
+    ])
+    error_message = "Invalid `allowed_device_management_levels` value."
+  }
 }
 
 variable "access_policy" {

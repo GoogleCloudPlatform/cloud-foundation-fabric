@@ -61,7 +61,7 @@ resource "google_access_context_manager_access_level" "basic" {
   basic {
     combining_function = each.value.combining_function
     dynamic "conditions" {
-      for_each = toset(each.value.conditions)
+      for_each = each.value.conditions
       iterator = c
       content {
         ip_subnetworks = c.value.ip_subnetworks
@@ -85,7 +85,7 @@ resource "google_access_context_manager_access_level" "basic" {
             require_corp_owned     = dp.value.require_corp_owned
             require_screen_lock    = dp.value.require_screen_lock
             dynamic "os_constraints" {
-              for_each = toset(
+              for_each = (
                 dp.value.os_constraints == null
                 ? []
                 : dp.value.os_constraints
