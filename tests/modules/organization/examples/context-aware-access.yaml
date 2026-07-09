@@ -1,0 +1,48 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.org.google_access_context_manager_access_level.basic["trusted_ips"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks:
+        - 203.0.113.0/24
+        - 198.51.100.0/24
+        members: []
+        negate: null
+        regions: []
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    name: accessPolicies/1234567890/accessLevels/trusted_ips
+    parent: accessPolicies/1234567890
+    timeouts: null
+    title: Trusted Corporate IPs
+  module.org.google_access_context_manager_gcp_user_access_binding.binding["developers_binding"]:
+    group_key: gcp-developers@example.com
+    organization_id: '1122334455'
+    scoped_access_settings: []
+    session_settings: []
+    timeouts: null
+
+counts:
+  google_access_context_manager_access_level: 1
+  google_access_context_manager_gcp_user_access_binding: 1
+  modules: 1
+  resources: 2
+
+outputs: {}

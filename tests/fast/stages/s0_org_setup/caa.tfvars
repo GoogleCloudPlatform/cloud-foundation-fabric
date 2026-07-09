@@ -12,23 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/organization
-
-common_tfvars:
-  - common.tfvars
-
-tests:
-  context:
-    extra_dirs:
-      - ../../tests/modules/organization/factory-caa
-  iam_by_principals_additive:
-  iam_by_principals_conditional:
-  org_policies:
-  org_policies_factory:
-    inventory:
-      - org_policies.yaml
-    extra_dirs:
-      - ../../tests/modules/organization/factory
-  tags:
-  tags_force_context:
-  tags_skip_iam:
+factories_config = {
+  dataset = "datasets/starter-gcd"
+  paths = {
+    defaults     = "./data-caa/defaults.yaml"
+    organization = "./data-caa/organization"
+  }
+}
