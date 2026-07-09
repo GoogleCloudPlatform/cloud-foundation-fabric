@@ -20,6 +20,16 @@ variable "auto_create_subnetworks" {
   default     = false
 }
 
+variable "bgp_config" {
+  description = "Optional BGP path selection configuration."
+  type = object({
+    always_compare_med       = optional(bool)
+    best_path_selection_mode = optional(string)
+    inter_region_cost        = optional(string)
+  })
+  default = null
+}
+
 variable "context" {
   description = "Context-specific interpolations."
   type = object({

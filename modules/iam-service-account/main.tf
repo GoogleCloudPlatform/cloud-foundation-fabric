@@ -36,7 +36,7 @@ locals {
     : lookup(local.ctx.project_ids, var.project_id, var.project_id)
   )
   static_email = (
-    var.project_id == null
+    var.project_id == null || strcontains(var.name, "@")
     ? var.name
     : "${local.prefix}${local.name}@${local.sa_domain}.iam.gserviceaccount.com"
   )
