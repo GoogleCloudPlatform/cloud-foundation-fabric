@@ -44,6 +44,10 @@ In both modes, an optional service account can be created and assigned to either
   - [Snapshot Schedules](#snapshot-schedules)
   - [Resource Manager Tags](#resource-manager-tags)
   - [Sole Tenancy](#sole-tenancy)
+  - [TPU](#tpu)
+    - [Direct TPU VM](#direct-tpu-vm)
+    - [Queued TPU Resource](#queued-tpu-resource)
+    - [TPU Instance Template](#tpu-instance-template)
 - [Variables](#variables)
 - [Outputs](#outputs)
 - [Fixtures](#fixtures)
@@ -1207,50 +1211,123 @@ module "sole-tenancy" {
 }
 # tftest inventory=sole-tenancy.yaml
 ```
+### TPU
+
+> [!IMPORTANT]
+> To deploy TPU resources:
+> 1. Enable the Cloud TPU API (`tpu.googleapis.com`) on the project.
+> 2. If using Shared VPC, ensure the TPU Service Agent (`service-<PROJECT_NUMBER>@gcp-sa-tpu.iam.gserviceaccount.com`) is granted the TPU Shared VPC Agent role (`roles/tpu.xpnAgent`) on the host project.
+
+#### Direct TPU VM
+
+This example shows how to deploy a TPU VM directly.
+
+```hcl
+module "tpu-direct" {
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  zone         = "${var.region}-b"
+  name         = "tpu-direct"
+  machine_type = "ct5lp-hightpu-1t"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  tpu_config = {
+    runtime_version = "v2-alpha-tpuv5-lite"
+    queued          = false
+  }
+}
+# tftest modules=1 resources=1
+```
+
+#### Queued TPU Resource
+
+This example shows how to deploy a TPU VM as a Queued Resource.
+
+```hcl
+module "tpu-queued" {
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  zone         = "${var.region}-b"
+  name         = "tpu-queued"
+  machine_type = "ct5lp-hightpu-1t"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  tpu_config = {
+    runtime_version = "v2-alpha-tpuv5-lite"
+  }
+}
+# tftest modules=1 resources=1
+```
+
+#### TPU Instance Template
+
+This example shows how to create an instance template for TPU VMs.
+
+```hcl
+module "tpu-template" {
+  source       = "./fabric/modules/compute-vm"
+  project_id   = var.project_id
+  zone         = "${var.region}-b"
+  name         = "tpu-template"
+  machine_type = "ct5lp-hightpu-1t"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }]
+  create_template = {}
+  tpu_config      = {}
+}
+# tftest modules=1 resources=1
+```
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L356) | Instance name. | <code>string</code> | ✓ |  |
-| [network_interfaces](variables.tf#L368) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L408) | Project id. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L565) | Compute zone. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L357) | Instance name. | <code>string</code> | ✓ |  |
+| [network_interfaces](variables.tf#L369) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L409) | Project id. | <code>string</code> | ✓ |  |
+| [zone](variables.tf#L589) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disks](variables.tf#L17) | Additional disks. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [boot_disk](variables.tf#L57) | Boot disk properties. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [can_ip_forward](variables.tf#L112) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
-| [confidential_compute](variables.tf#L118) | Confidential Compute configuration. Set to 'SEV' or 'SEV_SNP' to enable. | <code>string</code> |  | <code>null</code> |
-| [context](variables.tf#L128) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [create_template](variables.tf#L149) | Create instance template instead of instances. Defaults to a global template. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [description](variables.tf#L158) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
-| [enable_display](variables.tf#L164) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
-| [encryption](variables.tf#L170) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [gpu](variables.tf#L181) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [group](variables.tf#L216) | Instance group configuration. Set 'named_ports' to create a new unmanaged instance group, or provide an existing group self_link/id in 'membership' to join one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [hostname](variables.tf#L225) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
-| [iam](variables.tf#L231) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [instance_schedule](variables.tf#L237) | Assign or create and assign an instance schedule policy. Set active to null to detach a policy from vm before destroying. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [kms_autokeys](variables.tf#L261) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [labels](variables.tf#L279) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [lifecycle_config](variables.tf#L285) | Instance lifecycle and operational configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [machine_features_config](variables.tf#L307) | Machine-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [machine_type](variables.tf#L331) | Machine type. | <code>string</code> |  | <code>&#34;e2-micro&#34;</code> |
-| [metadata](variables.tf#L337) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [metadata_startup_script](variables.tf#L343) | Instance startup script. Will trigger recreation on change, even after importing. | <code>string</code> |  | <code>null</code> |
-| [min_cpu_platform](variables.tf#L350) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
-| [network_attached_interfaces](variables.tf#L361) | Network interfaces using network attachments. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [network_performance_tier](variables.tf#L391) | Network performance total egress bandwidth tier. | <code>string</code> |  | <code>null</code> |
-| [network_tag_bindings](variables.tf#L401) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [project_number](variables.tf#L413) | Project number. Used in tag bindings to avoid a permadiff. | <code>string</code> |  | <code>null</code> |
-| [resource_policies](variables.tf#L419) | Resource policies to attach to the instance or template. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [scheduling_config](variables.tf#L426) | Scheduling configuration for the instance. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [scratch_disks](variables.tf#L461) | Scratch disks configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [service_account](variables.tf#L474) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [shielded_config](variables.tf#L485) | Shielded VM configuration of the instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [snapshot_schedules](variables.tf#L495) | Snapshot schedule resource policies that can be attached to disks. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L538) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings_immutable](variables.tf#L545) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L559) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [can_ip_forward](variables.tf#L113) | Enable IP forwarding. | <code>bool</code> |  | <code>false</code> |
+| [confidential_compute](variables.tf#L119) | Confidential Compute configuration. Set to 'SEV' or 'SEV_SNP' to enable. | <code>string</code> |  | <code>null</code> |
+| [context](variables.tf#L129) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [create_template](variables.tf#L150) | Create instance template instead of instances. Defaults to a global template. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L159) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
+| [enable_display](variables.tf#L165) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
+| [encryption](variables.tf#L171) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [gpu](variables.tf#L182) | GPU information. Based on https://cloud.google.com/compute/docs/gpus. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [group](variables.tf#L217) | Instance group configuration. Set 'named_ports' to create a new unmanaged instance group, or provide an existing group self_link/id in 'membership' to join one. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [hostname](variables.tf#L226) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
+| [iam](variables.tf#L232) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [instance_schedule](variables.tf#L238) | Assign or create and assign an instance schedule policy. Set active to null to detach a policy from vm before destroying. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [kms_autokeys](variables.tf#L262) | KMS Autokey key handles. If location is not specified it will be inferred from the zone. Key handle names will be added to the kms_keys context with an `autokeys/` prefix. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L280) | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [lifecycle_config](variables.tf#L286) | Instance lifecycle and operational configurations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [machine_features_config](variables.tf#L308) | Machine-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [machine_type](variables.tf#L332) | Machine type. | <code>string</code> |  | <code>&#34;e2-micro&#34;</code> |
+| [metadata](variables.tf#L338) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [metadata_startup_script](variables.tf#L344) | Instance startup script. Will trigger recreation on change, even after importing. | <code>string</code> |  | <code>null</code> |
+| [min_cpu_platform](variables.tf#L351) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
+| [network_attached_interfaces](variables.tf#L362) | Network interfaces using network attachments. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [network_performance_tier](variables.tf#L392) | Network performance total egress bandwidth tier. | <code>string</code> |  | <code>null</code> |
+| [network_tag_bindings](variables.tf#L402) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance only for networking purposes, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_number](variables.tf#L414) | Project number. Used in tag bindings to avoid a permadiff. | <code>string</code> |  | <code>null</code> |
+| [resource_policies](variables.tf#L420) | Resource policies to attach to the instance or template. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [scheduling_config](variables.tf#L427) | Scheduling configuration for the instance. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [scratch_disks](variables.tf#L462) | Scratch disks configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [service_account](variables.tf#L475) | Service account email and scopes. If email is null, the default Compute service account will be used unless auto_create is true, in which case a service account will be created. Set the variable to null to avoid attaching a service account. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [shielded_config](variables.tf#L486) | Shielded VM configuration of the instances. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [snapshot_schedules](variables.tf#L496) | Snapshot schedule resource policies that can be attached to disks. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L539) | Resource manager tag bindings in arbitrary key => tag key or value id format. Set on both the instance and zonal disks, and modifiable without impacting the main resource lifecycle. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings_immutable](variables.tf#L546) | Immutable resource manager tag bindings, in tagKeys/id => tagValues/id format. These are set on the instance or instance template at creation time, and trigger recreation if changed. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L560) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [tpu_config](variables.tf#L566) | TPU configuration. If null, a standard VM is created. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
