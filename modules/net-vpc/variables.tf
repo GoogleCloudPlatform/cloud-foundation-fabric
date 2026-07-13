@@ -28,6 +28,20 @@ variable "bgp_config" {
     inter_region_cost        = optional(string)
   })
   default = null
+  validation {
+    condition = (
+      try(var.bgp_config.best_path_selection_mode, null) == null ||
+      contains(["LEGACY", "STANDARD"], try(var.bgp_config.best_path_selection_mode, ""))
+    )
+    error_message = "best_path_selection_mode must be one of: LEGACY, STANDARD."
+  }
+  validation {
+    condition = (
+      try(var.bgp_config.inter_region_cost, null) == null ||
+      contains(["DEFAULT", "ADD_COST_TO_MED"], try(var.bgp_config.inter_region_cost, ""))
+    )
+    error_message = "inter_region_cost must be one of: DEFAULT, ADD_COST_TO_MED."
+  }
 }
 
 variable "context" {
