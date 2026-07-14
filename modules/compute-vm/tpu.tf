@@ -34,29 +34,7 @@ locals {
   }
 }
 
-check "tpu_machine_type_unparsed" {
-  assert {
-    condition = (
-      var.tpu_config == null ? true : (
-        try(regex("^(?:ct|v)([0-9])", var.machine_type), "---") != "---"
-      )
-    )
-    error_message = "WARNING: TPU machine type generation could not be parsed. TPU compatibility validation was skipped for the machine type."
-  }
-}
-
-check "tpu_runtime_unparsed" {
-  assert {
-    condition = (
-      var.tpu_config == null || var.tpu_config.runtime_version == null ? true : (
-        try(coalesce(regex("(?:tpuv([0-9])|\\-v([0-9])\\-)", var.tpu_config.runtime_version)...), "---") != "---"
-      )
-    )
-    error_message = "WARNING: TPU runtime version generation could not be parsed. TPU compatibility validation was skipped for the runtime."
-  }
-}
-
-resource "google_tpu_v2_vm" "tpu" {
+resource "google_tpu_v2_vm" "default" {
   provider         = google-beta
   count            = local.is_tpu_direct ? 1 : 0
   name             = var.name
@@ -94,7 +72,7 @@ resource "google_tpu_v2_vm" "tpu" {
   labels   = var.labels
 }
 
-resource "google_tpu_v2_queued_resource" "tpu_queued" {
+resource "google_tpu_v2_queued_resource" "default" {
   provider = google-beta
   count    = local.is_tpu_queued ? 1 : 0
   name     = var.name

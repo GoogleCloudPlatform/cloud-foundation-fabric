@@ -1336,16 +1336,16 @@ module "tpu-template" {
 | [external_ip](outputs.tf#L17) | Instance main interface external IP addresses. |  |
 | [group](outputs.tf#L26) | Instance group resource. |  |
 | [id](outputs.tf#L31) | Fully qualified instance id. |  |
-| [instance](outputs.tf#L36) | Instance resource. | ✓ |
-| [internal_ip](outputs.tf#L42) | Instance main interface internal IP address. |  |
-| [internal_ips](outputs.tf#L50) | Instance interfaces internal IP addresses. |  |
-| [login_command](outputs.tf#L58) | Command to SSH into the machine. |  |
-| [self_link](outputs.tf#L63) | Instance self links. |  |
-| [service_account](outputs.tf#L68) | Service account resource. |  |
-| [service_account_email](outputs.tf#L73) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L78) | Service account email. |  |
-| [template](outputs.tf#L87) | Template resource. |  |
-| [template_name](outputs.tf#L96) | Template name. |  |
+| [instance](outputs.tf#L41) | Instance resource. | ✓ |
+| [internal_ip](outputs.tf#L47) | Instance main interface internal IP address. |  |
+| [internal_ips](outputs.tf#L56) | Instance interfaces internal IP addresses. |  |
+| [login_command](outputs.tf#L70) | Command to SSH into the machine. |  |
+| [self_link](outputs.tf#L75) | Instance self links. |  |
+| [service_account](outputs.tf#L80) | Service account resource. |  |
+| [service_account_email](outputs.tf#L85) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L90) | Service account email. |  |
+| [template](outputs.tf#L99) | Template resource. |  |
+| [template_name](outputs.tf#L108) | Template name. |  |
 
 ## Fixtures
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  google_tpu_v2_vm.tpu[0]:
+  google_tpu_v2_vm.default[0]:
     name: test
     accelerator_type: v5litepod-1
     runtime_version: v2-alpha-tpuv5-lite

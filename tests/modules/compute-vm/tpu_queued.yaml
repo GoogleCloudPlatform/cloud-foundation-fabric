@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  google_tpu_v2_queued_resource.tpu_queued[0]:
+  google_tpu_v2_queued_resource.default[0]:
     name: test
 
 counts:
