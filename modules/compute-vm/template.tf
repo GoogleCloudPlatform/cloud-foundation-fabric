@@ -15,7 +15,6 @@
  */
 
 locals {
-  is_template       = var.create_template != null
   template_regional = try(var.create_template.regional, null) == true
 }
 
