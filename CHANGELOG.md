@@ -3,7 +3,37 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v56.2.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v56.3.0...HEAD)
+
+## [v56.3.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v56.3.0) - 2026-07-16 <!-- from: 2026-06-17 16:13:56+00:00 to: 2026-07-16 since: v56.2.0 -->
+
+### FAST
+
+- [[#4061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4061)] Fix folder schema ([ludoo](https://github.com/ludoo)) <!-- 2026-07-16 11:07:14+00:00 -->
+- [[#4059](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4059)] Minor fixes to 0-org-setup stage ([ludoo](https://github.com/ludoo)) <!-- 2026-07-16 08:44:22+00:00 -->
+- [[#4046](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4046)] Add support for context aware access to the org module and FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2026-07-09 14:01:34+00:00 -->
+- [[#4028](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4028)] Enable use of tags with dynamic values created in 0-org-setup stage to tag folders/projects managed inside the stage. ([leszek-grudzien](https://github.com/leszek-grudzien)) <!-- 2026-06-25 07:42:57+00:00 -->
+
+### MODULES
+
+- [[#4061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4061)] Fix folder schema ([ludoo](https://github.com/ludoo)) <!-- 2026-07-16 11:07:14+00:00 -->
+- [[#4054](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4054)] Add TPU VM and Queued Resource support to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-07-14 15:16:35+00:00 -->
+- [[#4046](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4046)] Add support for context aware access to the org module and FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2026-07-09 14:01:34+00:00 -->
+- [[#4045](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4045)] Avoid cascading permadiff with modules/billing-account threshold_rules ([juliocc](https://github.com/juliocc)) <!-- 2026-07-02 15:41:14+00:00 -->
+- [[#4044](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4044)] Supplementing missing IAM sections mapping in project-factory module. ([leszek-grudzien](https://github.com/leszek-grudzien)) <!-- 2026-07-02 15:17:50+00:00 -->
+- [[#4042](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4042)] Add network passthrough load balancer traffic policy to net-lb-int ([singhalss](https://github.com/singhalss)) <!-- 2026-07-02 12:03:14+00:00 -->
+- [[#4040](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4040)] Fix malformed member in automation SA IAM roles ([ludoo](https://github.com/ludoo)) <!-- 2026-07-01 09:35:10+00:00 -->
+- [[#4033](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4033)] Fix E2E Test for Cloud SQL PSC Auto Connections ([ludoo](https://github.com/ludoo)) <!-- 2026-06-29 11:31:36+00:00 -->
+- [[#4032](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4032)] Bump body-parser and @google-cloud/functions-framework in /modules/api-gateway/recipe-multi-region/function ([dependabot[bot]](https://github.com/dependabot[bot])) <!-- 2026-06-25 09:38:27+00:00 -->
+- [[#4023](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4023)] Consistent types for_each net-vpc-firewall in custom_rules dynamic blocks ([IrfanAnsari](https://github.com/IrfanAnsari)) <!-- 2026-06-18 10:11:12+00:00 -->
+
+### TOOLS
+
+- [[#4061](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4061)] Fix folder schema ([ludoo](https://github.com/ludoo)) <!-- 2026-07-16 11:07:14+00:00 -->
+- [[#4054](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4054)] Add TPU VM and Queued Resource support to compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2026-07-14 15:16:35+00:00 -->
+- [[#4046](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4046)] Add support for context aware access to the org module and FAST stage 0 ([ludoo](https://github.com/ludoo)) <!-- 2026-07-09 14:01:34+00:00 -->
+- [[#4051](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4051)] Update fabric-builder skill with SSL bypass and provider alignment ([yunus](https://github.com/yunus)) <!-- 2026-07-08 12:56:26+00:00 -->
+- [[#4031](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4031)] Pin GitHub Actions to secure commit SHAs ([sruffilli](https://github.com/sruffilli)) <!-- 2026-06-25 09:00:06+00:00 -->
 
 ## [v56.2.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v56.2.0) - 2026-06-17 <!-- from: 2026-05-25 12:50:01+00:00 to: 2026-06-17 since: v56.1.0 -->
 
