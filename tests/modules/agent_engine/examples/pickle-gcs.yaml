@@ -48,7 +48,6 @@ values:
     timeouts: null
     uniform_bucket_level_access: true
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
-    context_spec: []
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
@@ -59,10 +58,12 @@ values:
     project: project-id
     region: europe-west8
     spec:
-    - agent_framework: google-adk
+    - agent_card: null
+      agent_framework: google-adk
+      build_spec: []
       class_methods: null
       container_spec: []
-      deployment_spec: []
+      example_store: null
       identity_type: AGENT_IDENTITY
       package_spec:
       - dependency_files_gcs_uri: gs://my-bucket/dependencies.tar.gz

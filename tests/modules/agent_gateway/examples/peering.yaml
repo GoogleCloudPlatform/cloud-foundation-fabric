@@ -18,16 +18,23 @@ values:
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
-    google_managed: []
+    google_managed:
+    - governed_access_path: AGENT_TO_ANYWHERE
     labels: null
     location: europe-west1
     name: my-gateway
-    network_config: []
+    network_config:
+    - dns_peering_config:
+      - domains:
+        - agents.internal.
+        target_network: projects/my-host-project/global/networks/my-vpc
+        target_project: my-host-project
+      egress:
+      - network_attachment: projects/my-project-id/regions/europe-west1/serviceAttachments/my-sa
     project: my-project-id
     protocols: null
     registries: null
-    self_managed:
-    - resource_uri: my-proxy-uri
+    self_managed: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
