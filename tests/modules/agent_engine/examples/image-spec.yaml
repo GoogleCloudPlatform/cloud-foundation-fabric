@@ -53,7 +53,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    
+
 counts:
   google_project_iam_member: 2
   google_vertex_ai_reasoning_engine: 1

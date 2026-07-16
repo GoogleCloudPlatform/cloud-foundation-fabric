@@ -68,7 +68,7 @@ values:
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
-    
+
 counts:
   google_project_iam_member: 2
   google_service_account: 1
