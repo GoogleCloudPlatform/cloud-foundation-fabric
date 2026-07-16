@@ -545,7 +545,7 @@ iam_by_principals:
     - roles/essentialcontacts.admin
     # [...]
 iam_by_principals_additive:
-  $iam_principals:gcp-billing-admins:
+  $iam_principals:gcp-organization-admins:
     - roles/billing.admin
 ```
 
