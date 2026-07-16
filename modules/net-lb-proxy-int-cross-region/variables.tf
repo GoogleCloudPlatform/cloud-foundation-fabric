@@ -78,11 +78,11 @@ variable "backend_service_config" {
       try(var.backend_service_config.service_lb_policy_config, null) == null ||
       try(var.backend_service_config.service_lb_policy_config.load_balancing_algorithm, null) == null ||
       contains(
-        ["SPRAY_TO_REGION", "SPRAY_TO_WORLD", "WATERFALL_BY_REGION", "WATERFALL_BY_ZONE"],
+        ["SPRAY_TO_REGION", "WATERFALL_BY_REGION", "WATERFALL_BY_ZONE"],
         try(var.backend_service_config.service_lb_policy_config.load_balancing_algorithm, "")
       )
     )
-    error_message = "Invalid 'load_balancing_algorithm' value. Supported values are 'SPRAY_TO_REGION', 'SPRAY_TO_WORLD', 'WATERFALL_BY_REGION', 'WATERFALL_BY_ZONE'."
+    error_message = "Invalid 'load_balancing_algorithm' value. Supported values are 'SPRAY_TO_REGION', 'WATERFALL_BY_REGION', 'WATERFALL_BY_ZONE'."
   }
   validation {
     condition = (
