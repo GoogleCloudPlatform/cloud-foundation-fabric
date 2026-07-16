@@ -30,6 +30,29 @@ locals {
   )
 }
 
+resource "google_network_services_service_lb_policies" "default" {
+  provider = google-beta
+
+  name                     = var.backend_service_config.name
+  location                 = "global"
+  description              = var.service_lb_policy_config
+  load_balancing_algorithm = "WATERFALL_BY_ZONE"
+
+  auto_capacity_drain {
+    enable = true
+  }
+
+  failover_config {
+    failover_health_threshold = 70
+  }
+
+  isolation_config {
+    isolation_granularity = "REGION"
+    isolation_mode = "NEAREST"
+  }
+
+}
+
 resource "google_compute_backend_service" "default" {
   provider                        = google-beta
   project                         = local.project_id
@@ -42,6 +65,7 @@ resource "google_compute_backend_service" "default" {
   port_name                       = var.backend_service_config.port_name
   protocol                        = "TCP"
   session_affinity                = var.backend_service_config.session_affinity
+  service_lb_policy     = "//networkservices.googleapis.com/${google_network_services_service_lb_policies.default.id}"
   timeout_sec                     = var.backend_service_config.timeout_sec
 
   dynamic "backend" {
