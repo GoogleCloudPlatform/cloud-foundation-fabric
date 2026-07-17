@@ -33,6 +33,7 @@ locals {
 resource "google_network_services_service_lb_policies" "default" {
   count    = try(var.backend_service_config.service_lb_policy_config.enable, false) ? 1 : 0
   provider = google-beta
+  project  = local.project_id
 
   name                     = coalesce(var.backend_service_config.name, var.name)
   location                 = "global"
