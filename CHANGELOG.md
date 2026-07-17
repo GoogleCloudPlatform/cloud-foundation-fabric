@@ -3,7 +3,27 @@
 All notable changes to this project will be documented in this file.
 <!-- markdownlint-disable MD024 -->
 
-## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v56.3.0...HEAD)
+## [Unreleased](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v57.0.0...HEAD)
+
+## [v57.0.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v57.0.0) - 2026-07-17 <!-- from: 2026-07-16 12:07:13+00:00 to: 2026-07-17 since: v56.3.0 -->
+
+### BREAKING CHANGES
+
+- `provider`: Minimum version bumped to 7.40.0. [[#4060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4060)]
+- `modules/agent-gateway`: Removed deprecated `protocols` variable (field deprecated upstream). [[#4060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4060)]
+
+
+### FAST
+
+- [[#4060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4060)] Add DNS peering support to agent-gateway module ([juliocc](https://github.com/juliocc)) <!-- 2026-07-16 14:13:09+00:00 -->
+
+### MODULES
+
+- [[#4060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4060)] Add DNS peering support to agent-gateway module ([juliocc](https://github.com/juliocc)) <!-- 2026-07-16 14:13:09+00:00 -->
+
+### TOOLS
+
+- [[#4060](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/4060)] Add DNS peering support to agent-gateway module ([juliocc](https://github.com/juliocc)) <!-- 2026-07-16 14:13:09+00:00 -->
 
 ## [v56.3.0](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/releases/tag/v56.3.0) - 2026-07-16 <!-- from: 2026-06-17 16:13:56+00:00 to: 2026-07-16 since: v56.2.0 -->
 
