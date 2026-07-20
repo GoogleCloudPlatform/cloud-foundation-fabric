@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,16 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
 values:
+  google_storage_bucket_object.tfvars[0]:
+    bucket: test
+    cache_control: null
+    content_disposition: null
+    content_encoding: null
+    content_language: null
+    contexts: []
+    customer_encryption: []
+    deletion_policy: DELETE
+    detect_md5hash: null
+    event_based_hold: null
+    force_empty_content_type: null
+    metadata: null
+    name: tfvars/2-security.auto.tfvars.json
+    retention: []
+    source: null
+    temporary_hold: null
+    timeouts: null
   google_storage_bucket_object.version[0]:
     bucket: test
     cache_control: null
     content_disposition: null
     content_encoding: null
     content_language: null
+    contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -32,6 +50,7 @@ values:
     temporary_hold: null
     timeouts: null
   module.cas["prod-ca-0"].google_privateca_ca_pool.default[0]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     encryption_spec: []
@@ -89,6 +108,7 @@ values:
           unknown_extended_key_usages: []
         name_constraints: []
         policy_ids: []
+    deletion_policy: DELETE
     deletion_protection: true
     desired_state: null
     effective_labels:
@@ -163,36 +183,42 @@ values:
     project: fast-dev-sec-core-0
     role: roles/monitoring.notificationServiceAgent
   ? module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["certificatemanager.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: fast-dev-sec-core-0
     service: certificatemanager.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-dev-sec-core-0
     service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-dev-sec-core-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-dev-sec-core-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["privateca.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-dev-sec-core-0
     service: privateca.googleapis.com
     timeouts: null
   module.factory.module.projects["dev-sec-core-0"].google_project_service.project_services["secretmanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-dev-sec-core-0
@@ -251,36 +277,42 @@ values:
     project: fast-prod-sec-core-0
     role: roles/monitoring.notificationServiceAgent
   ? module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["certificatemanager.googleapis.com"]
-  : disable_dependent_services: false
+  : deletion_policy: DELETE
+    disable_dependent_services: false
     disable_on_destroy: false
     project: fast-prod-sec-core-0
     service: certificatemanager.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["cloudkms.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-prod-sec-core-0
     service: cloudkms.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-prod-sec-core-0
     service: logging.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["monitoring.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-prod-sec-core-0
     service: monitoring.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["privateca.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-prod-sec-core-0
     service: privateca.googleapis.com
     timeouts: null
   module.factory.module.projects["prod-sec-core-0"].google_project_service.project_services["secretmanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: fast-prod-sec-core-0
@@ -310,11 +342,12 @@ values:
     input: null
     output: null
     triggers_replace: null
-  module.factory.terraform_data.project-preconditions:
+  module.factory.terraform_data.project_preconditions:
     input: null
     output: null
     triggers_replace: null
   module.kms["dev-primary-default"].google_kms_crypto_key.default["bigquery"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -326,6 +359,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms["dev-primary-default"].google_kms_crypto_key.default["composer"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -337,6 +371,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms["dev-primary-default"].google_kms_crypto_key.default["compute"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -348,6 +383,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms["dev-primary-default"].google_kms_crypto_key.default["gke"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -359,6 +395,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms["dev-primary-default"].google_kms_crypto_key.default["storage"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -375,6 +412,7 @@ values:
     project: fast-dev-sec-core-0
     timeouts: null
   module.kms["prod-primary-default"].google_kms_crypto_key.default["compute"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -386,6 +424,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.kms["prod-primary-default"].google_kms_crypto_key.default["storage"]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     labels: null
@@ -417,3 +456,8 @@ counts:
   modules: 8
   resources: 49
   terraform_data: 2
+
+outputs:
+  ca_pools: __missing__
+  kms_keys_ids: __missing__
+  tfvars: __missing__

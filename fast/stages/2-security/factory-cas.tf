@@ -15,16 +15,13 @@
  */
 
 locals {
-  _ca_pools_path = try(
-    pathexpand(var.factories_config.certificate_authorities), null
-  )
   _ca_pools_files = try(
-    fileset(local._ca_pools_path, "**/*.yaml"),
+    fileset(local.paths.certificate_authorities, "**/*.yaml"),
     []
   )
   _ca_pools = {
     for f in local._ca_pools_files : trimsuffix(basename(f), ".yaml") => yamldecode(file(
-      "${coalesce(local._ca_pools_path, "-")}/${f}"
+      "${coalesce(local.paths.certificate_authorities, "-")}/${f}"
     ))
   }
   ca_pools = {

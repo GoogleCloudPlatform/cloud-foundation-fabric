@@ -65,6 +65,12 @@ resource "google_secure_source_manager_repository" "repositories" {
       readme         = each.value.initial_config.readme
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      initial_config,
+    ]
+  }
 }
 
 resource "google_secure_source_manager_branch_rule" "branch_rules" {

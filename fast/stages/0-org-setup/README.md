@@ -78,20 +78,33 @@ The admin principal is typically a group that includes the user running the firs
 
 ### Select/configure a factory dataset
 
-The `factories_config` variable points to several paths containing the YAML configuration files used by this stage. The default variable configuration points to the legacy FAST compatible fileset in the `data` folder.
+The `factories_config` variable configures the location for the dataset, and the individual factories within it. Its default values point to the classic FAST compatible fileset in the `datasets/classic` folder.
 
 If this configuration matches requirements, no changes are necessary at this stage. To select a different setup create a `tfvars` file and set paths to the desired data folder, like shown in the example below. The different configurations produced by each fileset are described [later in this document](#default-factory-datasets).
+
+This is how you would use a different dataset.
 
 ```bash
 # create a file named 0-org-setup.auto.tfvars containing the following
 # and replace paths by pointing them to the desired data folder
 factories_config = {
-  billing_accounts = "datasets/classic/billing-accounts"
-  cicd             = "datasets/classic/cicd.yaml"
-  defaults         = "datasets/classic/defaults.yaml"
-  folders          = "datasets/classic/folders"
-  organization     = "datasets/classic/organization"
-  projects         = "datasets/classic/projects"
+  dataset = "datasets/hardened"
+}
+```
+
+While changing the paths used by the inner factories, or disabling some of them by pointing to a non-existent path, is done via the `paths` attribute (which can of course be combined with `dataset`).
+
+```bash
+factories_config = {
+  # optional
+  # dataset = "datasets/hardened"
+  # optional
+  paths = {
+    # absolute paths ignores the dataset base path
+    billing_accounts = "/mydata/foo/billing-accounts"
+    # and if the path does not exist this specific factory is skipped
+    cicd             = "/tmp/fake/cicd.yaml"
+  }
 }
 ```
 
@@ -386,30 +399,30 @@ This is a simple reference table of available interpolation namespaces, refer to
 
 The resources created by this stage are controlled by several factories, which point to YAML configuration files and folders. Data locations for each factory are controlled via the `var.factories_config` variable, and each factory path can be overridden individually.
 
-The default paths point to the dataset in the `data` folder which deploys a FAST-compliant configuration. These are the available factories in this stage, with file-level factories based on a single YAML file, and folder-level factories based on sets of YAML files contained within a filesystem folder:
+The default paths point to the dataset in the `datasets/classic` folder which deploys a FAST-compliant configuration. These are the available factories in this stage, with file-level factories based on a single YAML file, and folder-level factories based on sets of YAML files contained within a filesystem folder:
 
-- **defaults** (`datasets/classic/defaults.yaml`) \
+- **defaults** (`[dataset]/defaults.yaml`) \
   file-level factory to define stage defaults (organization id, locations, prefix, etc.) and static context mappings
-- **billing_accounts** (`datasets/classic/billing-accounts`) \
+- **billing_accounts** (`[dataset]/billing-accounts`) \
   folder-level factory where each YAML file defines billing-account level IAM for one billing account; only used for externally managed accounts
-- **organization** (`datasets/classic/organization/.config.yaml`) \
-  file-level factory to define organization IAM and log sinks
-  - **custom roles** (`datasets/classic/organization/custom-roles`) \
+- **organization** (`[dataset]/organization/.config.yaml`) \
+  file-level factory to define organization IAM, service agents, and log sinks
+  - **custom roles** (`[dataset]/organization/custom-roles`) \
     folder-level factory to define organization-level custom roles
-  - **org policies** (`datasets/classic/organization/org-policies`) \
+  - **org policies** (`[dataset]/organization/org-policies`) \
     folder-level factory to define organization-level org policies
-  - **tags** (`datasets/classic/organization/tags`) \
+  - **tags** (`[dataset]/organization/tags`) \
     folder-level factory to define organization-level resource management tags
-- **folders** (`datasets/classic/folders`) \
+- **folders** (`[dataset]/folders`) \
   folder-level factory to define the resource management hierarchy and individual folder attributes (IAM, org policies, tag bindings, etc.); also supports defining folder-level IaC resources
-- **projects** (`datasets/classic/projects`) \
+- **projects** (`[dataset]/projects`) \
   folder-level factory to define projects and their attributes (projejct factory)
-- **cicd** (`datasets/classic/cicd-workflows.yaml`) \
+- **cicd** (`[dataset]/cicd-workflows.yaml`) \
   file-level factory to define CI/CD configurations for this and subsequent stages
 
 ### Defaults configuration
 
-The prerequisite configuration for this stage is done via a `defaults.yaml` file, which implements part or all of the [relevant JSON schema](./schemas/defaults.schema.json). The location of the file defaults to `datasets/classic/defaults.yaml` but can be easily changed via the `factories_config.defaults` variable.
+The prerequisite configuration for this stage is done via a `defaults.yaml` file, which implements part or all of the [relevant JSON schema](./schemas/defaults.schema.json). The location of the file defaults to `[dataset]/defaults.yaml` but can be easily changed via the `factories_config.paths.defaults` variable.
 
 This is a commented example of a defaults file, showing a minimal working configuration. Refer to the YAML schema for all available options.
 
@@ -502,7 +515,7 @@ logging_sinks:
 
 ### Organization configuration
 
-The default dataset implements a classic FAST design, recreating the required custom roles, IAM bindings, org policies, tags, and log sinks via the factories described in a previous section.
+The default dataset implements a classic FAST design, recreating the required custom roles, IAM bindings, org policies, tags, service agents, and log sinks via the factories described in a previous section.
 
 Compared to classic FAST this approach makes org-level configuration explicit, allowing easy customization of IAM and all other attributes. Before running this stage, check that the data files match your expected design.
 
@@ -532,7 +545,7 @@ iam_by_principals:
     - roles/essentialcontacts.admin
     # [...]
 iam_by_principals_additive:
-  $iam_principals:gcp-billing-admins:
+  $iam_principals:gcp-organization-admins:
     - roles/billing.admin
 ```
 
@@ -663,12 +676,12 @@ The provided project configurations also create several key resources for the st
 CI/CD support is implemented via two different sets of configurations:
 
 - [Workload Identity](https://docs.cloud.google.com/iam/docs/workload-identity-federation) providers are defined in project configurations
-- CI/CD service accounts and templated workflow generation are defined in a dedicated configuration (`var.factories_config.cicd_workflows`).
+- CI/CD service accounts and templated workflow generation are defined in a dedicated configuration (`var.factories_config.paths.cicd_workflows`).
 
 The default approach is to define a Workload Identity provider in the `iac-0` project, or in an additional project dedicated to this task. This is achieved by adding a `workload_identity_pools` block to the project configuration, like in the following example.
 
 ```yaml
-# projects/iac-0.yaml
+# projects/core/iac-0.yaml
 
 workload_identity_pools:
   default:
@@ -690,6 +703,34 @@ workload_identity_pools:
 
 The above configuration can be easily extended to support multiple pools and providers, and is not limited to OpenId Connect but can also leverage other provider types. Check the project module or project schema for the full interface.
 
+In the `iac-0` project you can find a sample configuration for 0-org-setup stage service accounts dedicated for CI/CD operations:
+
+```yaml
+# projects/core/iac-0.yaml
+
+service_accounts:
+  # IaC service accounts for this stage
+  iac-org-ro:
+    display_name: IaC service account for org setup (read-only).
+  iac-org-rw:
+    display_name: IaC service account for org setup (read-write).
+  # CI/CD service accounts for this stage
+  iac-org-cicd-ro:
+    display_name: IaC service account for org setup CI/CD (read-only).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-ro:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+  iac-org-cicd-rw:
+    display_name: IaC service account for org setup CI/CD (read-write).
+    iam_sa_roles:
+      $service_account_ids:iac-0/iac-org-rw:
+        - roles/iam.workloadIdentityUser
+        - roles/iam.serviceAccountTokenCreator
+```
+
+You need to extend this configuration to all other stages that you plan to use in your deployment and add permissions to IaC service account dedicated for specific stage.
+
 Once one or more providers have been defined they can be referenced in the CI/CD configuration file. The following example defines a workflow configuration for this stage.
 
 ```yaml
@@ -698,7 +739,7 @@ Once one or more providers have been defined they can be referenced in the CI/CD
 org-setup:
   provider_files:
     apply: 0-org-setup-providers.tf
-    plan: 0-org-setup-providers-ro.tf
+    plan: 0-org-setup-ro-providers.tf
   repository:
     name: example/0-org-setup
     type: github
@@ -858,7 +899,7 @@ Define values for the `var.environments` variable in a tfvars file.
 | [billing.tf](./billing.tf) | None | <code>billing-account</code> |  |
 | [cicd-workflows-preconditions.tf](./cicd-workflows-preconditions.tf) | None |  | <code>terraform_data</code> |
 | [cicd-workflows.tf](./cicd-workflows.tf) | None | <code>iam-service-account</code> | <code>google_storage_bucket_object</code> · <code>local_file</code> |
-| [factory.tf](./factory.tf) | None | <code>project-factory</code> |  |
+| [factory.tf](./factory.tf) | None | <code>net-vpc-factory</code> · <code>project-factory</code> |  |
 | [identity-providers-defs.tf](./identity-providers-defs.tf) | None |  |  |
 | [imports.tf](./imports.tf) | None |  |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  | <code>terraform_data</code> |
@@ -872,9 +913,9 @@ Define values for the `var.environments` variable in a tfvars file.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  custom_roles                &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids                  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations                   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids                 &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_account_ids         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_keys                    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values                  &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  workload_identity_pools     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  workload_identity_providers &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L40) | Configuration for the resource factories or external data. | <code title="object&#40;&#123;&#10;  billing_accounts  &#61; optional&#40;string, &#34;datasets&#47;classic&#47;billing-accounts&#34;&#41;&#10;  cicd_workflows    &#61; optional&#40;string&#41;&#10;  defaults          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;defaults.yaml&#34;&#41;&#10;  folders           &#61; optional&#40;string, &#34;datasets&#47;classic&#47;folders&#34;&#41;&#10;  observability     &#61; optional&#40;string, &#34;datasets&#47;classic&#47;observability&#34;&#41;&#10;  organization      &#61; optional&#40;string, &#34;datasets&#47;classic&#47;organization&#34;&#41;&#10;  project_templates &#61; optional&#40;string, &#34;datasets&#47;classic&#47;templates&#34;&#41;&#10;  projects          &#61; optional&#40;string, &#34;datasets&#47;classic&#47;projects&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_imports](variables.tf#L56) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L46) | Configuration for the resource factories or external data. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_imports](variables.tf#L66) | List of org policies to import. These need to also be defined in data files. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
@@ -882,5 +923,8 @@ Define values for the `var.environments` variable in a tfvars file.
 |---|---|:---:|
 | [iam_principals](outputs.tf#L17) | IAM principals. |  |
 | [projects](outputs.tf#L22) | Attributes for managed projects. |  |
-| [tfvars](outputs.tf#L27) | Stage tfvars. | ✓ |
+| [subnet_ips](outputs.tf#L27) | Map of subnet address ranges keyed by VPC and subnet name. |  |
+| [subnet_self_links](outputs.tf#L34) | Map of subnet self links keyed by VPC and subnet name. |  |
+| [tfvars](outputs.tf#L41) | Stage tfvars. | ✓ |
+| [vpc_self_links](outputs.tf#L47) | Map of VPC self links keyed by VPC name. |  |
 <!-- END TFDOC -->

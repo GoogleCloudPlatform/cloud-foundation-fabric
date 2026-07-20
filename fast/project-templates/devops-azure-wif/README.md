@@ -199,6 +199,8 @@ This example uses Microsoft-hosted agents, but also provides some basic starting
 
 ## Pipeline Configuration
 
+The pipelines need the [Azure Devops Terraform Task](https://marketplace.visualstudio.com/items?itemName=ms-devlabs.custom-terraform-tasks), so make sure this is available in your project.
+
 ### Included Examples
 
 Three sample pipelines are provided as examples:
@@ -207,7 +209,7 @@ Three sample pipelines are provided as examples:
 - `pr-pipeline.yaml`: a "PR pipeline" that runs Terraform init, validate, and plan on pull requests. It posts the plan output as a comment to the PR and updates the PR status.
 - `merge-pipeline.yaml`: a "merge pipeline" that runs Terraform init, validate, and apply on merges to the main branch.
 
-Each of the above pipelines needs to be edited to match your project id and resource names. Once that has been done, the code can be copy/pasted on a new pipeline in Azure Devops. On first run, you might be asked to grant permissions to the pipeline on the service connection. Refer to the Azure Devops [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/view=azure-pipelines) can be used for further customizations.
+Each of the above pipelines needs to be edited to match your project id and resource names. Once that has been done, the code can be copy/pasted on a new pipeline in Azure Devops. On first run, you might be asked to grant permissions to the pipeline on the service connection. Refer to the Azure Devops [Pipelines Schema Reference](https://learn.microsoft.com/en-us/azure/devops/pipelines/yaml-schema/?view=azure-pipelines) can be used for further customizations.
 
 ### Branch Policies and Permissions
 

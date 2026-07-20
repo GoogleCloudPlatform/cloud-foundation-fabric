@@ -28,7 +28,10 @@ locals {
           "Terraform-managed."
         )
         iam                    = try(opts.iam, {})
+        iam_bindings           = try(opts.iam_bindings, {})
+        iam_bindings_additive  = try(opts.iam_bindings_additive, {})
         iam_billing_roles      = try(opts.iam_billing_roles, {})
+        iam_folder_roles       = try(opts.iam_folder_roles, {})
         iam_organization_roles = try(opts.iam_organization_roles, {})
         iam_sa_roles           = try(opts.iam_sa_roles, {})
         iam_project_roles      = try(opts.iam_project_roles, {})
@@ -38,6 +41,7 @@ locals {
           try(local.data_defaults.defaults.service_accounts.iam_self_roles, []),
         ))
         iam_storage_roles = try(opts.iam_storage_roles, {})
+        tag_bindings      = try(opts.tag_bindings, {})
         opts              = opts
       }
     ]
@@ -77,22 +81,38 @@ module "service-accounts" {
     for k in local.projects_service_accounts :
     "${k.project_key}/${k.name}" => k
   }
-  project_id   = module.projects[each.value.project_key].project_id
-  name         = each.value.name
-  description  = each.value.description
-  display_name = each.value.display_name
+  project_id     = module.projects[each.value.project_key].project_id
+  project_number = module.projects[each.value.project_key].number
+  name           = each.value.name
+  description    = each.value.description
+  display_name   = each.value.display_name
   context = merge(local.ctx, {
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
     project_ids = local.ctx_project_ids
+    tag_values  = local.ctx_tag_values
   })
+  iam_billing_roles      = each.value.iam_billing_roles
+  iam_folder_roles       = each.value.iam_folder_roles
+  iam_organization_roles = each.value.iam_organization_roles
   iam_project_roles = merge(
     each.value.iam_project_roles,
     {
       "$project_ids:${each.value.project_key}" = each.value.iam_self_roles
     }
   )
+  iam_storage_roles = each.value.iam_storage_roles
+  tag_bindings      = each.value.tag_bindings
 }
 
-module "service_accounts-iam" {
+moved {
+  from = module.service_accounts-iam
+  to   = module.service-accounts-iam
+}
+
+module "service-accounts-iam" {
   source = "../iam-service-account"
   for_each = {
     for k in local.projects_service_accounts :
@@ -112,6 +132,8 @@ module "service_accounts-iam" {
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails,
+      local.projects_service_agents,
+      lookup(local.per_project_service_agents, each.value.project_key, {}),
       lookup(local.self_sas_iam_emails, each.value.project_key, {})
     )
     service_account_ids = merge(
@@ -119,6 +141,8 @@ module "service_accounts-iam" {
       lookup(local.self_sas_ids, each.value.project_key, {})
     )
   })
-  iam          = each.value.iam
-  iam_sa_roles = each.value.iam_sa_roles
+  iam                   = each.value.iam
+  iam_bindings          = each.value.iam_bindings
+  iam_bindings_additive = each.value.iam_bindings_additive
+  iam_sa_roles          = each.value.iam_sa_roles
 }

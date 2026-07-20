@@ -28,6 +28,13 @@ resource "google_cloud_run_v2_service" "service" {
   deletion_protection  = var.deletion_protection
   iap_enabled          = var.service_config.iap_config != null
 
+  dynamic "multi_region_settings" {
+    for_each = local.multi_region_regions == null ? [] : [""]
+    content {
+      regions = local.multi_region_regions
+    }
+  }
+
   template {
     labels         = var.revision.labels
     encryption_key = var.encryption_key

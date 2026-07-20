@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../../../schemas/scc-sha-custom-modules.schema.json
+
 gkeRequireDataplaneV2:
   description: Detect if GKE clusters are configured with a version different than Dataplane V2
   predicate:
-    expression: resource.networkConfig.datapathProvider == 'ADVANCED_DATAPATH'
+    expression: resource.networkConfig.datapathProvider != 'ADVANCED_DATAPATH'
   recommendation: Ensure only GKE Dataplane V2 are configured
   resource_selector:
     resource_types:

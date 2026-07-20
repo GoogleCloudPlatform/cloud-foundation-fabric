@@ -1,10 +1,10 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ values:
     client_version: null
     custom_audiences: null
     default_uri_disabled: null
+    deletion_policy: DELETE
     deletion_protection: false
     description: null
     effective_labels:
@@ -29,6 +30,7 @@ values:
     invoker_iam_disabled: false
     labels: null
     location: europe-west8
+    multi_region_settings: []
     name: db-test
     project: project-id
     template:
@@ -41,9 +43,12 @@ values:
         image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.18.0
         liveness_probe: []
         name: authproxy
+        readiness_probe: []
+        source_code: []
         volume_mounts:
         - mount_path: /cloudsql
           name: custom_cloudsql
+          sub_path: null
         working_dir: null
       - args: null
         base_image_uri: null
@@ -64,13 +69,17 @@ values:
         ports:
         - container_port: 8080
           name: http1
+        readiness_probe: []
+        source_code: []
         volume_mounts:
         - mount_path: /cloudsql
           name: custom_cloudsql
+          sub_path: null
         working_dir: null
       encryption_key: null
       execution_environment: EXECUTION_ENVIRONMENT_GEN1
       gpu_zonal_redundancy_disabled: null
+      health_check_disabled: null
       labels: null
       node_selector: []
       revision: null
@@ -97,18 +106,25 @@ values:
     project: project-id
     timeouts: null
   module.db.google_sql_database_instance.primary:
+    backupdr_backup: null
     clone: []
     database_version: MYSQL_8_4
+    deletion_policy: DELETE
     deletion_protection: false
+    final_backup_description: null
     name: db
+    point_in_time_restore_context: []
     project: project-id
     region: europe-west8
     restore_backup_context: []
     root_password: null
+    root_password_wo: null
+    root_password_wo_version: null
     settings:
     - activation_policy: ALWAYS
       active_directory_config: []
       advanced_machine_features: []
+      auto_upgrade_enabled: null
       availability_type: ZONAL
       collation: null
       database_flags:
@@ -124,6 +140,8 @@ values:
       edition: ENTERPRISE
       enable_dataplex_integration: null
       enable_google_ml_integration: null
+      entraid_config: []
+      final_backup_config: []
       ip_configuration:
       - allocated_ip_range: null
         authorized_networks: []
@@ -133,6 +151,7 @@ values:
         private_network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
         psc_config: []
         server_ca_pool: null
+        server_certificate_rotation_mode: null
       maintenance_window: []
       password_validation_policy: []
       pricing_plan: PER_USE
@@ -142,7 +161,8 @@ values:
       time_zone: null
     timeouts: null
   module.db.google_sql_user.users["db-run@project-id.iam.gserviceaccount.com"]:
-    deletion_policy: null
+    database_roles: null
+    deletion_policy: DELETE
     instance: db
     name: db-run@project-id.iam.gserviceaccount.com
     password: null
@@ -152,25 +172,26 @@ values:
     project: project-id
     timeouts: null
     type: CLOUD_IAM_SERVICE_ACCOUNT
-  module.run-sa.google_project_iam_member.project-roles["project-id-roles/cloudsql.client"]:
+  module.run-sa.google_project_iam_member.project_roles["project-id-roles/cloudsql.client"]:
     condition: []
     project: project-id
     role: roles/cloudsql.client
-  module.run-sa.google_project_iam_member.project-roles["project-id-roles/cloudsql.instanceUser"]:
+  module.run-sa.google_project_iam_member.project_roles["project-id-roles/cloudsql.instanceUser"]:
     condition: []
     project: project-id
     role: roles/cloudsql.instanceUser
-  module.run-sa.google_project_iam_member.project-roles["project-id-roles/logging.logWriter"]:
+  module.run-sa.google_project_iam_member.project_roles["project-id-roles/logging.logWriter"]:
     condition: []
     project: project-id
     role: roles/logging.logWriter
-  module.run-sa.google_project_iam_member.project-roles["project-id-roles/storage.objectViewer"]:
+  module.run-sa.google_project_iam_member.project_roles["project-id-roles/storage.objectViewer"]:
     condition: []
     project: project-id
     role: roles/storage.objectViewer
   module.run-sa.google_service_account.service_account[0]:
     account_id: db-run
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Terraform-managed.

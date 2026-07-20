@@ -13,7 +13,7 @@
 # limitations under the License.
 
 values:
-  google_compute_firewall.allow-admins[0]:
+  google_compute_firewall.allow_admins[0]:
     allow:
     - ports: []
       protocol: all
@@ -33,7 +33,7 @@ values:
     target_service_accounts: null
     target_tags: null
     timeouts: null
-  google_compute_firewall.allow-tag-http[0]:
+  google_compute_firewall.allow_tag_http[0]:
     allow:
     - ports:
       - '80'
@@ -55,7 +55,7 @@ values:
     target_tags:
     - http-server
     timeouts: null
-  google_compute_firewall.allow-tag-https[0]:
+  google_compute_firewall.allow_tag_https[0]:
     allow:
     - ports:
       - '443'
@@ -77,7 +77,7 @@ values:
     target_tags:
     - https-server
     timeouts: null
-  google_compute_firewall.allow-tag-ssh[0]:
+  google_compute_firewall.allow_tag_ssh[0]:
     allow:
     - ports:
       - '22'
@@ -99,7 +99,7 @@ values:
     target_tags:
     - ssh
     timeouts: null
-  google_compute_firewall.custom-rules["egress-test"]:
+  google_compute_firewall.custom_rules["egress-test"]:
     allow:
     - ports: []
       protocol: all
@@ -131,7 +131,7 @@ values:
     - serviceAccount:test@test-project.iam.gserviceaccount.com
     target_tags: null
     timeouts: null
-  google_compute_firewall.custom-rules["ingress-test"]:
+  google_compute_firewall.custom_rules["ingress-test"]:
     allow:
     - ports: []
       protocol: all

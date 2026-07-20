@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 variable "activation_policy" {
   description = "This variable specifies when the instance should be active. Can be either ALWAYS, NEVER or ON_DEMAND. Default is ALWAYS."
   type        = string
@@ -31,8 +32,8 @@ variable "availability_type" {
 }
 
 variable "backup_configuration" {
-  description = "Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas."
-  nullable    = false
+  description = "Backup settings for primary instance. Set to null to leave existing GCP backup settings unmanaged. When set, all fields are managed by Terraform including disabling backups when enabled=false."
+  nullable    = true
   type = object({
     enabled                        = optional(bool, false)
     binary_log_enabled             = optional(bool, false)
@@ -44,20 +45,10 @@ variable "backup_configuration" {
     retain_backups_on_delete       = optional(bool)
     final_backup = optional(object({
       enabled        = optional(bool, false)
-      retention_days = optional(number, 7)
+      retention_days = optional(number)
     }))
   })
-  default = {
-    enabled                        = false
-    binary_log_enabled             = false
-    start_time                     = "23:00"
-    location                       = null
-    log_retention_days             = 7
-    point_in_time_recovery_enabled = null
-    retention_count                = 7
-    retain_backups_on_delete       = null
-    final_backup                   = null
-  }
+  default = null
 }
 
 variable "collation" {
@@ -70,6 +61,29 @@ variable "connector_enforcement" {
   description = "Specifies if connections must use Cloud SQL connectors."
   type        = string
   default     = null
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    kms_keys    = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
+variable "data_api_access" {
+  description = "Access to the Cloud SQL Data API. Either `ALLOW_DATA_API` or `DISALLOW_DATA_API`."
+  type        = string
+  default     = null
+  nullable    = true
+  validation {
+    condition     = var.data_api_access == null || contains(["ALLOW_DATA_API", "DISALLOW_DATA_API"], var.data_api_access)
+    error_message = "The data_api_access must be one of 'ALLOW_DATA_API' or 'DISALLOW_DATA_API'."
+  }
 }
 
 variable "data_cache" {
@@ -136,10 +150,11 @@ variable "gcp_deletion_protection" {
 variable "insights_config" {
   description = "Query Insights configuration. Defaults to null which disables Query Insights."
   type = object({
-    query_string_length     = optional(number, 1024)
-    record_application_tags = optional(bool, false)
-    record_client_address   = optional(bool, false)
-    query_plans_per_minute  = optional(number, 5)
+    query_string_length             = optional(number, 1024)
+    record_application_tags         = optional(bool, false)
+    record_client_address           = optional(bool, false)
+    query_plans_per_minute          = optional(number, 5)
+    enhanced_query_insights_enabled = optional(bool, false)
   })
   default = null
 }
@@ -154,7 +169,7 @@ variable "maintenance_config" {
   description = "Set maintenance window configuration and maintenance deny period (up to 90 days). Date format: 'yyyy-mm-dd'."
   type = object({
     maintenance_window = optional(object({
-      day          = number
+      day          = optional(number)
       hour         = number
       update_track = optional(string, null)
     }), null)
@@ -169,17 +184,19 @@ variable "maintenance_config" {
     condition = (
       try(var.maintenance_config.maintenance_window, null) == null ? true : (
         # Maintenance window day validation below
-        var.maintenance_config.maintenance_window.day >= 1 &&
-        var.maintenance_config.maintenance_window.day <= 7 &&
+        var.maintenance_config.maintenance_window.day == null || (
+          var.maintenance_config.maintenance_window.day >= 1 &&
+          var.maintenance_config.maintenance_window.day <= 7
+        ) &&
         # Maintenance window hour validation below
         var.maintenance_config.maintenance_window.hour >= 0 &&
         var.maintenance_config.maintenance_window.hour <= 23 &&
         # Maintenance window update_track validation below
         try(var.maintenance_config.maintenance_window.update_track, null) == null ? true :
-        contains(["canary", "stable"], var.maintenance_config.maintenance_window.update_track)
+        contains(["canary", "stable", "week5"], var.maintenance_config.maintenance_window.update_track)
       )
     )
-    error_message = "Maintenance window day must be between 1 and 7, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable' or 'canary'."
+    error_message = "Maintenance window day must be between 1 and 7 or null, maintenance window hour must be between 0 and 23 and maintenance window update_track must be 'stable', 'canary', or 'week5'."
   }
 }
 
@@ -211,10 +228,27 @@ variable "network_config" {
           replica = optional(string)
         }))
       }))
-      psc_allowed_consumer_projects    = optional(list(string))
+      psc_allowed_consumer_projects = optional(list(string)) # OBSOLETE. See validation below.
+      psc_config = optional(object({
+        allowed_consumer_projects = optional(list(string))
+        network_attachment_uri    = optional(string)
+        psc_auto_connections = optional(list(object({
+          consumer_network            = string
+          consumer_service_project_id = optional(string)
+        })))
+      }))
       enable_private_path_for_services = optional(bool, false)
     })
   })
+  validation {
+    condition = (
+      try(var.network_config.connectivity, null) == null ? true : (
+        var.network_config.connectivity.psc_allowed_consumer_projects == null ||
+        length(var.network_config.connectivity.psc_allowed_consumer_projects) == 0
+      )
+    )
+    error_message = "network_config.connectivity.psc_allowed_consumer_projects is obsolete. Use network_config.connectivity.psc_config.allowed_consumer_projects instead."
+  }
 }
 
 variable "password_validation_policy" {
@@ -252,11 +286,12 @@ variable "region" {
 }
 
 variable "replicas" {
-  description = "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE} for additional read replicas. Set to null to disable replica creation."
+  description = "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE, TIER} for additional read replicas. Set TIER to override the primary's machine type per replica. Set to null to disable replica creation."
   type = map(object({
     region              = string
     encryption_key_name = optional(string)
     availability_type   = optional(string)
+    tier                = optional(string)
   }))
   default  = {}
   nullable = false
@@ -315,6 +350,7 @@ variable "users" {
     password         = optional(string)
     password_version = optional(number)
     type             = optional(string, "BUILT_IN")
+    database_roles   = optional(list(string))
   }))
   default  = {}
   nullable = false

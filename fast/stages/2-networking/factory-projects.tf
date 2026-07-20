@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,15 @@ module "projects" {
   source        = "../../../modules/project-factory"
   data_defaults = local.project_defaults.defaults
   data_overrides = merge(
-    {
-      universe = var.universe
-    },
+    { universe = var.universe },
     local.project_defaults.overrides
   )
   context = local.ctx
   factories_config = {
-    folders  = var.factories_config.folders
-    projects = var.factories_config.projects
+    basepath = var.factories_config.dataset
+    budgets = {
+      billing_account = var.billing_account.id
+    }
+    paths = var.factories_config.paths
   }
 }

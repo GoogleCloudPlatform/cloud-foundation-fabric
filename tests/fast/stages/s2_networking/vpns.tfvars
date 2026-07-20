@@ -5,18 +5,8 @@ billing_account = {
   id = "000000-111111-222222"
 }
 factories_config = {
-  defaults              = "datasets/hub-and-spokes-vpns/defaults.yaml"
-  dns                   = "datasets/hub-and-spokes-vpns/dns/zones"
-  dns-response-policies = "datasets/hub-and-spokes-vpns/dns/response-policies"
-  firewall-policies     = "datasets/hub-and-spokes-vpns/firewall-policies"
-  folders               = "datasets/hub-and-spokes-vpns/folders"
-  interconnect          = "datasets/hub-and-spokes-vpns/interconnect"
-  ncc-hubs              = "datasets/hub-and-spokes-vpns/ncc-hubs"
-  nvas                  = "datasets/hub-and-spokes-vpns/nvas"
-  projects              = "datasets/hub-and-spokes-vpns/projects"
-  vpcs                  = "datasets/hub-and-spokes-vpns/vpcs"
+  dataset = "datasets/hub-and-spokes-vpns"
 }
-
 folder_ids = {
   "networking"      = "folders/12345678"
   "networking/prod" = "folders/23456789"

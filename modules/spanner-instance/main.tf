@@ -55,12 +55,14 @@ resource "google_spanner_instance" "spanner_instance" {
     ? var.instance.config.name
     : google_spanner_instance_config.spanner_instance_config[0].name
   )
-  name             = var.instance.name
-  display_name     = coalesce(var.instance.display_name, var.instance.name)
-  num_nodes        = var.instance.num_nodes
-  labels           = var.instance.labels
-  force_destroy    = var.instance.force_destroy
-  processing_units = var.instance.processing_units
+  name                         = var.instance.name
+  display_name                 = coalesce(var.instance.display_name, var.instance.name)
+  num_nodes                    = var.instance.num_nodes
+  labels                       = var.instance.labels
+  force_destroy                = var.instance.force_destroy
+  processing_units             = var.instance.processing_units
+  edition                      = var.instance.edition
+  default_backup_schedule_type = var.instance.default_backup_schedule_type
   dynamic "autoscaling_config" {
     for_each = var.instance.autoscaling == null ? [] : [""]
     content {
@@ -92,6 +94,7 @@ resource "google_spanner_database" "spanner_databases" {
   instance                 = local.spanner_instance.name
   name                     = each.key
   ddl                      = each.value.ddl
+  default_time_zone        = each.value.default_time_zone
   enable_drop_protection   = each.value.enable_drop_protection
   deletion_protection      = false
   version_retention_period = each.value.version_retention_period

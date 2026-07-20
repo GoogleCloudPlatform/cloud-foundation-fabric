@@ -28,22 +28,25 @@ variable "backend_service_configs" {
     custom_response_headers         = optional(list(string))
     enable_cdn                      = optional(bool)
     health_checks                   = optional(list(string), ["default"])
-    log_sample_rate                 = optional(number)
     locality_lb_policy              = optional(string)
-    port_name                       = optional(string)
-    project_id                      = optional(string)
-    protocol                        = optional(string)
-    security_policy                 = optional(string)
-    session_affinity                = optional(string)
-    timeout_sec                     = optional(number)
+    log_config = optional(object({
+      enable          = optional(bool)
+      sample_rate     = optional(number)
+      optional_mode   = optional(string)
+      optional_fields = optional(list(string))
+    }))
+    port_name        = optional(string)
+    project_id       = optional(string)
+    protocol         = optional(string)
+    security_policy  = optional(string)
+    session_affinity = optional(string)
+    timeout_sec      = optional(number)
     backends = list(object({
-      # group renamed to backend
-      backend         = string
+      group           = string
       preferred       = optional(bool, false)
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
-      failover        = optional(bool, false)
       max_connections = optional(object({
         per_endpoint = optional(number)
         per_group    = optional(number)
@@ -142,7 +145,11 @@ variable "backend_service_configs" {
         access_key_version = optional(string)
         origin_region      = optional(string)
       }))
-  })) }))
+    }))
+    tls_settings = optional(object({
+      sni = optional(string)
+    }))
+  }))
   default  = {}
   nullable = false
   validation {

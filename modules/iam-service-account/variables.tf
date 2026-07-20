@@ -25,6 +25,10 @@ variable "context" {
     service_account_ids = optional(map(string), {})
     storage_buckets     = optional(map(string), {})
     tag_values          = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
@@ -100,6 +104,9 @@ variable "service_account_reuse" {
     attributes = optional(object({
       project_number = number
       unique_id      = string
+    }))
+    universe = optional(object({
+      prefix = string
     }))
   })
   nullable = true

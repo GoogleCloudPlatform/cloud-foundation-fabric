@@ -55,4 +55,3 @@ resource "google_clouddeploy_target" "default" {
     }
   }
 }
-

@@ -46,6 +46,12 @@ variable "message_retention_duration" {
   default     = null
 }
 
+variable "message_storage_enforce_in_transit" {
+  description = "If true, var.regions is also used to enforce in-transit guarantees for messages."
+  type        = bool
+  default     = null
+}
+
 variable "name" {
   description = "PubSub topic name."
   type        = string

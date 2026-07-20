@@ -33,7 +33,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       access_levels = (
         spec.value.access_levels == null ? null : [
           for k in spec.value.access_levels :
-          try(google_access_context_manager_access_level.basic[k].id, k)
+          lookup(local.ctx_access_levels, k, k)
         ]
       )
       resources = flatten([
@@ -55,7 +55,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
         ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.value.key)
+          title = replace(coalesce(policy.value.title, policy.value.key), "$egress_policies:", "")
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -76,9 +76,8 @@ resource "google_access_context_manager_service_perimeter" "additive" {
                 for_each = policy.value.from.access_levels
                 iterator = access_level
                 content {
-                  access_level = try(
-                    google_access_context_manager_access_level.basic[access_level.value].id,
-                    access_level.value
+                  access_level = lookup(
+                    local.ctx_access_levels, access_level.value, access_level.value
                   )
                 }
               }
@@ -141,7 +140,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
         ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.value.key)
+          title = replace(coalesce(policy.value.title, policy.value.key), "$ingress_policies:", "")
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -157,9 +156,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
                 for_each = toset(policy.value.from.access_levels)
                 iterator = s
                 content {
-                  access_level = try(
-                    google_access_context_manager_access_level.basic[s.value].id, s.value
-                  )
+                  access_level = lookup(local.ctx_access_levels, s.value, s.value)
                 }
               }
               dynamic "sources" {
@@ -231,7 +228,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
       access_levels = (
         status.value.access_levels == null ? null : [
           for k in status.value.access_levels :
-          try(google_access_context_manager_access_level.basic[k].id, k)
+          lookup(local.ctx_access_levels, k, k)
         ]
       )
       resources = flatten([
@@ -253,7 +250,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
         ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.value.key)
+          title = replace(coalesce(policy.value.title, policy.value.key), "$egress_policies:", "")
           dynamic "egress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -274,9 +271,8 @@ resource "google_access_context_manager_service_perimeter" "additive" {
                 for_each = policy.value.from.access_levels
                 iterator = access_level
                 content {
-                  access_level = try(
-                    google_access_context_manager_access_level.basic[access_level.value].id,
-                    access_level.value
+                  access_level = lookup(
+                    local.ctx_access_levels, access_level.value, access_level.value
                   )
                 }
               }
@@ -338,7 +334,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
         ]
         iterator = policy
         content {
-          title = coalesce(policy.value.title, policy.value.key)
+          title = replace(coalesce(policy.value.title, policy.value.key), "$ingress_policies:", "")
           dynamic "ingress_from" {
             for_each = policy.value.from == null ? [] : [""]
             content {
@@ -354,10 +350,7 @@ resource "google_access_context_manager_service_perimeter" "additive" {
                 for_each = toset(policy.value.from.access_levels)
                 iterator = s
                 content {
-                  access_level = try(
-                    google_access_context_manager_access_level.basic[s.value].id,
-                    s.value
-                  )
+                  access_level = lookup(local.ctx_access_levels, s.value, s.value)
                 }
               }
               dynamic "sources" {

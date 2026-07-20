@@ -6,12 +6,36 @@
 
 *additional properties: false*
 
+- **access_policy**: *string*
+- **asset_feeds**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**billing_project**: *string*
+    - **content_type**: *string*
+      <br>*enum: ['RESOURCE', 'IAM_POLICY', 'ORG_POLICY', 'ACCESS_POLICY', 'OS_INVENTORY', 'RELATIONSHIP']*
+    - **asset_types**: *array*
+      - items: *string*
+    - **asset_names**: *array*
+      - items: *string*
+    - ⁺**feed_output_config**: *object*
+      <br>*additional properties: false*
+      - ⁺**pubsub_destination**: *object*
+        <br>*additional properties: false*
+        - ⁺**topic**: *string*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - **title**: *string*
+      - **description**: *string*
+      - **location**: *string*
 - **id**: *string*
 - **contacts**: *object*
   <br>*additional properties: false*
   - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*
     - items: *string*
       <br>*enum: ['ALL', 'BILLING', 'LEGAL', 'SECURITY', 'PRODUCT_UPDATES', 'SUSPENSION', 'TECHNICAL']*
+- **context_aware_access_bindings**: *reference([context_aware_access_bindings](#refs-context_aware_access_bindings))*
 - **data_access_logs**: *object*
   <br>*additional properties: false*
   - **`^([a-z][a-z-]+\.googleapis\.com|allServices)$`**: *object*
@@ -34,6 +58,29 @@
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **iam_by_principals_additive**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_deny_policies**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **display_name**: *string*
+    - ⁺**rules**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **description**: *string*
+        - ⁺**denied_permissions**: *array*
+          - items: *string*
+        - ⁺**denied_principals**: *array*
+          - items: *string*
+        - **denial_condition**: *object*
+          <br>*additional properties: false*
+          - ⁺**expression**: *string*
+          - **title**: *string*
+          - **description**: *string*
+          - **location**: *string*
+        - **exception_permissions**: *array*
+          - items: *string*
+        - **exception_principals**: *array*
+          - items: *string*
 - **logging**: *object*
   <br>*additional properties: false*
   - **kms_key_name**: *string*
@@ -74,33 +121,63 @@
           - **location**: *string*
           - **title**: *string*
 - **pam_entitlements**: *reference([pam_entitlements](#refs-pam_entitlements))*
+- **service_agents_config**: *object*
+  <br>*additional properties: false*
+  - **create_agents**: *boolean*
+  - **services**: *array*
+    - items: *string*
 - **tags**: *object*
   <br>*additional properties: object*
-- **workforce_identity_config**: *object*
+- **workforce_identity_pools**: *object*
   <br>*additional properties: false*
-  - **pool_name**: *string*
-  - **providers**: *object*
+  - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
     <br>*additional properties: false*
-    - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
+    - **display_name**: *string*
+    - **description**: *string*
+    - **disabled**: *boolean*
+    - **session_duration**: *string*
+    - **access_restrictions**: *object*
       <br>*additional properties: false*
-      - **description**: *string*
-      - **display_name**: *string*
-      - **attribute_condition**: *string*
-      - **attribute_mapping**: *object*
-      - **attribute_mapping_template**: *string*
-        <br>*enum: ['azuread', 'okta']*
-      - **disabled**: *boolean*
-      - **identity_provider**: *object*
-      - **oauth2_client_config**: *object*
+      - **allowed_services**: *array*
+        - items: *object*
+          <br>*additional properties: false*
+          - **domain**: *string*
+      - **disable_programmatic_signin**: *boolean*
+    - **providers**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9-]+[a-z0-9]$`**: *object*
         <br>*additional properties: false*
-        - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
-        - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+        - **description**: *string*
+        - **display_name**: *string*
+        - **attribute_condition**: *string*
+        - **attribute_mapping**: *object*
+        - **attribute_mapping_template**: *string*
+          <br>*enum: ['azuread', 'okta']*
+        - **disabled**: *boolean*
+        - **detailed_audit_logging**: *boolean*
+        - **identity_provider**: *object*
+        - **oauth2_client_config**: *object*
+          <br>*additional properties: false*
+          - **extended_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+          - **extra_attributes**: *reference([wfif_oauth2_client_attrs](#refs-wfif_oauth2_client_attrs))*
+        - **scim_tenant**: *object*
+          <br>*additional properties: false*
+          - ⁺**id**: *string*
+          - ⁺**claim_mapping**: *object*
+            <br>*additional properties: string*
+          - **location**: *string*
+            <br>*default: global*
+          - **display_name**: *string*
+          - **description**: *string*
+          - **hard_delete**: *boolean*
+        - **scim_usage**: *string*
+          <br>*enum: ['ENABLED_FOR_GROUPS']*
 
 ## Definitions
 
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|$custom_roles:|organizations/|projects/)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:\$[a-z_-]+:|domain:|group:|mdb:|serviceAccount:|user:|principal:|principalSet:)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -111,7 +188,7 @@
       - items: *string*
         <br>*pattern: ^(?:\$[a-z_-]+:|domain:|group:|mdb:|serviceAccount:|user:|principal:|principalSet:)*
     - ⁺**role**: *string*
-      <br>*pattern: ^roles/*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -134,7 +211,7 @@
   <br>*additional properties: false*
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
 - **iam_by_principals_conditional**<a name="refs-iam_by_principals_conditional"></a>: *object*
   <br>*additional properties: false*
   - **`^(?:\$[a-z_-]+:|domain:|group:|serviceAccount:|user:|principal:|principalSet:)`**: *object*
@@ -146,7 +223,25 @@
       - **description**: *string*
     - ⁺**roles**: *array*
       - items: *string*
-        <br>*pattern: ^(?:roles/|\$custom_roles:)*
+        <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+- **context_aware_access_bindings**<a name="refs-context_aware_access_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9-_.]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**group_key**: *string*
+    - ⁺**access_levels**: *array*
+      - items: *string*
+    - **scoped_access_settings**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **active_settings**: *object*
+          <br>*additional properties: false*
+          - **access_levels**: *array*
+            - items: *string*
+        - **dry_run_settings**: *object*
+          <br>*additional properties: false*
+          - **access_levels**: *array*
+            - items: *string*
 - **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*

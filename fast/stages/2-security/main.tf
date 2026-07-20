@@ -15,9 +15,6 @@
  */
 
 locals {
-  paths = {
-    for k, v in var.factories_config : k => try(pathexpand(v), null)
-  }
   _ctx = {
     for k, v in var.context : k => merge(
       v, try(local._defaults.context[k], {})
@@ -41,10 +38,18 @@ locals {
       },
       local._ctx.iam_principals
     )
-    project_ids       = merge(var.project_ids, local._ctx.project_ids)
-    storage_buckets   = merge(var.storage_buckets, local._ctx.storage_buckets)
-    tag_keys          = merge(var.tag_keys, local._ctx.tag_keys)
-    tag_values        = merge(var.tag_values, local._ctx.tag_values)
+    project_ids     = merge(var.project_ids, local._ctx.project_ids)
+    storage_buckets = merge(var.storage_buckets, local._ctx.storage_buckets)
+    tag_keys        = merge(var.tag_keys, local._ctx.tag_keys)
+    tag_values      = merge(var.tag_values, local._ctx.tag_values)
+    tag_vars = {
+      organization = merge(
+        var.tag_vars.organization, local._ctx.tag_vars.organization
+      )
+      projects = merge(
+        var.tag_vars.projects, local._ctx.tag_vars.projects
+      )
+    }
     vpc_sc_perimeters = merge(var.perimeters, local._ctx.vpc_sc_perimeters)
   })
   # normalize defaults
@@ -59,6 +64,13 @@ locals {
       local._defaults.output_files.storage_bucket,
       null
     )
+  }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
   }
   project_defaults = {
     defaults = merge(

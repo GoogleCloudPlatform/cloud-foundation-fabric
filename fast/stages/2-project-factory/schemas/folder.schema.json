@@ -4,6 +4,30 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "asset_search": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "asset_types"
+          ],
+          "properties": {
+            "asset_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "query": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "asset_feeds": {
       "type": "object",
       "additionalProperties": false,
@@ -141,6 +165,9 @@
                 },
                 "iam_storage_roles": {
                   "$ref": "#/$defs/iam_storage_roles"
+                },
+                "tag_bindings": {
+                  "$ref": "#/$defs/tag_bindings"
                 }
               }
             }
@@ -236,6 +263,73 @@
     "deletion_protection": {
       "type": "boolean"
     },
+    "id": {
+      "type": "string",
+      "pattern": "^(folders/[0-9]+|\\$folder_ids:[a-z0-9_/-]+)$"
+    },
+    "firewall_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "policy"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        }
+      }
+    },
+    "logging": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kms_key_name": {
+          "type": "string"
+        },
+        "storage_location": {
+          "type": "string"
+        },
+        "sinks": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9-_]+$": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "destination": {
+                  "type": "string"
+                },
+                "exclusions": {
+                  "type": "object"
+                },
+                "filter": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "default": "logging",
+                  "enum": [
+                    "bigquery",
+                    "logging",
+                    "project",
+                    "pubsub",
+                    "storage"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "factories_config": {
       "type": "object",
       "additionalProperties": false,
@@ -265,6 +359,85 @@
     },
     "iam_by_principals_conditional": {
       "$ref": "#/$defs/iam_by_principals_conditional"
+    },
+    "iam_deny_policies": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rules"
+          ],
+          "properties": {
+            "display_name": {
+              "type": "string"
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "denied_permissions",
+                  "denied_principals"
+                ],
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "denied_permissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "denied_principals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "denial_condition": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "expression"
+                    ],
+                    "properties": {
+                      "expression": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "location": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "exception_permissions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exception_principals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "name": {
       "type": "string"
@@ -349,21 +522,125 @@
     "pam_entitlements": {
       "$ref": "#/$defs/pam_entitlements"
     },
+    "assured_workload_config": {
+      "$ref": "#/$defs/assured_workload_config"
+    },
     "parent": {
       "type": "string",
       "pattern": "^(?:folders/[0-9]+|organizations/[0-9]+|\\$folder_ids:[a-z0-9_-]+)$"
     },
     "tag_bindings": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^[a-z0-9_-]+$": {
-          "type": "string"
-        }
-      }
+      "$ref": "#/$defs/tag_bindings"
     }
   },
   "$defs": {
+    "assured_workload_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "compliance_regime": {
+          "type": "string",
+          "enum": [
+            "ASSURED_WORKLOADS_FOR_PARTNERS",
+            "AU_REGIONS_AND_US_SUPPORT",
+            "AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT",
+            "CA_PROTECTED_B",
+            "CA_REGIONS_AND_SUPPORT",
+            "CANADA_CONTROLLED_GOODS",
+            "CANADA_DATA_BOUNDARY_AND_SUPPORT",
+            "CJIS",
+            "COMPLIANCE_REGIME_UNSPECIFIED",
+            "DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS",
+            "DATA_BOUNDARY_FOR_CANADA_PROTECTED_B",
+            "DATA_BOUNDARY_FOR_CJIS",
+            "DATA_BOUNDARY_FOR_FEDRAMP_HIGH",
+            "DATA_BOUNDARY_FOR_FEDRAMP_MODERATE",
+            "DATA_BOUNDARY_FOR_IL2",
+            "DATA_BOUNDARY_FOR_IL4",
+            "DATA_BOUNDARY_FOR_IL5",
+            "DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075",
+            "DATA_BOUNDARY_FOR_ITAR",
+            "EU_DATA_BOUNDARY_AND_SUPPORT",
+            "EU_REGIONS_AND_SUPPORT",
+            "FEDRAMP_HIGH",
+            "FEDRAMP_MODERATE",
+            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
+            "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
+            "HIPAA",
+            "HITRUST",
+            "IL2",
+            "IL4",
+            "IL5",
+            "IRS_1075",
+            "ISR_REGIONS",
+            "ISR_REGIONS_AND_SUPPORT",
+            "ISRAEL_DATA_BOUNDARY_AND_SUPPORT",
+            "ITAR",
+            "JAPAN_DATA_BOUNDARY",
+            "JP_REGIONS_AND_SUPPORT",
+            "KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS",
+            "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
+            "REGIONAL_CONTROLS",
+            "REGIONAL_DATA_BOUNDARY",
+            "US_DATA_BOUNDARY_AND_SUPPORT",
+            "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES",
+            "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT",
+            "US_REGIONAL_ACCESS"
+          ]
+        },
+        "display_name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "enable_sovereign_controls": {
+          "type": "boolean"
+        },
+        "labels": {
+          "$ref": "#/$defs/labels"
+        },
+        "partner": {
+          "type": "string",
+          "enum": [
+            "LOCAL_CONTROLS_BY_S3NS",
+            "PARTNER_UNSPECIFIED",
+            "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
+            "SOVEREIGN_CONTROLS_BY_CNTXT",
+            "SOVEREIGN_CONTROLS_BY_PSN",
+            "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
+            "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
+          ]
+        },
+        "partner_permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assured_workloads_monitoring": {
+              "type": "boolean"
+            },
+            "data_logs_viewer": {
+              "type": "boolean"
+            },
+            "service_access_approver": {
+              "type": "boolean"
+            }
+          }
+        },
+        "violation_notifications_enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "compliance_regime",
+        "display_name",
+        "location",
+        "organization"
+      ]
+    },
     "bucket": {
       "type": "object",
       "additionalProperties": false,
@@ -387,10 +664,7 @@
           "type": "boolean"
         },
         "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "$ref": "#/$defs/labels"
         },
         "location": {
           "type": "string"
@@ -437,7 +711,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:roles/|\\$custom_roles:)": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
@@ -463,7 +737,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -502,7 +776,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -535,7 +809,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
           }
         }
       }
@@ -575,7 +849,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(?:roles/|\\$custom_roles:)"
+                "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
               }
             }
           }
@@ -651,6 +925,16 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_-]{0,62}$": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]{0,63}$"
         }
       }
     },
@@ -765,6 +1049,15 @@
             "privileged_access"
           ],
           "additionalProperties": false
+        }
+      }
+    },
+    "tag_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "string"
         }
       }
     }

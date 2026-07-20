@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ output "psc" {
         forwarding_rule = {
           id                = try(google_compute_forwarding_rule.psc_consumer[k].id, null)
           name              = try(google_compute_forwarding_rule.psc_consumer[k].name, null)
-          psc_connection_id = try(google_compute_global_forwarding_rule.psc_consumer[k].psc_connection_id, null)
+          psc_connection_id = try(google_compute_forwarding_rule.psc_consumer[k].psc_connection_id, null)
         }
       }
     }

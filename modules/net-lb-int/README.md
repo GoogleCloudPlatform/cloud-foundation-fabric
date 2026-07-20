@@ -10,7 +10,10 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
   - [Multiple forwarding rules](#multiple-forwarding-rules)
   - [Dual stack (IPv4 and IPv6)](#dual-stack-ipv4-and-ipv6)
   - [PSC service attachments](#psc-service-attachments)
+  - [Zonal affinity traffic policy](#zonal-affinity-traffic-policy)
+  - [Regional health check](#regional-health-check)
   - [End to end example](#end-to-end-example)
+  - [Context](#context)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Issues](#issues)
 - [Recipes](#recipes)
@@ -280,6 +283,70 @@ module "ilb" {
 # tftest modules=1 resources=7
 ```
 
+### Zonal affinity traffic policy
+
+The `backend_service_config.network_pass_through_lb_traffic_policy` block allows tuning the backend service behavior for network passthrough load balancers, including zonal affinity spillover settings.
+
+```hcl
+module "ilb" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = var.project_id
+  region        = "europe-west1"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  backend_service_config = {
+    network_pass_through_lb_traffic_policy = {
+      zonal_affinity = {
+        spillover       = "ZONAL_AFFINITY_SPILL_CROSS_ZONE"
+        spillover_ratio = 0.5
+      }
+    }
+  }
+  group_configs = {
+    my-group = {
+      zone = "europe-west1-b"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  backends = [{
+    group = module.ilb.groups.my-group.self_link
+  }]
+}
+# tftest modules=1 resources=4
+```
+
+### Regional health check
+
+The `is_regional` flag in the `health_check_config` block allows creating a regional health check instead of a global one.
+
+```hcl
+module "ilb" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = var.project_id
+  region        = "europe-west1"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  health_check_config = {
+    is_regional = true
+    http = {
+      port = 80
+    }
+  }
+}
+# tftest modules=1 resources=3
+```
+
 ### End to end example
 
 This example spins up a simple HTTP server and combines four modules:
@@ -308,10 +375,12 @@ module "instance-group" {
     addresses  = null
   }]
   boot_disk = {
-    initialize_params = {
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
-      type  = "pd-ssd"
-      size  = 10
+    }
+    initialize_params = {
+      type = "pd-ssd"
+      size = 10
     }
   }
   tags = ["http-server", "ssh"]
@@ -350,6 +419,62 @@ module "ilb" {
 # tftest modules=3 resources=7 e2e
 ```
 
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "ilb" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = "$project_ids:my-prj"
+  region        = "$locations:primary-region"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  forwarding_rules_config = {
+    default = {
+      address = "$addresses:lb-ip-addr"
+    }
+  }
+  vpc_config = {
+    network    = "$networks:shared-vpc"
+    subnetwork = "$subnets:my-subnet"
+  }
+  group_configs = {
+    my-group = {
+      zone = "$locations:primary-zone"
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
+      ]
+    }
+  }
+  health_check_config = {
+    http = {
+      port = 80
+    }
+  }
+  context = {
+    addresses = {
+      lb-ip-addr = "192.168.0.1"
+    }
+    locations = {
+      primary-region = "us-central1"
+      primary-zone   = "us-central1-b"
+    }
+    networks = {
+      shared-vpc = "projects/prj-host/global/networks/shared-vpc"
+    }
+    project_ids = {
+      my-prj = "my-project-1"
+    }
+    subnets = {
+      my-subnet = "projects/prj-host/regions/us-central1/subnetworks/sub-1"
+    }
+  }
+}
+# tftest modules=1 resources=4 inventory=context.yaml
+```
+
 ## Deploying changes to load balancer configurations
 
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
@@ -374,21 +499,21 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L201) | Name used for all resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L206) | Project id where resources will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L211) | GCP region. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L237) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code title="object&#40;&#123;&#10;  connection_draining_timeout_sec &#61; optional&#40;number&#41;&#10;  connection_tracking &#61; optional&#40;object&#40;&#123;&#10;    idle_timeout_sec          &#61; optional&#40;number&#41;&#10;    persist_conn_on_unhealthy &#61; optional&#40;string&#41;&#10;    track_per_session         &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  enable_subsetting &#61; optional&#40;bool&#41;&#10;  failover_config &#61; optional&#40;object&#40;&#123;&#10;    disable_conn_drain        &#61; optional&#40;bool&#41;&#10;    drop_traffic_if_unhealthy &#61; optional&#40;bool&#41;&#10;    ratio                     &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  log_sample_rate  &#61; optional&#40;number&#41;&#10;  name             &#61; optional&#40;string&#41;&#10;  description      &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  protocol         &#61; optional&#40;string, &#34;UNSPECIFIED&#34;&#41;&#10;  session_affinity &#61; optional&#40;string&#41;&#10;  timeout_sec      &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [backends](variables.tf#L53) | Load balancer backends. | <code title="list&#40;object&#40;&#123;&#10;  group       &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  failover    &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [context](variables.tf#L64) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  addresses   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  networks    &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  subnets     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L77) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [forwarding_rules_config](variables.tf#L83) | The optional forwarding rules configuration. | <code title="map&#40;object&#40;&#123;&#10;  address       &#61; optional&#40;string&#41;&#10;  description   &#61; optional&#40;string&#41;&#10;  global_access &#61; optional&#40;bool, true&#41;&#10;  ipv6          &#61; optional&#40;bool, false&#41;&#10;  name          &#61; optional&#40;string&#41;&#10;  ports         &#61; optional&#40;list&#40;string&#41;, null&#41;&#10;  protocol      &#61; optional&#40;string, &#34;TCP&#34;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;&#34; &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [group_configs](variables.tf#L99) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code title="map&#40;object&#40;&#123;&#10;  zone        &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  instances   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  named_ports &#61; optional&#40;map&#40;number&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L111) | Name of existing health check to use, disables auto-created health check. Also set `health_check_config = null` when cross-referencing an health check from another load balancer module to avoid a Terraform error. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L117) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  name                &#61; optional&#40;string&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  tcp &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L195) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_attachments](variables.tf#L216) | PSC service attachments, keyed by forwarding rule. | <code title="map&#40;object&#40;&#123;&#10;  nat_subnets           &#61; list&#40;string&#41;&#10;  automatic_connection  &#61; optional&#40;bool, false&#41;&#10;  consumer_accept_lists &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  consumer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;  description           &#61; optional&#40;string&#41;&#10;  domain_name           &#61; optional&#40;string&#41;&#10;  enable_proxy_protocol &#61; optional&#40;bool, false&#41;&#10;  reconcile_connections &#61; optional&#40;bool&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [service_label](variables.tf#L231) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
+| [name](variables.tf#L235) | Name used for all resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L240) | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L245) | GCP region. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L271) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [backends](variables.tf#L85) | Load balancer backends. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L96) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L109) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [forwarding_rules_config](variables.tf#L115) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L131) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L144) | Name of existing health check to use, disables auto-created health check. Also set `health_check_config = null` when cross-referencing an health check from another load balancer module to avoid a Terraform error. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L150) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L229) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_attachments](variables.tf#L250) | PSC service attachments, keyed by forwarding rule. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [service_label](variables.tf#L265) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -403,8 +528,8 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 | [group_self_links](outputs.tf#L57) | Optional unmanaged instance group self links. |  |
 | [groups](outputs.tf#L64) | Optional unmanaged instance group resources. |  |
 | [health_check](outputs.tf#L69) | Auto-created health-check resource. |  |
-| [health_check_id](outputs.tf#L74) | Auto-created health-check id. |  |
-| [health_check_self_link](outputs.tf#L79) | Auto-created health-check self link. |  |
-| [id](outputs.tf#L84) | Fully qualified forwarding rule ids. |  |
-| [service_attachment_ids](outputs.tf#L92) | Service attachment ids. |  |
+| [health_check_id](outputs.tf#L78) | Auto-created health-check id. |  |
+| [health_check_self_link](outputs.tf#L87) | Auto-created health-check self link. |  |
+| [id](outputs.tf#L96) | Fully qualified forwarding rule ids. |  |
+| [service_attachment_ids](outputs.tf#L104) | Service attachment ids. |  |
 <!-- END TFDOC -->

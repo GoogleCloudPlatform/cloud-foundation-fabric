@@ -108,7 +108,12 @@ locals {
   }
 }
 
-resource "google_compute_firewall" "custom-rules" {
+moved {
+  from = google_compute_firewall.custom-rules
+  to   = google_compute_firewall.custom_rules
+}
+
+resource "google_compute_firewall" "custom_rules" {
   for_each    = local.rules
   project     = local.project_id
   network     = local.network
@@ -173,7 +178,7 @@ resource "google_compute_firewall" "custom-rules" {
   }
 
   dynamic "deny" {
-    for_each = each.value.action == "DENY" ? each.value.rules : {}
+    for_each = { for k, v in each.value.rules : k => v if each.value.action == "DENY" }
     iterator = rule
     content {
       protocol = rule.value.protocol
@@ -182,7 +187,7 @@ resource "google_compute_firewall" "custom-rules" {
   }
 
   dynamic "allow" {
-    for_each = each.value.action == "ALLOW" ? each.value.rules : {}
+    for_each = { for k, v in each.value.rules : k => v if each.value.action == "ALLOW" }
     iterator = rule
     content {
       protocol = rule.value.protocol

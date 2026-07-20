@@ -105,6 +105,10 @@ variable "projects" {
             with_state                 = optional(string)
           })
         })), {})
+        logging_config = optional(object({
+          log_bucket        = string
+          log_object_prefix = optional(string)
+        }), null)
         retention_policy = optional(object({
           retention_period = string
           is_locked        = optional(bool)
@@ -211,6 +215,10 @@ variable "projects" {
           with_state                 = optional(string)
         })
       })), {})
+      logging_config = optional(object({
+        log_bucket        = string
+        log_object_prefix = optional(string)
+      }), null)
       retention_policy = optional(object({
         retention_period = string
         is_locked        = optional(bool)
@@ -223,6 +231,26 @@ variable "projects" {
       friendly_name  = optional(string)
       location       = optional(string)
     })), {})
+    dns_threat_detector = optional(object({
+      enabled                  = optional(bool, false)
+      excluded_networks        = optional(list(string), [])
+      labels                   = optional(map(string), {})
+      location                 = optional(string)
+      name                     = optional(string)
+      threat_detector_provider = optional(string)
+    }), {})
+    factories_config = optional(object({
+      aspect_types           = optional(string)
+      custom_roles           = optional(string)
+      data_catalog_taxonomy  = optional(string)
+      observability          = optional(string)
+      org_policies           = optional(string)
+      pam_entitlements       = optional(string)
+      quotas                 = optional(string)
+      scc_mute_configs       = optional(string)
+      scc_sha_custom_modules = optional(string)
+      tags                   = optional(string)
+    }), {})
     iam = optional(map(list(string)), {})
     iam_bindings = optional(map(object({
       members = list(string)
@@ -242,7 +270,8 @@ variable "projects" {
         description = optional(string)
       }))
     })), {})
-    iam_by_principals = optional(map(list(string)), {})
+    iam_by_principals          = optional(map(list(string)), {})
+    iam_by_principals_additive = optional(map(list(string)), {})
     iam_by_principals_conditional = optional(map(object({
       roles = list(string)
       condition = object({
@@ -461,6 +490,12 @@ variable "projects" {
       iam_self_roles    = optional(list(string), [])
       iam_project_roles = optional(map(list(string)), {})
     })), {})
+    service_agents_config = optional(object({
+      create_primary_agents      = optional(bool, true)
+      grant_default_roles        = optional(bool, true)
+      grant_service_agent_editor = optional(bool, true)
+      skip_iam                   = optional(set(string), [])
+    }), {})
     service_encryption_key_ids = optional(map(list(string)), {})
     services                   = optional(list(string), [])
     shared_vpc_host_config = optional(object({

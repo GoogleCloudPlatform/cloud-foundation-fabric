@@ -117,6 +117,16 @@ output "self_link" {
   ]
 }
 
+output "service_connection_policies" {
+  description = "Service connection policy resources."
+  value       = google_network_connectivity_service_connection_policy.service_connection_policy
+}
+
+output "service_connection_policy_ids" {
+  description = "Service connection policy IDs."
+  value       = { for k, v in google_network_connectivity_service_connection_policy.service_connection_policy : k => v.id }
+}
+
 output "subnet_ids" {
   description = "Map of subnet IDs keyed by name."
   value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.id }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,6 @@ resource "google_monitoring_notification_channel" "default" {
 #       condition     = local.factory_budgets == null
 #       error_message = yamlencode(local.factory_budgets)
 #     }
-#     precondition {
-#       condition     = local.factory_budgets == null
-#       error_message = yamlencode(local.ctx.project_sets)
-#     }
 #   }
 # }
 
@@ -93,6 +89,7 @@ resource "google_billing_budget" "default" {
         : "INCLUDE_ALL_CREDITS"
       )
     )
+    credit_types = try(each.value.filter.credit_types_treatment.include_specified, null)
     labels = each.value.filter.label == null ? null : {
       (each.value.filter.label.key) = each.value.filter.label.value
     }
@@ -133,7 +130,7 @@ resource "google_billing_budget" "default" {
     }
   }
   dynamic "threshold_rules" {
-    for_each = toset(each.value.threshold_rules)
+    for_each = each.value.threshold_rules
     iterator = rule
     content {
       threshold_percent = rule.value.percent

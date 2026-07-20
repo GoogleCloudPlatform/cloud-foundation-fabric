@@ -17,16 +17,20 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    condition_vars    = optional(map(map(string)), {})
-    email_addresses   = optional(map(string), {})
-    custom_roles      = optional(map(string), {})
-    folder_ids        = optional(map(string), {})
-    iam_principals    = optional(map(string), {})
-    locations         = optional(map(string), {})
-    project_ids       = optional(map(string), {})
-    storage_buckets   = optional(map(string), {})
-    tag_keys          = optional(map(string), {})
-    tag_values        = optional(map(string), {})
+    condition_vars  = optional(map(map(string)), {})
+    email_addresses = optional(map(string), {})
+    custom_roles    = optional(map(string), {})
+    folder_ids      = optional(map(string), {})
+    iam_principals  = optional(map(string), {})
+    locations       = optional(map(string), {})
+    project_ids     = optional(map(string), {})
+    storage_buckets = optional(map(string), {})
+    tag_keys        = optional(map(string), {})
+    tag_values      = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
     vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
@@ -36,11 +40,14 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    certificate_authorities = optional(string) # "data/certificate-authorities"
-    defaults                = optional(string, "data/defaults.yaml")
-    folders                 = optional(string, "data/folders")
-    keyrings                = optional(string, "data/keyrings")
-    projects                = optional(string, "data/projects")
+    dataset = optional(string, "datasets/classic")
+    paths = optional(object({
+      certificate_authorities = optional(string) # "certificate-authorities"
+      defaults                = optional(string, "defaults.yaml")
+      folders                 = optional(string, "folders")
+      keyrings                = optional(string, "keyrings")
+      projects                = optional(string, "projects")
+    }), {})
   })
   nullable = false
   default  = {}

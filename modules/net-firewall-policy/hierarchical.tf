@@ -123,6 +123,14 @@ resource "google_compute_firewall_policy_rule" "hierarchical" {
         ports       = layer4_configs.value.ports
       }
     }
+    dynamic "src_secure_tags" {
+      for_each = toset(coalesce(local.rules[each.key].match.source_tags, []))
+      content {
+        name = lookup(
+          local.ctx.tag_values, src_secure_tags.key, src_secure_tags.key
+        )
+      }
+    }
   }
   dynamic "target_secure_tags" {
     for_each = toset(

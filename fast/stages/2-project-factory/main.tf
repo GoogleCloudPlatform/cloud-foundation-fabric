@@ -18,20 +18,28 @@
 
 locals {
   _context = {
-    for k, v in var.context : k => merge(v, try(local.defaults.context[k], {}))
+    for k, v in var.context :
+    k => merge(v, try(local.defaults.context[k], {}))
   }
   context = merge(local._context, {
     vpc_sc_perimeters = merge(var.perimeters, local._context.vpc_sc_perimeters)
   })
-  defaults = yamldecode(file(pathexpand(var.factories_config.defaults)))
+  defaults = yamldecode(file(pathexpand(local.paths.defaults)))
   fast_defaults = {
-    billing_account = coalesce(
+    billing_account = try(coalesce(
       var.data_defaults.billing_account,
       var.billing_account.id
-    )
+    ), null)
     prefix = coalesce(
       var.data_defaults.prefix, var.prefix
     )
+  }
+  paths = {
+    for k, v in var.factories_config.paths : k => try(pathexpand(
+      startswith(v, "/") || startswith(v, ".")
+      ? v :
+      "${var.factories_config.dataset}/${v}"
+    ), null)
   }
   project_defaults = {
     defaults = {
@@ -56,6 +64,10 @@ locals {
       }
     )
   }
+  vpc_defaults = {
+    defaults  = try(local.defaults.vpcs.defaults, {})
+    overrides = try(local.defaults.vpcs.overrides, {})
+  }
   subnet_self_links = flatten([
     for net, subnets in var.subnet_self_links : [
       for subnet_name, subnet_link in subnets : {
@@ -72,6 +84,11 @@ module "factory" {
     condition_vars = merge({
       subnet_self_links = {
         for v in local.subnet_self_links : v.key => v.link
+      }
+      organization = {
+        id          = var.organization.id
+        domain      = var.organization.domain
+        customer_id = var.organization.customer_id
       }
     }, local.context.condition_vars)
     custom_roles = merge(var.custom_roles, local.context.custom_roles)
@@ -90,20 +107,25 @@ module "factory" {
     project_ids = merge(
       var.project_ids, var.host_project_ids, local.context.project_ids
     )
-    tag_values        = merge(var.tag_values, local.context.tag_values)
+    tag_values = merge(var.tag_values, local.context.tag_values)
+    tag_vars = {
+      organization = merge(
+        var.tag_vars.organization, local.context.tag_vars.organization
+      )
+      projects = merge(
+        var.tag_vars.projects, local.context.tag_vars.projects
+      )
+    }
     vpc_sc_perimeters = merge(var.perimeters, local.context.vpc_sc_perimeters)
   }
   data_defaults  = local.project_defaults.defaults
   data_merges    = local.project_defaults.merges
   data_overrides = local.project_defaults.overrides
-  factories_config = merge(var.factories_config, {
+  factories_config = {
+    basepath = var.factories_config.dataset
     budgets = {
-      billing_account_id = try(
-        var.factories_config.budgets.billing_account_id, var.billing_account.id
-      )
-      data = try(
-        var.factories_config.budgets.data, "data/budgets"
-      )
+      billing_account = var.billing_account.id
     }
-  })
+    paths = var.factories_config.paths
+  }
 }

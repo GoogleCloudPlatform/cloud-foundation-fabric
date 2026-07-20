@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "asset_search_results" {
+  description = "Cloud Asset Inventory search results."
+  value = {
+    for k, v in data.google_cloud_asset_search_all_resources.default : k => v.results
+  }
+}
 
 output "assured_workload" {
   description = "Assured Workloads workload resource."
@@ -57,6 +64,9 @@ output "scc_custom_sha_modules_ids" {
 output "service_agents" {
   description = "Identities of all folder-level service agents."
   value       = local.service_agents
+  depends_on = [
+    google_folder_service_identity.default
+  ]
 }
 
 output "sink_writer_identities" {

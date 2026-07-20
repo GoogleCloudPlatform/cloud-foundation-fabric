@@ -50,7 +50,58 @@ locals {
         try(v.contacts, null),
         local.data_defaults.defaults.contacts
       )
-      factories_config              = try(v.factories_config, {})
+      factories_config = {
+        aspect_types = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.aspect_types, null),
+          try(v.factories_config.aspect_types, null),
+          try(local.data_defaults.defaults.factories_config.aspect_types, null),
+        ), null)
+        custom_roles = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.custom_roles, null),
+          try(v.factories_config.custom_roles, null),
+          try(local.data_defaults.defaults.factories_config.custom_roles, null),
+        ), null)
+        data_catalog_taxonomy = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.data_catalog_taxonomy, null),
+          try(v.factories_config.data_catalog_taxonomy, null),
+          try(local.data_defaults.defaults.factories_config.data_catalog_taxonomy, null),
+        ), null)
+        observability = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.observability, null),
+          try(v.factories_config.observability, null),
+          try(local.data_defaults.defaults.factories_config.observability, null),
+        ), null)
+        org_policies = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.org_policies, null),
+          try(v.factories_config.org_policies, null),
+          try(local.data_defaults.defaults.factories_config.org_policies, null),
+        ), null)
+        pam_entitlements = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.pam_entitlements, null),
+          try(v.factories_config.pam_entitlements, null),
+          try(local.data_defaults.defaults.factories_config.pam_entitlements, null),
+        ), null)
+        quotas = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.quotas, null),
+          try(v.factories_config.quotas, null),
+          try(local.data_defaults.defaults.factories_config.quotas, null),
+        ), null)
+        scc_mute_configs = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.scc_mute_configs, null),
+          try(v.factories_config.scc_mute_configs, null),
+          try(local.data_defaults.defaults.factories_config.scc_mute_configs, null),
+        ), null)
+        scc_sha_custom_modules = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.scc_sha_custom_modules, null),
+          try(v.factories_config.scc_sha_custom_modules, null),
+          try(local.data_defaults.defaults.factories_config.scc_sha_custom_modules, null),
+        ), null)
+        tags = try(coalesce(
+          try(local.data_defaults.overrides.factories_config.tags, null),
+          try(v.factories_config.tags, null),
+          try(local.data_defaults.defaults.factories_config.tags, null),
+        ), null)
+      }
       iam                           = try(v.iam, {})                           # type: map(list(string))
       iam_bindings                  = try(v.iam_bindings, {})                  # type: map(object({...}))
       iam_bindings_additive         = try(v.iam_bindings_additive, {})         # type: map(object({...}))
@@ -80,13 +131,16 @@ locals {
           local.data_defaults.defaults.parent
         ), null
       )
-      prefix = try( # type: string, nullable
-        coalesce(
-          local.data_defaults.overrides.prefix,
-          try(v.prefix, null),
-          local.data_defaults.defaults.prefix
-        ), null
-      )
+      prefix = try(
+        (
+          local.data_defaults.overrides.prefix != null
+          ? local.data_defaults.overrides.prefix
+          : (
+            try(v.prefix, "-") == "-"
+            ? local.data_defaults.defaults.prefix
+            : v.prefix
+          )
+      ), null)
       project_reuse = ( # type: object({...})
         try(v.project_reuse, null) != null
         ? merge(
@@ -103,6 +157,19 @@ locals {
         local.data_defaults.overrides.service_encryption_key_ids,
         try(v.service_encryption_key_ids, null),
         local.data_defaults.defaults.service_encryption_key_ids
+      )
+      service_agents_config = (
+        try(v.service_agents_config, null) != null
+        ? merge(
+          {
+            create_primary_agents      = true
+            grant_default_roles        = true
+            grant_service_agent_editor = true
+            skip_iam                   = []
+          },
+          v.service_agents_config
+        )
+        : local.data_defaults.defaults.service_agents_config
       )
       services = coalesce( # type: list(string)
         local.data_defaults.overrides.services,
@@ -137,6 +204,7 @@ locals {
       )
       tags = {
         for tag_name, tag_data in try(v.tags, {}) : tag_name => {
+          allowed_values_regex = try(tag_data.allowed_values_regex, null)
           description = try(
             tag_data.description,
             "Managed by the Terraform project-factory module."
@@ -235,6 +303,15 @@ locals {
             attributes      = null
             }
           )
+        )
+        service_agents_config = merge(
+          {
+            create_primary_agents      = true
+            grant_default_roles        = true
+            grant_service_agent_editor = true
+            skip_iam                   = []
+          },
+          try(local._data_defaults.defaults.service_agents_config, {})
         )
         service_encryption_key_ids = {}
         services                   = []

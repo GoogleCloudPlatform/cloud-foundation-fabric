@@ -23,9 +23,10 @@ output "instance_addresses" {
 
 output "instance_ssh" {
   description = "Instance SSH commands."
+  sensitive   = true
   value = {
     for k, v in module.instances : k => (
-      "gcloud compute ssh ${k} --project ${v.instance.project} --zone ${v.instance.zone}"
+      "gcloud compute ssh ${k} --project ${nonsensitive(v.instance.project)} --zone ${nonsensitive(v.instance.zone)}"
     )
   }
 }

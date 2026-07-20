@@ -70,7 +70,7 @@ group with source ref:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
@@ -86,7 +86,7 @@ repository:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
@@ -106,11 +106,11 @@ deploy key in the modules project, and as secrets in the stage repositories:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
-  group      = "shared"
+  group = "shared"
   key_config = {
     create_key     = true
     create_secrets = true
@@ -127,11 +127,11 @@ and new repositories need to be created and their corresponding secret set:
 ```hcl
 modules_config = {
   project_name = "modules"
-  key_config   = {
+  key_config = {
     create_key     = true
     create_secrets = true
   }
-  group      = "shared"
+  group = "shared"
   key_config = {
     create_secrets = true
     keypair_path   = "~/modules-repository-key"
@@ -149,38 +149,16 @@ This is an example that creates repositories for stages 00 and 01 and 02:
 
 ```tfvars
 projects = {
-  fast_00_bootstrap = {
+  fast_0_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features = {
         issues = true
       }
     }
     group         = "org-admins"
     populate_from = "../../stages/0-org-setup"
-    workflow_file = "bootstrap-workflow.yaml"
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features = {
-        issues = true
-      }
-    }
-    group         = "org-admins"
-    populate_from = "../../stages/1-resman"
-    workflow_file = "resman-workflow.yaml"
-  }
-  fast_02_networking = {
-    create_options = {
-      description = "FAST networking management."
-      features = {
-        issues = true
-      }
-    }
-    group         = "net-admins"
-    populate_from = "../../stages/2-networking-legacy-a-peering"
-    workflow_file = "networking-workflow.yaml"
+    workflow_file = "org-setup-workflow.yaml"
   }
 }
 # tftest skip
@@ -203,9 +181,9 @@ attribute to `true`. Here's an updated example:
 
 ```tfvars
 projects = {
-  fast_00_bootstrap = {
+  fast_0_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features    = {
         issues = true
       }
@@ -213,31 +191,7 @@ projects = {
     group           = "org-admins"
     populate_from   = "../../stages/0-org-setup"
     populate_sample = true
-    workflow_file   = "bootstrap-workflow.yaml"
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "org-admins"
-    populate_from   = "../../stages/1-resman"
-    populate_sample = true
-    workflow_file   = "resman-workflow.yaml"
-  }
-  fast_02_networking = {
-    create_options = {
-      description = "FAST networking management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "net-admins"
-    populate_from   = "../../stages/2-networking-legacy-a-peering"
-    populate_sample = true
-    workflow_file   = "networking-workflow.yaml"
+    workflow_file   = "org-setup-workflow.yaml"
   }
 }
 # tftest skip
@@ -258,9 +212,9 @@ initialization.
 
 ```tfvars
 projects = {
-  fast_00_bootstrap = {
+  fast_0_org_setup = {
     create_options = {
-      description = "FAST bootstrap."
+      description = "FAST org setup."
       features    = {
         issues = true
       }
@@ -268,31 +222,7 @@ projects = {
     group           = "org-admins"
     populate_from   = "../../stages/0-org-setup"
     populate_sample = true
-    workflow_file   = "bootstrap-workflow.yaml"
-  }
-  fast_01_resman = {
-    create_options = {
-      description = "FAST resource management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "org-admins"
-    populate_from   = "../../stages/1-resman"
-    populate_sample = true
-    workflow_file   = "resman-workflow.yaml"
-  }
-  fast_02_networking = {
-    create_options = {
-      description = "FAST networking management."
-      features    = {
-        issues = true
-      }
-    }
-    group           = "net-admins"
-    populate_from   = "../../stages/2-networking-legacy-a-peering"
-    populate_sample = true
-    workflow_file   = "networking-workflow.yaml"
+    workflow_file   = "org-setup-workflow.yaml"
   }
 }
 
@@ -301,16 +231,6 @@ groups = {
     name        = "gcp-org-admins"
     path        = "gcp-org-admins"
     description = "GCP Organization administrators"
-  }
-  net-admins = {
-    name        = "gcp-net-admins"
-    path        = "gcp-net-admins"
-    description = "GCP Network administrators"
-  }
-  shared = {
-    name        = "shared"
-    path        = "shared"
-    description = "Shared repositories"
   }
 }
 # tftest skip
@@ -327,16 +247,6 @@ groups = {
     name        = "gcp-org-admins"
     path        = "gcp-org-admins"
     description = "GCP Organization administrators"
-  }
-  net-admins = {
-    name        = "gcp-net-admins"
-    path        = "gcp-net-admins"
-    description = "GCP Network administrators"
-  }
-  shared = {
-    name        = "shared"
-    path        = "shared"
-    description = "Shared repositories"
   }
 }
 # tftest skip
@@ -402,11 +312,11 @@ check if the plan pipeline executes successfully.
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [gitlab_config](variables.tf#L28) | Gitlab config. | <code title="object&#40;&#123;&#10;  access_token &#61; string&#10;  hostname     &#61; optional&#40;string, &#34;gitlab.com&#34;&#41;&#10;  ssh_port     &#61; optional&#40;number, 22&#41;&#10;  saas_group   &#61; optional&#40;string, &#34;&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [groups](variables.tf#L45) | Gitlab groups. | <code title="map&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  path        &#61; string&#10;  description &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [commit_config](variables.tf#L17) | Configure commit metadata. | <code title="object&#40;&#123;&#10;  author  &#61; optional&#40;string, &#34;FAST loader&#34;&#41;&#10;  email   &#61; optional&#40;string, &#34;fast-loader&#64;fast.gcp.tf&#34;&#41;&#10;  message &#61; optional&#40;string, &#34;FAST initial loading&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [modules_config](variables.tf#L54) | Gitlab modules config. | <code title="object&#40;&#123;&#10;  bootstrap     &#61; optional&#40;bool, true&#41;&#10;  module_prefix &#61; optional&#40;string, &#34;&#34;&#41;&#10;  group         &#61; optional&#40;string&#41;&#10;  project_name  &#61; string&#10;  source_ref    &#61; optional&#40;string&#41;&#10;  key_config &#61; optional&#40;object&#40;&#123;&#10;    create_key     &#61; optional&#40;bool, false&#41;&#10;    create_secrets &#61; optional&#40;bool, false&#41;&#10;    keypair_path   &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [projects](variables.tf#L79) | Gitlab projects to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  group            &#61; string&#10;  populate_from    &#61; optional&#40;string&#41;&#10;  populate_samples &#61; optional&#40;bool, false&#41;&#10;  workflow_file    &#61; optional&#40;string, null&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [gitlab_config](variables.tf#L28) | Gitlab config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [groups](variables.tf#L45) | Gitlab groups. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [commit_config](variables.tf#L17) | Configure commit metadata. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [modules_config](variables.tf#L54) | Gitlab modules config. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [projects](variables.tf#L79) | Gitlab projects to create. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

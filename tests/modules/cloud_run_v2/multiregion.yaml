@@ -1,0 +1,110 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_cloud_run_v2_service.service[0]:
+    annotations: null
+    binary_authorization: []
+    build_config: []
+    client: null
+    client_version: null
+    custom_audiences: null
+    default_uri_disabled: null
+    deletion_policy: DELETE
+    deletion_protection: true
+    description: null
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    iap_enabled: false
+    invoker_iam_disabled: false
+    labels: null
+    location: global
+    multi_region_settings:
+    - regions:
+      - europe-west8
+      - europe-west1
+    name: test-run-multiregion
+    project: test-project
+    template:
+    - annotations: null
+      containers:
+      - args: null
+        base_image_uri: null
+        command: null
+        depends_on: null
+        env: []
+        image: gcr.io/cloudrun/hello
+        liveness_probe: []
+        name: first
+        readiness_probe: []
+        source_code: []
+        volume_mounts: []
+        working_dir: null
+      encryption_key: null
+      execution_environment: EXECUTION_ENVIRONMENT_GEN1
+      gpu_zonal_redundancy_disabled: null
+      health_check_disabled: null
+      labels: null
+      node_selector: []
+      revision: null
+      service_account: test-run-multiregion@test-project.iam.gserviceaccount.com
+      service_mesh: []
+      session_affinity: null
+      volumes: []
+      vpc_access: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  google_project_iam_member.default["roles/logging.logWriter"]:
+    condition: []
+    member: serviceAccount:test-run-multiregion@test-project.iam.gserviceaccount.com
+    project: test-project
+    role: roles/logging.logWriter
+  google_project_iam_member.default["roles/monitoring.metricWriter"]:
+    condition: []
+    member: serviceAccount:test-run-multiregion@test-project.iam.gserviceaccount.com
+    project: test-project
+    role: roles/monitoring.metricWriter
+  google_service_account.service_account[0]:
+    account_id: test-run-multiregion
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: test-run-multiregion
+    email: test-run-multiregion@test-project.iam.gserviceaccount.com
+    member: serviceAccount:test-run-multiregion@test-project.iam.gserviceaccount.com
+    project: test-project
+    timeouts: null
+
+counts:
+  google_cloud_run_v2_service: 1
+  google_project_iam_member: 2
+  google_service_account: 1
+  modules: 0
+  resources: 4
+
+outputs:
+  id: __missing__
+  invoke_command: __missing__
+  job: null
+  resource: __missing__
+  resource_name: __missing__
+  service: __missing__
+  service_account: __missing__
+  service_account_email: test-run-multiregion@test-project.iam.gserviceaccount.com
+  service_account_iam_email: serviceAccount:test-run-multiregion@test-project.iam.gserviceaccount.com
+  service_name: __missing__
+  service_uri: __missing__
+  vpc_connector: null

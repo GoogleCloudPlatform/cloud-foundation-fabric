@@ -47,7 +47,7 @@ resource "google_container_cluster" "cluster" {
   datapath_provider = (
     var.enable_features.dataplane_v2
     ? "ADVANCED_DATAPATH"
-    : "DATAPATH_PROVIDER_UNSPECIFIED"
+    : "LEGACY_DATAPATH"
   )
 
   dynamic "default_snat_status" {
@@ -92,8 +92,11 @@ resource "google_container_cluster" "cluster" {
   dynamic "node_pool_auto_config" {
     for_each = try(local.cas.enabled, null) == true ? [""] : []
     content {
-      network_tags {
-        tags = var.node_pool_auto_config.network_tags
+      dynamic "network_tags" {
+        for_each = length(var.node_pool_auto_config.network_tags) > 0 ? [""] : []
+        content {
+          tags = var.node_pool_auto_config.network_tags
+        }
       }
       resource_manager_tags = var.node_pool_auto_config.resource_manager_tags
       node_kubelet_config {
@@ -270,7 +273,9 @@ resource "google_container_cluster" "cluster" {
   }
   control_plane_endpoints_config {
     dns_endpoint_config {
-      allow_external_traffic = var.access_config.dns_access == true
+      allow_external_traffic    = var.access_config.dns_access.allow_external_traffic == true
+      enable_k8s_tokens_via_dns = var.access_config.dns_access.enable_k8s_tokens
+      enable_k8s_certs_via_dns  = var.access_config.dns_access.enable_k8s_certs
     }
     ip_endpoints_config {
       enabled = var.access_config.ip_access != null

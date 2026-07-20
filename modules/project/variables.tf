@@ -48,6 +48,16 @@ variable "asset_feeds" {
   }
 }
 
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "auto_create_network" {
   description = "Whether to create the default network for the project."
   type        = bool
@@ -139,7 +149,11 @@ variable "context" {
     storage_buckets       = optional(map(string), {})
     tag_keys              = optional(map(string), {})
     tag_values            = optional(map(string), {})
-    vpc_sc_perimeters     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
+    vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
   nullable = false
@@ -196,6 +210,7 @@ variable "factories_config" {
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
     quotas                 = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
     tags                   = optional(string)
   })
@@ -317,6 +332,7 @@ variable "service_agents_config" {
     create_primary_agents      = optional(bool, true)
     grant_default_roles        = optional(bool, true)
     grant_service_agent_editor = optional(bool, true)
+    skip_iam                   = optional(set(string), [])
   })
   default  = {}
   nullable = false

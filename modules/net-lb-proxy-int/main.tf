@@ -15,6 +15,19 @@
  */
 
 locals {
+  ctx = {
+    for k, v in var.context : k => {
+      for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
+    }
+  }
+  ctx_p      = "$"
+  network    = lookup(local.ctx.networks, var.vpc_config.network, var.vpc_config.network)
+  project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  region     = lookup(local.ctx.locations, var.region, var.region)
+  subnetwork = lookup(local.ctx.subnets, var.vpc_config.subnetwork, var.vpc_config.subnetwork)
+}
+
+locals {
   # we need keys in the endpoint type to address issue #1055
   _neg_endpoints = flatten([
     for k, v in local.neg_zonal : [
@@ -22,6 +35,27 @@ locals {
         key = "${k}-${kk}", neg = k, zone = v.zone
       })
     ]
+  ])
+  forwarding_rule_names = {
+    for k, v in var.forwarding_rules_config :
+    k => k == "" ? var.name : "${var.name}-${k}"
+  }
+  health_check = (
+    local.has_psc_backend
+    ? null
+    : (
+      var.health_check == null
+      ? (
+        var.health_check_config == null
+        ? null
+        : google_compute_region_health_check.default[0].self_link
+      )
+      : var.health_check
+    )
+  )
+  has_psc_backend = anytrue([
+    for b in coalesce(var.backend_service_config.backends, []) :
+    try(var.neg_configs[b.group].psc != null, false)
   ])
   neg_endpoints = {
     for v in local._neg_endpoints : (v.key) => v
@@ -41,36 +75,47 @@ locals {
     for k, v in var.neg_configs :
     k => v if v.psc != null
   }
-  health_check = (
-    var.health_check != null
-    ? var.health_check
-    : google_compute_region_health_check.default[0].self_link
-  )
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  provider              = google-beta
-  project               = var.project_id
-  region                = var.region
-  name                  = var.name
-  description           = var.description
-  ip_address            = var.address
-  ip_protocol           = "TCP"
+  for_each    = var.forwarding_rules_config
+  provider    = google-beta
+  project     = local.project_id
+  region      = local.region
+  name        = coalesce(each.value.name, local.forwarding_rule_names[each.key])
+  description = coalesce(each.value.description, var.description)
+  ip_address  = try(local.ctx.addresses[each.value.address], each.value.address)
+  ip_protocol = "TCP"
+  ip_version = (
+    each.value.address != null
+    ? null
+    : (
+      each.value.ipv6 == true
+      ? "IPV6"
+      : "IPV4" # do not set if address is provided
+    )
+  )
   load_balancing_scheme = "INTERNAL_MANAGED"
-  network               = var.vpc_config.network
-  port_range            = var.port
-  subnetwork            = var.vpc_config.subnetwork
+  network               = local.network
+  port_range            = each.value.port
+  subnetwork            = local.subnetwork
   labels                = var.labels
   target                = google_compute_region_target_tcp_proxy.default.id
-  # during the preview phase you cannot change this attribute on an existing rule
-  allow_global_access = var.global_access
+  # During the preview phase you cannot change this attribute on an existing rule
+  allow_global_access = each.value.global_access
+
+  lifecycle {
+    replace_triggered_by = [
+      google_compute_region_target_tcp_proxy.default
+    ]
+  }
 }
 
 resource "google_compute_region_target_tcp_proxy" "default" {
-  project         = var.project_id
+  project         = local.project_id
   name            = var.name
   description     = var.description
-  region          = var.region
+  region          = local.region
   backend_service = google_compute_region_backend_service.default.self_link
 }
 
@@ -78,22 +123,27 @@ resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
-  zone = each.value.zone
+  zone = try(local.ctx.locations[each.value.zone], each.value.zone)
   name = "${var.name}-${each.key}"
   # re-enable once provider properly supports this
   # default_port = each.value.default_port
   description           = var.description
   network_endpoint_type = each.value.type
   network = (
-    each.value.network != null ? each.value.network : var.vpc_config.network
+    each.value.network != null
+    ? try(local.ctx.networks[each.value.network], each.value.network)
+    : local.network
   )
   subnetwork = (
     each.value.type == "NON_GCP_PRIVATE_IP_PORT"
     ? null
-    : coalesce(each.value.subnetwork, var.vpc_config.subnetwork)
+    : coalesce(
+      try(local.ctx.subnets[each.value.subnetwork], each.value.subnetwork),
+      local.subnetwork
+    )
   )
 }
 
@@ -108,22 +158,29 @@ resource "google_compute_network_endpoint" "default" {
   instance   = try(each.value.instance, null)
   ip_address = each.value.ip_address
   port       = each.value.port
-  zone       = each.value.zone
+  zone       = try(local.ctx.locations[each.value.zone], each.value.zone)
 }
 
 resource "google_compute_region_network_endpoint_group" "psc" {
-  for_each = local.neg_regional_psc
-  project  = var.project_id
-  region   = each.value.psc.region
-  name     = "${var.name}-${each.key}"
-  //description           = coalesce(each.value.description, var.description)
+  for_each              = local.neg_regional_psc
+  project               = local.project_id
+  region                = each.value.psc.region
+  name                  = "${var.name}-${each.key}"
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
-  network               = each.value.psc.network
-  subnetwork            = each.value.psc.subnetwork
-  lifecycle {
-    # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
-    ignore_changes = [psc_data]
+  network = (
+    each.value.psc.network == null
+    ? null
+    : try(local.ctx.networks[each.value.psc.network], each.value.psc.network)
+  )
+  subnetwork = (
+    each.value.psc.subnetwork == null
+    ? null
+    : try(local.ctx.subnets[each.value.psc.subnetwork], each.value.psc.subnetwork)
+  )
+
+  psc_data {
+    producer_port = each.value.psc.producer_port
   }
 }
 
@@ -147,7 +204,7 @@ locals {
 
 resource "google_compute_region_network_endpoint_group" "internet" {
   for_each = local.neg_internet
-  project  = var.project_id
+  project  = local.project_id
   name     = "${var.name}-${each.key}"
   region   = each.value.internet.region
   # re-enable once provider properly supports this
@@ -176,12 +233,15 @@ resource "google_compute_region_network_endpoint" "internet" {
 # PSC Producer Service attachments
 resource "google_compute_service_attachment" "default" {
   count          = var.service_attachment == null ? 0 : 1
-  project        = var.project_id
+  project        = local.project_id
   region         = var.region
   name           = var.name
   description    = var.description
-  target_service = google_compute_forwarding_rule.default.id
-  nat_subnets    = var.service_attachment.nat_subnets
+  target_service = google_compute_forwarding_rule.default[var.service_attachment.forwarding_rule].id
+  nat_subnets = [
+    for s in var.service_attachment.nat_subnets
+    : lookup(local.ctx.subnets, s, s)
+  ]
   connection_preference = (
     var.service_attachment.automatic_connection
     ? "ACCEPT_AUTOMATIC"
@@ -195,9 +255,11 @@ resource "google_compute_service_attachment" "default" {
   )
   enable_proxy_protocol = var.service_attachment.enable_proxy_protocol
   reconcile_connections = var.service_attachment.reconcile_connections
+
   dynamic "consumer_accept_lists" {
     for_each = var.service_attachment.consumer_accept_lists
     iterator = accept
+
     content {
       project_id_or_num = accept.key
       connection_limit  = accept.value

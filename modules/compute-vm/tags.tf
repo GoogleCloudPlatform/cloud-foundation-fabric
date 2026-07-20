@@ -17,8 +17,14 @@
 # tfdoc:file:description Tag bindings.
 
 locals {
+  _tag_bindings = {
+    for k, v in var.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
+  _network_tag_bindings = {
+    for k, v in var.network_tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
   boot_disk_tags = flatten([
-    for k, v in var.tag_bindings : [
+    for k, v in local._tag_bindings : [
       for dk, dv in google_compute_disk.boot : {
         disk_id   = dv.disk_id
         key       = "${dk}/${k}"
@@ -27,7 +33,7 @@ locals {
     ]
   ])
   disk_tags = flatten([
-    for k, v in var.tag_bindings : [
+    for k, v in local._tag_bindings : [
       for dk, dv in google_compute_disk.disks : {
         disk_id   = dv.disk_id
         key       = "${dk}/${k}"
@@ -36,7 +42,7 @@ locals {
     ]
   ])
   region_disk_tags = flatten([
-    for k, v in var.tag_bindings : [
+    for k, v in local._tag_bindings : [
       for dk, dv in google_compute_region_disk.disks : {
         disk_id   = dv.disk_id
         key       = "${dk}/${k}"
@@ -53,60 +59,60 @@ locals {
 # use a different resource to avoid overlapping key issues
 
 resource "google_tags_location_tag_binding" "network" {
-  for_each = local.template_create ? {} : var.network_tag_bindings
+  for_each = local.is_template ? {} : local._network_tag_bindings
   parent = (
     "${local.tag_parent_base}/zones/${local.zone}/instances/${google_compute_instance.default[0].instance_id}"
   )
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = templatestring(each.value, var.context.tag_vars)
   location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "instance" {
-  for_each = local.template_create ? {} : var.tag_bindings
+  for_each = local.is_template ? {} : local._tag_bindings
   parent = (
     "${local.tag_parent_base}/zones/${local.zone}/instances/${google_compute_instance.default[0].instance_id}"
   )
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  tag_value = templatestring(each.value, var.context.tag_vars)
   location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "boot_disks" {
   for_each = (
-    local.template_create ? {} : { for v in local.boot_disk_tags : v.key => v }
+    local.is_template ? {} : { for v in local.boot_disk_tags : v.key => v }
   )
   parent = (
     "${local.tag_parent_base}/zones/${local.zone}/disks/${each.value.disk_id}"
   )
-  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+  tag_value = templatestring(each.value.tag_value, var.context.tag_vars)
   location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "disks" {
   for_each = (
-    local.template_create ? {} : { for v in local.disk_tags : v.key => v }
+    local.is_template ? {} : { for v in local.disk_tags : v.key => v }
   )
   parent = (
     "${local.tag_parent_base}/zones/${local.zone}/disks/${each.value.disk_id}"
   )
-  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+  tag_value = templatestring(each.value.tag_value, var.context.tag_vars)
   location  = local.zone
 }
 
 resource "google_tags_location_tag_binding" "disks_regional" {
   for_each = (
-    local.template_create ? {} : { for v in local.region_disk_tags : v.key => v }
+    local.is_template ? {} : { for v in local.region_disk_tags : v.key => v }
   )
   parent = (
     "${local.tag_parent_base}/regions/${local.region}/disks/${each.value.disk_id}"
   )
-  tag_value = lookup(local.ctx.tag_values, each.value.tag_value, each.value.tag_value)
+  tag_value = templatestring(each.value.tag_value, var.context.tag_vars)
   location  = local.region
 }
 
 # TODO: enable once the template id is available
 
 # resource "google_tags_location_tag_binding" "template" {
-#   for_each = local.template_create ? var.tag_bindings : {}
+#   for_each = local.is_template ? var.tag_bindings : {}
 #   parent = (
 #     "${local.tag_parent_base}/regions/${local.region}/instanceTemplates/${google_compute_instance_template.default[0].instance_id}"
 #   )

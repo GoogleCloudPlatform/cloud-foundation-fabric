@@ -15,8 +15,8 @@ This example shows how to reference existing Managed Infrastructure Groups (MIGs
 ```hcl
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
-  project_id = var.project_id
-  region     = var.region
+  project_id = "$project_ids:my-project"
+  region     = "$locations:europe-west1"
   name       = "nlb-test"
   backends = [{
     group = module.compute-mig.group_manager.instance_group
@@ -24,6 +24,14 @@ module "nlb" {
   health_check_config = {
     http = {
       port = 80
+    }
+  }
+  context = {
+    project_ids = {
+      my-project = var.project_id
+    }
+    locations = {
+      europe-west1 = var.region
     }
   }
 }
@@ -159,9 +167,11 @@ module "instance-group" {
   }]
   boot_disk = {
     initialize_params = {
+      type = "pd-ssd"
+      size = 10
+    }
+    source = {
       image = "projects/cos-cloud/global/images/family/cos-stable"
-      type  = "pd-ssd"
-      size  = 10
     }
   }
   tags = ["http-server", "ssh"]
@@ -196,23 +206,24 @@ module "nlb" {
 ```
 
 ## Deploying changes to load balancer configurations
+
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L202) | Name used for all resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L207) | Project id where resources will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L212) | GCP region. | <code>string</code> | ✓ |  |
-| [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code title="object&#40;&#123;&#10;  connection_draining_timeout_sec &#61; optional&#40;number&#41;&#10;  connection_tracking &#61; optional&#40;object&#40;&#123;&#10;    idle_timeout_sec          &#61; optional&#40;number&#41;&#10;    persist_conn_on_unhealthy &#61; optional&#40;string&#41;&#10;    track_per_session         &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  failover_config &#61; optional&#40;object&#40;&#123;&#10;    disable_conn_drain        &#61; optional&#40;bool&#41;&#10;    drop_traffic_if_unhealthy &#61; optional&#40;bool&#41;&#10;    ratio                     &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;  locality_lb_policy &#61; optional&#40;string&#41;&#10;  log_sample_rate    &#61; optional&#40;number&#41;&#10;  name               &#61; optional&#40;string&#41;&#10;  description        &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  port_name          &#61; optional&#40;string&#41;&#10;  protocol           &#61; optional&#40;string, &#34;UNSPECIFIED&#34;&#41;&#10;  session_affinity   &#61; optional&#40;string&#41;&#10;  timeout_sec        &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [backends](variables.tf#L68) | Load balancer backends. | <code title="list&#40;object&#40;&#123;&#10;  group       &#61; string&#10;  description &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  failover    &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [description](variables.tf#L79) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [forwarding_rules_config](variables.tf#L85) | The optional forwarding rules configuration. | <code title="map&#40;object&#40;&#123;&#10;  address     &#61; optional&#40;string&#41;&#10;  description &#61; optional&#40;string&#41;&#10;  ipv6        &#61; optional&#40;bool, false&#41;&#10;  name        &#61; optional&#40;string&#41;&#10;  ports       &#61; optional&#40;list&#40;string&#41;, null&#41;&#10;  protocol    &#61; optional&#40;string, &#34;TCP&#34;&#41;&#10;  subnetwork  &#61; optional&#40;string&#41; &#35; Required for IPv6&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;&#34; &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [group_configs](variables.tf#L101) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code title="map&#40;object&#40;&#123;&#10;  zone        &#61; string&#10;  instances   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  named_ports &#61; optional&#40;map&#40;number&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L112) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L118) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  name                &#61; optional&#40;string&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  tcp &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L196) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L215) | Name used for all resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L220) | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L225) | GCP region. | <code>string</code> | ✓ |  |
+| [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [backends](variables.tf#L73) | Load balancer backends. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [context](variables.tf#L84) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [forwarding_rules_config](variables.tf#L96) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L112) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L125) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L131) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L209) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

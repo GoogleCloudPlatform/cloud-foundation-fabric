@@ -16,3 +16,4 @@ module: modules/gke-cluster-autopilot
 
 tests:
   network_tags:
+  monitoring:

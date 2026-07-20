@@ -1,0 +1,470 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.address-ilb.google_compute_address.internal["ilb-01"]:
+    address_type: INTERNAL
+    deletion_policy: DELETE
+    description: Terraform managed.
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    ip_collection: null
+    ip_version: null
+    ipv6_endpoint_type: null
+    labels: null
+    name: ilb-01
+    network: null
+    project: project-id
+    purpose: SHARED_LOADBALANCER_VIP
+    region: europe-west8
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+  module.ilb-producer.google_compute_forwarding_rule.default["default"]:
+    all_ports: true
+    allow_global_access: true
+    allow_psc_global_access: null
+    deletion_policy: DELETE
+    description: null
+    ip_collection: null
+    ip_protocol: TCP
+    ip_version: IPV4
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL
+    name: ilb-producer-default
+    no_automate_dns_zone: null
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west1
+    service_label: ilb-producer
+    source_ip_ranges: null
+    target: null
+    timeouts: null
+  module.ilb-producer.google_compute_health_check.default[0]:
+    check_interval_sec: 5
+    deletion_policy: DELETE
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: ilb-producer
+    project: project-id
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check:
+    - port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  module.ilb-producer.google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    backend: []
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    custom_metrics: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    dynamic_forwarding: []
+    enable_cdn: null
+    failover_policy: []
+    ha_policy: []
+    iap:
+    - enabled: false
+      oauth2_client_id: null
+      oauth2_client_secret: null
+    ip_address_selection_policy: null
+    load_balancing_scheme: INTERNAL
+    locality_lb_policy: null
+    name: ilb-producer
+    network_pass_through_lb_traffic_policy: []
+    outlier_detection: []
+    params: []
+    project: project-id
+    protocol: UNSPECIFIED
+    region: europe-west1
+    security_policy: null
+    strong_session_affinity_cookie: []
+    subsetting: []
+    timeouts: null
+    tls_settings: []
+  module.ilb-producer.google_compute_service_attachment.default["default"]:
+    connection_preference: ACCEPT_AUTOMATIC
+    consumer_accept_lists: []
+    consumer_reject_lists: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    domain_names: null
+    enable_proxy_protocol: false
+    name: ilb-producer-default
+    project: project-id
+    region: europe-west1
+    send_propagated_connection_limit_if_zero: false
+    show_nat_ips: null
+    timeouts: null
+  module.int-tcp-proxy.google_compute_forwarding_rule.default["http"]:
+    all_ports: null
+    allow_global_access: true
+    allow_psc_global_access: null
+    backend_service: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    ip_collection: null
+    ip_protocol: TCP
+    ip_version: IPV4
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: int-tcp-proxy-http
+    no_automate_dns_zone: null
+    port_range: '80'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.int-tcp-proxy.google_compute_forwarding_rule.default["https"]:
+    all_ports: null
+    allow_global_access: true
+    allow_psc_global_access: null
+    backend_service: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    ip_collection: null
+    ip_protocol: TCP
+    ip_version: IPV4
+    is_mirroring_collector: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    name: int-tcp-proxy-https
+    no_automate_dns_zone: null
+    port_range: '443'
+    ports: null
+    project: project-id
+    recreate_closed_psc: false
+    region: europe-west8
+    service_label: null
+    source_ip_ranges: null
+    timeouts: null
+  module.int-tcp-proxy.google_compute_region_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    backend:
+    - balancing_mode: UTILIZATION
+      capacity_scaler: 1
+      custom_metrics: []
+      description: Terraform managed.
+      max_connections: null
+      max_connections_per_endpoint: null
+      max_connections_per_instance: null
+      max_rate: null
+      max_rate_per_endpoint: null
+      max_rate_per_instance: null
+      max_utilization: null
+      traffic_duration: ''
+    circuit_breakers: []
+    connection_draining_timeout_sec: 300
+    connection_tracking_policy: []
+    consistent_hash: []
+    custom_metrics: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    dynamic_forwarding: []
+    enable_cdn: null
+    failover_policy: []
+    ha_policy: []
+    health_checks: null
+    ip_address_selection_policy: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    locality_lb_policy: null
+    name: int-tcp-proxy
+    network: null
+    network_pass_through_lb_traffic_policy: []
+    outlier_detection: []
+    params: []
+    project: project-id
+    protocol: TCP
+    region: europe-west8
+    security_policy: null
+    session_affinity: NONE
+    strong_session_affinity_cookie: []
+    subsetting: []
+    timeouts: null
+    tls_settings: []
+  module.int-tcp-proxy.google_compute_region_network_endpoint_group.psc["my-neg"]:
+    app_engine: []
+    cloud_function: []
+    cloud_run: []
+    deletion_policy: DELETE
+    description: null
+    name: int-tcp-proxy-my-neg
+    network_endpoint_type: PRIVATE_SERVICE_CONNECT
+    project: project-id
+    psc_data:
+    - producer_port: '80'
+    region: europe-west8
+    timeouts: null
+  module.int-tcp-proxy.google_compute_region_target_tcp_proxy.default:
+    deletion_policy: DELETE
+    description: Terraform managed.
+    name: int-tcp-proxy
+    project: project-id
+    proxy_header: NONE
+    region: europe-west8
+    timeouts: null
+  module.int-tcp-proxy.terraform_data.neg_trigger:
+    input:
+      internet: {}
+      psc: {}
+      zonal: {}
+    triggers_replace: null
+  module.vpc-producer.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: false
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: net-producer-0
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: project-id
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc-producer.google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: net-producer-0-directpath-googleapis
+    network: net-producer-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc-producer.google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: net-producer-0-private-googleapis
+    network: net-producer-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc-producer.google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: net-producer-0-restricted-googleapis
+    network: net-producer-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc-producer.google_compute_subnetwork.proxy_only["europe-west8/sub-proxy-producer-0"]:
+    deletion_policy: DELETE
+    description: Terraform-managed proxy-only subnet for Regional HTTPS, Internal
+      HTTPS or Cross-Regional HTTPS Internal LB.
+    ip_cidr_range: 10.0.1.0/26
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: sub-proxy-producer-0
+    network: net-producer-0
+    params: []
+    project: project-id
+    purpose: REGIONAL_MANAGED_PROXY
+    region: europe-west8
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: ACTIVE
+    send_secondary_ip_range_if_empty: null
+    timeouts: null
+  module.vpc-producer.google_compute_subnetwork.psc["europe-west8/sub-psc-producer-0"]:
+    deletion_policy: DELETE
+    description: Terraform-managed subnet for Private Service Connect (PSC NAT).
+    ip_cidr_range: 10.0.2.0/26
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: sub-psc-producer-0
+    network: net-producer-0
+    params: []
+    project: project-id
+    purpose: PRIVATE_SERVICE_CONNECT
+    region: europe-west8
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: null
+    send_secondary_ip_range_if_empty: null
+    timeouts: null
+  module.vpc-producer.google_compute_subnetwork.subnetwork["europe-west8/sub-producer-0"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.0.0/24
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: sub-producer-0
+    network: net-producer-0
+    params: []
+    private_ip_google_access: true
+    project: project-id
+    region: europe-west8
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: false
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: net-consumer-0
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: project-id
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: net-consumer-0-directpath-googleapis
+    network: net-consumer-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: net-consumer-0-private-googleapis
+    network: net-consumer-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: net-consumer-0-restricted-googleapis
+    network: net-consumer-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: project-id
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_subnetwork.proxy_only["europe-west8/sub-proxy-consumer-0"]:
+    deletion_policy: DELETE
+    description: Terraform-managed proxy-only subnet for Regional HTTPS, Internal
+      HTTPS or Cross-Regional HTTPS Internal LB.
+    ip_cidr_range: 10.0.1.0/26
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: sub-proxy-consumer-0
+    network: net-consumer-0
+    params: []
+    project: project-id
+    purpose: REGIONAL_MANAGED_PROXY
+    region: europe-west8
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: ACTIVE
+    send_secondary_ip_range_if_empty: null
+    timeouts: null
+  module.vpc.google_compute_subnetwork.subnetwork["europe-west8/sub-consumer-0"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    ip_cidr_range: 10.0.0.0/24
+    ip_collection: null
+    ipv6_access_type: null
+    log_config: []
+    name: sub-consumer-0
+    network: net-consumer-0
+    params: []
+    private_ip_google_access: true
+    project: project-id
+    region: europe-west8
+    reserved_internal_range: null
+    resolve_subnet_mask: null
+    role: null
+    send_secondary_ip_range_if_empty: true
+    timeouts: null
+
+counts:
+  google_compute_address: 1
+  google_compute_forwarding_rule: 3
+  google_compute_health_check: 1
+  google_compute_network: 2
+  google_compute_region_backend_service: 2
+  google_compute_region_network_endpoint_group: 1
+  google_compute_region_target_tcp_proxy: 1
+  google_compute_route: 6
+  google_compute_service_attachment: 1
+  google_compute_subnetwork: 5
+  modules: 5
+  resources: 24
+  terraform_data: 1
+
+outputs: {}

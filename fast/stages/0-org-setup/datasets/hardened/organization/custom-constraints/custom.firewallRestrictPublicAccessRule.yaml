@@ -12,18 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# yaml-language-server: $schema=../../../../schemas/custom-constraint.schema.json
+
 custom.firewallRestrictPublicAccessRule:
   action_type: DENY
   condition: |-
-    (size(resource.allowed) > 0) &&
-    (
-      resource.sourceRanges.exists(range, range == '0.0.0.0/0') ||
-      resource.destinationRanges.exists(range, range == '0.0.0.0/0')
+    resource.direction == 'INGRESS' &&
+    size(resource.allowed) > 0 &&
+    resource.sourceRanges.exists(r, r == '0.0.0.0/0') &&
+    !resource.allowed.exists(a,
+      a.IPProtocol == 'icmp'
     )
-  description: Prevent the creation of VPC firewall rules with source or destination
-    any IP address (0.0.0.0/0)
-  display_name: Restrict VPC Firewall rules allowing public Internet access
+  description: Prevent VPC Firewall ingress rules from 0.0.0.0/0 except for allowed protocols (ICMP).
+  display_name: Restrict VPC Firewall ingress rules allowing public Internet access
   method_types:
   - CREATE
+  - UPDATE
   resource_types:
   - compute.googleapis.com/Firewall

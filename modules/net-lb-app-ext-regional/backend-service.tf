@@ -44,11 +44,11 @@ resource "google_compute_region_backend_service" "default" {
   for_each = var.backend_service_configs
   project = (
     each.value.project_id == null
-    ? var.project_id
-    : each.value.project_id
+    ? local.project_id
+    : lookup(local.ctx.project_ids, each.value.project_id, each.value.project_id)
   )
   name                            = coalesce(each.value.name, "${var.name}-${each.key}")
-  region                          = var.region
+  region                          = local.region
   description                     = each.value.description
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
@@ -72,7 +72,7 @@ resource "google_compute_region_backend_service" "default" {
   timeout_sec        = each.value.timeout_sec
 
   dynamic "backend" {
-    for_each = { for b in coalesce(each.value.backends, []) : b.backend => b }
+    for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
     content {
       group           = lookup(local.group_ids, backend.key, backend.key)
       balancing_mode  = backend.value.balancing_mode # UTILIZATION, RATE
@@ -205,10 +205,12 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "log_config" {
-    for_each = each.value.log_sample_rate == null ? [] : [""]
+    for_each = each.value.log_config == null ? [] : [""]
     content {
-      enable      = true
-      sample_rate = each.value.log_sample_rate
+      enable          = each.value.log_config.enable
+      sample_rate     = each.value.log_config.sample_rate
+      optional_mode   = each.value.log_config.optional_mode
+      optional_fields = each.value.log_config.optional_fields
     }
   }
 
@@ -243,6 +245,20 @@ resource "google_compute_region_backend_service" "default" {
         content {
           seconds = interval.value.seconds
           nanos   = interval.value.nanos
+        }
+      }
+    }
+  }
+
+  dynamic "tls_settings" {
+    for_each = each.value.tls_settings == null ? [] : [each.value.tls_settings]
+    content {
+      authentication_config = tls_settings.value.authentication_config
+      sni                   = tls_settings.value.sni
+      dynamic "subject_alt_names" {
+        for_each = tls_settings.value.subject_alt_names == null ? [] : tls_settings.value.subject_alt_names
+        content {
+          dns_name = subject_alt_names.value
         }
       }
     }

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-resource "terraform_data" "precondition-cicd" {
+moved {
+  from = terraform_data.precondition-cicd
+  to   = terraform_data.precondition_cicd
+}
+
+resource "terraform_data" "precondition_cicd" {
   lifecycle {
     precondition {
       condition = alltrue([

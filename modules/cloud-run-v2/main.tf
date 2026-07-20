@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local._ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   connector = (
     var.vpc_connector_create != null
@@ -45,6 +45,14 @@ locals {
 
   location   = lookup(local.ctx.locations, var.region, var.region)
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  multi_region_regions = (
+    try(var.service_config.multi_region_settings.regions, null) == null
+    ? null
+    : [
+      for r in var.service_config.multi_region_settings.regions :
+      lookup(local.ctx.locations, r, r)
+    ]
+  )
 
   revision_name = (
     var.revision.name == null ? null : "${var.name}-${var.revision.name}"

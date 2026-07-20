@@ -41,7 +41,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   ctx_p        = "$"
   ctx_kms_keys = try(local.ctx.kms_keys, {})
@@ -231,15 +231,6 @@ resource "google_bigquery_dataset_access" "authorized_routines" {
   }
 }
 
-resource "google_bigquery_dataset_iam_binding" "bindings" {
-  for_each   = var.iam
-  project    = local.project_id
-  dataset_id = google_bigquery_dataset.default.dataset_id
-  role       = lookup(local.ctx.custom_roles, each.key, each.key)
-  members = [
-    for v in each.value : lookup(local.ctx.iam_principals, v, v)
-  ]
-}
 
 resource "google_bigquery_table" "default" {
   provider                 = google-beta

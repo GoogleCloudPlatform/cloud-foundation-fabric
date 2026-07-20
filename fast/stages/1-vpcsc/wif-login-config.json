@@ -1,0 +1,9 @@
+{
+  "universe_domain": "apis-berlin-build0.goog",
+  "universe_cloud_web_domain": "cloud.berlin-build0.goog",
+  "type": "external_account_authorized_user_login_config",
+  "audience": "//iam.googleapis.com/locations/global/workforcePools/wfp2608/providers/wfpp2608",
+  "auth_url": "https://auth.cloud.berlin-build0.goog/authorize",
+  "token_url": "https://sts.apis-berlin-build0.goog/v1/oauthtoken",
+  "token_info_url": "https://sts.apis-berlin-build0.goog/v1/introspect"
+}

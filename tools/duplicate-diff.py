@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,23 +21,27 @@ import os
 
 # List of folders and files that are expected to have same content
 duplicates = [
-    # deep recursive folder comparison
+    # factory policies
     [
-        "fast/stages/0-org-setup/datasets/classic/organization/custom-roles",
-        "fast/stages/0-org-setup/datasets/hardened/organization/custom-roles",
-    ],
-    [
-        "fast/stages/0-org-setup/datasets/classic/organization/tags",
-        "fast/stages/0-org-setup/datasets/hardened/organization/tags",
+        "tests/modules/folder/factory/policies",
+        "tests/modules/organization/factory/policies",
+        "tests/modules/project/factory/policies",
     ],
     # schemas
     [
         "fast/stages/1-vpcsc/schemas/access-level.schema.json",
         "modules/vpc-sc/schemas/access-level.schema.json",
+        "modules/organization/schemas/access-level.schema.json",
+        "fast/stages/0-org-setup/schemas/access-level.schema.json",
     ],
     [
-        "fast/stages/3-data-platform-dev/schemas/aspect-type.schema.json",
         "modules/dataplex-aspect-types/schemas/aspect-type.schema.json",
+        "modules/project-factory/schemas/aspect-type.schema.json",
+        "fast/stages/2-project-factory/schemas/aspect-type.schema.json",
+    ],
+    [
+        "modules/data-catalog-policy-tag/schemas/policy-tag.schema.json",
+        "modules/project-factory/schemas/taxonomy.schema.json",
     ],
     [
         "fast/stages/2-project-factory/schemas/budget.schema.json",
@@ -59,15 +63,21 @@ duplicates = [
         "modules/vpc-sc/schemas/egress-policy.schema.json",
     ],
     [
+        "fast/stages/0-org-setup/schemas/firewall-rules.schema.json",
         "fast/stages/2-networking/schemas/firewall-rules.schema.json",
+        "modules/net-vpc-factory/schemas/firewall-rules.schema.json",
         "modules/net-vpc-firewall/schemas/firewall-rules.schema.json",
     ],
     [
+        "modules/project-factory/schemas/folder.schema.json",
         "fast/stages/0-org-setup/schemas/folder.schema.json",
         "fast/stages/2-networking/schemas/folder.schema.json",
         "fast/stages/2-project-factory/schemas/folder.schema.json",
         "fast/stages/2-security/schemas/folder.schema.json",
-        "modules/project-factory/schemas/folder.schema.json",
+    ],
+    [
+        "fast/stages/0-org-setup/schemas/observability.schema.json",
+        "modules/project/schemas/observability.schema.json",
     ],
     [
         "fast/stages/1-vpcsc/schemas/ingress-policy.schema.json",
@@ -101,20 +111,26 @@ duplicates = [
         "modules/organization/schemas/scc-sha-custom-modules.schema.json",
     ],
     [
+        "fast/stages/0-org-setup/schemas/subnet.schema.json",
         "fast/stages/2-networking/schemas/subnet.schema.json",
+        "modules/net-vpc-factory/schemas/subnet.schema.json",
         "modules/net-vpc/schemas/subnet.schema.json",
+    ],
+    [
+        "fast/stages/0-org-setup/schemas/vpc-factory.schema.json",
+        "modules/net-vpc-factory/schemas/vpc-factory.schema.json",
     ],
     [
         "fast/stages/0-org-setup/schemas/tags.schema.json",
         "modules/project/schemas/tags.schema.json",
         "modules/organization/schemas/tags.schema.json",
+        "fast/stages/2-project-factory/schemas/tags.schema.json",
     ],
     [
         "modules/cloud-function-v1/bundle.tf",
         "modules/cloud-function-v2/bundle.tf",
     ],
     [
-        "modules/agent-engine/serviceaccount.tf",
         "modules/cloud-function-v1/serviceaccount.tf",
         "modules/cloud-function-v2/serviceaccount.tf",
         "modules/cloud-run-v2/serviceaccount.tf",
@@ -186,13 +202,11 @@ for group in duplicates:
     if is_dir:
       dcmp = filecmp.dircmp(first, second)
       if check_dir_diff(dcmp):
-        print(
-            f"[DIFF] Found differences between directories {first} and {second}"
-        )
+        print(f"[DIFF] Found differences between directories {first} {second}")
         has_diff = True
     else:
       if not filecmp.cmp(first, second, shallow=False):
-        print(f"[DIFF] Files are different: {first} and {second}")
+        print(f"[DIFF] Files are different: {first} {second}")
         has_diff = True
 
 if has_diff:

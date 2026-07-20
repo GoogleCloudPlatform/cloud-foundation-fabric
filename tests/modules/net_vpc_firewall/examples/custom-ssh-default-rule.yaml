@@ -13,9 +13,9 @@
 # limitations under the License.
 
 values:
-  module.firewall.google_compute_firewall.allow-tag-http[0]: {}
-  module.firewall.google_compute_firewall.allow-tag-https[0]: {}
-  module.firewall.google_compute_firewall.allow-tag-ssh[0]:
+  module.firewall.google_compute_firewall.allow_tag_http[0]: {}
+  module.firewall.google_compute_firewall.allow_tag_https[0]: {}
+  module.firewall.google_compute_firewall.allow_tag_ssh[0]:
     allow:
     - ports:
       - '22'

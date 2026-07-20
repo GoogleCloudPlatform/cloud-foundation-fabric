@@ -4,7 +4,7 @@
   "type": "object",
   "additionalProperties": false,
   "patternProperties": {
-    "^[a-z-]+\\.[a-zA-Z]+$": {
+    "^custom\\.[a-zA-Z0-9_-]+$": {
       "type": "object",
       "additionalProperties": false,
       "required": [

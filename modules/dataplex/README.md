@@ -116,7 +116,6 @@ module "dataplex" {
 
 - [ ] support multi-regions
 <!-- BEGIN TFDOC -->
-
 ## Variables
 
 | name | description | type | required | default |
@@ -124,7 +123,7 @@ module "dataplex" {
 | [name](variables.tf#L30) | Name of Dataplex Lake. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L41) | The ID of the project where this Dataplex Lake will be created. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L46) | Region of the Dataplax Lake. | <code>string</code> | ✓ |  |
-| [zones](variables.tf#L51) | Dataplex lake zones, such as `RAW` and `CURATED`. | <code title="map&#40;object&#40;&#123;&#10;  type      &#61; string&#10;  discovery &#61; optional&#40;bool, true&#41;&#10;  iam       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, null&#41;&#10;  assets &#61; map&#40;object&#40;&#123;&#10;    resource_name          &#61; string&#10;    resource_project       &#61; optional&#40;string&#41;&#10;    cron_schedule          &#61; optional&#40;string, &#34;15 15 &#42; &#42; &#42;&#34;&#41;&#10;    discovery_spec_enabled &#61; optional&#40;bool, true&#41;&#10;    resource_spec_type     &#61; optional&#40;string, &#34;STORAGE_BUCKET&#34;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [zones](variables.tf#L51) | Dataplex lake zones, such as `RAW` and `CURATED`. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
 | [iam](variables.tf#L17) | Dataplex lake IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location_type](variables.tf#L24) | The location type of the Dataplax Lake. | <code>string</code> |  | <code>&#34;SINGLE_REGION&#34;</code> |
 | [prefix](variables.tf#L35) | Optional prefix used to generate Dataplex Lake. | <code>string</code> |  | <code>null</code> |
@@ -137,5 +136,4 @@ module "dataplex" {
 | [id](outputs.tf#L22) | Fully qualified Dataplex Lake id. |  |
 | [lake](outputs.tf#L27) | The lake name of Dataplex Lake. |  |
 | [zones](outputs.tf#L32) | The zone name of Dataplex Lake. |  |
-
 <!-- END TFDOC -->

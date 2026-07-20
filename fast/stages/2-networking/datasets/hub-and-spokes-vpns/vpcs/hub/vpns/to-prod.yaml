@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# yaml-language-server: $schema=../../../../../schemas/vpn.schema.json
 
 name: to-prod
 region: $locations:primary
@@ -25,13 +27,13 @@ tunnels:
     shared_secret: foobar
     bgp_peer:
       address: 169.254.2.1
-      asn: 64515
+      asn: 64517
     bgp_session_range: "169.254.2.2/30"
     vpn_gateway_interface: 0
   remote-1:
     shared_secret: foobar
     bgp_peer:
       address: 169.254.2.5
-      asn: 64515
+      asn: 64517
     bgp_session_range: "169.254.2.6/30"
     vpn_gateway_interface: 1

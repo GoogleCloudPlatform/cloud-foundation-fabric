@@ -9,6 +9,13 @@
 - ⁺**project_id**: *string*
 - ⁺**name**: *string*
 - **description**: *string*
+- **factories_config**: *object*
+  <br>*additional properties: false*
+  - **firewall_rules**: *string*
+  - **attachment_groups**: *string*
+  - **subnets**: *string*
+  - **vlan_attachments**: *string*
+  - **vpns**: *string*
 - **auto_create_subnetworks**: *boolean*
 - **delete_default_routes_on_create**: *boolean*
 - **mtu**: *number*
@@ -60,6 +67,7 @@
 - **nat_config**<a name="refs-nat_config"></a>: *object*
   - **`^[a-z0-9-]+$`**: *object*
     - ⁺**region**: *string*
+    - **num_nat_ips**: *number*
 - **ncc_config**<a name="refs-ncc_config"></a>: *object*
   - ⁺**hub**: *string*
   - **group**: *string*
@@ -87,7 +95,9 @@
       - **ip_protocol**: *string*
       - **src_range**: *string*
     - **labels**: *object*
-      <br>*additional properties: string*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **next_hop_ilb_ip**: *string*
     - **priority**: *number*
     - **target**: *object*

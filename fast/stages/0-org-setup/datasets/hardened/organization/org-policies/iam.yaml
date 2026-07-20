@@ -18,6 +18,23 @@
 
 # yaml-language-server: $schema=../../../../schemas/org-policies.schema.json
 
+custom.iamDisableAdminServiceAccount:
+  rules:
+    - enforce: true
+
+custom.iamDisableBasicRoles:
+  rules:
+    - enforce: true
+
+custom.iamDisableProjectServiceAccountImpersonationRoles:
+  rules:
+    - enforce: false
+      condition:
+        title: Allow service account impersonation for tagged users
+        expression: |
+          resource.matchTag('${organization.id}/org-policies', 'allowed-sa-impersonation')
+    - enforce: true
+
 custom.iamDisableRedisAdminRoles:
   rules:
     - enforce: false
@@ -65,6 +82,10 @@ iam.disableServiceAccountKeyUpload:
     - enforce: true
 
 iam.managed.disableServiceAccountApiKeyCreation:
+  rules:
+    - enforce: true
+
+iam.managed.preventPrivilegedBasicRolesForDefaultServiceAccounts:
   rules:
     - enforce: true
 

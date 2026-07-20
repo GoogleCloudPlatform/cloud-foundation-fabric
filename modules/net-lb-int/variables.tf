@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,18 @@ variable "backend_service_config" {
       drop_traffic_if_unhealthy = optional(bool)
       ratio                     = optional(number)
     }))
-    log_sample_rate  = optional(number)
+    log_config = optional(object({
+      enable          = optional(bool)
+      sample_rate     = optional(number)
+      optional_mode   = optional(string)
+      optional_fields = optional(list(string))
+    }))
+    network_pass_through_lb_traffic_policy = optional(object({
+      zonal_affinity = object({
+        spillover       = optional(string, "ZONAL_AFFINITY_DISABLED")
+        spillover_ratio = optional(number)
+      })
+    }))
     name             = optional(string)
     description      = optional(string, "Terraform managed.")
     protocol         = optional(string, "UNSPECIFIED")
@@ -47,6 +58,27 @@ variable "backend_service_config" {
       coalesce(var.backend_service_config.session_affinity, "NONE")
     )
     error_message = "Invalid session affinity value."
+  }
+  validation {
+    condition = (
+      try(var.backend_service_config.network_pass_through_lb_traffic_policy, null) == null
+      || contains(
+        ["ZONAL_AFFINITY_DISABLED", "ZONAL_AFFINITY_SPILL_CROSS_ZONE", "ZONAL_AFFINITY_STAY_WITHIN_ZONE"],
+        coalesce(var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover, "ZONAL_AFFINITY_DISABLED")
+      )
+    )
+    error_message = "network_pass_through_lb_traffic_policy.zonal_affinity.spillover must be one of ZONAL_AFFINITY_DISABLED, ZONAL_AFFINITY_SPILL_CROSS_ZONE, or ZONAL_AFFINITY_STAY_WITHIN_ZONE."
+  }
+  validation {
+    condition = (
+      try(var.backend_service_config.network_pass_through_lb_traffic_policy, null) == null
+      || try(var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio, null) == null
+      || (
+        var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio >= 0 &&
+        var.backend_service_config.network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio <= 1
+      )
+    )
+    error_message = "network_pass_through_lb_traffic_policy.zonal_affinity.spillover_ratio must be a number between 0 and 1."
   }
 }
 
@@ -100,6 +132,7 @@ variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
   type = map(object({
     zone        = string
+    name        = optional(string)
     description = optional(string, "Terraform managed.")
     instances   = optional(list(string))
     named_ports = optional(map(number), {})
@@ -121,6 +154,7 @@ variable "health_check_config" {
     description         = optional(string, "Terraform managed.")
     enable_logging      = optional(bool, false)
     healthy_threshold   = optional(number)
+    is_regional         = optional(bool, false)
     name                = optional(string)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)

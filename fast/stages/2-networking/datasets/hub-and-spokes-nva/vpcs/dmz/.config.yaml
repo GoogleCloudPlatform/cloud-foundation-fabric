@@ -1,6 +1,16 @@
-# skip boilerplate check
----
-# start of document (---) avoids errors if the file only contains comments
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # yaml-language-server: $schema=../../../../schemas/vpc.schema.json
 
@@ -9,7 +19,7 @@ name: dmz
 delete_default_routes_on_create: true
 mtu: 1500
 routers:
-  vpn-router:
+  hybrid-connectivity-router:
     region: $locations:primary
     asn: 64514
     custom_advertise:
@@ -17,6 +27,12 @@ routers:
         "10.0.0.0/8": "rfc1918-10"
         "172.16.0.0/12": "rfc1918-172"
         "192.168.0.0/16": "rfc1918-192"
+        # # Uncomment to advertise the Cloud DNS query source address range. (see https://docs.cloud.google.com/dns/docs/server-policies-overview#altns-targets:~:text=0/19-,Type%202%20name%20server,-An%20IP%20address)
+        # "35.199.192.0/19": "cloud-dns-resolver"
+        # # Uncomment to advertise the Private Google Access routes. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+        # "199.36.153.8/30": "private-googleapis-com"
+        # # Uncomment to advertise the Private Google Access routes that support VPC Service Controls. (see https://docs.cloud.google.com/vpc/docs/private-google-access-hybrid)
+        # "199.36.153.4/30": "restricted-googleapis-com"
 nat_config:
   nat-ew8:
     region: europe-west1
@@ -41,3 +57,5 @@ routes:
     priority: 100
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"
+factories_config:
+  vlan_attachments: "none"

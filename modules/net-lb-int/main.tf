@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ locals {
   )
   bs_conntrack = var.backend_service_config.connection_tracking
   bs_failover  = var.backend_service_config.failover_config
+  bs_nptlb     = var.backend_service_config.network_pass_through_lb_traffic_policy
   forwarding_rule_names = {
     for k, v in var.forwarding_rules_config :
     k => k == "" ? var.name : "${var.name}-${k}"
@@ -31,10 +32,10 @@ locals {
     }
   }
   ctx_p = "$"
-  health_check = (
-    var.health_check != null
-    ? var.health_check
-    : google_compute_health_check.default[0].self_link
+  health_check = coalesce(
+    var.health_check,
+    try(google_compute_health_check.default[0].self_link, null),
+    try(google_compute_region_health_check.default[0].self_link, null)
   )
   network = lookup(
     local.ctx.networks, var.vpc_config.network, var.vpc_config.network
@@ -134,10 +135,12 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "log_config" {
-    for_each = var.backend_service_config.log_sample_rate == null ? [] : [""]
+    for_each = var.backend_service_config.log_config == null ? [] : [""]
     content {
-      enable      = true
-      sample_rate = var.backend_service_config.log_sample_rate
+      enable          = var.backend_service_config.log_config.enable
+      sample_rate     = var.backend_service_config.log_config.sample_rate
+      optional_mode   = var.backend_service_config.log_config.optional_mode
+      optional_fields = var.backend_service_config.log_config.optional_fields
     }
   }
 
@@ -148,6 +151,18 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
+  dynamic "network_pass_through_lb_traffic_policy" {
+    for_each = local.bs_nptlb != null ? [""] : []
+    content {
+      dynamic "zonal_affinity" {
+        for_each = local.bs_nptlb.zonal_affinity != null ? [""] : []
+        content {
+          spillover       = local.bs_nptlb.zonal_affinity.spillover
+          spillover_ratio = local.bs_nptlb.zonal_affinity.spillover_ratio
+        }
+      }
+    }
+  }
 }
 
 resource "google_compute_service_attachment" "default" {

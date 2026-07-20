@@ -48,6 +48,16 @@ variable "asset_feeds" {
   }
 }
 
+variable "asset_search" {
+  description = "Cloud Asset Inventory search configurations."
+  type = map(object({
+    asset_types = list(string)
+    query       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "assured_workload_config" {
   description = "Create AssuredWorkloads folder instead of regular folder when value is provided. Incompatible with folder_create=false."
   type = object({
@@ -71,20 +81,48 @@ variable "assured_workload_config" {
     condition = try(contains([
       "ASSURED_WORKLOADS_FOR_PARTNERS",
       "AU_REGIONS_AND_US_SUPPORT",
-      "CA_PROTECTED_B, IL5",
+      "AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT",
+      "CA_PROTECTED_B",
       "CA_REGIONS_AND_SUPPORT",
+      "CANADA_CONTROLLED_GOODS",
+      "CANADA_DATA_BOUNDARY_AND_SUPPORT",
       "CJIS",
       "COMPLIANCE_REGIME_UNSPECIFIED",
+      "DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS",
+      "DATA_BOUNDARY_FOR_CANADA_PROTECTED_B",
+      "DATA_BOUNDARY_FOR_CJIS",
+      "DATA_BOUNDARY_FOR_FEDRAMP_HIGH",
+      "DATA_BOUNDARY_FOR_FEDRAMP_MODERATE",
+      "DATA_BOUNDARY_FOR_IL2",
+      "DATA_BOUNDARY_FOR_IL4",
+      "DATA_BOUNDARY_FOR_IL5",
+      "DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075",
+      "DATA_BOUNDARY_FOR_ITAR",
+      "EU_DATA_BOUNDARY_AND_SUPPORT",
       "EU_REGIONS_AND_SUPPORT",
       "FEDRAMP_HIGH",
       "FEDRAMP_MODERATE",
-      "HIPAA, HITRUST",
+      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS",
+      "HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT",
+      "HIPAA",   # DEPRECATED
+      "HITRUST", # DEPRECATED
       "IL2",
       "IL4",
-      "ISR_REGIONS_AND_SUPPORT",
+      "IL5",
+      "IRS_1075",
       "ISR_REGIONS",
+      "ISR_REGIONS_AND_SUPPORT",
+      "ISRAEL_DATA_BOUNDARY_AND_SUPPORT",
       "ITAR",
+      "JAPAN_DATA_BOUNDARY",
       "JP_REGIONS_AND_SUPPORT",
+      "KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS",
+      "KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS",
+      "REGIONAL_CONTROLS",
+      "REGIONAL_DATA_BOUNDARY",
+      "US_DATA_BOUNDARY_AND_SUPPORT",
+      "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES",
+      "US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT",
       "US_REGIONAL_ACCESS"
     ], var.assured_workload_config.compliance_regime), true)
     error_message = "Field assured_workload_config.compliance_regime must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/ComplianceRegime"
@@ -93,9 +131,11 @@ variable "assured_workload_config" {
     condition = try(contains([
       "LOCAL_CONTROLS_BY_S3NS",
       "PARTNER_UNSPECIFIED",
+      "SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM",
+      "SOVEREIGN_CONTROLS_BY_CNTXT",
       "SOVEREIGN_CONTROLS_BY_PSN",
       "SOVEREIGN_CONTROLS_BY_SIA_MINSAIT",
-      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS"
+      "SOVEREIGN_CONTROLS_BY_T_SYSTEMS",
     ], var.assured_workload_config.partner), true)
     error_message = "Field assured_workload_config.partner must be one of the values listed in https://cloud.google.com/assured-workloads/docs/reference/rest/Shared.Types/Partner"
   }
@@ -138,12 +178,17 @@ variable "context" {
     email_addresses   = optional(map(string), {})
     folder_ids        = optional(map(string), {})
     iam_principals    = optional(map(string), {})
+    kms_keys          = optional(map(string), {})
     log_buckets       = optional(map(string), {})
     project_ids       = optional(map(string), {})
     project_numbers   = optional(map(string), {})
     pubsub_topics     = optional(map(string), {})
     storage_buckets   = optional(map(string), {})
     tag_values        = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   default  = {}
   nullable = false
@@ -160,6 +205,7 @@ variable "factories_config" {
   type = object({
     org_policies           = optional(string)
     pam_entitlements       = optional(string)
+    scc_mute_configs       = optional(string)
     scc_sha_custom_modules = optional(string)
   })
   nullable = false
@@ -174,6 +220,8 @@ variable "firewall_policy" {
   })
   default = null
 }
+
+# keep the following variable as it allows passing in a dynamic value for id
 
 variable "folder_create" {
   description = "Create folder. When set to false, uses id to reference an existing folder."
@@ -237,6 +285,16 @@ variable "parent" {
     )
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id, or map to a context variable via $folder_ids:."
   }
+}
+
+variable "service_agents_config" {
+  description = "Service agents configuration."
+  type = object({
+    services      = optional(list(string), [])
+    create_agents = optional(bool, true)
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "tag_bindings" {

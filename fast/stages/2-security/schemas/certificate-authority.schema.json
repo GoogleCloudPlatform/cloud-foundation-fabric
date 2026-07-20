@@ -109,7 +109,14 @@
               "default": true
             },
             "labels": {
-              "type": "object"
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
+                }
+              }
             },
             "gcs_bucket": {
               "type": "string"
@@ -395,7 +402,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
           }
         }
       }

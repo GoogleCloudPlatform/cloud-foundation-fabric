@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# yamllint disable rule:line-length
 values:
   module.cb_connection.google_cloudbuild_trigger.triggers["my-repository-my-trigger"]:
     bitbucket_server_trigger_config: []
     build: []
+    deletion_policy: DELETE
     description: null
     developer_connect_event_config: []
     disabled: false
@@ -53,6 +53,7 @@ values:
       - {}
       workspace: my-workspace
     bitbucket_data_center_config: []
+    deletion_policy: DELETE
     disabled: false
     github_config: []
     github_enterprise_config: []
@@ -71,6 +72,7 @@ values:
     role: roles/cloudbuild.connectionViewer
   module.cb_connection.google_cloudbuildv2_repository.repositories["my-repository"]:
     annotations: null
+    deletion_policy: DELETE
     location: europe-west8
     name: my-repository
     parent_connection: my-connection
@@ -80,6 +82,7 @@ values:
   module.cb_service_account.google_service_account.service_account[0]:
     account_id: cloudbuild
     create_ignore_already_exists: null
+    deletion_policy: DELETE
     description: null
     disabled: false
     display_name: Terraform-managed.
@@ -117,12 +120,14 @@ values:
     project: test-my-project
     role: roles/cloudbuild.builds.builder
   module.project.google_project_service.project_services["cloudbuild.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-my-project
     service: cloudbuild.googleapis.com
     timeouts: null
   module.project.google_project_service.project_services["secretmanager.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-my-project
@@ -134,6 +139,7 @@ values:
     timeouts: null
   module.secret_manager.google_secret_manager_secret.default["authorizer-credential"]:
     annotations: null
+    deletion_policy: DELETE
     deletion_protection: false
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -155,6 +161,7 @@ values:
     version_destroy_ttl: null
   module.secret_manager.google_secret_manager_secret.default["read-authorizer-credential"]:
     annotations: null
+    deletion_policy: DELETE
     deletion_protection: false
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -176,6 +183,7 @@ values:
     version_destroy_ttl: null
   module.secret_manager.google_secret_manager_secret.default["webhook-secret"]:
     annotations: null
+    deletion_policy: DELETE
     deletion_protection: false
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -205,7 +213,6 @@ values:
   : condition: []
     role: roles/secretmanager.secretAccessor
   module.secret_manager.google_secret_manager_secret_version.default["authorizer-credential/v1"]:
-    deletion_policy: DELETE
     enabled: true
     is_secret_data_base64: false
     secret_data: null
@@ -213,7 +220,6 @@ values:
     secret_data_wo_version: 1
     timeouts: null
   module.secret_manager.google_secret_manager_secret_version.default["read-authorizer-credential/v1"]:
-    deletion_policy: DELETE
     enabled: true
     is_secret_data_base64: false
     secret_data: null
@@ -221,7 +227,6 @@ values:
     secret_data_wo_version: 1
     timeouts: null
   module.secret_manager.google_secret_manager_secret_version.default["webhook-secret/v1"]:
-    deletion_policy: DELETE
     enabled: true
     is_secret_data_base64: false
     secret_data: null
@@ -245,3 +250,5 @@ counts:
   google_service_account: 1
   modules: 4
   resources: 21
+
+outputs: {}

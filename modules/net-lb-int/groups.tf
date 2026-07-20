@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ resource "google_compute_instance_group" "default" {
   for_each    = var.group_configs
   project     = local.project_id
   zone        = lookup(local.ctx.locations, each.value.zone, each.value.zone)
-  name        = "${var.name}-${each.key}"
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
   description = each.value.description
   instances   = each.value.instances
 

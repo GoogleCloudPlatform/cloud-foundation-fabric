@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,36 +13,20 @@
 # limitations under the License.
 
 values:
-  module.agent_engine.google_project_iam_member.default["roles/aiplatform.user"]:
+  module.agent_engine.google_project_iam_member.iam_member_identity["roles/aiplatform.user"]:
     condition: []
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/aiplatform.user
-  module.agent_engine.google_project_iam_member.default["roles/storage.objectViewer"]:
+  module.agent_engine.google_project_iam_member.iam_member_identity["roles/storage.objectViewer"]:
     condition: []
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
     project: project-id
     role: roles/storage.objectViewer
-  module.agent_engine.google_project_iam_member.default["roles/viewer"]:
-    condition: []
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
-    project: project-id
-    role: roles/viewer
-  module.agent_engine.google_service_account.service_account[0]:
-    account_id: my-agent
-    create_ignore_already_exists: null
-    description: null
-    disabled: false
-    display_name: my-agent
-    email: my-agent@project-id.iam.gserviceaccount.com
-    member: serviceAccount:my-agent@project-id.iam.gserviceaccount.com
-    project: project-id
-    timeouts: null
   module.agent_engine.google_storage_bucket.default[0]:
     autoclass: []
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -71,7 +55,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -90,7 +74,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -109,7 +93,7 @@ values:
     content_language: null
     contexts: []
     customer_encryption: []
-    deletion_policy: null
+    deletion_policy: DELETE
     detect_md5hash: null
     event_based_hold: null
     force_empty_content_type: null
@@ -121,36 +105,40 @@ values:
     temporary_hold: null
     timeouts: null
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
+    deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
+    effective_labels:
+      goog-terraform-provisioned: 'true'
     encryption_spec: []
+    labels: null
     project: project-id
     region: europe-west8
     spec:
-    - agent_framework: google-adk
+    - agent_card: null
+      agent_framework: google-adk
+      build_spec: []
       class_methods: null
-      deployment_spec: []
+      container_spec: []
+      example_store: null
+      identity_type: AGENT_IDENTITY
       package_spec:
       - dependency_files_gcs_uri: gs://my-agent/dependencies.tar.gz
         pickle_object_gcs_uri: gs://my-agent/pickle.pkl
-        python_version: '3.12'
+        python_version: '3.13'
         requirements_gcs_uri: gs://my-agent/requirements.txt
-      service_account: my-agent@project-id.iam.gserviceaccount.com
+      service_account: null
       source_code_spec: []
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
     timeouts: null
-  module.agent_engine.time_sleep.wait_5_minutes:
-    create_duration: 5m
-    destroy_duration: null
-    triggers: null
 
 counts:
-  google_project_iam_member: 3
-  google_service_account: 1
+  google_project_iam_member: 2
   google_storage_bucket: 1
   google_storage_bucket_object: 3
   google_vertex_ai_reasoning_engine: 1
   modules: 1
-  resources: 10
-  time_sleep: 1
+  resources: 7
 
 outputs: {}

@@ -28,8 +28,8 @@
       <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
     - **labels**: *object*
       <br>*additional properties: false*
-      - **`^[a-z0-9_-]+$`**: *array*
-        - items: *string*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **locations**: *object*
       <br>*additional properties: false*
       - **bigquery**: *string*
@@ -145,6 +145,11 @@
     <br>*additional properties: string*
   - **tag_values**: *object*
     <br>*additional properties: string*
+  - **tag_vars**: *object*
+    <br>*additional properties: false*
+    - **projects**: *object*
+      <br>*additional properties: object*
+    - **organization**: *string*
   - **vpc_host_projects**: *object*
     <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*
@@ -158,7 +163,7 @@
 
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|\$custom_roles:)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -169,7 +174,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -182,7 +187,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -192,4 +197,4 @@
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*

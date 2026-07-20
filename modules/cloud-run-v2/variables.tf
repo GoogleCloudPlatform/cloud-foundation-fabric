@@ -107,6 +107,10 @@ variable "context" {
     project_ids    = optional(map(string), {})
     subnets        = optional(map(string), {})
     tag_values     = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
   })
   nullable = false
   default  = {}
@@ -282,6 +286,9 @@ variable "service_config" {
     ingress              = optional(string, null)
     invoker_iam_disabled = optional(bool, false)
     max_concurrency      = optional(number)
+    multi_region_settings = optional(object({
+      regions = list(string)
+    }), null)
     scaling = optional(object({
       max_instance_count = optional(number)
       min_instance_count = optional(number)

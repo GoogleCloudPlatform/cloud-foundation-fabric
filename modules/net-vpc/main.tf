@@ -183,3 +183,25 @@ resource "google_dns_policy" "default" {
     }
   }
 }
+
+resource "google_network_connectivity_service_connection_policy" "service_connection_policy" {
+  for_each      = var.service_connection_policies
+  project       = local.project_id
+  name          = each.key
+  network       = local.network.id
+  description   = each.value.description
+  service_class = each.value.service_class
+  labels        = each.value.labels
+  location = lookup(
+    local.ctx.locations, each.value.location, each.value.location
+  )
+  psc_config {
+    subnetworks = [
+      for s in each.value.psc_config.subnetworks :
+      try(local.all_subnets[s].id, s)
+    ]
+    limit                                             = each.value.psc_config.limit
+    producer_instance_location                        = each.value.psc_config.producer_instance_location
+    allowed_google_producers_resource_hierarchy_level = each.value.psc_config.nodes
+  }
+}

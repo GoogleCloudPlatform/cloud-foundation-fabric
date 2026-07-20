@@ -19,10 +19,15 @@ locals {
     for k, v in local.automation_buckets : v.parent_name => k
   }
   _outputs_automation_sas = {
-    for k, v in local.automation_sas : v.parent_name => k...
+    for k, v in local.automation_sas : v.prefix => k...
   }
   outputs_projects = {
     for k, v in local.projects_input : k => {
+      aspect_types = (
+        v.factories_config.aspect_types == null
+        ? {}
+        : module.aspect-types[k].ids
+      )
       automation = {
         bucket = try(
           module.automation-bucket[local._outputs_automation_buckets[k]].name,
@@ -65,6 +70,17 @@ locals {
         "${k}/${sk}" => (
           module.buckets["${k}/${sk}"].name
         )
+      }
+      tag_keys = {
+        for sk, sv in module.projects[k].tag_keys : sk => sv.id
+      }
+      tag_values = {
+        for sk, sv in module.projects[k].tag_values : sk => sv.id
+      }
+      tag_vars = {
+        for sk, sv in module.projects[k].tag_keys : sk => sv.namespaced_name
+        # the provider returns allowed_values_regex set to "" not null
+        if try(sv.allowed_values_regex, "") != ""
       }
       workload_identity_pools = (
         module.projects[k].workload_identity_pool_ids
@@ -158,6 +174,17 @@ output "service_account_ids" {
 output "service_accounts" {
   description = "Service account emails."
   value       = local.outputs_service_accounts
+}
+
+output "service_agents" {
+  description = "Service agent emails."
+  value = {
+    for k, v in local.projects_service_agents
+    : trimprefix(k, "service_agents/") => {
+      email     = trimprefix(v, "serviceAccount:")
+      iam_email = v
+    }
+  }
 }
 
 output "storage_buckets" {

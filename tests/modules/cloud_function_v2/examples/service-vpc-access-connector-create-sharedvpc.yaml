@@ -22,7 +22,6 @@ values:
       - repo_source: []
         storage_source:
         - bucket: bucket
-          object: bundle-95c1b0e5b92dae8333539b1e0ad5173b.zip
       worker_pool: null
     description: Terraform managed.
     effective_labels:

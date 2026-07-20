@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,12 @@ locals {
       } if alltrue([
         var.service_agents_config.grant_default_roles,
         agent.role != null,
-        !agent.skip_iam
+        # 1. Static Skip (Global): Managed via tools/build_service_agents.py
+        #    Filters out known lazy agents that always fail on API enablement.
+        !agent.skip_iam,
+        # 2. Dynamic Skip (Runtime/Project-level): Managed by the user via skip_iam
+        #    Filters out project-specific overrides or newly introduced lazy agents.
+        !contains(var.service_agents_config.skip_iam, agent.name)
     ])
   }
   services = [
@@ -125,6 +130,23 @@ locals {
       try(var.project_reuse.attributes.services_enabled, [])
     )) : s if !contains(local._u_unavailable_si, s)
   ]
+
+
+  default_service_accounts = (
+    var.universe == null
+    ? {
+      compute = "${local.project.number}-compute@developer.gserviceaccount.com"
+      gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
+    }
+    : {
+      compute = "${local.project.number}-compute@developer.${local._u_domain}iam.gserviceaccount.com"
+      gae = format(
+        "%s@appspot.%siam.gserviceaccount.com",
+        trimprefix(local.project.project_id, "${var.universe.prefix}:"),
+        local._u_domain
+      )
+    }
+  )
 }
 
 data "google_storage_project_service_account" "gcs_sa" {

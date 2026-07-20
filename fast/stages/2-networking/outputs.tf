@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,24 @@ locals {
   tfvars = {
     host_project_ids     = module.projects.project_ids
     host_project_numbers = module.projects.project_numbers
+    subnet_ips = {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ips
+    }
     subnet_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => vpc.subnet_ids
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.subnet_ids
     }
     subnet_proxy_only_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
         for subnet_key, subnet in vpc.subnets_proxy_only : subnet_key => subnet.id
       }
     }
     subnet_psc_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => {
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => {
         for subnet_key, subnet in vpc.subnets_psc : subnet_key => subnet.id
       }
     }
     vpc_self_links = {
-      for vpc_key, vpc in module.vpcs : vpc_key => vpc.id
+      for vpc_key, vpc in module.vpc-factory.vpcs : vpc_key => vpc.id
     }
   }
 }
@@ -75,6 +78,11 @@ output "host_project_ids" {
 output "host_project_numbers" {
   description = "Project numbers."
   value       = local.tfvars.host_project_numbers
+}
+
+output "subnet_ips" {
+  description = "Subnet IP ranges."
+  value       = local.tfvars.subnet_ips
 }
 
 output "subnet_proxy_only_self_links" {

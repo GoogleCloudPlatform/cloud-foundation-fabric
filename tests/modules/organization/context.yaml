@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,51 @@
 # limitations under the License.
 
 values:
-  google_bigquery_dataset_iam_member.bq-sinks-binding["test-bq"]:
+  google_access_context_manager_access_level.basic["factory_level"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks:
+        - 192.168.0.0/24
+        members:
+        - group:test-group@example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    name: accessPolicies/1234567890/accessLevels/factory_level
+    parent: accessPolicies/1234567890
+    timeouts: null
+    title: factory_level
+  google_access_context_manager_access_level.basic["my_level"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks:
+        - 10.0.0.0/24
+        members:
+        - user:test-user@example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    name: accessPolicies/1234567890/accessLevels/my_level
+    parent: accessPolicies/1234567890
+    timeouts: null
+    title: my_level
+  google_access_context_manager_gcp_user_access_binding.binding["my_binding"]:
+    group_key: foo@example.com
+    organization_id: '1234567890'
+    scoped_access_settings: []
+    session_settings: []
+    timeouts: null
+  google_bigquery_dataset_iam_member.bq_sinks_binding["test-bq"]:
     condition: []
     dataset_id: logs
     project: test-prod-audit-logs-0
@@ -28,7 +72,7 @@ values:
     feed_output_config:
     - pubsub_destination:
       - topic: projects/test-prod-audit-logs-0/topics/audit-logs
-    org_id: "1234567890"
+    org_id: '1234567890'
     timeouts: null
   google_essential_contacts_contact.contact["$email_addresses:default"]:
     email: foo@example.com
@@ -37,13 +81,35 @@ values:
     - ALL
     parent: organizations/1234567890
     timeouts: null
+  google_iam_deny_policy.default["test-policy"]:
+    display_name: Test Deny Policy
+    name: test-policy
+    parent: cloudresourcemanager.googleapis.com%2Forganizations%2F1234567890
+    rules:
+    - deny_rule:
+      - denial_condition:
+        - description: null
+          expression: resource.matchTag('1234567890/environment', 'development')
+          location: null
+          title: Test Condition
+        denied_permissions:
+        - compute.googleapis.com/instances.create
+        denied_principals:
+        - user:test-user@example.com
+        exception_permissions: []
+        exception_principals:
+        - group:test-group@example.com
+      description: Test Rule
+    timeouts: null
   google_logging_organization_settings.default[0]:
+    kms_key_name: projects/test-kms-0/locations/europe-west8/keyRings/test/cryptoKeys/test
     organization: '1234567890'
     storage_location: europe-west8
     timeouts: null
   google_logging_organization_sink.sink["test-bq"]:
     bigquery_options:
     - use_partitioned_tables: false
+    deletion_policy: DELETE
     description: test-bq (Terraform-managed).
     destination: bigquery.googleapis.com/projects/test-prod-audit-logs-0/datasets/logs
     disabled: false
@@ -54,6 +120,7 @@ values:
     name: test-bq
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-logging"]:
+    deletion_policy: DELETE
     description: test-logging (Terraform-managed).
     destination: logging.googleapis.com/projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs
     disabled: false
@@ -64,6 +131,7 @@ values:
     name: test-logging
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-project"]:
+    deletion_policy: DELETE
     description: test-project (Terraform-managed).
     destination: logging.googleapis.com/projects/test-prod-audit-logs-0
     disabled: false
@@ -74,6 +142,7 @@ values:
     name: test-project
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-pubsub"]:
+    deletion_policy: DELETE
     description: test-pubsub (Terraform-managed).
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
@@ -84,6 +153,7 @@ values:
     name: test-pubsub
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-storage"]:
+    deletion_policy: DELETE
     description: test-storage (Terraform-managed).
     destination: storage.googleapis.com/test-prod-logs-audit-0
     disabled: false
@@ -164,13 +234,18 @@ values:
     org_id: '1234567890'
     role: organizations/366118655033/roles/myRoleTwo
   google_privileged_access_manager_entitlement.default["net-admins"]:
-    additional_notification_targets: []
+    additional_notification_targets:
+    - admin_email_recipients:
+      - foo@example.com
+      requester_email_recipients:
+      - foo@example.com
     approval_workflow:
     - manual_approvals:
       - require_approver_justification: true
         steps:
         - approvals_needed: 1
-          approver_email_recipients: null
+          approver_email_recipients:
+          - foo@example.com
           approvers:
           - principals:
             - group:test-group@example.com
@@ -197,22 +272,22 @@ values:
       unstructured:
       - {}
     timeouts: null
-  google_project_iam_member.bucket-sinks-binding["test-logging"]:
+  google_project_iam_member.bucket_sinks_binding["test-logging"]:
     condition:
     - expression: resource.name.endsWith('projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs')
       title: test-logging bucket writer
     project: test-prod-audit-logs-0
     role: roles/logging.bucketWriter
-  google_project_iam_member.project-sinks-binding["test-project"]:
+  google_project_iam_member.project_sinks_binding["test-project"]:
     condition: []
     project: projects/test-prod-audit-logs-0
     role: roles/logging.logWriter
-  google_pubsub_topic_iam_member.pubsub-sinks-binding["test-pubsub"]:
+  google_pubsub_topic_iam_member.pubsub_sinks_binding["test-pubsub"]:
     condition: []
     project: test-prod-audit-logs-0
     role: roles/pubsub.publisher
     topic: audit-logs
-  google_storage_bucket_iam_member.storage-sinks-binding["test-storage"]:
+  google_storage_bucket_iam_member.storage_sinks_binding["test-storage"]:
     bucket: test-prod-logs-audit-0
     condition: []
     role: roles/storage.objectCreator
@@ -257,9 +332,12 @@ values:
     tag_value: tagValues/1234567890
 
 counts:
+  google_access_context_manager_access_level: 2
+  google_access_context_manager_gcp_user_access_binding: 1
   google_bigquery_dataset_iam_member: 1
   google_cloud_asset_organization_feed: 1
   google_essential_contacts_contact: 1
+  google_iam_deny_policy: 1
   google_logging_organization_settings: 1
   google_logging_organization_sink: 5
   google_organization_iam_audit_config: 1
@@ -275,4 +353,29 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 30
+  resources: 34
+
+outputs:
+  access_levels: __missing__
+  asset_search_results: {}
+  context_aware_access_bindings: __missing__
+  custom_constraint_ids: {}
+  custom_role_id: {}
+  custom_roles: {}
+  id: organizations/1234567890
+  logging_identities: __missing__
+  logging_sinks: __missing__
+  network_tag_keys: {}
+  network_tag_values: {}
+  organization_id: organizations/1234567890
+  organization_policies_ids: {}
+  scc_custom_sha_modules_ids: {}
+  scc_mute_configs: {}
+  scim_tenants: {}
+  service_agents: {}
+  sink_writer_identities: __missing__
+  tag_keys: {}
+  tag_values: {}
+  workforce_identity_pool_ids: {}
+  workforce_identity_provider_names: {}
+  workforce_identity_providers: {}

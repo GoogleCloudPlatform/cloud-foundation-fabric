@@ -49,6 +49,7 @@ resource "google_pubsub_topic" "default" {
       allowed_persistence_regions = [
         for v in var.regions : lookup(local.ctx.locations, v, v)
       ]
+      enforce_in_transit = var.message_storage_enforce_in_transit
     }
   }
   dynamic "schema_settings" {
@@ -64,7 +65,7 @@ resource "google_pubsub_subscription" "default" {
   for_each                     = var.subscriptions
   project                      = local.project_id
   name                         = each.key
-  topic                        = google_pubsub_topic.default.name
+  topic                        = google_pubsub_topic.default.id
   labels                       = coalesce(each.value.labels, var.labels)
   ack_deadline_seconds         = each.value.ack_deadline_seconds
   message_retention_duration   = each.value.message_retention_duration

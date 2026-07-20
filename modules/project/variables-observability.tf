@@ -39,12 +39,12 @@ variable "alerts" {
       condition_absent = optional(object({
         duration = string
         filter   = optional(string)
-        aggregations = optional(object({
+        aggregations = optional(list(object({
           per_series_aligner   = optional(string)
           group_by_fields      = optional(list(string))
           cross_series_reducer = optional(string)
           alignment_period     = optional(string)
-        }))
+        })))
         trigger = optional(object({
           count   = optional(number)
           percent = optional(number)
@@ -79,18 +79,18 @@ variable "alerts" {
         evaluation_missing_data = optional(string)
         filter                  = optional(string)
         threshold_value         = optional(number)
-        aggregations = optional(object({
+        aggregations = optional(list(object({
           per_series_aligner   = optional(string)
           group_by_fields      = optional(list(string))
           cross_series_reducer = optional(string)
           alignment_period     = optional(string)
-        }))
-        denominator_aggregations = optional(object({
+        })))
+        denominator_aggregations = optional(list(object({
           per_series_aligner   = optional(string)
           group_by_fields      = optional(list(string))
           cross_series_reducer = optional(string)
           alignment_period     = optional(string)
-        }))
+        })))
         forecast_options = optional(object({
           forecast_horizon = string
         }))

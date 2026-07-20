@@ -13,9 +13,9 @@
 # limitations under the License.
 
 data "archive_file" "bundle" {}
-resource "azuread_user" "default" {}
-resource "azurerm_resource_group" "default" {}
-#resource "github_branch" "default" { provider = github }
+# resource "azuread_user" "default" {}
+# resource "azurerm_resource_group" "default" {}
+# resource "github_branch" "default" { provider = github }
 resource "google_service_account" "sa1" {}
 resource "google_service_account" "sa2" { provider = google-beta }
 resource "local_file" "default" {}
@@ -23,6 +23,6 @@ resource "null_resource" "default" {}
 resource "random_pet" "default" {}
 resource "time_static" "default" {}
 resource "tls_private_key" "default" {}
-resource "vsphere_role" "default" {}
-resource "kubernetes_secret" "default" {}
+# resource "vsphere_role" "default" {}
+# resource "kubernetes_secret" "default" {}
 resource "aws_vpc" "default" {}

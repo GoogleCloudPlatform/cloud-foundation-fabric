@@ -65,11 +65,9 @@
               "default": {},
               "additionalProperties": false,
               "patternProperties": {
-                "^[a-z0-9_-]+$": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
                 }
               }
             },
@@ -498,6 +496,24 @@
             "type": "string"
           }
         },
+        "tag_vars": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "projects": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "organization": {
+              "type": "string"
+            }
+          }
+        },
         "vpc_host_projects": {
           "type": "object",
           "additionalProperties": {
@@ -530,7 +546,7 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^(?:roles/|\\$custom_roles:)": {
+        "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)": {
           "type": "array",
           "items": {
             "type": "string",
@@ -556,7 +572,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -595,7 +611,7 @@
             },
             "role": {
               "type": "string",
-              "pattern": "^(?:roles/|\\$custom_roles:)"
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
             },
             "condition": {
               "type": "object",
@@ -628,7 +644,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(?:roles/|\\$custom_roles:)"
+            "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
           }
         }
       }

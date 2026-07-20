@@ -15,15 +15,15 @@
  */
 
 resource "google_compute_instance_group" "default" {
-  for_each = var.group_configs
+  for_each = local.group_configs
   project = (
     each.value.project_id == null
-    ? var.project_id
+    ? local.project_id
     : each.value.project_id
   )
   zone        = each.value.zone
-  name        = "${var.name}-${each.key}"
-  description = var.description
+  name        = coalesce(each.value.name, "${var.name}-${each.key}")
+  description = each.value.description
   instances   = each.value.instances
 
   dynamic "named_port" {
@@ -34,4 +34,3 @@ resource "google_compute_instance_group" "default" {
     }
   }
 }
-

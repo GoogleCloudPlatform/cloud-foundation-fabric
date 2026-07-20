@@ -18,7 +18,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   ctx_p = "$"
   iam_email = (
@@ -42,7 +42,7 @@ locals {
   )
   static_iam_email = "serviceAccount:${local.static_email}"
   static_id = (
-    "projects/${local.project_id}/serviceAccounts/${local.static_email}"
+    "projects/${local.project_id_universe}/serviceAccounts/${local.static_email}"
   )
   service_account = (
     local.use_data_source
@@ -50,11 +50,21 @@ locals {
     : try(google_service_account.service_account[0], null)
   )
   # universe-related locals
-  universe = try(regex("^([^:]*):[a-z]", local.project_id)[0], "")
+  universe = try(
+    regex("^([^:]*):[a-z]", local.project_id)[0],
+    var.service_account_reuse.universe.prefix,
+    ""
+  )
   use_data_source = (
     try(var.service_account_reuse.use_data_source, null) == true
   )
   project_id_no_universe = element(split(":", local.project_id), 1)
+  # reassemble project id for cases where we are reusing service account
+  project_id_universe = (
+    local.universe == ""
+    ? local.project_id
+    : "${local.universe}:${local.project_id_no_universe}"
+  )
   sa_domain = join(".", compact([
     local.project_id_no_universe, local.universe
   ]))
@@ -65,6 +75,9 @@ locals {
     ? {}
     : var.tag_bindings
   )
+  _tag_bindings = {
+    for k, v in local.tag_bindings : k => lookup(local.ctx.tag_values, v, v)
+  }
 }
 
 data "google_service_account" "service_account" {
@@ -88,6 +101,6 @@ resource "google_service_account" "service_account" {
 
 resource "google_tags_tag_binding" "binding" {
   for_each  = local.tag_bindings
-  parent    = "//iam.googleapis.com/projects/${coalesce(var.project_number, var.project_id)}/serviceAccounts/${local.service_account.unique_id}"
-  tag_value = lookup(local.ctx.tag_values, each.value, each.value)
+  parent    = "//iam.googleapis.com/projects/${coalesce(var.project_number, local.project_id)}/serviceAccounts/${local.service_account.unique_id}"
+  tag_value = templatestring(local._tag_bindings[each.key], var.context.tag_vars)
 }

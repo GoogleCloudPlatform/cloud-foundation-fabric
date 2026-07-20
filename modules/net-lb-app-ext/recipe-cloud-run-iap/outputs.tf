@@ -25,14 +25,14 @@ EOT
 
 output "application_service_account_email" {
   description = "Application service account email."
-  value       = module.application_service_account.email
+  value       = module.application-service-account.email
 }
 
 output "command" {
   description = "Command."
   value = templatestring(local.command_tpl, {
     aud = google_iap_client.iap_client.client_id
-    sa  = module.application_service_account.email
+    sa  = module.application-service-account.email
     url = local.url
   })
 }

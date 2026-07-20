@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Addresses",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "external": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["region"],
+        "properties": {
+          "region": { "type": "string" },
+          "description": { "type": "string" },
+          "ipv6": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["endpoint_type"],
+            "properties": {
+              "endpoint_type": { "type": "string", "enum": ["NETLB", "VM"] }
+            }
+          },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
+          "name": { "type": "string" },
+          "subnetwork": { "type": "string" },
+          "tier": { "type": "string", "enum": ["PREMIUM", "STANDARD"] }
+        }
+      }
+    },
+    "global": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": { "type": "string" },
+          "ipv6": { "type": "object", "additionalProperties": true },
+          "name": { "type": "string" }
+        }
+      }
+    },
+    "internal": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["region", "subnetwork"],
+        "properties": {
+          "region": { "type": "string" },
+          "subnetwork": { "type": "string" },
+          "address": { "type": "string" },
+          "description": { "type": "string" },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
+          "name": { "type": "string" },
+          "purpose": { "type": "string" },
+          "tier": { "type": "string" }
+        }
+      }
+    },
+    "psa": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["address", "network", "prefix_length"],
+        "properties": {
+          "address": { "type": "string" },
+          "network": { "type": "string" },
+          "prefix_length": { "type": "number" },
+          "description": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      }
+    },
+    "psc": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": { "type": "string" },
+          "description": { "type": "string" },
+          "name": { "type": "string" },
+          "network": { "type": "string" },
+          "region": { "type": "string" },
+          "subnet_self_link": { "type": "string" },
+          "service_attachment": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["psc_service_attachment_link"],
+            "properties": {
+              "psc_service_attachment_link": { "type": "string" },
+              "global_access": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "network_attachments": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["subnet_self_link"],
+        "properties": {
+          "subnet_self_link": { "type": "string" },
+          "automatic_connection": { "type": "boolean" },
+          "description": { "type": "string" },
+          "producer_accept_lists": { "type": "array", "items": { "type": "string" } },
+          "producer_reject_lists": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

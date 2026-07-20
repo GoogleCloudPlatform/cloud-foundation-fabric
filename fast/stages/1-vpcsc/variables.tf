@@ -130,12 +130,15 @@ variable "egress_policies" {
 variable "factories_config" {
   description = "Paths to folders that enable factory functionality."
   type = object({
-    access_levels       = optional(string, "datasets/classic/access-levels")
-    defaults            = optional(string, "datasets/classic/defaults.yaml")
-    egress_policies     = optional(string, "datasets/classic/egress-policies")
-    ingress_policies    = optional(string, "datasets/classic/ingress-policies")
-    perimeters          = optional(string, "datasets/classic/perimeters")
-    restricted_services = optional(string, "datasets/classic/restricted-services.yaml")
+    dataset = optional(string, "datasets/classic")
+    paths = optional(object({
+      access_levels       = optional(string, "access-levels")
+      defaults            = optional(string, "defaults.yaml")
+      egress_policies     = optional(string, "egress-policies")
+      ingress_policies    = optional(string, "ingress-policies")
+      perimeters          = optional(string, "perimeters")
+      restricted_services = optional(string, "restricted-services.yaml")
+    }), {})
   })
   nullable = false
   default  = {}

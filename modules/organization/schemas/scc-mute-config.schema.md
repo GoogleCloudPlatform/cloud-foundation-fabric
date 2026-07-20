@@ -1,0 +1,13 @@
+# SCC Mute Configurations
+
+<!-- markdownlint-disable MD036 -->
+
+## Properties
+
+- **`^[a-z]([a-z0-9-]*[a-z0-9])?$`**: *object*
+  - **description**: *string*
+  - ⁺**filter**: *string*
+  - **type**: *string*
+    <br>*default: DYNAMIC*, *enum: ['DYNAMIC', 'STATIC']*
+
+## Definitions

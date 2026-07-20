@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,10 +49,11 @@ values:
     - autoscaling_profile: BALANCED
       default_compute_class_enabled: null
       enabled: true
-      resource_limits: []
     control_plane_endpoints_config:
     - dns_endpoint_config:
       - allow_external_traffic: true
+        enable_k8s_certs_via_dns: null
+        enable_k8s_tokens_via_dns: null
       ip_endpoints_config:
       - enabled: true
     cost_management_config:
@@ -86,6 +87,7 @@ values:
     maintenance_policy:
     - daily_maintenance_window:
       - start_time: 03:00
+      disruption_budget: []
       maintenance_exclusion: []
       recurring_window: []
     master_auth:
@@ -107,7 +109,6 @@ values:
     node_config:
     - advanced_machine_features: []
       boot_disk_kms_key: null
-      containerd_config: []
       enable_confidential_storage: null
       ephemeral_storage_config: []
       ephemeral_storage_local_ssd_config: []
@@ -132,14 +133,14 @@ values:
       taint: []
     node_pool_auto_config:
     - linux_node_config:
+      - node_kernel_module_loading: []
+      network_tags: []
+      node_kubelet_config:
       - {}
-      network_tags:
-      - tags: []
       resource_manager_tags: null
     node_pool_defaults:
     - node_config_defaults:
-      - containerd_config: []
-        gcfs_config:
+      - gcfs_config:
         - enabled: false
     pod_security_policy_config: []
     private_cluster_config:
@@ -151,6 +152,7 @@ values:
     resource_labels: null
     resource_usage_export_config: []
     secret_manager_config: []
+    secret_sync_config: []
     terraform_labels:
       goog-terraform-provisioned: 'true'
     timeouts: null
@@ -351,6 +353,7 @@ values:
     timeouts: null
   module.vpc.google_compute_network.network[0]:
     auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
     delete_default_routes_on_create: false
     description: Terraform-managed.
     enable_ula_internal_ipv6: null
@@ -416,6 +419,7 @@ values:
     project: gkehub-test
     region: europe-west1
     reserved_internal_range: null
+    resolve_subnet_mask: null
     role: null
     send_secondary_ip_range_if_empty: true
     timeouts: null

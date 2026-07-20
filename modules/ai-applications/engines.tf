@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,84 +15,77 @@
  */
 
 resource "google_discovery_engine_chat_engine" "default" {
-  for_each = ({
-    for k, v in var.engines_configs
-    : k => v if v.chat_engine_config != null
-  })
-  engine_id     = "${var.name}-${each.key}"
-  display_name  = "${var.name}-${each.key}"
-  collection_id = each.value.collection_id
+  count         = var.engines_configs.chat_engine_config == null ? 0 : 1
+  engine_id     = var.name
+  display_name  = var.name
+  collection_id = var.engines_configs.collection_id
   project       = var.project_id
   data_store_ids = [
-    for ds in each.value.data_store_ids
+    for ds in var.engines_configs.data_store_ids
     : coalesce(
       try(google_discovery_engine_data_store.default[ds].data_store_id, null),
       ds
     )
   ]
   industry_vertical = coalesce(
-    try(each.value.industry_vertical, null),
-    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].industry_vertical, null)
+    try(var.engines_configs.industry_vertical, null),
+    try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].industry_vertical, null),
+    "GENERIC"
   )
   location = coalesce(
-    try(each.value.location, null),
-    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
+    try(var.engines_configs.location, null),
+    try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].location, null),
     var.location
   )
 
   chat_engine_config {
-    allow_cross_region       = each.value.chat_engine_config.allow_cross_region
-    dialogflow_agent_to_link = each.value.chat_engine_config.dialogflow_agent_to_link
-
-    agent_creation_config {
-      business              = each.value.chat_engine_config.business
-      default_language_code = each.value.chat_engine_config.default_language_code
-      time_zone             = each.value.chat_engine_config.time_zone
-      location = coalesce(
-        try(each.value.location, null),
-        try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
-        var.location
-      )
-    }
+    allow_cross_region = var.engines_configs.chat_engine_config.allow_cross_region
+    dialogflow_agent_to_link = try(
+      coalesce(
+        var.engines_configs.chat_engine_config.agent_config.id,
+        google_dialogflow_cx_agent.default[0].id
+      ),
+      null
+    )
   }
 
   dynamic "common_config" {
-    for_each = each.value.chat_engine_config.company_name == null ? [] : [""]
+    for_each = (
+      var.engines_configs.chat_engine_config.company_name == null
+      ? [] : [""]
+    )
 
     content {
-      company_name = each.value.chat_engine_config.company_name
+      company_name = var.engines_configs.chat_engine_config.company_name
     }
   }
 }
 
 resource "google_discovery_engine_search_engine" "default" {
-  for_each = ({
-    for k, v in var.engines_configs
-    : k => v if v.search_engine_config != null
-  })
-  engine_id     = "${var.name}-${each.key}"
-  display_name  = "${var.name}-${each.key}"
-  collection_id = each.value.collection_id
+  count         = var.engines_configs.search_engine_config == null ? 0 : 1
+  engine_id     = var.name
+  display_name  = var.name
+  collection_id = var.engines_configs.collection_id
   project       = var.project_id
   data_store_ids = [
-    for ds in each.value.data_store_ids
+    for ds in var.engines_configs.data_store_ids
     : coalesce(
       try(google_discovery_engine_data_store.default[ds].data_store_id, null),
       ds
     )
   ]
   industry_vertical = coalesce(
-    try(each.value.industry_vertical, null),
-    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].industry_vertical, null)
+    try(var.engines_configs.industry_vertical, null),
+    try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].industry_vertical, null),
+    "GENERIC"
   )
   location = coalesce(
-    try(each.value.location, null),
-    try(google_discovery_engine_data_store.default[each.value.data_store_ids[0]].location, null),
+    try(var.engines_configs.location, null),
+    try(google_discovery_engine_data_store.default[var.engines_configs.data_store_ids[0]].location, null),
     var.location
   )
-
   search_engine_config {
-    search_add_ons = each.value.search_engine_config.search_add_ons
-    search_tier    = each.value.search_engine_config.search_tier
+    search_add_ons = var.engines_configs.search_engine_config.search_add_ons
+    search_tier    = var.engines_configs.search_engine_config.search_tier
   }
 }

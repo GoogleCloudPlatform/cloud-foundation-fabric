@@ -14,6 +14,10 @@
     - **customer_id**: *string*
     - **domain**: *string*
     - ⁺**id**: *integer*
+- **observability**: *object*
+  <br>*additional properties: false*
+  - ⁺**project_id**: *string*
+  - ⁺**number**: *string*
 - **projects**: *object*
   <br>*additional properties: false*
   - **defaults**: *object*
@@ -30,8 +34,8 @@
       <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
     - **labels**: *object*
       <br>*additional properties: false*
-      - **`^[a-z0-9_-]+$`**: *array*
-        - items: *string*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **locations**: *object*
       <br>*additional properties: false*
       - **bigquery**: *string*
@@ -123,8 +127,80 @@
     - **vpc_sc**: *object*
       - ⁺**perimeter_name**: *string*
       - **is_dry_run**: *boolean*
+- **vpcs**: *object*
+  <br>*additional properties: false*
+  - **defaults**: *object*
+    <br>*additional properties: false*
+    - **project_id**: *string*
+    - **description**: *string*
+    - **auto_create_subnetworks**: *boolean*
+    - **delete_default_routes_on_create**: *boolean*
+    - **mtu**: *number*
+    - **routing_mode**: *string*
+      <br>*enum: ['GLOBAL', 'REGIONAL']*
+    - **firewall_policy_enforcement_order**: *string*
+      <br>*enum: ['BEFORE_CLASSIC_FIREWALL', 'AFTER_CLASSIC_FIREWALL']*
+    - **create_googleapis_routes**: *object*
+      <br>*additional properties: false*
+      - **directpath**: *boolean*
+      - **directpath-6**: *boolean*
+      - **private**: *boolean*
+      - **private-6**: *boolean*
+      - **restricted**: *boolean*
+      - **restricted-6**: *boolean*
+    - **dns_policy**: *object*
+      <br>*additional properties: false*
+      - **inbound**: *boolean*
+      - **logging**: *boolean*
+      - **outbound**: *object*
+        <br>*additional properties: false*
+        - **private_ns**: *array*
+          - items: *string*
+        - **public_ns**: *array*
+          - items: *string*
+    - **ipv6_config**: *object*
+      <br>*additional properties: false*
+      - **enable_ula_internal**: *boolean*
+      - **internal_range**: *string*
+  - **overrides**: *object*
+    <br>*additional properties: false*
+    - **project_id**: *string*
+    - **description**: *string*
+    - **auto_create_subnetworks**: *boolean*
+    - **delete_default_routes_on_create**: *boolean*
+    - **mtu**: *number*
+    - **routing_mode**: *string*
+      <br>*enum: ['GLOBAL', 'REGIONAL']*
+    - **firewall_policy_enforcement_order**: *string*
+      <br>*enum: ['BEFORE_CLASSIC_FIREWALL', 'AFTER_CLASSIC_FIREWALL']*
+    - **create_googleapis_routes**: *object*
+      <br>*additional properties: false*
+      - **directpath**: *boolean*
+      - **directpath-6**: *boolean*
+      - **private**: *boolean*
+      - **private-6**: *boolean*
+      - **restricted**: *boolean*
+      - **restricted-6**: *boolean*
+    - **dns_policy**: *object*
+      <br>*additional properties: false*
+      - **inbound**: *boolean*
+      - **logging**: *boolean*
+      - **outbound**: *object*
+        <br>*additional properties: false*
+        - **private_ns**: *array*
+          - items: *string*
+        - **public_ns**: *array*
+          - items: *string*
+    - **ipv6_config**: *object*
+      <br>*additional properties: false*
+      - **enable_ula_internal**: *boolean*
+      - **internal_range**: *string*
 - **context**: *object*
   <br>*additional properties: false*
+  - **access_levels**: *object*
+    <br>*additional properties: string*
+  - **cidr_ranges_sets**: *object*
+    <br>*additional properties: array*
   - **custom_roles**: *object*
     <br>*additional properties: string*
   - **email_addresses**: *object*
@@ -147,6 +223,12 @@
     <br>*additional properties: string*
   - **tag_values**: *object*
     <br>*additional properties: string*
+  - **tag_vars**: *object*
+    <br>*additional properties: false*
+    - **projects**: *object*
+      <br>*additional properties: object*
+    - **organization**: *object*
+      <br>*additional properties: string*
   - **vpc_host_projects**: *object*
     <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*
@@ -171,7 +253,7 @@
 
 - **iam**<a name="refs-iam"></a>: *object*
   <br>*additional properties: false*
-  - **`^(?:roles/|\$custom_roles:)`**: *array*
+  - **`^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)`**: *array*
     - items: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:||\$iam_principals:[a-z0-9_-]+)*
 - **iam_bindings**<a name="refs-iam_bindings"></a>: *object*
@@ -182,7 +264,7 @@
       - items: *string*
         <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -195,7 +277,7 @@
     - **member**: *string*
       <br>*pattern: ^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)*
     - **role**: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
     - **condition**: *object*
       <br>*additional properties: false*
       - ⁺**expression**: *string*
@@ -205,4 +287,4 @@
   <br>*additional properties: false*
   - **`^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\$iam_principals:[a-z0-9_-]+)`**: *array*
     - items: *string*
-      <br>*pattern: ^(?:roles/|\$custom_roles:)*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*

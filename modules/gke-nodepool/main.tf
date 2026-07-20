@@ -192,23 +192,32 @@ resource "google_container_node_pool" "nodepool" {
   }
 
   node_config {
-    boot_disk_kms_key = var.node_config.boot_disk_kms_key
-    disk_size_gb      = var.node_config.disk_size_gb
-    disk_type         = var.node_config.disk_type
-    image_type        = var.node_config.image_type
-    labels            = var.k8s_labels
-    resource_labels   = var.labels
-    local_ssd_count   = var.node_config.local_ssd_count
-    machine_type      = var.node_config.machine_type
-    metadata          = local.node_metadata
-    min_cpu_platform  = var.node_config.min_cpu_platform
-    node_group        = var.sole_tenant_nodegroup
-    oauth_scopes      = local.service_account_scopes
-    preemptible       = var.node_config.preemptible
-    service_account   = local.service_account_email
+    boot_disk_kms_key = try(var.node_config.boot_disk.kms_key, var.node_config.boot_disk_kms_key)
+    boot_disk {
+      size_gb   = try(var.node_config.boot_disk.size_gb, var.node_config.disk_size_gb)
+      disk_type = try(var.node_config.boot_disk.type, var.node_config.disk_type)
+      provisioned_iops = try(
+        var.node_config.boot_disk.provisioned_iops, null
+      )
+      provisioned_throughput = try(
+        var.node_config.boot_disk.provisioned_throughput, null
+      )
+    }
+    image_type       = var.node_config.image_type
+    labels           = var.k8s_labels
+    resource_labels  = var.labels
+    local_ssd_count  = var.node_config.local_ssd_count
+    machine_type     = var.node_config.machine_type
+    metadata         = local.node_metadata
+    min_cpu_platform = var.node_config.min_cpu_platform
+    node_group       = var.sole_tenant_nodegroup
+    oauth_scopes     = local.service_account_scopes
+    preemptible      = var.node_config.preemptible
+    service_account  = local.service_account_email
     spot = (
       var.node_config.spot == true && var.node_config.preemptible != true
     )
+    flex_start            = var.node_config.flex_start
     tags                  = var.tags
     resource_manager_tags = var.resource_manager_tags
 
@@ -216,6 +225,12 @@ resource "google_container_node_pool" "nodepool" {
       for_each = var.node_config.ephemeral_ssd_count != null ? [""] : []
       content {
         local_ssd_count = var.node_config.ephemeral_ssd_count
+      }
+    }
+    dynamic "ephemeral_storage_local_ssd_config" {
+      for_each = var.node_config.ephemeral_storage_local_ssd_count != null ? [""] : []
+      content {
+        local_ssd_count = var.node_config.ephemeral_storage_local_ssd_count
       }
     }
     dynamic "gcfs_config" {
@@ -321,6 +336,108 @@ resource "google_container_node_pool" "nodepool" {
       for_each = var.node_config.workload_metadata_config_mode != null ? [""] : []
       content {
         mode = var.node_config.workload_metadata_config_mode
+      }
+    }
+    dynamic "advanced_machine_features" {
+      for_each = var.node_config.advanced_machine_features != null ? [""] : []
+      content {
+        enable_nested_virtualization = var.node_config.advanced_machine_features.enable_nested_virtualization
+        threads_per_core             = var.node_config.advanced_machine_features.threads_per_core
+      }
+    }
+    dynamic "containerd_config" {
+      for_each = var.node_config.containerd_config != null ? [""] : []
+      content {
+        dynamic "private_registry_access_config" {
+          for_each = try(var.node_config.containerd_config.private_registry_access_config, null) != null ? [""] : []
+          content {
+            enabled = (
+              length(try(
+                var.node_config.containerd_config
+                .private_registry_access_config
+                .certificate_authority_domain_config,
+                []
+              )) > 0
+            )
+            dynamic "certificate_authority_domain_config" {
+              for_each = try(
+                var.node_config.containerd_config
+                .private_registry_access_config
+                .certificate_authority_domain_config,
+                []
+              )
+              content {
+                fqdns = certificate_authority_domain_config.value.fqdns
+                gcp_secret_manager_certificate_config {
+                  secret_uri = (
+                    certificate_authority_domain_config.value
+                    .gcp_secret_manager_certificate_config_secret_uri
+                  )
+                }
+              }
+            }
+          }
+        }
+        dynamic "writable_cgroups" {
+          for_each = var.node_config.containerd_config.writable_cgroups != null ? [""] : []
+          content {
+            enabled = var.node_config.containerd_config.writable_cgroups
+          }
+        }
+        dynamic "registry_hosts" {
+          for_each = try(var.node_config.containerd_config.registry_hosts, {})
+          content {
+            server = registry_hosts.key
+            dynamic "hosts" {
+              for_each = registry_hosts.value.hosts
+              content {
+                host          = hosts.key
+                capabilities  = hosts.value.capabilities
+                override_path = hosts.value.override_path
+                dial_timeout  = hosts.value.dial_timeout
+                dynamic "header" {
+                  for_each = coalesce(hosts.value.header, {})
+                  content {
+                    key   = header.key
+                    value = header.value
+                  }
+                }
+                dynamic "ca" {
+                  for_each = (
+                    hosts.value.ca_gcp_secret_manager_secret_uri != null
+                    ? [hosts.value.ca_gcp_secret_manager_secret_uri]
+                    : []
+                  )
+                  content {
+                    gcp_secret_manager_secret_uri = ca.value
+                  }
+                }
+                dynamic "client" {
+                  for_each = (
+                    hosts.value.client != null ? [hosts.value.client] : []
+                  )
+                  content {
+                    cert {
+                      gcp_secret_manager_secret_uri = (
+                        client.value.cert_gcp_secret_manager_secret_uri
+                      )
+                    }
+                    dynamic "key" {
+                      for_each = (
+                        client.value.key_gcp_secret_manager_secret_uri != null
+                        ? [client.value.key_gcp_secret_manager_secret_uri]
+                        : []
+                      )
+                      content {
+                        gcp_secret_manager_secret_uri = key.value
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

@@ -281,6 +281,7 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$folder_ids:my_folder`
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
+- `$iam_principals:service_agents/_self_/my_api`
 - `$iam_principals:service_agents/my_project/my_api`
 - `$iam_principalsets:service_accounts/all`
 - `$kms_keys:my_key`
@@ -291,7 +292,10 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$service_account_ids:my_project/my_sa`
 - `$service_account_ids:my_project/automation/my_sa`
 - `$service_agents:compute`
-- `$tag_values:my_value`
+- `$tag_keys:my_key` *static context*
+- `$tag_keys:my_project/my_key` *project-level tag keys*
+- `$tag_values:my_key/my_value` *static context*
+- `$tag_values:my_project/my_key/my_value` *project-level tag values*
 - `$vpc_host_projects:my_project`
 - `$vpc_sc_perimeters:my_perimeter`
 
@@ -307,8 +311,8 @@ As an example, the id of the folder defined in `folders/networking/prod/.config.
 
 Project ids ise the `$project_ids:` namespace, with ids defined in two different ways:
 
-- projects defined in the `var.factories_config.project` tree use the filename (dirname is stripped)
-- projects defined in the `var.factories_config.folders` tree use the full path (dirname is kept)
+- projects defined in the `var.factories_config.paths.project` tree use the filename (dirname is stripped)
+- projects defined in the `var.factories_config.paths.folders` tree use the full path (dirname is kept)
 
 As an example, the id of the project defined in the `projects/team-0/app-0-0.yaml` file will be accessible via `$project_ids:app-0-0`. The id of the project defined in the `folders/shared/iac-core-0.yaml` file will be accessible via `$project_ids:shared/iac-core-0`.
 
@@ -372,7 +376,7 @@ context = {
     "test/prod" = "folders/1234567890"
   }
   iam_principals = {
-    mysa    = "serviceAccount:test@test-project.iam.gserviceaccount.com"
+    mysa = "serviceAccount:test@test-project.iam.gserviceaccount.com"
   }
   project_ids = {
     vpc-host = "test-vpc-host"
@@ -424,6 +428,9 @@ module "project-factory" {
     pubsub_topics = {
       feeds-topic = "projects/my-cai-feeds-project/topics/feed"
     }
+    storage_buckets = {
+      log-bucket = "log-bucket"
+    }
     tag_values = {
       "context/gke"                = "tagValues/654321"
       "org-policies/drs-allow-all" = "tagValues/123456"
@@ -436,7 +443,8 @@ module "project-factory" {
   data_defaults = {
     billing_account = var.billing_account_id
     locations = {
-      storage = "EU"
+      bigquery = "EU"
+      storage  = "EU"
     }
   }
   # make sure the environment label and stackdriver service are always added
@@ -457,13 +465,13 @@ module "project-factory" {
   }
   # location where the yaml files are read from
   factories_config = {
+    basepath = "data"
     budgets = {
-      billing_account_id = var.billing_account_id
-      data               = "data/budgets"
+      billing_account = var.billing_account_id
     }
-    folders           = "data/hierarchy"
-    project_templates = "data/templates"
-    projects          = "data/projects"
+    exclusions = {
+      projects = ["staging/"]
+    }
   }
   notification_channels = {
     billing-default = {
@@ -475,7 +483,7 @@ module "project-factory" {
     }
   }
 }
-# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10 inventory=example.yaml
+# tftest files=t0,0,1,2,2.1,2.2,2.3,3,4,5,6,7,8,9,10,99 inventory=example.yaml
 ```
 
 A project template for GKE projects:
@@ -492,7 +500,7 @@ service_encryption_key_ids:
     - $kms_keys:compute-prod-ew1
 tag_bindings:
   context: $tag_values:context/gke
-# tftest-file id=t0 path=data/templates/container/base.yaml schema=project.schema.json
+# tftest-file id=t0 path=data/project-templates/container/base.yaml schema=project.schema.json
 ```
 
 A simple hierarchy of folders:
@@ -509,31 +517,31 @@ data_access_logs:
     DATA_READ:
       exempted_members:
         - $iam_principals:gcp-devops
-# tftest-file id=0 path=data/hierarchy/team-a/.config.yaml schema=folder.schema.json
+# tftest-file id=0 path=data/folders/team-a/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Team B
 # explicit parent definition via key
 parent: $folder_ids:teams
-# tftest-file id=1 path=data/hierarchy/team-b/.config.yaml schema=folder.schema.json
+# tftest-file id=1 path=data/folders/team-b/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Team C
 # explicit parent definition via folder id
 parent: folders/5678901234
-# tftest-file id=2 path=data/hierarchy/team-c/.config.yaml schema=folder.schema.json
+# tftest-file id=2 path=data/folders/team-c/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Apps
-# tftest-file id=2.1 path=data/hierarchy/team-c/apps/.config.yaml schema=folder.schema.json
+# tftest-file id=2.1 path=data/folders/team-c/apps/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: Test
-# tftest-file id=2.2 path=data/hierarchy/team-c/apps/test/.config.yaml schema=folder.schema.json
+# tftest-file id=2.2 path=data/folders/team-c/apps/test/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
@@ -547,14 +555,13 @@ asset_feeds:
     content_type: RESOURCE
     asset_types:
       - compute.googleapis.com/Instance
-# tftest-file id=2.3 path=data/hierarchy/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
+# tftest-file id=2.3 path=data/folders/team-c/apps/test/app-x/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: App 0
 factories_config:
-  org_policies: data/factories/org-policies
-
+  org_policies: ./data/factories/org-policies
 pam_entitlements:
   app-0-admins:
     max_request_duration: 3600s
@@ -568,14 +575,14 @@ pam_entitlements:
     privileged_access:
       - role: roles/writer
 
-# tftest-file id=3 path=data/hierarchy/team-a/app-0/.config.yaml schema=folder.schema.json
+# tftest-file id=3 path=data/folders/team-a/app-0/.config.yaml schema=folder.schema.json
 ```
 
 ```yaml
 name: App 0
 tag_bindings:
   drs-allow-all: $tag_values:org-policies/drs-allow-all
-# tftest-file id=4 path=data/hierarchy/team-b/app-0/.config.yaml schema=folder.schema.json
+# tftest-file id=4 path=data/folders/team-b/app-0/.config.yaml schema=folder.schema.json
 ```
 
 One project defined within the folder hierarchy, using a lower level factory for org policies:
@@ -583,7 +590,7 @@ One project defined within the folder hierarchy, using a lower level factory for
 ```yaml
 billing_account: 012345-67890A-BCDEF0
 factories_config:
-  org_policies: data/factories/org-policies
+  org_policies: factories/org-policies
 services:
   - container.googleapis.com
   - storage.googleapis.com
@@ -604,7 +611,17 @@ workload_identity_pools:
           oidc:
             template: github
 
-# tftest-file id=5 path=data/hierarchy/teams-iac-0.yaml schema=project.schema.json
+# tftest-file id=5 path=data/folders/teams-iac-0.yaml schema=project.schema.json
+```
+
+A project definition ignored via `factories_config.exclusions.projects`.
+
+```yaml
+billing_account: 012345-67890A-BCDEF0
+services:
+  - container.googleapis.com
+  - storage.googleapis.com
+# tftest-file id=99 path=data/projects/staging/unused-0.yaml schema=project.schema.json
 ```
 
 More traditional project definitions via the project factory data:
@@ -618,6 +635,8 @@ labels:
  app: app-0
  team: team-a
 parent: $folder_ids:team-a/app-0
+dns_threat_detector:
+  enabled: true
 iam_by_principals:
   $iam_principals:service_accounts/dev-ta-app0-be/app-0-be:
     - roles/storage.objectViewer
@@ -630,16 +649,26 @@ iam:
 service_accounts:
   app-0-be:
     display_name: "Backend instances."
+    # assign roles on different projects
     iam_project_roles:
       $project_ids:dev-spoke-0:
         - roles/compute.networkUser
+    # assign roles on this project projects
     iam_self_roles:
       - roles/logging.logWriter
       - roles/monitoring.metricWriter
-    # this is just for illustrative/test purposes
+    tag_bindings:
+      context: $tag_values:context/project-factory
+    # assign roles on this service account
     iam:
       roles/iam.serviceAccountUser:
         - $iam_principals:service_accounts/_self_/app-0-fe
+        - $iam_principals:service_agents/_self_/compute
+        - $iam_principals:service_agents/dev-tb-app0-0/compute
+    iam_bindings_additive:
+      test:
+        role: roles/iam.serviceAccountUser
+        member: group:team-a-admins@example.org
     iam_sa_roles:
       $service_account_ids:_self_/app-0-fe:
         - roles/iam.serviceAccountUser
@@ -662,6 +691,16 @@ shared_vpc_service_config:
       - $service_agents:container-engine
 billing_budgets:
   - $billing_budgets:test-100
+buckets:
+  app-0-bucket-a:
+    location: europe-west8
+    tag_bindings:
+      context: $tag_values:context/gke
+  app-0-bucket-b:
+    location: europe-west8
+    logging_config:
+      log_bucket: $storage_buckets:log-bucket
+      log_object_prefix: log-prefix
 pam_entitlements:
   project-admins:
     max_request_duration: 3600s
@@ -680,6 +719,12 @@ services:
   - container.googleapis.com
   - pubsub.googleapis.com
   - storage.googleapis.com
+datasets:
+  test_0:
+    friendly_name: Test Dataset
+    iam:
+      roles/bigquery.dataViewer:
+        - $iam_principals:gcp-devops
 pubsub_topics:
   app-0-topic-a:
     iam:
@@ -688,6 +733,14 @@ pubsub_topics:
   app-0-topic-b:
     subscriptions:
       app-0-topic-b-sub: {}
+kms:
+  keyrings:
+    my-keyring:
+      location: europe-west1
+      keys:
+        my-key: {}
+      tag_bindings:
+        context: $tag_values:context/project-factory
 tags:
   my-tag-key-1:
     values:
@@ -713,6 +766,8 @@ iam:
     - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
   "roles/viewer":
     - $iam_principals:service_accounts/dev-tb-app0-0/automation/ro
+factories_config:
+  data_catalog_taxonomy: data/taxonomies/sample.yaml
 shared_vpc_host_config:
   enabled: true
 service_accounts:
@@ -736,6 +791,9 @@ automation:
   service_accounts:
     rw:
       description: Team B app 0 read/write automation sa.
+      iam_sa_roles:
+        $service_account_ids:dev-tb-app0-0/automation/ro:
+          - roles/iam.serviceAccountTokenCreator
     ro:
       description: Team B app 0 read-only automation sa.
   bucket:
@@ -748,6 +806,9 @@ automation:
         - group:team-b-admins@example.org
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/ro
+    logging_config:
+      log_bucket: $storage_buckets:log-bucket
+      log_object_prefix: log-prefix
 
 # tftest-file id=7 path=data/projects/dev-tb-app0-0.yaml schema=project.schema.json
 ```
@@ -815,6 +876,7 @@ compute.disableSerialPortAccess:
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [aspect-types.tf](./aspect-types.tf) | Aspect types resources. | <code>dataplex-aspect-types</code> |  |
 | [automation.tf](./automation.tf) | None | <code>gcs</code> · <code>iam-service-account</code> |  |
 | [budgets.tf](./budgets.tf) | Billing budget factory locals. | <code>billing-account</code> |  |
 | [folders.tf](./folders.tf) | Folder hierarchy factory resources. | <code>folder</code> |  |
@@ -823,11 +885,13 @@ compute.disableSerialPortAccess:
 | [projects-bigquery.tf](./projects-bigquery.tf) | None | <code>bigquery-dataset</code> |  |
 | [projects-buckets.tf](./projects-buckets.tf) | None | <code>gcs</code> |  |
 | [projects-defaults.tf](./projects-defaults.tf) | None |  |  |
+| [projects-dns-armor.tf](./projects-dns-armor.tf) | None |  | <code>google_network_security_dns_threat_detector</code> |
 | [projects-kms.tf](./projects-kms.tf) | None | <code>kms</code> |  |
 | [projects-log-buckets.tf](./projects-log-buckets.tf) | None | <code>logging-bucket</code> |  |
 | [projects-pubsub.tf](./projects-pubsub.tf) | None | <code>pubsub</code> |  |
 | [projects-service-accounts.tf](./projects-service-accounts.tf) | None | <code>iam-service-account</code> |  |
 | [projects.tf](./projects.tf) | None | <code>project</code> | <code>terraform_data</code> |
+| [taxonomies.tf](./taxonomies.tf) | Taxonomy resources. | <code>data-catalog-policy-tag</code> |  |
 | [variables-billing.tf](./variables-billing.tf) | None |  |  |
 | [variables-folders.tf](./variables-folders.tf) | None |  |  |
 | [variables-projects.tf](./variables-projects.tf) | None |  |  |
@@ -837,32 +901,33 @@ compute.disableSerialPortAccess:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L163) | Path to folder with YAML resource description data files. | <code title="object&#40;&#123;&#10;  folders           &#61; optional&#40;string&#41;&#10;  project_templates &#61; optional&#40;string&#41;&#10;  projects          &#61; optional&#40;string&#41;&#10;  budgets &#61; optional&#40;object&#40;&#123;&#10;    billing_account_id &#61; string&#10;    data               &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [context](variables.tf#L17) | Context-specific interpolations. | <code title="object&#40;&#123;&#10;  condition_vars        &#61; optional&#40;map&#40;map&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  custom_roles          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  email_addresses       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  folder_ids            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  iam_principals        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  kms_keys              &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations             &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  log_buckets           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  notification_channels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_ids           &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  project_numbers       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  pubsub_topics         &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  tag_values            &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_host_projects     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  vpc_sc_perimeters     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_defaults](variables.tf#L40) | Optional default values used when corresponding project or folder data from files are missing. | <code title="object&#40;&#123;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  bucket &#61; optional&#40;object&#40;&#123;&#10;    force_destroy &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  labels          &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  locations &#61; optional&#40;object&#40;&#123;&#10;    bigquery &#61; optional&#40;string&#41;&#10;    logging  &#61; optional&#40;string&#41;&#10;    storage  &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  metric_scopes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  parent        &#61; optional&#40;string&#41;&#10;  prefix        &#61; optional&#40;string&#41;&#10;  project_reuse &#61; optional&#40;object&#40;&#123;&#10;    use_data_source &#61; optional&#40;bool, true&#41;&#10;    attributes &#61; optional&#40;object&#40;&#123;&#10;      name             &#61; string&#10;      number           &#61; number&#10;      services_enabled &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  shared_vpc_service_config &#61; optional&#40;object&#40;&#123;&#10;    host_project &#61; string&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_merges](variables.tf#L105) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code title="object&#40;&#123;&#10;  contacts                   &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes              &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_overrides](variables.tf#L124) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code title="object&#40;&#123;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  bucket &#61; optional&#40;object&#40;&#123;&#10;    force_destroy &#61; optional&#40;bool&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  contacts        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  deletion_policy &#61; optional&#40;string&#41;&#10;  locations &#61; optional&#40;object&#40;&#123;&#10;    bigquery &#61; optional&#40;string&#41;&#10;    logging  &#61; optional&#40;string&#41;&#10;    storage  &#61; optional&#40;string&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  parent &#61; optional&#40;string&#41;&#10;  prefix &#61; optional&#40;string&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name   &#61; optional&#40;string, &#34;Terraform-managed.&#34;&#41;&#10;    iam_self_roles &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  tag_bindings               &#61; optional&#40;map&#40;string&#41;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    forced_jit_service_identities  &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [folders](variables-folders.tf#L17) | Folders data merged with factory data. | <code title="map&#40;object&#40;&#123;&#10;  asset_feeds &#61; optional&#40;map&#40;object&#40;&#123;&#10;    billing_project &#61; string&#10;    content_type    &#61; optional&#40;string&#41;&#10;    asset_types     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    asset_names     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    feed_output_config &#61; object&#40;&#123;&#10;      pubsub_destination &#61; object&#40;&#123;&#10;        topic &#61; string&#10;      &#125;&#41;&#10;    &#125;&#41;&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; optional&#40;string&#41;&#10;      description &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  name                &#61; optional&#40;string&#41;&#10;  parent              &#61; optional&#40;string&#41;&#10;  deletion_protection &#61; optional&#40;bool&#41;&#10;  iam                 &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals_conditional &#61; optional&#40;map&#40;object&#40;&#123;&#10;    roles &#61; list&#40;string&#41;&#10;    condition &#61; object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  pam_entitlements &#61; optional&#40;map&#40;object&#40;&#123;&#10;    max_request_duration &#61; string&#10;    eligible_users       &#61; list&#40;string&#41;&#10;    privileged_access &#61; list&#40;object&#40;&#123;&#10;      role      &#61; string&#10;      condition &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    requester_justification_config &#61; optional&#40;object&#40;&#123;&#10;      not_mandatory &#61; optional&#40;bool, true&#41;&#10;      unstructured  &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;, &#123; not_mandatory &#61; false, unstructured &#61; true &#125;&#41;&#10;    manual_approvals &#61; optional&#40;object&#40;&#123;&#10;      require_approver_justification &#61; bool&#10;      steps &#61; list&#40;object&#40;&#123;&#10;        approvers                 &#61; list&#40;string&#41;&#10;        approvals_needed          &#61; optional&#40;number, 1&#41;&#10;        approver_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    additional_notification_targets &#61; optional&#40;object&#40;&#123;&#10;      admin_email_recipients     &#61; optional&#40;list&#40;string&#41;&#41;&#10;      requester_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [notification_channels](variables-billing.tf#L17) | Notification channels used by budget alerts. | <code title="map&#40;object&#40;&#123;&#10;  project_id   &#61; string&#10;  type         &#61; string&#10;  description  &#61; optional&#40;string&#41;&#10;  display_name &#61; optional&#40;string&#41;&#10;  enabled      &#61; optional&#40;bool, true&#41;&#10;  force_delete &#61; optional&#40;bool&#41;&#10;  labels       &#61; optional&#40;map&#40;string&#41;&#41;&#10;  sensitive_labels &#61; optional&#40;list&#40;object&#40;&#123;&#10;    auth_token  &#61; optional&#40;string&#41;&#10;    password    &#61; optional&#40;string&#41;&#10;    service_key &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  user_labels &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [projects](variables-projects.tf#L17) | Projects data merged with factory data. | <code title="map&#40;object&#40;&#123;&#10;  asset_feeds &#61; optional&#40;map&#40;object&#40;&#123;&#10;    billing_project &#61; optional&#40;string&#41;&#10;    content_type    &#61; optional&#40;string&#41;&#10;    asset_types     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    asset_names     &#61; optional&#40;list&#40;string&#41;&#41;&#10;    feed_output_config &#61; object&#40;&#123;&#10;      pubsub_destination &#61; object&#40;&#123;&#10;        topic &#61; string&#10;      &#125;&#41;&#10;    &#125;&#41;&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; optional&#40;string&#41;&#10;      description &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  automation &#61; optional&#40;object&#40;&#123;&#10;    project &#61; string&#10;    bucket &#61; optional&#40;object&#40;&#123;&#10;      location                    &#61; string&#10;      description                 &#61; optional&#40;string&#41;&#10;      force_destroy               &#61; optional&#40;bool&#41;&#10;      prefix                      &#61; optional&#40;string&#41;&#10;      storage_class               &#61; optional&#40;string, &#34;STANDARD&#34;&#41;&#10;      uniform_bucket_level_access &#61; optional&#40;bool, true&#41;&#10;      versioning                  &#61; optional&#40;bool&#41;&#10;      iam                         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;        members &#61; list&#40;string&#41;&#10;        role    &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;        member &#61; string&#10;        role   &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      labels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      managed_folders &#61; optional&#40;map&#40;object&#40;&#123;&#10;        force_destroy &#61; optional&#40;bool&#41;&#10;        iam           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;        iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;          members &#61; list&#40;string&#41;&#10;          role    &#61; string&#10;          condition &#61; optional&#40;object&#40;&#123;&#10;            expression  &#61; string&#10;            title       &#61; string&#10;            description &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;, &#123;&#125;&#41;&#10;        iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;          member &#61; string&#10;          role   &#61; string&#10;          condition &#61; optional&#40;object&#40;&#123;&#10;            expression  &#61; string&#10;            title       &#61; string&#10;            description &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      lifecycle_rules &#61; optional&#40;map&#40;object&#40;&#123;&#10;        action &#61; object&#40;&#123;&#10;          type          &#61; string&#10;          storage_class &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#10;        condition &#61; object&#40;&#123;&#10;          age                        &#61; optional&#40;number&#41;&#10;          created_before             &#61; optional&#40;string&#41;&#10;          custom_time_before         &#61; optional&#40;string&#41;&#10;          days_since_custom_time     &#61; optional&#40;number&#41;&#10;          days_since_noncurrent_time &#61; optional&#40;number&#41;&#10;          matches_prefix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;          matches_storage_class      &#61; optional&#40;list&#40;string&#41;&#41;&#10;          matches_suffix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;          noncurrent_time_before     &#61; optional&#40;string&#41;&#10;          num_newer_versions         &#61; optional&#40;number&#41;&#10;          with_state                 &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      retention_policy &#61; optional&#40;object&#40;&#123;&#10;        retention_period &#61; string&#10;        is_locked        &#61; optional&#40;bool&#41;&#10;      &#125;&#41;&#41;&#10;      soft_delete_retention &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      iam         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;        members &#61; list&#40;string&#41;&#10;        role    &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;        member &#61; string&#10;        role   &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      iam_billing_roles      &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_folder_roles       &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_organization_roles &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_project_roles      &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_sa_roles           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_storage_roles      &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  billing_account &#61; optional&#40;string&#41;&#10;  billing_budgets &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  buckets &#61; optional&#40;map&#40;object&#40;&#123;&#10;    location                    &#61; string&#10;    description                 &#61; optional&#40;string&#41;&#10;    force_destroy               &#61; optional&#40;bool&#41;&#10;    prefix                      &#61; optional&#40;string&#41;&#10;    storage_class               &#61; optional&#40;string, &#34;STANDARD&#34;&#41;&#10;    uniform_bucket_level_access &#61; optional&#40;bool, true&#41;&#10;    versioning                  &#61; optional&#40;bool&#41;&#10;    iam                         &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    labels &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    managed_folders &#61; optional&#40;map&#40;object&#40;&#123;&#10;      force_destroy &#61; optional&#40;bool&#41;&#10;      iam           &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;        members &#61; list&#40;string&#41;&#10;        role    &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;        member &#61; string&#10;        role   &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    lifecycle_rules &#61; optional&#40;map&#40;object&#40;&#123;&#10;      action &#61; object&#40;&#123;&#10;        type          &#61; string&#10;        storage_class &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#10;      condition &#61; object&#40;&#123;&#10;        age                        &#61; optional&#40;number&#41;&#10;        created_before             &#61; optional&#40;string&#41;&#10;        custom_time_before         &#61; optional&#40;string&#41;&#10;        days_since_custom_time     &#61; optional&#40;number&#41;&#10;        days_since_noncurrent_time &#61; optional&#40;number&#41;&#10;        matches_prefix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;        matches_storage_class      &#61; optional&#40;list&#40;string&#41;&#41;&#10;        matches_suffix             &#61; optional&#40;list&#40;string&#41;&#41;&#10;        noncurrent_time_before     &#61; optional&#40;string&#41;&#10;        num_newer_versions         &#61; optional&#40;number&#41;&#10;        with_state                 &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    retention_policy &#61; optional&#40;object&#40;&#123;&#10;      retention_period &#61; string&#10;      is_locked        &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    soft_delete_retention &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  contacts &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  datasets &#61; optional&#40;map&#40;object&#40;&#123;&#10;    encryption_key &#61; optional&#40;string&#41;&#10;    friendly_name  &#61; optional&#40;string&#41;&#10;    location       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;    members &#61; list&#40;string&#41;&#10;    role    &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;    member &#61; string&#10;    role   &#61; string&#10;    condition &#61; optional&#40;object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  iam_by_principals_conditional &#61; optional&#40;map&#40;object&#40;&#123;&#10;    roles &#61; list&#40;string&#41;&#10;    condition &#61; object&#40;&#123;&#10;      expression  &#61; string&#10;      title       &#61; string&#10;      description &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  kms &#61; optional&#40;object&#40;&#123;&#10;    autokeys &#61; optional&#40;map&#40;object&#40;&#123;&#10;      location               &#61; string&#10;      resource_type_selector &#61; string&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    keyrings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      location &#61; string&#10;      iam      &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;        members &#61; list&#40;string&#41;&#10;        role    &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;        member &#61; string&#10;        role   &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      keys &#61; optional&#40;map&#40;object&#40;&#123;&#10;        destroy_scheduled_duration &#61; optional&#40;string&#41;&#10;        rotation_period            &#61; optional&#40;string&#41;&#10;        purpose                    &#61; optional&#40;string, &#34;ENCRYPT_DECRYPT&#34;&#41;&#10;        iam                        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;        iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;          members &#61; list&#40;string&#41;&#10;          role    &#61; string&#10;          condition &#61; optional&#40;object&#40;&#123;&#10;            expression  &#61; string&#10;            title       &#61; string&#10;            description &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;, &#123;&#125;&#41;&#10;        iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;          member &#61; string&#10;          role   &#61; string&#10;          condition &#61; optional&#40;object&#40;&#123;&#10;            expression  &#61; string&#10;            title       &#61; string&#10;            description &#61; optional&#40;string&#41;&#10;          &#125;&#41;&#41;&#10;        &#125;&#41;&#41;, &#123;&#125;&#41;&#10;        version_template &#61; optional&#40;object&#40;&#123;&#10;          algorithm        &#61; string&#10;          protection_level &#61; optional&#40;string, &#34;SOFTWARE&#34;&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;, &#123;&#125;&#41;&#10;  labels        &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  metric_scopes &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  pam_entitlements &#61; optional&#40;map&#40;object&#40;&#123;&#10;    max_request_duration &#61; string&#10;    eligible_users       &#61; list&#40;string&#41;&#10;    privileged_access &#61; list&#40;object&#40;&#123;&#10;      role      &#61; string&#10;      condition &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;&#10;    requester_justification_config &#61; optional&#40;object&#40;&#123;&#10;      not_mandatory &#61; optional&#40;bool, true&#41;&#10;      unstructured  &#61; optional&#40;bool, false&#41;&#10;    &#125;&#41;, &#123; not_mandatory &#61; false, unstructured &#61; true &#125;&#41;&#10;    manual_approvals &#61; optional&#40;object&#40;&#123;&#10;      require_approver_justification &#61; bool&#10;      steps &#61; list&#40;object&#40;&#123;&#10;        approvers                 &#61; list&#40;string&#41;&#10;        approvals_needed          &#61; optional&#40;number, 1&#41;&#10;        approver_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    additional_notification_targets &#61; optional&#40;object&#40;&#123;&#10;      admin_email_recipients     &#61; optional&#40;list&#40;string&#41;&#41;&#10;      requester_email_recipients &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  name             &#61; optional&#40;string&#41;&#10;  descriptive_name &#61; optional&#40;string&#41;&#10;  org_policies &#61; optional&#40;map&#40;object&#40;&#123;&#10;    inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;    reset               &#61; optional&#40;bool&#41;&#10;    rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;      allow &#61; optional&#40;object&#40;&#123;&#10;        all    &#61; optional&#40;bool&#41;&#10;        values &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      deny &#61; optional&#40;object&#40;&#123;&#10;        all    &#61; optional&#40;bool&#41;&#10;        values &#61; optional&#40;list&#40;string&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      enforce &#61; optional&#40;bool&#41; &#35; for boolean policies only.&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        description &#61; optional&#40;string&#41;&#10;        expression  &#61; optional&#40;string&#41;&#10;        location    &#61; optional&#40;string&#41;&#10;        title       &#61; optional&#40;string&#41;&#10;      &#125;&#41;, &#123;&#125;&#41;&#10;      parameters &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  parent &#61; optional&#40;string&#41;&#10;  prefix &#61; optional&#40;string&#41;&#10;  pubsub_topics &#61; optional&#40;map&#40;object&#40;&#123;&#10;    iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;      members &#61; list&#40;string&#41;&#10;      role    &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;      member &#61; string&#10;      role   &#61; string&#10;      condition &#61; optional&#40;object&#40;&#123;&#10;        expression  &#61; string&#10;        title       &#61; string&#10;        description &#61; optional&#40;string&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;    iam_by_principals          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    kms_key                    &#61; optional&#40;string&#41;&#10;    labels                     &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;    message_retention_duration &#61; optional&#40;string&#41;&#10;    regions                    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    schema &#61; optional&#40;object&#40;&#123;&#10;      definition   &#61; string&#10;      msg_encoding &#61; optional&#40;string, &#34;ENCODING_UNSPECIFIED&#34;&#41;&#10;      schema_type  &#61; string&#10;    &#125;&#41;&#41;&#10;    subscriptions &#61; optional&#40;map&#40;object&#40;&#123;&#10;      ack_deadline_seconds         &#61; optional&#40;number&#41;&#10;      enable_exactly_once_delivery &#61; optional&#40;bool, false&#41;&#10;      enable_message_ordering      &#61; optional&#40;bool, false&#41;&#10;      expiration_policy_ttl        &#61; optional&#40;string&#41;&#10;      filter                       &#61; optional&#40;string&#41;&#10;      iam                          &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings &#61; optional&#40;map&#40;object&#40;&#123;&#10;        members &#61; list&#40;string&#41;&#10;        role    &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      iam_bindings_additive &#61; optional&#40;map&#40;object&#40;&#123;&#10;        member &#61; string&#10;        role   &#61; string&#10;        condition &#61; optional&#40;object&#40;&#123;&#10;          expression  &#61; string&#10;          title       &#61; string&#10;          description &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;, &#123;&#125;&#41;&#10;      labels                     &#61; optional&#40;map&#40;string&#41;&#41;&#10;      message_retention_duration &#61; optional&#40;string&#41;&#10;      retain_acked_messages      &#61; optional&#40;bool, false&#41;&#10;      bigquery &#61; optional&#40;object&#40;&#123;&#10;        table                 &#61; string&#10;        drop_unknown_fields   &#61; optional&#40;bool, false&#41;&#10;        service_account_email &#61; optional&#40;string&#41;&#10;        use_table_schema      &#61; optional&#40;bool, false&#41;&#10;        use_topic_schema      &#61; optional&#40;bool, false&#41;&#10;        write_metadata        &#61; optional&#40;bool, false&#41;&#10;      &#125;&#41;&#41;&#10;      cloud_storage &#61; optional&#40;object&#40;&#123;&#10;        bucket          &#61; string&#10;        filename_prefix &#61; optional&#40;string&#41;&#10;        filename_suffix &#61; optional&#40;string&#41;&#10;        max_duration    &#61; optional&#40;string&#41;&#10;        max_bytes       &#61; optional&#40;number&#41;&#10;        avro_config &#61; optional&#40;object&#40;&#123;&#10;          write_metadata &#61; optional&#40;bool, false&#41;&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      dead_letter_policy &#61; optional&#40;object&#40;&#123;&#10;        topic                 &#61; string&#10;        max_delivery_attempts &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;      push &#61; optional&#40;object&#40;&#123;&#10;        endpoint   &#61; string&#10;        attributes &#61; optional&#40;map&#40;string&#41;&#41;&#10;        no_wrapper &#61; optional&#40;object&#40;&#123;&#10;          write_metadata &#61; optional&#40;bool, false&#41;&#10;        &#125;&#41;&#41;&#10;        oidc_token &#61; optional&#40;object&#40;&#123;&#10;          audience              &#61; optional&#40;string&#41;&#10;          service_account_email &#61; string&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#41;&#10;      retry_policy &#61; optional&#40;object&#40;&#123;&#10;        minimum_backoff &#61; optional&#40;number&#41;&#10;        maximum_backoff &#61; optional&#40;number&#41;&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  service_accounts &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name      &#61; optional&#40;string&#41;&#10;    iam_self_roles    &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    iam_project_roles &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  service_encryption_key_ids &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  services                   &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  shared_vpc_host_config &#61; optional&#40;object&#40;&#123;&#10;    enabled          &#61; bool&#10;    service_projects &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  shared_vpc_service_config &#61; optional&#40;object&#40;&#123;&#10;    host_project             &#61; string&#10;    network_users            &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    service_agent_iam        &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_agent_subnet_iam &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;    service_iam_grants       &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    network_subnet_users     &#61; optional&#40;map&#40;list&#40;string&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;&#10;  tag_bindings &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  universe &#61; optional&#40;object&#40;&#123;&#10;    prefix                         &#61; string&#10;    unavailable_services           &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;    unavailable_service_identities &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;  &#125;&#41;&#41;&#10;  vpc_sc &#61; optional&#40;object&#40;&#123;&#10;    perimeter_name &#61; string&#10;    is_dry_run     &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  workload_identity_pools &#61; optional&#40;map&#40;object&#40;&#123;&#10;    display_name &#61; optional&#40;string&#41;&#10;    description  &#61; optional&#40;string&#41;&#10;    disabled     &#61; optional&#40;bool&#41;&#10;    providers &#61; optional&#40;map&#40;object&#40;&#123;&#10;      display_name        &#61; optional&#40;string&#41;&#10;      description         &#61; optional&#40;string&#41;&#10;      attribute_condition &#61; optional&#40;string&#41;&#10;      attribute_mapping   &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;      disabled            &#61; optional&#40;bool, false&#41;&#10;      identity_provider &#61; object&#40;&#123;&#10;        aws &#61; optional&#40;object&#40;&#123;&#10;          account_id &#61; string&#10;        &#125;&#41;&#41;&#10;        oidc &#61; optional&#40;object&#40;&#123;&#10;          allowed_audiences &#61; optional&#40;list&#40;string&#41;, &#91;&#93;&#41;&#10;          issuer_uri        &#61; optional&#40;string&#41;&#10;          jwks_json         &#61; optional&#40;string&#41;&#10;          template          &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#41;&#10;        saml &#61; optional&#40;object&#40;&#123;&#10;          idp_metadata_xml &#61; string&#10;        &#125;&#41;&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;, &#123;&#125;&#41;&#10;  &#125;&#41;&#41;, &#123;&#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L200) | Path to folder with YAML resource description data files. Exclusions match the start of file paths, relative to their containing folder. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_defaults](variables.tf#L47) | Optional default values used when corresponding project or folder data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_merges](variables.tf#L130) | Optional values that will be merged with corresponding data from files. Combines with `data_defaults`, file data, and `data_overrides`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [data_overrides](variables.tf#L149) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [folders](variables-folders.tf#L17) | Folders data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [notification_channels](variables-billing.tf#L17) | Notification channels used by budget alerts. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [projects](variables-projects.tf#L17) | Projects data merged with factory data. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L91) | Folder ids. |  |
-| [iam_principals](outputs.tf#L96) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L101) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L106) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L113) | Project ids. |  |
-| [project_numbers](outputs.tf#L118) | Project numbers. |  |
-| [projects](outputs.tf#L125) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L130) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L137) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L144) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L151) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L158) | Service account emails. |  |
-| [storage_buckets](outputs.tf#L163) | Bucket names. |  |
+| [folder_ids](outputs.tf#L107) | Folder ids. |  |
+| [iam_principals](outputs.tf#L112) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L117) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L122) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L129) | Project ids. |  |
+| [project_numbers](outputs.tf#L134) | Project numbers. |  |
+| [projects](outputs.tf#L141) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L146) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L153) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L160) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L167) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L174) | Service account emails. |  |
+| [service_agents](outputs.tf#L179) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L190) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
@@ -871,11 +936,28 @@ These tests validate fixes to the project factory.
 ```hcl
 module "project-factory" {
   source = "./fabric/modules/project-factory"
+  context = {
+    condition_vars = {
+      organization = {
+        id = 1234567890
+      }
+    }
+    iam_principals = {
+      tag-test = "user:user1@example.com"
+    }
+    tag_keys = {
+      "context" = "tagKeys/1234567890"
+    }
+    tag_values = {
+      "context/project-factory" = "tagValues/1234567890"
+    }
+  }
   data_defaults = {
     billing_account = "012345-67890A-ABCDEF"
     locations = {
       storage = "eu"
     }
+    prefix = "foo"
   }
   data_merges = {
     labels = {
@@ -885,36 +967,70 @@ module "project-factory" {
       "compute.googleapis.com"
     ]
   }
-  data_overrides = {
-    prefix = "foo"
-  }
   factories_config = {
-    projects = "data/projects"
+    basepath = "data"
   }
 }
-# tftest modules=4 resources=24 files=test-0,test-1,test-2 inventory=test-1.yaml
+# tftest modules=10 resources=36 files=test-0,test-1,test-2 inventory=test-1.yaml
 ```
 
 ```yaml
 parent: folders/1234567890
+# prefix from defaults (foo)
 services:
   - iam.googleapis.com
   - contactcenteraiplatform.googleapis.com
   - container.googleapis.com
+iam_bindings_additive:
+  test_context:
+    role: roles/viewer
+    member: user:user1@example.com
+    condition:
+      title: Test context
+      expression: resource.matchTag('${organization.id}/context', 'project-factory')
+tags:
+  context:
+    description: Test org-level tag value shadowing.
+    values:
+      project-factory:
+        description: Test value.
+        iam:
+          roles/resourcemanager.tagUser:
+            - $iam_principals:tag-test
+            - $iam_principals:service_accounts/test-1/tag-test
+service_accounts:
+  tag-test:
+    tag_bindings:
+      project-level: $tag_values:test-0/context/project-factory
+automation:
+  project: test-0
+  service_accounts:
+    auto-tag-test:
+      tag_bindings:
+        project-level: $tag_values:test-0/context/project-factory
 # tftest-file id=test-0 path=data/projects/test-0.yaml
 ```
 
 ```yaml
 parent: folders/1234567890
 descriptive_name: "Test Project 1"
+# null prefix
+prefix: null
 services:
   - iam.googleapis.com
   - contactcenteraiplatform.googleapis.com
+service_accounts:
+  tag-test: {}
+tag_bindings:
+  org-level: $tag_values:context/project-factory
+  project-level: $tag_values:test-0/context/project-factory
 # tftest-file id=test-1 path=data/projects/test-1.yaml
 ```
 
 ```yaml
 parent: folders/1234567890
+# explicit prefix
+prefix: bar
 services:
   - iam.googleapis.com
   - storage.googleapis.com

@@ -18,7 +18,7 @@
 
 locals {
   hc = (
-    var.health_check != null ? null : var.health_check_config
+    local.has_psc_backend || var.health_check != null ? null : var.health_check_config
   )
   hc_grpc  = try(local.hc.grpc, null) != null
   hc_http  = try(local.hc.http, null) != null
@@ -31,14 +31,14 @@ locals {
 resource "google_compute_region_health_check" "default" {
   provider            = google-beta
   count               = local.hc != null ? 1 : 0
-  project             = var.project_id
-  name                = coalesce(local.hc.name, var.name)
-  region              = var.region
-  description         = local.hc.description
-  check_interval_sec  = local.hc.check_interval_sec
-  healthy_threshold   = local.hc.healthy_threshold
-  timeout_sec         = local.hc.timeout_sec
-  unhealthy_threshold = local.hc.unhealthy_threshold
+  project             = local.project_id
+  name                = coalesce(try(local.hc.name, null), var.name)
+  region              = local.region
+  description         = try(local.hc.description, null)
+  check_interval_sec  = try(local.hc.check_interval_sec, null)
+  healthy_threshold   = try(local.hc.healthy_threshold, null)
+  timeout_sec         = try(local.hc.timeout_sec, null)
+  unhealthy_threshold = try(local.hc.unhealthy_threshold, null)
 
   dynamic "grpc_health_check" {
     for_each = local.hc_grpc ? [""] : []

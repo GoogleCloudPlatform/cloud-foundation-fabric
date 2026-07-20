@@ -1,0 +1,63 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.folder.google_folder.folder[0]:
+    deletion_protection: false
+    display_name: Folder name
+    parent: folders/1122334455
+    tags: null
+    timeouts: null
+  module.folder.google_iam_deny_policy.default["conditional-delete-deny"]:
+    display_name: Conditional instance deletion deny
+    name: conditional-delete-deny
+    rules:
+    - deny_rule:
+      - denial_condition:
+        - description: Prevent deletion of instances tagged as production.
+          expression: resource.matchTag('123456789012/environment', 'prod')
+          location: null
+          title: prevent_prod_deletion
+        denied_permissions:
+        - compute.googleapis.com/instances.delete
+        denied_principals:
+        - principalSet://goog/public:all
+        exception_permissions: []
+        exception_principals: []
+      description: Deny deletion of compute instances based on resource tags.
+    timeouts: null
+  module.folder.google_iam_deny_policy.default["prevent-key-creation"]:
+    display_name: Prevent SA key creation
+    name: prevent-key-creation
+    rules:
+    - deny_rule:
+      - denial_condition: []
+        denied_permissions:
+        - iam.googleapis.com/serviceAccountKeys.create
+        denied_principals:
+        - principalSet://goog/public:all
+        exception_permissions: []
+        exception_principals:
+        - principalSet://goog/group/gcp-folder-admins@example.com
+      description: Deny service account key creation to all except the folder admin
+        group.
+    timeouts: null
+
+counts:
+  google_folder: 1
+  google_iam_deny_policy: 2
+  modules: 1
+  resources: 3
+
+outputs: {}

@@ -19,7 +19,7 @@ locals {
   ctx = {
     for k, v in var.context : k => {
       for kk, vv in v : "${local.ctx_p}${k}:${kk}" => vv
-    } if k != "condition_vars"
+    } if !endswith(k, "_vars")
   }
   ctx_kms_keys = merge(local.ctx.kms_keys, {
     for k, v in google_kms_key_handle.default : "$kms_keys:autokeys/${k}" => v.kms_key
@@ -125,7 +125,12 @@ resource "google_storage_bucket" "bucket" {
   dynamic "logging" {
     for_each = var.logging_config == null ? [] : [""]
     content {
-      log_bucket        = var.logging_config.log_bucket
+      # log_bucket is actually a storage bucket (and not a logging bucket)
+      log_bucket = var.logging_config.log_bucket == null ? null : lookup(
+        local.ctx.storage_buckets,
+        var.logging_config.log_bucket,
+        var.logging_config.log_bucket
+      )
       log_object_prefix = var.logging_config.log_object_prefix
     }
   }

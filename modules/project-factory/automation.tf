@@ -46,6 +46,7 @@ locals {
       lifecycle_rules       = lookup(v.bucket, "lifecycle_rules", {})
       retention_policy      = lookup(v.bucket, "retention_policy", null)
       soft_delete_retention = lookup(v.bucket, "soft_delete_retention", null)
+      logging_config        = lookup(v.bucket, "logging_config", null)
       prefix = try(coalesce(
         local.data_defaults.overrides.prefix,
         v.prefix,
@@ -59,7 +60,7 @@ locals {
         automation_project = v.project
         name               = sk
         parent             = k
-        parent_name        = v.parent_name
+        prefix             = try(sv.prefix, v.parent_name)
       })
     ] if v.service_accounts != null
   ]))
@@ -95,8 +96,9 @@ module "automation-bucket" {
     local.data_defaults.defaults.force_destroy,
   ), null)
   context = merge(local.ctx, {
-    project_ids    = local.ctx_project_ids
-    iam_principals = local.ctx_iam_principals
+    project_ids     = local.ctx_project_ids
+    iam_principals  = local.ctx_iam_principals
+    storage_buckets = local.ctx.storage_buckets
   })
   iam                   = lookup(each.value, "iam", {})
   iam_bindings          = lookup(each.value, "iam_bindings", {})
@@ -120,13 +122,23 @@ module "automation-bucket" {
   )
   retention_policy      = each.value.retention_policy
   soft_delete_retention = each.value.soft_delete_retention
+  logging_config        = each.value.logging_config
 }
 
 module "automation-service-accounts" {
-  source      = "../iam-service-account"
-  for_each    = local.automation_sas
-  project_id  = each.value.automation_project
-  prefix      = each.value.parent_name
+  source     = "../iam-service-account"
+  for_each   = local.automation_sas
+  project_id = each.value.automation_project
+  project_number = (
+    each.value.automation_project == null
+    ? null
+    : lookup(
+      local.ctx_project_numbers,
+      trimprefix(each.value.automation_project, "$project_ids:"),
+      null
+    )
+  )
+  prefix      = each.value.prefix
   name        = each.value.name
   description = lookup(each.value, "description", null)
   display_name = lookup(
@@ -140,6 +152,11 @@ module "automation-service-accounts" {
       local.ctx.iam_principals,
       local.projects_sas_iam_emails
     )
+    tag_vars = {
+      projects     = merge(try(local.ctx.tag_vars.projects, {}), local.tag_vars_projects)
+      organization = try(local.ctx.tag_vars.organization, {})
+    }
+    tag_values = local.ctx_tag_values
   })
   iam                    = lookup(each.value, "iam", {})
   iam_bindings           = lookup(each.value, "iam_bindings", {})
@@ -151,6 +168,7 @@ module "automation-service-accounts" {
   # iam_sa_roles           = lookup(each.value, "iam_sa_roles", {})
   # we don't interpolate buckets here as we can't use a dynamic key
   iam_storage_roles = lookup(each.value, "iam_storage_roles", {})
+  tag_bindings      = lookup(each.value, "tag_bindings", {})
 }
 
 module "automation-service-accounts-iam" {
@@ -159,10 +177,9 @@ module "automation-service-accounts-iam" {
     for k, v in local.automation_sas :
     k => v if lookup(v, "iam_sa_roles", null) != null
   }
-  project_id = (
-    module.automation-service-accounts[each.key].service_account.project
-  )
-  name = module.automation-service-accounts[each.key].name
+  project_id = each.value.automation_project
+  prefix     = each.value.prefix
+  name       = each.value.name
   service_account_reuse = {
     use_data_source = false
   }

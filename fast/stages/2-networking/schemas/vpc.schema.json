@@ -18,6 +18,27 @@
     "description": {
       "type": "string"
     },
+    "factories_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firewall_rules": {
+          "type": "string"
+        },
+        "attachment_groups": {
+          "type": "string"
+        },
+        "subnets": {
+          "type": "string"
+        },
+        "vlan_attachments": {
+          "type": "string"
+        },
+        "vpns": {
+          "type": "string"
+        }
+      }
+    },
     "auto_create_subnetworks": {
       "type": "boolean"
     },
@@ -176,6 +197,9 @@
           "properties": {
             "region": {
               "type": "string"
+            },
+            "num_nat_ips": {
+              "type": "number"
             }
           }
         }
@@ -270,8 +294,12 @@
             },
             "labels": {
               "type": "object",
-              "additionalProperties": {
-                "type": "string"
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
+                }
               }
             },
             "next_hop_ilb_ip": {

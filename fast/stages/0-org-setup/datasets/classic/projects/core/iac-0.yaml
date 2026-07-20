@@ -1,4 +1,4 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ iam_by_principals:
     - roles/serviceusage.serviceUsageConsumer
 services:
   - accesscontextmanager.googleapis.com
+# uncomment if you want to use Assured Workloads
+#  - assuredworkloads.googleapis.com
   - bigquery.googleapis.com
   - bigqueryreservation.googleapis.com
   - bigquerystorage.googleapis.com
@@ -81,11 +83,17 @@ org_policies:
             - https://token.actions.githubusercontent.com
             - https://gitlab.com
             - https://app.terraform.io
+factories_config:
+  observability: observability/iac-0
 data_access_logs:
   storage.googleapis.com:
     DATA_READ: {}
     DATA_WRITE: {}
   sts.googleapis.com:
+    DATA_READ: {}
+    DATA_WRITE: {}
+  # required to capture service account impersonation events
+  iam.googleapis.com:
     DATA_READ: {}
     DATA_WRITE: {}
 buckets:
@@ -127,12 +135,6 @@ buckets:
             - $iam_principals:service_accounts/iac-0/iac-pf-rw
           $custom_roles:storage_viewer:
             - $iam_principals:service_accounts/iac-0/iac-pf-ro
-      3-data-platform-dev:
-        iam:
-          roles/storage.admin:
-            - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
-          $custom_roles:storage_viewer:
-            - $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
   # Terraform state bucket for FAST outputs
   iac-outputs:
     description: Terraform state for the org-level automation.
@@ -140,14 +142,12 @@ buckets:
     iam:
       roles/storage.admin:
         - $iam_principals:service_accounts/iac-0/iac-org-rw
-        - $iam_principals:service_accounts/iac-0/iac-dp-dev-rw
         - $iam_principals:service_accounts/iac-0/iac-networking-rw
         - $iam_principals:service_accounts/iac-0/iac-security-rw
         - $iam_principals:service_accounts/iac-0/iac-pf-rw
         - $iam_principals:service_accounts/iac-0/iac-vpcsc-rw
       $custom_roles:storage_viewer:
         - $iam_principals:service_accounts/iac-0/iac-org-ro
-        - $iam_principals:service_accounts/iac-0/iac-dp-dev-ro
         - $iam_principals:service_accounts/iac-0/iac-networking-ro
         - $iam_principals:service_accounts/iac-0/iac-security-ro
         - $iam_principals:service_accounts/iac-0/iac-pf-ro
@@ -193,11 +193,6 @@ service_accounts:
     display_name: IaC service account for project factory (read-only).
   iac-pf-rw:
     display_name: IaC service account for project factory (read-write).
-  # IaC service accounts for data platform (dev) stage
-  iac-dp-dev-ro:
-    display_name: IaC service account for data platform dev (read-only).
-  iac-dp-dev-rw:
-    display_name: IaC service account for data platform dev (read-write).
 # workload_identity_pools:
 #   default:
 #     display_name: Default pool for CI/CD.

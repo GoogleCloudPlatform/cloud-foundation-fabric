@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,19 @@ variable "address" {
   default     = null
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    addresses   = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "description" {
   description = "Optional description used for resources."
   type        = string
@@ -36,11 +49,23 @@ variable "global_access" {
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
+    name        = optional(string)
+    description = optional(string, "Terraform managed.")
     zone        = string
     instances   = optional(list(string))
     named_ports = optional(map(number), {})
     project_id  = optional(string)
   }))
+  default  = {}
+  nullable = false
+}
+
+variable "http_proxy_config" {
+  description = "HTTP proxy configuration. Only used for non-classic load balancers."
+  type = object({
+    name        = optional(string)
+    description = optional(string, "Terraform managed.")
+  })
   default  = {}
   nullable = false
 }
@@ -74,12 +99,14 @@ variable "neg_configs" {
     project_id  = optional(string)
     description = optional(string)
     cloudrun = optional(object({
-      region = string
+      region         = string
+      tag            = optional(string)
+      target_urlmask = optional(string)
       target_service = optional(object({
         name = string
-        tag  = optional(string)
+        # TODO: deprecate after one major release
+        tag = optional(string)
       }))
-      target_urlmask = optional(string)
     }))
     gce = optional(object({
       zone = string

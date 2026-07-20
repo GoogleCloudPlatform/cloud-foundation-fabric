@@ -1,25 +1,30 @@
 # Internal Proxy Network Load Balancer Module
 
-This module allows managing Internal HTTP/HTTPS Load Balancers (L7 ILBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
+This module allows managing Internal TCP proxy Load Balancers. It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
 
 Due to the complexity of the underlying resources, changes to the configuration that involve recreation of resources are best applied in stages, starting by disabling the configuration in the urlmap that references the resources that need recreation, then doing the same for the backend service, etc.
 
 ## Examples
 
 <!-- BEGIN TOC -->
+
 - [Examples](#examples)
   - [Minimal Example](#minimal-example)
   - [Health Checks](#health-checks)
+  - [Specify an existing IP address](#specify-an-existing-ip-address)
+  - [Specify multiple ports](#specify-multiple-ports)
   - [Instance Groups](#instance-groups)
   - [Network Endpoint Groups (NEGs)](#network-endpoint-groups-negs)
     - [Zonal NEG creation](#zonal-neg-creation)
     - [Hybrid NEG creation](#hybrid-neg-creation)
     - [Private Service Connect NEG creation](#private-service-connect-neg-creation)
     - [Internet NEG creation](#internet-neg-creation)
+  - [Context](#context)
 - [Deploying changes to load balancer configurations](#deploying-changes-to-load-balancer-configurations)
 - [Files](#files)
 - [Variables](#variables)
 - [Outputs](#outputs)
+
 <!-- END TOC -->
 
 ### Minimal Example
@@ -27,7 +32,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
 An Regional internal proxy Network Load Balancer with a backend service pointing to an existing GCE instance group:
 
 ```hcl
-module "tcp-proxy" {
+module "int-tcp-proxy" {
   source     = "./fabric/modules/net-lb-proxy-int"
   name       = "ilb-test"
   project_id = var.project_id
@@ -42,7 +47,7 @@ module "tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=4
+# tftest inventory=minimal.yaml
 ```
 
 ### Health Checks
@@ -70,7 +75,7 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=4
+# tftest inventory=health-check-config.yaml
 ```
 
 To leverage an existing health check without having the module create them, simply pass its self link:
@@ -92,7 +97,92 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=3
+# tftest inventory=health-check-link.yaml
+```
+
+### Specify an existing IP address
+
+You can pass your forwarding rules existing IP addresses to use.
+
+```hcl
+module "address" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  internal_addresses = {
+    ilb = {
+      purpose    = "INTERNAL"
+      region     = "europe-west1"
+      subnetwork = var.subnet.self_link
+    }
+  }
+}
+
+module "int-tcp-proxy" {
+  source     = "./fabric/modules/net-lb-proxy-int"
+  name       = "int-tcp-proxy"
+  project_id = var.project_id
+  region     = "europe-west1"
+  forwarding_rules_config = {
+    "" = {
+      ip_address = module.address.internal_addresses["ilb"].address
+    }
+  }
+  backend_service_config = {
+    backends = [{
+      group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+    }]
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest inventory=address.yaml
+```
+
+### Specify multiple ports
+
+To make your load balancer listen on multiple ports you will need to create multiple forwarding rules listening on the same IP of type `SHARED_LOADBALANCER_VIP` (created outside the module).
+
+```hcl
+module "address" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  internal_addresses = {
+    ilb = {
+      purpose    = "SHARED_LOADBALANCER_VIP"
+      region     = "europe-west1"
+      subnetwork = var.subnet.self_link
+    }
+  }
+}
+
+module "int-tcp-proxy" {
+  source     = "./fabric/modules/net-lb-proxy-int"
+  name       = "int-tcp-proxy"
+  project_id = var.project_id
+  region     = "europe-west1"
+  forwarding_rules_config = {
+    http = {
+      ip_address = module.address.internal_addresses["ilb"].address
+      port       = 80
+    }
+    https = {
+      ip_address = module.address.internal_addresses["ilb"].address
+      port       = 443
+    }
+  }
+  backend_service_config = {
+    backends = [{
+      group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+    }]
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest inventory=ports.yaml
 ```
 
 ### Instance Groups
@@ -125,7 +215,7 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=5
+# tftest inventory=group-config.yaml
 ```
 
 ### Network Endpoint Groups (NEGs)
@@ -148,7 +238,7 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=4
+# tftest inventory=neg-link.yaml
 ```
 
 Similarly to instance groups, NEGs can also be managed by this module which supports GCE, hybrid and Private Service Connect NEGs:
@@ -156,15 +246,6 @@ Similarly to instance groups, NEGs can also be managed by this module which supp
 #### Zonal NEG creation
 
 ```hcl
-resource "google_compute_address" "test" {
-  project      = var.project_id
-  name         = "neg-test"
-  subnetwork   = var.subnet.self_link
-  address_type = "INTERNAL"
-  address      = "10.0.0.10"
-  region       = "europe-west1"
-}
-
 module "int-tcp-proxy" {
   source     = "./fabric/modules/net-lb-proxy-int"
   name       = "int-tcp-proxy"
@@ -186,9 +267,8 @@ module "int-tcp-proxy" {
         endpoints = {
           e-0 = {
             instance   = "test-1"
-            ip_address = google_compute_address.test.address
-            # ip_address = "10.0.0.10"
-            port = 80
+            ip_address = "10.0.0.10"
+            port       = 80
           }
         }
       }
@@ -199,7 +279,7 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=7 inventory=zonal-neg.yaml
+# tftest inventory=zonal-neg.yaml
 ```
 
 #### Hybrid NEG creation
@@ -237,40 +317,133 @@ module "int-tcp-proxy" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=6
+# tftest inventory=hybrid-neg.yaml
 ```
 
 #### Private Service Connect NEG creation
 
 ```hcl
+module "address-ilb" {
+  source     = "./fabric/modules/net-address"
+  project_id = var.project_id
+  internal_addresses = {
+    ilb-01 = {
+      purpose    = "SHARED_LOADBALANCER_VIP"
+      region     = var.region
+      subnetwork = module.vpc.subnets["${var.region}/sub-consumer-0"].id
+    }
+  }
+}
+
 module "int-tcp-proxy" {
   source     = "./fabric/modules/net-lb-proxy-int"
   name       = "int-tcp-proxy"
   project_id = var.project_id
-  region     = "europe-west1"
+  region     = var.region
+  forwarding_rules_config = {
+    http = {
+      ip_address = module.address-ilb.internal_addresses["ilb-01"].address
+      port       = 80
+    }
+    https = {
+      ip_address = module.address-ilb.internal_addresses["ilb-01"].address
+      port       = 443
+    }
+  }
   backend_service_config = {
     backends = [{
-      group          = "my-neg"
-      balancing_mode = "CONNECTION"
-      max_connections = {
-        per_endpoint = 10
-      }
+      group = "my-neg"
     }]
   }
   neg_configs = {
     my-neg = {
       psc = {
-        region         = "europe-west1"
-        target_service = "europe-west1-cloudkms.googleapis.com"
+        network        = module.vpc.id
+        subnetwork     = module.vpc.subnets["${var.region}/sub-consumer-0"].id
+        region         = var.region
+        producer_port  = 80
+        target_service = module.ilb-producer.service_attachment_ids["default"]
       }
     }
   }
   vpc_config = {
-    network    = var.vpc.self_link
-    subnetwork = var.subnet.self_link
+    network    = module.vpc.id
+    subnetwork = module.vpc.subnets["${var.region}/sub-consumer-0"].id
   }
 }
-# tftest modules=1 resources=5
+
+module "vpc" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = var.project_id
+  name       = "net-consumer-0"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "sub-consumer-0"
+      region        = var.region
+    }
+  ]
+  subnets_proxy_only = [
+    {
+      name          = "sub-proxy-consumer-0"
+      region        = var.region
+      ip_cidr_range = "10.0.1.0/26"
+      active        = true
+    }
+  ]
+}
+
+# PRODUCER - What the PSC NEG points to
+
+module "ilb-producer" {
+  source        = "./fabric/modules/net-lb-int"
+  project_id    = var.project_id
+  region        = "europe-west1"
+  name          = "ilb-producer"
+  service_label = "ilb-producer"
+  vpc_config = {
+    network    = module.vpc-producer.id
+    subnetwork = module.vpc-producer.subnets["${var.region}/sub-producer-0"].id
+  }
+  forwarding_rules_config = {
+    default = {}
+  }
+  service_attachments = {
+    default = {
+      nat_subnets          = [module.vpc-producer.subnets_psc["${var.region}/sub-psc-producer-0"].id]
+      automatic_connection = true
+    }
+  }
+}
+
+module "vpc-producer" {
+  source     = "./fabric/modules/net-vpc"
+  project_id = var.project_id
+  name       = "net-producer-0"
+  subnets = [
+    {
+      ip_cidr_range = "10.0.0.0/24"
+      name          = "sub-producer-0"
+      region        = var.region
+    }
+  ]
+  subnets_proxy_only = [
+    {
+      name          = "sub-proxy-producer-0"
+      region        = var.region
+      ip_cidr_range = "10.0.1.0/26"
+      active        = true
+    }
+  ]
+  subnets_psc = [
+    {
+      name          = "sub-psc-producer-0"
+      region        = var.region
+      ip_cidr_range = "10.0.2.0/26"
+    }
+  ]
+}
+# tftest inventory=psc-neg.yaml
 ```
 
 #### Internet NEG creation
@@ -278,7 +451,7 @@ module "int-tcp-proxy" {
 This example shows how to create and manage internet NEGs:
 
 ```hcl
-module "ilb-l7" {
+module "ilb-tcp-proxy" {
   source     = "./fabric/modules/net-lb-proxy-int"
   project_id = var.project_id
   name       = "ilb-test"
@@ -290,7 +463,6 @@ module "ilb-l7" {
     # with a single internet NEG the implied default health check is optional
     health_checks = []
   }
-  port = 80
   neg_configs = {
     neg-0 = {
       internet = {
@@ -310,10 +482,66 @@ module "ilb-l7" {
     subnetwork = var.subnet.self_link
   }
 }
-# tftest modules=1 resources=6 inventory=internet-neg.yaml e2e
+# tftest inventory=internet-neg.yaml e2e
+```
+
+### Context
+
+The module supports the contexts interpolation. For example:
+
+```hcl
+module "tcp-proxy" {
+  source     = "./fabric/modules/net-lb-proxy-int"
+  name       = "ilb-test"
+  project_id = "$project_ids:test"
+  region     = "$locations:ew8"
+  forwarding_rules_config = {
+    "" = {
+      ip_address = "$addresses:test"
+    }
+  }
+  backend_service_config = {
+    backends = [{
+      group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+    }]
+  }
+  group_configs = {
+    default = {
+      zone = "$locations:ew8-b"
+      instances = [
+        "projects/myprj/zones/europe-west1-b/instances/vm-a"
+      ]
+      named_ports = { http = 80 }
+    }
+  }
+  vpc_config = {
+    network    = "$networks:test"
+    subnetwork = "$subnets:test"
+  }
+  context = {
+    addresses = {
+      test = "10.0.0.10"
+    }
+    locations = {
+      ew8   = "europe-west8"
+      ew8-b = "europe-west8-b"
+    }
+    networks = {
+      test = "projects/foo-dev-net-spoke-0/global/networks/dev-spoke-0"
+    }
+    project_ids = {
+      test = "foo-test-0"
+    }
+    subnets = {
+      test = "projects/foo-dev-net-spoke-0/regions/europe-west8/subnetworks/gce"
+    }
+  }
+}
+# tftest inventory=context.yaml
 ```
 
 ## Deploying changes to load balancer configurations
+
 For deploying changes to load balancer configuration please refer to [net-lb-app-ext README.md](../net-lb-app-ext/README.md#deploying-changes-to-load-balancer-configurations)
 
 <!-- TFDOC OPTS files:1 -->
@@ -322,7 +550,7 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 | name | description | resources |
 |---|---|---|
-| [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_region_backend_service</code> |
+| [backend-service.tf](./backend-service.tf) | Backend service resources. | <code>google_compute_region_backend_service</code> · <code>terraform_data</code> |
 | [groups.tf](./groups.tf) | None | <code>google_compute_instance_group</code> |
 | [health-check.tf](./health-check.tf) | Health check resource. | <code>google_compute_region_health_check</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_forwarding_rule</code> · <code>google_compute_network_endpoint</code> · <code>google_compute_network_endpoint_group</code> · <code>google_compute_region_network_endpoint</code> · <code>google_compute_region_network_endpoint_group</code> · <code>google_compute_region_target_tcp_proxy</code> · <code>google_compute_service_attachment</code> |
@@ -334,37 +562,36 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L201) | Load balancer name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L270) | Project id. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L275) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L295) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
-| [backend_service_config](variables.tf#L23) | Backend service level configuration. | <code title="object&#40;&#123;&#10;  name                            &#61; optional&#40;string&#41;&#10;  description                     &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  affinity_cookie_ttl_sec         &#61; optional&#40;number&#41;&#10;  connection_draining_timeout_sec &#61; optional&#40;number&#41;&#10;  health_checks                   &#61; optional&#40;list&#40;string&#41;, &#91;&#34;default&#34;&#93;&#41;&#10;  log_sample_rate                 &#61; optional&#40;number&#41;&#10;  port_name                       &#61; optional&#40;string&#41;&#10;  project_id                      &#61; optional&#40;string&#41;&#10;  session_affinity                &#61; optional&#40;string, &#34;NONE&#34;&#41;&#10;  timeout_sec                     &#61; optional&#40;number&#41;&#10;  backends &#61; optional&#40;list&#40;object&#40;&#123;&#10;    group           &#61; string&#10;    balancing_mode  &#61; optional&#40;string, &#34;UTILIZATION&#34;&#41;&#10;    capacity_scaler &#61; optional&#40;number, 1&#41;&#10;    description     &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;    failover        &#61; optional&#40;bool, false&#41;&#10;    max_connections &#61; optional&#40;object&#40;&#123;&#10;      per_endpoint &#61; optional&#40;number&#41;&#10;      per_group    &#61; optional&#40;number&#41;&#10;      per_instance &#61; optional&#40;number&#41;&#10;    &#125;&#41;&#41;&#10;    max_utilization &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#41;&#10;  connection_tracking &#61; optional&#40;object&#40;&#123;&#10;    idle_timeout_sec          &#61; optional&#40;number&#41;&#10;    persist_conn_on_unhealthy &#61; optional&#40;string&#41;&#10;    track_per_session         &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  failover_config &#61; optional&#40;object&#40;&#123;&#10;    disable_conn_drain        &#61; optional&#40;bool&#41;&#10;    drop_traffic_if_unhealthy &#61; optional&#40;bool&#41;&#10;    ratio                     &#61; optional&#40;number&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L77) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [global_access](variables.tf#L84) | Allow client access from all regions. | <code>bool</code> |  | <code>null</code> |
-| [group_configs](variables.tf#L90) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  zone        &#61; string&#10;  instances   &#61; optional&#40;list&#40;string&#41;&#41;&#10;  named_ports &#61; optional&#40;map&#40;number&#41;, &#123;&#125;&#41;&#10;  project_id  &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L102) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L108) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;  name                &#61; optional&#40;string&#41;&#10;  check_interval_sec  &#61; optional&#40;number&#41;&#10;  description         &#61; optional&#40;string, &#34;Terraform managed.&#34;&#41;&#10;  enable_logging      &#61; optional&#40;bool, false&#41;&#10;  healthy_threshold   &#61; optional&#40;number&#41;&#10;  project_id          &#61; optional&#40;string&#41;&#10;  timeout_sec         &#61; optional&#40;number&#41;&#10;  unhealthy_threshold &#61; optional&#40;number&#41;&#10;  grpc &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    service_name       &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  http2 &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  https &#61; optional&#40;object&#40;&#123;&#10;    host               &#61; optional&#40;string&#41;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request_path       &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  tcp &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  ssl &#61; optional&#40;object&#40;&#123;&#10;    port               &#61; optional&#40;number&#41;&#10;    port_name          &#61; optional&#40;string&#41;&#10;    port_specification &#61; optional&#40;string&#41; &#35; USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT&#10;    proxy_header       &#61; optional&#40;string&#41;&#10;    request            &#61; optional&#40;string&#41;&#10;    response           &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  tcp &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L195) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [neg_configs](variables.tf#L206) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code title="map&#40;object&#40;&#123;&#10;  project_id &#61; optional&#40;string&#41;&#10;  gce &#61; optional&#40;object&#40;&#123;&#10;    zone &#61; string&#10;    network    &#61; optional&#40;string&#41;&#10;    subnetwork &#61; optional&#40;string&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      instance   &#61; string&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;&#10;&#10;  &#125;&#41;&#41;&#10;  hybrid &#61; optional&#40;object&#40;&#123;&#10;    zone    &#61; string&#10;    network &#61; optional&#40;string&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      ip_address &#61; string&#10;      port       &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  internet &#61; optional&#40;object&#40;&#123;&#10;    region   &#61; string&#10;    use_fqdn &#61; optional&#40;bool, true&#41;&#10;    endpoints &#61; optional&#40;map&#40;object&#40;&#123;&#10;      destination &#61; string&#10;      port        &#61; number&#10;    &#125;&#41;&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  psc &#61; optional&#40;object&#40;&#123;&#10;    region         &#61; string&#10;    target_service &#61; string&#10;    network        &#61; optional&#40;string&#41;&#10;    subnetwork     &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [port](variables.tf#L264) | Port. | <code>number</code> |  | <code>80</code> |
-| [service_attachment](variables.tf#L280) | PSC service attachment. | <code title="object&#40;&#123;&#10;  nat_subnets           &#61; list&#40;string&#41;&#10;  automatic_connection  &#61; optional&#40;bool, false&#41;&#10;  consumer_accept_lists &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41; &#35; map of &#96;project_id&#96; &#61;&#62; &#96;connection_limit&#96;&#10;  consumer_reject_lists &#61; optional&#40;list&#40;string&#41;&#41;&#10;  description           &#61; optional&#40;string&#41;&#10;  domain_name           &#61; optional&#40;string&#41;&#10;  enable_proxy_protocol &#61; optional&#40;bool, false&#41;&#10;  reconcile_connections &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [name](variables.tf#L213) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L277) | Project id. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L282) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L303) | VPC-level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L65) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L78) | Optional description used for resources. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [forwarding_rules_config](variables.tf#L84) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L100) | Optional unmanaged groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L114) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L120) | Optional auto-created health check configurations, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L207) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [neg_configs](variables.tf#L218) | Optional network endpoint groups to create. Can be referenced in backends via key or outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_attachment](variables.tf#L287) | PSC service attachment. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [address](outputs.tf#L17) | Forwarding rule address. |  |
-| [backend_service](outputs.tf#L22) | Backend resource. |  |
-| [backend_service_id](outputs.tf#L27) | Backend id. |  |
-| [backend_service_self_link](outputs.tf#L32) | Backend self link. |  |
-| [forwarding_rule](outputs.tf#L37) | Forwarding rule resource. |  |
-| [group_self_links](outputs.tf#L42) | Optional unmanaged instance group self links. |  |
-| [groups](outputs.tf#L49) | Optional unmanaged instance group resources. |  |
-| [health_check](outputs.tf#L54) | Auto-created health-check resource. |  |
-| [health_check_id](outputs.tf#L59) | Auto-created health-check id. |  |
-| [health_check_self_link](outputs.tf#L64) | Auto-created health-check self link. |  |
-| [id](outputs.tf#L69) | Fully qualified forwarding rule id. |  |
-| [neg_ids](outputs.tf#L74) | Autogenerated network endpoint group ids. |  |
-| [service_attachment_id](outputs.tf#L81) | Id of the service attachment. |  |
+| [address](outputs.tf#L17) | Forwarding rules addresses. |  |
+| [backend_service](outputs.tf#L25) | Backend resource. |  |
+| [backend_service_id](outputs.tf#L30) | Backend id. |  |
+| [backend_service_self_link](outputs.tf#L35) | Backend self link. |  |
+| [forwarding_rules](outputs.tf#L40) | Forwarding rule resources. |  |
+| [group_self_links](outputs.tf#L45) | Optional unmanaged instance group self links. |  |
+| [groups](outputs.tf#L52) | Optional unmanaged instance group resources. |  |
+| [health_check](outputs.tf#L57) | Auto-created health-check resource. |  |
+| [health_check_id](outputs.tf#L62) | Auto-created health-check id. |  |
+| [health_check_self_link](outputs.tf#L67) | Auto-created health-check self link. |  |
+| [ids](outputs.tf#L72) | Fully qualified forwarding rule ids. |  |
+| [neg_ids](outputs.tf#L79) | Autogenerated network endpoint group ids. |  |
+| [service_attachment_id](outputs.tf#L86) | Id of the service attachment. |  |
 <!-- END TFDOC -->

@@ -20,6 +20,20 @@ variable "addresses" {
   default     = null
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    addresses   = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
+
 variable "description" {
   description = "Optional description used for resources."
   type        = string
@@ -29,6 +43,8 @@ variable "description" {
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
+    name        = optional(string)
+    description = optional(string, "Terraform managed.")
     zone        = string
     instances   = optional(list(string))
     named_ports = optional(map(number), {})
@@ -58,6 +74,7 @@ variable "https_proxy_config" {
     http_keepalive_timeout           = optional(string)
     quic_override                    = optional(string)
     ssl_policy                       = optional(string)
+    server_tls_policy                = optional(string)
   })
   default  = {}
   nullable = false

@@ -18,6 +18,7 @@ variable "backend_buckets_config" {
   description = "Backend buckets configuration."
   type = map(object({
     bucket_name             = string
+    name                    = optional(string)
     compression_mode        = optional(string)
     custom_response_headers = optional(list(string))
     description             = optional(string)
@@ -46,6 +47,19 @@ variable "backend_buckets_config" {
   }))
   default  = {}
   nullable = true
+}
+
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    addresses   = optional(map(string), {})
+    locations   = optional(map(string), {})
+    networks    = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
 }
 
 variable "description" {
@@ -78,6 +92,8 @@ variable "forwarding_rules_config" {
 variable "group_configs" {
   description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
+    name        = optional(string)
+    description = optional(string, "Terraform managed.")
     zone        = string
     instances   = optional(list(string))
     named_ports = optional(map(number), {})

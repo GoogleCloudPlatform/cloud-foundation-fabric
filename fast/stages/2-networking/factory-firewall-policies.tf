@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,12 @@
 # tfdoc:file:description Firewall policies factory.
 
 locals {
-  _firewall_policies_path = try(
-    pathexpand(var.factories_config.firewall-policies), null
-  )
-  _firewall_policies_files = local._firewall_policies_path == null ? [] : fileset(
-    local._firewall_policies_path, "**/*.yaml"
+  _firewall_policies_files = local.paths.firewall_policies == null ? [] : fileset(
+    local.paths.firewall_policies, "**/*.yaml"
   )
   _firewall_policies_data = {
     for f in local._firewall_policies_files : replace(f, ".yaml", "") => yamldecode(
-      file("${local._firewall_policies_path}/${f}")
+      file("${local.paths.firewall_policies}/${f}")
     )
   }
   firewall_policies = {
@@ -38,17 +35,24 @@ locals {
   }
 }
 
-module "firewall_policies" {
+moved {
+  from = module.firewall_policies
+  to   = module.firewall-policies
+}
+
+module "firewall-policies" {
   source        = "../../../modules/net-firewall-policy"
   for_each      = local.firewall_policies
   attachments   = each.value.attachments
   name          = each.key
   parent_id     = each.value.parent
+  region        = try(each.value.region, null)
   egress_rules  = each.value.egress_rules
   ingress_rules = each.value.ingress_rules
   context = {
     folder_ids       = local.ctx_folders
     cidr_ranges_sets = local.ctx.cidr_ranges_sets
     tag_values       = local.ctx.tag_values
+    locations        = local.ctx.locations
   }
 }

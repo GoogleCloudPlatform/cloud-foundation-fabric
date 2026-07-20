@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,21 @@
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
-    cidr_ranges_sets  = optional(map(list(string)), {})
-    custom_roles      = optional(map(string), {})
-    email_addresses   = optional(map(string), {})
-    folder_ids        = optional(map(string), {})
-    kms_keys          = optional(map(string), {})
-    iam_principals    = optional(map(string), {})
-    locations         = optional(map(string), {})
-    project_ids       = optional(map(string), {})
-    storage_buckets   = optional(map(string), {})
-    tag_keys          = optional(map(string), {})
-    tag_values        = optional(map(string), {})
+    cidr_ranges_sets = optional(map(list(string)), {})
+    custom_roles     = optional(map(string), {})
+    email_addresses  = optional(map(string), {})
+    folder_ids       = optional(map(string), {})
+    kms_keys         = optional(map(string), {})
+    iam_principals   = optional(map(string), {})
+    locations        = optional(map(string), {})
+    project_ids      = optional(map(string), {})
+    storage_buckets  = optional(map(string), {})
+    tag_keys         = optional(map(string), {})
+    tag_values       = optional(map(string), {})
+    tag_vars = optional(object({
+      projects     = optional(map(map(string)), {})
+      organization = optional(map(string), {})
+    }), {})
     vpc_sc_perimeters = optional(map(string), {})
   })
   default  = {}
@@ -37,29 +41,19 @@ variable "context" {
 variable "factories_config" {
   description = "Configuration for the resource factories or external data."
   type = object({
-    defaults              = optional(string, "datasets/hub-and-spokes-peerings/defaults.yaml")
-    dns                   = optional(string, "datasets/hub-and-spokes-peerings/dns/zones")
-    dns-response-policies = optional(string, "datasets/hub-and-spokes-peerings/dns/response-policies")
-    firewall-policies     = optional(string, "datasets/hub-and-spokes-peerings/firewall-policies")
-    folders               = optional(string, "datasets/hub-and-spokes-peerings/folders")
-    ncc-hubs              = optional(string, "datasets/hub-and-spokes-peerings/ncc-hubs")
-    nvas                  = optional(string, "datasets/hub-and-spokes-peerings/nvas")
-    projects              = optional(string, "datasets/hub-and-spokes-peerings/projects")
-    vpcs                  = optional(string, "datasets/hub-and-spokes-peerings/vpcs")
+    dataset = optional(string, "datasets/hub-and-spokes-peerings")
+    paths = optional(object({
+      defaults              = optional(string, "defaults.yaml")
+      dns                   = optional(string, "dns/zones")
+      dns_response_policies = optional(string, "dns/response-policies")
+      firewall_policies     = optional(string, "firewall-policies")
+      folders               = optional(string, "folders")
+      ncc_hubs              = optional(string, "ncc-hubs")
+      nvas                  = optional(string, "nvas")
+      projects              = optional(string, "projects")
+      vpcs                  = optional(string, "vpcs")
+    }), {})
   })
   nullable = false
   default  = {}
-}
-
-variable "universe" {
-  # tfdoc:variable:source 0-org-setup
-  description = "GCP universe where to deploy projects. The prefix will be prepended to the project id."
-  type = object({
-    domain                         = string
-    prefix                         = string
-    forced_jit_service_identities  = optional(list(string), [])
-    unavailable_services           = optional(list(string), [])
-    unavailable_service_identities = optional(list(string), [])
-  })
-  default = null
 }
