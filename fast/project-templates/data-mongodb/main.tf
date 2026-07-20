@@ -88,7 +88,4 @@ resource "mongodbatlas_privatelink_endpoint_service" "default" {
   endpoint_service_id         = module.addresses.psc[local.psc_endpoint_key].forwarding_rule.name
   private_endpoint_ip_address = module.addresses.psc[local.psc_endpoint_key].address.address
   gcp_project_id              = var.project_id
-
-  # Wait for the GCP PSC forwarding rule before registering it in Atlas.
-  depends_on = [module.addresses]
 }
