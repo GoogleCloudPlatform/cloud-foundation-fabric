@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-
+#
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "click",
+#   "marko",
+# ]
+# ///
 # Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

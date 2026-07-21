@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
+output "access_levels" {
+  description = "Access level resources."
+  value       = google_access_context_manager_access_level.basic
+}
+
 output "asset_search_results" {
   description = "Cloud Asset Inventory search results."
   value = {
     for k, v in data.google_cloud_asset_search_all_resources.default : k => v.results
   }
+}
+
+output "context_aware_access_bindings" {
+  description = "GCP User Access Bindings for securing Console and APIs."
+  value       = google_access_context_manager_gcp_user_access_binding.binding
+  depends_on = [
+    google_access_context_manager_access_level.basic
+  ]
 }
 
 output "custom_constraint_ids" {

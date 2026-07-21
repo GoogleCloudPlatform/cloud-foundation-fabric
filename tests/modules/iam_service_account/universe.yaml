@@ -31,4 +31,4 @@ outputs:
   email: prefix-sa-name@my-project-id.universe.iam.gserviceaccount.com
   iam_email: serviceAccount:prefix-sa-name@my-project-id.universe.iam.gserviceaccount.com
   id: projects/universe:my-project-id/serviceAccounts/prefix-sa-name@my-project-id.universe.iam.gserviceaccount.com
-  name: projects/universe:my-project-id/serviceAccounts/prefix-sa-name@my-project-id.universe.iam.gserviceaccount.com
+  name: prefix-sa-name@my-project-id.universe.iam.gserviceaccount.com

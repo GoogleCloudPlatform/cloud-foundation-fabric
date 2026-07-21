@@ -96,6 +96,7 @@ variable "boot_disk" {
   nullable = false
   validation {
     condition = (
+      var.tpu_config != null ||
       var.boot_disk.initialize_params != null ||
       var.boot_disk.source.attach != null ||
       var.boot_disk.source.snapshot != null ||
@@ -571,6 +572,29 @@ variable "tags" {
   description = "Instance network tags for firewall rule targets."
   type        = list(string)
   default     = []
+}
+
+variable "tpu_config" {
+  description = "TPU configuration. If null, a standard VM is created."
+  type = object({
+    runtime_version = optional(string)
+    queued          = optional(bool, true)
+  })
+  default = null
+  validation {
+    condition = (
+      var.tpu_config == null ||
+      var.create_template != null ||
+      var.tpu_config.runtime_version != null
+    )
+    error_message = "TPU runtime version must be specified when creating a TPU VM."
+  }
+  validation {
+    condition = try(var.tpu_config.runtime_version, null) == null || (
+      try(regex("^(?:ct|v)([0-9])", var.machine_type)[0], "---") == try(coalesce(regex("(?:tpuv([0-9])|\\-v([0-9])\\-)", var.tpu_config.runtime_version)...), "---")
+    )
+    error_message = "TPU machine type and runtime version compatibility check failed. Please ensure both are of the same generation (v5 or v6)."
+  }
 }
 
 variable "zone" {

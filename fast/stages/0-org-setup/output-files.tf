@@ -39,6 +39,7 @@ locals {
       local.ctx.project_ids,
       module.factory.project_ids
     )
+    pubsub_topics   = module.factory.pubsub_topics
     storage_buckets = module.factory.storage_buckets
     tag_keys = merge(
       local.ctx.tag_keys,
