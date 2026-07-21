@@ -21,6 +21,9 @@
     "auto_create_subnetworks": {
       "type": "boolean"
     },
+    "bgp_config": {
+      "$ref": "#/$defs/bgp_config"
+    },
     "delete_default_routes_on_create": {
       "type": "boolean"
     },
@@ -82,6 +85,29 @@
     }
   },
   "$defs": {
+    "bgp_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "always_compare_med": {
+          "type": "boolean"
+        },
+        "best_path_selection_mode": {
+          "type": "string",
+          "enum": [
+            "LEGACY",
+            "STANDARD"
+          ]
+        },
+        "inter_region_cost": {
+          "type": "string",
+          "enum": [
+            "DEFAULT",
+            "ADD_COST_TO_MED"
+          ]
+        }
+      }
+    },
     "create_googleapis_routes": {
       "type": "object",
       "properties": {
