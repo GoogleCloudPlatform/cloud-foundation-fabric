@@ -68,7 +68,7 @@ resource "google_compute_backend_service" "default" {
   session_affinity                = var.backend_service_config.session_affinity
   service_lb_policy = (
     try(var.backend_service_config.service_lb_policy_config.enable, false)
-    ? "//networkservices.googleapis.com/${google_network_services_service_lb_policies.default[0].id}"
+    ? "${google_network_services_service_lb_policies.default[0].id}"
     : null
   )
   timeout_sec                     = var.backend_service_config.timeout_sec
