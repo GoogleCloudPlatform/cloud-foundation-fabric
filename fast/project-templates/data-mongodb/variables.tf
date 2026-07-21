@@ -30,6 +30,14 @@ variable "atlas_config" {
   })
 }
 
+variable "database_user" {
+  description = "MongoDB Atlas database user configuration."
+  type = object({
+    database_user_name     = string
+    database_user_password = string
+  })
+}
+
 variable "name" {
   description = "Prefix used for all resource names."
   type        = string
