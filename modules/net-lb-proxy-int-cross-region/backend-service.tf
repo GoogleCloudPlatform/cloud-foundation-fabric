@@ -30,6 +30,31 @@ locals {
   )
 }
 
+resource "google_network_services_service_lb_policies" "default" {
+  count    = try(var.backend_service_config.service_lb_policy_config.enable, false) ? 1 : 0
+  provider = google-beta
+  project  = local.project_id
+
+  name                     = coalesce(var.backend_service_config.name, var.name)
+  location                 = "global"
+  description              = var.backend_service_config.description
+  load_balancing_algorithm = var.backend_service_config.service_lb_policy_config.load_balancing_algorithm
+
+  dynamic "auto_capacity_drain" {
+    for_each = var.backend_service_config.service_lb_policy_config.auto_capacity_drain == null ? [] : [""]
+    content {
+      enable = var.backend_service_config.service_lb_policy_config.auto_capacity_drain
+    }
+  }
+
+  dynamic "failover_config" {
+    for_each = var.backend_service_config.service_lb_policy_config.failover_health_threshold == null ? [] : [""]
+    content {
+      failover_health_threshold = var.backend_service_config.service_lb_policy_config.failover_health_threshold
+    }
+  }
+}
+
 resource "google_compute_backend_service" "default" {
   provider                        = google-beta
   project                         = local.project_id
@@ -42,7 +67,12 @@ resource "google_compute_backend_service" "default" {
   port_name                       = var.backend_service_config.port_name
   protocol                        = "TCP"
   session_affinity                = var.backend_service_config.session_affinity
-  timeout_sec                     = var.backend_service_config.timeout_sec
+  service_lb_policy = (
+    try(var.backend_service_config.service_lb_policy_config.enable, false)
+    ? "//networkservices.googleapis.com/${google_network_services_service_lb_policies.default[0].id}"
+    : null
+  )
+  timeout_sec = var.backend_service_config.timeout_sec
 
   dynamic "backend" {
     for_each = { for b in coalesce(var.backend_service_config.backends, []) : b.group => b }

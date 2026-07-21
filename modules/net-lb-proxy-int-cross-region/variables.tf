@@ -36,6 +36,12 @@ variable "backend_service_config" {
     }))
     port_name        = optional(string)
     project_id       = optional(string)
+    service_lb_policy_config = optional(object({
+      enable         = optional(bool)
+      load_balancing_algorithm     = optional(string, "WATERFALL_BY_REGION")
+      auto_capacity_drain          = optional(bool)
+      failover_health_threshold    = optional(number)
+    }))
     session_affinity = optional(string, "NONE")
     timeout_sec      = optional(number)
     backends = optional(list(object({
@@ -66,6 +72,28 @@ variable "backend_service_config" {
       )
     ])
     error_message = "When specified, balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
+  }
+  validation {
+    condition = (
+      try(var.backend_service_config.service_lb_policy_config, null) == null ||
+      try(var.backend_service_config.service_lb_policy_config.load_balancing_algorithm, null) == null ||
+      contains(
+        ["SPRAY_TO_REGION", "WATERFALL_BY_REGION", "WATERFALL_BY_ZONE"],
+        try(var.backend_service_config.service_lb_policy_config.load_balancing_algorithm, "")
+      )
+    )
+    error_message = "Invalid 'load_balancing_algorithm' value. Supported values are 'SPRAY_TO_REGION', 'WATERFALL_BY_REGION', 'WATERFALL_BY_ZONE'."
+  }
+  validation {
+    condition = (
+      try(var.backend_service_config.service_lb_policy_config, null) == null ||
+      try(var.backend_service_config.service_lb_policy_config.failover_health_threshold, null) == null ||
+      (
+        try(var.backend_service_config.service_lb_policy_config.failover_health_threshold, 0) >= 1 &&
+        try(var.backend_service_config.service_lb_policy_config.failover_health_threshold, 0) <= 99
+      )
+    )
+    error_message = "The 'failover_health_threshold' value must be between 1 and 99."
   }
 }
 

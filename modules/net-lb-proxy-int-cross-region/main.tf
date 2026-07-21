@@ -81,11 +81,14 @@ resource "google_compute_global_forwarding_rule" "default" {
 
 resource "google_compute_target_tcp_proxy" "default" {
   project         = local.project_id
+  provider        = google-beta
   name            = coalesce(var.target_proxy_config.name, var.name)
   description     = var.target_proxy_config.description
-  backend_service = google_compute_backend_service.default.id
+  backend_service = var.tls_route_config == null ? google_compute_backend_service.default.id : null
   proxy_header    = var.target_proxy_config.proxy_header
+  load_balancing_scheme = "INTERNAL_MANAGED"
 }
+
 
 resource "google_compute_network_endpoint_group" "default" {
   for_each = local.neg_zonal
