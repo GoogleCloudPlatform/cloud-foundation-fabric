@@ -1,0 +1,148 @@
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+iam_principals = {
+  "domain" = "domain:stayhome-ai.com"
+  "gcp-organization-admins" = "group:gcp-organization-admins@stayhome-ai.com"
+}
+projects = {
+  "billing-0" = {
+    "aspect_types" = {}
+    "automation" = {
+      "bucket" = null
+      "service_accounts" = {}
+    }
+    "kms_keys" = {}
+    "log_buckets" = {}
+    "number" = "140437498494"
+    "project_id" = "shai-prod-billing-exp-0"
+    "pubsub_topics" = {}
+    "service_accounts" = {}
+    "storage_buckets" = {}
+    "tag_keys" = {}
+    "tag_values" = {}
+    "tag_vars" = {}
+    "workload_identity_pools" = {}
+    "workload_identity_providers" = {}
+  }
+  "iac-0" = {
+    "aspect_types" = {}
+    "automation" = {
+      "bucket" = null
+      "service_accounts" = {}
+    }
+    "kms_keys" = {}
+    "log_buckets" = {}
+    "number" = "794786758150"
+    "project_id" = "shai-prod-iac-core-1"
+    "pubsub_topics" = {}
+    "service_accounts" = {
+      "iac-0/iac-networking-ro" = {
+        "email" = "iac-networking-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-networking-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-networking-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-networking-rw" = {
+        "email" = "iac-networking-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-networking-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-networking-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-org-cicd-ro" = {
+        "email" = "iac-org-cicd-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-org-cicd-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-org-cicd-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-org-cicd-rw" = {
+        "email" = "iac-org-cicd-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-org-cicd-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-org-cicd-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-org-ro" = {
+        "email" = "iac-org-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-org-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-org-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-org-rw" = {
+        "email" = "iac-org-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-org-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-org-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-pf-ro" = {
+        "email" = "iac-pf-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-pf-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-pf-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-pf-rw" = {
+        "email" = "iac-pf-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-pf-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-pf-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-security-ro" = {
+        "email" = "iac-security-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-security-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-security-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-security-rw" = {
+        "email" = "iac-security-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-security-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-security-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-vpcsc-ro" = {
+        "email" = "iac-vpcsc-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-vpcsc-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-vpcsc-ro@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+      "iac-0/iac-vpcsc-rw" = {
+        "email" = "iac-vpcsc-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "iam_email" = "serviceAccount:iac-vpcsc-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+        "id" = "projects/shai-prod-iac-core-1/serviceAccounts/iac-vpcsc-rw@shai-prod-iac-core-1.iam.gserviceaccount.com"
+      }
+    }
+    "storage_buckets" = {
+      "iac-0/iac-org-state" = "shai-prod-iac-core-1-iac-org-state"
+      "iac-0/iac-outputs" = "shai-prod-iac-core-1-iac-outputs"
+      "iac-0/iac-stage-state" = "shai-prod-iac-core-1-iac-stage-state"
+    }
+    "tag_keys" = {}
+    "tag_values" = {}
+    "tag_vars" = {}
+    "workload_identity_pools" = {
+      "default" = "projects/794786758150/locations/global/workloadIdentityPools/default"
+    }
+    "workload_identity_providers" = {
+      "default/github-default" = {
+        "name" = "projects/794786758150/locations/global/workloadIdentityPools/default/providers/github-default"
+        "pool" = "projects/794786758150/locations/global/workloadIdentityPools/default"
+        "type" = "github"
+      }
+    }
+  }
+  "log-0" = {
+    "aspect_types" = {}
+    "automation" = {
+      "bucket" = null
+      "service_accounts" = {}
+    }
+    "kms_keys" = {}
+    "log_buckets" = {
+      "log-0/audit-logs" = "projects/shai-prod-audit-logs-0/locations/us/buckets/audit-logs"
+      "log-0/iam" = "projects/shai-prod-audit-logs-0/locations/us/buckets/iam"
+      "log-0/vpc-sc" = "projects/shai-prod-audit-logs-0/locations/us-central1/buckets/vpc-sc"
+    }
+    "number" = "569689827358"
+    "project_id" = "shai-prod-audit-logs-0"
+    "pubsub_topics" = {}
+    "service_accounts" = {}
+    "storage_buckets" = {}
+    "tag_keys" = {}
+    "tag_values" = {}
+    "tag_vars" = {}
+    "workload_identity_pools" = {}
+    "workload_identity_providers" = {}
+  }
+}
+subnet_ips = {}
+subnet_self_links = {}
+tfvars = <sensitive>
+vpc_self_links = {}

@@ -22,11 +22,22 @@ iam_by_principals:
     - roles/owner
 services:
   - logging.googleapis.com
+  - monitoring.googleapis.com
   - pubsub.googleapis.com
   - storage.googleapis.com
+# log-based alerts (design §7) must live here, not in iac-0: a google_logging_metric
+# can only be created in the project that owns the bucket it reads from
+factories_config:
+  observability: observability/log-0
 log_buckets:
-  audit-logs: {}
-  iam: {}
+  # 13-month retention, US multi-region (design §7) — not bucket-locked yet,
+  # raise toward 6yr + lock at BA status (design §10)
+  audit-logs:
+    location: $locations:us_multi
+    retention: 395
+  iam:
+    location: $locations:us_multi
+    retention: 395
   vpc-sc:
     log_analytics:
       enable: true

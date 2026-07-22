@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: data access logs
-
 # yaml-language-server: $schema=../../../schemas/organization.schema.json
 
 id: $defaults:organization/id
@@ -116,12 +114,16 @@ iam_by_principals:
   # Uncomment if you want to use PAM.
   # $service_agents:pam:
   #   - roles/privilegedaccessmanager.serviceAgent
+# org-wide, all services (design §7) — FTC HBNR / future BA-status forensics
+# require history that can't be backfilled, so this is on from day one
 data_access_logs:
-  sts.googleapis.com:
+  allServices:
     ADMIN_READ: {}
+    DATA_READ: {}
+    DATA_WRITE: {}
 logging:
   # disable_default_log_sink: false
-  storage_location: $locations:primary
+  storage_location: $locations:us_multi
   sinks:
     audit-logs:
       # description: foo

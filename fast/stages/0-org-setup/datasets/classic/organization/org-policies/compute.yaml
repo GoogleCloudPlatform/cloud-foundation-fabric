@@ -42,11 +42,20 @@ compute.requireOsLogin:
   rules:
   - enforce: true
 
+# GLOBAL_EXTERNAL_MANAGED_HTTP_HTTPS is the global external HTTPS LB fronting
+# the device fleet (design §5/§6); in:INTERNAL covers Shared VPC-internal
+# services. Deliberately not the broader in:EXTERNAL group — no other
+# external LB type (network/proxy/SSL) is part of the design.
 compute.restrictLoadBalancerCreationForTypes:
   rules:
   - allow:
       values:
       - in:INTERNAL
+      - GLOBAL_EXTERNAL_MANAGED_HTTP_HTTPS
+
+compute.requireShieldedVm:
+  rules:
+  - enforce: true
 
 compute.skipDefaultNetworkCreation:
   rules:

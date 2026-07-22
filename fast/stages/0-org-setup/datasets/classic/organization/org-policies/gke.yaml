@@ -26,6 +26,11 @@ container.managed.enablePrivateNodes:
   rules:
     - enforce: true
 
+# Born-with-it (design §5): GKE Autopilot private clusters everywhere.
+custom.gkeRequirePrivateEndpoint:
+  rules:
+    - enforce: true
+
 # container.managed.enableControlPlaneDNSOnlyAccess:
 #   rules:
 #     - enforce: true
