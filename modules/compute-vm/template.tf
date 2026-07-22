@@ -171,6 +171,12 @@ resource "google_compute_instance_template" "default" {
           network_tier = try(config.value.network_tier, null)
         }
       }
+      dynamic "ipv6_access_config" {
+        for_each = config.value.external_ipv6 ? [""] : []
+        content {
+          network_tier = "PREMIUM"
+        }
+      }
       dynamic "alias_ip_range" {
         for_each = config.value.alias_ips
         iterator = config_alias
