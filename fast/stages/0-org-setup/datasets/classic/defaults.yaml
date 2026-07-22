@@ -15,20 +15,19 @@
 # yaml-language-server: $schema=../../schemas/defaults.schema.json
 
 global:
-  # use `gcloud beta billing accounts list` to populate
-  billing_account: ABCDEF-0123456-ABCDEF
+  # org-owned billing account (Phase 0.3)
+  billing_account: 01425B-C8ADCC-9C38B7
   organization:
-    # use `gcloud organizations list`` to populate
-    domain: fast-test-00.example.com
-    id: 1234567890
-    customer_id: abcd123456
+    domain: stayhome-ai.com
+    id: 15122406886
+    customer_id: C03ayt8zz
 observability:
   project_id: $project_ids:log-0
   number: $project_numbers:log-0
 projects:
   defaults:
-    # prefix must be unique and less than 9 characters
-    prefix: test00
+    # prefix must be unique and less than 9 characters — immutable, baked into every project id
+    prefix: shai
     locations:
       bigquery: $locations:primary
       logging: $locations:primary
@@ -37,15 +36,19 @@ projects:
 context:
   # you can populate context variables here for use in YAML replacements
   email_addresses:
-    gcp-organization-admins: gcp-organization-admins@example.com
+    gcp-organization-admins: gcp-organization-admins@stayhome-ai.com
   iam_principals:
     # this is the default group used in bootstrap, initial user must be a member
-    gcp-organization-admins: group:gcp-organization-admins@example.com
+    gcp-organization-admins: group:gcp-organization-admins@stayhome-ai.com
   locations:
-    primary: europe-west1
+    primary: us-central1
+    # US multi-region: log buckets only (design §5/§7) — everything else stays regional.
+    # Lowercase: this is a Cloud Logging bucket location, not a GCS bucket location
+    # (Logging uses `us`/`eu`/`global`; GCS uses `US`/`EU`/`ASIA` — different conventions)
+    us_multi: us
 output_files:
   # local path is optional but recommended when starting
-  local_path: ~/fast-config/fast-test-00
+  local_path: ~/fast-config/stayhome
   storage_bucket: $storage_buckets:iac-0/iac-outputs
   providers:
     0-org-setup:

@@ -18,6 +18,21 @@
 
 # yaml-language-server: $schema=../../../../schemas/custom-constraint.schema.json
 
+# Born-with-it: GKE Autopilot private clusters (design §5) — cherry-picked
+# from the hardened dataset; enforced org-wide in ../org-policies/gke.yaml.
+custom.gkeRequirePrivateEndpoint:
+  action_type: DENY
+  condition: |-
+    resource.privateClusterConfig.enablePrivateEndpoint == false
+  description: Enforce that GKE clusters are created as private clusters with public
+    endpoint disabled
+  display_name: Disable public endpoints
+  method_types:
+  - CREATE
+  - UPDATE
+  resource_types:
+  - container.googleapis.com/Cluster
+
 # custom.disableKubeletReadOnlyPort:
 #   resource_types:
 #     - container.googleapis.com/Cluster

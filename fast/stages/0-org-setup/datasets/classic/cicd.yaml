@@ -19,11 +19,10 @@ org-setup:
     apply: 0-org-setup-providers.tf
     plan: 0-org-setup-ro-providers.tf
   repository:
-    name: myorg/0-org-setup
+    name: Stayhome-AI/cloud-foundation-fabric
     type: github
     apply_branches:
       - master
-      - fast-dev
   service_accounts:
     apply: $iam_principals:service_accounts/iac-0/iac-org-cicd-rw
     plan: $iam_principals:service_accounts/iac-0/iac-org-cicd-ro

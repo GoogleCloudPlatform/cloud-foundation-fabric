@@ -25,3 +25,25 @@ sql.restrictAuthorizedNetworks:
 sql.restrictPublicIp:
   rules:
     - enforce: true
+
+# Born-with-it (design §2/§7): free, no cost delta, so enforced org-wide.
+custom.cloudsqlRequirePointInTimeRecovery:
+  rules:
+    - enforce: true
+
+custom.cloudsqlRequireSSLConnection:
+  rules:
+    - enforce: true
+
+# HA doubles instance cost (design §11) — production only, via the
+# environment tag (organization/tags/environment.yaml).
+custom.cloudsqlRequireHighAvailability:
+  rules:
+    - enforce: true
+      condition:
+        title: Require HA for production Cloud SQL instances
+        expression: |
+          resource.matchTag('${organization.id}/environment', 'production')
+    # boolean policies require one unconditional rule as the fallback for
+    # anything that doesn't match the condition above (dev/staging: not required)
+    - enforce: false
