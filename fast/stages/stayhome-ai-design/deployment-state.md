@@ -13,14 +13,15 @@ truth for stage mechanics, see "Stage map" below for the v57 reality.
 
 ## ▶ Resume pointer
 
-- **Current stage:** `0-org-setup` — **first apply succeeded** 2026-07-22 (a clean `terraform plan`
-  afterward shows zero changes, state matches reality exactly)
-- **Branch:** `fabric-fast-stage-0` (convention: `fabric-fast-stage-<N>`, one branch + PR per stage)
-- **Next action:** state migration to the GCS backend, then wire + prove CI/CD via WIF — see
-  stage-0 checklist below. This was a long first-apply saga (billing quota, a soft-deleted project
-  id, ADC reauth, a project-factory `log_buckets` gap, a boolean-org-policy fallback rule, and a
-  cross-project metric-ownership rule) — every one of them is written up in the checklist/breadcrumbs
-  below and in [upstream-bug-log-buckets-cross-project-ctx.md](upstream-bug-log-buckets-cross-project-ctx.md).
+- **Current stage:** `0-org-setup` — **first apply succeeded** 2026-07-22, **state migrated** to
+  the GCS backend same day. Both confirmed via clean `terraform plan` (zero changes).
+- **Branch:** `landing-zone-stage-0` (PR: `Stayhome-AI/cloud-foundation-fabric#1`)
+- **Next action:** wire + prove CI/CD via WIF (last item in the stage-0 checklist below), then
+  clean up `org_policies_imports` from the tfvars. This was a long first-apply saga (billing quota,
+  a soft-deleted project id, ADC reauth, a project-factory `log_buckets` gap, a boolean-org-policy
+  fallback rule, and a cross-project metric-ownership rule) — every one of them is written up in
+  the checklist/breadcrumbs below and in
+  [upstream-bug-log-buckets-cross-project-ctx.md](upstream-bug-log-buckets-cross-project-ctx.md).
 - **Working method:** edit the `datasets/classic` dataset **in place** (keeps clean diffs vs
   `fast_version.txt` on future upgrades). Configure via **YAML factories**, not `.tfvars`.
 - **Repo:** this fork (`Stayhome-AI/cloud-foundation-fabric`) *is* the monorepo — CI/CD runs
@@ -147,13 +148,34 @@ The implementation plan's phase→stage names are outdated. Actual mapping:
 - [x] Add `staging` environment (partner agreement, 2026-07-22) — `organization/tags/environment.yaml` new `staging` tag value (mirrors `development`/`production` IAM grants exactly); `folders/networking/staging/.config.yaml` and `folders/security/staging/.config.yaml` new subfolders (mirror the `dev`/`prod` siblings' pattern, including `security/staging`'s explicit `parent:` line that `networking/staging` doesn't need). Re-planned clean (0 destroy) before this was added; re-plan again to confirm the 3 new folder/tag resources add cleanly
 - [x] First apply cycle (local, as org admin) — succeeded 2026-07-22; subsequent `terraform plan` shows no changes, state matches reality exactly
 - [ ] Remove `org_policies_imports` from `0-org-setup.auto.tfvars` — import is one-time-use, README says to clear it post-apply (gitignored file, not part of the PR either way)
-- [ ] Migrate state to the GCS backend (`iac-org-state` bucket, now that `iac-0` exists) via `../fast-links.sh <local_path>` + re-`init` — see README §"Provider setup and final apply cycle"
+- [x] Migrate state to the GCS backend — `0-org-setup-providers.tf` symlinked from
+  `~/fast-config/stayhome/providers/` (gitignored, matches `fast/**/[0-9]*providers.tf`),
+  `terraform init` migrated local state into `gs://shai-prod-iac-core-1-iac-org-state`, confirmed
+  with a clean `terraform plan` (no changes) reading through the new backend + `iac-org-rw` SA
+  impersonation. Note: `../fast-links.sh` has a broken shebang on macOS (`#!/bin/env bash` —
+  `/bin/env` doesn't exist, needs `/usr/bin/env`); invoke it as `bash ../fast-links.sh <path>`
+  instead. Its tfvars-linking suggestion doesn't apply to this stage specifically — that's for
+  linking a *manually-copied* tfvars file into the shared output path, not the auto-generated
+  `tfvars/*.auto.tfvars.json` output files (those are for *downstream* stages to consume, e.g.
+  `1-vpcsc`, `2-networking` — not something `0-org-setup` itself needs).
 - [ ] Wire and prove CI/CD: set `factories_config.paths.cicd_workflows = "cicd.yaml"` in tfvars, generate the GitHub Actions workflow, **fix `branches: [main]` → `branches: [master]`** in the generated file (breadcrumb below) before committing, then prove a PR-driven plan/apply via WIF end to end ← **next action**
 
 ---
 
 ## 🍞 Breadcrumbs for later stages / follow-ups
 
+- **`USER_PROJECT_OVERRIDE`/`GOOGLE_BILLING_PROJECT` become actively harmful once the real
+  provider config is linked.** These were set early on to fix ADC's missing-quota-project error
+  (pointing quota at the temp project `heroic-bird-502819-q1`) while running with direct user
+  credentials. After state migration linked `0-org-setup-providers.tf` (which impersonates
+  `iac-org-rw@shai-prod-iac-core-1...`), the same env vars caused `plan` to fail with
+  `USER_PROJECT_DENIED` — the impersonated SA has no rights to use the old temp project for quota,
+  and doesn't need to; the provider's own service-account identity handles that now. Fix: `unset
+  GOOGLE_BILLING_PROJECT USER_PROJECT_OVERRIDE` in any shell that still has them from earlier in
+  this saga. (Separately: my own verification `plan` right after migration succeeded because my
+  tool's shell never had these vars set — only the user's actual terminal carried them forward
+  from the original ADC fix. Worth remembering that my Bash tool and a user's own terminal are
+  different shell sessions with independently-set env state.)
 - **Boolean org policies with a conditional rule need an explicit unconditional fallback rule.**
   `custom.cloudsqlRequireHighAvailability` (production-tag-scoped, `org-policies/sql.yaml`) failed
   apply with `A boolean policy must always include one unconditional rule` — it only had the
