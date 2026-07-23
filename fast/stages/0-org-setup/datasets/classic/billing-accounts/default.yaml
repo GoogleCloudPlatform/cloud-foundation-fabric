@@ -16,10 +16,15 @@
 
 id: $defaults:billing_account
 # authoritative IAM must be used with care here, as it resets permissions
-# three modes of managing billing IAM
-# - at the org level (don't set anything here, set roles in the org)
-# - at the billing account level (set the roles below)
-# - no admin access to billing account (don't set roles here or in org)
+# Choose one of the following three modes of managing billing IAM:
+# 1. at the org level: don't set the roles here. Delete the
+#    "iam_bindings_additive" block below and set roles in the organization
+#    configuration (organization/.config.yaml).
+# 2. at the billing account level: set the billing roles in the
+#    "iam_bindings_additive" block below
+# 3. no admin access to billing account: if your billing account is either
+#    shared or externally managed, don't set roles here nor in org. Delete the
+#    "iam_bindings_additive" block below and don't set roles in the organization either.
 iam_bindings_additive:
   billing_admin_org_admins:
     role: roles/billing.admin

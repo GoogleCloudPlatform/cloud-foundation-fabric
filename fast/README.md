@@ -56,3 +56,6 @@ Since we expect users to customize FAST to their specific needs, we strive to ma
 We also recognize that FAST users don't need all of its features. Therefore, you don't need to use our project factory or our GKE implementation if you don't want to. Instead, remove those stages or pieces of code and keep what suits you.
 
 Those familiar with Python will note that FAST follows many of the maxims in the [Zen of Python](https://www.python.org/dev/peps/pep-0020/#id2).
+
+### Next Step
+Continue with [stages](./stages/README.md).

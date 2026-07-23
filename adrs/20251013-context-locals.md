@@ -9,7 +9,7 @@ Draft
 
 ## Context
 
-Terraform build dependency graph using variables and locals as nodes. If those are complex structures, such as lists, maps or objects, they can contain references to multiple resources. Because of that, any access to a complex variable creates an implicit dependency on all resources referenced within this variable. For example:
+Terraform builds dependency graph using variables and locals as nodes. If those are complex structures, such as lists, maps or objects, they can contain references to multiple resources. Because of that, any access to a complex variable creates an implicit dependency on all resources referenced within this variable. For example:
 
 ```hcl
 locals {
@@ -51,7 +51,7 @@ The primary reason is to make module calls concise and easy to use. As of now, t
 ## Alternatives Considered:
 
 ### Separating `local.ctx` by type of context
-Currently, `local.ctx` is build like this (example from `modules/project`):
+Currently, `local.ctx` is built like this (example from `modules/project`):
 ```hcl
 locals {
   ctx = {
