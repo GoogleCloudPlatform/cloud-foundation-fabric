@@ -30,55 +30,60 @@ locals {
   )
 }
 
+locals {
+  lb_policy_backends = {
+    for k, v in var.backend_service_configs :
+    k => v if try(v.service_lb_policy_config.enable, false)
+  }
+}
+
 resource "google_network_services_service_lb_policies" "default" {
-  count    = try(var.backend_service_config.service_lb_policy_config.enable, false) ? 1 : 0
+  for_each = local.lb_policy_backends
   provider = google-beta
   project  = local.project_id
 
-  name                     = coalesce(var.backend_service_config.name, var.name)
+  name                     = coalesce(each.value.name, "${var.name}-${each.key}")
   location                 = "global"
-  description              = var.backend_service_config.description
-  load_balancing_algorithm = var.backend_service_config.service_lb_policy_config.load_balancing_algorithm
+  description              = each.value.description
+  load_balancing_algorithm = each.value.service_lb_policy_config.load_balancing_algorithm
 
   dynamic "auto_capacity_drain" {
-    for_each = var.backend_service_config.service_lb_policy_config.auto_capacity_drain == null ? [] : [""]
+    for_each = each.value.service_lb_policy_config.auto_capacity_drain == null ? [] : [""]
     content {
-      enable = var.backend_service_config.service_lb_policy_config.auto_capacity_drain
+      enable = each.value.service_lb_policy_config.auto_capacity_drain
     }
   }
 
   dynamic "failover_config" {
-    for_each = var.backend_service_config.service_lb_policy_config.failover_health_threshold == null ? [] : [""]
+    for_each = each.value.service_lb_policy_config.failover_health_threshold == null ? [] : [""]
     content {
-      failover_health_threshold = var.backend_service_config.service_lb_policy_config.failover_health_threshold
+      failover_health_threshold = each.value.service_lb_policy_config.failover_health_threshold
     }
   }
 }
 
 resource "google_compute_backend_service" "default" {
+  for_each                        = var.backend_service_configs
   provider                        = google-beta
   project                         = local.project_id
-  name                            = coalesce(var.backend_service_config.name, var.name)
-  description                     = var.backend_service_config.description
-  affinity_cookie_ttl_sec         = var.backend_service_config.affinity_cookie_ttl_sec
-  connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
+  name                            = coalesce(each.value.name, "${var.name}-${each.key}")
+  description                     = each.value.description
+  affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
+  connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
   health_checks                   = [local.health_check]
   load_balancing_scheme           = "INTERNAL_MANAGED"
-  port_name                       = var.backend_service_config.port_name
+  port_name                       = each.value.port_name
   protocol                        = "TCP"
-  session_affinity                = var.backend_service_config.session_affinity
+  session_affinity                = each.value.session_affinity
+  timeout_sec                     = each.value.timeout_sec
   service_lb_policy = (
-    try(var.backend_service_config.service_lb_policy_config.enable, false)
-    ? "${google_network_services_service_lb_policies.default[0].id}"
-    : null
-  )
-  timeout_sec                     = var.backend_service_config.timeout_sec
-    ? "//networkservices.googleapis.com/${google_network_services_service_lb_policies.default[0].id}"
+    try(each.value.service_lb_policy_config.enable, false)
+    ? google_network_services_service_lb_policies.default[each.key].id
     : null
   )
 
   dynamic "backend" {
-    for_each = { for b in coalesce(var.backend_service_config.backends, []) : b.group => b }
+    for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
     content {
       group           = lookup(local.group_ids, backend.key, backend.key)
       balancing_mode  = backend.value.balancing_mode
@@ -98,12 +103,12 @@ resource "google_compute_backend_service" "default" {
   }
 
   dynamic "log_config" {
-    for_each = var.backend_service_config.log_config == null ? [] : [""]
+    for_each = each.value.log_config == null ? [] : [""]
     content {
-      enable          = var.backend_service_config.log_config.enable
-      sample_rate     = var.backend_service_config.log_config.sample_rate
-      optional_mode   = var.backend_service_config.log_config.optional_mode
-      optional_fields = var.backend_service_config.log_config.optional_fields
+      enable          = each.value.log_config.enable
+      sample_rate     = each.value.log_config.sample_rate
+      optional_mode   = each.value.log_config.optional_mode
+      optional_fields = each.value.log_config.optional_fields
     }
   }
 }

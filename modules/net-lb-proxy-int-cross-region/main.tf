@@ -79,14 +79,49 @@ resource "google_compute_global_forwarding_rule" "default" {
   target                = google_compute_target_tcp_proxy.default.id
 }
 
+locals {
+  backend_service_ids = {
+    for k, v in google_compute_backend_service.default : k => v.id
+  }
+  target_proxy_backend_key = (
+    var.target_proxy_config.backend_service_key != null
+    ? var.target_proxy_config.backend_service_key
+    : (length(local.backend_service_ids) == 1
+      ? one(keys(local.backend_service_ids))
+      : null
+    )
+  )
+}
+
 resource "google_compute_target_tcp_proxy" "default" {
-  project         = local.project_id
-  provider        = google-beta
-  name            = coalesce(var.target_proxy_config.name, var.name)
-  description     = var.target_proxy_config.description
-  backend_service = var.tls_route_config == null ? google_compute_backend_service.default.id : null
-  proxy_header    = var.target_proxy_config.proxy_header
+  project     = local.project_id
+  provider    = google-beta
+  name        = coalesce(var.target_proxy_config.name, var.name)
+  description = var.target_proxy_config.description
+  backend_service = (
+    var.tls_route_config != null
+    ? null
+    : local.backend_service_ids[local.target_proxy_backend_key]
+  )
+  proxy_header          = var.target_proxy_config.proxy_header
   load_balancing_scheme = "INTERNAL_MANAGED"
+
+  lifecycle {
+    precondition {
+      condition = (
+        var.tls_route_config != null ||
+        local.target_proxy_backend_key != null
+      )
+      error_message = "When 'tls_route_config' is null, either 'backend_service_configs' must contain exactly one entry or 'target_proxy_config.backend_service_key' must be set."
+    }
+    precondition {
+      condition = (
+        var.target_proxy_config.backend_service_key == null ||
+        contains(keys(var.backend_service_configs), coalesce(var.target_proxy_config.backend_service_key, ""))
+      )
+      error_message = "'target_proxy_config.backend_service_key' must reference a key in 'backend_service_configs'."
+    }
+  }
 }
 
 
@@ -147,13 +182,31 @@ resource "google_network_services_tls_route" "default" {
     google_compute_target_tcp_proxy.default.id
   ]
 
-  rules {
-    matches {
-      sni_host = var.tls_route_config.sni_host
-    }
-    action {
-      destinations {
-        service_name = google_compute_backend_service.default.id
+  dynamic "rules" {
+    for_each = var.tls_route_config.rules
+    content {
+      dynamic "matches" {
+        for_each = rules.value.matches
+        content {
+          sni_host = matches.value.sni_host
+          alpn     = matches.value.alpn
+        }
+      }
+      action {
+        dynamic "destinations" {
+          for_each = coalesce(rules.value.destinations, [
+            for k, v in local.backend_service_ids :
+            { service_name = v, weight = null }
+          ])
+          content {
+            service_name = lookup(
+              local.backend_service_ids,
+              destinations.value.service_name,
+              destinations.value.service_name
+            )
+            weight = destinations.value.weight
+          }
+        }
       }
     }
   }

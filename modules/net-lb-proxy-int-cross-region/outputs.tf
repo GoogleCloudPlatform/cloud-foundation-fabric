@@ -19,19 +19,23 @@ output "addresses" {
   value       = { for k, v in google_compute_global_forwarding_rule.default : k => v.ip_address }
 }
 
-output "backend_service" {
-  description = "Backend resource."
+output "backend_services" {
+  description = "Backend service resources, keyed by config key."
   value       = google_compute_backend_service.default
 }
 
-output "backend_service_id" {
-  description = "Backend id."
-  value       = google_compute_backend_service.default.id
+output "backend_service_ids" {
+  description = "Backend service ids, keyed by config key."
+  value = {
+    for k, v in google_compute_backend_service.default : k => v.id
+  }
 }
 
-output "backend_service_self_link" {
-  description = "Backend self link."
-  value       = google_compute_backend_service.default.self_link
+output "backend_service_self_links" {
+  description = "Backend service self links, keyed by config key."
+  value = {
+    for k, v in google_compute_backend_service.default : k => v.self_link
+  }
 }
 
 output "forwarding_rules" {
