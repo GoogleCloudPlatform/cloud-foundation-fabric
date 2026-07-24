@@ -28,14 +28,18 @@ locals {
     for k, v in google_kms_key_handle.default :
     "$kms_keys:autokeys/${k}" => v.kms_key
   })
-  ctx_p = "$"
-  gpu   = var.gpu != null
+  ctx_p       = "$"
+  gpu         = var.gpu != null
+  is_gce      = !local.is_template && !local.is_tpu
+  is_template = var.create_template != null
+  is_tpu      = var.tpu_config != null
   on_host_maintenance = coalesce(
     var.scheduling_config.on_host_maintenance,
     (
       var.scheduling_config.provisioning_model == "SPOT" ||
       var.confidential_compute != null ||
-      local.gpu
+      local.gpu ||
+      local.is_tpu
     ) ? "TERMINATE" : "MIGRATE"
   )
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)

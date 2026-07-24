@@ -73,6 +73,9 @@ resource "google_compute_backend_service" "default" {
     : null
   )
   timeout_sec                     = var.backend_service_config.timeout_sec
+    ? "//networkservices.googleapis.com/${google_network_services_service_lb_policies.default[0].id}"
+    : null
+  )
 
   dynamic "backend" {
     for_each = { for b in coalesce(var.backend_service_config.backends, []) : b.group => b }

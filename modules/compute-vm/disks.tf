@@ -33,7 +33,7 @@ locals {
 
 resource "google_compute_disk" "boot" {
   count = (
-    !local.is_template && var.boot_disk.use_independent_disk != null ? 1 : 0
+    !local.is_template && !local.is_tpu && var.boot_disk.use_independent_disk != null ? 1 : 0
   )
   project = local.project_id
   zone    = local.zone
