@@ -23,6 +23,7 @@ This skill generates idiomatic Terraform code using Cloud Foundation Fabric (CFF
   - To fetch outputs files: `python3 scripts/fabric.py fetch outputs <module_name>`
   - To fetch schema files (useful for factories): `python3 scripts/fabric.py fetch schemas <module_name>`
   - To fetch the latest release version: `python3 scripts/fabric.py release`
+  - **SSL Certification Verification**: If you run into SSL certificate issues on your host machine, use the `--no-ssl-verify` flag (e.g., `python3 scripts/fabric.py --no-ssl-verify fetch readme <module_name>`).
 
 ## Guidelines for Output
 

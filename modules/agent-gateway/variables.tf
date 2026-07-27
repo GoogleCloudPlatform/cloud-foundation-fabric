@@ -48,6 +48,7 @@ variable "context" {
   description = "Context-specific interpolations."
   type = object({
     locations               = optional(map(string), {})
+    networks                = optional(map(string), {})
     project_ids             = optional(map(string), {})
     psc_network_attachments = optional(map(string), {})
   })
@@ -84,28 +85,22 @@ variable "name" {
 variable "networking_config" {
   description = "The Agent Gateway networking configuration."
   type = object({
+    dns_peering_config = optional(object({
+      domains        = list(string)
+      target_network = string
+      target_project = string
+    }))
     psc_i_network_attachment_id = optional(string)
   })
   nullable = false
   default  = {}
 }
 
+
 variable "project_id" {
   description = "The ID of the project where the data stores and the agents will be created."
   type        = string
   nullable    = false
-}
-
-variable "protocols" {
-  description = "The protocols managed by the Agent Gateway."
-  type        = list(string)
-  nullable    = false
-  default     = ["MCP"]
-
-  validation {
-    condition     = length(var.protocols) == 0 || (length(var.protocols) == 1 && var.protocols[0] == "MCP")
-    error_message = "var.protocols can be one of the following: [], [\"MCP\"]."
-  }
 }
 
 variable "proxy_uri" {

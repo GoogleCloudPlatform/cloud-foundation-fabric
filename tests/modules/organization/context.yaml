@@ -13,6 +13,50 @@
 # limitations under the License.
 
 values:
+  google_access_context_manager_access_level.basic["factory_level"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks:
+        - 192.168.0.0/24
+        members:
+        - group:test-group@example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    name: accessPolicies/1234567890/accessLevels/factory_level
+    parent: accessPolicies/1234567890
+    timeouts: null
+    title: factory_level
+  google_access_context_manager_access_level.basic["my_level"]:
+    basic:
+    - combining_function: AND
+      conditions:
+      - device_policy: []
+        ip_subnetworks:
+        - 10.0.0.0/24
+        members:
+        - user:test-user@example.com
+        negate: null
+        regions: []
+        required_access_levels: []
+        vpc_network_sources: []
+    custom: []
+    description: null
+    name: accessPolicies/1234567890/accessLevels/my_level
+    parent: accessPolicies/1234567890
+    timeouts: null
+    title: my_level
+  google_access_context_manager_gcp_user_access_binding.binding["my_binding"]:
+    group_key: foo@example.com
+    organization_id: '1234567890'
+    scoped_access_settings: []
+    session_settings: []
+    timeouts: null
   google_bigquery_dataset_iam_member.bq_sinks_binding["test-bq"]:
     condition: []
     dataset_id: logs
@@ -65,6 +109,7 @@ values:
   google_logging_organization_sink.sink["test-bq"]:
     bigquery_options:
     - use_partitioned_tables: false
+    deletion_policy: DELETE
     description: test-bq (Terraform-managed).
     destination: bigquery.googleapis.com/projects/test-prod-audit-logs-0/datasets/logs
     disabled: false
@@ -75,6 +120,7 @@ values:
     name: test-bq
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-logging"]:
+    deletion_policy: DELETE
     description: test-logging (Terraform-managed).
     destination: logging.googleapis.com/projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs
     disabled: false
@@ -85,6 +131,7 @@ values:
     name: test-logging
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-project"]:
+    deletion_policy: DELETE
     description: test-project (Terraform-managed).
     destination: logging.googleapis.com/projects/test-prod-audit-logs-0
     disabled: false
@@ -95,6 +142,7 @@ values:
     name: test-project
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-pubsub"]:
+    deletion_policy: DELETE
     description: test-pubsub (Terraform-managed).
     destination: pubsub.googleapis.com/projects/test-prod-audit-logs-0/topics/audit-logs
     disabled: false
@@ -105,6 +153,7 @@ values:
     name: test-pubsub
     org_id: '1234567890'
   google_logging_organization_sink.sink["test-storage"]:
+    deletion_policy: DELETE
     description: test-storage (Terraform-managed).
     destination: storage.googleapis.com/test-prod-logs-audit-0
     disabled: false
@@ -283,6 +332,8 @@ values:
     tag_value: tagValues/1234567890
 
 counts:
+  google_access_context_manager_access_level: 2
+  google_access_context_manager_gcp_user_access_binding: 1
   google_bigquery_dataset_iam_member: 1
   google_cloud_asset_organization_feed: 1
   google_essential_contacts_contact: 1
@@ -302,10 +353,12 @@ counts:
   google_tags_tag_value_iam_binding: 2
   google_tags_tag_value_iam_member: 1
   modules: 0
-  resources: 31
+  resources: 34
 
 outputs:
+  access_levels: __missing__
   asset_search_results: {}
+  context_aware_access_bindings: __missing__
   custom_constraint_ids: {}
   custom_role_id: {}
   custom_roles: {}

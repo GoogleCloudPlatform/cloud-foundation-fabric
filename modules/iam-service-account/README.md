@@ -180,7 +180,7 @@ module "service-account-with-tags" {
 | [email](outputs.tf#L17) | Service account email. |  |
 | [iam_email](outputs.tf#L25) | IAM-format service account email. |  |
 | [id](outputs.tf#L33) | Fully qualified service account id. |  |
-| [name](outputs.tf#L41) | Service account name. |  |
+| [name](outputs.tf#L41) | Service account email (mirrors email output for symmetry when chaining create and reuse). |  |
 | [service_account](outputs.tf#L49) | Service account resource. |  |
 | [unique_id](outputs.tf#L54) | Fully qualified service account id. |  |
 <!-- END TFDOC -->

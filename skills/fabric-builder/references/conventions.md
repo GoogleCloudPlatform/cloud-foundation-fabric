@@ -39,6 +39,10 @@ When generating Terraform code that consumes Cloud Foundation Fabric modules, yo
 - **Formatting:** Adhere to standard Terraform formatting and keep line lengths readable. Wrap complex ternaries in parentheses.
 - **No Local Exec:** Never use `local-exec` or similar provisioners to run shell commands. Rely on native Terraform resources and data sources, preferably from official providers (i.e., no third-party providers).
 
+## 5a. Provider Version Alignment
+- **Align Constraints:** When invoking a specific release of a CFF module (e.g., `?ref=v56.2.0`), ensure the root `providers.tf` block contains matching version constraints for the `google` and `google-beta` providers.
+- **Check Module Requirements:** If `terraform init` fails with conflicting provider constraints, inspect the module's provider specifications on GitHub or local cache, and adjust the root module constraints to be fully compatible (e.g. `version = ">= 7.33.0, < 8.0.0"`).
+
 ## 6. Impersonation and Backend Management
 - **Impersonation:** If the user requires service account impersonation, add the `impersonate_service_account` attribute to the `provider "google"` and `provider "google-beta"` blocks in `providers.tf`.
 - **Remote Backend:** If the user wants to use a remote backend, prefer `gcs`. Put the backend configuration in the `terraform` block inside `providers.tf`. If impersonation is used, also set it for the backend.

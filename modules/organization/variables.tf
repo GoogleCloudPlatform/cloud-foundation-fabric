@@ -15,6 +15,112 @@
  */
 
 
+variable "access_levels" {
+  description = "Access level definitions."
+  type = map(object({
+    combining_function = optional(string)
+    conditions = optional(list(object({
+      device_policy = optional(object({
+        allowed_device_management_levels = optional(list(string))
+        allowed_encryption_statuses      = optional(list(string))
+        require_admin_approval           = bool
+        require_corp_owned               = bool
+        require_screen_lock              = optional(bool)
+        os_constraints = optional(list(object({
+          os_type                    = string
+          minimum_version            = optional(string)
+          require_verified_chrome_os = optional(bool)
+        })))
+      }))
+      ip_subnetworks         = optional(list(string), [])
+      members                = optional(list(string), [])
+      negate                 = optional(bool)
+      regions                = optional(list(string), [])
+      required_access_levels = optional(list(string), [])
+      vpc_subnets            = optional(map(list(string)), {})
+    })), [])
+    description = optional(string)
+    title       = optional(string)
+  }))
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : (
+        v.combining_function == null ||
+        v.combining_function == "AND" ||
+        v.combining_function == "OR"
+      )
+    ])
+    error_message = "Invalid `combining_function` value (null, \"AND\", \"OR\" accepted)."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : alltrue([
+        for condition in v.conditions : alltrue([
+          for member in condition.members : can(regex("^(?:serviceAccount:|user:)", member))
+        ])
+      ])
+    ])
+    error_message = "Invalid `conditions[].members`. It needs to start with on of the prefixes: 'serviceAccount:' or 'user:'."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : alltrue([
+        for condition in v.conditions : (
+          try(
+            condition.device_policy.allowed_encryption_statuses, null
+          ) == null
+          ? true
+          : alltrue([
+            for status in(
+              condition.device_policy.allowed_encryption_statuses
+            ) :
+            contains([
+              "ENCRYPTION_UNSPECIFIED",
+              "ENCRYPTION_UNSUPPORTED",
+              "UNENCRYPTED",
+              "ENCRYPTED"
+            ], status)
+          ])
+        )
+      ])
+    ])
+    error_message = "Invalid `allowed_encryption_statuses` value."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : alltrue([
+        for condition in v.conditions : (
+          try(
+            condition.device_policy.allowed_device_management_levels, null
+          ) == null
+          ? true
+          : alltrue([
+            for level in(
+              condition.device_policy.allowed_device_management_levels
+            ) :
+            contains([
+              "MANAGEMENT_UNSPECIFIED",
+              "NONE",
+              "BASIC",
+              "COMPLETE",
+              "CHROME_ENTERPRISE"
+            ], level)
+          ])
+        )
+      ])
+    ])
+    error_message = "Invalid `allowed_device_management_levels` value."
+  }
+}
+
+variable "access_policy" {
+  description = "Access Policy name or ID, required if creating access levels."
+  type        = string
+  default     = null
+}
+
 variable "asset_feeds" {
   description = "Cloud Asset Inventory feeds."
   type = map(object({
@@ -79,6 +185,7 @@ variable "contacts" {
 variable "context" {
   description = "Context-specific interpolations."
   type = object({
+    access_levels     = optional(map(string), {})
     bigquery_datasets = optional(map(string), {})
     condition_vars    = optional(map(map(string)), {})
     custom_roles      = optional(map(string), {})
@@ -101,6 +208,24 @@ variable "context" {
   default  = {}
 }
 
+variable "context_aware_access_bindings" {
+  description = "GCP User Access Bindings for securing Console and APIs."
+  type = map(object({
+    group_key     = string
+    access_levels = list(string)
+    scoped_access_settings = optional(list(object({
+      active_settings = optional(object({
+        access_levels = optional(list(string))
+      }))
+      dry_run_settings = optional(object({
+        access_levels = optional(list(string))
+      }))
+    })), [])
+  }))
+  default  = {}
+  nullable = false
+}
+
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
@@ -111,6 +236,7 @@ variable "custom_roles" {
 variable "factories_config" {
   description = "Paths to data files and folders that enable factory functionality."
   type = object({
+    access_levels                 = optional(string)
     custom_roles                  = optional(string)
     org_policies                  = optional(string)
     org_policy_custom_constraints = optional(string)

@@ -4,6 +4,9 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "access_policy": {
+      "type": "string"
+    },
     "asset_feeds": {
       "type": "object",
       "additionalProperties": false,
@@ -111,6 +114,9 @@
           }
         }
       }
+    },
+    "context_aware_access_bindings": {
+      "$ref": "#/$defs/context_aware_access_bindings"
     },
     "data_access_logs": {
       "type": "object",
@@ -825,6 +831,64 @@
               "items": {
                 "type": "string",
                 "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "context_aware_access_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9-_.]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "group_key",
+            "access_levels"
+          ],
+          "properties": {
+            "group_key": {
+              "type": "string"
+            },
+            "access_levels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "scoped_access_settings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "active_settings": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "access_levels": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "dry_run_settings": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "access_levels": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }

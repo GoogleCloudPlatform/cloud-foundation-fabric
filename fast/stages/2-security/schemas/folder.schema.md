@@ -166,16 +166,27 @@
 - **assured_workload_config**: *reference([assured_workload_config](#refs-assured_workload_config))*
 - **parent**: *string*
   <br>*pattern: ^(?:folders/[0-9]+|organizations/[0-9]+|\$folder_ids:[a-z0-9_-]+)$*
-- **tag_bindings**: *object*
-  <br>*additional properties: false*
-  - **`^[a-z0-9_-]+$`**: *string*
+- **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 
 ## Definitions
 
-- **labels**<a name="refs-labels"></a>: *object*
+- **assured_workload_config**<a name="refs-assured_workload_config"></a>: *object*
   <br>*additional properties: false*
-  - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
-    <br>*pattern: ^[a-z0-9_-]{0,63}$*
+  - ⁺**compliance_regime**: *string*
+    <br>*enum: ['ASSURED_WORKLOADS_FOR_PARTNERS', 'AU_REGIONS_AND_US_SUPPORT', 'AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT', 'CA_PROTECTED_B', 'CA_REGIONS_AND_SUPPORT', 'CANADA_CONTROLLED_GOODS', 'CANADA_DATA_BOUNDARY_AND_SUPPORT', 'CJIS', 'COMPLIANCE_REGIME_UNSPECIFIED', 'DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS', 'DATA_BOUNDARY_FOR_CANADA_PROTECTED_B', 'DATA_BOUNDARY_FOR_CJIS', 'DATA_BOUNDARY_FOR_FEDRAMP_HIGH', 'DATA_BOUNDARY_FOR_FEDRAMP_MODERATE', 'DATA_BOUNDARY_FOR_IL2', 'DATA_BOUNDARY_FOR_IL4', 'DATA_BOUNDARY_FOR_IL5', 'DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075', 'DATA_BOUNDARY_FOR_ITAR', 'EU_DATA_BOUNDARY_AND_SUPPORT', 'EU_REGIONS_AND_SUPPORT', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT', 'HIPAA', 'HITRUST', 'IL2', 'IL4', 'IL5', 'IRS_1075', 'ISR_REGIONS', 'ISR_REGIONS_AND_SUPPORT', 'ISRAEL_DATA_BOUNDARY_AND_SUPPORT', 'ITAR', 'JAPAN_DATA_BOUNDARY', 'JP_REGIONS_AND_SUPPORT', 'KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS', 'KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS', 'REGIONAL_CONTROLS', 'REGIONAL_DATA_BOUNDARY', 'US_DATA_BOUNDARY_AND_SUPPORT', 'US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES', 'US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT', 'US_REGIONAL_ACCESS']*
+  - ⁺**display_name**: *string*
+  - ⁺**location**: *string*
+  - ⁺**organization**: *string*
+  - **enable_sovereign_controls**: *boolean*
+  - **labels**: *reference([labels](#refs-labels))*
+  - **partner**: *string*
+    <br>*enum: ['LOCAL_CONTROLS_BY_S3NS', 'PARTNER_UNSPECIFIED', 'SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM', 'SOVEREIGN_CONTROLS_BY_CNTXT', 'SOVEREIGN_CONTROLS_BY_PSN', 'SOVEREIGN_CONTROLS_BY_SIA_MINSAIT', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']*
+  - **partner_permissions**: *object*
+    <br>*additional properties: false*
+    - **assured_workloads_monitoring**: *boolean*
+    - **data_logs_viewer**: *boolean*
+    - **service_access_approver**: *boolean*
+  - **violation_notifications_enabled**: *boolean*
 - **bucket**<a name="refs-bucket"></a>: *object*
   <br>*additional properties: false*
   - **name**: *string*
@@ -271,6 +282,10 @@
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*
     - items: *string*
+- **labels**<a name="refs-labels"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+    <br>*pattern: ^[a-z0-9_-]{0,63}$*
 - **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*
@@ -304,20 +319,6 @@
         - items: *string*
       - **requester_email_recipients**: *array*
         - items: *string*
-- **assured_workload_config**<a name="refs-assured_workload_config"></a>: *object*
+- **tag_bindings**<a name="refs-tag_bindings"></a>: *object*
   <br>*additional properties: false*
-  - ⁺**compliance_regime**: *string*
-    <br>*enum: ['ASSURED_WORKLOADS_FOR_PARTNERS', 'AU_REGIONS_AND_US_SUPPORT', 'AUSTRALIA_DATA_BOUNDARY_AND_SUPPORT', 'CA_PROTECTED_B', 'CA_REGIONS_AND_SUPPORT', 'CANADA_CONTROLLED_GOODS', 'CANADA_DATA_BOUNDARY_AND_SUPPORT', 'CJIS', 'COMPLIANCE_REGIME_UNSPECIFIED', 'DATA_BOUNDARY_FOR_CANADA_CONTROLLED_GOODS', 'DATA_BOUNDARY_FOR_CANADA_PROTECTED_B', 'DATA_BOUNDARY_FOR_CJIS', 'DATA_BOUNDARY_FOR_FEDRAMP_HIGH', 'DATA_BOUNDARY_FOR_FEDRAMP_MODERATE', 'DATA_BOUNDARY_FOR_IL2', 'DATA_BOUNDARY_FOR_IL4', 'DATA_BOUNDARY_FOR_IL5', 'DATA_BOUNDARY_FOR_IRS_PUBLICATION_1075', 'DATA_BOUNDARY_FOR_ITAR', 'EU_DATA_BOUNDARY_AND_SUPPORT', 'EU_REGIONS_AND_SUPPORT', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS', 'HEALTHCARE_AND_LIFE_SCIENCES_CONTROLS_US_SUPPORT', 'HIPAA', 'HITRUST', 'IL2', 'IL4', 'IL5', 'IRS_1075', 'ISR_REGIONS', 'ISR_REGIONS_AND_SUPPORT', 'ISRAEL_DATA_BOUNDARY_AND_SUPPORT', 'ITAR', 'JAPAN_DATA_BOUNDARY', 'JP_REGIONS_AND_SUPPORT', 'KSA_DATA_BOUNDARY_WITH_ACCESS_JUSTIFICATIONS', 'KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS', 'REGIONAL_CONTROLS', 'REGIONAL_DATA_BOUNDARY', 'US_DATA_BOUNDARY_AND_SUPPORT', 'US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES', 'US_DATA_BOUNDARY_FOR_HEALTHCARE_AND_LIFE_SCIENCES_WITH_SUPPORT', 'US_REGIONAL_ACCESS']*
-  - ⁺**display_name**: *string*
-  - ⁺**location**: *string*
-  - ⁺**organization**: *string*
-  - **enable_sovereign_controls**: *boolean*
-  - **labels**: *reference([labels](#refs-labels))*
-  - **partner**: *string*
-    <br>*enum: ['LOCAL_CONTROLS_BY_S3NS', 'PARTNER_UNSPECIFIED', 'SOVEREIGN_CONTROLS_BY_CNTXT_NO_EKM', 'SOVEREIGN_CONTROLS_BY_CNTXT', 'SOVEREIGN_CONTROLS_BY_PSN', 'SOVEREIGN_CONTROLS_BY_SIA_MINSAIT', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']*
-  - **partner_permissions**: *object*
-    <br>*additional properties: false*
-    - **assured_workloads_monitoring**: *boolean*
-    - **data_logs_viewer**: *boolean*
-    - **service_access_approver**: *boolean*
-  - **violation_notifications_enabled**: *boolean*
+  - **`^[a-z0-9_-]+$`**: *string*
