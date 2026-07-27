@@ -129,20 +129,38 @@
                 "iam_bindings_additive": {
                   "$ref": "#/$defs/iam_bindings_additive"
                 },
+                "iam_billing_bindings": {
+                  "$ref": "#/$defs/iam_billing_bindings"
+                },
                 "iam_billing_roles": {
                   "$ref": "#/$defs/iam_billing_roles"
+                },
+                "iam_folder_bindings": {
+                  "$ref": "#/$defs/iam_folder_bindings"
                 },
                 "iam_folder_roles": {
                   "$ref": "#/$defs/iam_folder_roles"
                 },
+                "iam_organization_bindings": {
+                  "$ref": "#/$defs/iam_organization_bindings"
+                },
                 "iam_organization_roles": {
                   "$ref": "#/$defs/iam_organization_roles"
+                },
+                "iam_project_bindings": {
+                  "$ref": "#/$defs/iam_project_bindings"
                 },
                 "iam_project_roles": {
                   "$ref": "#/$defs/iam_project_roles"
                 },
+                "iam_sa_bindings": {
+                  "$ref": "#/$defs/iam_sa_bindings"
+                },
                 "iam_sa_roles": {
                   "$ref": "#/$defs/iam_sa_roles"
+                },
+                "iam_storage_bindings": {
+                  "$ref": "#/$defs/iam_storage_bindings"
                 },
                 "iam_storage_roles": {
                   "$ref": "#/$defs/iam_storage_roles"
@@ -800,17 +818,47 @@
             "iam_bindings_additive": {
               "$ref": "#/$defs/iam_bindings_additive"
             },
+            "iam_billing_bindings": {
+              "$ref": "#/$defs/iam_billing_bindings"
+            },
+            "iam_billing_roles": {
+              "$ref": "#/$defs/iam_billing_roles"
+            },
+            "iam_folder_bindings": {
+              "$ref": "#/$defs/iam_folder_bindings"
+            },
+            "iam_folder_roles": {
+              "$ref": "#/$defs/iam_folder_roles"
+            },
+            "iam_organization_bindings": {
+              "$ref": "#/$defs/iam_organization_bindings"
+            },
+            "iam_organization_roles": {
+              "$ref": "#/$defs/iam_organization_roles"
+            },
+            "iam_project_bindings": {
+              "$ref": "#/$defs/iam_project_bindings"
+            },
+            "iam_project_roles": {
+              "$ref": "#/$defs/iam_project_roles"
+            },
+            "iam_sa_bindings": {
+              "$ref": "#/$defs/iam_sa_bindings"
+            },
+            "iam_sa_roles": {
+              "$ref": "#/$defs/iam_sa_roles"
+            },
             "iam_self_roles": {
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
-            "iam_project_roles": {
-              "$ref": "#/$defs/iam_project_roles"
+            "iam_storage_bindings": {
+              "$ref": "#/$defs/iam_storage_bindings"
             },
-            "iam_sa_roles": {
-              "$ref": "#/$defs/iam_sa_roles"
+            "iam_storage_roles": {
+              "$ref": "#/$defs/iam_storage_roles"
             },
             "tag_bindings": {
               "$ref": "#/$defs/tag_bindings"
@@ -1566,6 +1614,258 @@
               "items": {
                 "type": "string",
                 "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_billing_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "billing_account_id",
+            "role"
+          ],
+          "properties": {
+            "billing_account_id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_folder_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "folder_id",
+            "role"
+          ],
+          "properties": {
+            "folder_id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_organization_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organization_id",
+            "role"
+          ],
+          "properties": {
+            "organization_id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_project_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "project_id",
+            "role"
+          ],
+          "properties": {
+            "project_id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_sa_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "service_account_id"
+          ],
+          "properties": {
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "service_account_id": {
+              "type": "string"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "iam_storage_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z0-9_-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bucket",
+            "role"
+          ],
+          "properties": {
+            "bucket": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string",
+              "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)"
+            },
+            "condition": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expression",
+                "title"
+              ],
+              "properties": {
+                "expression": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
               }
             }
           }

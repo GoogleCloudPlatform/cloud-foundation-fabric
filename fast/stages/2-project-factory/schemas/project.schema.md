@@ -43,11 +43,17 @@
       - **iam**: *reference([iam](#refs-iam))*
       - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
       - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+      - **iam_billing_bindings**: *reference([iam_billing_bindings](#refs-iam_billing_bindings))*
       - **iam_billing_roles**: *reference([iam_billing_roles](#refs-iam_billing_roles))*
+      - **iam_folder_bindings**: *reference([iam_folder_bindings](#refs-iam_folder_bindings))*
       - **iam_folder_roles**: *reference([iam_folder_roles](#refs-iam_folder_roles))*
+      - **iam_organization_bindings**: *reference([iam_organization_bindings](#refs-iam_organization_bindings))*
       - **iam_organization_roles**: *reference([iam_organization_roles](#refs-iam_organization_roles))*
+      - **iam_project_bindings**: *reference([iam_project_bindings](#refs-iam_project_bindings))*
       - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
+      - **iam_sa_bindings**: *reference([iam_sa_bindings](#refs-iam_sa_bindings))*
       - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
+      - **iam_storage_bindings**: *reference([iam_storage_bindings](#refs-iam_storage_bindings))*
       - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
       - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 - **billing_account**: *string*
@@ -248,10 +254,20 @@
     - **iam**: *reference([iam](#refs-iam))*
     - **iam_bindings**: *reference([iam_bindings](#refs-iam_bindings))*
     - **iam_bindings_additive**: *reference([iam_bindings_additive](#refs-iam_bindings_additive))*
+    - **iam_billing_bindings**: *reference([iam_billing_bindings](#refs-iam_billing_bindings))*
+    - **iam_billing_roles**: *reference([iam_billing_roles](#refs-iam_billing_roles))*
+    - **iam_folder_bindings**: *reference([iam_folder_bindings](#refs-iam_folder_bindings))*
+    - **iam_folder_roles**: *reference([iam_folder_roles](#refs-iam_folder_roles))*
+    - **iam_organization_bindings**: *reference([iam_organization_bindings](#refs-iam_organization_bindings))*
+    - **iam_organization_roles**: *reference([iam_organization_roles](#refs-iam_organization_roles))*
+    - **iam_project_bindings**: *reference([iam_project_bindings](#refs-iam_project_bindings))*
+    - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
+    - **iam_sa_bindings**: *reference([iam_sa_bindings](#refs-iam_sa_bindings))*
+    - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
     - **iam_self_roles**: *array*
       - items: *string*
-    - **iam_project_roles**: *reference([iam_project_roles](#refs-iam_project_roles))*
-    - **iam_sa_roles**: *reference([iam_sa_roles](#refs-iam_sa_roles))*
+    - **iam_storage_bindings**: *reference([iam_storage_bindings](#refs-iam_storage_bindings))*
+    - **iam_storage_roles**: *reference([iam_storage_roles](#refs-iam_storage_roles))*
     - **tag_bindings**: *reference([tag_bindings](#refs-tag_bindings))*
 - **service_agents_config**: *object*
   <br>*additional properties: false*
@@ -447,6 +463,78 @@
     - ⁺**roles**: *array*
       - items: *string*
         <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+- **iam_billing_bindings**<a name="refs-iam_billing_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**billing_account_id**: *string*
+    - ⁺**role**: *string*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+- **iam_folder_bindings**<a name="refs-iam_folder_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**folder_id**: *string*
+    - ⁺**role**: *string*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+- **iam_organization_bindings**<a name="refs-iam_organization_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**organization_id**: *string*
+    - ⁺**role**: *string*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+- **iam_project_bindings**<a name="refs-iam_project_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**project_id**: *string*
+    - ⁺**role**: *string*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+- **iam_sa_bindings**<a name="refs-iam_sa_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**role**: *string*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+    - ⁺**service_account_id**: *string*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
+- **iam_storage_bindings**<a name="refs-iam_storage_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9_-]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**bucket**: *string*
+    - ⁺**role**: *string*
+      <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+    - **condition**: *object*
+      <br>*additional properties: false*
+      - ⁺**expression**: *string*
+      - ⁺**title**: *string*
+      - **description**: *string*
 - **iam_billing_roles**<a name="refs-iam_billing_roles"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *array*

@@ -981,6 +981,13 @@ values:
   : condition: []
     project: test-pf-dev-tb-app0-0
     role: roles/monitoring.metricWriter
+  ? module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_project_iam_member.project_roles["cond-0"]
+  : condition:
+    - description: null
+      expression: resource.name.startsWith('projects/test')
+      title: conditional-access
+    project: test-pf-dev-tb-app0-0
+    role: roles/storage.objectViewer
   module.project-factory.module.service-accounts["dev-tb-app0-0/vm-default"].google_service_account.service_account[0]:
     account_id: vm-default
     create_ignore_already_exists: null
@@ -1053,7 +1060,7 @@ counts:
   google_project: 4
   google_project_iam_audit_config: 1
   google_project_iam_binding: 6
-  google_project_iam_member: 22
+  google_project_iam_member: 23
   google_project_service: 14
   google_project_service_identity: 5
   google_pubsub_subscription: 1
@@ -1071,7 +1078,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 39
-  resources: 121
+  resources: 122
   terraform_data: 2
 
 outputs: {}

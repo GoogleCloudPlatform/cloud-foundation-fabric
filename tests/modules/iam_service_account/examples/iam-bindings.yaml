@@ -1,0 +1,82 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  module.service-account-cond.google_billing_account_iam_member.billing_roles["binding-0"]:
+    billing_account_id: ABCDE-12345-ABCDE
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    role: roles/billing.user
+  module.service-account-cond.google_folder_iam_member.folder_roles["binding-0"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    folder: folders/1234567890
+    role: roles/resourcemanager.folderAdmin
+  module.service-account-cond.google_organization_iam_member.organization_roles["binding-0"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    org_id: organizations/1234567890
+    role: roles/resourcemanager.organizationAdmin
+  module.service-account-cond.google_project_iam_member.project_roles["binding-0"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    project: project-id
+    role: roles/storage.admin
+  module.service-account-cond.google_service_account.service_account[0]:
+    account_id: test-sa-cond
+    create_ignore_already_exists: null
+    deletion_policy: DELETE
+    description: null
+    disabled: false
+    display_name: Terraform-managed.
+    email: test-sa-cond@project-id.iam.gserviceaccount.com
+    member: serviceAccount:test-sa-cond@project-id.iam.gserviceaccount.com
+    project: project-id
+    timeouts: null
+  module.service-account-cond.google_service_account_iam_member.additive["binding-0"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    role: roles/iam.serviceAccountUser
+    service_account_id: projects/project-id/serviceAccounts/my-test-sa@project-id.iam.gserviceaccount.com
+  module.service-account-cond.google_storage_bucket_iam_member.bucket_roles["binding-0"]:
+    bucket: my-bucket
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    role: roles/storage.objectAdmin
+    timeouts: null
+
+counts:
+  google_billing_account_iam_member: 1
+  google_folder_iam_member: 1
+  google_organization_iam_member: 1
+  google_project_iam_member: 1
+  google_service_account: 1
+  google_service_account_iam_member: 1
+  google_storage_bucket_iam_member: 1
+  modules: 1
+  resources: 7
+
+outputs: {}

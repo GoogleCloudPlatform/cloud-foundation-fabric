@@ -779,6 +779,13 @@ service_accounts:
     iam:
       roles/iam.serviceAccountTokenCreator:
         - $iam_principals:service_accounts/dev-tb-app0-0/automation/rw
+    iam_project_bindings:
+      cond-0:
+        project_id: $project_ids:dev-tb-app0-0
+        role: roles/storage.objectViewer
+        condition:
+          expression: resource.name.startsWith('projects/test')
+          title: conditional-access
 data_access_logs:
   storage.googleapis.com:
     DATA_READ:
