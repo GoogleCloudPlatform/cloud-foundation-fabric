@@ -93,6 +93,9 @@ module "firewall-policy" {
   attachments = {
     my-vpc = module.vpc.self_link
   }
+  tag_bindings = {
+    foo = "tagValues/12345678"
+  }
   egress_rules = {
     smtp = {
       priority = 900
@@ -128,7 +131,8 @@ module "firewall-policy" {
     }
   }
 }
-# tftest modules=2 resources=10 inventory=global-net.yaml
+# tftest modules=2 resources=11 inventory=global-net.yaml
+
 ```
 
 ### Regional Network policy
@@ -509,18 +513,19 @@ The following variable is defined at the top level of the rule (not within the `
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L197) | Policy name. | <code>string</code> | ✓ |  |
-| [parent_id](variables.tf#L203) | Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L201) | Policy name. | <code>string</code> | ✓ |  |
+| [parent_id](variables.tf#L207) | Parent node where the policy will be created, `folders/nnn` or `organizations/nnn` for hierarchical policy, project id for a network policy. | <code>string</code> | ✓ |  |
 | [attachments](variables.tf#L17) | Ids of the resources to which this policy will be attached, in descriptive name => self link format. Specify folders or organization for hierarchical policy, VPCs for network policy. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L24) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L40) | Policy description. | <code>string</code> |  | <code>null</code> |
-| [egress_mirroring_rules](variables.tf#L46) | List of egress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [egress_rules](variables.tf#L77) | List of egress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. The match.layer4configs map is in protocol => optional [ports] format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L115) | Paths to folders for the optional factories. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_mirroring_rules](variables.tf#L128) | List of ingress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_rules](variables.tf#L159) | List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [region](variables.tf#L209) | Policy region. Leave null for hierarchical policy, set to 'global' for a global network policy. | <code>string</code> |  | <code>null</code> |
-| [security_profile_group_ids](variables.tf#L215) | The optional security groups ids to be referenced in factories. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L44) | Policy description. | <code>string</code> |  | <code>null</code> |
+| [egress_mirroring_rules](variables.tf#L50) | List of egress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [egress_rules](variables.tf#L81) | List of egress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. The match.layer4configs map is in protocol => optional [ports] format. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L119) | Paths to folders for the optional factories. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_mirroring_rules](variables.tf#L132) | List of ingress packet mirroring rule definitions, action can be 'mirror', 'do_not_mirror', or 'goto_next'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_rules](variables.tf#L163) | List of ingress rule definitions, action can be 'allow', 'deny', 'goto_next' or 'apply_security_profile_group'. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [region](variables.tf#L213) | Policy region. Leave null for hierarchical policy, set to 'global' for a global network policy. | <code>string</code> |  | <code>null</code> |
+| [security_profile_group_ids](variables.tf#L219) | The optional security groups ids to be referenced in factories. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L226) | Tag bindings for this firewall policy, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

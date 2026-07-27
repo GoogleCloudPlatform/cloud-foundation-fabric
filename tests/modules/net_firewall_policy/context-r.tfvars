@@ -58,3 +58,7 @@ ingress_rules = {
     }
   }
 }
+
+tag_bindings = {
+  "test" = "$tag_values:test"
+}

@@ -33,6 +33,16 @@
     "egress_rules": {
       "$ref": "#/$defs/rules",
       "description": "A map of egress firewall rules."
+    },
+    "tag_bindings": {
+      "type": "object",
+      "description": "Tag bindings for this firewall policy, in key => tag value id format.",
+      "patternProperties": {
+        "^[a-zA-Z0-9_/-]+$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "$defs": {
