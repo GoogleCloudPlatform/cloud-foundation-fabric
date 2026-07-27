@@ -378,6 +378,7 @@ variable "network_interfaces" {
     stack_type                  = optional(string)
     queue_count                 = optional(number) # NEW
     internal_ipv6_prefix_length = optional(number) # NEW
+    external_ipv6               = optional(bool, false)
     addresses = optional(object({
       internal = optional(string)
       external = optional(string)
