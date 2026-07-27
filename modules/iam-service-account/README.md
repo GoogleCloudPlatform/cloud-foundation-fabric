@@ -94,6 +94,39 @@ module "service-account-cond" {
         my_tag = "tagValues/123456789"
       }
     }
+    folder_ids = {
+      test = "folders/1234567890"
+    }
+  }
+  iam_billing_bindings = {
+    binding-0 = {
+      billing_account_id = "ABCDE-12345-ABCDE"
+      role               = "roles/billing.user"
+      condition = {
+        expression = "resource.matchTag('1234567890/env', '$${tags.my_tag}')"
+        title      = "conditional-access"
+      }
+    }
+  }
+  iam_folder_bindings = {
+    binding-0 = {
+      folder_id = "$folder_ids:test"
+      role      = "roles/resourcemanager.folderAdmin"
+      condition = {
+        expression = "resource.matchTag('1234567890/env', '$${tags.my_tag}')"
+        title      = "conditional-access"
+      }
+    }
+  }
+  iam_organization_bindings = {
+    binding-0 = {
+      organization_id = "organizations/1234567890"
+      role            = "roles/resourcemanager.organizationAdmin"
+      condition = {
+        expression = "resource.matchTag('1234567890/env', '$${tags.my_tag}')"
+        title      = "conditional-access"
+      }
+    }
   }
   iam_project_bindings = {
     binding-0 = {
@@ -105,8 +138,28 @@ module "service-account-cond" {
       }
     }
   }
+  iam_sa_bindings = {
+    binding-0 = {
+      service_account_id = "projects/${var.project_id}/serviceAccounts/my-test-sa@${var.project_id}.iam.gserviceaccount.com"
+      role               = "roles/iam.serviceAccountUser"
+      condition = {
+        expression = "resource.matchTag('1234567890/env', '$${tags.my_tag}')"
+        title      = "conditional-access"
+      }
+    }
+  }
+  iam_storage_bindings = {
+    binding-0 = {
+      bucket = "my-bucket"
+      role   = "roles/storage.objectAdmin"
+      condition = {
+        expression = "resource.matchTag('1234567890/env', '$${tags.my_tag}')"
+        title      = "conditional-access"
+      }
+    }
+  }
 }
-# tftest modules=1 resources=2 inventory=iam-bindings.yaml
+# tftest modules=1 resources=7 inventory=iam-bindings.yaml
 ```
 
 ## Reusing Existing Service Accounts

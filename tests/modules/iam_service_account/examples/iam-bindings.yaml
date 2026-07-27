@@ -13,6 +13,27 @@
 # limitations under the License.
 
 values:
+  module.service-account-cond.google_billing_account_iam_member.billing_roles["binding-0"]:
+    billing_account_id: ABCDE-12345-ABCDE
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    role: roles/billing.user
+  module.service-account-cond.google_folder_iam_member.folder_roles["binding-0"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    folder: folders/1234567890
+    role: roles/resourcemanager.folderAdmin
+  module.service-account-cond.google_organization_iam_member.organization_roles["binding-0"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    org_id: organizations/1234567890
+    role: roles/resourcemanager.organizationAdmin
   module.service-account-cond.google_project_iam_member.project_roles["binding-0"]:
     condition:
     - description: null
@@ -31,11 +52,31 @@ values:
     member: serviceAccount:test-sa-cond@project-id.iam.gserviceaccount.com
     project: project-id
     timeouts: null
+  module.service-account-cond.google_service_account_iam_member.additive["binding-0"]:
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    role: roles/iam.serviceAccountUser
+    service_account_id: projects/project-id/serviceAccounts/my-test-sa@project-id.iam.gserviceaccount.com
+  module.service-account-cond.google_storage_bucket_iam_member.bucket_roles["binding-0"]:
+    bucket: my-bucket
+    condition:
+    - description: null
+      expression: resource.matchTag('1234567890/env', 'tagValues/123456789')
+      title: conditional-access
+    role: roles/storage.objectAdmin
+    timeouts: null
 
 counts:
+  google_billing_account_iam_member: 1
+  google_folder_iam_member: 1
+  google_organization_iam_member: 1
   google_project_iam_member: 1
   google_service_account: 1
+  google_service_account_iam_member: 1
+  google_storage_bucket_iam_member: 1
   modules: 1
-  resources: 2
+  resources: 7
 
 outputs: {}
