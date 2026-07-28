@@ -129,6 +129,16 @@ variable "workstation_configs" {
         type  = optional(string)
         count = optional(number)
       })), [])
+      boost_configs = optional(map(object({
+        machine_type                 = optional(string)
+        boot_disk_size_gb            = optional(number)
+        enable_nested_virtualization = optional(bool)
+        pool_size                    = optional(number)
+        accelerators = optional(list(object({
+          type  = optional(string)
+          count = optional(number)
+        })), [])
+      })), {})
       shielded_instance_config = optional(object({
         enable_secure_boot          = optional(bool, false)
         enable_vtpm                 = optional(bool, false)
