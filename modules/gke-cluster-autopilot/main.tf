@@ -460,6 +460,88 @@ resource "google_gke_backup_backup_plan" "backup_plan" {
   }
 }
 
+resource "google_gke_backup_restore_plan" "restore_plan" {
+  for_each = (
+    var.backup_configs.enable_backup_agent
+    ? var.backup_configs.restore_plans
+    : {}
+  )
+  name        = each.key
+  description = each.value.description
+  cluster     = google_container_cluster.cluster.id
+  location    = each.value.region
+  project     = var.project_id
+  labels      = each.value.labels
+
+  backup_plan = (
+    try(google_gke_backup_backup_plan.backup_plan[each.value.backup_plan].id, null) != null
+    ? google_gke_backup_backup_plan.backup_plan[each.value.backup_plan].id
+    : each.value.backup_plan
+  )
+
+  restore_config {
+    volume_data_restore_policy       = each.value.volume_data_restore_policy
+    cluster_resource_conflict_policy = each.value.cluster_resource_conflict_policy
+    namespaced_resource_restore_mode = each.value.namespaced_resource_restore_mode
+
+    all_namespaces = each.value.all_namespaces
+    no_namespaces  = each.value.no_namespaces
+
+    dynamic "selected_namespaces" {
+      for_each = each.value.namespaces != null ? [""] : []
+      content {
+        namespaces = each.value.namespaces
+      }
+    }
+
+    dynamic "excluded_namespaces" {
+      for_each = each.value.excluded_namespaces != null ? [""] : []
+      content {
+        namespaces = each.value.excluded_namespaces
+      }
+    }
+
+    dynamic "selected_applications" {
+      for_each = each.value.applications != null ? [""] : []
+      content {
+        dynamic "namespaced_names" {
+          for_each = flatten([for k, vs in each.value.applications : [
+            for v in vs : { namespace = k, name = v }
+          ]])
+          content {
+            namespace = namespaced_names.value.namespace
+            name      = namespaced_names.value.name
+          }
+        }
+      }
+    }
+
+    dynamic "cluster_resource_restore_scope" {
+      for_each = each.value.cluster_resource_restore_scope != null ? [""] : []
+      content {
+        all_group_kinds = each.value.cluster_resource_restore_scope.all_group_kinds
+        no_group_kinds  = each.value.cluster_resource_restore_scope.no_group_kinds
+
+        dynamic "selected_group_kinds" {
+          for_each = each.value.cluster_resource_restore_scope.selected_group_kinds != null ? each.value.cluster_resource_restore_scope.selected_group_kinds : []
+          content {
+            resource_group = selected_group_kinds.value.resource_group
+            resource_kind  = selected_group_kinds.value.resource_kind
+          }
+        }
+
+        dynamic "excluded_group_kinds" {
+          for_each = each.value.cluster_resource_restore_scope.excluded_group_kinds != null ? each.value.cluster_resource_restore_scope.excluded_group_kinds : []
+          content {
+            resource_group = excluded_group_kinds.value.resource_group
+            resource_kind  = excluded_group_kinds.value.resource_kind
+          }
+        }
+      }
+    }
+  }
+}
+
 resource "google_pubsub_topic" "notifications" {
   count = (
     try(var.enable_features.upgrade_notifications, null) != null &&

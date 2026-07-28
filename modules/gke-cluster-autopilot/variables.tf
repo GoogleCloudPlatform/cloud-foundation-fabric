@@ -63,9 +63,75 @@ variable "backup_configs" {
       retention_policy_lock             = optional(bool, false)
       retention_policy_delete_lock_days = optional(string)
     })), {})
+    restore_plans = optional(map(object({
+      region                           = string
+      backup_plan                      = string
+      description                      = optional(string)
+      labels                           = optional(map(string))
+      cluster_resource_conflict_policy = optional(string)
+      namespaced_resource_restore_mode = optional(string)
+      volume_data_restore_policy       = optional(string)
+      all_namespaces                   = optional(bool)
+      no_namespaces                    = optional(bool)
+      namespaces                       = optional(list(string))
+      excluded_namespaces              = optional(list(string))
+      applications                     = optional(map(list(string)))
+      cluster_resource_restore_scope = optional(object({
+        all_group_kinds = optional(bool)
+        no_group_kinds  = optional(bool)
+        selected_group_kinds = optional(list(object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })))
+        excluded_group_kinds = optional(list(object({
+          resource_group = optional(string)
+          resource_kind  = optional(string)
+        })))
+      }))
+    })), {})
   })
   default  = {}
   nullable = false
+
+  validation {
+    condition = alltrue([
+      for k, v in var.backup_configs.backup_plans : (
+        v.schedule == null || v.retention_policy_days != null
+      )
+    ])
+    error_message = "Backup plans with a defined schedule require retention_policy_days to be set."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.backup_configs.restore_plans : (
+        (v.cluster_resource_restore_scope == null || try(v.cluster_resource_restore_scope.no_group_kinds, false) == true) &&
+        v.cluster_resource_conflict_policy == null
+      ) ||
+      contains(["USE_EXISTING_VERSION", "USE_BACKUP_VERSION"], try(v.cluster_resource_conflict_policy, ""))
+    ])
+    error_message = "cluster_resource_conflict_policy must be set to a valid value (USE_EXISTING_VERSION, USE_BACKUP_VERSION) if cluster_resource_restore_scope is configured and not set to no_group_kinds."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.backup_configs.restore_plans : (
+        (try(v.no_namespaces, false) == true && v.namespaced_resource_restore_mode == null) ||
+        contains(["DELETE_AND_RESTORE", "FAIL_ON_CONFLICT", "MERGE_SKIP_ON_CONFLICT", "MERGE_REPLACE_VOLUME_ON_CONFLICT", "MERGE_REPLACE_ON_CONFLICT"], try(v.namespaced_resource_restore_mode, ""))
+      )
+    ])
+    error_message = "namespaced_resource_restore_mode must be set to a valid value (DELETE_AND_RESTORE, FAIL_ON_CONFLICT, MERGE_SKIP_ON_CONFLICT, MERGE_REPLACE_VOLUME_ON_CONFLICT, MERGE_REPLACE_ON_CONFLICT) unless no_namespaces is set to true."
+  }
+
+  validation {
+    condition = alltrue([
+      for k, v in var.backup_configs.restore_plans : (
+        v.volume_data_restore_policy == null ||
+        contains(["RESTORE_VOLUME_DATA_FROM_BACKUP", "REUSE_VOLUME_HANDLE_FROM_BACKUP", "NO_VOLUME_DATA_RESTORATION"], v.volume_data_restore_policy)
+      )
+    ])
+    error_message = "Invalid volume_data_restore_policy. Allowed values are RESTORE_VOLUME_DATA_FROM_BACKUP, REUSE_VOLUME_HANDLE_FROM_BACKUP, NO_VOLUME_DATA_RESTORATION."
+  }
 }
 
 variable "deletion_protection" {
