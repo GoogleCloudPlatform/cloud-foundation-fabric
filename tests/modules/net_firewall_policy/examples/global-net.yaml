@@ -1,10 +1,10 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,21 @@
 
 values:
   module.firewall-policy.google_compute_network_firewall_policy.net_global[0]:
+    deletion_policy: DELETE
+    description: null
     name: test-1
     project: my-project
+    timeouts: null
   module.firewall-policy.google_compute_network_firewall_policy_association.net_global["my-vpc"]:
+    deletion_policy: DELETE
     firewall_policy: test-1
     name: test-1-my-vpc
     project: my-project
+    timeouts: null
   module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["egress/smtp"]:
     action: deny
+    deletion_policy: DELETE
+    description: null
     direction: EGRESS
     disabled: false
     enable_logging: null
@@ -40,16 +47,23 @@ values:
       src_address_groups: null
       src_fqdns: null
       src_ip_ranges: null
+      src_networks: null
       src_region_codes: null
       src_secure_tags: []
       src_threat_intelligences: null
     priority: 900
     project: my-project
     rule_name: smtp
+    security_profile_group: null
+    target_forwarding_rules: null
     target_secure_tags: []
     target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
   module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["ingress/icmp"]:
     action: allow
+    deletion_policy: DELETE
+    description: null
     direction: INGRESS
     disabled: false
     enable_logging: null
@@ -67,16 +81,23 @@ values:
       src_fqdns: null
       src_ip_ranges:
       - 0.0.0.0/0
+      src_networks: null
       src_region_codes: null
       src_secure_tags: []
       src_threat_intelligences: null
     priority: 1000
     project: my-project
     rule_name: icmp
+    security_profile_group: null
+    target_forwarding_rules: null
     target_secure_tags: []
     target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
   module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["ingress/mgmt"]:
     action: allow
+    deletion_policy: DELETE
+    description: null
     direction: INGRESS
     disabled: false
     enable_logging: true
@@ -94,16 +115,23 @@ values:
       src_fqdns: null
       src_ip_ranges:
       - 10.1.1.0/24
+      src_networks: null
       src_region_codes: null
       src_secure_tags: []
       src_threat_intelligences: null
     priority: 1001
     project: my-project
     rule_name: mgmt
+    security_profile_group: null
+    target_forwarding_rules: null
     target_secure_tags: []
     target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
   module.firewall-policy.google_compute_network_firewall_policy_rule.net_global["ingress/ssh"]:
     action: allow
+    deletion_policy: DELETE
+    description: null
     direction: INGRESS
     disabled: false
     enable_logging: true
@@ -122,16 +150,92 @@ values:
       src_fqdns: null
       src_ip_ranges:
       - 10.0.0.0/8
+      src_networks: null
       src_region_codes: null
       src_secure_tags: []
       src_threat_intelligences: null
     priority: 1002
     project: my-project
     rule_name: ssh
+    security_profile_group: null
+    target_forwarding_rules: null
     target_secure_tags: []
     target_service_accounts: null
+    timeouts: null
+    tls_inspect: null
+  module.firewall-policy.google_tags_location_tag_binding.binding["foo"]:
+    deletion_policy: DELETE
+    location: global
+    tag_value: tagValues/12345678
+    timeouts: null
+  module.vpc.google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_bgp_always_compare_med: false
+    delete_default_routes_on_create: false
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: my-network
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: my-project
+    routing_mode: GLOBAL
+    timeouts: null
+  module.vpc.google_compute_route.gateway["directpath-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 34.126.0.0/18
+    name: my-network-directpath-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["private-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.8/30
+    name: my-network-private-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
+  module.vpc.google_compute_route.gateway["restricted-googleapis"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 199.36.153.4/30
+    name: my-network-restricted-googleapis
+    network: my-network
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: my-project
+    tags: null
+    timeouts: null
 
 counts:
+  google_compute_network: 1
   google_compute_network_firewall_policy: 1
   google_compute_network_firewall_policy_association: 1
   google_compute_network_firewall_policy_rule: 4
+  google_compute_route: 3
+  google_tags_location_tag_binding: 1
+  modules: 2
+  resources: 11
+
+outputs: {}

@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,9 +12,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.firewall-policies["global-policy"].google_compute_network_firewall_policy.net_global[0]:
+    deletion_policy: DELETE
+    description: null
+    name: global-policy
+    project: folders/12345
+    timeouts: null
+  module.firewall-policies["global-policy"].google_tags_location_tag_binding.binding["foo"]:
+    deletion_policy: DELETE
+    location: global
+    tag_value: tagValues/12345
+    timeouts: null
+  module.firewall-policies["regional-policy"].google_compute_region_network_firewall_policy.net_regional[0]:
+    deletion_policy: DELETE
+    description: null
+    name: regional-policy
+    project: folders/12345
+    region: europe-west1
+    timeouts: null
+  module.projects.terraform_data.defaults_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+  module.projects.terraform_data.project_preconditions:
+    input: null
+    output: null
+    triggers_replace: null
+
 counts:
   google_compute_network_firewall_policy: 1
   google_compute_region_network_firewall_policy: 1
+  google_tags_location_tag_binding: 1
   modules: 3
-  resources: 4
+  resources: 5
   terraform_data: 2
+
+outputs:
+  host_project_ids: {}
+  host_project_numbers: {}
+  subnet_ips: {}
+  subnet_proxy_only_self_links: {}
+  subnet_psc_self_links: {}
+  subnet_self_links: {}
+  vpc_self_links: {}

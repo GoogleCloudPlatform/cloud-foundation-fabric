@@ -15,3 +15,5 @@
 name: global-policy
 parent_id: folders/12345
 region: global
+tag_bindings:
+  foo: tagValues/12345
