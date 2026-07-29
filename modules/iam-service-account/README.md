@@ -230,11 +230,12 @@ module "service-account-with-tags" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L62) | Name of the service account to create. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L72) | Name of the service account to create. | <code>string</code> | ✓ |  |
 | [context](variables.tf#L17) | External context used in replacements. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [create_ignore_already_exists](variables.tf#L37) | If set to true, skip service account creation if a service account with the same email already exists. | <code>bool</code> |  | <code>null</code> |
-| [description](variables.tf#L48) | Optional description. | <code>string</code> |  | <code>null</code> |
-| [display_name](variables.tf#L55) | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
+| [deletion_policy](variables.tf#L48) | Deletion policy: DELETE, ABANDON, or PREVENT. | <code>string</code> |  | <code>null</code> |
+| [description](variables.tf#L58) | Optional description. | <code>string</code> |  | <code>null</code> |
+| [display_name](variables.tf#L65) | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | [iam](variables-iam.tf#L17) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_billing_bindings](variables-iam.tf#L24) | Billing account role bindings granted to this service account, by arbitrary key. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_billing_roles](variables-iam.tf#L39) | Billing account roles granted to this service account, by billing account id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -252,11 +253,11 @@ module "service-account-with-tags" {
 | [iam_sa_roles](variables-iam.tf#L171) | Service account roles granted to this service account, by service account name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_storage_bindings](variables-iam.tf#L178) | Storage role bindings granted to this service account, by arbitrary key. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_storage_roles](variables-iam.tf#L193) | Storage roles granted to this service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [prefix](variables.tf#L68) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
-| [project_id](variables.tf#L79) | Project id where service account will be created. This can be left null when reusing service accounts. | <code>string</code> |  | <code>null</code> |
-| [project_number](variables.tf#L93) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. This can be left null when reusing service accounts and tags are not used. | <code>string</code> |  | <code>null</code> |
-| [service_account_reuse](variables.tf#L100) | Reuse existing service account if not null. Data source can be forced disabled if tag bindings are not used, or unique id is set. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L116) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L78) | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
+| [project_id](variables.tf#L89) | Project id where service account will be created. This can be left null when reusing service accounts. | <code>string</code> |  | <code>null</code> |
+| [project_number](variables.tf#L103) | Project number of var.project_id. Set this to avoid permadiffs when creating tag bindings. This can be left null when reusing service accounts and tags are not used. | <code>string</code> |  | <code>null</code> |
+| [service_account_reuse](variables.tf#L110) | Reuse existing service account if not null. Data source can be forced disabled if tag bindings are not used, or unique id is set. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L126) | Tag bindings for this service accounts, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
