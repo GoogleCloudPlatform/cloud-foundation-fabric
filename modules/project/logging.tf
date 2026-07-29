@@ -169,7 +169,7 @@ resource "google_project_iam_member" "bucket_sinks_binding" {
   condition {
     title       = "${each.key} bucket writer"
     description = "Grants bucketWriter to ${google_logging_project_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.project.project_id}"
-    expression  = "resource.name.endsWith('${each.value.destination}')"
+    expression  = "resource.name.endsWith('locations/${split("/", each.value.destination)[3]}/buckets/${split("/", each.value.destination)[5]}')"
   }
 }
 
