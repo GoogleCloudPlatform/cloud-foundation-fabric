@@ -158,23 +158,47 @@
           "default": false
         },
         "accelerators": {
-          "type": "array",
-          "description": "Accelerator configuration (optional, defaults to []).",
-          "items": {
+          "type": "object",
+          "description": "Accelerator configuration by type (optional, defaults to {}).",
+          "additionalProperties": {
+            "type": "number"
+          },
+          "default": {}
+        },
+        "boost_configs": {
+          "type": "object",
+          "description": "Boost configurations by ID (optional, defaults to {}).",
+          "additionalProperties": {
             "type": "object",
-            "additionalProperties": false,
             "properties": {
-              "type": {
+              "machine_type": {
                 "type": "string",
-                "description": "Accelerator type (optional)."
+                "description": "Boost instaconfigce machine type (optional)."
               },
-              "count": {
+              "boot_disk_size_gb": {
                 "type": "number",
-                "description": "Number of accelerators (optional)."
+                "description": "Boost instance boot disk size in GB (optional)."
+              },
+              "enable_nested_virtualization": {
+                "type": "boolean",
+                "description": "Whether to enable nested virtualization on the boost instance (optional, defaults to false).",
+                "default": false
+              },
+              "pool_size": {
+                "type": "number",
+                "description": "Size of the boost config instance pool (optional)."
+              },
+              "accelerators": {
+                "type": "object",
+                "description": "Boost instance accelerator configuration by type (optional, defaults to {}).",
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "default": {}
               }
             }
           },
-          "default": []
+          "default": {}
         }
       }
     },

@@ -129,7 +129,7 @@ variable "workstation_configs" {
       boost_configs = optional(map(object({
         machine_type                 = optional(string)
         boot_disk_size_gb            = optional(number)
-        enable_nested_virtualization = optional(bool)
+        enable_nested_virtualization = optional(bool, false)
         pool_size                    = optional(number)
         accelerators                 = optional(map(number), {})
       })), {})
