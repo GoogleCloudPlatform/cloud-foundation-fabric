@@ -3,9 +3,9 @@ name: contributing
 description: "End-to-end workflow for contributing to Cloud Foundation Fabric: triaging GitHub issues, proactive feature development, validating with tests, and submitting sanitized Pull Requests."
 ---
 
-# CFF Contribution Flow Skill
+# Fabric Contribution Flow Skill
 
-This skill defines the end-to-end workflow for contributing to Cloud Foundation Fabric (CFF). It supports two entry modes:
+This skill defines the end-to-end workflow for contributing to Cloud Foundation Fabric. It supports two entry modes:
 - **Mode A: Issue Triage & Bug Fix**: You are addressing an assigned or reported GitHub Issue. Start at **Step 1**.
 - **Mode B: Proactive Development & PR Prep**: You are actively building a feature, refactoring code, or preparing an existing branch for a Pull Request. Jump directly to **Step 2**.
 
@@ -35,7 +35,7 @@ graph TD
 
 2.  **Explore the Codebase**: Identify the target module (`modules/<module_name>`) or FAST stage (`fast/stages/<stage_name>`) that requires modification.
 
-3.  **Evaluate Fit & Scope**: Assess whether the issue is relevant for Fabric. Ensure it aligns with CFF's core philosophy (modules should be lean, composable, and represent a single resource type context). Confirm the change has a sufficiently large scope and represents a generic, valuable addition to the module or FAST stage rather than a highly specific, one-off customization.
+3.  **Evaluate Fit & Scope**: Assess whether the issue is relevant for Fabric. Ensure it aligns with Fabric's core philosophy (modules should be lean, composable, and represent a single resource type context). Confirm the change has a sufficiently large scope and represents a generic, valuable addition to the module or FAST stage rather than a highly specific, one-off customization.
 
 4.  **Read Provider Documentation**: If the issue involves Google Cloud resources, retrieve and read the latest version of the documentation for the involved GCP resources or Terraform provider resource/datasource to ensure accurate implementation of its attributes, behaviors, and constraints.
     > [!WARNING]
@@ -47,7 +47,7 @@ graph TD
     > curl -s https://raw.githubusercontent.com/hashicorp/terraform-provider-google/main/website/docs/r/workstations_workstation_config.html.markdown -o scratch/workstation_config_doc.md
     > ```
     > You can then search and view it locally to identify all supported arguments and blocks.
-    > Use this information to make an informed decision on which arguments to support. While 100% coverage is not always necessary or desirable, make a deliberate choice to include all arguments that are useful and align with CFF's composability and simplicity goals, rather than missing them by omission.
+    > Use this information to make an informed decision on which arguments to support. While 100% coverage is not always necessary or desirable, make a deliberate choice to include all arguments that are useful and align with Fabric's composability and simplicity goals, rather than missing them by omission.
 
 ### Step 2: Develop the Fix or Feature (Modes A & B)
 
@@ -60,7 +60,7 @@ graph TD
     git checkout -b <username>/<feature-name>
     ```
 
-3.  **Apply CFF Design Conventions**:
+3.  **Apply Fabric/FAST Design Conventions**:
     *   **Context Interpolation**: If context support is relevant and needed for the module (e.g., to support resolving symbolic references like `"$project_ids:myprj"`), add a `context` variable block and implement `ctx`/`ctx_p` locals in `main.tf`. Do not add it blindly if the module does not benefit from symbolic interpolation.
     *   **Compact Variables**: Leverage objects with `optional()` attributes and default values to keep user interfaces clean.
     *   **Stable State Keys**: Always use maps instead of lists for collection variables to avoid index shifts in Terraform state.
