@@ -1,6 +1,6 @@
 ---
 name: contributing
-description: End-to-end workflow for contributing to Cloud Foundation Fabric: triaging GitHub issues, proactive feature development, validating with tests, and submitting sanitized Pull Requests.
+description: "End-to-end workflow for contributing to Cloud Foundation Fabric: triaging GitHub issues, proactive feature development, validating with tests, and submitting sanitized Pull Requests."
 ---
 
 # CFF Contribution Flow Skill
