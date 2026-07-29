@@ -137,12 +137,9 @@ module "workstation-cluster" {
         boost_configs = {
           boost-1 = {
             machine_type = "n1-standard-2"
-            accelerators = [
-              {
-                type  = "nvidia-tesla-t4"
-                count = 1
-              }
-            ]
+            accelerators = {
+              "nvidia-tesla-t4" = 1
+            }
           }
           boost-2 = {
             machine_type                 = "n1-standard-4"

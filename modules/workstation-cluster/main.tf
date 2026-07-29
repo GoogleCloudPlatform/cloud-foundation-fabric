@@ -122,8 +122,8 @@ resource "google_workstations_workstation_config" "configs" {
         dynamic "accelerators" {
           for_each = each.value.gce_instance.accelerators
           content {
-            type  = accelerators.value.type
-            count = accelerators.value.count
+            type  = accelerators.key
+            count = accelerators.value
           }
         }
         dynamic "boost_configs" {
@@ -137,8 +137,8 @@ resource "google_workstations_workstation_config" "configs" {
             dynamic "accelerators" {
               for_each = boost_configs.value.accelerators
               content {
-                type  = accelerators.value.type
-                count = accelerators.value.count
+                type  = accelerators.key
+                count = accelerators.value
               }
             }
           }
