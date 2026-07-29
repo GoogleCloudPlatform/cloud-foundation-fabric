@@ -54,6 +54,10 @@ locals {
       name => sink if sink.iam && sink.type == type
     }
   }
+  sink_bucket_expressions = {
+    for name, sink in local.sink_bindings["logging"] :
+    name => "resource.name.endsWith('locations/${split("/", sink.destination)[3]}/buckets/${split("/", sink.destination)[5]}')"
+  }
 
   log_scopes = {
     for k, v in var.log_scopes :
@@ -169,7 +173,7 @@ resource "google_project_iam_member" "bucket_sinks_binding" {
   condition {
     title       = "${each.key} bucket writer"
     description = "Grants bucketWriter to ${google_logging_project_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.project.project_id}"
-    expression  = "resource.name.endsWith('${each.value.destination}')"
+    expression  = local.sink_bucket_expressions[each.key]
   }
 }
 
