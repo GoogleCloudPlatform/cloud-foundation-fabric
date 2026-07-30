@@ -41,6 +41,7 @@ automation:
   project: $project_ids:prod-iac-core-0
   bucket:
     name: tf-state
+    force_destroy: true
   service_accounts:
     ro: {}
     rw:
