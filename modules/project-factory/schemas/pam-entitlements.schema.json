@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PAM Entitlements",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[a-z0-9-]+$": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_request_duration",
+        "eligible_users",
+        "privileged_access"
+      ],
+      "properties": {
+        "max_request_duration": {
+          "type": "string",
+          "description": "Maximum duration for privileged access requests (e.g., '8h', '1d')."
+        },
+        "eligible_users": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
+          },
+          "description": "List of principals eligible for privileged access."
+        },
+        "privileged_access": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "role"
+            ],
+            "properties": {
+              "role": {
+                "type": "string",
+                "pattern": "^(?:roles/|\\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)",
+                "description": "IAM role to grant during privileged access."
+              },
+              "condition": {
+                "type": "string",
+                "description": "Optional CEL condition expression for the role binding. Supports interpolation via $tag_keys, $tag_values, $folder_ids, $projects."
+              }
+            }
+          }
+        },
+        "requester_justification_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "not_mandatory": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether justification is optional for access requests."
+            },
+            "unstructured": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether justification can be unstructured text."
+            }
+          }
+        },
+        "manual_approvals": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "require_approver_justification",
+            "steps"
+          ],
+          "properties": {
+            "require_approver_justification": {
+              "type": "boolean",
+              "description": "Whether approvers must provide justification."
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "approvers"
+                ],
+                "properties": {
+                  "approvers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^(?:domain:|group:|serviceAccount:|user:|principal:|principalSet:|\\$iam_principals:[a-z0-9_-]+)"
+                    },
+                    "description": "List of approvers for this step."
+                  },
+                  "approvals_needed": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "Number of approvals required from the approvers list."
+                  },
+                  "approver_email_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^\\S+@\\S+\\.\\S+$"
+                    },
+                    "description": "Email addresses to notify for approval requests."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "additional_notification_targets": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "admin_email_recipients": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^\\S+@\\S+\\.\\S+$"
+              },
+              "description": "Email addresses to notify admins about entitlement activity."
+            },
+            "requester_email_recipients": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^\\S+@\\S+\\.\\S+$"
+              },
+              "description": "Email addresses to notify requesters about their requests."
+            }
+          }
+        }
+      }
+    }
+  }
+}

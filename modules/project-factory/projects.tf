@@ -150,7 +150,7 @@ module "projects" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies"], k)
+    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies", "pam_entitlements"], k)
   }
   kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
@@ -209,6 +209,8 @@ module "projects-iam" {
         projects = {
           for k, v in module.projects : k => v.project_id
         }
+        tag_keys   = local.ctx_tag_keys
+        tag_values = local.ctx_tag_values
       }
     )
     tag_vars = {
