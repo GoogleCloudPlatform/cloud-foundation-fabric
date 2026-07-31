@@ -81,7 +81,6 @@ values:
         disable_public_ip_addresses: true
         disable_ssh: true
         enable_nested_virtualization: false
-        instance_metadata: null
         machine_type: n1-standard-2
         service_account_scopes: []
         tags: null
