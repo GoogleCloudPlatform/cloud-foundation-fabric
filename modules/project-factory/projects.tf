@@ -150,7 +150,7 @@ module "projects" {
       ? v :
       "${var.factories_config.basepath}/${v}"
     ), null)
-    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies", "pam_entitlements"], k)
+    if !contains(["aspect_types", "data_catalog_taxonomy", "org_policies"], k)
   }
   kms_autokeys = try(each.value.kms.autokeys, {})
   labels = merge(
