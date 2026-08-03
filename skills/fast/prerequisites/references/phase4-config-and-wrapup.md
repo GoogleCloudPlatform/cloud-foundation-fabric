@@ -27,9 +27,9 @@
     - Use `write_file` to create `0-org-setup.auto.tfvars` inside the `local_path` (`<LOCAL_PATH>/0-org-setup.auto.tfvars`).
     - In `0-org-setup.auto.tfvars`, set the `factories_config` variable. The `dataset` should point to the original dataset folder (e.g., `"datasets/classic"`), but the `paths.defaults` must point to the absolute path of the copied defaults file.
     - *If GCD*, also: Create a temporary `0-org-setup-providers.tf` file containing the specific `universe_domain` configuration using `write_file` at `<LOCAL_PATH>/providers/0-org-setup-providers.tf`.
-11. **Present Configuration and Halt:** Briefly tell the user you have created and validated the baseline configuration files. You MUST stop execution immediately, present the generated files, ask the user if they are ready to proceed with **Step 8 (Organization Policy Import Check)**, and wait for their response. Do not proceed to Step 8 or run more tools in this turn.
+11. **Present Configuration and Halt:** Briefly tell the user you have created and validated the baseline configuration files. You MUST stop execution immediately, present the generated files, ask the user if they are ready to proceed with **Step 8 (Organization Policy Import Check & Essential Contacts)**, and wait for their response. Do not proceed to Step 8 or run more tools in this turn.
 
-### Step 8: Organization Policy Import Check
+### Step 8: Organization Policy Import Check & Essential Contacts
 
 1. **Organization Policy Import Check:**
    - Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
@@ -41,10 +41,16 @@
    - **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
 
 2. **Essential Contacts Handling:**
-   - Explain to the user that FAST Stage 0 configures organization policies including the Essential Contacts domain restriction (`essentialcontacts.allowedContactDomains`). If the organization enforces an essential contacts policy or if contacts are required during setup, missing or mismatched essential contacts can cause Terraform deployment errors.
+   - Explain to the user that FAST Stage 0 datasets configure essential contacts as part of the organization configuration, and simultaneously enforce the Essential Contacts domain restriction organization policy (`essentialcontacts.allowedContactDomains`). Any essential contacts defined must match the allowed domains in the organization policy, otherwise Terraform deployment will fail with policy violation errors.
    - Ask the user to choose how they want to handle essential contacts:
-     - **Option A (Configure Essential Contact - Recommended):** Prompt the user for the essential contact email address. If the currently authenticated identity / deploying principal (from Phase 1/2) is an email-like principal (e.g. `user@example.com` or `user:user@example.com`), offer the option to reuse it. If the deploying principal is a Workforce Identity Federation (WIF) identity (i.e. starting with `principal://`), skip this option and prompt the user to provide a valid email address. Update the copied `<LOCAL_PATH>/data/0-org-setup/defaults.yaml` file (e.g. under `context.email_addresses` or `projects.defaults.contacts`) using the `replace` tool so the contact is properly set.
-     - **Option B (Disable / Remove Policy):** If the user does not want to configure essential contacts now or needs to bypass domain restrictions, instruct them (or perform the edit) to adjust the local policy in `<LOCAL_PATH>/data/0-org-setup/` by either removing `essentialcontacts.yaml` from `organization/org-policies/` or updating it to allow all domains (`all: true`).
+     - **Option A (Define Essential Contact & Update Org Policy - Recommended):**
+       - Prompt the user for the essential contact email address.
+       - If the currently authenticated identity / deploying principal (from Phase 1/2) is an email-like principal (e.g. `user@example.com` or `user:user@example.com`), offer the option to reuse it.
+       - If the deploying principal is a Workforce Identity Federation (WIF) identity (i.e. starting with `principal://`), skip this option and prompt the user to provide a valid email address.
+       - Update the essential contact in `<LOCAL_PATH>/data/0-org-setup/defaults.yaml` (under `context.email_addresses` or `projects.defaults.contacts`) using the `replace` tool.
+       - Update the organization policy in `<LOCAL_PATH>/data/0-org-setup/organization/org-policies/essentialcontacts.yaml` using the `replace` tool so that `essentialcontacts.allowedContactDomains` allows the domain part of the provided email (e.g. adding `@<EMAIL_DOMAIN>` to the allowed values).
+     - **Option B (Allow All Domains in Org Policy):**
+       - If the user does not want to restrict domains or wants to bypass domain restrictions, update `<LOCAL_PATH>/data/0-org-setup/organization/org-policies/essentialcontacts.yaml` using the `replace` tool to set the policy rule to allow all values (`allow: all: true`), commenting out the existing restricted rule setup. Do NOT delete or empty the file (to keep it as a reference and avoid Terraform failures on empty YAML files).
 
 ### Step 9: Wrap-up & Apply
 

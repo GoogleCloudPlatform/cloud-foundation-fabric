@@ -12,7 +12,7 @@ This document outlines the various testing workflows and combinations for the `f
 6. **Billing Account Access Level:** Billing Administrator vs. Billing User vs. No Access
 7. **Bootstrap Project:** Pre-existing (with or without API check) vs. New project created by user
 8. **Configuration / Dataset:** Standard GCP datasets vs. `classic-gcd` dataset
-9. **Org Policy Import Check:** Pre-existing policies found vs. No policies found
+9. **Org Policy Import Check & Essential Contacts:** Pre-existing policies found vs. No policies found; Essential Contacts configured (deploying user vs. custom email) vs. Essential Contacts policy set to allow all
 
 ## Comprehensive Test Scenarios
 

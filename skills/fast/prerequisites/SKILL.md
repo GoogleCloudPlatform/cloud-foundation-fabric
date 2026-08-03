@@ -83,8 +83,8 @@ Guide the user through the following sequence strictly in order. **Before starti
 - **Step 6:** Bootstrap Project Setup (Creation and API enablement)
 
 ### Phase 4: Configuration & Wrap-up
-*Description:* Generate the FAST dataset configuration, handle existing organization policies, and prepare for the final Terraform apply.\
+*Description:* Generate the FAST dataset configuration, handle existing organization policies and essential contacts, and prepare for the final Terraform apply.\
 *Reference: [Configuration & Wrap-up](references/phase4-config-and-wrapup.md)*
 - **Step 7:** Configuration Generation (Datasets, defaults.yaml, local paths)
-- **Step 8:** Organization Policy Import Check
+- **Step 8:** Organization Policy Import Check & Essential Contacts
 - **Step 9:** Wrap-up & Apply
