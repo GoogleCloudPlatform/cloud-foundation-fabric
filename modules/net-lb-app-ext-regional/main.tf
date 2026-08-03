@@ -70,13 +70,13 @@ resource "google_compute_region_ssl_certificate" "default" {
 }
 
 resource "google_compute_region_target_http_proxy" "default" {
-  count       = var.protocol == "HTTPS" ? 0 : 1
-  project     = local.project_id
-  region      = local.region
-  name        = coalesce(var.http_proxy_config.name, var.name)
-  description = var.http_proxy_config.description
-  http_keep_alive_timeout_sec      = var.https_proxy_config.http_keepalive_timeout
-  url_map     = google_compute_region_url_map.default.id
+  count                       = var.protocol == "HTTPS" ? 0 : 1
+  project                     = local.project_id
+  region                      = local.region
+  name                        = coalesce(var.http_proxy_config.name, var.name)
+  description                 = var.http_proxy_config.description
+  http_keep_alive_timeout_sec = var.https_proxy_config.http_keepalive_timeout
+  url_map                     = google_compute_region_url_map.default.id
 }
 
 resource "google_compute_region_target_https_proxy" "default" {
