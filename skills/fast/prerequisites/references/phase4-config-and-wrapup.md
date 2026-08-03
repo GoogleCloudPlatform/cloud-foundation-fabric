@@ -31,13 +31,20 @@
 
 ### Step 8: Organization Policy Import Check
 
-1. Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
-2. Provide (or execute if automatic) the command to list current policies.
-   ```bash
-   gcloud org-policies list --organization="<ORG_ID>" --format="value(constraint)"
-   ```
-3. **STOP Execution and Wait:** You MUST stop execution immediately here, ask the user to run the command, and wait for them to paste the output. Do NOT proceed to Step 9 or update any files until the user has explicitly provided the output of this command.
-4. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
+1. **Organization Policy Import Check:**
+   - Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
+   - Provide (or execute if automatic) the command to list current policies:
+     ```bash
+     gcloud org-policies list --organization="<ORG_ID>" --format="value(constraint)"
+     ```
+   - **STOP Execution and Wait:** You MUST stop execution immediately here, ask the user to run the command, and wait for them to paste the output. Do NOT proceed to Step 9 or update any files until the user has explicitly provided the output of this command.
+   - **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
+
+2. **Essential Contacts Handling:**
+   - Explain to the user that FAST Stage 0 configures organization policies including the Essential Contacts domain restriction (`essentialcontacts.allowedContactDomains`). If the organization enforces an essential contacts policy or if contacts are required during setup, missing or mismatched essential contacts can cause Terraform deployment errors.
+   - Ask the user to choose how they want to handle essential contacts:
+     - **Option A (Configure Essential Contact - Recommended):** Prompt the user for the essential contact email address. If the currently authenticated identity / deploying principal (from Phase 1/2) is an email-like principal (e.g. `user@example.com` or `user:user@example.com`), offer the option to reuse it. If the deploying principal is a Workforce Identity Federation (WIF) identity (i.e. starting with `principal://`), skip this option and prompt the user to provide a valid email address. Update the copied `<LOCAL_PATH>/data/0-org-setup/defaults.yaml` file (e.g. under `context.email_addresses` or `projects.defaults.contacts`) using the `replace` tool so the contact is properly set.
+     - **Option B (Disable / Remove Policy):** If the user does not want to configure essential contacts now or needs to bypass domain restrictions, instruct them (or perform the edit) to adjust the local policy in `<LOCAL_PATH>/data/0-org-setup/` by either removing `essentialcontacts.yaml` from `organization/org-policies/` or updating it to allow all domains (`all: true`).
 
 ### Step 9: Wrap-up & Apply
 
