@@ -6,6 +6,7 @@ This module allows to create a workstation cluster with associated workstation c
 - [Simple example](#simple-example)
 - [Private cluster](#private-cluster)
 - [Custom image](#custom-image)
+- [Boost configs](#boost-configs)
 - [IAM](#iam)
 - [Variables](#variables)
 - [Outputs](#outputs)
@@ -111,6 +112,54 @@ module "workstation-cluster" {
   }
 }
 # tftest modules=1 resources=3 inventory=custom-image.yaml
+```
+
+## Boost configs
+
+Example showing how to create a cluster with a workstation config that includes a [boost configuration](https://docs.cloud.google.com/workstations/docs/boost-workstation) to temporarily allow the workstation to use a more powerful set of resources on demand:
+
+```hcl
+module "workstation-cluster" {
+  source     = "./fabric/modules/workstation-cluster"
+  project_id = var.project_id
+  id         = "my-workstation-cluster"
+  location   = var.region
+  network_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  workstation_configs = {
+    my-workstation-config = {
+      gce_instance = {
+        machine_type                = "n1-standard-2"
+        boot_disk_size_gb           = 10
+        disable_public_ip_addresses = true
+        boost_configs = {
+          boost-1 = {
+            machine_type = "n1-standard-2"
+            accelerators = {
+              "nvidia-tesla-t4" = 1
+            }
+          }
+          boost-2 = {
+            machine_type                 = "n1-standard-4"
+            pool_size                    = 2
+            boot_disk_size_gb            = 30
+            enable_nested_virtualization = true
+          }
+        }
+      }
+      workstations = {
+        my-workstation = {
+          labels = {
+            team = "my-team"
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=3 inventory=boost-configs.yaml
 ```
 
 ## IAM
