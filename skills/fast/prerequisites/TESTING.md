@@ -1,6 +1,6 @@
 # FAST 0-org-setup Prerequisites - Testing Workflows
 
-This document outlines the various testing workflows and combinations for the `fast-0-org-setup-prereqs` skill to ensure all branches of the skill's logic are covered.
+This document outlines the various testing workflows and combinations for the `fast-prerequisites` skill to ensure all branches of the skill's logic are covered.
 
 ## Core Variables & Decision Points
 
