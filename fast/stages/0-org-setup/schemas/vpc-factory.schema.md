@@ -10,6 +10,7 @@
 - ⁺**name**: *string*
 - **description**: *string*
 - **auto_create_subnetworks**: *boolean*
+- **bgp_config**: *reference([bgp_config](#refs-bgp_config))*
 - **delete_default_routes_on_create**: *boolean*
 - **mtu**: *number*
 - **routing_mode**: *string*
@@ -32,6 +33,13 @@
 
 ## Definitions
 
+- **bgp_config**<a name="refs-bgp_config"></a>: *object*
+  <br>*additional properties: false*
+  - **always_compare_med**: *boolean*
+  - **best_path_selection_mode**: *string*
+    <br>*enum: ['LEGACY', 'STANDARD']*
+  - **inter_region_cost**: *string*
+    <br>*enum: ['DEFAULT', 'ADD_COST_TO_MED']*
 - **create_googleapis_routes**<a name="refs-create_googleapis_routes"></a>: *object*
   - **directpath**: *boolean*
   - **directpath-6**: *boolean*

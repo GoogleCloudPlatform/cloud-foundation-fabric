@@ -72,6 +72,7 @@ module "vpcs" {
   project_id                        = try(each.value.project_id, null)
   name                              = try(each.value.name, null)
   auto_create_subnetworks           = try(each.value.auto_create_subnetworks, null)
+  bgp_config                        = try(each.value.bgp_config, null)
   create_googleapis_routes          = try(each.value.create_googleapis_routes, null)
   delete_default_routes_on_create   = try(each.value.delete_default_routes_on_create, true)
   description                       = try(each.value.description, "Terraform managed")

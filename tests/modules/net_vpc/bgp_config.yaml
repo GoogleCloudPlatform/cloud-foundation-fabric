@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/net-vpc
-common_tfvars:
-  - common.tfvars
-
-tests:
-  bgp_config:
-  context:
-  shared_vpc:
-  psa_routes_export:
-  psa_routes_import:
-  psa_routes_import_export:
+values:
+  google_compute_network.network[0]:
+    auto_create_subnetworks: false
+    delete_default_routes_on_create: false
+    description: Terraform-managed.
+    enable_ula_internal_ipv6: null
+    name: test
+    network_firewall_policy_enforcement_order: AFTER_CLASSIC_FIREWALL
+    network_profile: null
+    params: []
+    project: test-project
+    routing_mode: GLOBAL
+    bgp_always_compare_med: true
+    bgp_best_path_selection_mode: STANDARD
+    bgp_inter_region_cost: ADD_COST_TO_MED
