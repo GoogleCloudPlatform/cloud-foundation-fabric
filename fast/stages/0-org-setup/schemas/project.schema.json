@@ -578,6 +578,15 @@
         }
       }
     },
+    "logging_sinks": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/$defs/logging_sink"
+        }
+      }
+    },
     "metric_scopes": {
       "type": "array",
       "items": {
@@ -1975,6 +1984,57 @@
         },
         "retention": {
           "type": "number"
+        }
+      }
+    },
+    "logging_sink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "destination",
+        "type"
+      ],
+      "properties": {
+        "bq_partitioned_table": {
+          "type": "boolean",
+          "default": false
+        },
+        "description": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "exclusions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "filter": {
+          "type": "string"
+        },
+        "iam": {
+          "type": "boolean",
+          "default": true
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bigquery",
+            "logging",
+            "project",
+            "pubsub",
+            "storage"
+          ]
+        },
+        "unique_writer": {
+          "type": "boolean",
+          "default": true
         }
       }
     },
