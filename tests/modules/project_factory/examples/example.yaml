@@ -197,6 +197,14 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
+  ? module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: test-pf-dev-ta-app0-be-app-0-bucket-a
+    condition: []
+    # members are unknown at plan time when service agent references resolve,
+    # as service agent emails embed the project number
+    members: __missing__
+    role: roles/storage.objectViewer
+    timeouts: null
   module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_tags_location_tag_binding.binding["context"]:
     deletion_policy: DELETE
     location: europe-west8
@@ -1070,7 +1078,7 @@ counts:
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 3
   google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_iam_binding: 3
   google_storage_project_service_account: 4
   google_tags_location_tag_binding: 2
   google_tags_tag_binding: 3
@@ -1078,7 +1086,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 39
-  resources: 122
+  resources: 123
   terraform_data: 2
 
 outputs: {}

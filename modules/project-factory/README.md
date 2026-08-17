@@ -694,6 +694,10 @@ billing_budgets:
 buckets:
   app-0-bucket-a:
     location: europe-west8
+    iam:
+      roles/storage.objectViewer:
+        - $iam_principals:service_agents/_self_/compute
+        - $iam_principals:service_agents/dev-tb-app0-0/compute
     tag_bindings:
       context: $tag_values:context/gke
   app-0-bucket-b:
