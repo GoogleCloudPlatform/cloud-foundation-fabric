@@ -211,7 +211,7 @@ module "test-agent" {
   }
   project_id = "my-prj"
 }
-# tftest modules=4 resources=6 files=token skip-tofu
+# tftest modules=4 resources=6 files=token
 ```
 
 ```txt
