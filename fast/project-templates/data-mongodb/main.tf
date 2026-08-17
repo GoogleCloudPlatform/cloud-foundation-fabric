@@ -21,7 +21,7 @@ locals {
     var.vpc_config.subnetwork_id
   )[0]
   # shortcut for output references to avoid >79-char lines
-  _cluster_region_config = (
+  cluster_region_config = (
     mongodbatlas_advanced_cluster.default.replication_specs[0].region_configs[0]
   )
 }
