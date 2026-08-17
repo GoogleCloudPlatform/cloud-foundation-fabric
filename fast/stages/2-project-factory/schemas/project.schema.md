@@ -178,6 +178,9 @@
 - **log_buckets**: *object*
   <br>*additional properties: false*
   - **`^[a-zA-Z0-9_-]+$`**: *reference([log_bucket](#refs-log_bucket))*
+- **logging_sinks**: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_-]+$`**: *reference([logging_sink](#refs-logging_sink))*
 - **metric_scopes**: *array*
   - items: *string*
 - **name**: *string*
@@ -570,6 +573,19 @@
     - **dataset_link_id**: *string*
     - **description**: *string*
   - **retention**: *number*
+- **logging_sink**<a name="refs-logging_sink"></a>: *object*
+  <br>*additional properties: false*
+  - **bq_partitioned_table**: *boolean*
+  - **description**: *string*
+  - ⁺**destination**: *string*
+  - **disabled**: *boolean*
+  - **exclusions**: *object*
+    <br>*additional properties: string*
+  - **filter**: *string*
+  - **iam**: *boolean*
+  - ⁺**type**: *string*
+    <br>*enum: ['bigquery', 'logging', 'project', 'pubsub', 'storage']*
+  - **unique_writer**: *boolean*
 - **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*
