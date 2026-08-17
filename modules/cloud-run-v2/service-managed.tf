@@ -35,6 +35,16 @@ resource "google_cloud_run_v2_service" "service" {
     }
   }
 
+  dynamic "traffic" {
+    for_each = var.service_config.traffic == null ? [] : var.service_config.traffic
+    content {
+      percent  = traffic.value.percent
+      revision = traffic.value.revision
+      tag      = traffic.value.tag
+      type     = traffic.value.type
+    }
+  }
+
   template {
     labels         = var.revision.labels
     encryption_key = var.encryption_key
