@@ -17,14 +17,14 @@
 output "atlas_cluster" {
   description = "MongoDB Atlas cluster."
   value = {
-    id                     = mongodbatlas_cluster.default.cluster_id
-    mongo_uri              = mongodbatlas_cluster.default.mongo_uri
-    mongo_uri_with_options = mongodbatlas_cluster.default.mongo_uri_with_options
-    name                   = mongodbatlas_cluster.default.name
-    project_id             = mongodbatlas_cluster.default.project_id
-    region                 = mongodbatlas_cluster.default.provider_region_name
-    size                   = mongodbatlas_cluster.default.provider_instance_size_name
-    srv_address            = mongodbatlas_cluster.default.srv_address
+    connection_strings = (
+      mongodbatlas_advanced_cluster.default.connection_strings
+    )
+    id         = mongodbatlas_advanced_cluster.default.cluster_id
+    name       = mongodbatlas_advanced_cluster.default.name
+    project_id = mongodbatlas_advanced_cluster.default.project_id
+    region     = local.cluster_region_config.region_name
+    size       = local.cluster_region_config.electable_specs.instance_size
   }
 }
 
