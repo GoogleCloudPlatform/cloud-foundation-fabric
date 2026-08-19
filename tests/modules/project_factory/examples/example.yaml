@@ -197,6 +197,24 @@ values:
     uniform_bucket_level_access: true
     versioning:
     - enabled: false
+  ? module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket_iam_binding.authoritative["roles/storage.legacyObjectReader"]
+  : bucket: test-pf-dev-ta-app0-be-app-0-bucket-a
+    condition: []
+    # members must be unknown at plan time: the cross-project service agent
+    # reference resolves to an email embedding the project number, while an
+    # unresolved reference would be passed through as a known literal
+    members: __missing__
+    role: roles/storage.legacyObjectReader
+    timeouts: null
+  ? module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_storage_bucket_iam_binding.authoritative["roles/storage.objectViewer"]
+  : bucket: test-pf-dev-ta-app0-be-app-0-bucket-a
+    condition: []
+    # members must be unknown at plan time: the _self_ service agent
+    # reference resolves to an email embedding the project number, while an
+    # unresolved reference would be passed through as a known literal
+    members: __missing__
+    role: roles/storage.objectViewer
+    timeouts: null
   module.project-factory.module.buckets["dev-ta-app0-be/app-0-bucket-a"].google_tags_location_tag_binding.binding["context"]:
     deletion_policy: DELETE
     location: europe-west8
@@ -870,6 +888,14 @@ values:
     - group:team-a-admins@example.org
     project: test-pf-dev-ta-app0-be
     role: roles/pubsub.subscriber
+  ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-a"].google_pubsub_topic_iam_binding.authoritative["roles/pubsub.viewer"]
+  : condition: []
+    # members must be unknown at plan time: the _self_ service agent
+    # reference resolves to an email embedding the project number, while an
+    # unresolved reference would be passed through as a known literal
+    members: __missing__
+    project: test-pf-dev-ta-app0-be
+    role: roles/pubsub.viewer
   ? module.project-factory.module.pubsub["dev-ta-app0-be/app-0-topic-b"].google_pubsub_subscription.default["app-0-topic-b-sub"]
   : bigquery_config: []
     cloud_storage_config: []
@@ -1065,12 +1091,12 @@ counts:
   google_project_service_identity: 5
   google_pubsub_subscription: 1
   google_pubsub_topic: 2
-  google_pubsub_topic_iam_binding: 1
+  google_pubsub_topic_iam_binding: 2
   google_service_account: 6
   google_service_account_iam_binding: 2
   google_service_account_iam_member: 3
   google_storage_bucket: 3
-  google_storage_bucket_iam_binding: 2
+  google_storage_bucket_iam_binding: 4
   google_storage_project_service_account: 4
   google_tags_location_tag_binding: 2
   google_tags_tag_binding: 3
@@ -1078,7 +1104,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 39
-  resources: 122
+  resources: 125
   terraform_data: 2
 
 outputs: {}

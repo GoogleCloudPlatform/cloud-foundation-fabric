@@ -281,8 +281,8 @@ Assuming keys of the form `my_folder`, `my_project`, `my_sa`, etc. this is an ex
 - `$folder_ids:my_folder`
 - `$iam_principals:my_principal`
 - `$iam_principals:service_accounts/my_project/my_sa`
-- `$iam_principals:service_agents/_self_/my_api`
-- `$iam_principals:service_agents/my_project/my_api`
+- `$iam_principals:service_agents/_self_/my_api` *only resolves for agents whose API is enabled in the project*
+- `$iam_principals:service_agents/my_project/my_api` *only resolves for agents whose API is enabled in the target project*
 - `$iam_principalsets:service_accounts/all`
 - `$kms_keys:my_key`
 - `$log_buckets:my_project/my_bucket`
@@ -664,7 +664,7 @@ service_accounts:
       roles/iam.serviceAccountUser:
         - $iam_principals:service_accounts/_self_/app-0-fe
         - $iam_principals:service_agents/_self_/compute
-        - $iam_principals:service_agents/dev-tb-app0-0/compute
+        - $iam_principals:service_agents/dev-tb-app0-0/storage
     iam_bindings_additive:
       test:
         role: roles/iam.serviceAccountUser
@@ -694,6 +694,11 @@ billing_budgets:
 buckets:
   app-0-bucket-a:
     location: europe-west8
+    iam:
+      roles/storage.objectViewer:
+        - $iam_principals:service_agents/_self_/compute
+      roles/storage.legacyObjectReader:
+        - $iam_principals:service_agents/dev-tb-app0-0/storage
     tag_bindings:
       context: $tag_values:context/gke
   app-0-bucket-b:
@@ -730,6 +735,8 @@ pubsub_topics:
     iam:
       roles/pubsub.subscriber:
         - group:team-a-admins@example.org
+      roles/pubsub.viewer:
+        - $iam_principals:service_agents/_self_/pubsub
   app-0-topic-b:
     subscriptions:
       app-0-topic-b-sub: {}
