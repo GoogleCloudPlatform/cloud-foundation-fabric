@@ -272,7 +272,7 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   context = {
-    networks = { myvpc = var.vpc.self_link }
+    networks = { myvpc = var.vpc.id }
   }
   network_config = {
     connectivity = {

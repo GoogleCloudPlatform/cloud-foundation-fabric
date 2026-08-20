@@ -1518,7 +1518,7 @@ module "project" {
     "compute.googleapis.com"
   ]
 }
-# tftest modules=1 resources=5 inventory=quotas.yaml e2e
+# tftest modules=1 resources=5 inventory=quotas.yaml
 ```
 
 ## Quotas factory
@@ -1540,7 +1540,7 @@ module "project" {
     "compute.googleapis.com"
   ]
 }
-# tftest modules=1 resources=5 files=quota-cpus-ew8 inventory=quotas.yaml e2e
+# tftest modules=1 resources=5 files=quota-cpus-ew8 inventory=quotas.yaml
 ```
 
 ```yaml
