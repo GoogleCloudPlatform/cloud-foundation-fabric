@@ -155,6 +155,18 @@ variable "backend_service_configs" {
   nullable = false
   validation {
     condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : (
+        backend_service.cdn_policy == null
+        || try(backend_service.cdn_policy.cache_key_policy, null) != null
+        || try(
+          backend_service.cdn_policy.signed_url_cache_max_age_sec, null
+        ) != null
+      )
+    ])
+    error_message = "Backend service cdn_policy requires one of cache_key_policy or signed_url_cache_max_age_sec."
+  }
+  validation {
+    condition = alltrue([
       for backend_service in values(var.backend_service_configs) : contains(
         [
           "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
