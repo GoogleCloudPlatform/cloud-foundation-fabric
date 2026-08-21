@@ -16,3 +16,16 @@ routes:
     dest_range: 0.0.0.0/0
     next_hop_type: "gateway"
     next_hop: "default-internet-gateway"
+  named:
+    name: imported-route
+    dest_range: 172.16.0.0/16
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"
+policy_based_routes:
+  skip-pbr-for-nva:
+    name: imported-pbr
+    use_default_routing: true
+    priority: 100
+    target:
+      tags:
+        - nva

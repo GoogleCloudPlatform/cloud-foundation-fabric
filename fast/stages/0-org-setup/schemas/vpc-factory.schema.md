@@ -27,8 +27,8 @@
   - items: *reference([psa_config](#refs-psa_config))*
 - **nat_config**: *reference([nat_config](#refs-nat_config))*
 - **ncc_config**: *reference([ncc_config](#refs-ncc_config))*
-- **routes**: *object*
-- **policy_based_routes**: *object*
+- **routes**: *reference([routes](#refs-routes))*
+- **policy_based_routes**: *reference([policy_based_routes](#refs-policy_based_routes))*
 - **vpn_config**: *object*
 
 ## Definitions
@@ -78,6 +78,28 @@
   - **create_remote_peer**: *boolean*
   - **export_routes**: *boolean*
   - **import_routes**: *boolean*
+- **policy_based_routes**<a name="refs-policy_based_routes"></a>: *object*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **description**: *string*
+    - **filter**: *object*
+      <br>*additional properties: false*
+      - **dest_range**: *string*
+      - **ip_protocol**: *string*
+      - **src_range**: *string*
+    - **labels**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
+    - **name**: *string*
+    - **next_hop_ilb_ip**: *string*
+    - **priority**: *number*
+    - **target**: *object*
+      <br>*additional properties: false*
+      - **interconnect_attachment**: *string*
+      - **tags**: *array*
+        - items: *string*
+    - **use_default_routing**: *boolean*
 - **psa_config**<a name="refs-psa_config"></a>: *object*
   - **deletion_policy**: *string*
   - **ranges**: *object*
@@ -97,3 +119,15 @@
       - **all_subnets**: *boolean*
       - **ip_ranges**: *object*
         - **`.*`**: *string*
+- **routes**<a name="refs-routes"></a>: *object*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **description**: *string*
+    - ⁺**dest_range**: *string*
+    - **name**: *string*
+    - ⁺**next_hop_type**: *string*
+      <br>*enum: ['gateway', 'ilb', 'instance', 'ip', 'vpn_tunnel']*
+    - ⁺**next_hop**: *string*
+    - **priority**: *number*
+    - **tags**: *array*
+      - items: *string*

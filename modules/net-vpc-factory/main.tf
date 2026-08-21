@@ -82,7 +82,9 @@ module "vpcs" {
   ipv6_config                       = try(each.value.ipv6_config, null)
   mtu                               = try(each.value.mtu, null)
   network_attachments               = try(each.value.network_attachments, {})
+  policy_based_routes               = try(each.value.policy_based_routes, {})
   psa_configs                       = try(each.value.psa_configs, [])
+  routes                            = try(each.value.routes, {})
   routing_mode                      = try(each.value.routing_mode, "GLOBAL")
 }
 

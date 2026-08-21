@@ -67,6 +67,20 @@ values:
     project: my-host-project-id
     tags: null
     timeouts: null
+  module.net-vpc-factory.module.vpcs["data-vpc-0"].google_compute_route.gateway["gateway"]:
+    description: Terraform-managed.
+    dest_range: 8.8.8.8/32
+    name: data-vpc-0-gateway
+    network: data-vpc-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: my-host-project-id
+    tags: null
+    timeouts: null
   module.net-vpc-factory.module.vpcs["data-vpc-0"].google_compute_route.gateway["private-googleapis"]:
     description: Terraform-managed.
     dest_range: 199.36.153.8/30
@@ -95,6 +109,39 @@ values:
     project: my-host-project-id
     tags: null
     timeouts: null
+  module.net-vpc-factory.module.vpcs["data-vpc-0"].google_compute_route.ip["nva"]:
+    description: Terraform-managed.
+    dest_range: 0.0.0.0/0
+    name: to-nva-route
+    network: data-vpc-0
+    next_hop_gateway: null
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_ip: 10.10.0.253
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 100
+    project: my-host-project-id
+    tags: null
+    timeouts: null
+  ? module.net-vpc-factory.module.vpcs["data-vpc-0"].google_network_connectivity_policy_based_route.default["skip-pbr-for-nva"]
+  : description: Terraform-managed.
+    filter:
+    - dest_range: 0.0.0.0/0
+      ip_protocol: ALL
+      protocol_version: IPV4
+      src_range: 0.0.0.0/0
+    interconnect_attachment: []
+    labels: null
+    name: data-vpc-0-skip-pbr-for-nva
+    next_hop_ilb_ip: null
+    next_hop_other_routes: DEFAULT_ROUTING
+    priority: 100
+    project: my-host-project-id
+    timeouts: null
+    virtual_machine:
+    - tags:
+      - nva
   module.net-vpc-factory.module.vpcs["data-vpc-0"].google_compute_subnetwork.subnetwork["europe-west1/primary-subnet"]:
     description: Primary subnet for data-vpc-0
     ip_cidr_range: 10.10.0.0/24
@@ -116,9 +163,10 @@ values:
 counts:
   google_compute_firewall: 1
   google_compute_network: 1
-  google_compute_route: 3
+  google_compute_route: 5
   google_compute_subnetwork: 1
+  google_network_connectivity_policy_based_route: 1
   modules: 3
-  resources: 6
+  resources: 9
 
 outputs: {}

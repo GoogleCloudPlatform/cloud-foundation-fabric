@@ -302,6 +302,9 @@
                 }
               }
             },
+            "name": {
+              "type": "string"
+            },
             "next_hop_ilb_ip": {
               "type": "string"
             },
@@ -379,6 +382,9 @@
               "type": "string"
             },
             "dest_range": {
+              "type": "string"
+            },
+            "name": {
               "type": "string"
             },
             "next_hop_type": {

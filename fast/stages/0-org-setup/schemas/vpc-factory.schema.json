@@ -75,10 +75,10 @@
       "$ref": "#/$defs/ncc_config"
     },
     "routes": {
-      "type": "object"
+      "$ref": "#/$defs/routes"
     },
     "policy_based_routes": {
-      "type": "object"
+      "$ref": "#/$defs/policy_based_routes"
     },
     "vpn_config": {
       "type": "object"
@@ -248,6 +248,72 @@
         }
       }
     },
+    "policy_based_routes": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "filter": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "dest_range": {
+                  "type": "string"
+                },
+                "ip_protocol": {
+                  "type": "string"
+                },
+                "src_range": {
+                  "type": "string"
+                }
+              }
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
+                }
+              }
+            },
+            "name": {
+              "type": "string"
+            },
+            "next_hop_ilb_ip": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "number"
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "interconnect_attachment": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "use_default_routing": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
     "psa_config": {
       "type": "object",
       "properties": {
@@ -314,6 +380,53 @@
                     }
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "routes": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dest_range",
+            "next_hop_type",
+            "next_hop"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "dest_range": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "next_hop_type": {
+              "type": "string",
+              "enum": [
+                "gateway",
+                "ilb",
+                "instance",
+                "ip",
+                "vpn_tunnel"
+              ]
+            },
+            "next_hop": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "number"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
               }
             }
           }

@@ -236,6 +236,7 @@ variable "peering_config" {
 variable "policy_based_routes" {
   description = "Policy based routes, keyed by name."
   type = map(object({
+    name                = optional(string)
     description         = optional(string, "Terraform-managed.")
     labels              = optional(map(string))
     priority            = optional(number)
@@ -321,6 +322,7 @@ variable "psa_configs" {
 variable "routes" {
   description = "Network routes, keyed by name."
   type = map(object({
+    name          = optional(string)
     description   = optional(string, "Terraform-managed.")
     dest_range    = string
     next_hop_type = string # gateway, instance, ip, vpn_tunnel, ilb
