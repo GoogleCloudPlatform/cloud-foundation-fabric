@@ -192,6 +192,7 @@ Check the diff against this checklist:
 *   [ ] **CRITICAL TESTING RULE**: if resource blocks were modified (adding a new argument or modifying an existing one), the Terraform plan output changes — the corresponding test inventory YAML files (`tests/.../*.yaml`) MUST be updated in the diff. If they are not, this is a critical testing failure.
 *   [ ] JSON schemas and factory code consistent with the changed variable surface.
 *   [ ] Documentation tables regenerated (`tfdoc`), alphabetical order preserved.
+*   [ ] **Breaking Changes**: If any variable or YAML interface changed in a backwards-incompatible way, verify the PR description draft includes the `**Breaking Changes**` / `upgrade-note` block.
 
 Report the outcome as a short plain-text list of issues found (or "no issues found") under a `Pre-submission self-review` heading — no emojis, no status tables. Fix any issue and loop back to Step 3 until the checklist passes.
 
@@ -258,7 +259,16 @@ When code modifications affect GCP resource structures or APIs, run a live E2E s
     *   Explain the problem, rationale, and the fix clearly.
     *   **Document Verification & E2E Testing Methodology**: Detail local unit tests and, for E2E runs, the apply, read-back, and behavioral verification results (or note that behavioral verification was skipped) so reviewers can see the exact testing rationale and methodology.
     *   **CRITICAL PII SANITIZATION**: Before writing the PR description, **MUST scrub all developer PII** (real GCP project IDs, numeric project numbers, personal email addresses, usernames, and custom bucket/resource names) and replace them with generic placeholders (e.g., `my-project`, `123456789012`, `user:tester@example.com`, `test-bucket`).
-    *   Do NOT touch `CHANGELOG.md`: release notes are generated from PR labels applied by maintainers.
+    *   **Breaking Changes & Upgrade Notes**: Whenever a change requires users to upgrade their variable or YAML surface (e.g. variable type changes, deleted attributes, changed schema structures), you **MUST append** a `**Breaking Changes**` section with an `upgrade-note` code fence at the bottom of the PR description. This is automatically parsed by `tools/changelog.py` when generating release notes.
+        Format:
+        ````markdown
+        **Breaking Changes**
+
+        ```upgrade-note
+        `modules/organization`: `custom_roles` variable type changed from `map(list(string))` to `map(object({...}))`. Existing code passing permission lists directly must be updated to pass `{ permissions = [...] }`.
+        ```
+        ````
+    *   Do NOT touch `CHANGELOG.md`: release notes are generated from PR labels and `upgrade-note` blocks by maintainers using `tools/changelog.py`.
 
 5.  **Gate — PR Approval**: Present the final sanitized PR title and body to the user and get explicit approval before creating the PR.
 
