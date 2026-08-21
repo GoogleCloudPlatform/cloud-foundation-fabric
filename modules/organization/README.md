@@ -567,9 +567,13 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   custom_roles = {
-    "myRole${replace(var.prefix, "/[^a-zA-Z0-9_\\.]/", "")}" = [
-      "compute.instances.list",
-    ]
+    "myRole${replace(var.prefix, "/[^a-zA-Z0-9_\\.]/", "")}" = {
+      title       = "My custom role"
+      description = "Allows listing compute instances."
+      permissions = [
+        "compute.instances.list",
+      ]
+    }
   }
   iam = {
     (module.org.custom_role_id["myRole${replace(var.prefix, "/[^a-zA-Z0-9_\\.]/", "")}"]) = ["group:${var.group_email}"]
@@ -584,6 +588,7 @@ Custom roles can also be specified via a factory in a similar way to organizatio
 
 - the role name defaults to the file name but can be overridden via a `name` attribute in the yaml
 - role permissions are defined in an `includedPermissions` map
+- role title, description and launch stage can optionally be set via the `title`, `description` and `stage` attributes
 
 Custom roles defined via the variable are merged with those coming from the factory, and override them in case of duplicate names.
 
@@ -609,6 +614,9 @@ includedPermissions:
 # tftest-file id=custom-role-2 path=data/custom_roles/test_2.yaml
 
 name: projectViewer
+title: Project viewer
+description: Allows viewing project resources.
+stage: GA
 includedPermissions:
   - resourcemanager.projects.get
   - resourcemanager.projects.getIamPolicy
@@ -1122,7 +1130,7 @@ module "org" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_id](variables.tf#L303) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
+| [organization_id](variables.tf#L317) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
 | [access_levels](variables.tf#L18) | Access level definitions. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [access_policy](variables.tf#L118) | Access Policy name or ID, required if creating access levels. | <code>string</code> |  | <code>null</code> |
 | [asset_feeds](variables.tf#L124) | Cloud Asset Inventory feeds. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1130,9 +1138,9 @@ module "org" {
 | [contacts](variables.tf#L167) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context](variables.tf#L185) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [context_aware_access_bindings](variables.tf#L211) | GCP User Access Bindings for securing Console and APIs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [custom_roles](variables.tf#L229) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [factories_config](variables.tf#L236) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy](variables.tf#L252) | Hierarchical firewall policies to associate to the organization. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [custom_roles](variables.tf#L229) | Map of role name => role attributes to create in this organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L250) | Paths to data files and folders that enable factory functionality. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy](variables.tf#L266) | Hierarchical firewall policies to associate to the organization. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [iam](variables-iam.tf#L17) | Authoritative IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings](variables-iam.tf#L24) | Authoritative IAM bindings in {KEY => {role = ROLE, members = [], condition = {}}}. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam_bindings_additive](variables-iam.tf#L39) | Individual additive IAM bindings. Keys are arbitrary. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -1145,12 +1153,12 @@ module "org" {
 | [logging_settings](variables-logging.tf#L35) | Default settings for logging resources. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [logging_sinks](variables-logging.tf#L45) | Logging sinks to create for the organization. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [network_tags](variables-tags.tf#L17) | Network tags by key name. If `id` is provided, key creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies](variables.tf#L261) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policy_custom_constraints](variables.tf#L289) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies](variables.tf#L275) | Organization policies applied to this organization keyed by policy name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policy_custom_constraints](variables.tf#L303) | Organization policy custom constraints keyed by constraint name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [pam_entitlements](variables-pam.tf#L17) | Privileged Access Manager entitlements for this resource, keyed by entitlement ID. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_mute_configs](variables-scc.tf#L17) | SCC mute configurations keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [scc_sha_custom_modules](variables-scc.tf#L28) | SCC custom modules keyed by module name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_agents_config](variables.tf#L312) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_agents_config](variables.tf#L326) | Service agents configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tag_bindings](variables-tags.tf#L89) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags](variables-tags.tf#L96) | Tags by key name. If `id` is provided, key or value creation is skipped. The `iam` attribute behaves like the similarly named one at module level. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [tags_config](variables-tags.tf#L171) | Fine-grained control on tag resource and IAM creation. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
