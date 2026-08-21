@@ -20,6 +20,7 @@ Gate on steps that are hard to reverse, costly, or where your judgment is likely
 | **Triage Disposition** | End of Step 1 (Mode A) | Whether the issue is in scope and worth pursuing: proceed, reject, or escalate. |
 | **Design Sign-off** | Before Step 2 | Approves the proposed design and scope. Mandatory for new features and interface changes; skippable for trivial fixes where the design is self-evident. |
 | **E2E Opt-in** | Step 5 | Whether to run live cloud verification. Providing a sandbox project ID **is** the consent to deploy to it. |
+| **Behavioral Verification Opt-in** | Step 5, after read-back verification | Whether to also verify runtime behavior of the deployed resources, given the described extra time and cost. |
 | **PR Approval** | Step 6 | Reviews the final sanitized PR body before submission. |
 
 ---
@@ -209,12 +210,23 @@ When code modifications affect GCP resource structures or APIs, run a live E2E s
     *   **CRITICAL**: The `source` argument of the module call MUST point to the **local path** of the modified module in the repository (e.g. `source = "../../modules/<module-name>"`), NOT the GitHub reference, to ensure your local changes are tested.
     *   Set up necessary providers and variables.
 
-5.  **Deploy and Verify**:
+5.  **Deploy**:
     *   Run `terraform init` and `terraform apply -auto-approve` in the sandbox folder.
-    *   Confirm that all resources are created successfully.
+    *   Confirm that all resources are created successfully. A clean apply is the baseline, not the goal: it only proves the API accepted the request, not that the change behaves as intended.
 
-6.  **Verify IAM Conditions via Policy Troubleshooter**:
-    *   When modifying IAM conditional bindings or policies, use Google Cloud's official IAM Policy Troubleshooter (`gcloud policy-troubleshoot iam`) to verify runtime evaluation against live target resources.
+6.  **Read-Back Verification (required)**:
+    *   Verify the deployed state through the service's read API (e.g. `gcloud compute backend-services describe`, or the equivalent `GET`/`describe` surface for the resource), not just the Terraform state or plan output.
+    *   For every field or block touched by the change, confirm the live resource contains the intended value and structure (e.g. one API list entry per input element, correct nesting, no silently dropped attributes).
+
+7.  **Behavioral Verification (optional — Gate)**:
+    *   **Gate — Behavioral Verification Opt-in**: after read-back verification passes, explicitly ask the user whether to also verify runtime behavior, describing what the check would entail for this specific change (resources involved, expected extra time such as propagation delays, any additional cost). Proceed only on explicit approval; skipping is a valid outcome and must be recorded in the PR body.
+    *   Verify the change behaves as expected from the perspective of a consumer of the deployed infrastructure. Examples:
+        *   Compute instances: connect to the instance (SSH/serial) and check it is reachable and its startup configuration behaves as expected.
+        *   Networking, load balancers, DNS: send traffic through the deployed path and verify routing, reachability, and response attributes (e.g. `curl` through a load balancer and inspect status and headers, resolve records, test connectivity across peerings or VPN tunnels).
+        *   Serverless and workloads (Cloud Run, Cloud Functions, GKE): invoke the deployed service and verify the response.
+        *   Data services (GCS, BigQuery, Pub/Sub): perform a representative read/write operation (upload an object, run a query, publish and pull a message).
+    *   Account for propagation delays (load balancers, CDN, IAM can take several minutes); retry before concluding failure.
+    *   **IAM conditional bindings**: use Google Cloud's official IAM Policy Troubleshooter as the behavioral check (`gcloud policy-troubleshoot iam`) to verify runtime evaluation against live target resources.
     *   **CRITICAL**: GCP IAM runtime evaluates `resource.name` using numeric Project Numbers. Always test conditions against `--resource-name` with the numeric Project Number:
         ```bash
         gcloud policy-troubleshoot iam //logging.googleapis.com/projects/<PROJECT_NUMBER>/locations/global/buckets/<BUCKET> \
@@ -224,7 +236,7 @@ When code modifications affect GCP resource structures or APIs, run a live E2E s
           --format="json(access,explainedPolicies[].bindingExplanations)"
         ```
 
-7.  **Destroy Resources**:
+8.  **Destroy Resources**:
     *   Once verified, run `terraform destroy -auto-approve` to tear down all created resources and avoid ongoing cloud costs.
     *   Delete the sandbox directory.
     *   If verification surfaced failures, fix the code and loop back to Step 3 before re-deploying.
@@ -244,7 +256,7 @@ When code modifications affect GCP resource structures or APIs, run a live E2E s
 
 4.  **Write the PR Body**:
     *   Explain the problem, rationale, and the fix clearly.
-    *   **Document Verification & E2E Testing Methodology**: Detail any local unit tests, live E2E sandbox deployments, or Policy Troubleshooter API verifications performed so reviewers can see the exact testing rationale and methodology.
+    *   **Document Verification & E2E Testing Methodology**: Detail local unit tests and, for E2E runs, the apply, read-back, and behavioral verification results (or note that behavioral verification was skipped) so reviewers can see the exact testing rationale and methodology.
     *   **CRITICAL PII SANITIZATION**: Before writing the PR description, **MUST scrub all developer PII** (real GCP project IDs, numeric project numbers, personal email addresses, usernames, and custom bucket/resource names) and replace them with generic placeholders (e.g., `my-project`, `123456789012`, `user:tester@example.com`, `test-bucket`).
     *   Do NOT touch `CHANGELOG.md`: release notes are generated from PR labels applied by maintainers.
 
