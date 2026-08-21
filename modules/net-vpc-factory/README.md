@@ -1,10 +1,10 @@
 # Net VPC Factory
 
-This module implements the creation of VPCs, subnets, and firewall rules via YAML configurations. It is designed to be embedded in other factories such as the [FAST networking stage](../../fast/stages/2-networking).
+This module implements the creation of VPCs, subnets, routes, and firewall rules via YAML configurations. It is designed to be embedded in other factories such as the [FAST networking stage](../../fast/stages/2-networking).
 
 It supports:
 
-- **VPCs** and **Subnets** leveraging the [net-vpc](../net-vpc/) module.
+- **VPCs**, **Subnets**, **Routes** and **Policy Based Routes** leveraging the [net-vpc](../net-vpc/) module.
 - **Firewall rules** leveraging the [net-vpc-firewall](../net-vpc-firewall/) module.
 - **Context-based interpolation** for referring to resources dynamically (e.g., project IDs, IAM principals, Locations).
 
@@ -155,6 +155,24 @@ bgp_config:
   always_compare_med: true
   best_path_selection_mode: STANDARD
   inter_region_cost: ADD_COST_TO_MED
+routes:
+  gateway:
+    dest_range: 8.8.8.8/32
+    next_hop_type: gateway
+    next_hop: default-internet-gateway
+  nva:
+    name: to-nva-route
+    dest_range: 0.0.0.0/0
+    priority: 100
+    next_hop_type: ip
+    next_hop: 10.10.0.253
+policy_based_routes:
+  skip-pbr-for-nva:
+    use_default_routing: true
+    priority: 100
+    target:
+      tags:
+        - nva
 # tftest-file id=vpc path=data/vpcs/data-vpc-0/.config.yaml schema=vpc-factory.schema.json
 ```
 
@@ -185,7 +203,7 @@ ingress:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [factories_config](variables.tf#L99) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [factories_config](variables.tf#L125) | Path to folder with YAML resource description data files. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [context](variables.tf#L17) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_defaults](variables.tf#L29) | Optional default values used when corresponding vpc data from files are missing. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [data_overrides](variables.tf#L64) | Optional values that override corresponding data from files. Takes precedence over file data and `data_defaults`. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |

@@ -613,6 +613,7 @@ module "vpc" {
       next_hop      = each.value
     }
     gateway = {
+      name          = "gateway-route"
       dest_range    = "0.0.0.0/0",
       priority      = 100
       tags          = ["tag-a"]
@@ -646,6 +647,7 @@ module "vpc" {
       }
     }
     send-all-to-nva = {
+      name            = "pbr-nva"
       next_hop_ilb_ip = "10.0.0.253"
       priority        = 101
       filter = {
@@ -961,7 +963,7 @@ secondary_ip_ranges:
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L207) | The name of the network being created. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L284) | The ID of the project where this VPC will be created. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L285) | The ID of the project where this VPC will be created. | <code>string</code> | ✓ |  |
 | [auto_create_subnetworks](variables.tf#L17) | Set to true to create an auto mode subnet, defaults to custom mode. | <code>bool</code> |  | <code>false</code> |
 | [bgp_config](variables.tf#L23) | Optional BGP path selection configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [context](variables.tf#L47) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -977,17 +979,17 @@ secondary_ip_ranges:
 | [network_attachments](variables.tf#L212) | PSC network attachments, names as keys. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [peering_config](variables.tf#L225) | VPC peering configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [policy_based_routes](variables.tf#L236) | Policy based routes, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [psa_configs](variables.tf#L289) | The Private Service Access configuration. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [routes](variables.tf#L321) | Network routes, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [routing_mode](variables.tf#L342) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
-| [service_connection_policies](variables.tf#L352) | Service connection policies, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [shared_vpc_host](variables.tf#L394) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
-| [shared_vpc_service_projects](variables.tf#L400) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets](variables.tf#L406) | Subnet configuration. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_private_nat](variables.tf#L486) | List of private NAT subnets. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_proxy_only](variables.tf#L498) | List of proxy-only subnets for Regional HTTPS or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_psc](variables.tf#L532) | List of subnets for Private Service Connect service producers. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc_reuse](variables.tf#L572) | Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [psa_configs](variables.tf#L290) | The Private Service Access configuration. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [routes](variables.tf#L322) | Network routes, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [routing_mode](variables.tf#L344) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
+| [service_connection_policies](variables.tf#L354) | Service connection policies, keyed by name. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [shared_vpc_host](variables.tf#L396) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
+| [shared_vpc_service_projects](variables.tf#L402) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets](variables.tf#L408) | Subnet configuration. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_private_nat](variables.tf#L488) | List of private NAT subnets. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_proxy_only](variables.tf#L500) | List of proxy-only subnets for Regional HTTPS or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_psc](variables.tf#L534) | List of subnets for Private Service Connect service producers. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc_reuse](variables.tf#L574) | Reuse existing VPC if not null. If the network_id number is not passed in, a data source is used. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
