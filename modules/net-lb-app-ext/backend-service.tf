@@ -117,6 +117,17 @@ resource "google_compute_backend_service" "default" {
       negative_caching             = cdn.value.negative_caching
       serve_while_stale            = cdn.value.serve_while_stale
       signed_url_cache_max_age_sec = cdn.value.signed_url_cache_max_age_sec
+      dynamic "bypass_cache_on_request_headers" {
+        for_each = (
+          cdn.value.bypass_cache_on_request_headers == null
+          ? []
+          : cdn.value.bypass_cache_on_request_headers
+        )
+        iterator = h
+        content {
+          header_name = h.value
+        }
+      }
       dynamic "cache_key_policy" {
         for_each = (
           cdn.value.cache_key_policy == null
