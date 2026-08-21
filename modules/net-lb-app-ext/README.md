@@ -19,6 +19,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Instance Groups](#instance-groups)
     - [Managed Instance Groups](#managed-instance-groups)
     - [Storage Buckets](#storage-buckets)
+    - [Cloud CDN](#cloud-cdn)
     - [Network Endpoint Groups (NEGs)](#network-endpoint-groups-negs)
     - [Zonal NEG creation](#zonal-neg-creation)
     - [Hybrid NEG creation](#hybrid-neg-creation)
@@ -384,6 +385,58 @@ module "glb-0" {
   health_check_configs = {}
 }
 # tftest modules=1 resources=4 inventory=storage.yaml e2e
+```
+
+#### Cloud CDN
+
+Cloud CDN can be enabled on backend buckets and backend services via the `enable_cdn` flag, and tuned via the `cdn_policy` attribute. The `bypass_cache_on_request_headers` attribute allows bypassing the cache for requests carrying specific headers (e.g. `Authorization`):
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-lb-app-ext"
+  project_id = var.project_id
+  name       = "glb-test-0"
+  backend_buckets_config = {
+    static = {
+      bucket_name = var.bucket
+      enable_cdn  = true
+      cdn_policy = {
+        bypass_cache_on_request_headers = ["Authorization", "Pragma"]
+        cache_mode                      = "CACHE_ALL_STATIC"
+      }
+    }
+  }
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b"
+      }]
+      enable_cdn = true
+      cdn_policy = {
+        bypass_cache_on_request_headers = ["Authorization"]
+        cache_mode                      = "CACHE_ALL_STATIC"
+        signed_url_cache_max_age_sec    = 7200
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [{
+          paths   = ["/static", "/static/*"]
+          service = "static"
+        }]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=cloud-cdn.yaml
 ```
 
 #### Network Endpoint Groups (NEGs)
