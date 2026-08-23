@@ -12,8 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+values:
+  module.cas.google_privateca_ca_pool.default[0]:
+    location: europe-west1
+    name: test-ca
+    publishing_options:
+    - encoding_format: null
+      publish_ca_cert: true
+      publish_crl: true
+    tier: ENTERPRISE
+
 counts:
   google_privateca_ca_pool: 1
   google_privateca_certificate_authority: 2
   modules: 1
   resources: 3
+
