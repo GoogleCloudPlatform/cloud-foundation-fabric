@@ -1,0 +1,125 @@
+# Inferring Import Manifests from Terraform State
+
+When migrating or refactoring existing Google Cloud infrastructure managed by Terraform into Cloud Foundation Fabric (CFF), inferring the `import-manifest.yaml` directly from existing Terraform state file(s) (`.tfstate`) is the most precise and deterministic way to define the import boundary.
+
+---
+
+## Why State-Driven Manifest Generation?
+
+| Approach | Strength | Trade-off / Note |
+| :--- | :--- | :--- |
+| **State-Driven Inference (`manifest_from_state.py`)** | Exactly matches the existing Terraform management footprint. No risk of accidentally pulling unmanaged live assets into the stage scope. | Requires access to state files (`terraform state pull` or GCS bucket access). |
+| **Live Asset Survey (`inventory.py survey` + `manifest_init.py`)** | Discovers all live cloud assets, including unmanaged or out-of-band resources. | Broader denominator; requires manually waiving pre-existing or external assets. |
+
+---
+
+## Workflow
+
+### 1. Retrieve the Terraform State(s)
+
+Pull the state files for the target stages or root modules:
+
+```bash
+# Example for FAST Stage 0
+gsutil cp gs://<iac-core-project>-iac-org-state/default.tfstate stage-0.tfstate
+
+# Or pull via Terraform CLI
+terraform -chdir=path/to/stage-0 state pull > stage-0.tfstate
+```
+
+For multi-stage environments (e.g., FAST stages 0, 1, 2), you can pull states for all relevant stages:
+```bash
+terraform -chdir=fast/stages/0-org-setup state pull > stage-0.tfstate
+terraform -chdir=fast/stages/1-vpcsc state pull > stage-1.tfstate
+terraform -chdir=fast/stages/2-networking state pull > stage-2-networking.tfstate
+terraform -chdir=fast/stages/2-security state pull > stage-2-security.tfstate
+```
+
+### 2. Generate the Manifest
+
+Run `manifest_from_state.py`:
+
+```bash
+python3 scripts/manifest_from_state.py \
+  --state stage-0.tfstate \
+  --out import-manifest.yaml
+```
+
+To synthesize a manifest across multiple stages:
+```bash
+python3 scripts/manifest_from_state.py \
+  --state stage-0.tfstate stage-1.tfstate stage-2-networking.tfstate stage-2-security.tfstate \
+  --out import-manifest.yaml
+```
+
+### 3. Review and Collect
+
+Review the generated `import-manifest.yaml`, then collect the live denominator:
+
+```bash
+python3 scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
+```
+
+---
+
+## Type & Level Mapping Reference
+
+The inference script automatically maps Terraform `google_*` resources to CAI asset types and container levels:
+
+| Terraform Resource Type | Manifest `type` | Container Levels | Special Handling |
+| :--- | :--- | :--- | :--- |
+| `google_organization_iam_*` | `iam` | `[organization]` | Authoritative & additive bindings |
+| `google_folder_iam_*` | `iam` | `[folder]` | Folder IAM |
+| `google_project_iam_*` | `iam` | `[project]` | Project IAM |
+| `google_service_account_iam_*` | `iam.googleapis.com/ServiceAccount` | `[project]` | Emits `iam: true` on SA type |
+| `google_org_policy_policy`, `google_organization_policy` | `org-policy` | `[organization, folder, project]` | Inferred from parent attribute |
+| `google_organization_iam_custom_role` | `iam.googleapis.com/Role` | `[organization]` | Org custom roles |
+| `google_project_iam_custom_role` | `iam.googleapis.com/Role` | `[project]` | Project custom roles |
+| `google_logging_organization_sink` | `logging.googleapis.com/LogSink` | `[organization]` | Org log sinks |
+| `google_logging_folder_sink` | `logging.googleapis.com/LogSink` | `[folder]` | Folder log sinks |
+| `google_logging_project_sink` | `logging.googleapis.com/LogSink` | `[project]` | Project log sinks |
+| `google_logging_project_bucket_config`| `logging.googleapis.com/LogBucket` | `[project]` | Project log buckets |
+| `google_folder` | `cloudresourcemanager.googleapis.com/Folder` | `[organization, folder]` | Top-level and nested folders |
+| `google_project` | `cloudresourcemanager.googleapis.com/Project` | `[organization, folder]` | Projects |
+| `google_storage_bucket` | `storage.googleapis.com/Bucket` | `[project]` | GCS Buckets |
+| `google_service_account` | `iam.googleapis.com/ServiceAccount` | `[project]` | Service Accounts |
+| `google_tags_tag_key` | `cloudresourcemanager.googleapis.com/TagKey` | `[organization]` | Resource Manager Tag Keys |
+| `google_tags_tag_value` | `cloudresourcemanager.googleapis.com/TagValue` | `[organization]` | Tag Values |
+| `google_tags_tag_binding` | `cloudresourcemanager.googleapis.com/TagBinding` | `[organization, folder, project]` | Tag Bindings |
+| `google_project_service` | `serviceusage.googleapis.com/Service` | `[project]` | Enabled APIs |
+| `google_access_context_manager_*` | `accesscontextmanager.googleapis.com/*` | `[organization]` | Access Policies, Perimeters, Levels |
+| `google_compute_network` | `compute.googleapis.com/Network` | `[project]` | VPCs |
+| `google_compute_subnetwork` | `compute.googleapis.com/Subnetwork` | `[project]` | Subnets |
+| `google_compute_router` | `compute.googleapis.com/Router` | `[project]` | Cloud Routers & NAT |
+| `google_compute_firewall` | `compute.googleapis.com/Firewall` | `[project]` | Firewall rules |
+| `google_kms_key_ring` | `cloudkms.googleapis.com/KeyRing` | `[project]` | KMS Key Rings |
+| `google_kms_crypto_key` | `cloudkms.googleapis.com/CryptoKey` | `[project]` | KMS Keys |
+| `google_bigquery_dataset` | `bigquery.googleapis.com/Dataset` | `[project]` | BigQuery Datasets |
+| `google_pubsub_topic` | `pubsub.googleapis.com/Topic` | `[project]` | Pub/Sub Topics |
+| `google_pubsub_subscription` | `pubsub.googleapis.com/Subscription` | `[project]` | Pub/Sub Subscriptions |
+| `google_secret_manager_secret` | `secretmanager.googleapis.com/Secret` | `[project]` | Secret Manager |
+| `google_compute_network_firewall_policy` | `compute.googleapis.com/NetworkFirewallPolicy` | `[project]` | Network Firewall Policies |
+| `google_iam_workload_identity_pool` | `iam.googleapis.com/WorkloadIdentityPool` | `[project]` | WIF Pools |
+| `google_iam_workload_identity_pool_provider` | `iam.googleapis.com/WorkloadIdentityPoolProvider` | `[project]` | WIF Identity Providers |
+
+---
+
+## Multi-Scope Partitioning
+
+When resources span both Organization/Folder governance and project-contained resources, `manifest_from_state.py` produces a multi-scope configuration:
+
+```yaml
+scopes:
+  - name: org-foundation
+    root: organizations/123456789012
+    levels: [organization, folder]
+
+  - name: stage-projects
+    root: organizations/123456789012
+    levels: [project]
+    include:
+      - prj-prod-audit-logs-0   # project number: 111111111111
+      - prj-prod-iac-core-0     # project number: 222222222222
+```
+
+This prevents project-level queries from accidentally scanning every unrelated project in the organization while still managing org-level policies and folders.

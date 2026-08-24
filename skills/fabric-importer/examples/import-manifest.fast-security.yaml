@@ -1,0 +1,49 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# ---------------------------------------------------------------------------
+# fabric-importer manifest mirroring FAST stage 2-security: the security
+# projects plus KMS keyrings/keys and Certificate Authority Service (CAS).
+#
+# Maturity (see COVERAGE.md): [V] live-verified.
+# Note: KMS keyrings cannot be deleted in GCP; CAS pools bill monthly.
+# ---------------------------------------------------------------------------
+
+scope:
+  root: organizations/000000000000
+  # include:
+  #   - folders/222222222222         # security folder number
+
+types:
+  - type: iam                                              # [V]
+    levels: [project]
+  - type: org-policy                                       # [V]
+    levels: [folder, project]
+  - type: cloudresourcemanager.googleapis.com/Project      # [V]
+    levels: [folder]
+  - type: serviceusage.googleapis.com/Service              # [V]
+    levels: [project]
+  - type: iam.googleapis.com/ServiceAccount                # [V]
+    levels: [project]
+    iam: true
+  - type: cloudkms.googleapis.com/KeyRing                  # [V] modules/kms
+    levels: [project]
+  - type: cloudkms.googleapis.com/CryptoKey                # [V] modules/kms
+    levels: [project]
+    iam: true          # per-key IAM is leaf IAM - opt in explicitly
+  - type: privateca.googleapis.com/CaPool                  # [V] modules/certificate-authority-service
+    levels: [project]
+  # - type: privateca.googleapis.com/CertificateAuthority  # [C]
+  #   levels: [project]

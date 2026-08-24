@@ -1,0 +1,157 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# ---------------------------------------------------------------------------
+# EXAMPLE import manifest: "organization foundation"
+#
+# This manifest reproduces exactly the surface the legacy (v1) pipeline
+# covered: org-level custom roles, org IAM (bindings + audit configs), org
+# policies, org log sinks, the folder hierarchy, and folder IAM.
+#
+# A manifest is the user-owned contract for a fabric-importer run:
+#   - inventory.py collects ONLY what is declared here (the completeness
+#     denominator becomes "what you asked for", not "everything");
+#   - coverage.py fails the run until every collected asset is mapped to a
+#     Terraform address or waived by a human;
+#   - re-runs are incremental: widen this manifest (or let the org grow)
+#     and only the delta is added to the workspace. Existing addresses are
+#     never rewritten.
+# ---------------------------------------------------------------------------
+
+scope:
+  # Root of the import. organizations/N, folders/N and projects/N are all
+  # valid roots; everything below is evaluated inside this subtree.
+  root: organizations/000000000000   # <- replace with your org id
+
+  # Optional: restrict to specific subtrees inside the root. An asset is
+  # in scope only if one of these appears among its ancestors. Omit to
+  # cover the whole root.
+  # include:
+  #   - folders/111111111111
+
+  # Optional: carve out subtrees. Exclusion wins over inclusion.
+  #
+  # NOTE (live-verified): include/exclude match against the CAI
+  # `ancestors` array, which stores NUMERIC ids — `projects/123456789`
+  # (project number), never `projects/my-project-id`. Resolve ids with
+  # `gcloud projects describe <id> --format='value(projectNumber)'`.
+  # exclude:
+  #   - projects/123456789012
+  #
+  # -------------------------------------------------------------------
+  # RECIPES: importing only SPECIFIC projects or combining scopes
+  # -------------------------------------------------------------------
+  #
+  # (a) Multi-scope manifest (Org/Folder governance + Selected Projects):
+  #     Use `scopes:` to declare separate roots and level boundaries.
+  #     Alphanumeric project IDs (e.g. 'my-app-prod') are auto-resolved!
+  #
+  #   scopes:
+  #     - name: org-foundation
+  #       root: organizations/000000000000
+  #       levels: [organization, folder]
+  #
+  #     - name: logging-and-apps
+  #       root: organizations/000000000000
+  #       levels: [project]
+  #       include:
+  #         - my-app-prod              # project ID or number
+  #         - my-app-dev
+  #
+  # (b) Projects-only manifest (no organization/folder-level types):
+  #     A plain include or direct project root:
+  #
+  #   scopes:
+  #     - root: projects/my-app-prod
+  #       levels: [project]
+  #
+  # Widening later (adding a project or scope) is safe and incremental:
+  # only the new assets appear in the worklist. Types' `levels` still
+  # apply on top of scope.
+
+types:
+  # -------------------------------------------------------------------
+  # IAM policies (pseudo-type). CAI models IAM as a content type attached
+  # to resources, not as an asset type, hence the reserved name `iam`.
+  # `levels` controls WHERE bindings are replicated:
+  #   organization -> org IAM bindings + audit configs
+  #                   (v1: 74 bindings + logging_data_access)
+  #   folder       -> folder IAM bindings (v1: 88 bindings)
+  # Project-level IAM stays unmanaged in this example (add `project` to
+  # take it over). Only container-attached IAM (org/folder/project) is
+  # covered by this pseudo-type; IAM on leaf assets (tag values, buckets,
+  # service accounts, ...) needs explicit per-type manifest entries.
+  # -------------------------------------------------------------------
+  - type: iam
+    levels: [organization, folder]
+
+  # -------------------------------------------------------------------
+  # Org policies (pseudo-type; CAI content type org-policy). One
+  # inventory entry per (resource, constraint) pair, so coverage is
+  # per-constraint. v1 covered org-level only (35 policies); folder-level
+  # policies were discovered-but-unmodelled — declaring only
+  # [organization] here makes that same restriction explicit and honest:
+  # folder policies are then out of scope BY DECLARATION rather than
+  # silently dropped.
+  # -------------------------------------------------------------------
+  - type: org-policy
+    levels: [organization]
+
+  # -------------------------------------------------------------------
+  # Custom IAM roles. Fabric target: modules/organization factory,
+  # data/custom-roles/<role_id>.yaml (v1: 20 roles). Org-level only;
+  # project-level custom roles would need `project` here.
+  # -------------------------------------------------------------------
+  - type: iam.googleapis.com/Role
+    levels: [organization]
+
+  # -------------------------------------------------------------------
+  # Log sinks. Fabric target: modules/organization logging_sinks locals
+  # (v1: 4 sinks, iam=false, _Default/_Required quarantined). Folder and
+  # project sinks stay unmanaged here.
+  # -------------------------------------------------------------------
+  - type: logging.googleapis.com/LogSink
+    levels: [organization]
+
+  # -------------------------------------------------------------------
+  # Folder hierarchy. Fabric target: one modules/folder instance per
+  # folder (stable instance keys; parent chaining by module reference).
+  # `levels` refers to the CONTAINER of the asset: a folder whose parent
+  # is the org sits at level `organization`, a nested folder at `folder`.
+  # -------------------------------------------------------------------
+  - type: cloudresourcemanager.googleapis.com/Folder
+    levels: [organization, folder]
+
+# ---------------------------------------------------------------------------
+# What this manifest deliberately does NOT cover (would have been silent
+# gaps in v1; here they are visible declarations — add entries to take
+# them over):
+#
+#   - type: cloudresourcemanager.googleapis.com/Project
+#     levels: [organization, folder]
+#   - type: orgpolicy.googleapis.com/CustomConstraint
+#     levels: [organization]
+#   - type: cloudresourcemanager.googleapis.com/TagKey
+#     levels: [organization]
+#   - type: cloudresourcemanager.googleapis.com/TagValue
+#     levels: [organization]
+#   - type: essentialcontacts.googleapis.com/Contact
+#     levels: [organization]
+#   - type: compute.googleapis.com/Network        # modules/net-vpc
+#   - type: iam.googleapis.com/ServiceAccount     # modules/iam-service-account
+#     levels: [project]
+#     iam: true    # ALSO collect IAM attached to each SA (impersonation
+#                  # grants). Leaf-asset IAM never enters the denominator
+#                  # without this per-type opt-in.
+# ---------------------------------------------------------------------------

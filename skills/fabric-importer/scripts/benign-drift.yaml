@@ -1,0 +1,184 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# HUMAN-OWNED benign-drift ruleset for verify_plan.py.
+#
+# Every entry declares a class of plan diffs that is a provider/schema
+# artifact rather than real config-vs-reality drift. Entries require:
+#   - resource:        terraform resource type ("*" for any)
+#   - attributes:      top-level attribute paths covered
+#   - reason:          human-reviewed justification
+#   - verified_against: provider (and optionally terraform) version the
+#     justification was checked on. Re-verify on provider major bumps.
+#
+# The model operating the skill MUST NOT edit this file. verify_plan.py
+# prints a proposal template for unmatched updates; a human reviews the
+# diff and commits the entry.
+
+rules:
+  - resource: google_folder
+    attributes: [timeouts]
+    reason: >-
+      Google provider v7 emits `timeouts {} -> null` in the import preview
+      for imported folders; the attribute is not a live setting and
+      disappears once state is persisted.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_logging_organization_sink
+    attributes: [description]
+    # Guard: only sinks whose LIVE description is the empty string are
+    # covered; a real description drift on a sink must stay residual.
+    when_before:
+      description: ""
+    reason: >-
+      Live GCP log sinks with empty description ("") cannot round-trip through
+      Fabric's coalesce(v.description, default) which treats empty string as null
+      and applies the default description.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_compute_subnetwork
+    attributes: [send_secondary_ip_range_if_empty]
+    when_before:
+      send_secondary_ip_range_if_empty: null
+    reason: >-
+      Fabric modules/net-vpc hardcodes send_secondary_ip_range_if_empty = true
+      on google_compute_subnetwork to ensure secondary range removals propagate,
+      which causes an in-place preview diff (null -> true) on imported subnets.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_project
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited labels exist on the project while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_storage_bucket
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_dns_managed_zone
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_network_connectivity_spoke
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_bigquery_dataset
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_pubsub_topic
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_kms_crypto_key
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_privateca_ca_pool
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_compute_network
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified
+
+  - resource: google_compute_subnetwork
+    attributes: [terraform_labels]
+    when_before:
+      terraform_labels: {}
+    reason: >-
+      Google provider v7 computes `terraform_labels: {} -> {...}` during import
+      preview when default/inherited provider labels exist while
+      effective_labels and labels match live state with zero underlying mutation.
+    verified_against:
+      provider: 7.45.0
+      status: verified

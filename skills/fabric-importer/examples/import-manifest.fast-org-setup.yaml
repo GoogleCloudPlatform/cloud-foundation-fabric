@@ -1,0 +1,68 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# ---------------------------------------------------------------------------
+# fabric-importer manifest mirroring the surface managed by FAST stage
+# 0-org-setup: org-level governance plus the IaC / billing-export /
+# observability projects, their service accounts, state buckets, tags, and WIF.
+#
+# Maturity legend (see COVERAGE.md): [V] live-verified  [C] cookbook
+# rules exist, not yet plan-tested  [N] new territory (fallback +
+# capability-gap report). Validate counts with `inventory.py collect`
+# before mapping; adjust scope.include to your IaC folder/projects.
+# ---------------------------------------------------------------------------
+
+scope:
+  root: organizations/000000000000   # <- your org id
+  # include/exclude match CAI `ancestors` (NUMERIC project ids).
+  # Restrict project-level types to the org-setup projects:
+  # include:
+  #   - projects/111111111111        # iac-core project NUMBER; see the
+  #     "RECIPES" section in import-manifest.org-foundation.yaml for
+  #     selecting specific projects (incl. the include-vs-exclude trap)
+
+types:
+  - type: iam                                              # [V]
+    levels: [organization, project]
+  - type: org-policy                                       # [V]
+    levels: [organization]
+  - type: iam.googleapis.com/Role                          # [V] (org custom roles)
+    levels: [organization]
+  - type: logging.googleapis.com/LogSink                   # [V]
+    levels: [organization]
+  - type: cloudresourcemanager.googleapis.com/Folder       # [V]
+    levels: [organization, folder]
+  - type: cloudresourcemanager.googleapis.com/Project      # [V]
+    levels: [organization, folder]
+  - type: serviceusage.googleapis.com/Service              # [V]
+    levels: [project]
+  - type: iam.googleapis.com/ServiceAccount                # [V]
+    levels: [project]
+    iam: true          # impersonation grants enter the denominator
+  - type: logging.googleapis.com/LogBucket                 # [V]
+    levels: [project]
+  - type: storage.googleapis.com/Bucket                    # [V] state buckets
+    levels: [project]
+  - type: iam.googleapis.com/WorkloadIdentityPool          # [V] WIF federation
+    levels: [project]
+  - type: cloudresourcemanager.googleapis.com/TagKey       # [V] Resource Manager tags
+    levels: [organization]
+  - type: cloudresourcemanager.googleapis.com/TagValue     # [V]
+    levels: [organization]
+  - type: cloudresourcemanager.googleapis.com/TagBinding   # [V]
+    levels: [organization, folder, project]
+  # --- Optional additional types ---
+  # - type: cloudbilling.googleapis.com/BillingAccount     # [N] billing IAM
+  #   levels: [organization]
