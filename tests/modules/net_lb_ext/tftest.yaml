@@ -15,6 +15,7 @@
 module: modules/net-lb-ext
 
 tests:
+  context:
   defaults:
   dual-stack:
   forwarding-rule:

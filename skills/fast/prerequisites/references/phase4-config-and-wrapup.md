@@ -11,7 +11,7 @@
    - *If GCD:* The region is fixed based on the universe selected in Phase 1. Set the `logging` location to `global` and all other required locations to the Universe Region. Do not ask the user to choose; simply show them the configured locations.
    - *If Standard GCP:* Check the `fast/stages/0-org-setup/schemas/defaults.schema.json` to identify the required location keys (e.g., `bq`, `gcs`, `logging`, `pubsub`). First, ask the user to provide a "base location" (e.g., `europe-west1`), explaining that submitting without answering will confirm the default value. Even if the user confirms the base location, you must then ask if they need to override the location for any individual services.
 5. **Determine Local Path:** Explain to the user that FAST generates provider configurations and other files that need to be stored outside the repository. This is defined by the `output_files.local_path` setting. Propose a default path based on the chosen prefix (e.g., `~/fast-config/<prefix>`) and ask the user to confirm or provide a different path. **Crucially, if the user provides a relative path (e.g., `custom-fast-config` or `./custom-fast-config`), use it exactly as provided relative to the current working directory. Do not automatically prepend `~/` to their input.** Once confirmed, create this directory using `mkdir -p <LOCAL_PATH>`.
-6. **Ask for Additional Context:** Ask the user if there are any other static values they want to bring in from outside to be referenced in the YAML files. Show them the available context keys (excluding `condition_vars`). Provide examples showing that prefixes are mandatory for IAM principals (e.g., `user:foo@example.com`, `group:bar@example.com`). For GCD, also show a `principalSet:` example. **Do not use shell commands like `echo` or `cat` to show this list; output it directly in your chat message or the `ask_user` prompt.**
+6. **Ask for Additional Context:** Ask the user if there are any other static values they want to bring in from outside to be referenced in the YAML files. Show them the available context keys (excluding `condition_vars`). Provide examples showing that prefixes are mandatory for IAM principals (e.g., `user:foo@example.com`, `group:bar@example.com`). For GCD, also show a `principalSet:` example. **Do not use shell commands like `echo` or `cat` to show this list; output it directly in your chat message.**
 7. **Create Local Directories and Copy Defaults:**
    - Create the `data/0-org-setup/` and `providers/` directories inside the confirmed `local_path` (`mkdir -p <LOCAL_PATH>/data/0-org-setup/ <LOCAL_PATH>/providers/`).
    - **Copy** (do not move) the `defaults.yaml` from the chosen dataset folder to `<LOCAL_PATH>/data/0-org-setup/defaults.yaml` using `cp`.
@@ -27,17 +27,30 @@
     - Use `write_file` to create `0-org-setup.auto.tfvars` inside the `local_path` (`<LOCAL_PATH>/0-org-setup.auto.tfvars`).
     - In `0-org-setup.auto.tfvars`, set the `factories_config` variable. The `dataset` should point to the original dataset folder (e.g., `"datasets/classic"`), but the `paths.defaults` must point to the absolute path of the copied defaults file.
     - *If GCD*, also: Create a temporary `0-org-setup-providers.tf` file containing the specific `universe_domain` configuration using `write_file` at `<LOCAL_PATH>/providers/0-org-setup-providers.tf`.
-11. **Present Configuration and Halt:** Briefly tell the user you have created and validated the baseline configuration files. You MUST stop execution immediately, present the generated files, ask the user if they are ready to proceed with **Step 8 (Organization Policy Import Check)**, and wait for their response. Do not proceed to Step 8 or run more tools in this turn.
+11. **Present Configuration and Halt:** Briefly tell the user you have created and validated the baseline configuration files. You MUST stop execution immediately, present the generated files, ask the user if they are ready to proceed with **Step 8 (Organization Policy Import Check & Essential Contacts)**, and wait for their response. Do not proceed to Step 8 or run more tools in this turn.
 
-### Step 8: Organization Policy Import Check
+### Step 8: Organization Policy Import Check & Essential Contacts
 
-1. Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
-2. Provide (or execute if automatic) the command to list current policies.
-   ```bash
-   gcloud org-policies list --organization="<ORG_ID>" --format="value(constraint)"
-   ```
-3. **STOP Execution and Wait:** You MUST stop execution immediately here, ask the user to run the command, and wait for them to paste the output. Do NOT proceed to Step 9 or update any files until the user has explicitly provided the output of this command.
-4. **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
+1. **Organization Policy Import Check:**
+   - Explain that pre-existing organization policies can cause `409 Conflict` errors during the first apply if not imported.
+   - Provide (or execute if automatic) the command to list current policies:
+     ```bash
+     gcloud org-policies list --organization="<ORG_ID>" --format="value(constraint)"
+     ```
+   - **STOP Execution and Wait:** You MUST stop execution immediately here, ask the user to run the command, and wait for them to paste the output. Do NOT proceed to Step 9 or update any files until the user has explicitly provided the output of this command.
+   - **Update `0-org-setup.auto.tfvars`:** If any policies are returned, capture the output, format it as an HCL list in memory, and use the `replace` tool to append the `org_policies_imports` variable to the `0-org-setup.auto.tfvars` file. **ABSOLUTELY NEVER use shell redirection like `echo >>`, `awk >>`, or `cat <<EOF >>` to edit files.** Explain to the user that this tells Terraform to import these existing policies rather than attempting to recreate them.
+
+2. **Essential Contacts Handling:**
+   - Explain to the user that FAST Stage 0 datasets configure essential contacts as part of the organization configuration, and simultaneously enforce the Essential Contacts domain restriction organization policy (`essentialcontacts.allowedContactDomains`). Any essential contacts defined must match the allowed domains in the organization policy, otherwise Terraform deployment will fail with policy violation errors.
+   - Ask the user to choose how they want to handle essential contacts:
+     - **Option A (Define Essential Contact & Update Org Policy - Recommended):**
+       - Prompt the user for the essential contact email address.
+       - If the currently authenticated identity / deploying principal (from Phase 1/2) is an email-like principal (e.g. `user@example.com` or `user:user@example.com`), offer the option to reuse it.
+       - If the deploying principal is a Workforce Identity Federation (WIF) identity (i.e. starting with `principal://`), skip this option and prompt the user to provide a valid email address.
+       - Update the essential contact in `<LOCAL_PATH>/data/0-org-setup/defaults.yaml` (under `context.email_addresses` or `projects.defaults.contacts`) using the `replace` tool.
+       - Update the organization policy in `<LOCAL_PATH>/data/0-org-setup/organization/org-policies/essentialcontacts.yaml` using the `replace` tool so that `essentialcontacts.allowedContactDomains` allows the domain part of the provided email (e.g. adding `@<EMAIL_DOMAIN>` to the allowed values).
+     - **Option B (Allow All Domains in Org Policy):**
+       - If the user does not want to restrict domains or wants to bypass domain restrictions, update `<LOCAL_PATH>/data/0-org-setup/organization/org-policies/essentialcontacts.yaml` using the `replace` tool to set the policy rule to allow all values (`allow: all: true`), commenting out the existing restricted rule setup. Do NOT delete or empty the file (to keep it as a reference and avoid Terraform failures on empty YAML files).
 
 ### Step 9: Wrap-up & Apply
 

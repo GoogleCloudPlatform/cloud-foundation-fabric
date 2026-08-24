@@ -42,13 +42,11 @@ variable "backend_service_configs" {
     session_affinity = optional(string)
     timeout_sec      = optional(number)
     backends = list(object({
-      # group renamed to backend
-      backend         = string
+      group           = string
       preferred       = optional(bool, false)
       balancing_mode  = optional(string, "UTILIZATION")
       capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
-      failover        = optional(bool, false)
       max_connections = optional(object({
         per_endpoint = optional(number)
         per_group    = optional(number)
@@ -62,13 +60,14 @@ variable "backend_service_configs" {
       max_utilization = optional(number)
     }))
     cdn_policy = optional(object({
-      cache_mode                   = optional(string)
-      client_ttl                   = optional(number)
-      default_ttl                  = optional(number)
-      max_ttl                      = optional(number)
-      negative_caching             = optional(bool)
-      serve_while_stale            = optional(number)
-      signed_url_cache_max_age_sec = optional(number)
+      bypass_cache_on_request_headers = optional(list(string))
+      cache_mode                      = optional(string)
+      client_ttl                      = optional(number)
+      default_ttl                     = optional(number)
+      max_ttl                         = optional(number)
+      negative_caching                = optional(bool)
+      serve_while_stale               = optional(number)
+      signed_url_cache_max_age_sec    = optional(number)
       cache_key_policy = optional(object({
         include_host           = optional(bool)
         include_named_cookies  = optional(list(string))
@@ -154,6 +153,18 @@ variable "backend_service_configs" {
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for backend_service in values(var.backend_service_configs) : (
+        backend_service.cdn_policy == null
+        || try(backend_service.cdn_policy.cache_key_policy, null) != null
+        || try(
+          backend_service.cdn_policy.signed_url_cache_max_age_sec, null
+        ) != null
+      )
+    ])
+    error_message = "Backend service cdn_policy requires one of cache_key_policy or signed_url_cache_max_age_sec."
+  }
   validation {
     condition = alltrue([
       for backend_service in values(var.backend_service_configs) : contains(

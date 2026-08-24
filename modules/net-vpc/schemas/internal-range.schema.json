@@ -19,8 +19,12 @@
     "labels": {
       "type": "object",
       "description": "User-defined labels.",
-      "additionalProperties": {
-        "type": "string"
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_-]{0,62}$": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]{0,63}$"
+        }
       }
     },
     "ip_cidr_range": {

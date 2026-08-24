@@ -28,6 +28,9 @@ locals {
   )
   pool_name  = reverse(split("/", local.pool_id))[0]
   project_id = lookup(local.ctx.project_ids, var.project_id, var.project_id)
+  publishing_options = try(
+    var.ca_pool_config.create_pool.publishing_options, null
+  )
 }
 
 resource "google_privateca_ca_pool" "default" {
@@ -41,6 +44,16 @@ resource "google_privateca_ca_pool" "default" {
     ? "ENTERPRISE"
     : "DEVOPS"
   )
+  dynamic "publishing_options" {
+    for_each = (
+      local.publishing_options == null ? [] : [local.publishing_options]
+    )
+    content {
+      encoding_format = publishing_options.value.encoding_format
+      publish_ca_cert = publishing_options.value.publish_ca_cert
+      publish_crl     = publishing_options.value.publish_crl
+    }
+  }
 }
 
 resource "google_privateca_certificate_authority" "default" {

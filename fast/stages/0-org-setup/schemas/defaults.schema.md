@@ -34,7 +34,8 @@
       <br>*enum: ['PREVENT', 'DELETE', 'ABANDON']*
     - **labels**: *object*
       <br>*additional properties: false*
-      - **`^[a-z0-9_-]+$`**: *string*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **locations**: *object*
       <br>*additional properties: false*
       - **bigquery**: *string*
@@ -196,6 +197,8 @@
       - **internal_range**: *string*
 - **context**: *object*
   <br>*additional properties: false*
+  - **access_levels**: *object*
+    <br>*additional properties: string*
   - **cidr_ranges_sets**: *object*
     <br>*additional properties: array*
   - **custom_roles**: *object*
@@ -224,7 +227,8 @@
     <br>*additional properties: false*
     - **projects**: *object*
       <br>*additional properties: object*
-    - **organization**: *string*
+    - **organization**: *object*
+      <br>*additional properties: string*
   - **vpc_host_projects**: *object*
     <br>*additional properties: string*
   - **vpc_sc_perimeters**: *object*

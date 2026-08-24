@@ -17,6 +17,7 @@ common_tfvars:
   - common.tfvars
 
 tests:
+  bgp_config:
   context:
   shared_vpc:
   psa_routes_export:

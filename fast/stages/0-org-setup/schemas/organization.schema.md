@@ -6,6 +6,7 @@
 
 *additional properties: false*
 
+- **access_policy**: *string*
 - **asset_feeds**: *object*
   <br>*additional properties: false*
   - **`^[a-z0-9-]+$`**: *object*
@@ -34,6 +35,7 @@
   - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*
     - items: *string*
       <br>*enum: ['ALL', 'BILLING', 'LEGAL', 'SECURITY', 'PRODUCT_UPDATES', 'SUSPENSION', 'TECHNICAL']*
+- **context_aware_access_bindings**: *reference([context_aware_access_bindings](#refs-context_aware_access_bindings))*
 - **data_access_logs**: *object*
   <br>*additional properties: false*
   - **`^([a-z][a-z-]+\.googleapis\.com|allServices)$`**: *object*
@@ -56,6 +58,29 @@
 - **iam_by_principals**: *reference([iam_by_principals](#refs-iam_by_principals))*
 - **iam_by_principals_conditional**: *reference([iam_by_principals_conditional](#refs-iam_by_principals_conditional))*
 - **iam_by_principals_additive**: *reference([iam_by_principals](#refs-iam_by_principals))*
+- **iam_deny_policies**: *object*
+  <br>*additional properties: false*
+  - **`^[a-z0-9-]+$`**: *object*
+    <br>*additional properties: false*
+    - **display_name**: *string*
+    - ⁺**rules**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **description**: *string*
+        - ⁺**denied_permissions**: *array*
+          - items: *string*
+        - ⁺**denied_principals**: *array*
+          - items: *string*
+        - **denial_condition**: *object*
+          <br>*additional properties: false*
+          - ⁺**expression**: *string*
+          - **title**: *string*
+          - **description**: *string*
+          - **location**: *string*
+        - **exception_permissions**: *array*
+          - items: *string*
+        - **exception_principals**: *array*
+          - items: *string*
 - **logging**: *object*
   <br>*additional properties: false*
   - **kms_key_name**: *string*
@@ -199,6 +224,24 @@
     - ⁺**roles**: *array*
       - items: *string*
         <br>*pattern: ^(?:roles/|\$custom_roles:|organizations/[0-9]+/roles/|([a-z0-9.]+:)?projects/[a-z0-9-]+/roles/)*
+- **context_aware_access_bindings**<a name="refs-context_aware_access_bindings"></a>: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9-_.]+$`**: *object*
+    <br>*additional properties: false*
+    - ⁺**group_key**: *string*
+    - ⁺**access_levels**: *array*
+      - items: *string*
+    - **scoped_access_settings**: *array*
+      - items: *object*
+        <br>*additional properties: false*
+        - **active_settings**: *object*
+          <br>*additional properties: false*
+          - **access_levels**: *array*
+            - items: *string*
+        - **dry_run_settings**: *object*
+          <br>*additional properties: false*
+          - **access_levels**: *array*
+            - items: *string*
 - **pam_entitlements**<a name="refs-pam_entitlements"></a>: *object*
   <br>*additional properties: false*
   - **`^[a-z][a-z0-9-]{0,61}[a-z0-9]$`**: *object*

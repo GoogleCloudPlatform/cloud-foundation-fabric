@@ -28,6 +28,23 @@ resource "google_cloud_run_v2_service" "service_unmanaged" {
   deletion_protection  = var.deletion_protection
   iap_enabled          = var.service_config.iap_config != null
 
+  dynamic "multi_region_settings" {
+    for_each = local.multi_region_regions == null ? [] : [""]
+    content {
+      regions = local.multi_region_regions
+    }
+  }
+
+  dynamic "traffic" {
+    for_each = var.service_config.traffic == null ? [] : var.service_config.traffic
+    content {
+      percent  = traffic.value.percent
+      revision = traffic.value.revision
+      tag      = traffic.value.tag
+      type     = traffic.value.type
+    }
+  }
+
   template {
     labels         = var.revision.labels
     encryption_key = var.encryption_key

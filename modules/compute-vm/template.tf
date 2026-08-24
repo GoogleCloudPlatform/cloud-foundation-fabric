@@ -15,7 +15,6 @@
  */
 
 locals {
-  is_template       = var.create_template != null
   template_regional = try(var.create_template.regional, null) == true
 }
 
@@ -170,6 +169,12 @@ resource "google_compute_instance_template" "default" {
             null
           )
           network_tier = try(config.value.network_tier, null)
+        }
+      }
+      dynamic "ipv6_access_config" {
+        for_each = config.value.external_ipv6 ? [""] : []
+        content {
+          network_tier = "PREMIUM"
         }
       }
       dynamic "alias_ip_range" {

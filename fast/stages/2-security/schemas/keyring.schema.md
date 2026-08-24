@@ -19,7 +19,10 @@
     <br>*additional properties: false*
     - **destroy_scheduled_duration**: *string*
     - **rotation_period**: *string*
-    - **labels**: *string*
+    - **labels**: *object*
+      <br>*additional properties: false*
+      - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+        <br>*pattern: ^[a-z0-9_-]{0,63}$*
     - **purpose**: *string*
       <br>*default: ENCRYPT_DECRYPT*, *enum: ['CRYPTO_KEY_PURPOSE_UNSPECIFIED', 'ENCRYPT_DECRYPT', 'ASYMMETRIC_SIGN', 'ASYMMETRIC_DECRYPT', 'RAW_ENCRYPT_DECRYPT', 'MAC']*
     - **skip_initial_version_creation**: *boolean*

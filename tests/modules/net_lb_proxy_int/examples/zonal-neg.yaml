@@ -1,10 +1,10 @@
-# Copyright 2024 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,30 +13,16 @@
 # limitations under the License.
 
 values:
-  google_compute_address.test:
-    address: 10.0.0.10
-    address_type: INTERNAL
-    description: null
-    effective_labels:
-      goog-terraform-provisioned: 'true'
-    ip_version: null
-    ipv6_endpoint_type: null
-    labels: null
-    name: neg-test
-    network: null
-    project: project-id
-    region: europe-west1
-    subnetwork: subnet_self_link
-    terraform_labels:
-      goog-terraform-provisioned: 'true'
-    timeouts: null
-  module.int-tcp-proxy.google_compute_forwarding_rule.default:
+  module.int-tcp-proxy.google_compute_forwarding_rule.default[""]:
     all_ports: null
-    allow_global_access: null
+    allow_global_access: true
     allow_psc_global_access: null
     backend_service: null
+    deletion_policy: DELETE
     description: Terraform managed.
+    ip_collection: null
     ip_protocol: TCP
+    ip_version: IPV4
     is_mirroring_collector: null
     labels: null
     load_balancing_scheme: INTERNAL_MANAGED
@@ -53,6 +39,7 @@ values:
     subnetwork: subnet_self_link
     timeouts: null
   module.int-tcp-proxy.google_compute_network_endpoint.default["my-neg-e-0"]:
+    deletion_policy: DELETE
     instance: test-1
     ip_address: 10.0.0.10
     network_endpoint_group: int-tcp-proxy-my-neg
@@ -62,6 +49,7 @@ values:
     zone: europe-west1-b
   module.int-tcp-proxy.google_compute_network_endpoint_group.default["my-neg"]:
     default_port: null
+    deletion_policy: DELETE
     description: Terraform managed.
     name: int-tcp-proxy-my-neg
     network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
@@ -75,8 +63,8 @@ values:
     backend:
     - balancing_mode: CONNECTION
       capacity_scaler: 1
+      custom_metrics: []
       description: Terraform managed.
-      failover: false
       max_connections: null
       max_connections_per_endpoint: 10
       max_connections_per_instance: null
@@ -84,29 +72,41 @@ values:
       max_rate_per_endpoint: null
       max_rate_per_instance: null
       max_utilization: null
+      traffic_duration: ''
     circuit_breakers: []
     connection_draining_timeout_sec: 300
     connection_tracking_policy: []
     consistent_hash: []
+    custom_metrics: []
+    deletion_policy: DELETE
     description: Terraform managed.
+    dynamic_forwarding: []
     enable_cdn: null
     failover_policy: []
+    ha_policy: []
+    ip_address_selection_policy: null
     load_balancing_scheme: INTERNAL_MANAGED
     locality_lb_policy: null
     name: int-tcp-proxy
     network: null
+    network_pass_through_lb_traffic_policy: []
     outlier_detection: []
+    params: []
     project: project-id
     protocol: TCP
     region: europe-west1
     security_policy: null
     session_affinity: NONE
+    strong_session_affinity_cookie: []
     subsetting: []
     timeouts: null
+    tls_settings: []
   module.int-tcp-proxy.google_compute_region_health_check.default[0]:
     check_interval_sec: 5
+    deletion_policy: DELETE
     description: Terraform managed.
     grpc_health_check: []
+    grpc_tls_health_check: []
     healthy_threshold: 2
     http2_health_check: []
     http_health_check: []
@@ -126,15 +126,21 @@ values:
     timeouts: null
     unhealthy_threshold: 2
   module.int-tcp-proxy.google_compute_region_target_tcp_proxy.default:
+    deletion_policy: DELETE
     description: Terraform managed.
     name: int-tcp-proxy
     project: project-id
     proxy_header: NONE
     region: europe-west1
     timeouts: null
+  module.int-tcp-proxy.terraform_data.neg_trigger:
+    input:
+      internet: {}
+      psc: {}
+      zonal: {}
+    triggers_replace: null
 
 counts:
-  google_compute_address: 1
   google_compute_forwarding_rule: 1
   google_compute_network_endpoint: 1
   google_compute_network_endpoint_group: 1
@@ -143,3 +149,6 @@ counts:
   google_compute_region_target_tcp_proxy: 1
   modules: 1
   resources: 7
+  terraform_data: 1
+
+outputs: {}

@@ -50,8 +50,9 @@
               "default": {},
               "additionalProperties": false,
               "patternProperties": {
-                "^[a-z0-9_-]+$": {
-                  "type": "string"
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
                 }
               }
             },
@@ -278,8 +279,9 @@
               "default": {},
               "additionalProperties": false,
               "patternProperties": {
-                "^[a-z0-9_-]+$": {
-                  "type": "string"
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
                 }
               }
             },

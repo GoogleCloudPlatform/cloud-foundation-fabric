@@ -19,6 +19,7 @@ Due to the complexity of the underlying resources, changes to the configuration 
     - [Instance Groups](#instance-groups)
     - [Managed Instance Groups](#managed-instance-groups)
     - [Storage Buckets](#storage-buckets)
+    - [Cloud CDN](#cloud-cdn)
     - [Network Endpoint Groups (NEGs)](#network-endpoint-groups-negs)
     - [Zonal NEG creation](#zonal-neg-creation)
     - [Hybrid NEG creation](#hybrid-neg-creation)
@@ -53,8 +54,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id },
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id },
       ]
     }
   }
@@ -76,8 +77,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id },
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -106,8 +107,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id },
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTPS"
     }
@@ -180,7 +181,7 @@ module "glb-test-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-b.group.id },
       ]
       protocol = "HTTP"
     }
@@ -211,8 +212,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id },
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id },
       ]
     }
   }
@@ -236,7 +237,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
       # no need to reference the hc explicitly when using the `default` key
       # health_checks = ["default"]
@@ -261,7 +262,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
       health_checks = ["projects/${var.project_id}/global/healthChecks/custom"]
     }
@@ -285,7 +286,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "default-b" }
+        { group = "default-b" }
       ]
     }
   }
@@ -358,7 +359,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.win-mig.group_manager.instance_group }
+        { group = module.win-mig.group_manager.instance_group }
       ]
     }
   }
@@ -386,6 +387,58 @@ module "glb-0" {
 # tftest modules=1 resources=4 inventory=storage.yaml e2e
 ```
 
+#### Cloud CDN
+
+Cloud CDN can be enabled on backend buckets and backend services via the `enable_cdn` flag, and tuned via the `cdn_policy` attribute. The `bypass_cache_on_request_headers` attribute allows bypassing the cache for requests carrying specific headers (e.g. `Authorization`):
+
+```hcl
+module "glb-0" {
+  source     = "./fabric/modules/net-lb-app-ext"
+  project_id = var.project_id
+  name       = "glb-test-0"
+  backend_buckets_config = {
+    static = {
+      bucket_name = var.bucket
+      enable_cdn  = true
+      cdn_policy = {
+        bypass_cache_on_request_headers = ["Authorization", "Pragma"]
+        cache_mode                      = "CACHE_ALL_STATIC"
+      }
+    }
+  }
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b"
+      }]
+      enable_cdn = true
+      cdn_policy = {
+        bypass_cache_on_request_headers = ["Authorization"]
+        cache_mode                      = "CACHE_ALL_STATIC"
+        signed_url_cache_max_age_sec    = 7200
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        default_service = "default"
+        path_rules = [{
+          paths   = ["/static", "/static/*"]
+          service = "static"
+        }]
+      }
+    }
+  }
+}
+# tftest modules=1 resources=6 inventory=cloud-cdn.yaml
+```
+
 #### Network Endpoint Groups (NEGs)
 
 Supported Network Endpoint Groups (NEGs) can also be used as backends. Similarly to groups, you can pass a self link for existing NEGs or have the module manage them for you. A simple example using an existing zonal NEG:
@@ -399,7 +452,7 @@ module "glb-0" {
     default = {
       backends = [
         {
-          backend        = "myneg-b"
+          group          = "myneg-b"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -433,7 +486,7 @@ module "glb-0" {
     default = {
       backends = [
         {
-          backend        = "neg-0"
+          group          = "neg-0"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -473,7 +526,7 @@ module "glb-0" {
     default = {
       backends = [
         {
-          backend        = "neg-0"
+          group          = "neg-0"
           balancing_mode = "RATE"
           max_rate       = { per_endpoint = 10 }
         }
@@ -510,7 +563,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
     }
@@ -547,7 +600,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
     }
@@ -578,7 +631,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
       port_name     = ""
@@ -610,7 +663,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
       port_name     = "http"
@@ -656,7 +709,7 @@ module "ralb-0" {
 
       backends = [
         {
-          backend = "neg-0"
+          group = "neg-0"
         }
       ]
       health_checks = []
@@ -683,12 +736,12 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [{
-        backend = module.compute-vm-group-b.group.id
+        group = module.compute-vm-group-b.group.id
       }]
     }
     other = {
       backends = [{
-        backend = module.compute-vm-group-c.group.id
+        group = module.compute-vm-group-c.group.id
       }]
     }
   }
@@ -746,8 +799,8 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
-        { backend = module.compute-vm-group-c.group.id },
+        { group = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-c.group.id },
       ]
       protocol = "HTTP"
     }
@@ -778,7 +831,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = module.compute-vm-group-b.group.id },
+        { group = module.compute-vm-group-b.group.id },
       ]
       tls_settings = {
         sni = "backend.example.com"
@@ -806,26 +859,26 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b" },
-        { backend = "ig-c" }
+        { group = "projects/my-project/zones/europe-west8-b/instanceGroups/ig-b" },
+        { group = "ig-c" }
       ]
     }
     neg-cloudrun = {
-      backends      = [{ backend = "neg-cloudrun" }]
+      backends      = [{ group = "neg-cloudrun" }]
       health_checks = []
     }
     neg-gce = {
-      backends       = [{ backend = "neg-gce" }]
+      backends       = [{ group = "neg-gce" }]
       balancing_mode = "RATE"
       max_rate       = { per_endpoint = 10 }
     }
     neg-hybrid = {
-      backends       = [{ backend = "neg-hybrid" }]
+      backends       = [{ group = "neg-hybrid" }]
       balancing_mode = "RATE"
       max_rate       = { per_endpoint = 10 }
     }
     neg-internet = {
-      backends      = [{ backend = "neg-internet" }]
+      backends      = [{ group = "neg-internet" }]
       health_checks = []
     }
   }
@@ -952,21 +1005,21 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "group-zone-b" },
-        { backend = "group-zone-c" },
+        { group = "group-zone-b" },
+        { group = "group-zone-c" },
       ]
     }
     neg-gce-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-zone-c"
+        group          = "neg-zone-c"
         max_rate       = { per_endpoint = 10 }
       }]
     }
     neg-hybrid-0 = {
       backends = [{
         balancing_mode = "RATE"
-        backend        = "neg-hello"
+        group          = "neg-hello"
         max_rate       = { per_endpoint = 10 }
       }]
       health_checks = ["neg"]
@@ -1105,7 +1158,7 @@ module "glb-0" {
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-0" }
+        { group = "neg-0" }
       ]
       health_checks = []
       port_name     = "http"
@@ -1170,7 +1223,7 @@ After applying this change, you can update the backend service to point to the n
   backend_service_configs = {
     default = {
       backends = [
-        { backend = "neg-1" }
+        { group = "neg-1" }
       ]
       health_checks = []
       port_name     = "http"

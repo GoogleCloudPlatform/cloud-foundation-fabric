@@ -76,8 +76,9 @@ module "kms" {
       local.ctx.iam_principals,
       local.projects_sas_iam_emails,
       local.automation_sas_iam_emails,
-      lookup(local.self_sas_iam_emails, each.value.project_key, {}),
-      local.projects_service_agents
+      local.projects_service_agents,
+      lookup(local.per_project_service_agents, each.value.project_key, {}),
+      lookup(local.self_sas_iam_emails, each.value.project_key, {})
     )
     locations   = local.ctx.locations
     project_ids = local.ctx_project_ids

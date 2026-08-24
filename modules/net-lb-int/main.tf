@@ -21,6 +21,7 @@ locals {
   )
   bs_conntrack = var.backend_service_config.connection_tracking
   bs_failover  = var.backend_service_config.failover_config
+  bs_nptlb     = var.backend_service_config.network_pass_through_lb_traffic_policy
   forwarding_rule_names = {
     for k, v in var.forwarding_rules_config :
     k => k == "" ? var.name : "${var.name}-${k}"
@@ -150,6 +151,18 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
+  dynamic "network_pass_through_lb_traffic_policy" {
+    for_each = local.bs_nptlb != null ? [""] : []
+    content {
+      dynamic "zonal_affinity" {
+        for_each = local.bs_nptlb.zonal_affinity != null ? [""] : []
+        content {
+          spillover       = local.bs_nptlb.zonal_affinity.spillover
+          spillover_ratio = local.bs_nptlb.zonal_affinity.spillover_ratio
+        }
+      }
+    }
+  }
 }
 
 resource "google_compute_service_attachment" "default" {

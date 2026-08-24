@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@ values:
     bucket_name: my-bucket
     compression_mode: null
     custom_response_headers: null
+    deletion_policy: DELETE
     description: null
     edge_security_policy: null
     enable_cdn: null
@@ -48,6 +49,7 @@ values:
     custom_metrics: []
     custom_request_headers: null
     custom_response_headers: null
+    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     edge_security_policy: null
@@ -88,6 +90,7 @@ values:
     custom_metrics: []
     custom_request_headers: null
     custom_response_headers: null
+    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     edge_security_policy: null
@@ -129,6 +132,7 @@ values:
     custom_metrics: []
     custom_request_headers: null
     custom_response_headers: null
+    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     edge_security_policy: null
@@ -169,6 +173,7 @@ values:
     custom_metrics: []
     custom_request_headers: null
     custom_response_headers: null
+    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     edge_security_policy: null
@@ -209,6 +214,7 @@ values:
     custom_metrics: []
     custom_request_headers: null
     custom_response_headers: null
+    deletion_policy: DELETE
     description: Terraform managed.
     dynamic_forwarding: []
     edge_security_policy: null
@@ -236,6 +242,7 @@ values:
     tls_settings: []
   module.glb-0.google_compute_global_forwarding_rule.default[""]:
     allow_psc_global_access: null
+    deletion_policy: DELETE
     description: Terraform managed.
     external_managed_backend_bucket_migration_state: null
     external_managed_backend_bucket_migration_testing_percentage: null
@@ -247,10 +254,11 @@ values:
     name: glb-test-0
     no_automate_dns_zone: null
     port_range: '80'
-    project: $project_ids:test
+    project: my-project
     source_ip_ranges: null
     timeouts: null
   module.glb-0.google_compute_global_network_endpoint.default["neg-internet-e-0"]:
+    deletion_policy: DELETE
     fqdn: hello.example.org
     global_network_endpoint_group: glb-test-0-neg-internet
     ip_address: null
@@ -259,6 +267,7 @@ values:
     timeouts: null
   module.glb-0.google_compute_global_network_endpoint_group.default["neg-internet"]:
     default_port: null
+    deletion_policy: DELETE
     description: Terraform managed.
     name: glb-test-0-neg-internet
     network_endpoint_type: INTERNET_FQDN_PORT
@@ -266,6 +275,7 @@ values:
     timeouts: null
   module.glb-0.google_compute_health_check.default["default"]:
     check_interval_sec: 5
+    deletion_policy: DELETE
     description: Terraform managed.
     grpc_health_check: []
     grpc_tls_health_check: []
@@ -289,6 +299,7 @@ values:
     timeouts: null
     unhealthy_threshold: 2
   module.glb-0.google_compute_instance_group.default["ig-c"]:
+    deletion_policy: DELETE
     description: Terraform managed.
     instances:
     - projects/my-project/zones/europe-west8-c/instances/vm-c
@@ -300,23 +311,26 @@ values:
     timeouts: null
     zone: europe-west8-c
   module.glb-0.google_compute_network_endpoint.default["neg-gce-e-0"]:
+    deletion_policy: DELETE
     instance: nginx-ew8-b
-    ip_address: $addresses:test
+    ip_address: 10.24.32.25
     network_endpoint_group: glb-test-0-neg-gce
     port: 80
     project: my-project
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_network_endpoint.default["neg-hybrid-e-0"]:
+    deletion_policy: DELETE
     instance: null
-    ip_address: $addresses:test-hybrid
+    ip_address: 192.168.0.3
     network_endpoint_group: glb-test-0-neg-hybrid
     port: 80
     project: my-project
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_network_endpoint_group.default["neg-gce"]:
     default_port: null
+    deletion_policy: DELETE
     description: Terraform managed.
     name: glb-test-0-neg-gce
     network: projects/my-project/global/networks/shared-vpc
@@ -324,9 +338,10 @@ values:
     project: my-project
     subnetwork: projects/my-project/regions/europe-west8/subnetworks/gce
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_network_endpoint_group.default["neg-hybrid"]:
     default_port: null
+    deletion_policy: DELETE
     description: Terraform managed.
     name: glb-test-0-neg-hybrid
     network: projects/my-project/global/networks/shared-vpc
@@ -334,7 +349,7 @@ values:
     project: my-project
     subnetwork: null
     timeouts: null
-    zone: $locations:ew8-b
+    zone: europe-west8-b
   module.glb-0.google_compute_region_network_endpoint_group.serverless["neg-cloudrun"]:
     app_engine: []
     cloud_function: []
@@ -342,16 +357,18 @@ values:
     - service: hello
       tag: null
       url_mask: null
+    deletion_policy: DELETE
     description: Terraform managed.
     name: glb-test-0-neg-cloudrun
     network_endpoint_type: SERVERLESS
     project: my-project
     psc_target_service: null
-    region: $locations:ew8
+    region: europe-west8
     serverless_deployment: []
     subnetwork: null
     timeouts: null
   module.glb-0.google_compute_target_http_proxy.default[0]:
+    deletion_policy: DELETE
     description: Terraform managed.
     http_keep_alive_timeout_sec: null
     name: glb-test-0
@@ -361,6 +378,7 @@ values:
     default_custom_error_response_policy: []
     default_route_action: []
     default_url_redirect: []
+    deletion_policy: DELETE
     description: Terraform managed.
     header_action: []
     host_rule:

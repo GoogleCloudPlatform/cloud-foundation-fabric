@@ -54,7 +54,14 @@
         },
         "labels": {
           "type": "object",
-          "description": "Labels to apply to the group."
+          "description": "Labels to apply to the group.",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[a-z][a-z0-9_-]{0,62}$": {
+              "type": "string",
+              "pattern": "^[a-z0-9_-]{0,63}$"
+            }
+          }
         },
         "auto_accept": {
           "type": "array",

@@ -135,7 +135,7 @@ module "ext-lb" {
   use_classic_version = false
   backend_service_configs = {
     default = {
-      backends      = [for k, v in module.apigee.instances : { backend = "neg-${k}" }]
+      backends      = [for k, v in module.apigee.instances : { group = "neg-${k}" }]
       protocol      = "HTTPS"
       health_checks = []
     }

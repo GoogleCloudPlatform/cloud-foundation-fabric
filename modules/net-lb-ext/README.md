@@ -15,8 +15,8 @@ This example shows how to reference existing Managed Infrastructure Groups (MIGs
 ```hcl
 module "nlb" {
   source     = "./fabric/modules/net-lb-ext"
-  project_id = var.project_id
-  region     = var.region
+  project_id = "$project_ids:my-project"
+  region     = "$locations:europe-west1"
   name       = "nlb-test"
   backends = [{
     group = module.compute-mig.group_manager.instance_group
@@ -24,6 +24,14 @@ module "nlb" {
   health_check_config = {
     http = {
       port = 80
+    }
+  }
+  context = {
+    project_ids = {
+      my-project = var.project_id
+    }
+    locations = {
+      europe-west1 = var.region
     }
   }
 }
@@ -205,16 +213,17 @@ For deploying changes to load balancer configuration please refer to [net-lb-app
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [name](variables.tf#L203) | Name used for all resources. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L208) | Project id where resources will be created. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L213) | GCP region. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L215) | Name used for all resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L220) | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L225) | GCP region. | <code>string</code> | ✓ |  |
 | [backend_service_config](variables.tf#L17) | Backend service level configuration. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [backends](variables.tf#L73) | Load balancer backends. | <code>list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [forwarding_rules_config](variables.tf#L84) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [group_configs](variables.tf#L100) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_check](variables.tf#L113) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
-| [health_check_config](variables.tf#L119) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
-| [labels](variables.tf#L197) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [context](variables.tf#L84) | Context-specific interpolations. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [forwarding_rules_config](variables.tf#L96) | The optional forwarding rules configuration. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [group_configs](variables.tf#L112) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code>map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L125) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L131) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code>object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L209) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

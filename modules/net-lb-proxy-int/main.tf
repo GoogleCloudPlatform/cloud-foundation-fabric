@@ -36,11 +36,27 @@ locals {
       })
     ]
   ])
+  forwarding_rule_names = {
+    for k, v in var.forwarding_rules_config :
+    k => k == "" ? var.name : "${var.name}-${k}"
+  }
   health_check = (
-    var.health_check != null
-    ? var.health_check
-    : google_compute_region_health_check.default[0].self_link
+    local.has_psc_backend
+    ? null
+    : (
+      var.health_check == null
+      ? (
+        var.health_check_config == null
+        ? null
+        : google_compute_region_health_check.default[0].self_link
+      )
+      : var.health_check
+    )
   )
+  has_psc_backend = anytrue([
+    for b in coalesce(var.backend_service_config.backends, []) :
+    try(var.neg_configs[b.group].psc != null, false)
+  ])
   neg_endpoints = {
     for v in local._neg_endpoints : (v.key) => v
   }
@@ -62,25 +78,37 @@ locals {
 }
 
 resource "google_compute_forwarding_rule" "default" {
+  for_each    = var.forwarding_rules_config
   provider    = google-beta
   project     = local.project_id
   region      = local.region
-  name        = var.name
-  description = var.description
-  ip_address = (
-    var.address == null
+  name        = coalesce(each.value.name, local.forwarding_rule_names[each.key])
+  description = coalesce(each.value.description, var.description)
+  ip_address  = try(local.ctx.addresses[each.value.address], each.value.address)
+  ip_protocol = "TCP"
+  ip_version = (
+    each.value.address != null
     ? null
-    : lookup(local.ctx.addresses, var.address, var.address)
+    : (
+      each.value.ipv6 == true
+      ? "IPV6"
+      : "IPV4" # do not set if address is provided
+    )
   )
-  ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = local.network
-  port_range            = var.port
+  port_range            = each.value.port
   subnetwork            = local.subnetwork
   labels                = var.labels
   target                = google_compute_region_target_tcp_proxy.default.id
-  # during the preview phase you cannot change this attribute on an existing rule
-  allow_global_access = var.global_access
+  # During the preview phase you cannot change this attribute on an existing rule
+  allow_global_access = each.value.global_access
+
+  lifecycle {
+    replace_triggered_by = [
+      google_compute_region_target_tcp_proxy.default
+    ]
+  }
 }
 
 resource "google_compute_region_target_tcp_proxy" "default" {
@@ -134,11 +162,10 @@ resource "google_compute_network_endpoint" "default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "psc" {
-  for_each = local.neg_regional_psc
-  project  = local.project_id
-  region   = each.value.psc.region
-  name     = "${var.name}-${each.key}"
-  //description           = coalesce(each.value.description, var.description)
+  for_each              = local.neg_regional_psc
+  project               = local.project_id
+  region                = each.value.psc.region
+  name                  = "${var.name}-${each.key}"
   network_endpoint_type = "PRIVATE_SERVICE_CONNECT"
   psc_target_service    = each.value.psc.target_service
   network = (
@@ -151,9 +178,9 @@ resource "google_compute_region_network_endpoint_group" "psc" {
     ? null
     : try(local.ctx.subnets[each.value.psc.subnetwork], each.value.psc.subnetwork)
   )
-  lifecycle {
-    # ignore until https://github.com/hashicorp/terraform-provider-google/issues/20576 is fixed
-    ignore_changes = [psc_data]
+
+  psc_data {
+    producer_port = each.value.psc.producer_port
   }
 }
 
@@ -210,7 +237,7 @@ resource "google_compute_service_attachment" "default" {
   region         = var.region
   name           = var.name
   description    = var.description
-  target_service = google_compute_forwarding_rule.default.id
+  target_service = google_compute_forwarding_rule.default[var.service_attachment.forwarding_rule].id
   nat_subnets = [
     for s in var.service_attachment.nat_subnets
     : lookup(local.ctx.subnets, s, s)
@@ -228,9 +255,11 @@ resource "google_compute_service_attachment" "default" {
   )
   enable_proxy_protocol = var.service_attachment.enable_proxy_protocol
   reconcile_connections = var.service_attachment.reconcile_connections
+
   dynamic "consumer_accept_lists" {
     for_each = var.service_attachment.consumer_accept_lists
     iterator = accept
+
     content {
       project_id_or_num = accept.key
       connection_limit  = accept.value
