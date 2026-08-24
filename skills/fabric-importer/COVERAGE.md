@@ -29,7 +29,8 @@ Fabric ref it was verified against; re-verify on bumps (see
 | GCS buckets | gcs | **V** | State buckets, ForceNew project ID prefix verified |
 | BigQuery datasets | bigquery-dataset | **V** | Datasets, import IDs, `description = null` alignment verified (tables/views/routines unverified) |
 | Pub/Sub topics | pubsub | **V** | Topics, import IDs, sink reference graduation verified (subscriptions/schemas unverified) |
-| DNS zones / policies | dns | **V** | Private zones, VPC reference link verified |
+| DNS zones | dns | **V** | Private zones, VPC reference link verified |
+| DNS policies / response policies | dns | **N** | Named in `examples/import-manifest.fast-networking.yaml`; no mapping rules yet |
 | NCC spokes (linked-VPC) | raw resource — **capability gap**: no Fabric module (`ncc-spoke-ra` is router-appliance only) | **V** (raw) | Upstream-issue candidate, lift with `moved {}` when a module appears |
 | Cloud Routers / NAT | net-cloudnat | **V** | Integrated router + NAT verified |
 | Firewall policies | net-firewall-policy | **C** | Mapping rules documented in cookbook (Hierarchical, Global, and Regional Network policies) |
@@ -37,7 +38,7 @@ Fabric ref it was verified against; re-verify on bumps (see
 | KMS keyrings / keys + key IAM | kms | **V** | Seeded keyring, key, leaf-IAM on CryptoKey verified; permanent residue documented |
 | Certificate Authority Service | certificate-authority-service | **V** | CA pools: CAI type, import ID, pool address (`google_privateca_ca_pool.default[0]`), `ca_configs = {}` default-CA trap, and `publishing_options` support verified on Fabric ref containing PR #4106 (commit `a153861aae`). Note: on releases lacking #4106, CAS reverts to capability gap |
 | VPC-SC policy / perimeters | vpc-sc | **V** | Live AccessPolicy adopted, AccessLevel, dry-run ServicePerimeter; bare-numeric policy import ID verified; `unknown`-level classification handled in `inventory.py`. Enforced perimeters (`status` block) unverified |
-| Tags (keys/values/bindings) | organization / folder / project tags | **V** | TagKey, TagValue, TagBinding, import IDs, address shapes, and `templatestring` escaping matrix (`$$${`) verified across org, 10 folders, and project (tag IAM unverified) |
+| Tags (keys/values/bindings) | organization / folder / project tags | **V** | TagKey, TagValue, TagBinding, import IDs, address shapes, verified at organization, folder and project level. The `templatestring` escaping matrix (`$$${`) is DERIVED FROM MODULE SOURCE, not exercised — no seeded value contained `${` (tag IAM unverified) |
 | Billing account IAM | billing-account | **N** | — |
 | Workload identity pools / providers | project identity-providers | **V** | WorkloadIdentityPool, WorkloadIdentityPoolProvider, import IDs, address shapes, 30-day soft-delete residue, and org policy constraints verified |
 | Anything else | — | fallback | documented raw-resource fallback + capability-gap report |

@@ -37,7 +37,6 @@ addresses.
 """
 
 import argparse
-import glob
 import json
 import os
 import re
@@ -74,12 +73,26 @@ def _clean_hcl_line(line):
   return ''.join(out).strip()
 
 
-def parse_import_blocks(tf_dir):
+def _split_hcl_fields(text):
+  """Splits one cleaned HCL line into `k = v` fragments.
+
+  Only needed for single-line import blocks; a normal one-per-line body
+  yields the line unchanged.
+  """
+  if text.count('=') < 2:
+    return [text]
+  parts = re.split(r'\s+(?=(?:to|id)\s*=)', text)
+  return [p for p in parts if p.strip()]
+
+
+def parse_import_blocks(tf_dir, duplicates=None):
   """Extracts (to-address -> import id) from workspace `import {}` blocks.
 
-  Recursively scans tf_dir for all *.tf files.
+  Recursively scans tf_dir for all *.tf files. Repeated `to` addresses
+  are appended to `duplicates` when a list is supplied.
   """
   blocks = {}
+  duplicates = duplicates if duplicates is not None else []
   for root, _, files in os.walk(tf_dir):
     for filename in sorted(files):
       if filename.endswith('.tf'):
@@ -92,22 +105,37 @@ def parse_import_blocks(tf_dir):
               cleaned = _clean_hcl_line(line)
               if not cleaned:
                 continue
-              if cleaned.startswith('import {') or (cleaned.startswith('import')
-                                                    and '{' in cleaned):
+              if not in_import:
+                if not (cleaned.startswith('import {') or
+                        (cleaned.startswith('import') and '{' in cleaned)):
+                  continue
                 in_import = True
                 cur_to, cur_id = None, None
-                continue
-              if in_import:
-                m = _IMPORT_TO_RE.match(cleaned)
+                # Do NOT skip the rest of the line: a single-line
+                # `import { to = X  id = "Y" }` used to be swallowed
+                # whole, so its address was never recorded and the gate
+                # reported the mapping as having no import block.
+                cleaned = cleaned.split('{', 1)[1].strip()
+                if not cleaned:
+                  continue
+              closing = cleaned.endswith('}')
+              if closing:
+                # Strip the brace before capturing, or the id comes out
+                # as `folders/111" }`.
+                cleaned = cleaned[:-1].strip()
+              for part in _split_hcl_fields(cleaned):
+                m = _IMPORT_TO_RE.match(part)
                 if m:
-                  cur_to = m.group(1).strip()
-                m = _IMPORT_ID_RE.match(cleaned)
+                  cur_to = m.group(1).strip().rstrip(',').strip()
+                m = _IMPORT_ID_RE.match(part)
                 if m:
-                  cur_id = m.group(1).strip().strip('"')
-                if cleaned == '}' or cleaned.endswith('}'):
-                  in_import = False
-                  if cur_to:
-                    blocks[cur_to] = cur_id
+                  cur_id = m.group(1).strip().rstrip(',').strip().strip('"')
+              if closing:
+                in_import = False
+                if cur_to:
+                  if cur_to in blocks:
+                    duplicates.append(cur_to)
+                  blocks[cur_to] = cur_id
         except (IOError, OSError) as e:
           print(f'WARNING: could not read {path}: {e}', file=sys.stderr)
   return blocks
@@ -116,6 +144,22 @@ def parse_import_blocks(tf_dir):
 def parse_import_addresses(tf_dir):
   """Extracts every `import { to = ... }` address from workspace HCL."""
   return set(parse_import_blocks(tf_dir))
+
+
+def duplicate_import_ids(blocks):
+  """Import ids claimed by more than one address, as {id: [addresses]}.
+
+  Two addresses importing the same id is the realistic copy-paste error
+  when scaffolding dozens of near-identical folders or projects: one live
+  resource ends up owned by two Terraform addresses, and the resource the
+  second block was meant to name stays unmanaged while this gate still
+  reports RECONCILED.
+  """
+  by_id = {}
+  for addr, import_id in blocks.items():
+    if import_id:
+      by_id.setdefault(import_id, []).append(addr)
+  return {k: sorted(v) for k, v in by_id.items() if len(v) > 1}
 
 
 def unsigned_waivers(waivers):
@@ -130,6 +174,12 @@ def unsigned_waivers(waivers):
 
 def reconcile(inventory, coverage_map, waivers, import_addresses,
               require_signed=False):
+  for i, e in enumerate(inventory):
+    if not isinstance(e, dict) or not str(e.get('key', '')).strip():
+      raise SystemExit(
+          f'ERROR: inventory entry #{i + 1} has no usable `key`; the '
+          'inventory is malformed and no completeness claim can be made '
+          'from it')
   inv_keys = {e['key'] for e in inventory}
   mapped_keys = set(coverage_map)
 
@@ -215,6 +265,15 @@ def main():
                  help='write MISSING keys as YAML worklist')
   args = p.parse_args()
 
+  # A typo'd or not-yet-created workspace made os.walk yield nothing, so
+  # every mapped address was reported as "no import block" and the gate
+  # exited 2 — telling the operator the model failed when in fact the
+  # gate was pointed at a directory that does not exist.
+  if not os.path.isdir(args.workspace):
+    print(f'ERROR: workspace directory not found: {args.workspace}',
+          file=sys.stderr)
+    return 1
+
   try:
     with open(args.inventory, 'r', encoding='utf-8') as f:
       raw_inventory = json.load(f)
@@ -284,9 +343,20 @@ def main():
             file=sys.stderr)
       return 1
 
-  import_addresses = parse_import_addresses(args.workspace)
+  import_dupes = []
+  import_blocks = parse_import_blocks(args.workspace, import_dupes)
+  import_addresses = set(import_blocks)
   missing, problems = reconcile(inventory, coverage_map, waivers,
                                 import_addresses, args.require_signed_waivers)
+  for addr in sorted(set(import_dupes)):
+    problems.append(f'import address claimed by more than one import '
+                    f'block: {addr}')
+  for import_id, addrs in sorted(duplicate_import_ids(import_blocks).items()):
+    problems.append(
+        f'import id {import_id!r} is claimed by {len(addrs)} addresses '
+        f'({", ".join(addrs)}): one live resource cannot be owned by two '
+        'addresses, and whatever the duplicate was meant to name is '
+        'unmanaged')
 
   n_inv = len({e['key'] for e in inventory})
   print(integrity.stamp())
@@ -306,7 +376,8 @@ def main():
         tf_files.append(os.path.join(root, filename))
   print(
       integrity.tree_stamp('workspace', tf_files,
-                           integrity.display_path(args.workspace)))
+                           integrity.display_path(args.workspace),
+                           root=args.workspace))
   print(f'coverage: {n_inv} in scope, {len(coverage_map)} mapped, '
         f'{len(waivers)} waived, {len(missing)} missing, '
         f'{len(problems)} problem(s)')
@@ -346,9 +417,23 @@ def main():
               f, sort_keys=False)
         print(f'\nworklist written to {args.worklist_out}')
       except (IOError, OSError) as e:
+        # Gaps were genuinely found; exit 1 would have claimed malformed
+        # input instead, per the exit-code contract in the docstring. But
+        # the failure must reach the reconciliation output too: a
+        # PREVIOUS iteration's worklist is still sitting at that path,
+        # and an agent looping on it would re-read stale content with no
+        # signal — the same stale-artifact trap as a leftover plan file.
+        # Printed here, not appended to `problems`: that list has already
+        # been rendered above. The failure must still be visible in the
+        # gate's own output, because a PREVIOUS iteration's worklist is
+        # still sitting at that path and an agent looping on it would
+        # re-read stale content with no signal — the same stale-artifact
+        # trap as a leftover plan file.
         print(f'ERROR: could not write worklist to {args.worklist_out}: {e}',
               file=sys.stderr)
-        return 1
+        print(f'\nPROBLEM: worklist NOT written to '
+              f'{integrity.display_path(args.worklist_out)} ({e}). Any file '
+              'at that path is from an earlier run — do not trust it.')
 
   if missing or problems:
     print('\nNOT RECONCILED: extend the workspace for missing keys '

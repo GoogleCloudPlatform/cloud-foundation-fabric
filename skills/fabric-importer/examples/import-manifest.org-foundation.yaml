@@ -43,9 +43,13 @@ scope:
   # Optional: carve out subtrees. Exclusion wins over inclusion.
   #
   # NOTE (live-verified): include/exclude match against the CAI
-  # `ancestors` array, which stores NUMERIC ids — `projects/123456789`
-  # (project number), never `projects/my-project-id`. Resolve ids with
-  # `gcloud projects describe <id> --format='value(projectNumber)'`.
+  # `ancestors` array, which stores NUMERIC ids. Both spellings work:
+  # `projects/123456789` (the project NUMBER) matches directly, and a
+  # project ID is resolved to its number by inventory.py via
+  # `gcloud projects describe`. Prefer the number where you know it —
+  # resolution needs the describe permission, and a project that cannot
+  # be resolved is reported as an enumeration failure rather than
+  # silently matching nothing.
   # exclude:
   #   - projects/123456789012
   #
@@ -55,7 +59,8 @@ scope:
   #
   # (a) Multi-scope manifest (Org/Folder governance + Selected Projects):
   #     Use `scopes:` to declare separate roots and level boundaries.
-  #     Alphanumeric project IDs (e.g. 'my-app-prod') are auto-resolved!
+  #     Alphanumeric project IDs (e.g. 'my-app-prod') are resolved to
+  #     project numbers automatically; see the NOTE above.
   #
   #   scopes:
   #     - name: org-foundation
@@ -66,7 +71,7 @@ scope:
   #       root: organizations/000000000000
   #       levels: [project]
   #       include:
-  #         - my-app-prod              # project ID or number
+  #         - my-app-prod              # project ID, or projects/<number>
   #         - my-app-dev
   #
   # (b) Projects-only manifest (no organization/folder-level types):
@@ -86,8 +91,8 @@ types:
   # to resources, not as an asset type, hence the reserved name `iam`.
   # `levels` controls WHERE bindings are replicated:
   #   organization -> org IAM bindings + audit configs
-  #                   (v1: 74 bindings + logging_data_access)
-  #   folder       -> folder IAM bindings (v1: 88 bindings)
+  #                   (including logging_data_access)
+  #   folder       -> folder IAM bindings
   # Project-level IAM stays unmanaged in this example (add `project` to
   # take it over). Only container-attached IAM (org/folder/project) is
   # covered by this pseudo-type; IAM on leaf assets (tag values, buckets,
@@ -99,7 +104,7 @@ types:
   # -------------------------------------------------------------------
   # Org policies (pseudo-type; CAI content type org-policy). One
   # inventory entry per (resource, constraint) pair, so coverage is
-  # per-constraint. v1 covered org-level only (35 policies); folder-level
+  # per-constraint. This example covers org-level only; folder-level
   # policies were discovered-but-unmodelled — declaring only
   # [organization] here makes that same restriction explicit and honest:
   # folder policies are then out of scope BY DECLARATION rather than
@@ -110,7 +115,7 @@ types:
 
   # -------------------------------------------------------------------
   # Custom IAM roles. Fabric target: modules/organization factory,
-  # data/custom-roles/<role_id>.yaml (v1: 20 roles). Org-level only;
+  # data/custom-roles/<role_id>.yaml. Org-level only;
   # project-level custom roles would need `project` here.
   # -------------------------------------------------------------------
   - type: iam.googleapis.com/Role
@@ -118,7 +123,7 @@ types:
 
   # -------------------------------------------------------------------
   # Log sinks. Fabric target: modules/organization logging_sinks locals
-  # (v1: 4 sinks, iam=false, _Default/_Required quarantined). Folder and
+  # (with iam=false; _Default/_Required are quarantined). Folder and
   # project sinks stay unmanaged here.
   # -------------------------------------------------------------------
   - type: logging.googleapis.com/LogSink

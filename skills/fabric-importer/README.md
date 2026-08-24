@@ -22,10 +22,10 @@ Gate on steps that are hard to reverse, costly, or where human judgment is requi
 
 | Gate | When | What the human decides |
 | :--- | :--- | :--- |
-| **Scope Approval** | End of Step 0 (Manifest Drafting) | Reviews and commits `import-manifest.yaml`: which resource types, hierarchy levels (org/folder/project), and included/excluded subtrees are in scope. |
-| **Waiver Signing** | Step 3 (Completeness Gate) | Reviews deliberate exclusions in `waivers.yaml` and signs them with attribution (`signed_by`) for unmanaged or auto-generated resources (e.g. default log sinks, default compute service accounts). |
-| **Benign Drift Review** | Step 4 (Plan Convergence Gate) | Evaluates proposed cosmetic provider quirks (e.g. computed labels, default timeouts) and commits reviewed entries to `scripts/benign-drift.yaml`. |
-| **Final Review & Apply** | Step 5 (Handover) | Inspects the final zero-drift plan, run report, and input provenance digests before running `terraform apply` on their own schedule. |
+| **Scope Approval** | Manifest drafting, before any enumeration | Reviews and commits `import-manifest.yaml`: which resource types, hierarchy levels (org/folder/project), and included/excluded subtrees are in scope. |
+| **Waiver Signing** | Completeness Gate (`coverage.py`) | Reviews deliberate exclusions in `waivers.yaml` and signs them with attribution (`signed_by`) for unmanaged or auto-generated resources (e.g. default log sinks, default compute service accounts). |
+| **Benign Drift Review** | Plan Convergence Gate (`verify_plan.py`) | Evaluates proposed cosmetic provider quirks (e.g. computed labels, default timeouts) and commits reviewed entries to `scripts/benign-drift.yaml`. |
+| **Final Review & Apply** | Handover, before `terraform apply` | Inspects the final zero-drift plan, run report, and input provenance digests before running `terraform apply` on their own schedule. |
 
 ---
 
@@ -214,10 +214,58 @@ For each item in `worklist.yaml`, the agent writes:
 ### 5. Automated Verification (Definition of Done)
 Work is complete only when two independent gates pass with exit code `0`:
 - **Completeness Gate (`coverage.py`)**: Reconciles the inventory against `coverage-map.yaml`, `waivers.yaml`, and emitted `import {}` blocks. Every asset must be mapped or waived.
-- **Plan Convergence Gate (`verify_plan.py`)**: Runs `terraform plan` and classifies the planned actions. The plan may only contain clean imports, no-ops, and human-reviewed benign drift entries from `scripts/benign-drift.yaml`. Any residual attribute modification or destruction fails the gate.
+- **Plan Convergence Gate (`verify_plan.py`)**: Consumes `terraform show -json <planfile>` output (file argument or stdin) and classifies the planned actions. It never invokes Terraform itself. The plan may only contain clean imports, no-ops, and human-reviewed benign drift entries from `scripts/benign-drift.yaml`. Any residual attribute modification or destruction fails the gate.
+
+Run both gates like this:
+
+```bash
+terraform -chdir=tf fmt -recursive
+python3 scripts/coverage.py --inventory inventory.json --workspace tf \
+  --waivers waivers.yaml --require-signed-waivers
+terraform -chdir=tf init -input=false
+rm -f tf/verify.tfplan   # a stale plan must never answer for a failed one
+terraform -chdir=tf plan -input=false -out=verify.tfplan
+terraform -chdir=tf show -json verify.tfplan | python3 scripts/verify_plan.py
+```
+
+Do not add `-detailed-exitcode` to the plan: it returns 2 for any
+non-empty plan, and a converged import plan is always non-empty.
+`verify_plan.py` is the verdict.
 
 ### 6. Review and Apply
 The resulting workspace (`tf/`) is clean, formatted, and ready for you to review and run `terraform apply` at your own pace. The skill **never** runs `terraform apply` or mutates live cloud resources.
+
+---
+
+## Script reference
+
+Run every script from the skill directory. All output paths are relative
+to the current working directory.
+
+| Script | Purpose | Flags |
+|---|---|---|
+| `inventory.py survey` | Enumerate everything in scope, to draft a manifest from | `--scope` (required), `--out` |
+| `manifest_init.py` | Draft a manifest from a survey (Mode B) | `--survey` (required), `--scope` (required), `--out` |
+| `manifest_from_state.py` | Infer a manifest from existing `.tfstate` (Mode A) | `--state` (1+, required), `--out` (`-` for stdout), `--force` to overwrite an existing manifest |
+| `inventory.py collect` | Build the denominator from CAI | `--manifest` (required), `--out` |
+| `coverage.py` | Gate 1 — completeness | `--inventory` (required), `--workspace` (required), `--coverage-map`, `--waivers`, `--require-signed-waivers`, `--allow-empty-inventory`, `--worklist-out` |
+| `verify_plan.py` | Gate 2 — plan convergence | positional plan JSON (default stdin), `--rules`, `--allow-empty-plan` |
+| `integrity.py` | Print the frozen-tools provenance digest | `--verbose` for per-file digests |
+
+`inventory.py` requires the `survey` or `collect` subcommand; it has no
+top-level flags.
+
+Exit codes — `coverage.py`: `0` reconciled, `1` malformed input, `2` gaps
+or problems. `verify_plan.py`: `0` converged, `1` malformed input, `2`
+residual changes, `3` converged but ADVISORY (a substituted `--rules`
+file). A substituted ruleset can never exit `0`; a residual plan still
+exits `2`. Note that argparse usage errors also exit `2`, so read the
+message, not only the code.
+
+There is no checked-in expected digest. To check a recorded gate run,
+compute `python3 scripts/integrity.py` from a pristine checkout of the
+same commit and compare it with the `frozen tools:` line in the captured
+output.
 
 ---
 
@@ -226,7 +274,7 @@ The resulting workspace (`tf/`) is clean, formatted, and ready for you to review
 ### System Requirements
 - **Terraform**: `v1.5.0+` (required for native `import {}` blocks).
 - **Google Cloud SDK (`gcloud`)**: Authenticated with a configured quota project.
-- **Python**: `3.10+` with `PyYAML` (`pip install pyyaml`).
+- **Python**: `3.9+` (the scripts use `str.removeprefix`) with `PyYAML`.
 
 ### Minimal Read-Only IAM Permissions
 Run the import using a dedicated read-only identity. The following roles on the organization scope provide full read visibility:

@@ -21,6 +21,30 @@
 #   - reason:          human-reviewed justification
 #   - verified_against: provider (and optionally terraform) version the
 #     justification was checked on. Re-verify on provider major bumps.
+#   - a bound on the DIFF (machine-enforced; an unbounded rule is
+#     ignored with a warning when it would otherwise have applied):
+#       when_after: {attr: value}          exact destination value
+#       when_after_matches: {attr: regex}  destination matches, one line
+#       when_after_computed: [attr, ...]   destination is FULLY unknown at
+#         or true                          plan time (provider-computed)
+#       when_unchanged: [attr, ...]        these attributes must not
+#                                          appear in the diff at all
+#     Every attribute in `attributes` needs a direct destination guard,
+#     OR the rule declares `when_unchanged` naming the live-affecting
+#     siblings that make the diff inert (the `terraform_labels` case:
+#     provider bookkeeping is harmless exactly while `labels` and
+#     `effective_labels` are untouched). `when_unchanged` must be
+#     disjoint from `attributes`.
+#     `when_before` alone is NOT sufficient. A rule that bounds only the
+#     live value accepts an arbitrary destination, so the gate would
+#     report CONVERGED for a plan that really writes to the resource on
+#     apply — the exact silent-pass this ruleset exists to prevent.
+#   Only the diff bound is machine-enforced; `reason` and
+#   `verified_against` are conventions a human reviewer upholds.
+#
+# Keep `attributes` as narrow as possible: changed paths are reported as
+# TOP-LEVEL keys, so listing a block attribute waives every future change
+# anywhere under it.
 #
 # The model operating the skill MUST NOT edit this file. verify_plan.py
 # prints a proposal template for unmatched updates; a human reviews the
@@ -29,6 +53,10 @@
 rules:
   - resource: google_folder
     attributes: [timeouts]
+    when_before:
+      timeouts: {}
+    when_after:
+      timeouts: null
     reason: >-
       Google provider v7 emits `timeouts {} -> null` in the import preview
       for imported folders; the attribute is not a live setting and
@@ -43,6 +71,12 @@ rules:
     # covered; a real description drift on a sink must stay residual.
     when_before:
       description: ""
+    # Guard: the destination must be the module default, which
+    # modules/organization/logging.tf builds as
+    # `coalesce(each.value.description, "${each.key} (Terraform-managed).")`.
+    # Any other new description is real drift and stays residual.
+    when_after_matches:
+      description: '[^\n]{1,96} \(Terraform-managed\)\.'
     reason: >-
       Live GCP log sinks with empty description ("") cannot round-trip through
       Fabric's coalesce(v.description, default) which treats empty string as null
@@ -55,6 +89,8 @@ rules:
     attributes: [send_secondary_ip_range_if_empty]
     when_before:
       send_secondary_ip_range_if_empty: null
+    when_after:
+      send_secondary_ip_range_if_empty: true
     reason: >-
       Fabric modules/net-vpc hardcodes send_secondary_ip_range_if_empty = true
       on google_compute_subnetwork to ensure secondary range removals propagate,
@@ -67,6 +103,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited labels exist on the project while
@@ -79,6 +120,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -91,6 +137,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -103,6 +154,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -115,6 +171,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -127,6 +188,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -139,6 +205,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -151,6 +222,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -163,6 +239,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while
@@ -175,6 +256,11 @@ rules:
     attributes: [terraform_labels]
     when_before:
       terraform_labels: {}
+    # Guard: terraform_labels is provider bookkeeping, harmless exactly
+    # while the attributes that really carry labels to the API are
+    # untouched. If `labels` or `effective_labels` move too, this is a
+    # real label write and stays residual.
+    when_unchanged: [labels, effective_labels]
     reason: >-
       Google provider v7 computes `terraform_labels: {} -> {...}` during import
       preview when default/inherited provider labels exist while

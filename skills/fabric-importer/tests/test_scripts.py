@@ -12,8 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Unit tests for the frozen v2 tools (coverage, verify_plan, inventory,
-manifest_init).
+"""Unit tests for the frozen tools (coverage, verify_plan, inventory,
+integrity, manifest_init, manifest_from_state).
 
 Run with: python3 -m pytest skills/fabric-importer/tests -q
       or: python3 skills/fabric-importer/tests/test_scripts.py
@@ -43,6 +43,12 @@ _BENIGN_RULES = [
     {
         'resource': 'google_folder',
         'attributes': ['timeouts'],
+        'when_before': {
+            'timeouts': {}
+        },
+        'when_after': {
+            'timeouts': None
+        },
         'reason': 'import preview artifact',
     },
     # Hardening round 19: the wildcard `all-changes-computed` rule kind
@@ -184,12 +190,21 @@ class TestVerifyPlanClassify(unittest.TestCase):
     # No scoped rule -> residual (was benign via the wildcard rule).
     v, _ = verify_plan.classify(rc, _BENIGN_RULES)
     self.assertEqual(v, 'residual')
-    scoped = _BENIGN_RULES + [{
+    # A partially-computed block is NOT a computed destination: only a
+    # fully-unknown leaf counts, and the known remainder must agree.
+    partial = _BENIGN_RULES + [{
         'resource': 'google_anything',
         'attributes': ['settings'],
+        'when_after_computed': ['settings'],
         'reason': 'computed refresh'
     }]
-    v, _ = verify_plan.classify(rc, scoped)
+    v, _ = verify_plan.classify(rc, partial)
+    self.assertEqual(v, 'residual')
+    fully_computed = _rc('google_anything', ['update'],
+                         before={'settings': [{
+                             'tier': 'a'
+                         }]}, after={}, unknown={'settings': True})
+    v, _ = verify_plan.classify(fully_computed, partial)
     self.assertEqual(v, 'benign')
 
   def test_strip_unknown_masks_only_computed_subtrees(self):
@@ -244,6 +259,209 @@ class TestVerifyPlanClassify(unittest.TestCase):
     rules = verify_plan.load_rules(verify_plan.DEFAULT_RULES)
     self.assertTrue(any(r.get('resource') == 'google_folder' for r in rules))
 
+  def test_every_shipped_rule_bounds_its_destination(self):
+    """A rule guarding only `when_before` accepts an ARBITRARY new value:
+    the sink rule matched a live empty description and then allowed any
+    replacement, so the gate reported CONVERGED for a plan that really
+    writes to the live sink on apply. Every shipped rule must bound the
+    destination too."""
+    rules = verify_plan.load_rules(verify_plan.DEFAULT_RULES)
+    self.assertTrue(rules)
+    unguarded = [(r.get('resource'), verify_plan.rule_guard_problem(r))
+                 for r in rules
+                 if verify_plan.rule_guard_problem(r)]
+    self.assertEqual(unguarded, [])
+
+  def test_unguarded_rule_is_refused_not_applied(self):
+    rc = _rc('google_folder', ['update'], before={'timeouts': {}},
+             after={'timeouts': None})
+    unguarded = [{
+        'resource': 'google_folder',
+        'attributes': ['timeouts'],
+        'reason': 'no destination guard',
+    }]
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+      v, _ = verify_plan.classify(rc, unguarded)
+    self.assertEqual(v, 'residual')
+    self.assertIn('no destination guard', err.getvalue())
+
+  def test_when_after_blocks_a_real_write_to_live(self):
+    """The hole, stated as a test: same live value, different
+    destination. `when_before` alone said benign; the destination guard
+    must make it residual."""
+    rules = [{
+        'resource': 'google_logging_organization_sink',
+        'attributes': ['description'],
+        'when_before': {
+            'description': ''
+        },
+        'when_after_matches': {
+            'description': r'.+ \(Terraform-managed\)\.'
+        },
+        'reason': 'module default applied to an empty live description',
+    }]
+    benign = _rc('google_logging_organization_sink', ['update'],
+                 before={'description': ''},
+                 after={'description': 'audit (Terraform-managed).'})
+    self.assertEqual(verify_plan.classify(benign, rules)[0], 'benign')
+    writes_real_text = _rc('google_logging_organization_sink', ['update'],
+                           before={'description': ''},
+                           after={'description': 'PROD SINK - do not touch'})
+    self.assertEqual(verify_plan.classify(writes_real_text, rules)[0],
+                     'residual')
+
+  def test_secondary_ip_range_flag_alone_is_benign_with_ranges_residual(self):
+    """send_secondary_ip_range_if_empty makes the provider transmit an
+    empty secondary-range list, so it is the one rule whose misfire is
+    destructive. The flag flip alone is a preview artifact; the flag
+    flip PLUS a secondary_ip_range change is a deletion and must stay
+    residual."""
+    rules = verify_plan.load_rules(verify_plan.DEFAULT_RULES)
+    flag_only = _rc('google_compute_subnetwork', ['update'],
+                    before={'send_secondary_ip_range_if_empty': None},
+                    after={'send_secondary_ip_range_if_empty': True})
+    self.assertEqual(verify_plan.classify(flag_only, rules)[0], 'benign')
+    with_range_removal = _rc(
+        'google_compute_subnetwork', ['update'],
+        before={
+            'send_secondary_ip_range_if_empty': None,
+            'secondary_ip_range': [{
+                'range_name': 'pods',
+                'ip_cidr_range': '10.0.0.0/16'
+            }]
+        }, after={
+            'send_secondary_ip_range_if_empty': True,
+            'secondary_ip_range': []
+        })
+    v, detail = verify_plan.classify(with_range_removal, rules)
+    self.assertEqual(v, 'residual')
+    self.assertIn('secondary_ip_range', detail['paths'])
+
+  def test_terraform_labels_rule_is_bounded_by_its_live_siblings(self):
+    """terraform_labels is provider bookkeeping; the attributes that
+    really carry labels to the API are `labels` and `effective_labels`.
+    The rule must fire for bookkeeping alone and must NOT fire when a
+    real label write rides along.
+
+    Guarding this rule on `when_after_computed` instead would have
+    contradicted its own recorded observation (`{} -> {...}`, a concrete
+    map) and killed all ten label rules, turning every labelled import
+    into a false residual."""
+    rules = verify_plan.load_rules(verify_plan.DEFAULT_RULES)
+    bookkeeping = _rc('google_project', ['update'],
+                      before={'terraform_labels': {}},
+                      after={'terraform_labels': {
+                          'goog-managed': 'true'
+                      }})
+    self.assertEqual(verify_plan.classify(bookkeeping, rules)[0], 'benign')
+    real_write = _rc('google_project', ['update'],
+                     before={
+                         'terraform_labels': {},
+                         'labels': {}
+                     }, after={
+                         'terraform_labels': {
+                             'owner': 'someone-else'
+                         },
+                         'labels': {
+                             'owner': 'someone-else'
+                         }
+                     })
+    self.assertEqual(verify_plan.classify(real_write, rules)[0], 'residual')
+
+  def test_partially_computed_map_cannot_launder_a_concrete_write(self):
+    """after_unknown for a map is a PER-KEY structure, so a non-empty
+    dict is truthy while nothing inside it is computed. A guard testing
+    truthiness accepted an arbitrary concrete write."""
+    rules = [{
+        'resource': 'google_project',
+        'attributes': ['terraform_labels'],
+        'when_before': {
+            'terraform_labels': {}
+        },
+        'when_after_computed': ['terraform_labels'],
+        'reason': 'computed bookkeeping',
+    }]
+    laundered = _rc('google_project', ['update'],
+                    before={'terraform_labels': {}},
+                    after={'terraform_labels': {
+                        'owner': 'attacker'
+                    }},
+                    unknown={'terraform_labels': {
+                        'goog-provisioned': True
+                    }})
+    self.assertEqual(verify_plan.classify(laundered, rules)[0], 'residual')
+
+  def test_when_after_null_does_not_accept_an_unknown_destination(self):
+    """`after` holds null for a computed value exactly as it does for an
+    absent key, so an exact null guard would launder \'the provider will
+    decide later\' into \'no change\'."""
+    rules = [{
+        'resource': 'google_folder',
+        'attributes': ['timeouts'],
+        'when_before': {
+            'timeouts': {}
+        },
+        'when_after': {
+            'timeouts': None
+        },
+        'reason': 'import preview artifact',
+    }]
+    known_null = _rc('google_folder', ['update'], before={'timeouts': {}},
+                     after={'timeouts': None})
+    self.assertEqual(verify_plan.classify(known_null, rules)[0], 'benign')
+    unknown_dest = _rc('google_folder', ['update'], before={'timeouts': {}},
+                       after={}, unknown={'timeouts': True})
+    self.assertEqual(verify_plan.classify(unknown_dest, rules)[0], 'residual')
+
+  def test_regex_guard_is_single_line(self):
+    """re.DOTALL would let a suffix pattern be satisfied by a multi-line
+    value carrying arbitrary text above the expected tail."""
+    rules = verify_plan.load_rules(verify_plan.DEFAULT_RULES)
+    smuggled = _rc(
+        'google_logging_organization_sink', ['update'],
+        before={'description': ''},
+        after={'description': 'PROD - do not touch\nx (Terraform-managed).'})
+    self.assertEqual(verify_plan.classify(smuggled, rules)[0], 'residual')
+
+  def test_rule_may_not_waive_an_attribute_it_does_not_guard(self):
+    """Guards were rule-level while credit was attribute-level: one
+    guarded attribute waived every other attribute the rule named."""
+    rule = {
+        'resource': 'google_project',
+        'attributes': ['terraform_labels', 'description'],
+        'when_after_computed': ['terraform_labels'],
+        'reason': 'partial guard',
+    }
+    self.assertIn('no destination guard',
+                  verify_plan.rule_guard_problem(rule) or '')
+
+  def test_malformed_guard_shapes_are_refused_not_crashes(self):
+    for bad in ({
+        'resource': 'r',
+        'attributes': ['a'],
+        'when_after': 'x'
+    }, {
+        'resource': 'r',
+        'attributes': ['a'],
+        'when_after_computed': 'a'
+    }, {
+        'resource': 'r',
+        'attributes': ['a'],
+        'when_unchanged': 'a'
+    }, {
+        'resource': 'r',
+        'attributes': [],
+        'when_after': {
+            'a': 1
+        }
+    }, {
+        'resource': 'r',
+        'attributes': ['a'],
+        'when_unchanged': ['a']
+    }):
+      self.assertIsNotNone(verify_plan.rule_guard_problem(bad), bad)
+
   def test_when_before_guard(self):
     # D-03 rule: only empty-string live descriptions are benign.
     rules = [{
@@ -251,6 +469,9 @@ class TestVerifyPlanClassify(unittest.TestCase):
         'attributes': ['description'],
         'when_before': {
             'description': ''
+        },
+        'when_after_matches': {
+            'description': r'.+ \(Terraform-managed\)\.'
         },
         'reason': 'coalesce empty-string',
     }]
@@ -511,7 +732,7 @@ class TestInventoryHelpers(unittest.TestCase):
         'project')
 
   def test_asset_level_container_assets_use_parent(self):
-    # Container assets list themselves first (DISCOVERY.md issue 1):
+    # Container assets list themselves first in `ancestors`:
     # a top-level folder's CONTAINER level is organization.
     self.assertEqual(
         inventory.asset_level({
@@ -525,7 +746,7 @@ class TestInventoryHelpers(unittest.TestCase):
         }), 'folder')
 
   def test_normalize_iam_skips_leaf_assets(self):
-    # DISCOVERY.md issue 1: TagValue IAM must not pollute org-level IAM.
+    # TagValue IAM must not pollute org-level IAM.
     entries = inventory._normalize_iam([
         {
             'name': '//cloudresourcemanager.googleapis.com/tagValues/9',
@@ -572,15 +793,112 @@ class TestInventoryHelpers(unittest.TestCase):
     self.assertTrue(inventory.in_subtree(a, ['folders/22'], []))
     self.assertFalse(inventory.in_subtree(a, [], ['projects/123456']))
 
+  def _collect_with_failing_sweep(self, manifest):
+    """Runs collect() with every gcloud sweep recording a failure."""
+    real = inventory.run_json
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      inventory.SWEEP_FAILURES.append('simulated: gcloud asset list')
+      return []
+
+    inventory.run_json = fake
+    try:
+      return inventory.collect(manifest)
+    finally:
+      inventory.run_json = real
+
   def test_sweep_failures_fail_closed(self):
     # Tolerated enumeration failures must hard-fail collect() at the
     # end - a silently shrunken denominator is never acceptable.
-    inventory.SWEEP_FAILURES.append('simulated: gcloud org-policies list')
-    try:
+    with self.assertRaises(SystemExit) as ctx:
+      self._collect_with_failing_sweep({
+          'scope': {
+              'root': 'organizations/1'
+          },
+          'types': [{
+              'type': 'storage.googleapis.com/Bucket',
+              'levels': ['project']
+          }]
+      })
+    self.assertEqual(ctx.exception.code, 3)
+
+  def test_sweep_failures_do_not_leak_into_the_next_collect(self):
+    """SWEEP_FAILURES is module-global and was never reset, so a second
+    collect() in the same process inherited the first run's failures and
+    exited 3 with stale messages — and a caller retrying after a
+    transient error could never get a clean result."""
+    inventory.SWEEP_FAILURES.append('stale failure from an earlier run')
+    entries, _, _ = inventory.collect({
+        'scope': {
+            'root': 'organizations/1'
+        },
+        'types': []
+    })
+    self.assertEqual(entries, [])
+    self.assertEqual(inventory.SWEEP_FAILURES, [])
+
+  def test_bare_numeric_include_is_refused_as_ambiguous(self):
+    """`exclude: [12345]` meaning folder 12345 was coerced to
+    projects/12345, matched nothing, and the exclusion silently
+    no-oped. The same typo in `include` emptied the denominator."""
+    for field in ('include', 'exclude'):
       with self.assertRaises(SystemExit) as ctx:
-        inventory.collect({'scope': {'root': 'organizations/1'}, 'types': []})
-      self.assertEqual(ctx.exception.code, 3)
+        inventory.parse_and_validate_scopes({
+            'scope': {
+                'root': 'organizations/1',
+                field: ['12345']
+            }
+        })
+      self.assertIn('ambiguous', str(ctx.exception))
+
+  def test_misspelled_include_prefix_is_refused(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.parse_and_validate_scopes({
+          'scope': {
+              'root': 'organizations/1',
+              'include': ['folder/22']
+          }
+      })
+    self.assertIn('unsupported prefix', str(ctx.exception))
+
+  def test_bare_project_id_include_is_still_accepted(self):
+    scopes = inventory.parse_and_validate_scopes({
+        'scope': {
+            'root': 'organizations/1',
+            'include': ['my-app-prod']
+        }
+    })
+    self.assertEqual(scopes[0]['include'], ['my-app-prod'])
+
+  def test_unresolvable_project_id_is_recorded_not_swallowed(self):
+    """resolve() swallowed every failure of `gcloud projects describe`,
+    so an include written as a project ID matched nothing (CAI ancestors
+    are numbers) and every asset under it left the denominator with exit
+    0."""
+    real = inventory.run_json
+    calls = []
+
+    def fake(cmd, **kwargs):
+      del kwargs
+      calls.append(cmd)
+      inventory.SWEEP_FAILURES.append(f'{" ".join(cmd)}: permission denied')
+      return []
+
+    inventory.run_json = fake
+    inventory.SWEEP_FAILURES.clear()
+    try:
+      reg = inventory.ProjectRegistry()
+      num, _ = reg.resolve('my-app-prod')
+      self.assertIsNone(num)
+      self.assertTrue(inventory.SWEEP_FAILURES)
+      # ... and the negative result is cached: an uncached miss re-spawned
+      # the subprocess once per ASSET.
+      reg.resolve('my-app-prod')
+      reg.resolve('my-app-prod')
+      self.assertEqual(len(calls), 1)
     finally:
+      inventory.run_json = real
       inventory.SWEEP_FAILURES.clear()
 
   def _lvl_entry(self, atype, level, key):
@@ -696,7 +1014,7 @@ class TestInventoryHelpers(unittest.TestCase):
         }]), [])
 
   def test_org_policy_service_stream_normalization(self):
-    # Round 3 / W-14: dry-run-only policies exist only in the service
+    # Round 3: dry-run-only policies exist only in the service
     # API; its names lack the //orgpolicy prefix but must merge into
     # the same key namespace.
     entries = inventory._normalize_org_policies_from_service([
@@ -730,7 +1048,7 @@ class TestInventoryHelpers(unittest.TestCase):
     self.assertEqual(cai[0]['key'], entries[0]['key'])
 
   def test_org_policy_resource_stream_normalization(self):
-    # DISCOVERY.md issue 2: Policy resource assets merge into the same
+    # Policy resource assets merge into the same
     # key format as the legacy content-type stream.
     entries = inventory._normalize_org_policies_from_resources([{
         'name': ('//orgpolicy.googleapis.com/organizations/1/policies/'
@@ -859,6 +1177,49 @@ class TestVerifyPlanMain(unittest.TestCase):
     self.assertIn('input rules:', out)
     self.assertNotIn('WARNING: non-default rules file', out)
 
+  def test_residual_plan_exits_2_and_proposes_a_guarded_rule(self):
+    """The gate's primary failure mode had no end-to-end test: nothing
+    drove main() with a real residual, so the RESIDUAL block, the exit
+    code and the proposal template were never executed."""
+    residual = {
+        'type': 'google_project',
+        'address': 'google_project.p',
+        'change': {
+            'actions': ['update'],
+            'before': {
+                'name': 'old'
+            },
+            'after': {
+                'name': 'new'
+            }
+        }
+    }
+    code, out, _ = _run_main(verify_plan, [],
+                             stdin_text=_plan_json([residual]))
+    self.assertEqual(code, 2)
+    self.assertIn('RESIDUAL CHANGES', out)
+    self.assertIn('google_project.p', out)
+    self.assertNotIn('CONVERGED', out)
+    # The template must arrive already narrowed to what was observed:
+    # an attributes-only rule waives the whole subtree forever.
+    block = out.split('add reviewed entries to benign-drift.yaml, e.g.:')[1]
+    block = block.split('The workspace has NOT converged')[0]
+    proposal = yaml.safe_load(block)
+    rule = proposal['rules'][0]
+    self.assertEqual(rule['resource'], 'google_project')
+    self.assertEqual(rule['when_before'], {'name': 'old'})
+    self.assertEqual(rule['when_after'], {'name': 'new'})
+    # The template must be committable as-is: a proposal the guard
+    # checker would refuse hands the reviewer a dead rule.
+    self.assertIsNone(verify_plan.rule_guard_problem(rule))
+
+  def test_proposed_rule_for_computed_attribute_uses_computed_guard(self):
+    rc = _rc('google_project', ['update'], before={'terraform_labels': {}},
+             after={}, unknown={'terraform_labels': True})
+    proposal = verify_plan.propose_rule(rc, {'paths': ['terraform_labels']})
+    self.assertEqual(proposal['when_after_computed'], ['terraform_labels'])
+    self.assertNotIn('when_after', proposal)
+
   def test_non_default_rules_prints_loud_warning(self):
     # Reviewer repro: --rules /tmp/permissive.yaml used to produce a
     # verdict stamped with a clean frozen-tools digest and no trace of
@@ -869,7 +1230,11 @@ class TestVerifyPlanMain(unittest.TestCase):
     try:
       code, out, _ = _run_main(verify_plan, ['--rules', rules_path],
                                stdin_text=_plan_json([_CLEAN_IMPORT_RC]))
-      self.assertEqual(code, 0)
+      # A substituted ruleset can never produce a passing exit code:
+      # otherwise `--rules permissive.yaml` is a cheaper way to green
+      # than editing the frozen file the contract forbids editing.
+      self.assertEqual(code, 3)
+      self.assertIn('ADVISORY ONLY', out)
       self.assertIn('WARNING: non-default rules file', out)
       # Path shape safe for transcripts — basename, not absolute.
       self.assertIn(os.path.basename(rules_path), out)
@@ -943,6 +1308,51 @@ class TestCoverageHardening(unittest.TestCase):
       blocks = coverage.parse_import_blocks(td)
       self.assertEqual(blocks, {'google_folder.f': 'folders/111'})
       self.assertEqual(coverage.parse_import_addresses(td), {'google_folder.f'})
+
+  def test_single_line_import_block_is_parsed(self):
+    """`import { to = X\\n id = "Y" }` opened and closed on the same line
+    was swallowed whole: the address never landed in the map, so the
+    gate reported the mapping as having no import block — a false
+    failure the operator cannot explain."""
+    with tempfile.TemporaryDirectory() as td:
+      with open(os.path.join(td, 'x.tf'), 'w') as f:
+        f.write('import { to = google_folder.f  id = "folders/111" }\n')
+      self.assertEqual(coverage.parse_import_blocks(td),
+                       {'google_folder.f': 'folders/111'})
+
+  def test_same_line_closing_brace_does_not_pollute_the_id(self):
+    with tempfile.TemporaryDirectory() as td:
+      with open(os.path.join(td, 'x.tf'), 'w') as f:
+        f.write('import {\n'
+                '  to = google_folder.f\n'
+                '  id = "folders/111" }\n')
+      self.assertEqual(coverage.parse_import_blocks(td),
+                       {'google_folder.f': 'folders/111'})
+
+  def test_duplicate_import_ids_are_a_problem(self):
+    """Two addresses importing the SAME id is the copy-paste error that
+    scaffolding near-identical folders invites. Uniqueness was enforced
+    on addresses only, so this passed the completeness gate while one
+    live resource ended up owned twice and another stayed unmanaged."""
+    dupes = coverage.duplicate_import_ids({
+        'google_folder.a': 'folders/111',
+        'google_folder.b': 'folders/111',
+        'google_folder.c': 'folders/222',
+    })
+    self.assertEqual(dupes, {'folders/111': ['google_folder.a',
+                                             'google_folder.b']})
+
+  def test_missing_workspace_is_malformed_input_not_a_gap(self):
+    with tempfile.TemporaryDirectory() as td:
+      inv = os.path.join(td, 'inventory.json')
+      with open(inv, 'w') as f:
+        json.dump({'_meta': {}, 'assets': [{'key': 'k', 'asset_type': 't'}]}, f)
+      code, _, err = _run_main(
+          coverage,
+          ['--inventory', inv, '--workspace',
+           os.path.join(td, 'does-not-exist')])
+      self.assertEqual(code, 1)
+      self.assertIn('workspace directory not found', err)
 
   def _write_ws(self, td, inv, cmap=None, tf=''):
     inv_path = os.path.join(td, 'inventory.json')
@@ -1085,7 +1495,7 @@ class TestIntegrityInputBinding(unittest.TestCase):
       os.unlink(path)
 
   def test_input_stamp_does_not_leak_absolute_path(self):
-    """Regression (round 20 slip 8): an absolute path embeds home
+    """Regression: an absolute path embeds home
     directory names, private worktree names and internal directory
     conventions. input_stamp must never print one.
     """
@@ -1096,10 +1506,11 @@ class TestIntegrityInputBinding(unittest.TestCase):
       abs_path = os.path.abspath(path)
       line = integrity.input_stamp('rules', path)
       self.assertNotIn(abs_path, line)
-      # And specifically none of the shapes that leaked before:
-      for danger in ('/usr/local/google/home/', '/Users/', '/home/'):
-        self.assertNotIn(danger, line,
-                         f'input_stamp leaked absolute-path prefix {danger!r}')
+      # Stronger and environment-neutral: no component of the containing
+      # directory may appear at all. Hardcoding known home-directory
+      # prefixes both missed other layouts and baked one organisation's
+      # workstation convention into a public test.
+      self.assertNotIn(os.path.dirname(abs_path), line)
     finally:
       os.unlink(path)
 
@@ -1137,27 +1548,41 @@ class TestIntegrityInputBinding(unittest.TestCase):
         f.write('y')
       self.assertNotEqual(before, integrity.tree_stamp('workspace', [p], td))
 
-  def test_check_mode_detects_edit(self):
+  def test_frozen_digest_changes_when_any_frozen_file_is_edited(self):
+    """There is no checked-in expected digest (a digest committed beside
+    the files it covers is edited in the same commit and proves nothing).
+    What must hold is that the computed digest moves on any edit, so a
+    captured gate transcript can be compared against a clean checkout."""
     with tempfile.TemporaryDirectory() as t:
-      c = {n: f'# {n}\n' for n in integrity.FROZEN_FILES}
-      for name, body in c.items():
+      for name in integrity.FROZEN_FILES:
         with open(os.path.join(t, name), 'w') as f:
-          f.write(body)
-      with open(os.path.join(t, integrity.DIGEST_FILE), 'w') as f:
-        f.write(integrity.frozen_digest(t) + '\n')
-      ok, _ = integrity.check(t)
-      self.assertTrue(ok)
+          f.write(f'# {name}\n')
+      before = integrity.frozen_digest(t)
       with open(os.path.join(t, 'benign-drift.yaml'), 'a') as f:
         f.write('  - resource: sneaky\n')
-      ok, msg = integrity.check(t)
-      self.assertFalse(ok)
-      self.assertIn('FROZEN TOOLS MODIFIED', msg)
+      self.assertNotEqual(before, integrity.frozen_digest(t))
 
-  def test_check_mode_fails_closed_on_missing_digest_file(self):
+  def test_every_script_is_inside_the_trust_boundary(self):
+    """A script that is not in FROZEN_FILES can be edited without moving
+    the stamp any gate output carries. manifest_from_state.py was
+    outside it on import, while deciding the whole denominator."""
+    scripts_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                               'scripts')
+    on_disk = {
+        f for f in os.listdir(scripts_dir)
+        if (f.endswith('.py') or f.endswith('.yaml')) and
+        not f.startswith('__')
+    }
+    self.assertEqual(on_disk, set(integrity.FROZEN_FILES))
+
+  def test_missing_frozen_file_is_distinct_from_empty(self):
     with tempfile.TemporaryDirectory() as t:
-      ok, msg = integrity.check(t)
-      self.assertFalse(ok)
-      self.assertIn('missing', msg)
+      for name in integrity.FROZEN_FILES:
+        with open(os.path.join(t, name), 'w') as f:
+          f.write('')
+      all_empty = integrity.frozen_digest(t)
+      os.unlink(os.path.join(t, 'inventory.py'))
+      self.assertNotEqual(all_empty, integrity.frozen_digest(t))
 
 
 class TestManifestInit(unittest.TestCase):
@@ -1295,6 +1720,18 @@ class TestMultiScopeAndProjectRegistry(unittest.TestCase):
     self.assertFalse(inventory.in_subtree(asset, [], ['my-app'], reg))
 
 
+def _parse_state(state_content):
+  """Runs parse_state_files over one in-memory state document."""
+  with tempfile.NamedTemporaryFile('w', suffix='.tfstate',
+                                   delete=False) as f:
+    json.dump(state_content, f)
+    sp = f.name
+  try:
+    return manifest_from_state.parse_state_files([sp])
+  finally:
+    os.remove(sp)
+
+
 class TestManifestFromState(unittest.TestCase):
 
   def test_manifest_from_state_synthesis(self):
@@ -1364,6 +1801,14 @@ class TestManifestFromState(unittest.TestCase):
       self.assertIn('compute.googleapis.com/Network', types_found)
       self.assertIn('iam.googleapis.com/WorkloadIdentityPoolProvider',
                     types_found)
+      # THE REGRESSION. google_project stores folder_id as a bare number
+      # ('111222'), not 'folders/111222'. The prefix-only check classified
+      # this project as organization-level, apply_level_filter then kept
+      # only organization-level containers, and every folder-nested
+      # project silently left the denominator with a green gate.
+      self.assertEqual(
+          types_found['cloudresourcemanager.googleapis.com/Project']['levels'],
+          {'organization', 'folder'})
 
       manifest_text = manifest_from_state.generate_manifest(
           org_ids, projects, pnums, folders, types_found, [sp])
@@ -1373,10 +1818,258 @@ class TestManifestFromState(unittest.TestCase):
       self.assertEqual(parsed['scopes'][0]['root'],
                        'organizations/123456789012')
       self.assertEqual(parsed['scopes'][1]['name'], 'stage-projects')
-      self.assertEqual(parsed['scopes'][1]['include'], ['my-net-prj'])
-      self.assertIn('# project number: 987654321', manifest_text)
+      # CAI ancestors are project NUMBERS: bind to the number we already
+      # know rather than to an id that needs a live lookup to match.
+      self.assertEqual(parsed['scopes'][1]['include'], ['projects/987654321'])
+      # Source paths are basenames, never the operator's home directory.
+      self.assertIn(os.path.basename(sp), manifest_text)
+      self.assertNotIn(os.path.dirname(sp), manifest_text)
     finally:
       os.remove(sp)
+
+  def test_project_level_from_prefixed_parent(self):
+    """The other shape: `parent: folders/111222` must classify too."""
+    _, _, _, _, types_found = _parse_state({
+        'resources': [{
+            'mode': 'managed',
+            'type': 'google_project',
+            'instances': [{
+                'attributes': {
+                    'project_id': 'p',
+                    'parent': 'folders/111222'
+                }
+            }]
+        }]
+    })
+    self.assertIn(
+        'folder',
+        types_found['cloudresourcemanager.googleapis.com/Project']['levels'])
+
+  def test_tag_binding_parent_is_not_defaulted_to_organization(self):
+    """google_tags_tag_binding stores a full CAI resource name. The
+    service prefix matched none of the hierarchy prefixes, so project
+    and folder tag bindings were declared organization-level and
+    vanished from the sweep."""
+    _, _, _, _, types_found = _parse_state({
+        'resources': [{
+            'mode': 'managed',
+            'type': 'google_tags_tag_binding',
+            'instances': [{
+                'attributes': {
+                    'parent':
+                        '//cloudresourcemanager.googleapis.com/projects/123456'
+                }
+            }]
+        }]
+    })
+    self.assertEqual(
+        types_found['cloudresourcemanager.googleapis.com/TagBinding']
+        ['levels'], {'project'})
+
+  def test_unclassifiable_parent_becomes_unknown_not_organization(self):
+    _, _, _, _, types_found = _parse_state({
+        'resources': [{
+            'mode': 'managed',
+            'type': 'google_tags_tag_binding',
+            'instances': [{
+                'attributes': {
+                    'parent': 'something/else'
+                }
+            }]
+        }]
+    })
+    self.assertEqual(
+        types_found['cloudresourcemanager.googleapis.com/TagBinding']
+        ['levels'], {'unknown'})
+
+  def test_multi_org_state_is_refused(self):
+    """Picking sorted(org_ids)[0] dropped every asset under the others."""
+    with self.assertRaises(SystemExit) as cm:
+      manifest_from_state.generate_manifest({'1', '2'}, set(), {}, set(),
+                                            {'x': {
+                                                'levels': {'organization'},
+                                                'flags': {}
+                                            }}, ['s.tfstate'])
+    self.assertIn('more than one organization', str(cm.exception))
+
+  def test_empty_state_is_refused_not_given_a_placeholder_root(self):
+    """organizations/000000000000 is a manifest that looks valid and
+    enumerates nothing."""
+    with self.assertRaises(SystemExit) as cm:
+      manifest_from_state.generate_manifest(set(), set(), {}, set(), {},
+                                            ['s.tfstate'])
+    msg = str(cm.exception)
+    self.assertIn('scope root', msg)
+    self.assertNotIn('000000000000', msg)
+
+  def test_project_only_state_gets_project_roots(self):
+    """A per-project state is the most common Mode A input, and
+    inventory.py supports project roots. Refusing it would be a
+    regression dressed as strictness."""
+    text = manifest_from_state.generate_manifest(
+        set(), {'my-prj'}, {'my-prj': '987654321'}, set(),
+        {'storage.googleapis.com/Bucket': {
+            'levels': {'project'},
+            'flags': {}
+        }}, ['s.tfstate'])
+    parsed = yaml.safe_load(text)
+    self.assertEqual(parsed['scopes'][0]['root'], 'projects/987654321')
+    inventory.parse_and_validate_scopes(parsed)
+
+  def test_multi_folder_state_without_org_is_refused(self):
+    with self.assertRaises(SystemExit) as cm:
+      manifest_from_state.generate_manifest(set(), set(), {},
+                                            {'111222', '333444'},
+                                            {'x': {
+                                                'levels': {'folder'},
+                                                'flags': {}
+                                            }}, ['s.tfstate'])
+    self.assertIn('more than one folder', str(cm.exception))
+
+  def test_foreign_provider_org_attribute_is_ignored(self):
+    """`organization` is a REQUIRED attribute on tfe_workspace, and
+    github_*/azuread_* carry one too. Harvesting every provider let a
+    Terraform Cloud org name into org_ids and tripped the multi-org
+    refusal on a state with exactly one Google organization."""
+    org_ids, _, _, _, _ = _parse_state({
+        'resources': [{
+            'mode': 'managed',
+            'type': 'tfe_workspace',
+            'instances': [{
+                'attributes': {
+                    'name': 'prod',
+                    'organization': 'acme-tfc'
+                }
+            }]
+        }, {
+            'mode': 'managed',
+            'type': 'google_folder',
+            'instances': [{
+                'attributes': {
+                    'name': 'folders/111222',
+                    'parent': 'organizations/123456789012'
+                }
+            }]
+        }]
+    })
+    self.assertEqual(org_ids, {'123456789012'})
+
+  def test_generated_manifest_round_trips_through_inventory(self):
+    """The artefact, not just the units: a bare-number include or a
+    type declared only at `unknown` is invisible to unit assertions and
+    blows up (or silently empties the denominator) in inventory.py."""
+    org_ids, projects, pnums, folders, types_found = _parse_state({
+        'resources': [{
+            'mode': 'managed',
+            'type': 'google_folder',
+            'instances': [{
+                'attributes': {
+                    'name': 'folders/111222',
+                    'parent': 'organizations/123456789012'
+                }
+            }]
+        }, {
+            'mode': 'managed',
+            'type': 'google_storage_bucket',
+            'instances': [{
+                'attributes': {
+                    'name': 'b',
+                    'project': '987654321'
+                }
+            }]
+        }, {
+            'mode': 'managed',
+            'type': 'google_tags_tag_binding',
+            'instances': [{
+                'attributes': {
+                    'parent': 'something/else'
+                }
+            }]
+        }]
+    })
+    text = manifest_from_state.generate_manifest(org_ids, projects, pnums,
+                                                 folders, types_found,
+                                                 ['s.tfstate'])
+    parsed = yaml.safe_load(text)
+    # Must be accepted by the tool that consumes it...
+    scopes = inventory.parse_and_validate_scopes(parsed)
+    inventory.validate_manifest_types(parsed['types'])
+    # ... the project seen only as a number must be prefixed, not bare...
+    self.assertIn('projects/987654321', parsed['scopes'][-1]['include'])
+    # ... and a type declared at `unknown` needs `unknown` in some scope,
+    # or it intersects to the empty set and is swept then discarded.
+    unknown_types = [
+        t['type'] for t in parsed['types'] if 'unknown' in t['levels']
+    ]
+    self.assertTrue(unknown_types)
+    self.assertTrue(any('unknown' in s['levels'] for s in scopes))
+
+  def test_force_is_required_to_overwrite_an_existing_manifest(self):
+    with tempfile.TemporaryDirectory() as td:
+      state = os.path.join(td, 's.tfstate')
+      with open(state, 'w') as f:
+        json.dump({
+            'resources': [{
+                'mode': 'managed',
+                'type': 'google_folder',
+                'instances': [{
+                    'attributes': {
+                        'name': 'folders/111222',
+                        'parent': 'organizations/123456789012'
+                    }
+                }]
+            }]
+        }, f)
+      out = os.path.join(td, 'import-manifest.yaml')
+
+      def run(extra=()):
+        argv = ['manifest_from_state.py', '--state', state, '--out', out]
+        old = sys.argv
+        sys.argv = argv + list(extra)
+        try:
+          with contextlib.redirect_stdout(io.StringIO()), \
+               contextlib.redirect_stderr(io.StringIO()):
+            manifest_from_state.main()
+        finally:
+          sys.argv = old
+
+      run()
+      with self.assertRaises(SystemExit) as cm:
+        run()
+      msg = str(cm.exception)
+      self.assertIn('already exists', msg)
+      # ... and the refusal must not print the operator's home directory.
+      self.assertNotIn(td, msg)
+      run(['--force'])
+
+  def test_acm_types_carry_the_identity_prefix(self):
+    """CAI names these three `identity.accesscontextmanager...`. The bare
+    spelling matches nothing, and a mistyped asset type does not error:
+    the sweep returns zero and the gate goes vacuously green."""
+    for tf_type in ('google_access_context_manager_access_policy',
+                    'google_access_context_manager_access_level',
+                    'google_access_context_manager_service_perimeter'):
+      cai_type = manifest_from_state.TF_TYPE_MAP[tf_type][0]
+      self.assertTrue(
+          cai_type.startswith('identity.accesscontextmanager.googleapis.com/'),
+          f'{tf_type} maps to {cai_type}')
+
+  def test_unmapped_google_types_are_reported(self):
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+      _parse_state({
+          'resources': [{
+              'mode': 'managed',
+              'type': 'google_billing_budget',
+              'instances': [{
+                  'attributes': {
+                      'project': 'p'
+                  }
+              }]
+          }]
+      })
+    self.assertIn('google_billing_budget', err.getvalue())
+    self.assertIn('not in TF_TYPE_MAP', err.getvalue())
 
   def test_manifest_from_state_folder_root_fallback(self):
     state_content = {

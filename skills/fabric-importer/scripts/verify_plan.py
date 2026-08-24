@@ -29,12 +29,15 @@ propose new entries (a template is printed for unmatched updates) but must
 never edit the ruleset itself. Rationalizing a residual diff in prose is
 not an accepted outcome; encoding it as a reviewed rule is.
 
-Exit codes: 0 = converged, 2 = residual changes, 1 = malformed input.
+Exit codes: 0 = converged, 1 = malformed input, 2 = residual changes,
+3 = converged but ADVISORY (a substituted --rules file; never a passing
+gate). A residual plan judged by a substituted ruleset still exits 2.
 """
 
 import argparse
 import json
 import os
+import re
 import sys
 
 import yaml
@@ -54,7 +57,14 @@ def load_rules(path):
       if isinstance(data, list):
         return data
       elif isinstance(data, dict):
-        return data.get('rules', [])
+        rules = data.get('rules', [])
+        if not isinstance(rules, list):
+          print(f'WARNING: `rules` in {path} is not a list; no rules loaded',
+                file=sys.stderr)
+          return []
+        return rules
+      print(f'WARNING: unexpected top-level shape in {path} '
+            f'({type(data).__name__}); no rules loaded', file=sys.stderr)
       return []
   except yaml.YAMLError as e:
     print(f'WARNING: failed to parse benign rules {path}: {e}', file=sys.stderr)
@@ -122,13 +132,39 @@ def changed_paths(change):
   return paths, computed_only
 
 
-def match_benign(resource_type, paths, computed_only, rules, before=None):
+_MISSING = object()
+
+
+def match_benign(resource_type, paths, rules, before=None, after=None,
+                 unknown=None):
   """Returns the reasons list if every changed path is covered by rules.
 
-  A rule with `when_before: {<attr>: <value>}` applies only when every
-  listed attribute has exactly that value in the plan's `before` state.
-  This scopes rules to a specific live condition (e.g. empty-string
-  description) instead of allowing any drift on the attribute.
+  A rule scopes itself to a live condition with these guards:
+
+    when_before: {<attr>: <value>}   exact value in the plan's `before`
+    when_after:  {<attr>: <value>}   exact value in the plan's `after`
+    when_after_matches: {<attr>: <regex>}
+                                     `after` is a string fully matching
+                                     the regex, on one line
+    when_after_computed: [<attr>, …] or true
+                                     `after` is FULLY unknown at plan
+                                     time, i.e. the provider computes it
+    when_unchanged: [<attr>, …]      these attributes must not appear in
+                                     the diff at all
+
+  Every rule must BOUND THE DIFF, and `bound` is checked, not trusted:
+  either every attribute the rule covers carries a direct destination
+  guard (`when_after`/`when_after_matches`/`when_after_computed`), or the
+  rule declares `when_unchanged` naming the live-affecting siblings that
+  prove the diff inert (the `terraform_labels` case: provider bookkeeping
+  is harmless exactly while `labels` and `effective_labels` are
+  untouched). `when_unchanged` must be disjoint from `attributes`.
+
+  Guarding only `when_before` was a silent hole: a rule matching a live
+  empty description accepted ANY new description, so the gate reported
+  CONVERGED for a plan that would really write a value to the live
+  resource on apply. A benign rule asserts "this diff changes nothing",
+  which is a claim about the destination as much as the source.
 
   `match: all-changes-computed` rules are NO LONGER supported and are
   ignored: `after_unknown` means Terraform cannot prove the value, and a
@@ -136,8 +172,9 @@ def match_benign(resource_type, paths, computed_only, rules, before=None):
   whose every attribute is unknown at plan time is a residual (hardening
   round 19); benign rules must name a resource type and attributes.
   """
-  del computed_only  # no longer grants anything; see docstring.
   before = before or {}
+  after = after or {}
+  unknown = unknown or {}
   reasons = []
   covered = set()
   for rule in rules:
@@ -146,17 +183,153 @@ def match_benign(resource_type, paths, computed_only, rules, before=None):
     r_type = rule.get('resource', '*')
     if r_type not in ('*', resource_type):
       continue
-    cond = rule.get('when_before')
-    if cond and any(before.get(k) != v for k, v in cond.items()):
-      continue
     attrs = set(rule.get('attributes') or [])
     hit = paths & attrs
-    if hit:
-      covered |= hit
-      reasons.append(rule.get('reason', f'benign: {sorted(hit)}'))
+    if not hit:
+      continue
+    problem = rule_guard_problem(rule)
+    if problem:
+      _warn_once(f'WARNING: ignoring benign rule for {r_type} '
+                 f'{sorted(attrs)}: {problem}')
+      continue
+    cond = rule.get('when_before') or {}
+    if any(before.get(k, _MISSING) != v for k, v in cond.items()):
+      continue
+    cond = rule.get('when_after') or {}
+    # An unknown destination is not a matching destination: `after` holds
+    # null for a computed value exactly as it does for an absent key, so
+    # without this check `when_after: {x: null}` would silently accept
+    # "the provider will decide later" as "no change".
+    if any(unknown.get(k) for k in cond):
+      continue
+    if any(after.get(k, _MISSING) != v for k, v in cond.items()):
+      continue
+    if not _match_after_patterns(rule.get('when_after_matches'), after,
+                                 unknown):
+      continue
+    if not _match_after_computed(rule.get('when_after_computed'), hit, unknown,
+                                 before, after):
+      continue
+    unchanged = rule.get('when_unchanged') or []
+    if any(k in paths for k in unchanged):
+      continue
+    covered |= hit
+    reasons.append(rule.get('reason', f'benign: {sorted(hit)}'))
   if paths and paths <= covered:
     return reasons
   return None
+
+
+_WARNED = set()
+
+
+def _warn_once(message):
+  """A malformed rule must not print once per resource in a large plan."""
+  if message not in _WARNED:
+    _WARNED.add(message)
+    print(message, file=sys.stderr)
+
+
+def _guard_keys(rule):
+  """Attributes for which the rule bounds the destination directly."""
+  attrs = set(rule.get('attributes') or [])
+  keys = set()
+  for field in ('when_after', 'when_after_matches'):
+    val = rule.get(field)
+    if isinstance(val, dict):
+      keys |= set(val)
+  computed = rule.get('when_after_computed')
+  if computed is True:
+    keys |= attrs
+  elif isinstance(computed, (list, tuple, set)):
+    keys |= set(computed)
+  return keys
+
+
+def rule_guard_problem(rule):
+  """Why the rule may not be applied, or None if it is well formed.
+
+  Shape errors are refusals, not crashes: this file is edited by humans,
+  and a YAML slip that silently disabled a rule (or raised an
+  AttributeError mid-gate) would be indistinguishable from a rule that
+  simply did not match.
+  """
+  attrs = set(rule.get('attributes') or [])
+  if not attrs:
+    return 'no `attributes` list, so the rule can never apply'
+  for field in ('when_before', 'when_after', 'when_after_matches'):
+    if field in rule and not isinstance(rule[field], dict):
+      return f'`{field}` must be a mapping of attribute to value'
+  computed = rule.get('when_after_computed')
+  if computed is not None and computed is not True and not isinstance(
+      computed, (list, tuple, set)):
+    return '`when_after_computed` must be true or a list of attributes'
+  unchanged = rule.get('when_unchanged')
+  if unchanged is not None and not isinstance(unchanged, (list, tuple, set)):
+    return '`when_unchanged` must be a list of attributes'
+  unchanged = set(unchanged or [])
+  if unchanged & attrs:
+    return (f'`when_unchanged` overlaps `attributes` '
+            f'({sorted(unchanged & attrs)}): an attribute cannot be both '
+            'waived and required to be untouched')
+  ungoverned = attrs - _guard_keys(rule)
+  if ungoverned and not unchanged:
+    return (f'no destination guard for {sorted(ungoverned)}. Add '
+            '`when_after`, `when_after_matches` or `when_after_computed` '
+            'for those attributes, or `when_unchanged` naming the '
+            'live-affecting siblings that make the diff inert. A rule '
+            'that does not bound the diff cannot assert it is benign.')
+  return None
+
+
+def _match_after_patterns(patterns, after, unknown=None):
+  """Every listed attribute's `after` value fully matches its regex.
+
+  Anchored and single-line on purpose: `re.DOTALL` would let `.+` span
+  newlines, so a suffix pattern could be satisfied by an attacker- or
+  model-authored multi-line value carrying arbitrary text above it.
+  """
+  unknown = unknown or {}
+  if not patterns:
+    return True
+  for k, pattern in patterns.items():
+    if unknown.get(k):
+      return False
+    val = after.get(k)
+    if not isinstance(val, str):
+      return False
+    try:
+      if not re.fullmatch(pattern, val):
+        return False
+    except re.error as e:
+      _warn_once(f'WARNING: invalid when_after_matches regex for {k}: {e}')
+      return False
+  return True
+
+
+def _match_after_computed(spec, hit, unknown, before, after):
+  """Every named attribute is FULLY unknown at plan time.
+
+  `true` means every covered attribute in this diff. Two traps this
+  guards against, both previously live:
+
+  - `after_unknown` for a block is a per-key structure, so a non-empty
+    dict is truthy while nothing inside it is actually computed. Only
+    `is True` — a fully-computed leaf — counts.
+  - even then, the known remainder must agree, or a partially computed
+    block would carry real drift past the guard. This is the same
+    fail-closed rule `changed_paths` applies.
+  """
+  if not spec:
+    return True
+  names = sorted(hit) if spec is True else list(spec)
+  for k in names:
+    u = unknown.get(k)
+    if u is not True:
+      return False
+    if strip_unknown(before.get(k), u) != strip_unknown(after.get(k), u):
+      return False
+  return True
 
 
 def classify(resource_change, rules):
@@ -181,9 +354,10 @@ def classify(resource_change, rules):
     return ('ok-import' if importing else 'ok'), None
   if actions == ['update']:
     paths, computed_only = changed_paths(change)
-    reasons = match_benign(resource_change.get('type', ''), paths,
-                           computed_only, rules,
-                           change.get('before') or {})
+    reasons = match_benign(resource_change.get('type', ''), paths, rules,
+                           change.get('before') or {},
+                           change.get('after') or {},
+                           change.get('after_unknown') or {})
     if reasons is not None:
       return 'benign', {'paths': sorted(paths), 'reasons': reasons}
     detail = {'paths': sorted(paths)}
@@ -195,14 +369,44 @@ def classify(resource_change, rules):
 
 
 def propose_rule(rc, detail):
-  return {
+  """A rule template pre-filled with the OBSERVED before/after values.
+
+  Both ends are populated deliberately. An `attributes`-only rule waives
+  every future change to that attribute, including the whole subtree
+  under a block attribute, because `changed_paths` reports top-level
+  keys only. Emitting the observed values makes the narrow rule the
+  default and the broad one a deliberate deletion by the reviewer.
+  """
+  change = rc.get('change', {})
+  before = change.get('before') or {}
+  after = change.get('after') or {}
+  unknown = change.get('after_unknown') or {}
+  paths = detail.get('paths', [])
+  proposal = {
       'resource': rc.get('type', ''),
-      'attributes': detail.get('paths', []),
-      'reason': 'TODO: justify why this diff is benign',
-      'verified_against': {
-          'provider': 'TODO'
-      },
+      'attributes': paths,
+      'when_before': {k: before.get(k) for k in paths},
   }
+  computed = [k for k in paths if unknown.get(k)]
+  if computed:
+    proposal['when_after_computed'] = computed
+  known = [k for k in paths if not unknown.get(k)]
+  if known:
+    proposal['when_after'] = {k: after.get(k) for k in known}
+  proposal['reason'] = 'TODO: justify why this diff is benign'
+  proposal['verified_against'] = {'provider': 'TODO'}
+  return proposal
+
+
+def proposable(detail):
+  """False when no rule could be written for this residual.
+
+  An `update` with no comparable changed attributes (only sensitivity or
+  metadata differs) would yield a template with empty `attributes`,
+  which the guard checker refuses — handing the reviewer a rule that is
+  ignored with a warning the moment they commit it.
+  """
+  return bool(detail.get('paths'))
 
 
 def main():
@@ -246,6 +450,13 @@ def main():
         'which dumps STATE instead of a plan?', file=sys.stderr)
     return 1
   rules = load_rules(args.rules)
+  for rule in rules:
+    problem = rule_guard_problem(rule) if isinstance(rule, dict) else (
+        'rule is not a mapping')
+    if problem and not (isinstance(rule, dict) and rule.get('match')):
+      print(
+          f'WARNING: benign rule {rule.get("resource", "?") if isinstance(rule, dict) else rule!r} '
+          f'will be ignored: {problem}', file=sys.stderr)
 
   counts = {'ok-import': 0, 'ok': 0, 'benign': 0}
   benign_notes = []
@@ -266,10 +477,14 @@ def main():
     print(integrity.input_stamp('rules', rules_path))
   else:
     print(f'input rules: {rules_path} MISSING (no rules loaded)')
-  if rules_path != os.path.abspath(DEFAULT_RULES):
+  substituted_rules = rules_path != os.path.abspath(DEFAULT_RULES)
+  if substituted_rules:
     print('WARNING: non-default rules file in force. The verdict below '
           'is NOT judged by the\nfrozen human-owned ruleset; a reviewer '
-          'must inspect the file hashed above.')
+          'must inspect the file hashed above.\nThis run is ADVISORY: it '
+          'can never exit 0. Editing the frozen ruleset is forbidden, so '
+          'pointing\nthe gate at another file must not be the cheaper way '
+          'to reach a green exit code.')
   print(f'plan verification: {counts["ok-import"]} clean import(s), '
         f'{counts["ok"]} no-op(s), {counts["benign"]} benign change(s), '
         f'{len(residuals)} residual change(s)')
@@ -297,7 +512,8 @@ def main():
       actions = '/'.join(rc.get('change', {}).get('actions', []))
       print(f'  [{actions}] {rc.get("address")} '
             f'{detail.get("paths", detail.get("actions", ""))}')
-      if rc.get('change', {}).get('actions') == ['update']:
+      if (rc.get('change', {}).get('actions') == ['update'] and
+          proposable(detail)):
         proposals.append(propose_rule(rc, detail))
     if proposals:
       print('\nIf (and only if) a human confirms these diffs are provider '
@@ -309,6 +525,10 @@ def main():
 
   print('CONVERGED: every planned change is a clean import, no-op, or '
         'reviewed-benign.')
+  if substituted_rules:
+    print('ADVISORY ONLY: judged by a substituted ruleset, not the '
+          'frozen one. Not a passing gate.')
+    return 3
   return 0
 
 

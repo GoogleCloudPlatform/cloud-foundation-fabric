@@ -12,10 +12,13 @@ your output. Trust comes from the gates, not from you.
 
 ## Trust boundary (non-negotiable)
 
-- **Frozen scripts** (`scripts/`): `inventory.py`, `coverage.py`,
-  `verify_plan.py`, `benign-drift.yaml`, `manifest_init.py`,
-  `integrity.py`. You may RUN them; you must NEVER modify them or their
-  rulesets. Both gates print runtime provenance and active input hashes;
+- **Frozen scripts** — everything in `scripts/`: `inventory.py`,
+  `coverage.py`, `verify_plan.py`, `benign-drift.yaml`,
+  `manifest_init.py`, `manifest_from_state.py`, `integrity.py`. You may
+  RUN them; you must NEVER modify them or their rulesets.
+  `manifest_from_state.py` is frozen for the same reason as the gates:
+  it decides the SCOPE the denominator is built from, so editing it
+  shrinks what "complete" means. Both gates print runtime provenance and active input hashes;
   a reviewer compares them against a clean checkout. If a gate is
   genuinely broken, report it with evidence — do not patch around it.
 - **Human-owned files**: the import manifest and the waiver ledger. You
@@ -33,8 +36,16 @@ your output. Trust comes from the gates, not from you.
    export only. Prefer a dedicated read-only identity
    (`roles/cloudasset.viewer` + per-service viewers, via impersonation)
    so an accidental apply fails with 403.
-3. **All workspace output is org-confidential.** Never commit it; never
-   quote principals/IDs in documents that leave the engagement.
+3. **All workspace output is org-confidential.** Fabric is used
+   fork-and-own, so during the OWN phase these artifacts legitimately
+   live in the operator's own private fork alongside the code — that is
+   the expected working directory. What must never happen is any of it
+   reaching a PUBLIC repository, an upstream pull request, or a document
+   that leaves the engagement: no org/folder/project ids, principals,
+   resource names or asset counts. Pulled `.tfstate` and saved
+   `*.tfplan` additionally contain secret VALUES (Secret Manager
+   payloads, generated keys); delete them once the manifest is drafted
+   and the plan is verified, and never commit them anywhere.
 4. **Never rationalize a residual diff.** If you believe a plan diff is a
    provider artifact, propose a `benign-drift.yaml` entry with evidence in
    your report and stop. A human accepts it or the run stays red.
@@ -45,10 +56,10 @@ Gate on steps that are hard to reverse, costly, or where human judgment is requi
 
 | Gate | When | What the human decides |
 | :--- | :--- | :--- |
-| **Scope Approval** | End of Step 0 (Manifest Drafting) | Reviews and commits `import-manifest.yaml`: which resource types, hierarchy levels (org/folder/project), and included/excluded subtrees are in scope. |
-| **Waiver Signing** | Step 4 (Completeness Gate) | Reviews deliberate exclusions in `waivers.yaml` and signs them with attribution (`signed_by`) for unmanaged or auto-generated resources (e.g. default log sinks, default compute service accounts). |
-| **Benign Drift Review** | Step 5 (Plan Convergence Gate) | Evaluates proposed cosmetic provider quirks (e.g. computed labels, default timeouts) and commits reviewed entries to `scripts/benign-drift.yaml`. |
-| **Final Review & Apply** | Step 6 (Handover) | Inspects the final zero-drift plan, run report, and input provenance digests before running `terraform apply` on their own schedule. |
+| **Scope Approval** | Manifest drafting, before any enumeration | Reviews and commits `import-manifest.yaml`: which resource types, hierarchy levels (org/folder/project), and included/excluded subtrees are in scope. |
+| **Waiver Signing** | Completeness Gate (`coverage.py`) | Reviews deliberate exclusions in `waivers.yaml` and signs them with attribution (`signed_by`) for unmanaged or auto-generated resources (e.g. default log sinks, default compute service accounts). |
+| **Benign Drift Review** | Plan Convergence Gate (`verify_plan.py`) | Evaluates proposed cosmetic provider quirks (e.g. computed labels, default timeouts) and commits reviewed entries to `scripts/benign-drift.yaml`. |
+| **Final Review & Apply** | Handover, before `terraform apply` | Inspects the final zero-drift plan, run report, and input provenance digests before running `terraform apply` on their own schedule. |
 
 ---
 
@@ -148,6 +159,7 @@ confirm it; otherwise run one of the drafting workflows:
 
 ```bash
 python3 scripts/manifest_from_state.py --state <state-files...> --out import-manifest.yaml
+# add --force to replace an existing manifest, or --out - to review first
 ```
 
 See [references/inferring-manifests-from-state.md](./references/inferring-manifests-from-state.md).
@@ -310,9 +322,27 @@ terraform -chdir=tf fmt -recursive   # generated code is ALWAYS fmt-ed
 python3 scripts/coverage.py --inventory inventory.json --workspace tf \
   --waivers waivers.yaml --require-signed-waivers
 terraform -chdir=tf init -input=false
-terraform -chdir=tf plan -input=false -detailed-exitcode -out=verify.tfplan
+rm -f tf/verify.tfplan   # never let a stale plan answer for a failed one
+terraform -chdir=tf plan -input=false -out=verify.tfplan
 terraform -chdir=tf show -json verify.tfplan | python3 scripts/verify_plan.py
 ```
+
+Do not add `-detailed-exitcode` here: it returns **2 whenever the plan is
+non-empty**, and a converged import plan is always non-empty (every
+`import {}` block is a planned change). Under `set -e`, or to an agent
+treating non-zero as failure, it aborts the workflow at exactly the step
+that is meant to validate it. `verify_plan.py` is the verdict, not
+terraform's exit code.
+
+The `rm -f` matters: `plan` and `show` are separate commands, so if the
+plan step fails (expired credentials, a provider error, a syntax error in
+newly emitted HCL) `show -json` will happily read the PREVIOUS
+iteration's plan file and the gate can print CONVERGED for code that was
+never planned.
+
+`verify_plan.py` exit codes: `0` converged, `1` malformed input, `2`
+residual changes, `3` advisory run (a substituted `--rules` file — never
+a passing gate).
 
 `--require-signed-waivers` is the default posture: every waiver must
 carry a `signed_by` recording the human who accepted it. Drop the flag

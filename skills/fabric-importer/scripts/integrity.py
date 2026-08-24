@@ -40,6 +40,12 @@ mismatch means the gates that produced that verdict were not these gates.
 Run with `--verbose` for per-file digests, which identifies the file that
 differs.
 
+There is deliberately no checked-in expected-digest file. A digest
+committed next to the files it covers is edited by the same actor in the
+same commit, so it proves nothing that `git diff` does not already prove;
+the reference value is the digest computed from a pristine checkout of
+the commit under review.
+
 The gates additionally stamp every INPUT they read (resolved path +
 SHA256) via `input_stamp`/`data_stamp` below. The frozen-tools digest
 authenticates the gates; the input stamps authenticate what the gates
@@ -60,11 +66,11 @@ FROZEN_FILES = (
     'coverage.py',
     'integrity.py',
     'inventory.py',
+    'manifest_from_state.py',
     'manifest_init.py',
     'verify_plan.py',
 )
 
-DIGEST_FILE = 'frozen.digest'
 _DIGEST_LEN = 16
 
 
@@ -141,41 +147,31 @@ def input_stamp(label, path):
     return data_stamp(label, f.read(), display_path(path))
 
 
-def tree_stamp(label, paths, origin):
+def tree_stamp(label, paths, origin, root=None):
   """One-line provenance stamp over a set of files (e.g. workspace .tf).
 
   Hashes sorted (relative name, content) pairs so the digest changes if
-  any file is added, removed, renamed or edited.
+  any file is added, removed, renamed or edited. Names are taken
+  relative to `root` when given: hashing basenames alone let a file move
+  between subdirectories without changing the digest.
   """
+  ordered = sorted(paths)
   h = hashlib.sha256()
-  for p in sorted(paths):
-    h.update(os.path.basename(p).encode('utf-8'))
+  for p in ordered:
+    if root:
+      try:
+        name = os.path.relpath(p, root)
+      except ValueError:
+        name = os.path.basename(p)
+    else:
+      name = os.path.basename(p)
+    h.update(name.encode('utf-8'))
     h.update(b'\0')
     with open(p, 'rb') as f:
       h.update(hashlib.sha256(f.read()).digest())
     h.update(b'\0')
-  return (f'input {label}: {origin} files:{len(list(paths))} '
+  return (f'input {label}: {origin} files:{len(ordered)} '
           f'sha256:{h.hexdigest()}')
-
-
-def check(scripts_dir=None):
-  """Compares the live digest against frozen.digest.
-
-  Returns (ok, message). Missing expected-digest file fails closed.
-  """
-  path = os.path.join(scripts_dir or _scripts_dir(), DIGEST_FILE)
-  try:
-    with open(path, 'r', encoding='utf-8') as f:
-      expected = f.read().strip()
-  except FileNotFoundError:
-    return False, f'expected-digest file missing: {path}'
-  actual = frozen_digest(scripts_dir)
-  if expected != actual:
-    return False, (f'FROZEN TOOLS MODIFIED: expected {expected}, '
-                   f'got {actual} (run with --verbose to identify the '
-                   'file; if the change is a reviewed hardening, update '
-                   f'{DIGEST_FILE} in the same commit)')
-  return True, f'frozen tools digest matches {DIGEST_FILE}: {actual}'
 
 
 def report(scripts_dir=None):
@@ -191,16 +187,7 @@ def main():
       description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
   p.add_argument('--verbose', '-v', action='store_true',
                  help='print per-file digests')
-  p.add_argument(
-      '--check', action='store_true',
-      help='compare against frozen.digest if present; exit 1 on mismatch')
   args = p.parse_args()
-  if args.check:
-    ok, msg = check()
-    print(msg)
-    if not ok and args.verbose:
-      print(report())
-    return 0 if ok else 1
   print(report() if args.verbose else stamp())
   return 0
 

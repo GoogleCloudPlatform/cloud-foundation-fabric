@@ -10,7 +10,7 @@ from deterministic codegen. That only holds if the boundary is respected:
 
 | Layer | Contents | Who may change it |
 |---|---|---|
-| Frozen scripts | `scripts/inventory.py`, `scripts/coverage.py`, `scripts/verify_plan.py`, `scripts/benign-drift.yaml`, `scripts/manifest_init.py`, `scripts/integrity.py` | Humans, via code review only. The model may run them, never edit them. |
+| Frozen scripts | everything in `scripts/`: `inventory.py`, `coverage.py`, `verify_plan.py`, `benign-drift.yaml`, `manifest_init.py`, `manifest_from_state.py`, `integrity.py` | Humans, via code review only. The model may run them, never edit them. |
 | Human-owned run files | `import-manifest.yaml`, `waivers.yaml` | Humans. The model drafts/proposes; a human commits. |
 | Model workspace | `tf/`, `coverage-map.yaml`, reports, worklists | The model — with immutable-address discipline (§4). |
 
@@ -30,8 +30,11 @@ so both gates also stamp every input they read — resolved path and
 SHA256 — on the line after the digest: the plan JSON (or stdin), the
 rules file actually loaded, the inventory, the coverage map, the waiver
 ledger, and the set of `*.tf` files scanned. A non-default `--rules`
-file additionally prints a loud warning that the verdict is NOT judged
-by the frozen ruleset. A recorded verdict is therefore attributable to
+file additionally prints a loud warning and downgrades a converged
+verdict to exit code 3, so a substituted ruleset can never produce a
+passing gate — otherwise
+pointing the gate at a permissive file would be a cheaper route to green
+than editing the frozen file this contract forbids editing. A recorded verdict is therefore attributable to
 exact inputs, not just to a tool build.
 
 The gates also fail closed on degenerate inputs: a plan without
@@ -69,7 +72,15 @@ it was meant to support.
    (`verify_plan.py`) are the only accepted convergence evidence.
 4. **Org-confidential output.** Workspace contents and anything derived
    from a real org (IDs, domains, principals, resource names, counts)
-   never enter a repository or a shareable document unsanitized.
+   never enter a PUBLIC repository, an upstream pull request, or a
+   shareable document unsanitized. Fabric is used fork-and-own, so
+   during the OWN phase these artifacts legitimately live in the
+   operator's own private fork alongside the code — that is the expected
+   working directory, and the boundary to police is publication, not the
+   filesystem. Pulled `.tfstate` and saved `*.tfplan` are the exception
+   in kind, not degree: they contain secret VALUES (Secret Manager
+   payloads, generated keys) and are deleted once the manifest is
+   drafted and the plan verified.
 5. **Never rationalize residual diffs.** A diff believed benign becomes a
    *proposed* `benign-drift.yaml` entry with evidence, reviewed by a
    human. Until accepted, the run is red.

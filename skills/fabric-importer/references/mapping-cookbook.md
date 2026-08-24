@@ -71,7 +71,7 @@ an in-place `name` update, not destroy/create (verified r6).
 - Run `terraform fmt -recursive` as the last emission step;
   `terraform fmt -check -recursive` must pass before the gates. Fmt-ed
   output is the canonical form the determinism and checksum assertions
-  compare (verified plan-invariant, r11/W-21).
+  compare (verified plan-invariant, r11).
 
 ### Escaping
 
@@ -564,7 +564,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   - In `perimeters`, access level references can use `$access_levels:<key>` syntax (e.g. `$access_levels:my_level`), which the module expands to the full resource name `accessPolicies/<policy_id>/accessLevels/<key>`.
 - **CAI Enumeration & Level Detection**:
   - CAI `gcloud asset list --content-type=resource` rejects ACM asset types (`identity.accesscontextmanager.googleapis.com/*`), requiring fallback to `gcloud asset search-all-resources`.
-  - `asset_level()` in `inventory.py`: For `AccessLevel` and `ServicePerimeter`, `parentFullResourceName` is `//accesscontextmanager.googleapis.com/accessPolicies/<policy_id>`, which does not contain `/organizations/` or `/projects/`, classifying them as `unknown` level unless `levels: [organization, unknown]` is configured in `import-manifest.yaml` (verified r15).
+  - `asset_level()` in `inventory.py`: For `AccessLevel` and `ServicePerimeter`, `parentFullResourceName` is `//accesscontextmanager.googleapis.com/accessPolicies/<policy_id>`, which does not contain `/organizations/` or `/projects/`, classifying them as `unknown` level. `unknown` entries are ALWAYS retained in the denominator — `apply_level_filter()` never drops an entry classified `unknown`, whatever `levels` says. Listing `unknown` does change one thing: a type whose declared levels are otherwise disjoint from the scope's `levels` stays ACTIVE and is swept at all, so a type declared only at `unknown` needs `unknown` in the scope too or it is swept and then discarded (verified r15).
 
 ### VPC networks (`modules/net-vpc`) — verified r3/r9
 
@@ -663,7 +663,7 @@ the in-repo source, and with `moved {}` blocks if state already exists.
 ### Optional accelerator: `gcloud beta resource-config bulk-export`
 
 For large fallback scopes, Google's Config-Connector-based exporter can
-draft HCL and import IDs in bulk (evaluated live, r5/W-13):
+draft HCL and import IDs in bulk (evaluated live, r5):
 
 ```bash
 gcloud beta resource-config bulk-export --project=P \

@@ -64,6 +64,10 @@ _LEVEL_BY_TYPE = {
 # denominator is the one failure mode this tool must never have.
 SWEEP_FAILURES = []
 
+# Sweeps skipped because the API is disabled. Not fatal, but reported:
+# a disabled service and a permission error can produce the same string.
+SUPPRESSED_SWEEPS = []
+
 import shutil
 
 
@@ -73,7 +77,11 @@ def run_json(cmd, ignore_errors=False, allow_disabled_service=False,
   resolved_cmd = [executable] + cmd[1:]
   env = dict(os.environ, CLOUDSDK_CORE_DISABLE_PROMPTS='1')
   try:
-    res = subprocess.run(resolved_cmd, capture_output=True, text=True, env=env,
+    # encoding is pinned: gcloud always emits UTF-8, but `text=True`
+    # decodes with the process locale, so a non-ASCII display name blew
+    # up with UnicodeDecodeError under a non-UTF-8 LANG.
+    res = subprocess.run(resolved_cmd, capture_output=True, text=True,
+                         encoding='utf-8', errors='replace', env=env,
                          timeout=timeout)
   except FileNotFoundError:
     if ignore_errors:
@@ -94,6 +102,14 @@ def run_json(cmd, ignore_errors=False, allow_disabled_service=False,
         phrase in stderr
         for phrase in ('SERVICE_DISABLED', 'API has not been used',
                        'has not enabled')):
+      # Tolerated, but never silent: this is the only sweep that sees
+      # dry-run-only org policies, so a permission or quota-project
+      # error whose text happens to match one of these phrases would
+      # remove a whole class of policies from the denominator.
+      msg = f'{" ".join(cmd)}: {stderr.splitlines()[-1] if stderr else ""}'
+      SUPPRESSED_SWEEPS.append(msg)
+      print(f'WARNING: sweep suppressed as disabled-service: {msg}',
+            file=sys.stderr)
       return []
     if ignore_errors:
       err_line = stderr.splitlines()[-1] if stderr else "unknown error"
@@ -116,6 +132,7 @@ class ProjectRegistry:
   def __init__(self):
     self.id_to_num = {}
     self.num_to_id = {}
+    self._unresolvable = set()
 
   def register(self, num, pid):
     if num:
@@ -137,21 +154,27 @@ class ProjectRegistry:
     else:
       pid = val
       num = self.id_to_num.get(pid)
-      if not num:
-        try:
-          cmd = [
-              'gcloud', 'projects', 'describe', pid,
-              '--format=json(projectNumber,projectId)'
-          ]
-          res = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
-          if res.returncode == 0 and res.stdout.strip():
-            out = json.loads(res.stdout)
-            if isinstance(out, dict) and out.get('projectNumber'):
-              num = str(out['projectNumber'])
-              pid = str(out.get('projectId', pid))
-              self.register(num, pid)
-        except Exception:
-          pass
+      if not num and pid not in self._unresolvable:
+        # CAI `ancestors` are project NUMBERS, so failing to resolve an
+        # id here does not raise: it makes in_subtree() match nothing,
+        # which empties the denominator with exit 0. The failure has to
+        # be recorded, and it has to be cached — an uncached miss
+        # re-spawned this subprocess once per ASSET.
+        cmd = [
+            'gcloud', 'projects', 'describe', pid,
+            '--format=json(projectNumber,projectId)'
+        ]
+        out = run_json(cmd, ignore_errors=True, timeout=30)
+        if isinstance(out, dict) and out.get('projectNumber'):
+          num = str(out['projectNumber'])
+          pid = str(out.get('projectId', pid))
+          self.register(num, pid)
+        else:
+          self._unresolvable.add(pid)
+          if not any(pid in m for m in SWEEP_FAILURES):
+            msg = (f'gcloud projects describe {pid}: could not resolve '
+                   'project id to a project number')
+            SWEEP_FAILURES.append(msg)
       return num, pid
 
   def expand_target(self, target):
@@ -199,7 +222,7 @@ def _level_of(path):
 def asset_level(asset):
   """CONTAINER level of an asset: organization, folder or project.
 
-  Live-run finding (DISCOVERY.md issue 1): for resource-manager container
+  Live-run finding: for resource-manager container
   assets (Organization/Folder/Project), `ancestors[0]` is the asset
   itself and `ancestors[1]` is its container; for leaf assets,
   `ancestors[0]` is the container. A top-level folder therefore has
@@ -377,7 +400,7 @@ def _normalize_leaf_iam(assets, iam_types):
 def _normalize_iam(assets):
   """IAM pseudo-entries, restricted to container asset types.
 
-  Live-run finding (DISCOVERY.md issue 1): without this restriction, IAM
+  Live-run finding: without this restriction, IAM
   policies on leaf assets directly under the org (TagValues, buckets,
   service accounts, ...) pollute the organization-level IAM inventory.
   Leaf-asset IAM must be requested via its own resource type instead.
@@ -437,7 +460,7 @@ _ORG_POLICY_NAME = re.compile(
 def _normalize_org_policies_from_resources(assets):
   """Normalizes orgpolicy.googleapis.com/Policy resource assets.
 
-  Live-run finding (DISCOVERY.md issue 2): the legacy `org-policy`
+  Live-run finding: the legacy `org-policy`
   content-type projection omits newer v2 constraints (observed:
   essentialcontacts.allowedContactDomains), while the Policy resource
   asset stream covers them.
@@ -453,7 +476,7 @@ def _normalize_org_policies_from_resources(assets):
 def _normalize_org_policies_from_service(policies, container=''):
   """Normalizes `gcloud org-policies list --format=json` output.
 
-  Live-run finding (Round 3, V-04): BOTH CAI projections omit
+  Live-run finding (round 3): BOTH CAI projections omit
   dry-run-only policies (dryRunSpec set, spec unset) entirely. The
   org-policy service API is the only complete enumeration, so collect()
   sweeps it per in-scope container and merges by key.
@@ -537,6 +560,30 @@ def parse_and_validate_scopes(manifest, registry=None):
     if kind == 'projects' and registry:
       registry.resolve(root.split('/', 1)[1])
 
+    # Validate include/exclude BEFORE expanding. Anything without a
+    # recognised prefix was silently coerced to a project, so `exclude:
+    # [12345]` meaning folder 12345 became projects/12345, matched
+    # nothing, and the exclusion no-oped with exit 0; the same typo in
+    # `include` emptied the denominator just as quietly.
+    for field in ('include', 'exclude'):
+      for item in s.get(field) or []:
+        text = str(item).strip()
+        if not text:
+          raise SystemExit(f"scope #{i + 1} has an empty {field} entry")
+        if '/' in text:
+          prefix = text.split('/')[0]
+          if prefix not in ('organizations', 'folders', 'projects'):
+            raise SystemExit(
+                f"scope #{i + 1} {field} entry {text!r} has an "
+                f"unsupported prefix {prefix!r}; use organizations/<id>, "
+                "folders/<id>, projects/<id-or-number>, or a bare "
+                "project id")
+        elif text.isdigit():
+          raise SystemExit(
+              f"scope #{i + 1} {field} entry {text!r} is a bare number, "
+              "which is ambiguous: it was read as a project. Write "
+              f"folders/{text} or projects/{text} explicitly.")
+
     # Eagerly register include/exclude items if projects
     if registry:
       for inc in s.get('include') or []:
@@ -562,6 +609,11 @@ def parse_and_validate_scopes(manifest, registry=None):
 
 
 def collect(manifest):
+  # Module-level accumulators: reset so a second collect() in the same
+  # process cannot inherit the first run's failures (or hide behind
+  # them).
+  del SWEEP_FAILURES[:]
+  del SUPPRESSED_SWEEPS[:]
   registry = ProjectRegistry()
   scopes = parse_and_validate_scopes(manifest, registry)
   types = manifest.get('types') or []
@@ -716,6 +768,15 @@ def collect(manifest):
   entries = list({e['key']: e for e in all_entries}.values())
   entries.sort(key=lambda e: e['key'])
 
+  if SUPPRESSED_SWEEPS:
+    print(
+        f'\nWARNING: {len(SUPPRESSED_SWEEPS)} sweep(s) were skipped as '
+        'disabled-service. A disabled API and a permissions or '
+        'quota-project error can produce the same message, so confirm '
+        'each one is genuinely a disabled service:', file=sys.stderr)
+    for m in SUPPRESSED_SWEEPS:
+      print(f'  - {m}', file=sys.stderr)
+
   if SWEEP_FAILURES:
     print(
         f'\nERROR: {len(SWEEP_FAILURES)} enumeration failure(s) were '
@@ -791,7 +852,7 @@ def main():
         {
             '_meta': {
                 'manifest':
-                    os.path.abspath(args.manifest),
+                    integrity.display_path(args.manifest),
                 'manifest_sha256':
                     hashlib.sha256(manifest_raw).hexdigest(),
                 'generated':
@@ -803,6 +864,8 @@ def main():
                     type_counts,
                 'zero_yield_types':
                     zero_yield,
+                'suppressed_sweeps':
+                    list(SUPPRESSED_SWEEPS),
                 'scopes':
                     scope_summaries,
                 'resolved_projects':

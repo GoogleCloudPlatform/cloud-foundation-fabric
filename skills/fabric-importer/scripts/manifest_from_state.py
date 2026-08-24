@@ -23,14 +23,49 @@ import argparse
 from collections import defaultdict
 import json
 import os
+import re
 import sys
 from typing import Dict, List, Set, Tuple
+
+import integrity
 
 LEVEL_ORDER = {
     'organization': 0,
     'folder': 1,
     'project': 2,
+    'unknown': 3,
 }
+
+# CAI resource names arrive as `//<service>/<collection>/<id>`; the
+# service prefix has to come off before a hierarchy prefix can be read.
+_CAI_PREFIX_RE = re.compile(r'^//[^/]+/')
+
+
+def _hierarchy_level(value):
+  """Level implied by a parent/name string, or None if it implies none.
+
+  Accepts the two prefixed shapes that occur in Terraform state:
+  `folders/123` and `//cloudresourcemanager.googleapis.com/projects/123`.
+
+  A BARE NUMERIC id carries no level on its own and returns None here;
+  only the caller knows what an unprefixed number means for a given
+  resource (`google_project.folder_id` is a parent folder, while
+  `google_folder.folder_id` is the folder's own id). Missing the bare
+  form entirely was the headline bug: it silently classified every
+  folder-nested project as organization-level, dropping it from the
+  denominator with a green gate.
+  """
+  if value is None:
+    return None
+  text = str(value).strip()
+  if not text:
+    return None
+  text = _CAI_PREFIX_RE.sub('', text)
+  for prefix, level in (('organizations/', 'organization'),
+                        ('folders/', 'folder'), ('projects/', 'project')):
+    if text.startswith(prefix):
+      return level
+  return None
 
 # Mapping from Terraform google_* resource types to (CAI type, level_rule, flags)
 # level_rule can be:
@@ -83,8 +118,10 @@ TF_TYPE_MAP = {
         ('cloudresourcemanager.googleapis.com/Folder', 'organization', {}),
     'google_project':
         ('cloudresourcemanager.googleapis.com/Project', 'organization', {}),
+    # Tag keys are GA at project scope too and carry a `parent`, so the
+    # level has to be read rather than assumed.
     'google_tags_tag_key':
-        ('cloudresourcemanager.googleapis.com/TagKey', 'organization', {}),
+        ('cloudresourcemanager.googleapis.com/TagKey', 'dynamic', {}),
     'google_tags_tag_value':
         ('cloudresourcemanager.googleapis.com/TagValue', 'organization', {}),
     'google_tags_tag_binding':
@@ -97,15 +134,19 @@ TF_TYPE_MAP = {
     'google_project_service':
         ('serviceusage.googleapis.com/Service', 'project', {}),
 
-    # VPC-SC
+    # VPC-SC. The CAI type carries an `identity.` prefix for these three
+    # (see cloud.google.com/asset-inventory/docs/supported-asset-types);
+    # the bare `accesscontextmanager.googleapis.com/...` spelling matches
+    # NOTHING, which yields an empty sweep and a vacuously green gate.
     'google_access_context_manager_access_policy':
-        ('accesscontextmanager.googleapis.com/AccessPolicy', 'organization', {}
-        ),
+        ('identity.accesscontextmanager.googleapis.com/AccessPolicy',
+         'organization', {}),
     'google_access_context_manager_service_perimeter':
-        ('accesscontextmanager.googleapis.com/ServicePerimeter', 'organization',
-         {}),
+        ('identity.accesscontextmanager.googleapis.com/ServicePerimeter',
+         'organization', {}),
     'google_access_context_manager_access_level':
-        ('accesscontextmanager.googleapis.com/AccessLevel', 'organization', {}),
+        ('identity.accesscontextmanager.googleapis.com/AccessLevel',
+         'organization', {}),
 
     # Networking
     'google_compute_network': ('compute.googleapis.com/Network', 'project', {}),
@@ -153,6 +194,8 @@ def parse_state_files(state_paths: List[str]):
   folders = set()
   types_found = defaultdict(lambda: {'levels': set(), 'flags': {}})
   errors = []
+  unclassified = set()
+  unmapped = defaultdict(int)
 
   for sp in state_paths:
     try:
@@ -169,25 +212,57 @@ def parse_state_files(state_paths: List[str]):
       if r.get('mode') != 'managed':
         continue
       rtype = r.get('type')
+      # Only Google resources describe the Google hierarchy. `organization`
+      # is a required attribute on tfe_workspace, and github_*/azuread_*
+      # carry one too, so harvesting every provider let a Terraform Cloud
+      # org name land in org_ids -- which now trips the multi-org refusal
+      # on a state that has exactly one Google organization.
+      if not str(rtype).startswith('google_'):
+        continue
       instances = r.get('instances', [])
 
       for inst in instances:
         attrs = inst.get('attributes', {})
 
-        # Check for organization ID
+        # Check for organization ID. `parent` counts too: a folder at
+        # the top of the hierarchy records its org there and nowhere
+        # else, and missing it dropped the manifest to a folder root.
         org_id = attrs.get('org_id') or attrs.get('organization')
+        if not org_id:
+          parent = str(attrs.get('parent') or '')
+          parent = _CAI_PREFIX_RE.sub('', parent)
+          if parent.startswith('organizations/'):
+            org_id = parent
         if org_id:
-          org_ids.add(str(org_id).removeprefix('organizations/'))
+          org_id = str(org_id).removeprefix('organizations/').strip()
+          # Organization ids are numeric. Anything else is a name from
+          # some other namespace and must not become a scope root.
+          if org_id.isdigit():
+            org_ids.add(org_id)
+          else:
+            unclassified.add(f'{rtype} (non-numeric organization {org_id!r})')
 
         # Check for project
         pid = attrs.get('project') or attrs.get('project_id')
         if pid:
           pid_str = str(pid).removeprefix('projects/')
           projects.add(pid_str)
-        pnum = attrs.get('number') or attrs.get('project_number')
-        if pid and pnum:
-          pid_str = str(pid).removeprefix('projects/')
-          project_numbers[pid_str] = str(pnum)
+        # The number BINDS the include entry, so take it only from the
+        # resource that authoritatively owns it. `number` on any other
+        # resource is a different object's id, and a wrong number matches
+        # no CAI ancestor -- emptying that project from the denominator
+        # with exit 0.
+        if rtype == 'google_project':
+          pnum = attrs.get('number') or attrs.get('project_number')
+          if pid and pnum:
+            pid_str = str(pid).removeprefix('projects/')
+            existing = project_numbers.get(pid_str)
+            if existing and existing != str(pnum):
+              raise SystemExit(
+                  f'ERROR: conflicting project numbers for {pid_str}: '
+                  f'{existing} and {pnum}. Refusing to guess which one '
+                  'binds the scope.')
+            project_numbers[pid_str] = str(pnum)
 
         # Check for folder
         fid = attrs.get('folder') or attrs.get('folder_id')
@@ -199,38 +274,47 @@ def parse_state_files(state_paths: List[str]):
             folders.add(str(fname).removeprefix('folders/'))
 
         # Map to CAI types
+        if rtype not in TF_TYPE_MAP and str(rtype).startswith('google_'):
+          unmapped[rtype] += 1
         if rtype in TF_TYPE_MAP:
           cai_type, level_rule, flags = TF_TYPE_MAP[rtype]
 
           if level_rule == 'dynamic':
-            # Inspect parent or name
-            parent = attrs.get('parent') or attrs.get('name', '')
-            if parent.startswith('organizations/') or attrs.get('org_id'):
-              lvl = 'organization'
-            elif parent.startswith('folders/') or attrs.get('folder_id'):
-              lvl = 'folder'
-            elif parent.startswith('projects/') or attrs.get(
-                'project_id') or attrs.get('project'):
-              lvl = 'project'
-            else:
-              lvl = 'organization'
+            lvl = (_hierarchy_level(attrs.get('parent')) or
+                   _hierarchy_level(attrs.get('name')))
+            if not lvl:
+              if attrs.get('org_id'):
+                lvl = 'organization'
+              elif attrs.get('folder_id'):
+                lvl = 'folder'
+              elif attrs.get('project_id') or attrs.get('project'):
+                lvl = 'project'
+            # Fail visible, not convenient: defaulting an unclassifiable
+            # parent to `organization` invented a level and dropped the
+            # asset from every other sweep. `unknown` is a first-class
+            # level in inventory.py and is always retained.
+            if not lvl:
+              lvl = 'unknown'
+              unclassified.add(f'{rtype} (parent={attrs.get("parent")!r})')
             types_found[cai_type]['levels'].add(lvl)
           else:
             types_found[cai_type]['levels'].add(level_rule)
 
-          if rtype == 'google_folder':
-            parent = attrs.get('parent', '')
-            if parent.startswith('folders/'):
-              types_found[cai_type]['levels'].add('folder')
-            elif parent.startswith('organizations/'):
-              types_found[cai_type]['levels'].add('organization')
-
-          if rtype == 'google_project':
-            parent = attrs.get('parent', '') or attrs.get('folder_id', '')
-            if parent.startswith('folders/'):
-              types_found[cai_type]['levels'].add('folder')
-            else:
-              types_found[cai_type]['levels'].add('organization')
+          # Containers carry their own parent, so a folder or project may
+          # sit at either level regardless of the static rule above.
+          if rtype in ('google_folder', 'google_project'):
+            lvl = _hierarchy_level(attrs.get('parent'))
+            # `folder_id` is the PARENT on google_project and the folder's
+            # OWN id on google_folder, so it may only be read here for a
+            # project.
+            if not lvl and rtype == 'google_project':
+              fid = str(attrs.get('folder_id') or '').strip()
+              lvl = _hierarchy_level(fid) or ('folder' if fid.isdigit() else
+                                              None)
+            if not lvl and attrs.get('org_id'):
+              lvl = 'organization'
+            if lvl:
+              types_found[cai_type]['levels'].add(lvl)
 
           for k, v in flags.items():
             types_found[cai_type]['flags'][k] = v
@@ -240,71 +324,192 @@ def parse_state_files(state_paths: List[str]):
         f"ERROR: {len(errors)} state file(s) failed to parse: {', '.join(errors)}"
     )
 
+  if unclassified:
+    print(
+        f'WARNING: {len(unclassified)} resource instance kind(s) had a '
+        'parent this tool could not classify; they are declared at level '
+        '`unknown` and retained. Confirm the level by hand:',
+        file=sys.stderr)
+    for u in sorted(unclassified):
+      print(f'  - {u}', file=sys.stderr)
+
+  if unmapped:
+    # A google_* type absent from TF_TYPE_MAP is managed Terraform that
+    # this manifest will NOT enumerate: the denominator ends up smaller
+    # than the footprint the state already proves exists, and gate 1
+    # still goes green. Say so loudly rather than skipping in silence.
+    total = sum(unmapped.values())
+    print(
+        f'WARNING: {len(unmapped)} google_* resource type(s) ({total} '
+        'instance(s)) are not in TF_TYPE_MAP and are ABSENT from the '
+        'generated manifest. The denominator will not cover them:',
+        file=sys.stderr)
+    for t in sorted(unmapped):
+      print(f'  - {t} ({unmapped[t]} instance(s))', file=sys.stderr)
+    print(
+        '  Add a CAI mapping, or accept the gap deliberately with a '
+        'signed waiver.', file=sys.stderr)
+
   return org_ids, projects, project_numbers, folders, types_found
+
+
+def _project_include_lines(projects, project_numbers):
+  """`include:` entries, always prefixed and never duplicated.
+
+  CAI `ancestors` are project NUMBERS. Emitting the id and leaving the
+  number in a comment made every match depend on a live `gcloud projects
+  describe` call whose failure is silent; when the number is known from
+  state, bind to it directly. Everything is emitted `projects/`-prefixed
+  because a bare number is ambiguous and inventory.py now refuses it.
+  """
+  known_numbers = set(project_numbers.values())
+  lines = []
+  for p in sorted(projects):
+    if p in project_numbers:
+      lines.append(f'      - projects/{project_numbers[p]}   # {p}')
+    elif p in known_numbers:
+      continue  # already emitted above via its project id
+    else:
+      lines.append(f'      - projects/{p}')
+  return lines
+
+
+def _project_rooted_manifest(projects, project_numbers, types_found,
+                             state_files):
+  """Manifest for a state that manages resources inside projects only."""
+  lines = [
+      '# Import manifest inferred from Terraform state file(s)',
+      '# Generated by manifest_from_state.py',
+      '# No organization or folder appears in this state, so the scope is',
+      '# rooted at the projects it manages.',
+      f'# Source state(s): '
+      f'{", ".join(integrity.display_path(p) for p in state_files)}',
+      '',
+      'scopes:',
+  ]
+  has_unknown = any('unknown' in v['levels'] for v in types_found.values())
+  levels = ['project'] + (['unknown'] if has_unknown else [])
+  for i, entry in enumerate(_project_include_lines(projects,
+                                                   project_numbers)):
+    root = entry.strip().lstrip('- ').split()[0]
+    lines += [
+        f'  - name: project-{i + 1}',
+        f'    root: {root}',
+        f'    levels: [{", ".join(levels)}]',
+        '',
+    ]
+  return '\n'.join(lines + _type_lines(types_found)) + '\n'
+
+
+def _type_lines(types_found):
+  """The `types:` block, shared by every manifest shape."""
+  lines = ['types:']
+  pseudo_order = ['iam', 'org-policy']
+  ordered_types = [pt for pt in pseudo_order if pt in types_found]
+  ordered_types += [t for t in sorted(types_found) if t not in pseudo_order]
+  for t in ordered_types:
+    levels = sorted(types_found[t]['levels'],
+                    key=lambda lvl: LEVEL_ORDER.get(lvl, 99))
+    lines.append(f'  - type: {t}')
+    lines.append(f'    levels: [{", ".join(levels)}]')
+    for fk, fv in sorted(types_found[t]['flags'].items()):
+      lines.append(f'    {fk}: {str(fv).lower()}')
+  return lines
 
 
 def generate_manifest(org_ids, projects, project_numbers, folders, types_found,
                       state_files):
   """Generates YAML string for the import manifest."""
+  # Guessing the root is the one error this tool must not make: every
+  # scope, and therefore the whole denominator, hangs off it.
+  if len(org_ids) > 1:
+    raise SystemExit(
+        'ERROR: state spans more than one organization '
+        f'({", ".join(sorted(org_ids))}). Picking one silently would '
+        'drop every asset under the others from the denominator. Split '
+        'the state files per organization and generate one manifest each.')
   if org_ids:
     scope_root = f'organizations/{sorted(org_ids)[0]}'
-  elif folders:
+    root_is_org = True
+  elif len(folders) == 1:
     scope_root = f'folders/{sorted(folders)[0]}'
+    root_is_org = False
+  elif folders:
+    # Same argument as the multi-org refusal: picking a lexicographic
+    # minimum from sibling folders drops everything under the others,
+    # with exit 0 and a green gate.
+    raise SystemExit(
+        'ERROR: state spans more than one folder '
+        f'({", ".join("folders/" + f for f in sorted(folders))}) and no '
+        'organization was discovered, so there is no unambiguous scope '
+        'root. Declare the intended root by hand, or pass a state file '
+        'that includes the common ancestor.')
+  elif projects:
+    # A per-project state is the most common Mode A input and is exactly
+    # what inventory.py project roots exist for; refusing it would be a
+    # regression dressed as strictness.
+    return _project_rooted_manifest(projects, project_numbers, types_found,
+                                    state_files)
   else:
-    scope_root = 'organizations/000000000000'
+    raise SystemExit(
+        'ERROR: no organization, folder or project could be discovered '
+        'in the given state file(s), so there is no scope root to anchor '
+        'the manifest. Emitting a placeholder root would produce a '
+        'manifest that looks valid and enumerates nothing. Pass a state '
+        'file that contains the hierarchy, or write the manifest by hand.')
 
   lines = [
       '# Import manifest inferred from Terraform state file(s)',
       '# Generated by manifest_from_state.py',
-      f'# Source state(s): {", ".join(state_files)}',
+      f'# Source state(s): '
+      f'{", ".join(integrity.display_path(p) for p in state_files)}',
       '',
       'scopes:',
   ]
 
   has_org_level = any('organization' in v['levels'] or 'folder' in v['levels']
                       for v in types_found.values())
-  if has_org_level:
+  # `unknown` must appear in the SCOPE levels too, or every type declared
+  # only at `unknown` intersects to the empty set and is swept-then-
+  # discarded (pseudo-types are skipped outright). Retaining an
+  # unclassifiable asset is the whole point of the level.
+  has_unknown = any('unknown' in v['levels'] for v in types_found.values())
+  if has_org_level or has_unknown:
+    # A folder root cannot carry organization-level assets; declaring it
+    # anyway asks inventory.py for a sweep that cannot match.
+    levels = ['organization', 'folder'] if root_is_org else ['folder']
+    if has_unknown:
+      levels.append('unknown')
     lines += [
         '  - name: org-foundation',
         f'    root: {scope_root}',
-        '    levels: [organization, folder]',
+        f'    levels: [{", ".join(levels)}]',
         '',
     ]
+    if not root_is_org:
+      org_only = sorted(t for t, v in types_found.items()
+                        if v['levels'] == {'organization'})
+      if org_only:
+        print(
+            'WARNING: the scope root is a folder, so these declared '
+            'organization-level type(s) can never be enumerated and will '
+            'yield nothing:', file=sys.stderr)
+        for t in org_only:
+          print(f'  - {t}', file=sys.stderr)
 
-  if projects:
+  include = _project_include_lines(projects, project_numbers)
+  if include:
+    levels = ['project']
+    if has_unknown:
+      levels.append('unknown')
     lines += [
         '  - name: stage-projects',
         f'    root: {scope_root}',
-        '    levels: [project]',
+        f'    levels: [{", ".join(levels)}]',
         '    include:',
-    ]
-    for p in sorted(projects):
-      pnum_comment = (f'   # project number: {project_numbers[p]}'
-                      if p in project_numbers else '')
-      lines.append(f'      - {p}{pnum_comment}')
-    lines.append('')
+    ] + include + ['']
 
-  lines.append('types:')
-
-  pseudo_order = ['iam', 'org-policy']
-  ordered_types = []
-  for pt in pseudo_order:
-    if pt in types_found:
-      ordered_types.append(pt)
-  for t in sorted(types_found.keys()):
-    if t not in pseudo_order:
-      ordered_types.append(t)
-
-  for t in ordered_types:
-    levels = sorted(types_found[t]['levels'],
-                    key=lambda lvl: LEVEL_ORDER.get(lvl, 99))
-    flags = types_found[t]['flags']
-    lines.append(f'  - type: {t}')
-    lines.append(f'    levels: [{", ".join(levels)}]')
-    for fk, fv in sorted(flags.items()):
-      lines.append(f'    {fk}: {str(fv).lower()}')
-
-  return '\n'.join(lines) + '\n'
+  return '\n'.join(lines + _type_lines(types_found)) + '\n'
 
 
 def main():
@@ -313,7 +518,19 @@ def main():
                  help='Path(s) to Terraform .tfstate file(s)')
   p.add_argument('--out', default='import-manifest.yaml',
                  help='Output manifest file path (use "-" for stdout)')
+  p.add_argument(
+      '--force', action='store_true',
+      help='overwrite an existing --out file; refused by default '
+      'because the manifest is human-owned and gate-relevant')
   args = p.parse_args()
+
+  if args.out != '-' and os.path.exists(args.out) and not args.force:
+    raise SystemExit(
+        f'ERROR: {integrity.display_path(args.out)} already exists. It is '
+        'the human-owned scope '
+        'declaration the whole denominator derives from, and its SHA256 '
+        'is recorded in inventory.json. Re-run with --force to replace '
+        'it deliberately, or pass --out - to review on stdout first.')
 
   org_ids, projects, project_numbers, folders, types_found = parse_state_files(
       args.state)

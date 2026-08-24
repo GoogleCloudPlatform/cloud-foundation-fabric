@@ -45,12 +45,17 @@ python3 scripts/manifest_from_state.py \
   --out import-manifest.yaml
 ```
 
-To synthesize a manifest across multiple stages:
+To synthesize a manifest across multiple stages (note `--force`: the
+manifest is human-owned and gate-relevant, so it is never overwritten
+silently — use `--out -` to review on stdout first):
 ```bash
 python3 scripts/manifest_from_state.py \
   --state stage-0.tfstate stage-1.tfstate stage-2-networking.tfstate stage-2-security.tfstate \
-  --out import-manifest.yaml
+  --out import-manifest.yaml --force
 ```
+
+All state files must belong to the same organization: a state spanning
+several is refused rather than silently resolved to one of them.
 
 ### 3. Review and Collect
 
@@ -87,7 +92,7 @@ The inference script automatically maps Terraform `google_*` resources to CAI as
 | `google_tags_tag_value` | `cloudresourcemanager.googleapis.com/TagValue` | `[organization]` | Tag Values |
 | `google_tags_tag_binding` | `cloudresourcemanager.googleapis.com/TagBinding` | `[organization, folder, project]` | Tag Bindings |
 | `google_project_service` | `serviceusage.googleapis.com/Service` | `[project]` | Enabled APIs |
-| `google_access_context_manager_*` | `accesscontextmanager.googleapis.com/*` | `[organization]` | Access Policies, Perimeters, Levels |
+| `google_access_context_manager_*` | `identity.accesscontextmanager.googleapis.com/*` | `[organization]` | Access Policies, Perimeters, Levels |
 | `google_compute_network` | `compute.googleapis.com/Network` | `[project]` | VPCs |
 | `google_compute_subnetwork` | `compute.googleapis.com/Subnetwork` | `[project]` | Subnets |
 | `google_compute_router` | `compute.googleapis.com/Router` | `[project]` | Cloud Routers & NAT |
@@ -118,8 +123,8 @@ scopes:
     root: organizations/123456789012
     levels: [project]
     include:
-      - prj-prod-audit-logs-0   # project number: 111111111111
-      - prj-prod-iac-core-0     # project number: 222222222222
+      - projects/111111111111   # prj-prod-audit-logs-0
+      - projects/222222222222   # prj-prod-iac-core-0
 ```
 
 This prevents project-level queries from accidentally scanning every unrelated project in the organization while still managing org-level policies and folders.
