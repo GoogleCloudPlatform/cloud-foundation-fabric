@@ -67,7 +67,7 @@ Gate on steps that are hard to reverse, costly, or where human judgment is requi
 
 ```mermaid
 flowchart TD
-    subgraph S0["Step 0: Discovery & Scope Declaration"]
+    subgraph S0["Discovery &amp; scope declaration"]
         MA["<b>Mode A: State-Driven Inference</b><br/><code>manifest_from_state.py</code><br/><i>(Existing .tfstate files)</i>"]
         MB["<b>Mode B: Live Cloud Survey</b><br/><code>inventory.py survey</code> &amp;<br/><code>manifest_init.py</code><br/><i>(Untracked brownfield)</i>"]
         Draft["Draft <code>import-manifest.yaml</code><br/><i>(Resource types, levels &amp; subtree filters)</i>"]
@@ -75,28 +75,28 @@ flowchart TD
         Stop_Scope["Stop / Re-scope"]
     end
 
-    subgraph S1["Step 1: Inventory Enumeration"]
+    subgraph S1["Inventory enumeration"]
         Collect["<b>CAI &amp; API Enumeration</b><br/><code>inventory.py collect</code>"]
         InvFile[("<b>Frozen Denominator</b><br/><code>inventory.json</code>")]
     end
 
-    subgraph S2["Step 2: Canonical Scaffolding &amp; Mapping"]
+    subgraph S2["Canonical scaffolding &amp; mapping"]
         Worklist["<b>Compute Delta Worklist</b><br/><code>coverage.py --worklist-out</code>"]
         Emit["<b>Agent Emits Terraform &amp; Mappings</b><br/>• Canonical Fabric Module calls<br/>• Native <code>import {}</code> blocks<br/>• <code>tf/coverage-map.yaml</code>"]
     end
 
-    subgraph S3["Step 3: Completeness Gate (Gate 1)"]
+    subgraph S3["GATE 1 — completeness"]
         Gate1{"<b>Gate 1: Completeness</b><br/><code>coverage.py --require-signed-waivers</code><br/><i>Every asset mapped or waived?</i>"}
         GWaiver{"<b>Gate: Waiver Signing</b><br/>Human signs deliberate exclusion<br/>in <code>waivers.yaml</code>"}
     end
 
-    subgraph S4["Step 4: Plan Convergence Gate (Gate 2)"]
+    subgraph S4["GATE 2 — plan convergence"]
         PlanExec["<b>Plan &amp; Drift Evaluation</b><br/><code>terraform plan</code> &amp;<br/><code>verify_plan.py</code>"]
-        Gate2{"<b>Gate 2: Plan Convergence</b><br/><i>Zero unexpected changes?<br/>(Only clean imports &amp; no-ops)</i>"}
+        Gate2{"<b>Gate 2: Plan Convergence</b><br/><i>Zero unexpected changes?<br/>(clean imports, no-ops,<br/>reviewed-benign)</i>"}
         GDrift{"<b>Gate: Benign Drift Review</b><br/>Human accepts verified provider quirk<br/>in <code>benign-drift.yaml</code>"}
     end
 
-    subgraph S5["Step 5: Output &amp; Handover"]
+    subgraph S5["Output &amp; handover"]
         Report["<b>Generate Run Report</b><br/>Audit trail, capability gaps &amp;<br/>gate input SHA256 digests"]
         GApply{"<b>Gate: Apply Sign-off</b><br/>Human operator reviews plan"}
         Workspace(["<b>Zero-Drift Production Fabric Workspace</b><br/><code>tf/</code> ready for <code>terraform apply</code>"])
@@ -116,16 +116,16 @@ flowchart TD
 
     %% Gate 1 loops
     Gate1 -->|Missing / Unmapped Assets| GWaiver
-    GWaiver -->|Sign Waiver (signed_by)| Gate1
+    GWaiver -->|"Sign Waiver (signed_by)"| Gate1
     GWaiver -->|In-Scope Resource| Emit
-    Gate1 -->|100% Covered (Exit 0)| PlanExec
+    Gate1 -->|"100% Covered (Exit 0)"| PlanExec
 
     %% Gate 2 loops
     PlanExec --> Gate2
     Gate2 -->|Residual Diff / Attribute Mismatch| GDrift
     GDrift -->|Fix HCL / Module Inputs / ForceNew| Emit
-    GDrift -->|Accept Quirk (Review &amp; Commit)| Gate2
-    Gate2 -->|Zero Drift (Exit 0)| Report
+    GDrift -->|"Accept Quirk (Review &amp; Commit)"| Gate2
+    Gate2 -->|"Zero Drift (Exit 0)"| Report
 
     %% Final Step
     Report --> GApply
