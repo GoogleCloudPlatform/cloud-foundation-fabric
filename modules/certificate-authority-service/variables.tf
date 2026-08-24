@@ -106,14 +106,29 @@ variable "ca_pool_config" {
   description = "The CA pool config. Either use_pool or create_pool need to be used. Use pool takes precedence if both are defined."
   type = object({
     create_pool = optional(object({
-      name            = string
       enterprise_tier = optional(bool, false)
+      name            = string
+      publishing_options = optional(object({
+        encoding_format = optional(string)
+        publish_ca_cert = bool
+        publish_crl     = bool
+      }))
     }))
     use_pool = optional(object({
       id = string
     }))
   })
   nullable = false
+  validation {
+    condition = contains(
+      ["PEM", "DER"],
+      coalesce(
+        try(var.ca_pool_config.create_pool.publishing_options.encoding_format, null),
+        "PEM"
+      )
+    )
+    error_message = "Encoding format must be one of PEM or DER."
+  }
 }
 
 variable "context" {
