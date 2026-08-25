@@ -15,6 +15,7 @@
  */
 
 locals {
+  _org_logging_settings = lookup(local.organization, "logging", null)
   ctx_condition_vars = {
     custom_roles = merge(
       local.ctx.custom_roles,
@@ -56,14 +57,6 @@ locals {
   org_access_levels = {
     for k, v in module.organization[0].access_levels : k => v.id
   }
-  # private local: logging settings as defined in yaml, used to derive the
-  # shape of the identities map below from plan-time known values
-  _org_logging_settings = lookup(local.organization, "logging", null)
-  # keys must only depend on the yaml configuration: gating them on the
-  # computed identity attributes makes the ternary condition itself unknown
-  # while the logging settings resource is being created, which turns the
-  # whole map unknown and poisons every principal interpolation downstream
-  # (folder/project IAM, PAM entitlements, ...) in the project factory
   org_logging_identities = merge(
     try(local._org_logging_settings.kms_key_name, null) == null ? {} : {
       "organization/logging/kms" = module.organization[0].logging_identities.kms
