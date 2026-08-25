@@ -233,6 +233,11 @@ governance:
    tool. Never "the script works, keep it".
 6. Reported: the run report lists scaffolding used and gate verdicts;
    commit the script as round evidence (sanitized and parameterized).
+7. Strict address matching: When filtering or mutating import blocks
+   across incremental runs, match full resource type strings (e.g.
+   `google_organization_iam_custom_role`) rather than loose substrings
+   (like `"custom_role"`), which collide with role IDs such as
+   `roles/latchkey_custom_role_automation`.
 
 ## Import-ID quick table
 
@@ -323,6 +328,10 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - Factory `fileset()` is non-recursive: filenames are
   `<constraint>.yaml`, never subdirectories.
 - Value lists are ordered attributes: preserve live order (verified r3).
+- **Verbatim condition expressions**: Condition expressions in org policy
+  rules returned by the API can carry a trailing newline (`\n`). In factory
+  YAML, use block scalar style (`|`) rather than quoted/stripped strings so
+  the trailing newline is preserved and does not plan as an in-place update.
 
 ### Organization: custom roles
 
@@ -350,6 +359,12 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   instances (e.g. `module.organization`, `module.organization-iam`, or
   dynamic factory loops), member lists must be union-merged across all
   matching state bindings before mapping into canonical module `iam` maps.
+- **Verbatim condition expressions & ForceNew**: IAM condition expressions
+  from live API policies frequently contain a trailing newline (`\n`).
+  Because `condition.expression` on `google_*_iam_binding` is `ForceNew`,
+  stripping whitespace or omitting the newline triggers a spurious
+  destroy/create (replacement) plan. Preserve the exact string from the live
+  API (e.g. via HCL heredoc `<<-EOT` or explicit `\n`).
 
 ### Folders (`modules/folder`, one instance per folder)
 
