@@ -64,6 +64,16 @@ types:
       key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
 ```
 
+**The mechanism is per hierarchy container**, because that is the shape
+of the manifest's `levels`. A command that enumerates inside another
+resource — `gcloud storage managed-folders list gs://BUCKET` — cannot be
+expressed as an `enumerate:` block: there is no container flag to fill
+in. Those types are enumerated out of band and named in the run report
+(step 3 of the ladder), or waived deliberately. Do not force them into a
+block by hard-coding one bucket; a container argument that does not vary
+sweeps one place and leaves the rest silently unenumerated, which is why
+the tool refuses it.
+
 Run the command by hand once before committing the block: the key
 template has to match the payload the command actually returns, and a
 first run is the cheapest place to find out that it does not. A field
@@ -110,6 +120,9 @@ agent may draft one; a human signs it, exactly as with waivers.
 | Audit configs | `auditConfigs` block is present and fully preserved in the CAI `iam-policy` payload | Verified in live testing |
 | Deleted / pending-delete resources | CAI reflects live state; soft-deleted roles or pending-delete projects may or may not appear | Decide policy per type; document in the run report |
 | Propagation lag | CAI can lag live changes by minutes | Re-run inventory immediately before the final gate pass; treat count mismatches with service APIs as failures, not noise |
+| Cloud Storage below the bucket | The Cloud Storage section of the CAI catalogue contains exactly one type, `storage.googleapis.com/Bucket`. Objects (`google_storage_bucket_object`), managed folders (`google_storage_managed_folder`) and managed-folder IAM are not modelled | `gcloud storage ls` / `gcloud storage managed-folders list` take a bucket URL, not a container flag, so they do not fit an `enumerate:` block. Enumerate per bucket out of band, map, and record the method in the run report |
+| Terraform-only resources | Some `google_*` resources correspond to no asset at all. `google_project_service_identity` triggers creation of a Google-managed service agent: the state row is real, the CAI asset is not, and Fabric's `modules/project` handles service agents internally | Map through the owning module and note it in the report; there is nothing to enumerate and nothing to waive |
+| Leaf IAM read as a missing type | `google_storage_bucket_iam_binding`, `google_tags_tag_value_iam_binding` and friends are not asset types. They are the `iam-policy` content type on an asset CAI already models, and enter the denominator via `iam: true` on the PARENT type entry | Never waive these as unsupported. `manifest_from_state.py` maps the common ones to their parent with the flag already set |
 | Data-plane / child resources | Some child resources (e.g. per-bucket notification configs, dataset ACL entries) are attributes of the parent in CAI, not assets | The plan gate covers them once the parent is imported; note them in the report if the user expects per-child coverage |
 | Access Context Manager | CAI `asset list --content-type=resource` rejects ACM types, requiring `asset search-all-resources`; `parentFullResourceName` lacks standard container prefixes | Handled in `inventory.py` via dedicated search and level classification |
 

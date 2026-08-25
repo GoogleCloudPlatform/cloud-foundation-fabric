@@ -84,6 +84,11 @@ The inference script automatically maps Terraform `google_*` resources to CAI as
 | `google_logging_folder_sink` | `logging.googleapis.com/LogSink` | `[folder]` | Folder log sinks |
 | `google_logging_project_sink` | `logging.googleapis.com/LogSink` | `[project]` | Project log sinks |
 | `google_logging_project_bucket_config`| `logging.googleapis.com/LogBucket` | `[project]` | Project log buckets |
+| `google_logging_organization_settings` | `logging.googleapis.com/Settings` | `[organization]` | Logs Router settings singleton (CAI has no `OrganizationSettings` type) |
+| `google_logging_folder_settings` | `logging.googleapis.com/Settings` | `[folder]` | Logs Router settings singleton |
+| `google_essential_contacts_contact` | `essentialcontacts.googleapis.com/Contact` | inferred from `parent` | Essential contacts |
+| `google_storage_bucket_iam_*` | `storage.googleapis.com/Bucket` | `[project]` | Emits `iam: true` on the bucket type |
+| `google_tags_tag_value_iam_*` | `cloudresourcemanager.googleapis.com/TagValue` | `[organization]` | Emits `iam: true` on the tag value type |
 | `google_folder` | `cloudresourcemanager.googleapis.com/Folder` | `[organization, folder]` | Top-level and nested folders |
 | `google_project` | `cloudresourcemanager.googleapis.com/Project` | `[organization, folder]` | Projects |
 | `google_storage_bucket` | `storage.googleapis.com/Bucket` | `[project]` | GCS Buckets |
@@ -106,6 +111,18 @@ The inference script automatically maps Terraform `google_*` resources to CAI as
 | `google_compute_network_firewall_policy` | `compute.googleapis.com/NetworkFirewallPolicy` | `[project]` | Network Firewall Policies |
 | `google_iam_workload_identity_pool` | `iam.googleapis.com/WorkloadIdentityPool` | `[project]` | WIF Pools |
 | `google_iam_workload_identity_pool_provider` | `iam.googleapis.com/WorkloadIdentityPoolProvider` | `[project]` | WIF Identity Providers |
+
+### Types this table does not list
+
+A `google_*` type absent from the table is reported as unmapped, and the
+warning is precise about what that means: **this tool has no static
+Terraform-to-CAI row for it**. It is not a statement about Cloud Asset
+Inventory. Triage each one — CAI may model it (add the type by hand), it
+may be leaf IAM on a type CAI models (`iam: true` on the parent), CAI may
+genuinely not model it (`enumerate:` block or out-of-band enumeration,
+see [cai-blind-spots.md](./cai-blind-spots.md)), or it may be deliberately
+out of scope (signed waiver). Anything you resolve is worth sending back
+as a `TF_TYPE_MAP` entry.
 
 ---
 

@@ -87,6 +87,32 @@ TF_TYPE_MAP = {
         ('iam.googleapis.com/ServiceAccount', 'project', {
             'iam': True
         }),
+    # Leaf-asset IAM is never an asset type of its own: it is the
+    # `iam-policy` content type on an asset CAI already models, and it
+    # enters the denominator through the parent type's `iam: true`
+    # opt-in. Mapping the binding to the PARENT type is what sets that
+    # flag — the alternative is 4 bindings the manifest cannot see.
+    'google_storage_bucket_iam_binding':
+        ('storage.googleapis.com/Bucket', 'project', {
+            'iam': True
+        }),
+    'google_storage_bucket_iam_member':
+        ('storage.googleapis.com/Bucket', 'project', {
+            'iam': True
+        }),
+    'google_tags_tag_value_iam_binding':
+        ('cloudresourcemanager.googleapis.com/TagValue', 'organization', {
+            'iam': True
+        }),
+    'google_tags_tag_value_iam_member':
+        ('cloudresourcemanager.googleapis.com/TagValue', 'organization', {
+            'iam': True
+        }),
+
+    # Essential contacts. CAI models these; the parent may be an org, a
+    # folder or a project, so the level is read rather than assumed.
+    'google_essential_contacts_contact':
+        ('essentialcontacts.googleapis.com/Contact', 'dynamic', {}),
 
     # Custom roles
     'google_organization_iam_custom_role':
@@ -358,9 +384,27 @@ def parse_state_files(state_paths: List[str]):
         file=sys.stderr)
     for t in sorted(unmapped):
       print(f'  - {t} ({unmapped[t]} instance(s))', file=sys.stderr)
+    # The distinction this paragraph draws is not pedantry: read as "CAI
+    # does not support these", the list sends an operator straight to
+    # waivers for types CAI has covered all along.
     print(
-        '  Add a CAI mapping, or accept the gap deliberately with a '
-        'signed waiver.', file=sys.stderr)
+        '  This means only that THIS TOOL has no static Terraform-to-CAI\n'
+        '  row for them. It says nothing about whether Cloud Asset\n'
+        '  Inventory supports them. Triage each one:\n'
+        '    (a) CAI has an asset type for it -> add `- type: <cai-type>`\n'
+        '        to the manifest by hand (check the supported-types list:\n'
+        '        https://cloud.google.com/asset-inventory/docs/'
+        'supported-asset-types);\n'
+        '    (b) it is IAM on an asset CAI models (google_*_iam_binding /\n'
+        '        _member / _policy) -> add `iam: true` to THAT asset\'s\n'
+        '        type entry; leaf IAM is never a type of its own;\n'
+        '    (c) CAI genuinely does not model it -> declare an\n'
+        '        `enumerate:` block, or enumerate out of band and record\n'
+        '        it in the run report (references/cai-blind-spots.md);\n'
+        '    (d) deliberately out of scope -> signed waiver.\n'
+        '  Anything mapped here should also be sent back as a TF_TYPE_MAP\n'
+        '  entry, so the next engagement starts one step ahead.',
+        file=sys.stderr)
 
   return org_ids, projects, project_numbers, folders, types_found
 

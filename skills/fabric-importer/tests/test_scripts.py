@@ -2202,6 +2202,85 @@ class TestManifestFromState(unittest.TestCase):
     finally:
       os.remove(sp)
 
+  def test_leaf_iam_bindings_map_to_their_parent_type(self):
+    """`google_storage_bucket_iam_binding` is not an asset type; it is
+    the iam-policy content type on a bucket. Mapping it to the PARENT
+    with `iam: true` is what puts it in the denominator — left unmapped,
+    it read as "CAI does not support this", which is false and sends the
+    operator to a waiver for coverage CAI has had all along."""
+    _, _, _, _, types_found = _parse_state({
+        'resources': [{
+            'mode': 'managed',
+            'type': 'google_storage_bucket_iam_binding',
+            'instances': [{
+                'attributes': {
+                    'bucket': 'b-1'
+                }
+            }]
+        }, {
+            'mode': 'managed',
+            'type': 'google_tags_tag_value_iam_binding',
+            'instances': [{
+                'attributes': {
+                    'tag_value': 'tagValues/1'
+                }
+            }]
+        }]
+    })
+    self.assertEqual(types_found['storage.googleapis.com/Bucket']['flags'],
+                     {'iam': True})
+    self.assertEqual(
+        types_found['cloudresourcemanager.googleapis.com/TagValue']['flags'],
+        {'iam': True})
+
+  def test_essential_contacts_level_is_read_from_the_parent(self):
+    _, _, _, _, types_found = _parse_state({
+        'resources': [{
+            'mode':
+                'managed',
+            'type':
+                'google_essential_contacts_contact',
+            'instances': [{
+                'attributes': {
+                    'parent': 'organizations/1'
+                }
+            }, {
+                'attributes': {
+                    'parent': 'folders/22'
+                }
+            }]
+        }]
+    })
+    self.assertEqual(
+        types_found['essentialcontacts.googleapis.com/Contact']['levels'],
+        {'organization', 'folder'})
+
+  def test_unmapped_warning_does_not_read_as_cai_unsupported(self):
+    """The warning listed types 'not in TF_TYPE_MAP' and was read as
+    'CAI does not support these'. Two different statements, and the
+    wrong one sends an operator to waivers for types CAI models."""
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      _parse_state({
+          'resources': [{
+              'mode': 'managed',
+              'type': 'google_storage_bucket_object',
+              'instances': [{
+                  'attributes': {
+                      'name': 'cfg.yaml'
+                  }
+              }]
+          }]
+      })
+    err = buf.getvalue()
+    self.assertIn('google_storage_bucket_object', err)
+    self.assertIn('THIS TOOL has no static', err)
+    self.assertIn('says nothing about whether Cloud Asset', err)
+    # ... and it names all four exits, not just the waiver.
+    for remedy in ('supported-asset-types', 'iam: true', 'enumerate:',
+                   'signed waiver'):
+      self.assertIn(remedy, err)
+
   def test_project_level_from_prefixed_parent(self):
     """The other shape: `parent: folders/111222` must classify too."""
     _, _, _, _, types_found = _parse_state({
