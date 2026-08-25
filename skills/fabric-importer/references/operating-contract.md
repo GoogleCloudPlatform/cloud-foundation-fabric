@@ -53,13 +53,17 @@ model-owned. Use that test when something new appears: *does this shrink
 what is checked, or is it irreversible?* If yes, a human decides.
 
 The manifest is human-owned for that reason, and it is why a manifest is
-also the only place a native (non-CAI) enumerator may be declared. Cloud
-Asset Inventory does not model every GCP resource, and a type it cannot
-see is invisible to both gates at once, so such types are enumerated
-with a read-only `gcloud` command and merged into the same denominator
-(`references/cai-blind-spots.md`). That command widens what is checked
-rather than narrowing it, but it is still a hand-written piece of the
-denominator: `inventory.py` refuses non-read-only verbs, refuses
+the only place an operator may declare a native (non-CAI) enumerator.
+Cloud Asset Inventory does not model every GCP resource, and a type it
+cannot see is invisible to both gates at once, so such types are
+enumerated with a read-only `gcloud` command and merged into the same
+denominator (`references/cai-blind-spots.md`). `inventory.py` ships a
+frozen table of these for types known to be absent from the catalogue
+and applies them automatically — that is tool-owned, reviewed code, and
+a model may no more edit it than any other frozen ruleset. A manifest
+block covers a type the table does not, or overrides one. That command
+widens what is checked rather than narrowing it, but it is still a
+hand-written piece of the denominator: `inventory.py` refuses non-read-only verbs, refuses
 `--filter`/`--limit` and friends, refuses a key template that is not
 unique, and stamps every sweep it ran into `inventory.json`'s
 `_meta.native_sweeps`. A model may draft the block; a human commits it.

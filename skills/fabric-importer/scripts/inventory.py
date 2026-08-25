@@ -563,6 +563,41 @@ def _normalize_org_policies_from_service(policies, container=''):
 # keep it from becoming a way to shrink the denominator quietly.
 # ---------------------------------------------------------------------------
 
+# Built-in enumerators, applied AUTOMATICALLY to any manifest type that
+# names them. The default answer to "CAI does not model this type" is
+# not "stop" and not "skip it" — it is "enumerate it another way" — so
+# the knowledge of HOW lives here rather than being re-derived, by hand,
+# in every engagement's manifest.
+#
+# This table is frozen, for the same reason the rest of this file is:
+# it decides part of what the denominator contains. A manifest may
+# override an entry (an operator who knows better wins) and may add
+# blocks for types the table does not cover; neither requires editing
+# this file. Entries earned in an engagement come back as a reviewed
+# code change, so the next run starts with them.
+#
+# The bar for an entry: hierarchy-container-scoped (per-bucket or
+# per-region commands cannot be expressed — see cai-blind-spots.md),
+# read-only, JSON output, and a key that is stable and unique. Most
+# non-CAI types fail one of those, which is why this table is short and
+# the run report still carries out-of-band enumeration by hand.
+NATIVE_ENUMERATORS = {
+    # IAM deny policies: absent from the CAI catalogue, managed by
+    # modules/organization, modules/folder and modules/project. The
+    # policy `name` returned by the API already contains the attachment
+    # point, so it is unique across containers on its own.
+    # Command shape verified against gcloud 576; payload shape not yet
+    # exercised against a live deny policy — a wrong key template fails
+    # loudly (absent field, or non-unique key), never silently.
+    'iam.googleapis.com/DenyPolicy': {
+        'command': ['iam', 'policies', 'list', '--kind=denypolicies'],
+        'container_arg':
+            '--attachment-point=cloudresourcemanager.googleapis.com/'
+            '{container}',
+        'key': '//iam.googleapis.com/{item.name}',
+    },
+}
+
 # Read-only verbs only. This is the manifest-side expression of the
 # safety contract ("read-only against GCP"): the tool refuses to run a
 # native enumerator that is not a list/describe.
@@ -720,7 +755,7 @@ def _normalize_native(items, asset_type, container, key_template):
   return out
 
 
-def sweep_native(asset_type, spec, containers):
+def sweep_native(asset_type, spec, containers, source='manifest'):
   """Runs one type's native enumerator over every in-scope container."""
   entries = []
   for container, sweep_id in containers:
@@ -737,6 +772,7 @@ def sweep_native(asset_type, spec, containers):
     got = _normalize_native(payload, asset_type, container, spec['key'])
     NATIVE_SWEEPS.append({
         'asset_type': asset_type,
+        'source': source,
         'command': ' '.join(cmd),
         'container': container,
         'yield_count': len(got),
@@ -884,7 +920,27 @@ def collect(manifest):
   }
   # Types the manifest enumerates natively are never sent to CAI: that is
   # the whole point of declaring one.
-  native_specs = {t['type']: t['enumerate'] for t in types if t.get('enumerate')}
+  # Built-in enumerators apply automatically; a manifest block overrides
+  # one for the same type.
+  declared = {t['type'] for t in types}
+  native_specs = {
+      t: dict(spec)
+      for t, spec in NATIVE_ENUMERATORS.items()
+      if t in declared and t not in PSEUDO_TYPES
+  }
+  native_sources = {t: 'builtin' for t in native_specs}
+  for t in types:
+    if t.get('enumerate'):
+      native_specs[t['type']] = t['enumerate']
+      native_sources[t['type']] = 'manifest'
+  if native_specs:
+    for t in sorted(native_specs):
+      if native_sources[t] == 'builtin':
+        print(
+            f'NOTICE: {t} is not modelled by Cloud Asset Inventory; using '
+            'the built-in gcloud\nenumerator. It stays in the denominator '
+            'and must be mapped or waived like any other asset.',
+            file=sys.stderr)
 
   all_entries = []
   scope_summaries = []
@@ -1031,7 +1087,8 @@ def collect(manifest):
       levels = effective_levels_by_type.get(atype) or set()
       if not levels:
         continue
-      scope_entries += sweep_native(atype, spec, containers_for(levels))
+      scope_entries += sweep_native(atype, spec, containers_for(levels),
+                                    source=native_sources.get(atype))
 
     # Filter this scope's entries by its effective levels
     scope_entries = apply_level_filter(scope_entries, effective_levels_by_type,
@@ -1078,7 +1135,8 @@ def collect(manifest):
         'A type CAI does not\nsupport is retrieved by other means — '
         '`gcloud` first — and merged into the same\ndenominator; it is '
         'never dropped, because an unenumerated asset is invisible to '
-        'BOTH\ngates at once. Do one of:\n'
+        'BOTH\ngates at once. No built-in enumerator covers the type(s) '
+        'above, so this needs a\ndecision. Do one of:\n'
         '  1. check the type string against\n'
         '     https://cloud.google.com/asset-inventory/docs/'
         'supported-asset-types\n'

@@ -1634,6 +1634,108 @@ class TestNonCaiEnumeration(unittest.TestCase):
     # Enumerating outside CAI is announced, never quietly assumed.
     self.assertIn('enumerated natively', buf.getvalue())
 
+  def test_every_shipped_enumerator_passes_its_own_validation(self):
+    """The built-in table is held to the guard rails it enforces on
+    operators: read-only verb, no output-narrowing flags, resolvable key
+    template."""
+    self.assertTrue(inventory.NATIVE_ENUMERATORS)
+    for atype, spec in inventory.NATIVE_ENUMERATORS.items():
+      inventory.validate_native_spec(atype, spec)
+      self.assertNotIn(atype, inventory.PSEUDO_TYPES)
+
+  def test_a_known_non_cai_type_is_enumerated_without_being_asked(self):
+    """The point of the table: declaring the type is enough. An operator
+    should not have to re-derive the gcloud incantation per engagement,
+    and CAI should never be consulted for a type known to be absent from
+    it."""
+    calls = []
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      calls.append(' '.join(cmd))
+      if 'policies' in cmd:
+        return [{
+            'name': 'policies/cloudresourcemanager.googleapis.com%2F'
+                    'organizations%2F1/denypolicies/deny-external'
+        }]
+      return []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      entries, _, _ = self._collect(
+          {
+              'scope': {
+                  'root': 'organizations/1'
+              },
+              'types': [{
+                  'type': 'iam.googleapis.com/DenyPolicy',
+                  'levels': ['organization']
+              }]
+          }, handler)
+    self.assertEqual(len(entries), 1)
+    self.assertTrue(entries[0]['key'].startswith('//iam.googleapis.com/'))
+    self.assertFalse([c for c in calls if 'asset' in c and 'DenyPolicy' in c])
+    self.assertIn('built-in gcloud', buf.getvalue())
+    self.assertEqual(inventory.NATIVE_SWEEPS[0]['source'], 'builtin')
+
+  def test_a_manifest_block_overrides_the_built_in(self):
+    """An operator who knows better than the shipped table wins, without
+    editing a frozen file."""
+    calls = []
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      calls.append(' '.join(cmd))
+      return [{'name': 'x'}] if 'policies' in cmd else []
+
+    with contextlib.redirect_stderr(io.StringIO()):
+      self._collect(
+          {
+              'scope': {
+                  'root': 'organizations/1'
+              },
+              'types': [{
+                  'type': 'iam.googleapis.com/DenyPolicy',
+                  'levels': ['organization'],
+                  'enumerate': {
+                      'command':
+                          ['iam', 'policies', 'list', '--kind=denypolicies'],
+                      'key': '//custom/{container}/{item.name}',
+                  },
+              }]
+          }, handler)
+    self.assertEqual(inventory.NATIVE_SWEEPS[0]['source'], 'manifest')
+    # The override's own container flag shape is used, not the table's.
+    self.assertIn(
+        'gcloud --quiet iam policies list --kind=denypolicies '
+        '--organization=1 --format=json', calls)
+
+  def test_a_type_nobody_can_enumerate_still_stops_the_run(self):
+    """Automatic fallback must not become automatic optimism: with no
+    built-in and no manifest block, the run stops rather than shipping a
+    denominator that is quietly missing a type."""
+
+    def handler(cmd, **kwargs):
+      if not kwargs.get('ignore_errors'):
+        raise SystemExit(self._UNSUPPORTED_ERR)
+      return []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      with self.assertRaises(SystemExit) as ctx:
+        self._collect(
+            {
+                'scope': {
+                    'root': 'organizations/1'
+                },
+                'types': [{
+                    'type': 'storage.googleapis.com/ManagedFolder',
+                    'levels': ['project']
+                }]
+            }, handler)
+    self.assertEqual(ctx.exception.code, 3)
+    self.assertIn('No built-in enumerator covers', buf.getvalue())
+
   def test_native_sweeps_are_recorded_for_the_run_report(self):
 
     def handler(cmd, **kwargs):

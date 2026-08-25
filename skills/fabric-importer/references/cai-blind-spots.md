@@ -31,10 +31,32 @@ The ladder, in order of preference:
    deliberate, attributed decision. "Not enumerable" is a fact to
    publish, never a silence.
 
-`inventory.py` enforces step 1→2: a declared type CAI rejects as unknown
-now fails the run with the remedy, instead of a generic enumeration
-failure. It cannot enforce 3 and 4 — that is the operator's honesty, and
-the run report is where it is spent.
+`inventory.py` walks steps 1→2 by itself. It ships a table of built-in
+enumerators (`NATIVE_ENUMERATORS`) for types known to be absent from the
+CAI catalogue: declaring such a type in the manifest is enough, and the
+tool announces that it took the gcloud route. A declared type that CAI
+rejects and no enumerator covers fails the run with the remedy, instead
+of a generic enumeration failure. Steps 3 and 4 it cannot enforce — that
+is the operator's honesty, and the run report is where it is spent.
+
+## Built-in enumerators
+
+| Asset type | How it is enumerated | Status |
+|---|---|---|
+| `iam.googleapis.com/DenyPolicy` | `gcloud iam policies list --kind=denypolicies --attachment-point=cloudresourcemanager.googleapis.com/<container>` | Command shape verified against gcloud 576; payload shape not yet exercised live |
+
+The table is short on purpose. To qualify, an enumerator has to be
+hierarchy-container-scoped, read-only, JSON-emitting, and produce a key
+that is stable and unique. Most non-CAI types fail one of those —
+usually the first — and stay in the blind-spot table below, enumerated
+by hand and named in the run report.
+
+The table is frozen, like the rest of `inventory.py`: it decides part of
+what the denominator contains. Nothing about extending it requires
+editing a frozen file, though — a manifest block covers a type the table
+does not, and overrides an entry when an operator knows better. An
+enumerator earned in an engagement should come back as a reviewed change
+to the table, so the next run starts with it.
 
 ## Declaring a native enumerator
 
@@ -111,7 +133,7 @@ agent may draft one; a human signs it, exactly as with waivers.
 |---|---|---|
 | Service coverage | CAI supports several hundred asset types but not every GCP service/resource; niche or very new resources may be absent | Check the [CAI supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types) for every service the user cares about; for uncovered types, declare a native enumerator (above) so they still enter the denominator |
 | Wrong type string | A type string that does not exist in the catalogue is not a blind spot but a typo, and it presents as one. `gcloud asset list` answers `INVALID_ARGUMENT: No supported asset type matches: <type>` | `inventory.py` classifies that error separately from a permission failure and stops with instructions. Live example: `logging.googleapis.com/OrganizationSettings` does not exist — CAI models the Logs Router settings singleton as `logging.googleapis.com/Settings` at every container level |
-| IAM deny policies | `iam.googleapis.com/DenyPolicy` is not a CAI asset type. Fabric manages deny policies at all three container levels (`iam_deny_policies`) | Declare a native enumerator around `gcloud iam policies list --kind=denypolicies` (the worked example above) |
+| IAM deny policies | `iam.googleapis.com/DenyPolicy` is not a CAI asset type. Fabric manages deny policies at all three container levels (`iam_deny_policies`) | **Handled automatically** — built-in enumerator; just declare the type |
 | Log exclusions | `logging.googleapis.com/LogExclusion` is not a CAI asset type, and current `gcloud` has no `logging exclusions` group either — the ladder falls through to the REST API (`v2/{parent}/exclusions`). Fabric manages exclusions in `modules/organization`, `modules/folder` and `modules/project` | Enumerate out of band, map them, and record the enumeration method in the run report; do not let their absence from CAI read as absence from the estate |
 | Org-policy content-type lag | `--content-type=org-policy` can lag behind newly introduced v2 constraints; the `orgpolicy.googleapis.com/Policy` resource asset stream is more complete | `inventory.py` merges both CAI streams; keep cross-checking counts with `gcloud org-policies list` |
 | Org-policy dry-run specs | CAI `orgpolicy.googleapis.com/Policy` resource stream returns policies where `spec` is present (with or without `dryRunSpec`), but completely **omits dry-run-only policies** where `spec` is unset | `inventory.py collect` sweeps `gcloud org-policies list` per in-scope container and merges by key, so dry-run-only policies enter the denominator automatically |

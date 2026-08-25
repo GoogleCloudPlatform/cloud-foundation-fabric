@@ -40,7 +40,7 @@ Fabric ref it was verified against; re-verify on bumps (see
 | VPC-SC policy / perimeters | vpc-sc | **V** | Live AccessPolicy adopted, AccessLevel, dry-run ServicePerimeter; bare-numeric policy import ID verified; `unknown`-level classification handled in `inventory.py`. Enforced perimeters (`status` block) unverified |
 | Tags (keys/values/bindings) | organization / folder / project tags | **V** | TagKey, TagValue, TagBinding, import IDs, address shapes, verified at organization, folder and project level. The `templatestring` escaping matrix (`$$${`) is DERIVED FROM MODULE SOURCE, not exercised — no seeded value contained `${` (tag IAM unverified) |
 | Billing account IAM | billing-account | **N** | — |
-| IAM deny policies | organization / folder / project | **N** | Not a CAI asset type. Enumerate natively (`gcloud iam policies list --kind=denypolicies`) — worked `enumerate:` block in `references/cai-blind-spots.md`; payload shape not yet exercised live |
+| IAM deny policies | organization / folder / project | **N** | Not a CAI asset type; enumerated automatically by the built-in `gcloud iam policies list --kind=denypolicies` enumerator. Command shape verified, payload shape not yet exercised live |
 | Log exclusions | organization / folder / project | **N** | Neither a CAI asset type nor a gcloud command group; needs REST enumeration recorded in the run report |
 | Workload identity pools / providers | project identity-providers | **V** | WorkloadIdentityPool, WorkloadIdentityPoolProvider, import IDs, address shapes, 30-day soft-delete residue, and org policy constraints verified |
 | Anything else | — | fallback | documented raw-resource fallback + capability-gap report |
@@ -48,7 +48,7 @@ Fabric ref it was verified against; re-verify on bumps (see
 ## Verification Notes & Caveats
 
 - **CAS & Custom Roles**: CAS `publishing_options` requires Fabric PR #4106 (`a153861aae`). Custom roles title/description convergence requires Fabric PR #4102.
-- **Non-CAI types**: CAI is the default source of the denominator, not its boundary. Types it does not model are enumerated with `gcloud` (declared in the manifest) or, failing that, the REST API, and merged into the same denominator; `inventory.py` stops the run rather than proceeding without them. See `references/cai-blind-spots.md`.
+- **Non-CAI types**: CAI is the default source of the denominator, not its boundary. Types it does not model are enumerated with `gcloud` — automatically where `inventory.py` ships a built-in enumerator, otherwise via a manifest `enumerate:` block — or, where gcloud has no container-scoped surface, out of band against the REST API. All of it merges into the same denominator, and `inventory.py` stops the run rather than proceeding without a type it cannot enumerate. See `references/cai-blind-spots.md`.
 - **Provider Label Inheritance**: Provider v5/v6/v7 generates computed `terraform_labels: {} -> {...}` diffs for resources with inherited provider labels. These are accounted for via scoped rules in `scripts/benign-drift.yaml`.
 
 ## Regression habit

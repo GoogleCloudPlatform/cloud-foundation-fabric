@@ -203,17 +203,21 @@ REST API only where gcloud has no surface at all. It is never dropped:
 an unenumerated asset is invisible to BOTH gates at once, which is the
 exact failure the gates exist to prevent.
 
-`inventory.py` refuses to proceed when a declared type is not in the CAI
-catalogue, and separates that from a permission failure. Two remedies,
-in order:
+`inventory.py` does this for you where it can: it ships built-in gcloud
+enumerators for types known to be absent from the CAI catalogue
+(`NATIVE_ENUMERATORS`), so declaring the type in the manifest is enough
+— the tool skips CAI, sweeps with gcloud, and says so. Where no
+enumerator exists it refuses to proceed rather than guess, and it
+separates that case from a permission failure. Two remedies, in order:
 
 - **The type string is wrong.** The common case. Check it against the
   [supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
   — CAI calls the Logs Router settings singleton
   `logging.googleapis.com/Settings`, not `.../OrganizationSettings`.
-- **CAI genuinely does not model the type.** Give it a native
-  enumerator in the manifest, which runs a read-only gcloud command per
-  in-scope container and normalizes the result into inventory entries:
+- **CAI genuinely does not model the type, and no built-in covers it.**
+  Give it a native enumerator in the manifest — a read-only gcloud
+  command run per in-scope container, normalized into inventory
+  entries. It also overrides a built-in when you know better:
 
   ```yaml
   - type: iam.googleapis.com/DenyPolicy       # not in the CAI catalogue
@@ -226,9 +230,12 @@ in order:
 
   The manifest is human-owned: draft the block, a human commits it.
   Guard rails (read-only verbs only, no `--filter`/`--limit`, unique key
-  templates) and the full ladder — including what to do when gcloud has
-  no surface either — are in
-  [references/cai-blind-spots.md](./references/cai-blind-spots.md).
+  templates), the built-in table, and the full ladder — including what
+  to do when gcloud has no surface either, or when the command is scoped
+  to a bucket rather than a container — are in
+  [references/cai-blind-spots.md](./references/cai-blind-spots.md). An
+  enumerator that worked belongs in your report as a proposed addition
+  to the built-in table.
 
 Every entry that did not come from CAI is stamped into
 `inventory.json`'s `_meta.native_sweeps` with the verbatim command, and

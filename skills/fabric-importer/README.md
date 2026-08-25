@@ -194,13 +194,16 @@ python3 scripts/inventory.py collect --manifest import-manifest.yaml --out inven
 
 CAI is the default source of the denominator, not its boundary. CAI does
 not model every GCP resource, and a type it cannot see would otherwise be
-invisible to both gates at once. So a declared type that is not in the
-CAI catalogue stops the run with the remedy rather than shrinking the
-denominator: either the type string is wrong (checked against the
+invisible to both gates at once — so the tool routes around it rather
+than shrinking the denominator. For types known to be absent from the
+catalogue it ships built-in `gcloud` enumerators and uses them
+automatically; declaring the type is all it takes. Where no enumerator
+exists the run stops with the remedy instead of guessing: either the
+type string is wrong (checked against the
 [supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)),
-or the type needs a native enumerator — a read-only `gcloud` command
-declared in the manifest, run per in-scope container, normalized into the
-same inventory:
+or the type needs a native enumerator declared in the manifest — a
+read-only `gcloud` command run per in-scope container, normalized into
+the same inventory (this also overrides a built-in):
 
 ```yaml
   - type: iam.googleapis.com/DenyPolicy       # not in the CAI catalogue
