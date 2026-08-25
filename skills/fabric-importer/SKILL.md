@@ -195,6 +195,45 @@ incremental re-run, never a rewrite.
 python3 scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
 ```
 
+**CAI is the default source of the denominator, never the boundary of
+it.** Cloud Asset Inventory does not model every GCP resource. A type it
+does not support must be enumerated by other means and merged into the
+same denominator — `gcloud <service> list|describe` first, the service
+REST API only where gcloud has no surface at all. It is never dropped:
+an unenumerated asset is invisible to BOTH gates at once, which is the
+exact failure the gates exist to prevent.
+
+`inventory.py` refuses to proceed when a declared type is not in the CAI
+catalogue, and separates that from a permission failure. Two remedies,
+in order:
+
+- **The type string is wrong.** The common case. Check it against the
+  [supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+  — CAI calls the Logs Router settings singleton
+  `logging.googleapis.com/Settings`, not `.../OrganizationSettings`.
+- **CAI genuinely does not model the type.** Give it a native
+  enumerator in the manifest, which runs a read-only gcloud command per
+  in-scope container and normalizes the result into inventory entries:
+
+  ```yaml
+  - type: iam.googleapis.com/DenyPolicy       # not in the CAI catalogue
+    levels: [organization, folder]
+    enumerate:
+      command: [iam, policies, list, --kind=denypolicies]
+      container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
+      key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
+  ```
+
+  The manifest is human-owned: draft the block, a human commits it.
+  Guard rails (read-only verbs only, no `--filter`/`--limit`, unique key
+  templates) and the full ladder — including what to do when gcloud has
+  no surface either — are in
+  [references/cai-blind-spots.md](./references/cai-blind-spots.md).
+
+Every entry that did not come from CAI is stamped into
+`inventory.json`'s `_meta.native_sweeps` with the verbatim command, and
+belongs in the step-5 report.
+
 ### Step 2 — get your worklist
 
 ```bash
@@ -271,6 +310,10 @@ The loop:
    `gcloud asset list` output before trusting it. Type strings taken
    from module knowledge have been wrong before. Record what CAI
    actually returns, including which enumeration path had to be used.
+   If CAI does not model the type at all, that is not a dead end and
+   not a reason to narrow the manifest: enumerate it with `gcloud` (or
+   the REST API) and merge it into the same denominator — see step 1 and
+   `references/cai-blind-spots.md`.
 2. **Find the module and read its source.** Canonical module map first,
    then `modules/` in this repository. Read the resource blocks for
    addresses and `for_each` key formats, and the variables file for the
@@ -355,9 +398,13 @@ reviewed-benign.
 ### Step 5 — report
 
 Produce a run report for the user: what was imported (counts by type,
-with the Fabric module used for each), a **module capability gaps**
-section — every raw resource emitted, which module fell short, which
-attribute, and whether it is upstream-Fabric-issue material — plus
+with the Fabric module used for each), an **enumeration sources**
+section naming every type that did not come from CAI and the exact
+command that produced it (`_meta.native_sweeps` covers declared
+enumerators; quote anything you enumerated out of band yourself), a
+**module capability gaps** section — every raw resource emitted, which
+module fell short, which attribute, and whether it is
+upstream-Fabric-issue material — plus
 benign diffs relied on, waivers in effect, proposed waivers/benign rules
 awaiting human review, and anything the manifest excludes that you
 believe deserves attention. Plain facts; no "100%" claims beyond what the

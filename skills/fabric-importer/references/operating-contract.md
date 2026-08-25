@@ -52,6 +52,18 @@ keys, raw-vs-module calls — is falsifiable by the plan and can be
 model-owned. Use that test when something new appears: *does this shrink
 what is checked, or is it irreversible?* If yes, a human decides.
 
+The manifest is human-owned for that reason, and it is why a manifest is
+also the only place a native (non-CAI) enumerator may be declared. Cloud
+Asset Inventory does not model every GCP resource, and a type it cannot
+see is invisible to both gates at once, so such types are enumerated
+with a read-only `gcloud` command and merged into the same denominator
+(`references/cai-blind-spots.md`). That command widens what is checked
+rather than narrowing it, but it is still a hand-written piece of the
+denominator: `inventory.py` refuses non-read-only verbs, refuses
+`--filter`/`--limit` and friends, refuses a key template that is not
+unique, and stamps every sweep it ran into `inventory.json`'s
+`_meta.native_sweeps`. A model may draft the block; a human commits it.
+
 Waivers therefore carry an optional `signed_by` field. It is reported by
 default and enforced with `coverage.py --require-signed-waivers`.
 Enforcement is opt-in on purpose: demanding attribution where no human is

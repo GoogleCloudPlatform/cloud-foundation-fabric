@@ -34,8 +34,17 @@ collect mode wraps them with provenance metadata:
   - iam policies: key = "<asset name>#iam"
   - org policies: key = "<asset name>#org-policy/<constraint>"
 
-All gcloud interaction is read-only (`gcloud asset list`). Requires
-roles/cloudasset.viewer on the scope (see SKILL.md).
+Cloud Asset Inventory is the DEFAULT source of the denominator, not its
+boundary: a manifest type CAI does not model is enumerated natively via
+a read-only gcloud command declared in the manifest (`enumerate:`) and
+merged into the same output. A declared type CAI rejects as unknown, and
+for which no native enumerator exists, is fatal — an unenumerated asset
+is invisible to both gates at once.
+
+All gcloud interaction is read-only (`gcloud asset list`, plus the
+list/describe commands declared by native enumerators). Requires
+roles/cloudasset.viewer on the scope (see SKILL.md), plus per-service
+viewer roles for any natively enumerated type.
 """
 
 import argparse
@@ -68,7 +77,35 @@ SWEEP_FAILURES = []
 # a disabled service and a permission error can produce the same string.
 SUPPRESSED_SWEEPS = []
 
+# Declared types Cloud Asset Inventory refused as unknown. CAI is the
+# DEFAULT source of the denominator, never the boundary of it: a type CAI
+# does not model has to be enumerated by other means (gcloud first) and
+# merged into the same denominator. Dropping it is the silent-gap failure
+# this tool exists to prevent, so an unsupported type with no native
+# enumerator is fatal, with instructions.
+UNSUPPORTED_CAI_TYPES = []
+
+# What each native (non-CAI) enumeration actually ran and yielded, for the
+# provenance block: a denominator built partly outside CAI must say so.
+NATIVE_SWEEPS = []
+
 import shutil
+
+# gcloud's wording when an asset type is not in the CAI catalogue. Both
+# `asset list` and `asset search-all-resources` say it; matching the
+# phrase is what separates "this type does not exist in CAI" from "you
+# lack permission", which are the same exit code and must not be the same
+# diagnosis.
+_CAI_UNSUPPORTED_MARKERS = (
+    'no supported asset type matches',
+    'is not a supported asset type',
+    'not a valid asset type',
+)
+
+
+def _is_unsupported_type_error(text):
+  low = (text or '').lower()
+  return any(m in low for m in _CAI_UNSUPPORTED_MARKERS)
 
 
 def run_json(cmd, ignore_errors=False, allow_disabled_service=False,
@@ -499,6 +536,215 @@ def _normalize_org_policies_from_service(policies, container=''):
   return out
 
 
+# ---------------------------------------------------------------------------
+# Native (non-CAI) enumeration
+#
+# Rule: CAI is the default source of the denominator, not its boundary.
+# Anything CAI does not support is retrieved by other means — `gcloud`
+# first — and merged into the SAME denominator, so the completeness gate
+# still has to account for it. "CAI cannot see it" is never a reason for
+# an asset to be absent; it is a reason to enumerate it differently.
+#
+# A manifest type entry declares this with an `enumerate:` block:
+#
+#   - type: iam.googleapis.com/DenyPolicy
+#     levels: [organization, folder]
+#     enumerate:
+#       command: [iam, policies, list, --kind=denypolicies]
+#       container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
+#       key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
+#
+# The command runs once per in-scope container at the declared levels,
+# with --format=json and a container argument appended by this tool
+# (--organization/--folder/--project=<id> unless `container_arg` gives
+# the shape the command wants). The manifest is human-owned and
+# human-committed at the scope-approval gate, which is what makes an
+# operator-supplied command acceptable here; the guards below are what
+# keep it from becoming a way to shrink the denominator quietly.
+# ---------------------------------------------------------------------------
+
+# Read-only verbs only. This is the manifest-side expression of the
+# safety contract ("read-only against GCP"): the tool refuses to run a
+# native enumerator that is not a list/describe.
+_NATIVE_READ_VERBS = frozenset(('list', 'describe', 'get', 'search'))
+
+# Flags the tool owns, or that reshape/limit output. A `--filter` or
+# `--limit` in an enumerator shrinks the denominator with no trace, which
+# is precisely the failure mode the gates exist to prevent; scope is
+# expressed in the manifest's scope block, never in the command.
+_NATIVE_FORBIDDEN_FLAGS = ('--format', '--filter', '--limit', '--page-size',
+                           '--flatten', '--sort-by', '--uri')
+
+_KEY_TOKEN = re.compile(r'\{([^{}]+)\}')
+
+
+def _container_flag(container_path):
+  return {
+      'organizations': '--organization',
+      'folders': '--folder',
+      'projects': '--project',
+  }.get(container_path.split('/', 1)[0])
+
+
+def validate_native_spec(asset_type, spec):
+  """Validates one `enumerate:` block, fail-closed."""
+  if not isinstance(spec, dict):
+    raise SystemExit(
+        f'manifest type {asset_type!r}: `enumerate` must be a mapping with '
+        '`command` and `key`')
+  cmd = spec.get('command')
+  if (not isinstance(cmd, list) or not cmd or
+      not all(isinstance(c, str) and c.strip() for c in cmd)):
+    raise SystemExit(
+        f'manifest type {asset_type!r}: `enumerate.command` must be a '
+        "non-empty list of gcloud arguments, e.g. [logging, sinks, list]")
+  if cmd[0] == 'gcloud':
+    raise SystemExit(
+        f'manifest type {asset_type!r}: drop the leading `gcloud` from '
+        '`enumerate.command`; the tool supplies it (and nothing else is '
+        'executable from a manifest)')
+  verbs = [c for c in cmd if not c.startswith('-')]
+  if not verbs or verbs[-1] not in _NATIVE_READ_VERBS:
+    raise SystemExit(
+        f'manifest type {asset_type!r}: `enumerate.command` must end in a '
+        f'read-only verb {sorted(_NATIVE_READ_VERBS)}; refusing to run '
+        f'{verbs[-1] if verbs else cmd[-1]!r} against live infrastructure')
+  for c in cmd:
+    for bad in _NATIVE_FORBIDDEN_FLAGS:
+      if c == bad or c.startswith(bad + '='):
+        raise SystemExit(
+            f'manifest type {asset_type!r}: `enumerate.command` may not '
+            f'carry {bad}. Output shape is the tool\'s; narrowing belongs '
+            'in the manifest scope, not in a flag that would shrink the '
+            'denominator invisibly')
+    if c.startswith('--impersonate-service-account'):
+      raise SystemExit(
+          f'manifest type {asset_type!r}: `enumerate.command` may not '
+          'choose an identity; set CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT '
+          'for the whole run instead')
+  carg = spec.get('container_arg')
+  if carg is not None:
+    if not isinstance(carg, str) or not carg.startswith('--'):
+      raise SystemExit(
+          f'manifest type {asset_type!r}: `enumerate.container_arg` must be '
+          "a flag template, e.g. "
+          "'--attachment-point=cloudresourcemanager.googleapis.com/"
+          "{container}'")
+    tokens = _KEY_TOKEN.findall(carg)
+    if not tokens or any(
+        t not in ('container', 'container_id') for t in tokens):
+      raise SystemExit(
+          f'manifest type {asset_type!r}: `enumerate.container_arg` must '
+          'reference {container} or {container_id} and nothing else — a '
+          'container argument that does not vary per container would sweep '
+          'the same place repeatedly and leave the rest unenumerated')
+  key = spec.get('key')
+  if not isinstance(key, str) or '{' not in key:
+    raise SystemExit(
+        f'manifest type {asset_type!r}: `enumerate.key` must be a template '
+        "containing at least one field, e.g. "
+        "'//logging.googleapis.com/{item.name}'")
+  for token in _KEY_TOKEN.findall(key):
+    if token not in ('container',
+                     'container_id') and not token.startswith('item.'):
+      raise SystemExit(
+          f'manifest type {asset_type!r}: unknown key field {token!r}; use '
+          '{container}, {container_id} or {item.<field>[.<field>...]}')
+
+
+def _render_native_key(template, container, item):
+  """Renders one key. Raises KeyError when a field is absent: a key that
+  silently loses a field collapses distinct assets onto one key, which
+  removes them from the denominator without removing them from the
+  cloud."""
+
+  def resolve(match):
+    token = match.group(1)
+    if token == 'container':
+      return container
+    if token == 'container_id':
+      return container.split('/', 1)[1] if '/' in container else container
+    value = item
+    for part in token.split('.')[1:]:
+      if not isinstance(value, dict) or part not in value:
+        raise KeyError(token)
+      value = value[part]
+    if value is None or isinstance(value, (dict, list)):
+      raise KeyError(token)
+    return str(value)
+
+  return _KEY_TOKEN.sub(resolve, template)
+
+
+def _normalize_native(items, asset_type, container, key_template):
+  """Normalizes one native sweep's JSON into inventory entries.
+
+  `describe` commands emit an object, `list` commands an array; both are
+  accepted. A key template that is not unique across the returned items
+  is fatal rather than deduplicated — silently merging two assets into
+  one entry is a shrunken denominator with a green gate.
+  """
+  if isinstance(items, dict):
+    items = [items]
+  if not isinstance(items, list):
+    SWEEP_FAILURES.append(
+        f'native enumeration for {asset_type} on {container}: expected a '
+        'JSON object or array')
+    return []
+  out = []
+  for item in items:
+    if not isinstance(item, dict):
+      continue
+    try:
+      key = _render_native_key(key_template, container, item)
+    except KeyError as e:
+      SWEEP_FAILURES.append(
+          f'native enumeration for {asset_type} on {container}: key '
+          f'template {key_template!r} references {e.args[0]!r}, absent from '
+          'the returned item')
+      return []
+    out.append({
+        'key': key,
+        'asset_type': asset_type,
+        'level': _level_of(container) or 'unknown',
+        'container': container,
+    })
+  keys = {e['key'] for e in out}
+  if len(keys) != len(out):
+    SWEEP_FAILURES.append(
+        f'native enumeration for {asset_type} on {container}: key template '
+        f'{key_template!r} produced {len(keys)} distinct key(s) for '
+        f'{len(out)} item(s); a non-unique key hides assets from the '
+        'denominator')
+    return []
+  return out
+
+
+def sweep_native(asset_type, spec, containers):
+  """Runs one type's native enumerator over every in-scope container."""
+  entries = []
+  for container, sweep_id in containers:
+    if spec.get('container_arg'):
+      container_arg = _render_native_key(spec['container_arg'], container, {})
+    else:
+      flag = _container_flag(container)
+      if not flag:
+        continue
+      container_arg = f'{flag}={sweep_id}'
+    cmd = (['gcloud', '--quiet'] + list(spec['command']) +
+           [container_arg, '--format=json'])
+    payload = run_json(cmd, ignore_errors=True, allow_disabled_service=True)
+    got = _normalize_native(payload, asset_type, container, spec['key'])
+    NATIVE_SWEEPS.append({
+        'asset_type': asset_type,
+        'command': ' '.join(cmd),
+        'container': container,
+        'yield_count': len(got),
+    })
+    entries += got
+  return entries
+
+
 def validate_manifest_types(types):
   """Fails closed on manifest mistakes that silently shrink the
   denominator.
@@ -521,6 +767,12 @@ def validate_manifest_types(types):
           'entries silently narrow the denominator (last one wins) — '
           'merge them into a single entry')
     seen.add(tt)
+    if t.get('enumerate') is not None:
+      if tt in PSEUDO_TYPES:
+        raise SystemExit(
+            f'manifest type {tt!r} is a pseudo-type enumerated by this tool; '
+            '`enumerate` is for types CAI does not model')
+      validate_native_spec(tt, t['enumerate'])
     bad = set(t.get('levels') or []) - VALID_LEVELS
     if bad:
       raise SystemExit(
@@ -614,6 +866,8 @@ def collect(manifest):
   # them).
   del SWEEP_FAILURES[:]
   del SUPPRESSED_SWEEPS[:]
+  del UNSUPPORTED_CAI_TYPES[:]
+  del NATIVE_SWEEPS[:]
   registry = ProjectRegistry()
   scopes = parse_and_validate_scopes(manifest, registry)
   types = manifest.get('types') or []
@@ -628,6 +882,9 @@ def collect(manifest):
       for t in types
       if t.get('iam') and t.get('type') not in PSEUDO_TYPES
   }
+  # Types the manifest enumerates natively are never sent to CAI: that is
+  # the whole point of declaring one.
+  native_specs = {t['type']: t['enumerate'] for t in types if t.get('enumerate')}
 
   all_entries = []
   scope_summaries = []
@@ -652,13 +909,50 @@ def collect(manifest):
     }
     # Keep types that have at least one valid level in this scope (or unknown)
     active_resource_types = sorted({
-        t['type']
-        for t in types
-        if t.get('type') not in PSEUDO_TYPES and (effective_levels_by_type[
+        t['type'] for t in types if t.get('type') not in PSEUDO_TYPES and
+        t['type'] not in native_specs and (effective_levels_by_type[
             t['type']] or 'unknown' in manifest_levels_by_type[t['type']])
     })
 
     scope_entries = []
+
+    # In-scope containers at a given set of levels, resolved once per
+    # (scope, levels) and shared by the org-policy sweep and every
+    # native enumerator.
+    container_cache = {}
+
+    def containers_for(levels, _cache=container_cache, _scope_arg=scope_arg,
+                       _root=root, _include=include, _exclude=exclude):
+      ck = tuple(sorted(levels))
+      if ck in _cache:
+        return _cache[ck]
+      out = []
+      if 'organization' in levels and _root.startswith('organizations/'):
+        out.append((_root, _root.split('/', 1)[1]))
+      cont_asset_types = []
+      if 'folder' in levels:
+        cont_asset_types.append('cloudresourcemanager.googleapis.com/Folder')
+      if 'project' in levels:
+        cont_asset_types.append('cloudresourcemanager.googleapis.com/Project')
+      if cont_asset_types:
+        cont_assets = run_gcloud_json([
+            _scope_arg, '--content-type=resource',
+            f'--asset-types={",".join(cont_asset_types)}'
+        ])
+        registry.ingest_assets(cont_assets)
+        for a in cont_assets:
+          if in_subtree(a, _include, _exclude, registry):
+            c_path = a['name'].removeprefix(
+                '//cloudresourcemanager.googleapis.com/')
+            if a.get(
+                'assetType') == 'cloudresourcemanager.googleapis.com/Project':
+              pid = a.get('resource', {}).get(
+                  'data', {}).get('projectId') or c_path.split('/', 1)[1]
+              out.append((c_path, pid))
+            else:
+              out.append((c_path, c_path.split('/', 1)[1]))
+      _cache[ck] = out
+      return out
 
     if active_resource_types:
       try:
@@ -672,7 +966,15 @@ def collect(manifest):
           try:
             assets += run_gcloud_json(
                 [scope_arg, '--content-type=resource', f'--asset-types={rt}'])
-          except SystemExit:
+          except SystemExit as e:
+            if _is_unsupported_type_error(str(e)):
+              # Not a permission problem and not retryable: CAI does not
+              # model this type at all. `search-all-resources` would
+              # fail identically, so skip it and raise the real issue —
+              # the type needs a native enumerator.
+              if rt not in UNSUPPORTED_CAI_TYPES:
+                UNSUPPORTED_CAI_TYPES.append(rt)
+              continue
             search_scope = scope_arg.replace(
                 '--organization=', 'organizations/').replace(
                     '--folder=', 'folders/').replace('--project=', 'projects/')
@@ -711,39 +1013,9 @@ def collect(manifest):
       scope_entries += _normalize_org_policies_from_resources(
           a for a in pol_assets if in_subtree(a, include, exclude, registry))
 
-      levels = effective_levels_by_type['org-policy']
-      containers = []
-      if 'organization' in levels and root.startswith('organizations/'):
-        containers.append((root, root.split('/', 1)[1]))
-      cont_asset_types = []
-      if 'folder' in levels:
-        cont_asset_types.append('cloudresourcemanager.googleapis.com/Folder')
-      if 'project' in levels:
-        cont_asset_types.append('cloudresourcemanager.googleapis.com/Project')
-      if cont_asset_types:
-        cont_assets = run_gcloud_json([
-            scope_arg, '--content-type=resource',
-            f'--asset-types={",".join(cont_asset_types)}'
-        ])
-        registry.ingest_assets(cont_assets)
-        for a in cont_assets:
-          if in_subtree(a, include, exclude, registry):
-            c_path = a['name'].removeprefix(
-                '//cloudresourcemanager.googleapis.com/')
-            if a.get(
-                'assetType') == 'cloudresourcemanager.googleapis.com/Project':
-              pid = a.get('resource', {}).get(
-                  'data', {}).get('projectId') or c_path.split('/', 1)[1]
-              containers.append((c_path, pid))
-            else:
-              containers.append((c_path, c_path.split('/', 1)[1]))
-      for container, sweep_id in containers:
-        kind = container.split('/', 1)[0]
-        flag = {
-            'organizations': '--organization',
-            'folders': '--folder',
-            'projects': '--project'
-        }.get(kind)
+      for container, sweep_id in containers_for(
+          effective_levels_by_type['org-policy']):
+        flag = _container_flag(container)
         if not flag:
           continue
         scope_entries += _normalize_org_policies_from_service(
@@ -752,6 +1024,14 @@ def collect(manifest):
                 f'{flag}={sweep_id}', '--format=json'
             ], ignore_errors=True, allow_disabled_service=True),
             container=container)
+
+    # Natively enumerated types: everything CAI does not model. Same
+    # denominator, different source.
+    for atype, spec in sorted(native_specs.items()):
+      levels = effective_levels_by_type.get(atype) or set()
+      if not levels:
+        continue
+      scope_entries += sweep_native(atype, spec, containers_for(levels))
 
     # Filter this scope's entries by its effective levels
     scope_entries = apply_level_filter(scope_entries, effective_levels_by_type,
@@ -767,6 +1047,58 @@ def collect(manifest):
   # Dedupe merged streams across all scopes
   entries = list({e['key']: e for e in all_entries}.values())
   entries.sort(key=lambda e: e['key'])
+
+  if NATIVE_SWEEPS:
+    by_type = {}
+    for sw in NATIVE_SWEEPS:
+      agg = by_type.setdefault(sw['asset_type'], {
+          'containers': 0,
+          'yield_count': 0
+      })
+      agg['containers'] += 1
+      agg['yield_count'] += sw['yield_count']
+    print(
+        f'\nNOTICE: {len(by_type)} type(s) were enumerated natively '
+        '(outside Cloud Asset Inventory). They are IN the denominator '
+        'and must be\nmapped or waived like any other asset; name the '
+        'command in the run report:', file=sys.stderr)
+    for t, agg in sorted(by_type.items()):
+      print(
+          f'  - {t}: {agg["yield_count"]} entr(ies) over '
+          f'{agg["containers"]} container(s)', file=sys.stderr)
+
+  if UNSUPPORTED_CAI_TYPES:
+    print(
+        f'\nERROR: {len(UNSUPPORTED_CAI_TYPES)} declared type(s) are not '
+        'modelled by Cloud Asset Inventory:', file=sys.stderr)
+    for t in UNSUPPORTED_CAI_TYPES:
+      print(f'  - {t}', file=sys.stderr)
+    print(
+        'CAI is the DEFAULT source of the denominator, not its boundary. '
+        'A type CAI does not\nsupport is retrieved by other means — '
+        '`gcloud` first — and merged into the same\ndenominator; it is '
+        'never dropped, because an unenumerated asset is invisible to '
+        'BOTH\ngates at once. Do one of:\n'
+        '  1. check the type string against\n'
+        '     https://cloud.google.com/asset-inventory/docs/'
+        'supported-asset-types\n'
+        '     (a wrong spelling is the common cause — e.g. CAI calls the '
+        'Logs Router\n'
+        '     settings singleton logging.googleapis.com/Settings, not '
+        '.../OrganizationSettings);\n'
+        '  2. give the type a native enumerator in the manifest:\n'
+        '       - type: <type>\n'
+        '         levels: [organization]\n'
+        '         enumerate:\n'
+        '           command: [<read-only gcloud command>]   # no leading '
+        '`gcloud`\n'
+        "           key: '//<service>/{item.name}'\n"
+        '     see references/cai-blind-spots.md;\n'
+        '  3. drop the type from the manifest and record the gap in a '
+        'signed waiver and\n     in the run report — deliberately, never '
+        'silently.\n'
+        'Never proceed on a partial denominator.', file=sys.stderr)
+    raise SystemExit(3)
 
   if SUPPRESSED_SWEEPS:
     print(
@@ -866,13 +1198,19 @@ def main():
                     zero_yield,
                 'suppressed_sweeps':
                     list(SUPPRESSED_SWEEPS),
+                # Which part of the denominator did NOT come from CAI,
+                # and the exact command that produced it. A reviewer can
+                # re-run these by hand.
+                'native_sweeps':
+                    list(NATIVE_SWEEPS),
                 'scopes':
                     scope_summaries,
                 'resolved_projects':
                     registry.id_to_num,
             },
             'assets': entries,
-        }, indent=2)
+        },
+        indent=2)
   if args.out == '-':
     print(payload)
   else:

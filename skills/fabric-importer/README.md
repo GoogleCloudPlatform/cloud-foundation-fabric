@@ -192,6 +192,31 @@ The enumeration script queries Cloud Asset Inventory (CAI) and service APIs to c
 python3 scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
 ```
 
+CAI is the default source of the denominator, not its boundary. CAI does
+not model every GCP resource, and a type it cannot see would otherwise be
+invisible to both gates at once. So a declared type that is not in the
+CAI catalogue stops the run with the remedy rather than shrinking the
+denominator: either the type string is wrong (checked against the
+[supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)),
+or the type needs a native enumerator — a read-only `gcloud` command
+declared in the manifest, run per in-scope container, normalized into the
+same inventory:
+
+```yaml
+  - type: iam.googleapis.com/DenyPolicy       # not in the CAI catalogue
+    levels: [organization, folder]
+    enumerate:
+      command: [iam, policies, list, --kind=denypolicies]
+      container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
+      key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
+```
+
+Every such sweep is recorded verbatim in `_meta.native_sweeps` so a
+reviewer can re-run it. See
+[references/cai-blind-spots.md](./references/cai-blind-spots.md) for the
+full ladder (CAI → gcloud → REST API → signed waiver) and the guard
+rails.
+
 ### 3. Compute Delta Worklist
 The completeness tool reconciles the denominator against any existing code and written waivers:
 ```bash

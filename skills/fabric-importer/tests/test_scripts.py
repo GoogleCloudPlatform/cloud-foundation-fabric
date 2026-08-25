@@ -1478,6 +1478,381 @@ class TestInventoryManifestValidation(unittest.TestCase):
     self.assertIn('invalid level', str(ctx.exception))
 
 
+class TestNonCaiEnumeration(unittest.TestCase):
+  """CAI is the default source of the denominator, not its boundary.
+
+  A type CAI does not model must be enumerated by other means (gcloud
+  first) and merged into the SAME denominator. The failure this class
+  pins down is the one seen live: a manifest declared
+  `logging.googleapis.com/OrganizationSettings`, which is not in the CAI
+  catalogue at all, and the run died with a generic "enumeration
+  failure" that told the operator nothing about what to do instead.
+  """
+
+  _UNSUPPORTED_ERR = (
+      'command failed: gcloud --quiet asset list\n'
+      'ERROR: (gcloud.asset.list) INVALID_ARGUMENT: No supported asset '
+      'type matches: logging.googleapis.com/OrganizationSettings. See '
+      'https://cloud.google.com/asset-inventory/docs/supported-asset-types')
+
+  def _collect(self, manifest, handler):
+    real = inventory.run_json
+    inventory.run_json = handler
+    try:
+      return inventory.collect(manifest)
+    finally:
+      inventory.run_json = real
+
+  def test_unsupported_type_is_diagnosed_not_just_reported(self):
+
+    def handler(cmd, **kwargs):
+      joined = ' '.join(cmd)
+      if 'OrganizationSettings' in joined and not kwargs.get('ignore_errors'):
+        raise SystemExit(self._UNSUPPORTED_ERR)
+      if 'asset' in cmd and 'list' in cmd and not kwargs.get('ignore_errors'):
+        raise SystemExit(self._UNSUPPORTED_ERR)
+      return []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      with self.assertRaises(SystemExit) as ctx:
+        self._collect(
+            {
+                'scope': {
+                    'root': 'organizations/1'
+                },
+                'types': [{
+                    'type': 'logging.googleapis.com/OrganizationSettings',
+                    'levels': ['organization']
+                }]
+            }, handler)
+    self.assertEqual(ctx.exception.code, 3)
+    err = buf.getvalue()
+    self.assertIn('not modelled by Cloud Asset Inventory', err)
+    self.assertIn('logging.googleapis.com/OrganizationSettings', err)
+    # The message has to name the remedy, not just the symptom.
+    self.assertIn('enumerate:', err)
+    self.assertIn('gcloud', err)
+    self.assertIn('logging.googleapis.com/Settings', err)
+
+  def test_unsupported_type_skips_the_pointless_search_fallback(self):
+    """`search-all-resources` rejects an unknown type exactly like
+    `asset list` does, so retrying it only buried the real diagnosis
+    under a second identical error."""
+    calls = []
+
+    def handler(cmd, **kwargs):
+      calls.append(' '.join(cmd))
+      if not kwargs.get('ignore_errors'):
+        raise SystemExit(self._UNSUPPORTED_ERR)
+      return []
+
+    with contextlib.redirect_stderr(io.StringIO()):
+      with self.assertRaises(SystemExit):
+        self._collect(
+            {
+                'scope': {
+                    'root': 'organizations/1'
+                },
+                'types': [{
+                    'type': 'logging.googleapis.com/OrganizationSettings',
+                    'levels': ['organization']
+                }]
+            }, handler)
+    self.assertFalse([c for c in calls if 'search-all-resources' in c])
+
+  def test_permission_failure_is_still_a_sweep_failure(self):
+    """Only the type-catalogue error is re-diagnosed; a 403 must keep
+    its old path (search fallback, then the tolerated-failure exit)."""
+    calls = []
+
+    def handler(cmd, **kwargs):
+      calls.append(' '.join(cmd))
+      if not kwargs.get('ignore_errors'):
+        raise SystemExit('command failed\nERROR: PERMISSION_DENIED')
+      inventory.SWEEP_FAILURES.append('simulated 403')
+      return []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      with self.assertRaises(SystemExit) as ctx:
+        self._collect(
+            {
+                'scope': {
+                    'root': 'organizations/1'
+                },
+                'types': [{
+                    'type': 'storage.googleapis.com/Bucket',
+                    'levels': ['project']
+                }]
+            }, handler)
+    self.assertEqual(ctx.exception.code, 3)
+    self.assertIn('enumeration failure', buf.getvalue())
+    self.assertNotIn('not modelled by Cloud Asset Inventory', buf.getvalue())
+    self.assertTrue([c for c in calls if 'search-all-resources' in c])
+
+  _EXCLUSION_MANIFEST = {
+      'scope': {
+          'root': 'organizations/1'
+      },
+      'types': [{
+          'type': 'logging.googleapis.com/LogExclusion',
+          'levels': ['organization'],
+          'enumerate': {
+              'command': ['logging', 'exclusions', 'list'],
+              'key': '//logging.googleapis.com/{container}/exclusions/'
+                     '{item.name}',
+          },
+      }]
+  }
+
+  def test_native_enumeration_enters_the_same_denominator(self):
+    calls = []
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      calls.append(' '.join(cmd))
+      if 'exclusions' in cmd:
+        return [{'name': 'noisy-audit'}, {'name': 'debug'}]
+      return []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      entries, _, _ = self._collect(self._EXCLUSION_MANIFEST, handler)
+    self.assertEqual([e['key'] for e in entries], [
+        '//logging.googleapis.com/organizations/1/exclusions/debug',
+        '//logging.googleapis.com/organizations/1/exclusions/noisy-audit',
+    ])
+    self.assertTrue(
+        all(e['asset_type'] == 'logging.googleapis.com/LogExclusion' and
+            e['level'] == 'organization' for e in entries))
+    # The type is never sent to CAI - that is the point of declaring it.
+    self.assertFalse([c for c in calls if 'LogExclusion' in c])
+    self.assertIn(
+        'gcloud --quiet logging exclusions list --organization=1 '
+        '--format=json', calls)
+    # Enumerating outside CAI is announced, never quietly assumed.
+    self.assertIn('enumerated natively', buf.getvalue())
+
+  def test_native_sweeps_are_recorded_for_the_run_report(self):
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      return [{'name': 'noisy-audit'}] if 'exclusions' in cmd else []
+
+    with contextlib.redirect_stderr(io.StringIO()):
+      self._collect(self._EXCLUSION_MANIFEST, handler)
+    self.assertEqual(len(inventory.NATIVE_SWEEPS), 1)
+    sweep = inventory.NATIVE_SWEEPS[0]
+    self.assertEqual(sweep['asset_type'], 'logging.googleapis.com/LogExclusion')
+    self.assertEqual(sweep['container'], 'organizations/1')
+    self.assertEqual(sweep['yield_count'], 1)
+    # The verbatim command: a reviewer has to be able to re-run it.
+    self.assertIn('--organization=1', sweep['command'])
+
+  def test_native_sweeps_do_not_leak_into_the_next_collect(self):
+    inventory.NATIVE_SWEEPS.append({'asset_type': 'stale'})
+    inventory.UNSUPPORTED_CAI_TYPES.append('stale')
+    with contextlib.redirect_stderr(io.StringIO()):
+      inventory.collect({'scope': {'root': 'organizations/1'}, 'types': []})
+    self.assertEqual(inventory.NATIVE_SWEEPS, [])
+    self.assertEqual(inventory.UNSUPPORTED_CAI_TYPES, [])
+
+  def test_a_key_template_that_is_not_unique_is_fatal(self):
+    """Two assets collapsing onto one key is a shrunken denominator with
+    a green gate - the exact failure mode this tool exists to prevent -
+    so it fails rather than deduplicating."""
+    manifest = json.loads(json.dumps(self._EXCLUSION_MANIFEST))
+    manifest['types'][0]['enumerate']['key'] = (
+        '//logging.googleapis.com/{container}/exclusions/fixed')
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      return [{'name': 'a'}, {'name': 'b'}] if 'exclusions' in cmd else []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      with self.assertRaises(SystemExit) as ctx:
+        self._collect(manifest, handler)
+    self.assertEqual(ctx.exception.code, 3)
+    self.assertIn('non-unique key', buf.getvalue())
+
+  def test_a_key_field_absent_from_the_payload_is_fatal(self):
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      return [{'displayName': 'x'}] if 'exclusions' in cmd else []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      with self.assertRaises(SystemExit) as ctx:
+        self._collect(self._EXCLUSION_MANIFEST, handler)
+    self.assertEqual(ctx.exception.code, 3)
+    self.assertIn('absent from the returned item', buf.getvalue())
+
+  def test_describe_shaped_output_is_accepted(self):
+    """Singletons (`gcloud ... describe`) emit an object, not an array."""
+    entries = inventory._normalize_native(
+        {'name': 'organizations/1/settings'}, 'logging.googleapis.com/Settings',
+        'organizations/1', '//logging.googleapis.com/{item.name}')
+    self.assertEqual(entries[0]['key'],
+                     '//logging.googleapis.com/organizations/1/settings')
+
+  def test_key_template_fields(self):
+    rendered = inventory._render_native_key(
+        '{container}|{container_id}|{item.a.b}', 'folders/22',
+        {'a': {
+            'b': 'deep'
+        }})
+    self.assertEqual(rendered, 'folders/22|22|deep')
+    with self.assertRaises(KeyError):
+      inventory._render_native_key('{item.missing}', 'folders/22', {})
+
+  def test_enumerator_must_be_read_only(self):
+    for verb in ('update', 'create', 'delete', 'set-iam-policy'):
+      with self.assertRaises(SystemExit) as ctx:
+        inventory.validate_native_spec('x/Y', {
+            'command': ['logging', 'settings', verb],
+            'key': '{item.name}'
+        })
+      self.assertIn('read-only verb', str(ctx.exception))
+
+  def test_enumerator_may_not_narrow_its_own_output(self):
+    """`--filter`/`--limit` shrink the denominator with no trace; scope
+    belongs in the manifest scope block where it is reviewable."""
+    for flag in ('--filter=name~prod', '--limit', '--format=value(name)'):
+      with self.assertRaises(SystemExit) as ctx:
+        inventory.validate_native_spec('x/Y', {
+            'command': ['logging', 'sinks', flag, 'list'],
+            'key': '{item.name}'
+        })
+      self.assertIn('may not', str(ctx.exception))
+
+  def test_container_arg_template_shapes_the_scope_flag(self):
+    """Not every read-only command takes --organization: IAM deny
+    policies want --attachment-point=<service>/<container>. A mechanism
+    that only spoke resource-manager flags would send half the
+    non-CAI types back to being unenumerable."""
+    calls = []
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      calls.append(' '.join(cmd))
+      return [{'name': 'deny-external'}] if 'policies' in cmd else []
+
+    with contextlib.redirect_stderr(io.StringIO()):
+      entries, _, _ = self._collect(
+          {
+              'scope': {
+                  'root': 'organizations/1'
+              },
+              'types': [{
+                  'type': 'iam.googleapis.com/DenyPolicy',
+                  'levels': ['organization'],
+                  'enumerate': {
+                      'command':
+                          ['iam', 'policies', 'list', '--kind=denypolicies'],
+                      'container_arg':
+                          '--attachment-point=cloudresourcemanager.'
+                          'googleapis.com/{container}',
+                      'key': '//iam.googleapis.com/{container}/'
+                             'denypolicies/{item.name}',
+                  },
+              }]
+          }, handler)
+    self.assertIn(
+        'gcloud --quiet iam policies list --kind=denypolicies '
+        '--attachment-point=cloudresourcemanager.googleapis.com/'
+        'organizations/1 --format=json', calls)
+    self.assertEqual(
+        entries[0]['key'], '//iam.googleapis.com/organizations/1/denypolicies/'
+        'deny-external')
+
+  def test_container_arg_must_vary_per_container(self):
+    for carg in ('--attachment-point=organizations/1', 'attachment=x',
+                 '--attachment-point={item.name}'):
+      with self.assertRaises(SystemExit) as ctx:
+        inventory.validate_native_spec(
+            'x/Y', {
+                'command': ['iam', 'policies', 'list'],
+                'container_arg': carg,
+                'key': '{item.name}'
+            })
+      self.assertIn('container_arg', str(ctx.exception))
+
+  def test_enumerator_may_not_choose_an_identity(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.validate_native_spec(
+          'x/Y', {
+              'command': [
+                  'logging', 'sinks', 'list',
+                  '--impersonate-service-account=admin@x.iam'
+              ],
+              'key': '{item.name}'
+          })
+    self.assertIn('may not', str(ctx.exception))
+
+  def test_enumerator_shape_errors_are_named(self):
+    bad = [
+        ({
+            'command': ['gcloud', 'logging', 'sinks', 'list'],
+            'key': '{item.name}'
+        }, 'drop the leading'),
+        ({
+            'command': 'logging sinks list',
+            'key': '{item.name}'
+        }, 'non-empty list'),
+        ({
+            'command': ['logging', 'sinks', 'list'],
+            'key': 'a-literal-key'
+        }, 'must be a template'),
+        ({
+            'command': ['logging', 'sinks', 'list'],
+            'key': '{whatever}'
+        }, 'unknown key field'),
+        ('gcloud logging sinks list', 'must be a mapping'),
+    ]
+    for spec, expected in bad:
+      with self.assertRaises(SystemExit) as ctx:
+        inventory.validate_native_spec('x/Y', spec)
+      self.assertIn(expected, str(ctx.exception))
+
+  def test_pseudo_types_may_not_declare_an_enumerator(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.validate_manifest_types([{
+          'type': 'org-policy',
+          'enumerate': {
+              'command': ['org-policies', 'list'],
+              'key': '{item.name}'
+          }
+      }])
+    self.assertIn('pseudo-type', str(ctx.exception))
+
+  def test_manifest_is_validated_before_anything_is_executed(self):
+    calls = []
+
+    def handler(cmd, **kwargs):
+      del kwargs
+      calls.append(cmd)
+      return []
+
+    with self.assertRaises(SystemExit):
+      self._collect(
+          {
+              'scope': {
+                  'root': 'organizations/1'
+              },
+              'types': [{
+                  'type': 'logging.googleapis.com/LogExclusion',
+                  'enumerate': {
+                      'command': ['logging', 'settings', 'update'],
+                      'key': '{item.name}'
+                  }
+              }]
+          }, handler)
+    self.assertEqual(calls, [])
+
+
 class TestIntegrityInputBinding(unittest.TestCase):
 
   def test_input_stamp_hashes_content(self):

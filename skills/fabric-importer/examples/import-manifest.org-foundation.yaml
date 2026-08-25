@@ -160,3 +160,34 @@ types:
 #                  # grants). Leaf-asset IAM never enters the denominator
 #                  # without this per-type opt-in.
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# TYPES CLOUD ASSET INVENTORY DOES NOT MODEL
+#
+# CAI is the default source of the denominator, not its boundary. A type
+# CAI cannot see would be invisible to BOTH gates at once, so it is
+# enumerated by other means and merged into the same inventory --
+# `gcloud` first. Declare it with an `enumerate:` block: the command runs
+# once per in-scope container at the declared levels, with the container
+# flag (--organization/--folder/--project) and --format=json appended.
+#
+#   - type: iam.googleapis.com/DenyPolicy      # not in the CAI catalogue
+#     levels: [organization, folder]
+#     enumerate:
+#       command: [iam, policies, list, --kind=denypolicies]
+#       # Optional: only when the command does not take
+#       # --organization/--folder/--project=<id>.
+#       container_arg: '--attachment-point=cloudresourcemanager.googleapis.com/{container}'
+#       key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
+#
+# Refused by design: anything that is not a read-only verb, and
+# --format/--filter/--limit/--page-size/--flatten/--sort-by/--uri --
+# narrowing belongs in `scope` above, where it is reviewed, not in a flag
+# that shrinks the denominator invisibly. A key template that renders the
+# same key twice is fatal for the same reason.
+#
+# See references/cai-blind-spots.md for the full ladder (CAI -> gcloud ->
+# REST API -> signed waiver): not every gap has a gcloud command. Log
+# exclusions, for instance, are neither a CAI type nor a gcloud group,
+# and have to be enumerated against the REST API and reported by hand.
+# ---------------------------------------------------------------------------

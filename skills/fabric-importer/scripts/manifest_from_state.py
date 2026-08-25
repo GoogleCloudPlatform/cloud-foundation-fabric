@@ -110,8 +110,20 @@ TF_TYPE_MAP = {
         ('logging.googleapis.com/LogSink', 'project', {}),
     'google_logging_project_bucket_config':
         ('logging.googleapis.com/LogBucket', 'project', {}),
+    # Logs Router settings. CAI models the settings singleton as
+    # `logging.googleapis.com/Settings` for every container level; the
+    # `.../OrganizationSettings` spelling this map used to emit exists
+    # nowhere in the CAI catalogue, so enumeration failed the whole run
+    # (the same class of bug as the ACM `identity.` prefix above, one
+    # step worse: it fails loudly instead of matching nothing).
     'google_logging_organization_settings':
-        ('logging.googleapis.com/OrganizationSettings', 'organization', {}),
+        ('logging.googleapis.com/Settings', 'organization', {}),
+    'google_logging_folder_settings':
+        ('logging.googleapis.com/Settings', 'folder', {}),
+    # Log exclusions are NOT a CAI asset type at all. They stay out of
+    # this map deliberately: a manifest entry for them needs an
+    # `enumerate:` block (see references/cai-blind-spots.md), which is a
+    # human decision, not something inferred from state.
 
     # Resource Manager
     'google_folder':
