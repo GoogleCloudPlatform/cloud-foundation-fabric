@@ -85,6 +85,28 @@ scope:
   # only the new assets appear in the worklist. Types' `levels` still
   # apply on top of scope.
 
+# ---------------------------------------------------------------------
+# Optional: emission style, per resource family. This is YOUR call —
+# the scripts do not consume it; it directs step-3 mapping (see the
+# cookbook's "Factory emission (opt-in)" section, normative).
+#
+#   per-instance (default) : one module instance per container, HCL
+#                            inputs, shallow chosen addresses.
+#   factory                : data-driven YAML via the family's Fabric
+#                            factory carrier (canonical map names it;
+#                            FACTORIES.md is the full catalog).
+#
+# An org foundation is the canonical factory case: folder tree, folder
+# IAM and org policies maintained as hierarchical data/ YAML via
+# project-factory — the imported workspace doubles as the day-2
+# operating model. Mind the tradeoffs (4-level nesting cap, data-path =
+# key so directory moves re-key the subtree, deeper import addresses).
+# Per-scope override: scopes[].emission, same enum.
+#
+# emission:
+#   folder: factory
+#   project: per-instance
+
 types:
   # -------------------------------------------------------------------
   # IAM policies (pseudo-type). CAI models IAM as a content type attached

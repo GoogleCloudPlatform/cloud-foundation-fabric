@@ -263,10 +263,18 @@ First run: everything is missing. Re-runs: only the delta.
 **Fabric modules are the product, not an optimization.** Every resource
 maps to its canonical Fabric module (the cookbook's "Canonical module
 map" is normative): `modules/organization` for everything org-level,
-one `modules/folder` instance per folder, one `modules/project`
-instance per project — each carrying its own IAM, org policies, and
-sinks. Do NOT use `project-factory` for imports: per-instance modules
-give stable, chosen addresses.
+and — by default — one `modules/folder` instance per folder and one
+`modules/project` instance per project, each carrying its own IAM, org
+policies, and sinks. For families where Fabric also offers a factory
+carrier (e.g. `project-factory` for the folder hierarchy,
+`net-firewall-policy` rule factories), the manifest may opt into
+`factory` emission per resource family via `emission:` — a human call,
+made when the imported workspace is meant to become the day-2
+operating model (e.g. foundational folders + org policies + IAM as
+YAML data). The default stays per-instance: shallow, chosen addresses
+with no coupling to factory internals. The cookbook's "Factory
+emission (opt-in)" section is normative for how, and for the
+tradeoffs.
 
 For each worklist entry, emit module config (factory YAML or module
 inputs, per the cookbook) + a paired import block targeting the
