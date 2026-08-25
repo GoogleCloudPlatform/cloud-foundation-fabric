@@ -12,6 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Tamper-evidence for the frozen scripts.
 
 The gates are only meaningful if the actor whose output they judge did not
@@ -33,7 +38,7 @@ can be checked against a clean checkout.
 
 To verify a recorded run, from a pristine checkout of the same commit:
 
-    python3 scripts/integrity.py
+    uv run scripts/integrity.py
 
 and compare with the `frozen tools:` line in the captured output. A
 mismatch means the gates that produced that verdict were not these gates.

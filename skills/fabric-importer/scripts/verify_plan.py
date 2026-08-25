@@ -12,6 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#    "pyyaml",
+# ]
+# ///
 """FROZEN SCRIPT — machine-checked convergence verdict for a Terraform plan.
 
 Reads `terraform show -json <planfile>` output (file argument or stdin)

@@ -158,7 +158,7 @@ confirm it; otherwise run one of the drafting workflows:
 **Option A — Inferred from existing Terraform state(s)** (preferred when migrating existing TF):
 
 ```bash
-python3 scripts/manifest_from_state.py --state <state-files...> --out import-manifest.yaml
+uv run scripts/manifest_from_state.py --state <state-files...> --out import-manifest.yaml
 # add --force to replace an existing manifest, or --out - to review first
 ```
 
@@ -167,8 +167,8 @@ See [references/inferring-manifests-from-state.md](./references/inferring-manife
 **Option B — Surveyed from live GCP estate**:
 
 ```bash
-python3 scripts/inventory.py survey --scope organizations/ORG_ID --out survey.json
-python3 scripts/manifest_init.py --survey survey.json \
+uv run scripts/inventory.py survey --scope organizations/ORG_ID --out survey.json
+uv run scripts/manifest_init.py --survey survey.json \
   --scope organizations/ORG_ID --out import-manifest.yaml
 ```
 
@@ -192,7 +192,7 @@ incremental re-run, never a rewrite.
 ### Step 1 — enumerate (the denominator)
 
 ```bash
-python3 scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
+uv run scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
 ```
 
 **CAI is the default source of the denominator, never the boundary of
@@ -252,7 +252,7 @@ instead of guessed at.
 ### Step 2 — get your worklist
 
 ```bash
-python3 scripts/coverage.py --inventory inventory.json --workspace tf \
+uv run scripts/coverage.py --inventory inventory.json --workspace tf \
   --waivers waivers.yaml --worklist-out worklist.yaml
 ```
 
@@ -375,14 +375,28 @@ The loop:
 
 ### Step 4 — run the gates
 
+**The two gates measure different things, and neither can catch the
+other's failure.** Gate 1 compares the denominator against the TEXT of
+your workspace — the `import {}` blocks it parses out of `*.tf`, the
+coverage map, the waivers. It never runs Terraform and never reads your
+cloud. Gate 2 compares the plan against reality.
+
+So gate 1 passes happily on code that is completely wrong, and gate 2
+passes happily on a workspace covering three of fifty-nine assets: a
+plan of three clean imports is perfectly converged, because Terraform
+only knows about what you wrote down. **A converged plan is not evidence
+of completeness**, and a reconciled coverage report is not evidence of
+correctness. Never report one as if it covered the other, and never
+skip a gate because the other one is green.
+
 ```bash
 terraform -chdir=tf fmt -recursive   # generated code is ALWAYS fmt-ed
-python3 scripts/coverage.py --inventory inventory.json --workspace tf \
+uv run scripts/coverage.py --inventory inventory.json --workspace tf \
   --waivers waivers.yaml --require-signed-waivers
 terraform -chdir=tf init -input=false
 rm -f tf/verify.tfplan   # never let a stale plan answer for a failed one
 terraform -chdir=tf plan -input=false -out=verify.tfplan
-terraform -chdir=tf show -json verify.tfplan | python3 scripts/verify_plan.py
+terraform -chdir=tf show -json verify.tfplan | uv run scripts/verify_plan.py
 ```
 
 Do not add `-detailed-exitcode` here: it returns **2 whenever the plan is
@@ -451,8 +465,16 @@ of quoting them is not evidence.
 
 ## Prerequisites
 
-`terraform` >= 1.5, `gcloud`, `python3` + PyYAML. Discovery IAM — the
-read-only grant on the scope root (same table as the README):
+`terraform` >= 1.5, `gcloud`, and [`uv`](https://docs.astral.sh/uv/).
+
+Run every script with `uv run scripts/<name>.py`. Each one declares its
+own dependencies inline (PEP 723), so nothing needs installing or
+activating and the run cannot pick up a stale system PyYAML. Where `uv`
+is genuinely unavailable, `python3` >= 3.10 with PyYAML installed works
+and the arguments are identical — say which you used in the report.
+
+Discovery IAM — the read-only grant on the scope root (same table as the
+README):
 
 - `roles/viewer`
 - `roles/resourcemanager.organizationViewer`

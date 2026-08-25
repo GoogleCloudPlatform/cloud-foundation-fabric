@@ -12,6 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Infers an import-manifest.yaml from existing Terraform .tfstate files.
 
 Extracts managed resource types, hierarchy levels, and project scopes directly

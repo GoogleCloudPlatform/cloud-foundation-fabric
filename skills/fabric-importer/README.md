@@ -252,21 +252,21 @@ output is binding until you have reviewed it and committed it.
 
 **Option A — Inferred from existing Terraform state(s):**
 ```bash
-python3 scripts/manifest_from_state.py --state <state-files...> --out import-manifest.yaml
+uv run scripts/manifest_from_state.py --state <state-files...> --out import-manifest.yaml
 ```
 See [references/inferring-manifests-from-state.md](./references/inferring-manifests-from-state.md).
 
 **Option B — Surveyed from live GCP estate:**
 ```bash
-python3 scripts/inventory.py survey --scope organizations/ORG_ID --out survey.json
-python3 scripts/manifest_init.py --survey survey.json --scope organizations/ORG_ID --out import-manifest.yaml
+uv run scripts/inventory.py survey --scope organizations/ORG_ID --out survey.json
+uv run scripts/manifest_init.py --survey survey.json --scope organizations/ORG_ID --out import-manifest.yaml
 ```
 Ready-made examples aligned with FAST stages are provided in [`examples/`](./examples/).
 
 ### 2. Enumerate the Denominator (`inventory.json`)
 The enumeration script queries Cloud Asset Inventory (CAI) and service APIs to construct the exact denominator of all matching live assets:
 ```bash
-python3 scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
+uv run scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
 ```
 
 CAI is the default source of the denominator, not its boundary. CAI does
@@ -324,7 +324,7 @@ rails.
 ### 3. Compute Delta Worklist
 The completeness tool reconciles the denominator against any existing code and written waivers. This is the same program that runs as gate 1 in step 5 — the same comparison, run for a different reason. Here it tells you what is left to do; there it decides whether anything is. On the first round everything is outstanding, so the worklist is the whole denominator. On later rounds it is only the delta, which is what makes repeated rounds cheap:
 ```bash
-python3 scripts/coverage.py --inventory inventory.json --workspace tf \
+uv run scripts/coverage.py --inventory inventory.json --workspace tf \
   --waivers waivers.yaml --worklist-out worklist.yaml
 ```
 
@@ -349,12 +349,12 @@ Run both gates like this:
 
 ```bash
 terraform -chdir=tf fmt -recursive
-python3 scripts/coverage.py --inventory inventory.json --workspace tf \
+uv run scripts/coverage.py --inventory inventory.json --workspace tf \
   --waivers waivers.yaml --require-signed-waivers
 terraform -chdir=tf init -input=false
 rm -f tf/verify.tfplan   # a stale plan must never answer for a failed one
 terraform -chdir=tf plan -input=false -out=verify.tfplan
-terraform -chdir=tf show -json verify.tfplan | python3 scripts/verify_plan.py
+terraform -chdir=tf show -json verify.tfplan | uv run scripts/verify_plan.py
 ```
 
 Do not add `-detailed-exitcode` to the plan: it returns 2 for any
@@ -393,7 +393,7 @@ exits `2`. Note that argparse usage errors also exit `2`, so read the
 message, not only the code.
 
 There is no checked-in expected digest. To check a recorded gate run,
-compute `python3 scripts/integrity.py` from a pristine checkout of the
+compute `uv run scripts/integrity.py` from a pristine checkout of the
 same commit and compare it with the `frozen tools:` line in the captured
 output.
 
@@ -404,7 +404,13 @@ output.
 ### System Requirements
 - **Terraform**: `v1.5.0+` (required for native `import {}` blocks).
 - **Google Cloud SDK (`gcloud`)**: Authenticated with a configured quota project.
-- **Python**: `3.9+` (the scripts use `str.removeprefix`) with `PyYAML`.
+- **[`uv`](https://docs.astral.sh/uv/)**: the recommended way to run the scripts.
+  Every script declares its own dependencies inline
+  ([PEP 723](https://peps.python.org/pep-0723/), the same convention as
+  `tools/tfdoc.py`), so `uv run scripts/<name>.py` resolves them per script with
+  nothing to install and nothing to activate.
+- **Python**: `3.10+` if you would rather not use `uv`. Then run the scripts with
+  `python3` and install `PyYAML` yourself; the commands are otherwise identical.
 
 ### Minimal Read-Only IAM Permissions
 Run the import using a dedicated read-only identity. The following roles on the organization scope provide full read visibility:

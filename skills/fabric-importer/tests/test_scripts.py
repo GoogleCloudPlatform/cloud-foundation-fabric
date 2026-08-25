@@ -15,8 +15,13 @@
 """Unit tests for the frozen tools (coverage, verify_plan, inventory,
 integrity, manifest_init, manifest_from_state).
 
-Run with: python3 -m pytest skills/fabric-importer/tests -q
-      or: python3 skills/fabric-importer/tests/test_scripts.py
+Run with: uv run --with pyyaml --with pytest -m pytest \
+            skills/fabric-importer/tests -q
+      or: uv run --with pyyaml skills/fabric-importer/tests/test_scripts.py
+
+The scripts under test declare their dependencies inline (PEP 723), but
+this file is imported rather than executed as a script, so the `--with`
+flags supply them here. `python3` with PyYAML installed works too.
 """
 
 import contextlib

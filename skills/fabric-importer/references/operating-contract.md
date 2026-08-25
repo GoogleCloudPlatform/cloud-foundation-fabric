@@ -18,7 +18,7 @@ A converged verdict is only meaningful if the gates and their rulesets
 were not touched by the same actor whose output they verify.
 
 Both gates stamp runtime provenance into their output, covering every
-verification script. To check a recorded verdict, run `python3
+verification script. To check a recorded verdict, run `uv run
 scripts/integrity.py` from a clean checkout of the same commit and
 compare; `--verbose` identifies which file differs. This is evidence,
 not prevention — an actor editing a gate could edit the stamp — but it

@@ -40,7 +40,7 @@ terraform -chdir=fast/stages/2-security state pull > stage-2-security.tfstate
 Run `manifest_from_state.py`:
 
 ```bash
-python3 scripts/manifest_from_state.py \
+uv run scripts/manifest_from_state.py \
   --state stage-0.tfstate \
   --out import-manifest.yaml
 ```
@@ -49,7 +49,7 @@ To synthesize a manifest across multiple stages (note `--force`: the
 manifest is human-owned and gate-relevant, so it is never overwritten
 silently — use `--out -` to review on stdout first):
 ```bash
-python3 scripts/manifest_from_state.py \
+uv run scripts/manifest_from_state.py \
   --state stage-0.tfstate stage-1.tfstate stage-2-networking.tfstate stage-2-security.tfstate \
   --out import-manifest.yaml --force
 ```
@@ -62,7 +62,7 @@ several is refused rather than silently resolved to one of them.
 Review the generated `import-manifest.yaml`, then collect the live denominator:
 
 ```bash
-python3 scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
+uv run scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
 ```
 
 ---

@@ -12,13 +12,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """Drafts an import manifest from a survey inventory.
 
 Part of the agent-assisted manifest workflow (SKILL.md step 0):
 
-  1. python3 scripts/inventory.py survey --scope organizations/ID \
+  1. uv run scripts/inventory.py survey --scope organizations/ID \
        --out survey.json
-  2. python3 scripts/manifest_init.py --survey survey.json \
+  2. uv run scripts/manifest_init.py --survey survey.json \
        --scope organizations/ID --out import-manifest.yaml
   3. The agent walks the user through the draft: every discovered asset
      type is listed with counts per level, commented out; the user (with
