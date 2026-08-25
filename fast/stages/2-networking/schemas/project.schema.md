@@ -65,6 +65,17 @@
   - **`^(\S+@\S+\.\S+|\$email_addresses:\S+)$`**: *array*
     - items: *string*
       <br>*enum: ['ALL', 'BILLING', 'LEGAL', 'SECURITY', 'PRODUCT_UPDATES', 'SUSPENSION', 'TECHNICAL']*
+- **custom_roles**: *object*
+  <br>*additional properties: false*
+  - **`^[a-zA-Z0-9_]+$`**: *object*
+    <br>*additional properties: false*
+    - **title**: *string*
+    - **description**: *string*
+    - **stage**: *string*
+      <br>*enum: ['ALPHA', 'BETA', 'GA', 'DEPRECATED', 'DISABLED', 'EAP']*
+    - ⁺**permissions**: *array*
+      - items: *string*
+        <br>*pattern: ^[a-zA-Z-]+\.[a-zA-Z-]+\.[a-zA-Z-]+$*
 - **data_access_logs**: *object*
   <br>*additional properties: false*
   - **`^([a-z][a-z-]+\.googleapis\.com|allServices)$`**: *object*

@@ -855,17 +855,26 @@ Granting permissions to service accounts defined in other project through interp
 ```yaml
 billing_account: 012345-67890A-BCDEF0
 labels:
- app: app-0
- team: team-b
+  app: app-0
+  team: team-b
 parent: $folder_ids:team-b/app-0
 services:
   - container.googleapis.com
   - storage.googleapis.com
+custom_roles:
+  custom_role_0:
+    permissions:
+      - compute.instances.get
+      - compute.instances.list
+    title: "Custom role 0"
+    description: "Custom role 0 description."
 iam:
   "roles/run.admin":
     - $iam_principals:service_accounts/dev-ta-app0-be/app-0-be
   "roles/run.developer":
     - $iam_principals:service_accounts/dev-tb-app0-1/app-0-be
+  "$custom_roles:custom_role_0":
+    - group:team-b-admins@example.org
 service_accounts:
   app-0-be:
     display_name: "Backend instances."

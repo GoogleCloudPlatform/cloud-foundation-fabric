@@ -207,6 +207,45 @@
         }
       }
     },
+    "custom_roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "stage": {
+              "type": "string",
+              "enum": [
+                "ALPHA",
+                "BETA",
+                "GA",
+                "DEPRECATED",
+                "DISABLED",
+                "EAP"
+              ]
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z-]+\\.[a-zA-Z-]+\\.[a-zA-Z-]+$"
+              }
+            }
+          },
+          "required": [
+            "permissions"
+          ]
+        }
+      }
+    },
     "data_access_logs": {
       "type": "object",
       "additionalProperties": false,
