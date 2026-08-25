@@ -74,23 +74,93 @@ source in this repository, not yet exercised against live imports.**
 Everything in this section meets that standard and no higher; treat
 unmarked claims as unverified.
 
-The manifest owns the choice, per resource family:
+The manifest owns the choice, per resource family. `emission` is a
+map of family → style, where family names are the canonical-map rows
+and styles are `per-instance` (default) or `factory`; families without
+a factory carrier reject `factory`. It is valid in **two positions**:
+
+1. **Top level** — the manifest-wide default. This is the only
+   position available in singular-`scope:` manifests (no scope
+   entries, nothing to override).
+2. **Per scope** (`scopes[].emission`) — same map, same enum,
+   overriding the top level for assets collected by that scope.
+
+Resolution, per family, most specific wins:
+
+```text
+scopes[].emission.<family>  →  emission.<family>  →  per-instance
+```
+
+Omission at either level means "defer", never "per-instance": a scope
+without an `emission:` block (or without a given family key) inherits
+the top level, and only when both are silent does the built-in
+per-instance default apply.
 
 ```yaml
-# Values: per-instance (default) | factory. Family names are the
-# canonical-map rows; families without a factory carrier reject
-# `factory`. Resolution: scopes[].emission.<family> → top-level
-# emission.<family> → per-instance.
-emission:
-  folder: factory          # -> project-factory hierarchy data/
+emission:                    # top level: manifest-wide defaults
+  folder: factory            # -> project-factory hierarchy data/
   project: per-instance
 
 scopes:
   - name: org-foundation
     levels: [organization, folder]
+    # no emission: -> inherits folder: factory from the top level
+
+  - name: sandbox
+    levels: [folder, project]
+    include: [folders/333333333333]
     emission:
-      folder: factory      # per-scope override, same enum
+      folder: per-instance   # override for this scope only;
+                             # project still inherits the top level
 ```
+
+### Subtree-granular emission (scope splitting)
+
+Emission granularity follows scope granularity: to manage *some*
+folders via factory and others per-instance, split the tree into
+scopes along subtree boundaries and give each its own `emission:` —
+scope `include`/`exclude` already speak subtrees (CAI `ancestors`
+matching), so no new selector machinery is needed:
+
+```yaml
+scopes:
+  - name: teams               # this subtree is factory-managed
+    root: organizations/000000000000
+    include: [folders/111111111111]
+    levels: [folder]
+    emission:
+      folder: factory
+
+  - name: rest                # everything else stays per-instance
+    root: organizations/000000000000
+    exclude: [folders/111111111111]
+    levels: [folder]
+```
+
+Rules that make the split sound (from `project-factory` source,
+`folders.tf`):
+
+- **Factory subtrees can be rooted mid-tree.** A level-1 factory
+  folder takes an explicit `parent` in its `_config.yaml`
+  (`parent = coalesce(<config parent>, "$folder_ids:default")`),
+  resolvable through `context.folder_ids` — so a factory-managed
+  subtree may sit under a per-instance-managed or unmanaged folder.
+- **One factory instance for the whole workspace.** All
+  factory-emitted folders share a single `project-factory` instance
+  and one `data/` hierarchy, regardless of how many scopes opted in:
+  disjoint subtrees become multiple top-level `data/` directories,
+  each with an explicit `parent`. The factory is workspace-shaped,
+  not scope-shaped — scopes decide what is collected, emission how it
+  is written.
+- **Boundary crossings never use literals.** Downward
+  (per-instance child under a factory folder):
+  `parent = module.<pf>.folder_ids["<path>"]`. Upward (factory
+  subtree under a per-instance folder): `parent:` in the subtree
+  root's `_config.yaml`, fed via the factory's `context.folder_ids`
+  input. Every style boundary is a seam: name it in the run report.
+- **The 4-level cap applies per factory subtree**, since each subtree
+  root is level 1 — splitting deep hierarchies along scope boundaries
+  also relieves the nesting-depth tradeoff.
 
 When to opt in: the imported workspace is the intended day-2 operating
 model and the family's ongoing management is data-shaped — the
