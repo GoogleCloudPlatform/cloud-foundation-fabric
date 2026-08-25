@@ -141,9 +141,11 @@ resource "google_sql_database_instance" "primary" {
           : []
         )
         content {
-          psc_enabled               = true
-          allowed_consumer_projects = local.psc_allowed_consumer_projects
-          network_attachment_uri    = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+          psc_enabled                    = true
+          allowed_consumer_projects      = local.psc_allowed_consumer_projects
+          network_attachment_uri         = try(var.network_config.connectivity.psc_config.network_attachment_uri, null)
+          psc_auto_dns_enabled           = var.network_config.connectivity.psc_config.psc_auto_dns_enabled
+          psc_write_endpoint_dns_enabled = var.network_config.connectivity.psc_config.psc_write_endpoint_dns_enabled
 
           dynamic "psc_auto_connections" {
             for_each = local.psc_auto_connections
