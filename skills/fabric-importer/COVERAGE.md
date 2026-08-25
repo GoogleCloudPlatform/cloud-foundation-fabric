@@ -47,6 +47,13 @@ Fabric ref it was verified against; re-verify on bumps (see
 
 ## Verification Notes & Caveats
 
+- **Factory emission (opt-in)**: all matrix levels above are for the
+  default per-instance emission. The `factory` emission mode (manifest
+  `emission:` block; cookbook "Factory emission (opt-in)") is at **C**
+  across all carriers — address shapes and layout rules derived from
+  module source in-repo, no live import exercised yet. First verified
+  run graduates the exercised carrier and stamps it here.
+
 - **CAS & Custom Roles**: CAS `publishing_options` requires Fabric PR #4106 (`a153861aae`). Custom roles title/description convergence requires Fabric PR #4102.
 - **Non-CAI types**: CAI is the default source of the denominator, not its boundary. Types it does not model are enumerated with `gcloud` — automatically where `inventory.py` ships a built-in enumerator, otherwise via a manifest `enumerate:` block — or, where gcloud has no container-scoped surface, out of band against the REST API. All of it merges into the same denominator, and `inventory.py` stops the run rather than proceeding without a type it cannot enumerate. See `references/cai-blind-spots.md`.
 - **Provider Label Inheritance**: Provider v5/v6/v7 generates computed `terraform_labels: {} -> {...}` diffs for resources with inherited provider labels. These are accounted for via scoped rules in `scripts/benign-drift.yaml`.

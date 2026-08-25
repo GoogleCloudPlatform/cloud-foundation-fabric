@@ -29,10 +29,11 @@ ID format, the ForceNew inputs that must mirror live values, and every
 trap that cost a cycle. Mark surfaces you did not exercise as unverified
 — an honest gap is worth more than an implied guarantee.
 
-Contents: canonical module map · universal rules · workspace layout ·
-scaffolding scripts · import-ID table · per-type rules (organization,
-folders, projects, service accounts, log sinks, logging buckets, VPC
-networks, root module) · fallback and accelerator.
+Contents: canonical module map · factory emission (opt-in) · universal
+rules · workspace layout · scaffolding scripts · import-ID table ·
+per-type rules (organization, folders, projects, service accounts, log
+sinks, logging buckets, VPC networks, root module) · fallback and
+accelerator.
 
 ## Canonical module map (normative)
 
@@ -40,24 +41,110 @@ Fabric modules are the product — this table is the default mapping, not
 a suggestion. Raw resources require a documented module capability gap
 (see "Fallback" at the end).
 
-| Scope / resource family | Module | Carries |
-|---|---|---|
-| Organization | `modules/organization` (single instance) | org IAM + audit configs, org policies (factory), custom roles (factory), org sinks |
-| Folder | `modules/folder` — one instance per folder | the folder itself, folder IAM, folder org policies (factory), folder sinks |
-| Project | `modules/project` — one instance per project | the project, services, project IAM, project org policies, metadata |
-| Service accounts | `modules/iam-service-account` | SA + its IAM |
-| Log buckets | `modules/logging-bucket` | bucket config (sink destinations) |
-| VPC networks | `modules/net-vpc` | network, subnets (incl. proxy-only), routes |
-| Other | nearest Fabric module for the family; check `modules/` in-repo | — |
+Emission has two modes — `per-instance` (the default: one module
+instance per container, inputs as HCL) and `factory` (data-driven YAML
+consumed by a Fabric factory carrier). The mode is chosen per resource
+family in the manifest's `emission:` block (see "Factory emission
+(opt-in)" below); families with `—` in the factory column have exactly
+one mode and ignore the knob. Some sub-resources are factory-only by
+Fabric convention regardless of the knob: org policies, custom roles
+and custom constraints are carried as `data/` YAML inside their owning
+`organization` / `folder` / `project` instance.
 
-Never use `project-factory` for imports: per-instance `folder` /
-`project` modules give addresses derived from instance keys you choose
-once, instead of display-name-derived factory keys.
+| Scope / resource family | Default (`per-instance`) | `factory` emission — carrier | Carries |
+|---|---|---|---|
+| Organization | `modules/organization` (single instance) | — | org IAM + audit configs, org policies (factory), custom roles (factory), org sinks |
+| Folder | `modules/folder` — one instance per folder | `project-factory` — hierarchy `data/`, one YAML dir per folder, path = key | the folder itself, folder IAM, folder org policies (factory), folder sinks |
+| Project | `modules/project` — one instance per project | `project-factory` — one project YAML per project | the project, services, project IAM, project org policies, metadata |
+| Service accounts | `modules/iam-service-account` | `project-factory` — `service_accounts:` block in the owning project's YAML (only when that project is factory-emitted) | SA + its IAM |
+| Log buckets | `modules/logging-bucket` | — | bucket config (sink destinations) |
+| VPC networks | `modules/net-vpc` | subnets only: `net-vpc` `factories_config.subnets_folder` | network, subnets (incl. proxy-only), routes |
+| Firewall policy rules | `modules/net-firewall-policy` inputs | `net-firewall-policy` `factories_config` rule files | ingress/egress rules |
+| Other | nearest Fabric module for the family; check `modules/` in-repo | see `FACTORIES.md` at the repo root — the authoritative factory catalog (every module factory flows through `factories_config`) | — |
 
 Instance keys: pick short stable slugs at first import (record them in
 `coverage-map.yaml`); keys are immutable afterwards. Because the key —
 not the display name — defines the address, a console rename plans as
 an in-place `name` update, not destroy/create (verified r6).
+
+## Factory emission (opt-in)
+
+**Status: cookbook-level (C) — rules below are derived from module
+source in this repository, not yet exercised against live imports.**
+Everything in this section meets that standard and no higher; treat
+unmarked claims as unverified.
+
+The manifest owns the choice, per resource family:
+
+```yaml
+# Values: per-instance (default) | factory. Family names are the
+# canonical-map rows; families without a factory carrier reject
+# `factory`. Resolution: scopes[].emission.<family> → top-level
+# emission.<family> → per-instance.
+emission:
+  folder: factory          # -> project-factory hierarchy data/
+  project: per-instance
+
+scopes:
+  - name: org-foundation
+    levels: [organization, folder]
+    emission:
+      folder: factory      # per-scope override, same enum
+```
+
+When to opt in: the imported workspace is the intended day-2 operating
+model and the family's ongoing management is data-shaped — the
+canonical case is foundational infrastructure, with the folder tree,
+folder IAM and org policies maintained as hierarchical YAML. When in
+doubt, stay per-instance; graduating a family to factory emission later
+is a `moved {}` exercise, per instance, at a time of your choosing.
+
+### Tradeoffs (why per-instance stays the default)
+
+- **Key = data path, blast radius = subtree.** In `project-factory` the
+  hierarchy directory path IS the instance key: renaming or moving a
+  directory re-keys every folder and project below it — a
+  destroy/create plan across the subtree. The same immutability rule as
+  instance keys applies (choose the `data/` layout once, record it in
+  `coverage-map.yaml`), but the coupling is structural, not per-key.
+  D-04 recovery applies unchanged if it ever happens.
+- **Deeper, internal addresses.** Import blocks target factory
+  internals — these are not a stable interface across Fabric refs, so
+  "read the module source in this repository, do not trust memory" does
+  double duty here. Re-verify address shapes on every Fabric ref bump.
+- **Nesting depth.** `project-factory` supports at most 4 folder
+  levels (hardcoded `module.folder-1` … `module.folder-4`); the
+  per-instance `modules/folder` chain has no limit. A hierarchy deeper
+  than 4 cannot be factory-emitted.
+- **The reference rule changes carrier.** Inside factory YAML,
+  references are context interpolations (`$folder_ids:<path>`,
+  `$iam_principals:…`), not module outputs. The rule itself is
+  unchanged — no literals for managed resources — only its spelling.
+
+### project-factory: addresses and layout (from module source)
+
+- Folders: `module.<pf>.module.folder-<level>["<path>"]` where
+  `<level>` is 1-based directory depth and `<path>` the `data/`-relative
+  directory path. Folder IAM lives on a **separate** paired instance,
+  `module.<pf>.module.folder-<level>-iam["<path>"]` — both must appear
+  in `coverage-map.yaml` for a folder with IAM.
+- Projects: `module.<pf>.module.projects["<key>"]`; service accounts:
+  see `projects-service-accounts.tf` for the key format.
+- Cross-emission references: the factory outputs `folder_ids` /
+  `project_ids` / `iam_principals` keyed by hierarchy path, so mixed
+  mode composes without literals — a per-instance project under a
+  factory folder takes `parent = module.<pf>.folder_ids["<path>"]`.
+  The inverse (factory projects under per-instance folders) goes
+  through the factory's `context.folder_ids` input.
+- Escaping: the factory-YAML rows of the escaping table below apply
+  wholesale; check `templatestring` usage per field with the same
+  `grep -rn templatestring modules/project-factory/` discipline.
+
+Other carriers (`net-vpc` subnet factory, `net-firewall-policy` rule
+files, …): same method — read the carrier's `factories_config` source,
+derive address + key formats, and add a subsection here as part of the
+run report, marking what was exercised. `FACTORIES.md` at the repo root
+is the authoritative catalog of factory carriers.
 
 ## Universal rules
 
@@ -370,8 +457,8 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 
 - Chain parents by module reference
   (`parent = module.folder-<parent-key>.id`; top-level folders point at
-  the org). No nesting-depth limit — that was a project-factory
-  constraint.
+  the org). No nesting-depth limit — unlike factory emission, which
+  caps at 4 levels (see "Factory emission (opt-in)").
 - Set `deletion_protection = true` (imported provider default; avoids a
   spurious in-place change — verified r2).
 - Folder-level org policies, sinks and IAM live on the same instance as
