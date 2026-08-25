@@ -16,6 +16,99 @@ Most infrastructure importers rely on brittle per-resource generator pipelines t
 
 ---
 
+## What you provide, and what the tools work out
+
+You write one file: `import-manifest.yaml`. Everything else is derived from it.
+
+The important part is what that file contains. **It names resource types, not
+resources.** You never write a list of your 47 org policies. You write:
+
+```yaml
+scope:
+  root: organizations/123456789012
+types:
+  - type: org-policy
+    levels: [organization]
+  - type: cloudresourcemanager.googleapis.com/Folder
+    levels: [organization, folder]
+```
+
+That means "in this organization, take over org policies attached at org level,
+and every folder". Finding the actual 47 policies and 12 folders is the tool's
+job — and it has to be. If a human wrote the list of resources, "everything is
+covered" would only ever mean "everything I remembered to write down". The
+manifest is a deliberately coarse statement of intent; turning intent into an
+exact list is where people miss things, so a frozen script does it and refuses
+to hand back a partial answer.
+
+The run answers five questions in order, and only the third one is yours:
+
+| Question | Answered by | Binding? |
+|---|---|---|
+| What do I already manage in Terraform? | `manifest_from_state.py` | no, advisory |
+| What actually exists in the cloud? | `inventory.py survey` + `manifest_init.py` | no, advisory |
+| **What do I want under management?** | **you, in `import-manifest.yaml`** | **yes** |
+| Which live resources does that mean, exactly? | `inventory.py collect` → `inventory.json` | yes |
+| How much of it is done? | `coverage.py` | yes |
+
+The first two exist to break a chicken-and-egg problem: you cannot write a
+sensible manifest about an estate you cannot see, and the tools that measure the
+estate need a manifest first. Neither is a gate, neither produces anything
+binding, and you can skip both if you already know your scope. Run them anyway
+the first time: the gap between "what Terraform manages" and "what exists" is
+usually the most useful thing discovered all week.
+
+### `survey` and `collect` are not the same thing
+
+They are the same script and both list resources, which makes them easy to
+confuse. Their purposes are opposite.
+
+`survey` runs **without** a manifest. It browses, so that a human can decide. Its
+output is a conversation aid and is never used to judge anything.
+
+`collect` runs **only** with an approved manifest. Its output is the
+**denominator**: the exact list of live resources matching what you agreed.
+Everything downstream is measured against it.
+
+### The two gates answer different questions
+
+This is the part worth reading twice, because neither gate can catch the other's
+failure.
+
+| Gate | Compares | Answers |
+|---|---|---|
+| 1 — `coverage.py` | `inventory.json` against the **text of your code** | did you cover everything? |
+| 2 — `verify_plan.py` | the **Terraform plan** against reality | is what you wrote correct? |
+
+Gate 1 never runs Terraform and never contacts your cloud. It reads
+`inventory.json`, the `import {}` blocks it parses out of your `*.tf` files, the
+`coverage-map.yaml` ledger, and `waivers.yaml`. Every asset in the denominator
+must be in the ledger or in the waivers.
+
+Gate 1 can pass on completely wrong code — right addresses, garbage
+configuration. The plan catches that, as diffs.
+
+Gate 2 can pass on a workspace covering 3 of your 59 resources. A plan of three
+clean imports and nothing else is perfectly converged; Terraform has no idea the
+other 56 exist. **A converged plan says nothing about completeness**, because
+Terraform only knows about what you wrote down. Completeness can only be judged
+against a list built independently of the code, which is exactly what
+`inventory.json` is.
+
+### `inventory.json` is the only door
+
+The loop is closed in both directions:
+
+- a ledger key that is not in the inventory fails gate 1 as `stale`
+- an `import {}` block that no ledger key claims fails gate 1 as an `orphan`
+
+So nothing can be imported that the denominator does not contain, and nothing in
+the denominator can be quietly dropped. That is what makes "both gates green"
+mean something precise: everything the manifest declared is either in code or
+waived by name, and applying that code would change nothing.
+
+---
+
 ## Human-in-the-Loop Gates
 
 Gate on steps that are hard to reverse, costly, or where human judgment is required (e.g. narrowing scope, waiving assets, or accepting provider drift). Keep mechanical, reversible steps (asset collection, scaffolding, linting, plan checks) autonomous. Gates are **blocking**: if running non-interactively and confirmation cannot be obtained, stop — never assume approval.
@@ -29,149 +122,133 @@ Gate on steps that are hard to reverse, costly, or where human judgment is requi
 
 ---
 
-## Step-by-Step Workflow
+## How the work flows
+
+Three views. The main loop, then the two places where a single item funnels
+through a decision — enumeration and mapping.
+
+### The main loop
 
 ```mermaid
 flowchart TD
-    subgraph S0["Discovery &amp; scope declaration"]
-        MA["<b>Mode A: State-Driven Inference</b><br/><code>manifest_from_state.py</code><br/><i>(Existing .tfstate files)</i>"]
-        MB["<b>Mode B: Live Cloud Survey</b><br/><code>inventory.py survey</code> &amp;<br/><code>manifest_init.py</code><br/><i>(Untracked brownfield)</i>"]
-        Draft["Draft <code>import-manifest.yaml</code><br/><i>(Resource types, levels &amp; subtree filters)</i>"]
-        G_Scope{"<b>Gate: Scope Approval</b><br/>Human reviews &amp; commits manifest"}
-        Stop_Scope["Stop / Re-scope"]
-    end
-
-    subgraph S1["Inventory enumeration"]
-        Collect["<b>CAI &amp; API Enumeration</b><br/><code>inventory.py collect</code>"]
-        InvFile[("<b>Frozen Denominator</b><br/><code>inventory.json</code>")]
-    end
-
-    subgraph S2["Canonical scaffolding &amp; mapping"]
-        Worklist["<b>Compute Delta Worklist</b><br/><code>coverage.py --worklist-out</code>"]
-        Emit["<b>Agent Emits Terraform &amp; Mappings</b><br/>• Canonical Fabric Module calls<br/>• Native <code>import {}</code> blocks<br/>• <code>tf/coverage-map.yaml</code>"]
-    end
-
-    subgraph S3["GATE 1 — completeness"]
-        Gate1{"<b>Gate 1: Completeness</b><br/><code>coverage.py --require-signed-waivers</code><br/><i>Every asset mapped or waived?</i>"}
-        GWaiver{"<b>Gate: Waiver Signing</b><br/>Human signs deliberate exclusion<br/>in <code>waivers.yaml</code>"}
-    end
-
-    subgraph S4["GATE 2 — plan convergence"]
-        PlanExec["<b>Plan &amp; Drift Evaluation</b><br/><code>terraform plan</code> &amp;<br/><code>verify_plan.py</code>"]
-        Gate2{"<b>Gate 2: Plan Convergence</b><br/><i>Zero unexpected changes?<br/>(clean imports, no-ops,<br/>reviewed-benign)</i>"}
-        GDrift{"<b>Gate: Benign Drift Review</b><br/>Human accepts verified provider quirk<br/>in <code>benign-drift.yaml</code>"}
-    end
-
-    subgraph S5["Output &amp; handover"]
-        Report["<b>Generate Run Report</b><br/>Audit trail, capability gaps &amp;<br/>gate input SHA256 digests"]
-        GApply{"<b>Gate: Apply Sign-off</b><br/>Human operator reviews plan"}
-        Workspace(["<b>Zero-Drift Production Fabric Workspace</b><br/><code>tf/</code> ready for <code>terraform apply</code>"])
-    end
-
-    %% Flow connections
-    MA --> Draft
-    MB --> Draft
-    Draft --> G_Scope
-    G_Scope -->|Human Rejects| Stop_Scope
-    G_Scope -->|Human Approves &amp; Commits| Collect
-
-    Collect --> InvFile
-    InvFile --> Worklist
-    Worklist --> Emit
-    Emit --> Gate1
-
-    %% Gate 1 loops
-    Gate1 -->|Missing / Unmapped Assets| GWaiver
-    GWaiver -->|"Sign Waiver (signed_by)"| Gate1
-    GWaiver -->|In-Scope Resource| Emit
-    Gate1 -->|"100% Covered (Exit 0)"| PlanExec
-
-    %% Gate 2 loops
-    PlanExec --> Gate2
-    Gate2 -->|Residual Diff / Attribute Mismatch| GDrift
-    GDrift -->|Fix HCL / Module Inputs / ForceNew| Emit
-    GDrift -->|"Accept Quirk (Review &amp; Commit)"| Gate2
-    Gate2 -->|"Zero Drift (Exit 0)"| Report
-
-    %% Final Step
-    Report --> GApply
-    GApply -->|Reviewed &amp; Approved| Workspace
-
-    %% Styling & Classes
-    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100;
-    classDef step fill:#e8f0fe,stroke:#1a73e8,stroke-width:2px,color:#1a73e8;
-    classDef file fill:#f1f8e9,stroke:#33691e,stroke-width:2px,color:#33691e;
-    classDef terminal fill:#fce8e6,stroke:#c5221f,stroke-width:2px,color:#c5221f;
-    classDef success fill:#e6f4ea,stroke:#137333,stroke-width:3px,color:#137333;
-
-    class G_Scope,GWaiver,Gate1,Gate2,GDrift,GApply gate;
-    class MA,MB,Draft,Collect,Worklist,Emit,PlanExec,Report step;
-    class InvFile file;
-    class Stop_Scope terminal;
-    class Workspace success;
+    A["Existing .tfstate files<br/>or the live estate"] --> B["Draft import-manifest.yaml<br/>manifest_from_state.py, or<br/>inventory.py survey + manifest_init.py"]
+    B --> G0{{"HUMAN GATE 1<br/>approve the scope"}}
+    G0 --> C["inventory.py collect"]
+    C --> D[("inventory.json<br/>THE DENOMINATOR")]
+    D --> E["coverage.py --worklist-out"]
+    E --> F["AGENT WORK<br/>module config + import blocks<br/>+ coverage-map.yaml"]
+    F --> G1{"GATE 1 machine<br/>coverage.py"}
+    G1 -- "missing assets" --> W{{"HUMAN GATE 2<br/>sign a waiver"}}
+    W --> G1
+    G1 -- "gaps to close" --> F
+    G1 -- "reconciled, exit 0" --> P["terraform plan"]
+    P --> G2{"GATE 2 machine<br/>verify_plan.py"}
+    G2 -- "residual diff" --> F
+    G2 -- "provider quirk?" --> BD{{"HUMAN GATE 3<br/>accept benign drift"}}
+    BD --> G2
+    G2 -- "converged, exit 0" --> R["Run report"]
+    R --> NEXT["Widen the manifest<br/>for the next round"]
+    NEXT --> G0
+    R --> G3{{"HUMAN GATE 4<br/>apply sign-off"}}
+    G3 --> DONE(["terraform apply<br/>run by the operator"])
 ```
+
+Everything above the scope gate is advisory. Everything below it is mechanical
+and binding.
+
+### Funnel 1: how a declared type becomes inventory entries
+
+```mermaid
+flowchart TD
+    T["One type declared<br/>in the manifest"] --> Q1{"pseudo-type?"}
+    Q1 -- "iam" --> S1["asset list<br/>--content-type=iam-policy"]
+    Q1 -- "org-policy" --> S2["three streams merged:<br/>org-policy content type<br/>+ orgpolicy Policy assets<br/>+ gcloud org-policies list<br/>per container"]
+    Q1 -- "no, a real asset type" --> Q2{"enumerator registered?<br/>built-in table, or a<br/>manifest enumerate: block"}
+    Q2 -- "yes" --> S3["gcloud list per container<br/>CAI never consulted"]
+    Q2 -- "no" --> S4["gcloud asset list<br/>batched with the other types"]
+    S4 --> Q3{"outcome"}
+    Q3 -- "ok" --> OUT
+    Q3 -- "type not in the<br/>CAI catalogue" --> STOP["STOP, exit 3<br/>fix the type string,<br/>add an enumerator,<br/>or drop it deliberately"]
+    Q3 -- "any other error<br/>403, ACM types" --> S5["asset search-all-resources"]
+    S5 -- "ok" --> OUT
+    S5 -- "still failing" --> STOP2["STOP, exit 3<br/>partial denominator refused"]
+    S1 --> OUT[("inventory.json")]
+    S2 --> OUT
+    S3 --> OUT
+```
+
+No path exits with "skip it". Every branch ends in the denominator or in a stop,
+because an unenumerated asset is invisible to both gates at once — it would pass
+every check by not existing.
+
+### Funnel 2: how a worklist item becomes code
+
+```mermaid
+flowchart TD
+    I["Worklist item"] --> M{"Does the canonical<br/>Fabric module express<br/>the live resource?"}
+    M -- "yes" --> A["Module config<br/>+ import block<br/>+ coverage-map entry"]
+    M -- "module exists but cannot<br/>express an attribute" --> B["Raw google_* resource<br/>+ MODULE CAPABILITY GAP<br/>in the report"]
+    M -- "no module covers<br/>the type at all" --> C["Raw google_* resource<br/>+ report, propose upstream"]
+    M -- "deliberately out of scope" --> D{{"HUMAN GATE<br/>signed waiver"}}
+    M -- "a residual you<br/>cannot explain" --> STOP["STOP<br/>report it, never rationalise it"]
+    A --> P["Both gates"]
+    B --> P
+    C --> P
+    D --> X["Not in the workspace,<br/>named in the report"]
+```
+
+Three of those four outcomes are successes. That matters: the temptation at the
+middle two is to force the module to fit, or to call the leftover diff benign.
 
 ---
 
-### Terminal / ASCII Workflow Alternative
+### Terminal / ASCII alternative
 
 ```text
-  [Mode A: Existing .tfstate]         [Mode B: Untracked Brownfield]
-  (manifest_from_state.py)             (inventory.py survey + manifest_init.py)
-              │                                      │
-              └──────────────────┬───────────────────┘
-                                 ▼
-                     Draft import-manifest.yaml
-                                 │
-                     ┌───────────▼────────────┐
-                     │  GATE: Scope Approval  │◄── Human reviews & commits
-                     └───────────┬────────────┘
-                                 │ Approved
-                                 ▼
-           Step 1: inventory.py collect ──► inventory.json (Frozen Denominator)
-                                 │
-                                 ▼
-           Step 2: coverage.py --worklist-out ──► worklist.yaml
-                                 │
-           ┌─────────────────────┴────────────────────────────────┐
-           ▼                                                      ▼
-     Agent Scaffolding & Mapping                       GATE: Waiver Signing
-     • Canonical Fabric Modules (tf/*.tf)              (Human signs waivers.yaml
-     • Paired native import {} blocks                   for deliberate exclusions)
-     • tf/coverage-map.yaml                                       │
-           │                                                      │
-           └─────────────────────┬────────────────────────────────┘
-                                 ▼
-           Step 3: GATE 1: Completeness (coverage.py)
-                   [Missing / Unmapped Assets?] ──► (Loop back to Step 2)
-                                 │ 100% Reconciled (Exit 0)
-                                 ▼
-           Step 4: terraform plan & verify_plan.py
-                                 │
-                   GATE 2: Plan Convergence
-                   [Residual Diffs / Attribute Mismatch?]
-                         │                  │
-                         ▼                  ▼
-                 Fix HCL / Inputs     GATE: Benign Drift Review
-                 (Loop back to S2)    (Human accepts quirk in benign-drift.yaml)
-                                 │
-                                 │ Zero Residual Drift (Exit 0)
-                                 ▼
-           Step 5: Run Report (Provenance & Input SHA256 Hashes)
-                                 │
-                     ┌───────────▼────────────┐
-                     │ GATE: Apply Sign-Off   │◄── Human Operator
-                     └───────────┬────────────┘
-                                 ▼
-           Output: Zero-Drift Production Fabric Workspace (tf/)
+  [what Terraform manages]          [what actually exists]
+  (manifest_from_state.py)      (inventory.py survey + manifest_init.py)
+              |                                |
+              +----------------+---------------+
+                               v
+                  Draft import-manifest.yaml
+                               |
+                  +------------v-------------+
+                  |  HUMAN GATE: scope       |  <-- types and levels,
+                  |  approved and committed  |      never a list of resources
+                  +------------v-------------+
+                               v
+            inventory.py collect --> inventory.json (the denominator)
+                               |
+                               v
+            coverage.py --worklist-out --> worklist.yaml
+                               |
+                               v
+            AGENT: module config + import blocks + coverage-map.yaml
+                               |
+                               v
+            GATE 1 coverage.py     (denominator vs the text of the code)
+              | missing? --> HUMAN GATE: sign a waiver, or write the code
+              | reconciled (exit 0)
+                               v
+            terraform plan --> GATE 2 verify_plan.py   (plan vs reality)
+              | residual? --> fix the code, or HUMAN GATE: accept benign drift
+              | converged (exit 0)
+                               v
+            Run report --> widen the manifest, next round
+                       \--> HUMAN GATE: apply sign-off --> terraform apply
 ```
 
 ---
-
 ## Step-by-Step Operator Guide
 
 ### 1. Declare the Scope (`import-manifest.yaml`)
 You and the agent agree on an `import-manifest.yaml` declaring which resource types to import (e.g., folders, service accounts, VPC networks, org policies), at which container levels (organization, folder, or project), and which subtrees to include or exclude.
+
+This is the only file you author, and it names types, not resources. The two
+options below are drafting aids that answer different questions — A tells you
+what Terraform already manages, B tells you what exists. Run both the first
+time and compare them; run neither if you already know your scope. Neither
+output is binding until you have reviewed it and committed it.
 
 **Option A — Inferred from existing Terraform state(s):**
 ```bash
@@ -245,7 +322,7 @@ full ladder (CAI → gcloud → REST API → signed waiver) and the guard
 rails.
 
 ### 3. Compute Delta Worklist
-The completeness tool reconciles the denominator against any existing code and written waivers:
+The completeness tool reconciles the denominator against any existing code and written waivers. This is the same program that runs as gate 1 in step 5 — the same comparison, run for a different reason. Here it tells you what is left to do; there it decides whether anything is. On the first round everything is outstanding, so the worklist is the whole denominator. On later rounds it is only the delta, which is what makes repeated rounds cheap:
 ```bash
 python3 scripts/coverage.py --inventory inventory.json --workspace tf \
   --waivers waivers.yaml --worklist-out worklist.yaml
@@ -264,8 +341,8 @@ For each item in `worklist.yaml`, the agent writes:
 3. A ledger entry in `coverage-map.yaml` linking the asset to its Terraform address.
 
 ### 5. Automated Verification (Definition of Done)
-Work is complete only when two independent gates pass with exit code `0`:
-- **Completeness Gate (`coverage.py`)**: Reconciles the inventory against `coverage-map.yaml`, `waivers.yaml`, and emitted `import {}` blocks. Every asset must be mapped or waived.
+Work is complete only when two independent gates pass with exit code `0`. They are independent in a specific sense: each catches a failure the other cannot see. Gate 1 can pass on wrong code, and gate 2 can pass on a workspace covering three resources out of fifty-nine. See [The two gates answer different questions](#the-two-gates-answer-different-questions).
+- **Completeness Gate (`coverage.py`)**: Reconciles the inventory against `coverage-map.yaml`, `waivers.yaml`, and emitted `import {}` blocks. Every asset must be mapped or waived. It reads files only — no Terraform, no cloud access — so it needs neither credentials nor a `terraform init` to run.
 - **Plan Convergence Gate (`verify_plan.py`)**: Consumes `terraform show -json <planfile>` output (file argument or stdin) and classifies the planned actions. It never invokes Terraform itself. The plan may only contain clean imports, no-ops, and human-reviewed benign drift entries from `scripts/benign-drift.yaml`. Any residual attribute modification or destruction fails the gate.
 
 Run both gates like this:
