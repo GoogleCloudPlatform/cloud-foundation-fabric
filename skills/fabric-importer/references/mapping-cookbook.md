@@ -141,7 +141,7 @@ Rules that make the split sound (from `project-factory` source,
 `folders.tf`):
 
 - **Factory subtrees can be rooted mid-tree.** A level-1 factory
-  folder takes an explicit `parent` in its `_config.yaml`
+  folder takes an explicit `parent` in its `.config.yaml`
   (`parent = coalesce(<config parent>, "$folder_ids:default")`),
   resolvable through `context.folder_ids` — so a factory-managed
   subtree may sit under a per-instance-managed or unmanaged folder.
@@ -156,7 +156,7 @@ Rules that make the split sound (from `project-factory` source,
   (per-instance child under a factory folder):
   `parent = module.<pf>.folder_ids["<path>"]`. Upward (factory
   subtree under a per-instance folder): `parent:` in the subtree
-  root's `_config.yaml`, fed via the factory's `context.folder_ids`
+  root's `.config.yaml`, fed via the factory's `context.folder_ids`
   input. Every style boundary is a seam: name it in the run report.
 - **The 4-level cap applies per factory subtree**, since each subtree
   root is level 1 — splitting deep hierarchies along scope boundaries
@@ -189,7 +189,14 @@ is a `moved {}` exercise, per instance, at a time of your choosing.
 - **The reference rule changes carrier.** Inside factory YAML,
   references are context interpolations (`$folder_ids:<path>`,
   `$iam_principals:…`), not module outputs. The rule itself is
-  unchanged — no literals for managed resources — only its spelling.
+  unchanged — no literals for managed resources — only its spelling:
+  - **Level-1 folders** (under the organization or a boundary parent):
+    `parent: "organizations/<org_id>"` or `parent: "$folder_ids:default"`.
+  - **Nested folders (Level 2+)**: `parent: "$folder_ids:<parent_path>"`
+    (e.g. `parent: "$folder_ids:networking"` in `networking/production/.config.yaml`).
+    While `project-factory` defaults omitted `parent` on child folders to
+    `"$folder_ids:${parent_key}"`, emitting it explicitly makes hierarchy
+    dependencies clear and self-documenting in the YAML data.
 
 ### project-factory: addresses and layout (from module source)
 
