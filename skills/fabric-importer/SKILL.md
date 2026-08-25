@@ -241,6 +241,14 @@ Every entry that did not come from CAI is stamped into
 `inventory.json`'s `_meta.native_sweeps` with the verbatim command, and
 belongs in the step-5 report.
 
+Collection closes with a one-line cost summary (`N gcloud call(s) in
+Xs: …`) and records every command it ran in `_meta.api_calls`. Add
+`--verbose` after the subcommand to watch each call as it happens —
+useful when a sweep is slow and you want to know which one. Quote the
+summary line in the report: on a large estate the per-container
+org-policy sweep dominates the run, and this is what makes that visible
+instead of guessed at.
+
 ### Step 2 — get your worklist
 
 ```bash

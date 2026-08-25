@@ -1478,6 +1478,171 @@ class TestInventoryManifestValidation(unittest.TestCase):
     self.assertIn('invalid level', str(ctx.exception))
 
 
+class TestApiCallLoggingAndPaging(unittest.TestCase):
+  """Every call is announced and counted, and pages are as large as the
+  API allows.
+
+  These run real subprocesses on purpose: the rest of the suite replaces
+  run_json wholesale, so the logging, timing and failure bookkeeping
+  inside it would otherwise never execute.
+  """
+
+  def setUp(self):
+    inventory.API_CALLS.clear()
+    inventory.SWEEP_FAILURES.clear()
+    self._verbose = inventory.VERBOSE
+
+  def tearDown(self):
+    inventory.API_CALLS.clear()
+    inventory.SWEEP_FAILURES.clear()
+    inventory.VERBOSE = self._verbose
+
+  def test_asset_list_asks_for_the_largest_page_the_api_allows(self):
+    """assets.list defaults to 100 per page, so a 50k-asset org cost 500
+    round trips. 1000 is the documented maximum."""
+    seen = []
+    real = inventory.run_json
+    inventory.run_json = lambda cmd, **kw: seen.append(cmd) or []
+    try:
+      inventory.run_gcloud_json(['--organization=1'])
+    finally:
+      inventory.run_json = real
+    self.assertIn('--page-size=1000', seen[0])
+    self.assertEqual(inventory.CAI_LIST_PAGE_SIZE, 1000)
+    # searchAllResources clamps at 500 even if a larger value is given.
+    self.assertEqual(inventory.CAI_SEARCH_PAGE_SIZE, 500)
+
+  def test_search_fallback_uses_the_search_page_cap(self):
+    calls = []
+
+    def handler(cmd, **kwargs):
+      calls.append(' '.join(cmd))
+      if not kwargs.get('ignore_errors'):
+        raise SystemExit('command failed\nERROR: PERMISSION_DENIED')
+      return []
+
+    real = inventory.run_json
+    inventory.run_json = handler
+    try:
+      with contextlib.redirect_stderr(io.StringIO()):
+        inventory.collect({
+            'scope': {
+                'root': 'organizations/1'
+            },
+            'types': [{
+                'type': 'storage.googleapis.com/Bucket',
+                'levels': ['project']
+            }]
+        })
+    finally:
+      inventory.run_json = real
+    search = [c for c in calls if 'search-all-resources' in c]
+    self.assertTrue(search)
+    self.assertIn('--page-size=500', search[0])
+
+  def test_quiet_by_default_but_still_recorded(self):
+    """On a large estate the per-call log is one pair of lines per
+    container, which buries the warnings that decide whether the
+    denominator can be trusted. So the screen stays quiet unless asked,
+    while the record — which nothing else can reconstruct afterwards —
+    is kept either way."""
+    inventory.VERBOSE = False
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      inventory.run_json([sys.executable, '-c', 'print("[1,2]")'])
+    self.assertEqual(buf.getvalue(), '')
+    self.assertEqual(inventory.API_CALLS[0]['item_count'], 2)
+    self.assertEqual(inventory.API_CALLS[0]['outcome'], 'ok')
+
+  def test_verbose_flag_reaches_the_logger(self):
+    """The flag is per-subcommand on purpose: declared on the top-level
+    parser as well, argparse's subparser default would overwrite it."""
+    argv = sys.argv
+    verbose = inventory.VERBOSE
+    real_collect = inventory.collect
+    seen = {}
+
+    def fake_collect(manifest):
+      del manifest
+      seen['verbose'] = inventory.VERBOSE
+      return [], inventory.ProjectRegistry(), []
+
+    with tempfile.NamedTemporaryFile('w', suffix='.yaml', delete=False) as f:
+      yaml.safe_dump({'scope': {'root': 'organizations/1'}, 'types': []}, f)
+      mpath = f.name
+    try:
+      inventory.collect = fake_collect
+      for flags, expected in ((['--verbose'], True), ([], False)):
+        inventory.VERBOSE = False
+        sys.argv = ([
+            'inventory.py', 'collect', '--manifest', mpath, '--out', os.devnull
+        ] + flags)
+        with contextlib.redirect_stdout(io.StringIO()):
+          with contextlib.redirect_stderr(io.StringIO()):
+            inventory.main()
+        self.assertEqual(seen['verbose'], expected)
+    finally:
+      inventory.collect = real_collect
+      inventory.VERBOSE = verbose
+      sys.argv = argv
+      os.remove(mpath)
+
+  def test_a_successful_call_is_logged_before_and_after(self):
+    inventory.VERBOSE = True
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      out = inventory.run_json([sys.executable, '-c', 'print("[1,2,3]")'])
+    self.assertEqual(out, [1, 2, 3])
+    err = buf.getvalue()
+    # Announced before it runs, so a long sweep shows progress rather
+    # than silence.
+    self.assertIn('[api   1]', err)
+    self.assertIn('ok in', err)
+    self.assertIn('3 item(s)', err)
+    record = inventory.API_CALLS[0]
+    self.assertEqual(record['outcome'], 'ok')
+    self.assertEqual(record['item_count'], 3)
+    self.assertIn('seconds', record)
+
+  def test_a_failed_call_is_recorded_as_failed_not_as_ok(self):
+    inventory.VERBOSE = True
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      out = inventory.run_json([sys.executable, '-c', 'raise SystemExit(1)'],
+                               ignore_errors=True)
+    self.assertEqual(out, [])
+    self.assertEqual(inventory.API_CALLS[0]['outcome'], 'FAILED')
+    self.assertIn('FAILED in', buf.getvalue())
+    # ... and it still lands in the fail-closed accumulator.
+    self.assertTrue(inventory.SWEEP_FAILURES)
+
+  def test_calls_are_numbered_in_order_and_summarized(self):
+    with contextlib.redirect_stderr(io.StringIO()):
+      inventory.run_json([sys.executable, '-c', 'print("[]")'])
+      inventory.run_json([sys.executable, '-c', 'print("[]")'])
+    self.assertEqual([c['n'] for c in inventory.API_CALLS], [1, 2])
+    summary = inventory.api_call_summary()
+    self.assertIn('2 gcloud call(s)', summary)
+
+  def test_the_summary_counts_failures_separately(self):
+    with contextlib.redirect_stderr(io.StringIO()):
+      inventory.run_json([sys.executable, '-c', 'print("[]")'])
+      inventory.run_json([sys.executable, '-c', 'raise SystemExit(1)'],
+                         ignore_errors=True)
+    self.assertIn('1 not ok', inventory.api_call_summary())
+
+  def test_the_call_log_does_not_leak_into_the_next_collect(self):
+    inventory.API_CALLS.append({'n': 99, 'command': 'stale', 'outcome': 'ok'})
+    real = inventory.run_json
+    inventory.run_json = lambda cmd, **kw: []
+    try:
+      with contextlib.redirect_stderr(io.StringIO()):
+        inventory.collect({'scope': {'root': 'organizations/1'}, 'types': []})
+    finally:
+      inventory.run_json = real
+    self.assertEqual(inventory.API_CALLS, [])
+
+
 class TestNonCaiEnumeration(unittest.TestCase):
   """CAI is the default source of the denominator, not its boundary.
 

@@ -214,6 +214,30 @@ the same inventory (this also overrides a built-in):
       key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
 ```
 
+Every run closes with a one-line cost summary on stderr:
+
+```
+7 gcloud call(s) in 12.0s: asset list x5, org-policies list x2
+```
+
+Add `--verbose` (after the subcommand) to see each command as it runs,
+with its outcome, duration and item count:
+
+```
+[api   1] gcloud --quiet asset list --format=json --page-size=1000 --organization=123 --content-type=resource --asset-types=...
+[api   1] ok in 4.2s, 1841 item(s)
+```
+
+The full log is written to `_meta.api_calls` either way, so the cost of a
+scope stays auditable without making the run unreadable: on a large
+estate the per-container sweeps produce a pair of lines per container,
+and those would bury the warnings that decide whether the denominator
+can be trusted.
+
+CAI listings request the largest page each API allows (1000 for
+`asset list`, 500 for `search-all-resources`), which is what decides how
+many HTTP requests each command turns into.
+
 Every such sweep is recorded verbatim in `_meta.native_sweeps` so a
 reviewer can re-run it. See
 [references/cai-blind-spots.md](./references/cai-blind-spots.md) for the
@@ -272,16 +296,17 @@ to the current working directory.
 
 | Script | Purpose | Flags |
 |---|---|---|
-| `inventory.py survey` | Enumerate everything in scope, to draft a manifest from | `--scope` (required), `--out` |
+| `inventory.py survey` | Enumerate everything in scope, to draft a manifest from | `--scope` (required), `--out`, `--verbose` |
 | `manifest_init.py` | Draft a manifest from a survey (Mode B) | `--survey` (required), `--scope` (required), `--out` |
 | `manifest_from_state.py` | Infer a manifest from existing `.tfstate` (Mode A) | `--state` (1+, required), `--out` (`-` for stdout), `--force` to overwrite an existing manifest |
-| `inventory.py collect` | Build the denominator from CAI | `--manifest` (required), `--out` |
+| `inventory.py collect` | Build the denominator from CAI | `--manifest` (required), `--out`, `--verbose` |
 | `coverage.py` | Gate 1 — completeness | `--inventory` (required), `--workspace` (required), `--coverage-map`, `--waivers`, `--require-signed-waivers`, `--allow-empty-inventory`, `--worklist-out` |
 | `verify_plan.py` | Gate 2 — plan convergence | positional plan JSON (default stdin), `--rules`, `--allow-empty-plan` |
 | `integrity.py` | Print the frozen-tools provenance digest | `--verbose` for per-file digests |
 
 `inventory.py` requires the `survey` or `collect` subcommand; it has no
-top-level flags.
+top-level flags. `--verbose` therefore goes after the subcommand
+(`inventory.py collect --manifest m.yaml --verbose`), not before it.
 
 Exit codes — `coverage.py`: `0` reconciled, `1` malformed input, `2` gaps
 or problems. `verify_plan.py`: `0` converged, `1` malformed input, `2`

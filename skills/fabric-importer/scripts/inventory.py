@@ -55,6 +55,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 import yaml
 
@@ -108,11 +109,61 @@ def _is_unsupported_type_error(text):
   return any(m in low for m in _CAI_UNSUPPORTED_MARKERS)
 
 
+# Page sizes. gcloud passes these straight through to the API, and each
+# page is one HTTP request against the CAI quota, so the default of 100
+# turned a 50,000-asset organization into 500 round trips. Both values
+# are the documented maximum for their method: assets.list caps at 1000,
+# searchAllResources at 500 ("Page size is capped at 500 even if a
+# larger value is given"). Anything larger is silently clamped, so these
+# are the ceiling, not a tuning knob.
+#
+# Deliberately NOT applied to `gcloud org-policies list` or to native
+# enumerators: their page-size limits are per-service and undocumented
+# here, and an out-of-range value would be a new failure mode bought for
+# an unmeasured gain.
+CAI_LIST_PAGE_SIZE = 1000
+CAI_SEARCH_PAGE_SIZE = 500
+
+# Every subprocess this tool runs, in order, with its outcome. Always
+# RECORDED and summarized into the inventory's provenance block, so the
+# cost of a collection is auditable after the fact; printed per call
+# only under --verbose, because a large estate produces one pair of
+# lines per in-scope container and that buries the warnings that matter.
+API_CALLS = []
+VERBOSE = False
+
+
+def _log_call(index, cmd):
+  if VERBOSE:
+    print(f'[api {index:>3}] {" ".join(cmd)}', file=sys.stderr, flush=True)
+
+
+def _log_result(index, outcome, elapsed, count=None):
+  if VERBOSE:
+    detail = '' if count is None else f', {count} item(s)'
+    print(f'[api {index:>3}] {outcome} in {elapsed:.1f}s{detail}',
+          file=sys.stderr, flush=True)
+
+
 def run_json(cmd, ignore_errors=False, allow_disabled_service=False,
              timeout=300):
   executable = shutil.which(cmd[0]) or cmd[0]
   resolved_cmd = [executable] + cmd[1:]
   env = dict(os.environ, CLOUDSDK_CORE_DISABLE_PROMPTS='1')
+  index = len(API_CALLS) + 1
+  record = {'n': index, 'command': ' '.join(cmd), 'outcome': 'unknown'}
+  API_CALLS.append(record)
+  _log_call(index, cmd)
+  started = time.monotonic()
+
+  def finish(outcome, count=None):
+    elapsed = time.monotonic() - started
+    record['outcome'] = outcome
+    record['seconds'] = round(elapsed, 2)
+    if count is not None:
+      record['item_count'] = count
+    _log_result(index, outcome, elapsed, count)
+
   try:
     # encoding is pinned: gcloud always emits UTF-8, but `text=True`
     # decodes with the process locale, so a non-ASCII display name blew
@@ -121,12 +172,14 @@ def run_json(cmd, ignore_errors=False, allow_disabled_service=False,
                          encoding='utf-8', errors='replace', env=env,
                          timeout=timeout)
   except FileNotFoundError:
+    finish('NOT FOUND')
     if ignore_errors:
       msg = f'{" ".join(cmd)}: executable not found in PATH'
       SWEEP_FAILURES.append(msg)
       return []
     raise SystemExit(f"ERROR: executable '{cmd[0]}' not found in PATH")
   except subprocess.TimeoutExpired:
+    finish('TIMEOUT')
     if ignore_errors:
       msg = f'{" ".join(cmd)}: command timed out after {timeout}s'
       SWEEP_FAILURES.append(msg)
@@ -145,9 +198,11 @@ def run_json(cmd, ignore_errors=False, allow_disabled_service=False,
       # remove a whole class of policies from the denominator.
       msg = f'{" ".join(cmd)}: {stderr.splitlines()[-1] if stderr else ""}'
       SUPPRESSED_SWEEPS.append(msg)
+      finish('SKIPPED (service disabled)')
       print(f'WARNING: sweep suppressed as disabled-service: {msg}',
             file=sys.stderr)
       return []
+    finish('FAILED')
     if ignore_errors:
       err_line = stderr.splitlines()[-1] if stderr else "unknown error"
       msg = f'{" ".join(cmd)}: {err_line}'
@@ -155,12 +210,16 @@ def run_json(cmd, ignore_errors=False, allow_disabled_service=False,
       print(f'WARNING: enumeration failure (recorded): {msg}', file=sys.stderr)
       return []
     raise SystemExit(f'command failed: {" ".join(cmd)}\n{stderr}')
-  return json.loads(res.stdout) if res.stdout.strip() else []
+  payload = json.loads(res.stdout) if res.stdout.strip() else []
+  finish('ok', len(payload) if isinstance(payload, list) else 1)
+  return payload
 
 
 def run_gcloud_json(args):
-  return run_json(['gcloud', '--quiet', 'asset', 'list', '--format=json'] +
-                  args)
+  return run_json([
+      'gcloud', '--quiet', 'asset', 'list', '--format=json',
+      f'--page-size={CAI_LIST_PAGE_SIZE}'
+  ] + args)
 
 
 class ProjectRegistry:
@@ -896,6 +955,27 @@ def parse_and_validate_scopes(manifest, registry=None):
   return validated_scopes
 
 
+def api_call_summary():
+  """One line of cost accounting: how many commands ran, how long they
+  took, and which family they belonged to.
+
+  A gcloud invocation is one or more HTTP requests — it pages until the
+  results run out — so this counts commands, not requests. With
+  `--page-size` at the API maximum, the two are equal for any scope
+  under 1000 assets of a type and diverge slowly above it.
+  """
+  by_family = {}
+  for call in API_CALLS:
+    parts = call['command'].split()
+    family = ' '.join(p for p in parts[1:4] if not p.startswith('-'))
+    by_family[family] = by_family.get(family, 0) + 1
+  seconds = sum(c.get('seconds', 0) for c in API_CALLS)
+  failed = sum(1 for c in API_CALLS if c['outcome'] not in ('ok', 'unknown'))
+  families = ', '.join(f'{k} x{v}' for k, v in sorted(by_family.items()))
+  return (f'{len(API_CALLS)} gcloud call(s) in {seconds:.1f}s'
+          f'{f", {failed} not ok" if failed else ""}: {families}')
+
+
 def collect(manifest):
   # Module-level accumulators: reset so a second collect() in the same
   # process cannot inherit the first run's failures (or hide behind
@@ -904,6 +984,7 @@ def collect(manifest):
   del SUPPRESSED_SWEEPS[:]
   del UNSUPPORTED_CAI_TYPES[:]
   del NATIVE_SWEEPS[:]
+  del API_CALLS[:]
   registry = ProjectRegistry()
   scopes = parse_and_validate_scopes(manifest, registry)
   types = manifest.get('types') or []
@@ -1037,7 +1118,7 @@ def collect(manifest):
             assets += run_json([
                 'gcloud', '--quiet', 'asset', 'search-all-resources',
                 f'--scope={search_scope}', f'--asset-types={rt}',
-                '--format=json'
+                '--format=json', f'--page-size={CAI_SEARCH_PAGE_SIZE}'
             ], ignore_errors=True)
       registry.ingest_assets(assets)
       filtered_res = [
@@ -1104,6 +1185,8 @@ def collect(manifest):
   # Dedupe merged streams across all scopes
   entries = list({e['key']: e for e in all_entries}.values())
   entries.sort(key=lambda e: e['key'])
+
+  print(f'\n{api_call_summary()}', file=sys.stderr)
 
   if NATIVE_SWEEPS:
     by_type = {}
@@ -1199,16 +1282,27 @@ def survey(scope_root):
 
 
 def main():
+  global VERBOSE
   p = argparse.ArgumentParser(description=__doc__)
+  # Shared by both subcommands. The flag goes AFTER the subcommand
+  # (`collect --verbose`): declaring it on the top-level parser too
+  # would let argparse's subparser default silently overwrite it.
+  common = argparse.ArgumentParser(add_help=False)
+  common.add_argument(
+      '-v', '--verbose', action='store_true',
+      help='print every gcloud command as it runs, with its outcome, '
+      'duration and item count. The same log is always written to '
+      "the output file's _meta.api_calls regardless of this flag")
   sub = p.add_subparsers(dest='mode', required=True)
-  ps = sub.add_parser('survey')
+  ps = sub.add_parser('survey', parents=[common])
   ps.add_argument('--scope', required=True,
                   help='e.g. organizations/123, folders/456')
   ps.add_argument('--out', default='-')
-  pc = sub.add_parser('collect')
+  pc = sub.add_parser('collect', parents=[common])
   pc.add_argument('--manifest', required=True)
   pc.add_argument('--out', default='-')
   args = p.parse_args()
+  VERBOSE = args.verbose
 
   if args.mode == 'survey':
     entries = survey(args.scope)
@@ -1261,6 +1355,14 @@ def main():
                 # re-run these by hand.
                 'native_sweeps':
                     list(NATIVE_SWEEPS),
+                # Every command this collection ran, in order, with its
+                # outcome and duration. Makes the cost of a scope
+                # auditable after the fact, and a slow or failing sweep
+                # attributable to a command rather than to a feeling.
+                'api_calls':
+                    list(API_CALLS),
+                'api_call_summary':
+                    api_call_summary(),
                 'scopes':
                     scope_summaries,
                 'resolved_projects':
