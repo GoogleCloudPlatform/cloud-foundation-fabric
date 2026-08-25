@@ -97,8 +97,9 @@
               "default": {},
               "additionalProperties": false,
               "patternProperties": {
-                "^[a-z0-9_-]+$": {
-                  "type": "string"
+                "^[a-z][a-z0-9_-]{0,62}$": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{0,63}$"
                 }
               }
             },
@@ -673,6 +674,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "access_levels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "cidr_ranges_sets": {
           "type": "object",
           "additionalProperties": {
@@ -762,7 +769,10 @@
               }
             },
             "organization": {
-              "type": "string"
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
             }
           }
         },

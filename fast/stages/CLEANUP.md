@@ -2,7 +2,14 @@
 
 If you want to destroy a previous FAST deployment in your organization, follow these steps.
 
-Destruction must be done in reverse order, from stage 2 to stage 0
+Destruction must be done in reverse order, from stage 3 to stage 0
+
+## Stage 3 (SecOps)
+
+```bash
+cd $FAST_PWD/3-secops-dev/
+terraform destroy
+```
 
 ## Stage 2 (Project Factory)
 

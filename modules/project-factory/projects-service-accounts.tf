@@ -27,21 +27,28 @@ locals {
           try(local.data_defaults.defaults.service_accounts.display_name, null),
           "Terraform-managed."
         )
-        iam                    = try(opts.iam, {})
-        iam_bindings           = try(opts.iam_bindings, {})
-        iam_bindings_additive  = try(opts.iam_bindings_additive, {})
-        iam_billing_roles      = try(opts.iam_billing_roles, {})
-        iam_organization_roles = try(opts.iam_organization_roles, {})
-        iam_sa_roles           = try(opts.iam_sa_roles, {})
-        iam_project_roles      = try(opts.iam_project_roles, {})
+        iam                       = try(opts.iam, {})
+        iam_bindings              = try(opts.iam_bindings, {})
+        iam_bindings_additive     = try(opts.iam_bindings_additive, {})
+        iam_billing_bindings      = try(opts.iam_billing_bindings, {})
+        iam_billing_roles         = try(opts.iam_billing_roles, {})
+        iam_folder_bindings       = try(opts.iam_folder_bindings, {})
+        iam_folder_roles          = try(opts.iam_folder_roles, {})
+        iam_organization_bindings = try(opts.iam_organization_bindings, {})
+        iam_organization_roles    = try(opts.iam_organization_roles, {})
+        iam_project_bindings      = try(opts.iam_project_bindings, {})
+        iam_project_roles         = try(opts.iam_project_roles, {})
+        iam_sa_bindings           = try(opts.iam_sa_bindings, {})
+        iam_sa_roles              = try(opts.iam_sa_roles, {})
         iam_self_roles = distinct(concat(
           try(local.data_defaults.overrides.service_accounts.iam_self_roles, []),
           try(opts.iam_self_roles, []),
           try(local.data_defaults.defaults.service_accounts.iam_self_roles, []),
         ))
-        iam_storage_roles = try(opts.iam_storage_roles, {})
-        tag_bindings      = try(opts.tag_bindings, {})
-        opts              = opts
+        iam_storage_bindings = try(opts.iam_storage_bindings, {})
+        iam_storage_roles    = try(opts.iam_storage_roles, {})
+        tag_bindings         = try(opts.tag_bindings, {})
+        opts                 = opts
       }
     ]
   ])
@@ -93,13 +100,22 @@ module "service-accounts" {
     project_ids = local.ctx_project_ids
     tag_values  = local.ctx_tag_values
   })
+  iam_billing_bindings      = each.value.iam_billing_bindings
+  iam_billing_roles         = each.value.iam_billing_roles
+  iam_folder_bindings       = each.value.iam_folder_bindings
+  iam_folder_roles          = each.value.iam_folder_roles
+  iam_organization_bindings = each.value.iam_organization_bindings
+  iam_organization_roles    = each.value.iam_organization_roles
+  iam_project_bindings      = each.value.iam_project_bindings
   iam_project_roles = merge(
     each.value.iam_project_roles,
     {
       "$project_ids:${each.value.project_key}" = each.value.iam_self_roles
     }
   )
-  tag_bindings = each.value.tag_bindings
+  iam_storage_bindings = each.value.iam_storage_bindings
+  iam_storage_roles    = each.value.iam_storage_roles
+  tag_bindings         = each.value.tag_bindings
 }
 
 moved {
@@ -112,7 +128,7 @@ module "service-accounts-iam" {
   for_each = {
     for k in local.projects_service_accounts :
     "${k.project_key}/${k.name}" => k
-    if k.iam_sa_roles != {} || k.iam != {}
+    if k.iam_sa_roles != {} || k.iam_sa_bindings != {} || k.iam != {}
   }
   project_id = (
     module.service-accounts[each.key].service_account.project
@@ -139,5 +155,6 @@ module "service-accounts-iam" {
   iam                   = each.value.iam
   iam_bindings          = each.value.iam_bindings
   iam_bindings_additive = each.value.iam_bindings_additive
+  iam_sa_bindings       = each.value.iam_sa_bindings
   iam_sa_roles          = each.value.iam_sa_roles
 }

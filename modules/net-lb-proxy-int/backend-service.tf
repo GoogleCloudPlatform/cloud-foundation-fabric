@@ -34,6 +34,14 @@ locals {
   )
 }
 
+resource "terraform_data" "neg_trigger" {
+  input = {
+    zonal    = { for k, v in google_compute_network_endpoint_group.default : k => v.id }
+    psc      = { for k, v in google_compute_region_network_endpoint_group.psc : k => v.id }
+    internet = { for k, v in google_compute_region_network_endpoint_group.internet : k => v.id }
+  }
+}
+
 resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
   project                         = local.project_id
@@ -42,7 +50,7 @@ resource "google_compute_region_backend_service" "default" {
   description                     = var.backend_service_config.description
   affinity_cookie_ttl_sec         = var.backend_service_config.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
-  health_checks                   = [local.health_check]
+  health_checks                   = local.health_check == null ? null : [local.health_check]
   load_balancing_scheme           = "INTERNAL_MANAGED"
   port_name                       = var.backend_service_config.port_name # defaults to http, not for NEGs
   protocol                        = "TCP"
@@ -56,7 +64,6 @@ resource "google_compute_region_backend_service" "default" {
       balancing_mode  = backend.value.balancing_mode
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description
-      failover        = backend.value.failover
       max_connections = try(
         backend.value.max_connections.per_group, null
       )
@@ -70,28 +77,6 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
-  dynamic "connection_tracking_policy" {
-    for_each = var.backend_service_config.connection_tracking == null ? [] : [""]
-    content {
-      connection_persistence_on_unhealthy_backends = (
-        ar.backend_service_config.connection_tracking.persist_conn_on_unhealthy != null
-        ? ar.backend_service_config.connection_tracking.persist_conn_on_unhealthy
-        : null
-      )
-      idle_timeout_sec = var.backend_service_config.connection_tracking.idle_timeout_sec
-      tracking_mode    = try(local.bs_conntrack.track_per_session ? "PER_SESSION" : "PER_CONNECTION", null)
-    }
-  }
-
-  dynamic "failover_policy" {
-    for_each = var.backend_service_config.failover_config == null ? [] : [""]
-    content {
-      disable_connection_drain_on_failover = var.backend_service_config.failover_config.disable_conn_drain
-      drop_traffic_if_unhealthy            = var.backend_service_config.failover_config.drop_traffic_if_unhealthy
-      failover_ratio                       = var.backend_service_config.failover_config.ratio
-    }
-  }
-
   dynamic "log_config" {
     for_each = var.backend_service_config.log_config == null ? [] : [""]
     content {
@@ -102,4 +87,10 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.neg_trigger
+    ]
+  }
 }

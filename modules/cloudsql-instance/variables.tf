@@ -286,11 +286,12 @@ variable "region" {
 }
 
 variable "replicas" {
-  description = "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE} for additional read replicas. Set to null to disable replica creation."
+  description = "Map of NAME=> {REGION, KMS_KEY, AVAILABILITY_TYPE, TIER} for additional read replicas. Set TIER to override the primary's machine type per replica. Set to null to disable replica creation."
   type = map(object({
     region              = string
     encryption_key_name = optional(string)
     availability_type   = optional(string)
+    tier                = optional(string)
   }))
   default  = {}
   nullable = false

@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# /// script
+# dependencies = [
+#   "click",
+# ]
+# ///
 
 # Copyright 2025 Google LLC
 #

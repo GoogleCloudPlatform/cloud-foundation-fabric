@@ -31,8 +31,8 @@ locals {
 resource "google_compute_region_health_check" "default" {
   provider            = google-beta
   count               = local.hc != null ? 1 : 0
-  project             = var.project_id
-  region              = var.region
+  project             = local.project_id
+  region              = local.region
   name                = local.hc.name != null ? local.hc.name : var.name
   description         = local.hc.description
   check_interval_sec  = local.hc.check_interval_sec

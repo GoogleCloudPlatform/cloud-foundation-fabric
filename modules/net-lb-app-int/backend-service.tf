@@ -80,7 +80,6 @@ resource "google_compute_region_backend_service" "default" {
       balancing_mode  = backend.value.balancing_mode
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description
-      failover        = backend.value.failover
       max_connections = try(
         backend.value.max_connections.per_group, null
       )
@@ -150,18 +149,6 @@ resource "google_compute_region_backend_service" "default" {
           }
         }
       }
-    }
-  }
-
-  dynamic "failover_policy" {
-    for_each = (
-      each.value.failover_config == null ? [] : [each.value.failover_config]
-    )
-    iterator = fc
-    content {
-      disable_connection_drain_on_failover = fc.value.disable_conn_drain
-      drop_traffic_if_unhealthy            = fc.value.drop_traffic_if_unhealthy
-      failover_ratio                       = fc.value.ratio
     }
   }
 

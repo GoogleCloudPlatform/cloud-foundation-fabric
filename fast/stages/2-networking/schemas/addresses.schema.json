@@ -21,7 +21,16 @@
               "endpoint_type": { "type": "string", "enum": ["NETLB", "VM"] }
             }
           },
-          "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
           "name": { "type": "string" },
           "subnetwork": { "type": "string" },
           "tier": { "type": "string", "enum": ["PREMIUM", "STANDARD"] }
@@ -51,7 +60,16 @@
           "subnetwork": { "type": "string" },
           "address": { "type": "string" },
           "description": { "type": "string" },
-          "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+          "labels": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^[a-z][a-z0-9_-]{0,62}$": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{0,63}$"
+              }
+            }
+          },
           "name": { "type": "string" },
           "purpose": { "type": "string" },
           "tier": { "type": "string" }

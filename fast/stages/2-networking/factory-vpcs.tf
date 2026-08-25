@@ -101,9 +101,15 @@ moved {
 }
 
 module "vpc-factory" {
-  source         = "../../../modules/net-vpc-factory"
-  data_defaults  = local.vpc_defaults.defaults
-  data_overrides = local.vpc_defaults.overrides
+  source        = "../../../modules/net-vpc-factory"
+  data_defaults = local.vpc_defaults.defaults
+  # routes and policy based routes are suppressed here and managed in a
+  # second pass via module.vpc-routes, so that next hops can resolve NVA
+  # ILB addresses created after the VPCs
+  data_overrides = merge(local.vpc_defaults.overrides, {
+    policy_based_routes = {}
+    routes              = {}
+  })
   factories_config = {
     basepath = var.factories_config.dataset
     paths    = var.factories_config.paths
@@ -126,9 +132,10 @@ module "vpc-routes" {
     use_data_source = false
     attributes      = { network_id = module.vpc-factory.vpcs[each.key].network_id }
   }
-  project_id = each.value.project_id
-  name       = each.value.name
-  routes     = try(each.value.routes, {})
+  project_id          = each.value.project_id
+  name                = each.value.name
+  policy_based_routes = try(each.value.policy_based_routes, {})
+  routes              = try(each.value.routes, {})
   context = {
     project_ids = local.ctx_projects.project_ids
     locations   = local.ctx.locations

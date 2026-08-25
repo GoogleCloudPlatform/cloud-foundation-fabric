@@ -97,6 +97,7 @@ resource "google_service_account" "service_account" {
   display_name                 = var.display_name
   description                  = var.description
   create_ignore_already_exists = var.create_ignore_already_exists
+  deletion_policy              = var.deletion_policy
 }
 
 resource "google_tags_tag_binding" "binding" {

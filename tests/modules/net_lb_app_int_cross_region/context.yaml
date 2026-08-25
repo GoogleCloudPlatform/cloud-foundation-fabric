@@ -1,0 +1,178 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_global_forwarding_rule.forwarding_rules["europe-west1"]:
+    allow_psc_global_access: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    external_managed_backend_bucket_migration_state: null
+    external_managed_backend_bucket_migration_testing_percentage: null
+    ip_address: 10.0.0.1
+    ip_protocol: TCP
+    ip_version: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    metadata_filters: []
+    name: lb-test-europe-west1
+    network: resolved-network
+    no_automate_dns_zone: null
+    port_range: '80'
+    project: resolved-project
+    source_ip_ranges: null
+    subnetwork: resolved-subnet-ew1
+    timeouts: null
+  google_compute_global_forwarding_rule.forwarding_rules["europe-west4"]:
+    allow_psc_global_access: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    external_managed_backend_bucket_migration_state: null
+    external_managed_backend_bucket_migration_testing_percentage: null
+    ip_protocol: TCP
+    ip_version: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    metadata_filters: []
+    name: lb-test-europe-west4
+    network: resolved-network
+    no_automate_dns_zone: null
+    port_range: '80'
+    project: resolved-project
+    source_ip_ranges: null
+    subnetwork: resolved-subnet-ew4
+    timeouts: null
+  google_compute_health_check.default["default"]:
+    check_interval_sec: 5
+    deletion_policy: DELETE
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check:
+    - host: null
+      port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request_path: /
+      response: null
+    https_health_check: []
+    name: lb-test-default
+    project: resolved-project
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check: []
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  google_compute_instance_group.default["default"]:
+    deletion_policy: DELETE
+    description: Terraform managed.
+    name: lb-test-default
+    named_port: []
+    project: resolved-project
+    timeouts: null
+    zone: europe-west1-b
+  google_compute_region_network_endpoint_group.psc["psc-neg"]:
+    app_engine: []
+    cloud_function: []
+    cloud_run: []
+    deletion_policy: DELETE
+    description: null
+    name: lb-test-psc-neg
+    network: resolved-network
+    network_endpoint_type: PRIVATE_SERVICE_CONNECT
+    project: resolved-project
+    psc_target_service: projects/resolved-project/regions/europe-west1/serviceAttachments/sa
+    region: europe-west1
+    subnetwork: resolved-subnet-psc
+    timeouts: null
+  google_compute_service_attachment.default["europe-west1"]:
+    connection_preference: ACCEPT_MANUAL
+    consumer_accept_lists: []
+    consumer_reject_lists: null
+    deletion_policy: DELETE
+    description: null
+    domain_names: null
+    enable_proxy_protocol: false
+    name: lb-test-europe-west1
+    nat_subnets:
+    - resolved-subnet-ew1
+    project: resolved-project
+    region: europe-west1
+    send_propagated_connection_limit_if_zero: false
+    show_nat_ips: null
+    timeouts: null
+  google_compute_service_attachment.default["europe-west4"]:
+    connection_preference: ACCEPT_MANUAL
+    consumer_accept_lists: []
+    consumer_reject_lists: null
+    deletion_policy: DELETE
+    description: null
+    domain_names: null
+    enable_proxy_protocol: false
+    name: lb-test-europe-west4
+    nat_subnets:
+    - resolved-subnet-ew4
+    project: resolved-project
+    region: europe-west4
+    send_propagated_connection_limit_if_zero: false
+    show_nat_ips: null
+    timeouts: null
+  google_compute_target_http_proxy.default[0]:
+    deletion_policy: DELETE
+    description: Terraform managed.
+    http_keep_alive_timeout_sec: null
+    name: lb-test
+    project: resolved-project
+    timeouts: null
+  google_compute_url_map.default:
+    default_custom_error_response_policy: []
+    default_route_action: []
+    default_service: default
+    default_url_redirect: []
+    deletion_policy: DELETE
+    description: Terraform managed.
+    header_action: []
+    host_rule: []
+    name: lb-test
+    path_matcher: []
+    project: resolved-project
+    test: []
+    timeouts: null
+
+counts:
+  google_compute_global_forwarding_rule: 2
+  google_compute_health_check: 1
+  google_compute_instance_group: 1
+  google_compute_region_network_endpoint_group: 1
+  google_compute_service_attachment: 2
+  google_compute_target_http_proxy: 1
+  google_compute_url_map: 1
+  modules: 0
+  resources: 9
+
+outputs:
+  addresses: __missing__
+  backend_service_ids: {}
+  backend_service_names: {}
+  forwarding_rules: __missing__
+  group_ids: __missing__
+  health_check_ids: __missing__
+  ids: __missing__
+  neg_ids: {}
+  psc_neg_ids: __missing__
+  regional_neg_ids: {}
+  url_map_id: __missing__

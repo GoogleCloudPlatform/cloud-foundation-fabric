@@ -72,6 +72,7 @@ module "vpcs" {
   project_id                        = try(each.value.project_id, null)
   name                              = try(each.value.name, null)
   auto_create_subnetworks           = try(each.value.auto_create_subnetworks, null)
+  bgp_config                        = try(each.value.bgp_config, null)
   create_googleapis_routes          = try(each.value.create_googleapis_routes, null)
   delete_default_routes_on_create   = try(each.value.delete_default_routes_on_create, true)
   description                       = try(each.value.description, "Terraform managed")
@@ -81,7 +82,9 @@ module "vpcs" {
   ipv6_config                       = try(each.value.ipv6_config, null)
   mtu                               = try(each.value.mtu, null)
   network_attachments               = try(each.value.network_attachments, {})
+  policy_based_routes               = try(each.value.policy_based_routes, {})
   psa_configs                       = try(each.value.psa_configs, [])
+  routes                            = try(each.value.routes, {})
   routing_mode                      = try(each.value.routing_mode, "GLOBAL")
 }
 

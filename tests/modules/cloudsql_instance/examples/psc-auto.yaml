@@ -56,7 +56,7 @@ values:
           - project-id
           network_attachment_uri: ''
           psc_auto_connections:
-          - consumer_network: https://www.googleapis.com/compute/v1/projects/xxx/global/networks/aaa
+          - consumer_network: projects/xxx/global/networks/aaa
             consumer_service_project_id: project-id
           psc_enabled: true
         server_ca_pool: null

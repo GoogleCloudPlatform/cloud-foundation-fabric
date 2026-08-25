@@ -24,7 +24,7 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 ## Organization (0)
 
 - [Organization Setup](./0-org-setup/README.md)
-  This stage combines the legacy bootstrap and resource management stages described below, allowing easy configuration of all related resources via factories. Its flexibility supports any type of organizational design, while still supporting traditional FAST stages like VPC Service Controls, security, networking, and any stage 3.
+  This stage bootstraps the organization and resource management, allowing easy configuration of all related resources via factories. Its flexibility supports any type of organizational design, while still supporting traditional FAST stages like VPC Service Controls, security, networking, and any stage 3.
 
 ## VPC Service Controls (1)
 
@@ -33,14 +33,19 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 
 ## Shared resources (2)
 
-- [Security](2-security/README.md)
-  Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
+- [Security](./2-security/README.md)
+  Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage creates projects to host centralized KMS keys and Certificate Authority Service (CAS) instances used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.\
   Exports: KMS key ids, CA ids
-- Networking ([Networking factory](2-networking/README.md))
+- [Networking](./2-networking/README.md)
   Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage provides several different design as YaML datasets, including hub-and-spoke with VPC Peerings, VPNs, NVAs and NCC.
   Exports: host project ids and numbers, vpc self links
-- [Project Factory](./2-project-factory/)
+- [Project Factory](./2-project-factory/README.md)
   YAML-based factory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage can be cloned if an org-wide or dedicated per-environment factories are needed.
+
+## Applications and operations (3)
+
+- [SecOps Setup](./3-secops-dev/README.md)
+  Configures a Google SecOps instance at both infrastructure and application level. High level features of this stage include Data RBAC, IAM, Detection Rules, reference lists, API keys, and Google Workspace integrations.
 
 ## Importing existing setup into FAST
 For brownfield implementations you may need to import existing setting in the organization, folders, etc. These snippets can help you add existing settings into the YAML file

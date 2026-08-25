@@ -59,10 +59,13 @@ values:
     location: europe-west1
     name: prod-ca-0
     project: fast-prod-sec-core-0
-    publishing_options: []
+    publishing_options:
+    - encoding_format: PEM
+      publish_ca_cert: true
+      publish_crl: true
     terraform_labels:
       goog-terraform-provisioned: 'true'
-    tier: DEVOPS
+    tier: ENTERPRISE
     timeouts: null
   module.cas["prod-ca-0"].google_privateca_certificate_authority.default["prod-ca-0-0"]:
     certificate_authority_id: prod-ca-0-0

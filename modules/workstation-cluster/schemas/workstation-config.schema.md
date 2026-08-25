@@ -44,11 +44,10 @@
     - **enable_vtpm**: *boolean*
     - **enable_integrity_monitoring**: *boolean*
   - **enable_confidential_compute**: *boolean*
-  - **accelerators**: *array*
-    - items: *object*
-      <br>*additional properties: false*
-      - **type**: *string*
-      - **count**: *number*
+  - **accelerators**: *object*
+    <br>*additional properties: number*
+  - **boost_configs**: *object*
+    <br>*additional properties: object*
 - **iam**: *object*
   <br>*additional properties: array*
 - **iam_bindings**: *object*
@@ -56,7 +55,9 @@
 - **iam_bindings_additive**: *object*
   <br>*additional properties: object*
 - **labels**: *object*
-  <br>*additional properties: string*
+  <br>*additional properties: false*
+  - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+    <br>*pattern: ^[a-z0-9_-]{0,63}$*
 - **max_workstations**: *number*
 - **persistent_directories**: *array*
   - items: *object*

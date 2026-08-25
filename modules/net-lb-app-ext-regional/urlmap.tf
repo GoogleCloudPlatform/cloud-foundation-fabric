@@ -24,9 +24,9 @@ locals {
 
 resource "google_compute_region_url_map" "default" {
   provider    = google-beta
-  project     = var.project_id
+  project     = local.project_id
   name        = var.name
-  region      = var.region
+  region      = local.region
   description = var.urlmap_config.description
   default_service = (
     var.urlmap_config.default_service == null ? null : lookup(
@@ -210,6 +210,35 @@ resource "google_compute_region_url_map" "default" {
       prefix_redirect        = r.value.prefix
       redirect_response_code = r.value.response_code
       strip_query            = r.value.strip_query
+    }
+  }
+
+  dynamic "header_action" {
+    for_each = (
+      var.urlmap_config.header_action == null
+      ? []
+      : [var.urlmap_config.header_action]
+    )
+    iterator = h
+    content {
+      request_headers_to_remove  = h.value.request_remove
+      response_headers_to_remove = h.value.response_remove
+      dynamic "request_headers_to_add" {
+        for_each = coalesce(h.value.request_add, {})
+        content {
+          header_name  = request_headers_to_add.key
+          header_value = request_headers_to_add.value.value
+          replace      = request_headers_to_add.value.replace
+        }
+      }
+      dynamic "response_headers_to_add" {
+        for_each = coalesce(h.value.response_add, {})
+        content {
+          header_name  = response_headers_to_add.key
+          header_value = response_headers_to_add.value.value
+          replace      = response_headers_to_add.value.replace
+        }
+      }
     }
   }
 

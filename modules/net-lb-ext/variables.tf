@@ -81,6 +81,18 @@ variable "backends" {
   nullable = false
 }
 
+variable "context" {
+  description = "Context-specific interpolations."
+  type = object({
+    addresses   = optional(map(string), {})
+    locations   = optional(map(string), {})
+    project_ids = optional(map(string), {})
+    subnets     = optional(map(string), {})
+  })
+  default  = {}
+  nullable = false
+}
+
 variable "forwarding_rules_config" {
   description = "The optional forwarding rules configuration."
   type = map(object({

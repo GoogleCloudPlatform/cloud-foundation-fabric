@@ -22,7 +22,6 @@ values:
     project: project-id
     role: roles/storage.objectViewer
   module.agent_engine.google_vertex_ai_reasoning_engine.managed[0]:
-    context_spec: []
     deletion_policy: DELETE
     description: Terraform managed.
     display_name: my-agent
@@ -33,16 +32,23 @@ values:
     project: project-id
     region: europe-west8
     spec:
-    - agent_framework: null
+    - agent_card: null
+      agent_framework: null
+      build_spec: []
       class_methods: null
       container_spec:
       - image_uri: us-central1-docker.pkg.dev/my-project/my-repo/my-image:latest
       deployment_spec:
-      - env:
+      - agent_gateway_config: []
+        agent_server_mode: null
+        dedicated_ingress_endpoint_enabled: null
+        env:
         - name: FOO
           value: bar
+        keep_alive_probe: []
         psc_interface_config: []
         secret_env: []
+      example_store: null
       identity_type: AGENT_IDENTITY
       package_spec: []
       service_account: null

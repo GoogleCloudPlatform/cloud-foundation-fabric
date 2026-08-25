@@ -1,10 +1,10 @@
-# Copyright 2025 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,19 @@
 
 values:
   google_privateca_ca_pool.default[0]:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
+    encryption_spec: []
     issuance_policy: []
     labels: null
     location: europe-west8
     name: test-ca
     project: test-0
-    publishing_options: []
+    publishing_options:
+    - encoding_format: PEM
+      publish_ca_cert: true
+      publish_crl: true
     terraform_labels:
       goog-terraform-provisioned: 'true'
     tier: DEVOPS
@@ -107,6 +112,7 @@ values:
           unknown_extended_key_usages: []
         name_constraints: []
         policy_ids: []
+    deletion_policy: DELETE
     deletion_protection: true
     desired_state: null
     effective_labels:
@@ -136,3 +142,10 @@ counts:
   google_privateca_certificate_authority: 1
   modules: 0
   resources: 9
+
+outputs:
+  ca_chains: __missing__
+  ca_ids: __missing__
+  ca_pool: __missing__
+  ca_pool_id: __missing__
+  cas: __missing__

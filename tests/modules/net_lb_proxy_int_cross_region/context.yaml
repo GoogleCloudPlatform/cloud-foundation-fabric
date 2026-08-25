@@ -1,0 +1,174 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_compute_backend_service.default:
+    affinity_cookie_ttl_sec: null
+    backend:
+    - balancing_mode: CONNECTION
+      capacity_scaler: 1
+      custom_metrics: []
+      description: Terraform managed.
+      max_connections_per_endpoint: 100
+      preference: ''
+      traffic_duration: ''
+    circuit_breakers: []
+    compression_mode: null
+    connection_draining_timeout_sec: 300
+    consistent_hash: []
+    custom_metrics: []
+    custom_request_headers: null
+    custom_response_headers: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    dynamic_forwarding: []
+    edge_security_policy: null
+    enable_cdn: null
+    external_managed_migration_state: null
+    external_managed_migration_testing_percentage: null
+    ip_address_selection_policy: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    locality_lb_policies: []
+    locality_lb_policy: null
+    max_stream_duration: []
+    name: proxy-cr-ctx-test
+    network_pass_through_lb_traffic_policy: []
+    outlier_detection: []
+    params: []
+    project: concrete-project-id
+    protocol: TCP
+    security_policy: null
+    security_settings: []
+    service_lb_policy: null
+    session_affinity: NONE
+    strong_session_affinity_cookie: []
+    timeouts: null
+    tls_settings: []
+  google_compute_global_forwarding_rule.default["europe-west1"]:
+    allow_psc_global_access: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    external_managed_backend_bucket_migration_state: null
+    external_managed_backend_bucket_migration_testing_percentage: null
+    ip_address: 10.0.0.10
+    ip_protocol: TCP
+    ip_version: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    metadata_filters: []
+    name: proxy-cr-ctx-test-europe-west1
+    network: projects/concrete-project-id/global/networks/concrete-vpc
+    no_automate_dns_zone: null
+    port_range: '80'
+    project: concrete-project-id
+    source_ip_ranges: null
+    subnetwork: projects/concrete-project-id/regions/europe-west1/subnetworks/concrete-subnet-1
+    timeouts: null
+  google_compute_global_forwarding_rule.default["europe-west4"]:
+    allow_psc_global_access: null
+    deletion_policy: DELETE
+    description: Terraform managed.
+    external_managed_backend_bucket_migration_state: null
+    external_managed_backend_bucket_migration_testing_percentage: null
+    ip_protocol: TCP
+    ip_version: null
+    labels: null
+    load_balancing_scheme: INTERNAL_MANAGED
+    metadata_filters: []
+    name: proxy-cr-ctx-test-europe-west4
+    network: projects/concrete-project-id/global/networks/concrete-vpc
+    no_automate_dns_zone: null
+    port_range: '80'
+    project: concrete-project-id
+    source_ip_ranges: null
+    subnetwork: projects/concrete-project-id/regions/europe-west4/subnetworks/concrete-subnet-2
+    timeouts: null
+  google_compute_health_check.default[0]:
+    check_interval_sec: 5
+    deletion_policy: DELETE
+    description: Terraform managed.
+    grpc_health_check: []
+    grpc_tls_health_check: []
+    healthy_threshold: 2
+    http2_health_check: []
+    http_health_check: []
+    https_health_check: []
+    name: proxy-cr-ctx-test
+    project: concrete-project-id
+    source_regions: null
+    ssl_health_check: []
+    tcp_health_check:
+    - port: null
+      port_name: null
+      port_specification: USE_SERVING_PORT
+      proxy_header: NONE
+      request: null
+      response: null
+    timeout_sec: 5
+    timeouts: null
+    unhealthy_threshold: 2
+  google_compute_network_endpoint.default["neg-a-vm-a"]:
+    deletion_policy: DELETE
+    instance: my-vm-a
+    ip_address: 10.0.0.2
+    network_endpoint_group: proxy-cr-ctx-test-neg-a
+    port: 80
+    project: concrete-project-id
+    timeouts: null
+    zone: europe-west1-b
+  google_compute_network_endpoint_group.default["neg-a"]:
+    default_port: null
+    deletion_policy: DELETE
+    description: null
+    name: proxy-cr-ctx-test-neg-a
+    network: projects/concrete-project-id/global/networks/concrete-vpc
+    network_endpoint_type: GCE_VM_IP_PORT
+    project: concrete-project-id
+    subnetwork: projects/concrete-project-id/regions/europe-west1/subnetworks/concrete-subnet-1
+    timeouts: null
+    zone: europe-west1-b
+  google_compute_target_tcp_proxy.default:
+    deletion_policy: DELETE
+    description: Terraform managed.
+    name: proxy-cr-ctx-test
+    project: concrete-project-id
+    proxy_header: NONE
+    timeouts: null
+
+counts:
+  google_compute_backend_service: 1
+  google_compute_global_forwarding_rule: 2
+  google_compute_health_check: 1
+  google_compute_network_endpoint: 1
+  google_compute_network_endpoint_group: 1
+  google_compute_target_tcp_proxy: 1
+  modules: 0
+  resources: 7
+
+outputs:
+  addresses: __missing__
+  backend_service: __missing__
+  backend_service_id: __missing__
+  backend_service_self_link: __missing__
+  forwarding_rules: __missing__
+  group_self_links: {}
+  groups: {}
+  health_check: __missing__
+  health_check_id: __missing__
+  health_check_self_link: __missing__
+  ids: __missing__
+  neg_ids: __missing__
+  psc_neg_ids: {}
+  target_proxy: __missing__
+  target_proxy_id: __missing__

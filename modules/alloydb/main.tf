@@ -218,6 +218,14 @@ resource "google_alloydb_instance" "primary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = var.machine_config.cpu_count
     machine_type = var.machine_config.machine_type
@@ -439,6 +447,14 @@ resource "google_alloydb_instance" "secondary" {
     }
   }
 
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
+    }
+  }
+
   machine_config {
     cpu_count    = coalesce(try(var.cross_region_replication.secondary_machine_config.cpu_count, null), var.machine_config.cpu_count)
     machine_type = local.secondary_machine_type
@@ -523,6 +539,14 @@ resource "google_alloydb_instance" "read_pool_primary" {
           ssl_mode = each.value.ssl_mode
         }
       }
+    }
+  }
+
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
     }
   }
 
@@ -620,6 +644,14 @@ resource "google_alloydb_instance" "read_pool_secondary" {
           ssl_mode = each.value.ssl_mode
         }
       }
+    }
+  }
+
+  dynamic "connection_pool_config" {
+    for_each = var.connection_pool_flags != null ? [""] : []
+    content {
+      enabled = true
+      flags   = var.connection_pool_flags
     }
   }
 

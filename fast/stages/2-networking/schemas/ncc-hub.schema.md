@@ -22,5 +22,8 @@
   <br>*additional properties: false*
   - **description**: *string*
   - **labels**: *object*
+    <br>*additional properties: false*
+    - **`^[a-z][a-z0-9_-]{0,62}$`**: *string*
+      <br>*pattern: ^[a-z0-9_-]{0,63}$*
   - **auto_accept**: *array*
     - items: *string*
