@@ -78,6 +78,21 @@ values:
     region: us-central1
     settings:
     - edition: ENTERPRISE
+      ip_configuration:
+      - allocated_ip_range: null
+        authorized_networks: []
+        custom_subject_alternative_names: null
+        enable_private_path_for_google_cloud_services: false
+        ipv4_enabled: false
+        private_network: null
+        psc_config:
+        - allowed_consumer_projects:
+          - project-id
+          network_attachment_uri: ''
+          psc_auto_connections:
+          - consumer_network: projects/xxx/global/networks/aaa
+            consumer_service_project_id: project-id
+          psc_enabled: true
 
 counts:
   google_sql_database_instance: 2
