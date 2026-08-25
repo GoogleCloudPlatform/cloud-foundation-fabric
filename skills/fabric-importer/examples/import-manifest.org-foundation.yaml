@@ -101,11 +101,35 @@ scope:
 # project-factory — the imported workspace doubles as the day-2
 # operating model. Mind the tradeoffs (4-level nesting cap, data-path =
 # key so directory moves re-key the subtree, deeper import addresses).
-# Per-scope override: scopes[].emission, same enum.
+#
+# emission is valid in TWO positions:
+#   - here (top level): manifest-wide default — the only position in a
+#     singular-`scope:` manifest like this one;
+#   - per scope (scopes[].emission): same map, overrides the top level
+#     for that scope's assets.
+# Resolution per family: scopes[].emission -> top-level emission ->
+# per-instance. Omission defers to the next level; it never means
+# per-instance directly.
 #
 # emission:
 #   folder: factory
 #   project: per-instance
+#
+# To factory-manage only SOME folders, split the tree into scopes
+# along subtree boundaries (include/exclude) and set emission per
+# scope — see "Subtree-granular emission (scope splitting)" in the
+# cookbook's factory-emission section:
+#
+#   scopes:
+#     - name: teams
+#       root: organizations/000000000000
+#       include: [folders/111111111111]
+#       levels: [folder]
+#       emission: {folder: factory}
+#     - name: rest
+#       root: organizations/000000000000
+#       exclude: [folders/111111111111]
+#       levels: [folder]           # inherits/defaults to per-instance
 
 types:
   # -------------------------------------------------------------------
