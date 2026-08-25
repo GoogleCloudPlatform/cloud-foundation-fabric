@@ -18,6 +18,12 @@
     <br>*additional properties: false*
     - **name**: *string*
     - **enterprise_tier**: *boolean*
+    - **publishing_options**: *object*
+      <br>*additional properties: false*
+      - **encoding_format**: *string*
+        <br>*enum: ['PEM', 'DER']*
+      - ⁺**publish_ca_cert**: *boolean*
+      - ⁺**publish_crl**: *boolean*
   - **use_pool**: *object*
     <br>*additional properties: false*
     - ⁺**id**: *string*

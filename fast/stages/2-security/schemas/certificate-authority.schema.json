@@ -57,6 +57,29 @@
             "enterprise_tier": {
               "type": "boolean",
               "default": false
+            },
+            "publishing_options": {
+              "type": "object",
+              "required": [
+                "publish_ca_cert",
+                "publish_crl"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "encoding_format": {
+                  "type": "string",
+                  "enum": [
+                    "PEM",
+                    "DER"
+                  ]
+                },
+                "publish_ca_cert": {
+                  "type": "boolean"
+                },
+                "publish_crl": {
+                  "type": "boolean"
+                }
+              }
             }
           }
         },
