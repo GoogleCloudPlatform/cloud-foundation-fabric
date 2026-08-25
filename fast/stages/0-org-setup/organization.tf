@@ -15,6 +15,7 @@
  */
 
 locals {
+  _org_logging_settings = lookup(local.organization, "logging", null)
   ctx_condition_vars = {
     custom_roles = merge(
       local.ctx.custom_roles,
@@ -57,10 +58,10 @@ locals {
     for k, v in module.organization[0].access_levels : k => v.id
   }
   org_logging_identities = merge(
-    module.organization[0].logging_identities.kms == null ? {} : {
+    try(local._org_logging_settings.kms_key_name, null) == null ? {} : {
       "organization/logging/kms" = module.organization[0].logging_identities.kms
     },
-    module.organization[0].logging_identities.logging == null ? {} : {
+    local._org_logging_settings == null ? {} : {
       "organization/logging/sinks" = module.organization[0].logging_identities.logging
     }
   )
