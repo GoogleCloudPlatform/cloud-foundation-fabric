@@ -249,8 +249,10 @@ separates that case from a permission failure. Three remedies, in order:
   ```
 
   One extra call per scope; fatal if the search surface returns an asset
-  the list sweep did not. `_meta.split_parity` absent means NOT CHECKED,
-  which is not the same as clean — say which in the report. See
+  the list sweep did not. `_meta.split_parity` EMPTY means the probe did
+  not run; a probe that ran and found nothing is a record whose
+  `only_in_search` is empty. Read the record, not the key — and say
+  which in the report. See
   [references/cai-blind-spots.md](./references/cai-blind-spots.md).
 - **CAI genuinely does not model the type, and no built-in covers it.**
   Give it a native enumerator in the manifest — a read-only gcloud
@@ -528,9 +530,10 @@ upstream-Fabric-issue material — plus
 benign diffs relied on, waivers in effect, proposed waivers/benign rules
 awaiting human review, and anything the manifest excludes that you
 believe deserves attention. State whether `--verify-search-parity` was
-run and what it found; `_meta.split_parity` absent means NOT CHECKED,
-and reporting an unchecked table as clean is exactly the kind of claim
-this section exists to prevent. Plain facts; no "100%" claims beyond what the
+run and what it found. An empty `_meta.split_parity` means the probe did
+not run; a clean probe is a record whose `only_in_search` is empty.
+Reporting an unchecked table as clean is exactly the kind of claim this
+section exists to prevent. Plain facts; no "100%" claims beyond what the
 gates literally verified.
 
 The report MUST include the verbatim stdout of both final gate runs —

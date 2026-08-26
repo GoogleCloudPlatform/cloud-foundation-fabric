@@ -314,8 +314,9 @@ uv run scripts/inventory.py collect --manifest import-manifest.yaml \
 
 It costs one extra `search-all-resources` call per scope and fails the
 run if the search surface returns an asset the list sweep did not.
-`_meta.split_parity` is absent when the probe did not run, which is not
-the same as clean.
+`_meta.split_parity` is EMPTY when the probe did not run; a probe that
+ran and found nothing is a record whose `only_in_search` is empty. Read
+the record, not the key — the two are not the same claim.
 
 Every run closes with a one-line cost summary on stderr:
 

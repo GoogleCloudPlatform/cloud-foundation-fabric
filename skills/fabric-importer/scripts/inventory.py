@@ -1934,8 +1934,11 @@ def main():
                 # aggregated.
                 'split_type_sweeps':
                     list(SPLIT_TYPE_SWEEPS),
-                # Result of --verify-search-parity, when it ran. Absent
-                # means NOT CHECKED, which is not the same as clean.
+                # Result of --verify-search-parity. EMPTY means the
+                # probe did not run, which is not the same as clean: a
+                # probe that ran and found nothing appears here as a
+                # record whose `only_in_search` is empty. Read the
+                # record, not the key.
                 'split_parity':
                     list(SPLIT_PARITY_FINDINGS),
                 # Every command this collection ran, in order, with its

@@ -82,6 +82,17 @@ The documented pairs:
 | `compute.googleapis.com/Disk` | `compute.googleapis.com/RegionDisk` |
 | `compute.googleapis.com/ForwardingRule` | `compute.googleapis.com/GlobalForwardingRule` |
 
+### Reproducing it, if you ever need to
+
+The silent-gap condition needs a family whose declared type yields
+**non-zero** while still being incomplete: at least one REGIONAL address
+and at least one GLOBAL address, in the same in-scope project. With only
+global addresses present the declared type yields zero, the pre-existing
+zero-yield warning fires, and the tool is loud — a real bug, but not
+THIS bug. A test estate built only from a freshly created global address
+therefore validates that siblings are swept, and validates nothing about
+the silence.
+
 ### Why this one is worse than an unsupported type
 
 An unsupported type fails loudly. This one fails **silently, past every
@@ -151,8 +162,10 @@ table is stale and the denominator is incomplete.
 The probe is opt-in, for two reasons: it costs a call per scope, and it
 imports the search index's propagation lag as a possible false positive.
 Run it at least once per engagement, and quote the result in the run
-report. `_meta.split_parity` is absent when the probe did not run —
-which is **not** the same as clean.
+report. `_meta.split_parity` is **empty** when the probe did not run; a
+probe that ran and found nothing is a RECORD whose `only_in_search` is
+empty. Read the record, not the key — "not checked" and "checked, clean"
+are different claims and must not be reported as the same one.
 
 If the probe fires, identify the list-surface type of the missing assets
 (`gcloud asset list` with no `--asset-types`, then match on name) and
