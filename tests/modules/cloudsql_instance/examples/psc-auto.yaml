@@ -69,10 +69,34 @@ values:
       tier: db-g1-small
       time_zone: null
     timeouts: null
+  module.db.google_sql_database_instance.replicas["replica1"]:
+    clone: []
+    database_version: POSTGRES_13
+    master_instance_name: myprefix-db
+    name: myprefix-replica1
+    project: project-id
+    region: us-central1
+    settings:
+    - edition: ENTERPRISE
+      ip_configuration:
+      - allocated_ip_range: null
+        authorized_networks: []
+        custom_subject_alternative_names: null
+        enable_private_path_for_google_cloud_services: false
+        ipv4_enabled: false
+        private_network: null
+        psc_config:
+        - allowed_consumer_projects:
+          - project-id
+          network_attachment_uri: ''
+          psc_auto_connections:
+          - consumer_network: projects/xxx/global/networks/aaa
+            consumer_service_project_id: project-id
+          psc_enabled: true
 
 counts:
-  google_sql_database_instance: 1
+  google_sql_database_instance: 2
   modules: 1
-  resources: 1
+  resources: 2
 
 outputs: {}
