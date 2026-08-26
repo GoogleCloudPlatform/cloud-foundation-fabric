@@ -465,6 +465,7 @@ Three human-owned files govern the process. The agent may propose edits, but onl
 | `import-manifest.yaml` | Declares in-scope resource types, container levels, and subtree filters. |
 | `waivers.yaml` | Written waivers for resources deliberately excluded from management (e.g. `_Default` log sinks, default compute service accounts). Requires a `signed_by` attribute. |
 | `scripts/benign-drift.yaml` | Scoped provider quirks accepted as cosmetic diffs (e.g., computed provider labels or default timeouts). |
+| `references/address-map.yaml` | The fielded subset of the mapping cookbook: asset type, module, address pattern, import ID, verification round. Advisory, not a gate input — see below. |
 
 ---
 
@@ -482,6 +483,7 @@ skills/fabric-importer/
 │   ├── manifest_from_state.py   #   Terraform state-driven manifest inference
 │   ├── manifest_init.py         #   Starter manifest drafting assistant
 │   ├── integrity.py             #   Input binding & runtime provenance stamping
+│   ├── address_map.py           #   Address-map validator, cookbook linter, table renderer
 │   └── benign-drift.yaml        #   Human-reviewed provider quirk ruleset
 ├── examples/                    # Manifest and waiver templates
 │   ├── import-manifest.org-foundation.yaml
@@ -491,9 +493,45 @@ skills/fabric-importer/
 │   ├── import-manifest.fast-networking.yaml
 │   └── waivers.example.yaml
 ├── references/                  # Normative mapping rules & technical gotchas
-│   ├── mapping-cookbook.md      #   Module map, escaping rules, import IDs
+│   ├── mapping-cookbook.md      #   Traps, reasoning, capability gaps (prose)
+│   ├── address-map.yaml         #   Addresses, import IDs, asset types (data)
 │   ├── inferring-manifests-from-state.md # State-driven manifest inference workflow
 │   ├── cai-blind-spots.md       #   Known CAI gaps and service API mitigations
 │   └── operating-contract.md    #   Safety invariants and trust boundaries
 └── tests/                       # Unit test suite
 ```
+
+### Where mapping knowledge lives
+
+The cookbook carries two different kinds of knowledge, and they are now
+stored differently because they fail differently.
+
+**Fielded tuples** — asset type, module, address pattern, import ID,
+verification round — live in `references/address-map.yaml`. They are
+uniform and mechanically checkable, and they were the part that kept
+being duplicated: the same address appeared in per-type prose and again
+in a hand-maintained markdown table, and three families were once
+documented twice because nothing could detect it. Two invariants are now
+enforced:
+
+- an address pattern is claimed by exactly one entry;
+- a CAI asset type serviced by more than one module (the live case:
+  `compute.googleapis.com/Router`, created by both `net-cloudnat` and
+  `net-vpn-ha`) must say how to tell the carriers apart.
+
+**Reasoning** — ForceNew traps, provider quirks, waiver postures,
+capability gaps — stays in `references/mapping-cookbook.md`, in prose,
+on purpose. It is causal and only degrades when squeezed into a schema.
+
+```bash
+uv run scripts/address_map.py                      # validate + lint
+uv run scripts/address_map.py --render-cookbook    # regenerate the table
+uv run scripts/address_map.py --check-workspace tf/  # advisory, always exits 0
+```
+
+`address_map.py` is a linter, **not a gate**. `coverage.py` and
+`verify_plan.py` never read the address map, and a test enforces that.
+A wrong entry is caught by `terraform plan` erroring loudly, unlike a
+wrong `benign-drift.yaml` entry which would silently pass a gate. The
+map is also deliberately incomplete: an address it does not recognise is
+a type nobody has mapped yet, which SKILL.md calls the normal case.

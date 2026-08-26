@@ -595,6 +595,10 @@ missing permission when one is needed.
 - [COVERAGE.md](./COVERAGE.md) — resource maturity matrix
 - [references/mapping-cookbook.md](./references/mapping-cookbook.md) —
   Fabric mapping rules, escaping, import-ID table, known traps
+- [references/address-map.yaml](./references/address-map.yaml) — the
+  fielded subset of the cookbook (asset type, module, address, import
+  ID, verification round); validated and rendered by
+  `scripts/address_map.py`, never read by the gates
 - [references/inferring-manifests-from-state.md](./references/inferring-manifests-from-state.md)
   — inferring import manifests from existing Terraform states
 - [references/cai-blind-spots.md](./references/cai-blind-spots.md) —

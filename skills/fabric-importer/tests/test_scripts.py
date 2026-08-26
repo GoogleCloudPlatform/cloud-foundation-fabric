@@ -38,6 +38,7 @@ sys.path.insert(0, os.path.join(_BASE, 'scripts'))
 
 import yaml  # noqa: E402
 
+import address_map  # noqa: E402
 import coverage  # noqa: E402
 import integrity  # noqa: E402
 import inventory  # noqa: E402
@@ -4194,6 +4195,191 @@ class TestCaiSplitTypes(unittest.TestCase):
         self.assertNotEqual(s, unified)
         self.assertNotIn(s, inventory.CAI_SPLIT_TYPES,
                          f'{s} is both a unified type and a sibling')
+
+
+class TestAddressMap(unittest.TestCase):
+  """The fielded subset of the cookbook, and the checks that keep it honest.
+
+  These tests exist because the duplication they catch actually shipped:
+  three families were documented twice in `mapping-cookbook.md` because
+  nothing could see it, and the two copies disagreed.
+  """
+
+  def _entry(self, **kw):
+    base = {
+        'resource': 'Thing',
+        'module': 'modules/thing',
+        'address': 'module.<instance>.google_thing.default[0]',
+        'import_id': 'projects/<project_id>/things/<name>',
+    }
+    base.update(kw)
+    return base
+
+  def test_shipped_map_validates(self):
+    self.assertEqual(address_map.validate(address_map.load()), [])
+
+  def test_the_data_is_not_frozen_but_the_linter_is(self):
+    """Human-owned map data must not need gate ceremony to edit; the
+    executable that reads it is still tamper-evident like everything
+    else shipped in scripts/."""
+    self.assertNotIn('address-map.yaml', integrity.FROZEN_FILES)
+    self.assertIn('address_map.py', integrity.FROZEN_FILES)
+    self.assertFalse(
+        os.path.exists(
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'scripts',
+                         'address-map.yaml')),
+        'the map belongs in references/, outside the frozen scripts dir')
+
+  def test_the_gates_do_not_consume_the_address_map(self):
+    """An advisory linter must never become a hidden precondition for a
+    gate verdict."""
+    scripts = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                           'scripts')
+    for name in ('coverage.py', 'verify_plan.py'):
+      with open(os.path.join(scripts, name), encoding='utf-8') as f:
+        body = f.read()
+      self.assertNotIn('address_map', body, name)
+      self.assertNotIn('address-map', body, name)
+
+  def test_shipped_cookbook_has_no_duplicate_module_sections(self):
+    self.assertEqual(address_map.lint_cookbook(), [])
+
+  def test_shipped_cookbook_table_is_in_sync(self):
+    self.assertFalse(
+        address_map.render_cookbook(address_map.load(), check=True),
+        'generated table is stale — run --render-cookbook')
+
+  def test_duplicate_address_is_rejected(self):
+    """Two entries claiming one address is the duplication that shipped."""
+    entries = {'a': self._entry(), 'b': self._entry(module='modules/other')}
+    errors = address_map.validate(entries)
+    self.assertTrue(any('duplicate address' in e for e in errors), errors)
+
+  def test_shared_asset_type_across_modules_requires_disambiguation(self):
+    """The live case: net-cloudnat and net-vpn-ha both make a Router."""
+    entries = {
+        'nat':
+            self._entry(address='module.<a>.google_compute_router.router[0]',
+                        module='modules/net-cloudnat',
+                        asset_type='compute.googleapis.com/Router'),
+        'vpn':
+            self._entry(address='module.<b>.google_compute_router.router[0]',
+                        module='modules/net-vpn-ha',
+                        asset_type='compute.googleapis.com/Router'),
+    }
+    errors = address_map.validate(entries)
+    self.assertEqual(len(errors), 2, errors)
+    self.assertTrue(all('disambiguation' in e for e in errors), errors)
+
+    for entry in entries.values():
+      entry['disambiguation'] = 'decided from the live router attachments'
+    self.assertEqual(address_map.validate(entries), [])
+
+  def test_same_asset_type_one_module_needs_no_disambiguation(self):
+    entries = {
+        'a':
+            self._entry(address='module.<a>.google_compute_route.ip["<k>"]',
+                        asset_type='compute.googleapis.com/Route'),
+        'b':
+            self._entry(address='module.<a>.google_compute_route.ilb["<k>"]',
+                        asset_type='compute.googleapis.com/Route'),
+    }
+    self.assertEqual(address_map.validate(entries), [])
+
+  def test_verified_must_be_false_or_a_round(self):
+    self.assertEqual(address_map.validate({'a': self._entry(verified='r19')}),
+                     [])
+    self.assertEqual(address_map.validate({'a': self._entry(verified=False)}),
+                     [])
+    for bad in ('yes', 'round 19', 'r', True):
+      errors = address_map.validate({'a': self._entry(verified=bad)})
+      self.assertTrue(any('verified' in e for e in errors), (bad, errors))
+
+  def test_multi_line_note_is_rejected(self):
+    """Reasoning belongs in the cookbook prose, not smuggled into YAML."""
+    entries = {'a': self._entry(note='first line\nsecond line')}
+    errors = address_map.validate(entries)
+    self.assertTrue(any('single line' in e for e in errors), errors)
+
+  def test_missing_required_field_is_rejected(self):
+    entry = self._entry()
+    del entry['import_id']
+    errors = address_map.validate({'a': entry})
+    self.assertTrue(any('import_id' in e for e in errors), errors)
+
+  def test_unknown_key_is_rejected(self):
+    errors = address_map.validate({'a': self._entry(verifed='r1')})
+    self.assertTrue(any('unknown keys' in e for e in errors), errors)
+
+  def test_cookbook_lint_flags_a_repeated_module_section(self):
+    body = ('### DNS zones (`modules/dns`)\n\n- a\n\n'
+            '### Cloud DNS (`modules/dns`)\n\n- b\n')
+    with tempfile.TemporaryDirectory() as t:
+      path = os.path.join(t, 'cookbook.md')
+      with open(path, 'w', encoding='utf-8') as f:
+        f.write(body)
+      errors = address_map.lint_cookbook(path)
+    self.assertEqual(len(errors), 1, errors)
+    self.assertIn('modules/dns', errors[0])
+
+  def test_cookbook_lint_accepts_distinct_modules(self):
+    body = ('### A (`modules/dns`)\n\n- a\n\n'
+            '### B (`modules/net-vpc`)\n\n- b\n')
+    with tempfile.TemporaryDirectory() as t:
+      path = os.path.join(t, 'cookbook.md')
+      with open(path, 'w', encoding='utf-8') as f:
+        f.write(body)
+      self.assertEqual(address_map.lint_cookbook(path), [])
+
+  def test_workspace_check_matches_across_placeholders(self):
+    """Instance names are per-engagement, so only the skeleton compares."""
+    entries = {
+        'a': self._entry(address='module.<instance>.google_thing.default[0]'),
+    }
+    tf = ('import {\n'
+          '  to = module.thing_a.google_thing.default[0]\n'
+          '  id = "projects/p/things/t"\n'
+          '}\n')
+    with tempfile.TemporaryDirectory() as t:
+      with open(os.path.join(t, 'main.tf'), 'w', encoding='utf-8') as f:
+        f.write(tf)
+      targets, unknown = address_map.check_workspace(entries, t)
+    self.assertEqual(len(targets), 1)
+    self.assertEqual(unknown, [])
+
+  def test_workspace_check_reports_unknown_without_failing(self):
+    """An unmapped type is the normal case per SKILL.md, never an error."""
+    entries = {'a': self._entry()}
+    tf = ('import {\n'
+          '  to = google_unmapped_thing.raw\n'
+          '  id = "whatever"\n'
+          '}\n')
+    with tempfile.TemporaryDirectory() as t:
+      with open(os.path.join(t, 'main.tf'), 'w', encoding='utf-8') as f:
+        f.write(tf)
+      targets, unknown = address_map.check_workspace(entries, t)
+      self.assertEqual(len(unknown), 1)
+      # Advisory: the CLI surface must still exit 0.
+      buf = io.StringIO()
+      with contextlib.redirect_stdout(buf):
+        rc = address_map.main(['--check-workspace', t])
+    self.assertEqual(rc, 0)
+    self.assertIn('advisory only', buf.getvalue())
+
+  def test_placeholder_wildcard_does_not_cross_address_segments(self):
+    """`<instance>` must not swallow a dot and match a different resource."""
+    entries = {
+        'a': self._entry(address='module.<instance>.google_thing.default[0]'),
+    }
+    tf = ('import {\n'
+          '  to = module.a.google_other.default[0]\n'
+          '  id = "x"\n'
+          '}\n')
+    with tempfile.TemporaryDirectory() as t:
+      with open(os.path.join(t, 'main.tf'), 'w', encoding='utf-8') as f:
+        f.write(tf)
+      _, unknown = address_map.check_workspace(entries, t)
+    self.assertEqual(len(unknown), 1)
 
 
 if __name__ == '__main__':
