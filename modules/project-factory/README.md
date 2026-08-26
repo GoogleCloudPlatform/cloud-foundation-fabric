@@ -855,17 +855,26 @@ Granting permissions to service accounts defined in other project through interp
 ```yaml
 billing_account: 012345-67890A-BCDEF0
 labels:
- app: app-0
- team: team-b
+  app: app-0
+  team: team-b
 parent: $folder_ids:team-b/app-0
 services:
   - container.googleapis.com
   - storage.googleapis.com
+custom_roles:
+  custom_role_0:
+    permissions:
+      - compute.instances.get
+      - compute.instances.list
+    title: "Custom role 0"
+    description: "Custom role 0 description."
 iam:
   "roles/run.admin":
     - $iam_principals:service_accounts/dev-ta-app0-be/app-0-be
   "roles/run.developer":
     - $iam_principals:service_accounts/dev-tb-app0-1/app-0-be
+  "$custom_roles:custom_role_0":
+    - group:team-b-admins@example.org
 service_accounts:
   app-0-be:
     display_name: "Backend instances."
@@ -928,20 +937,21 @@ compute.disableSerialPortAccess:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [folder_ids](outputs.tf#L107) | Folder ids. |  |
-| [iam_principals](outputs.tf#L112) | IAM principals mappings. |  |
-| [kms_keys](outputs.tf#L117) | KMS key ids. |  |
-| [log_buckets](outputs.tf#L122) | Log bucket ids. |  |
-| [project_ids](outputs.tf#L129) | Project ids. |  |
-| [project_numbers](outputs.tf#L134) | Project numbers. |  |
-| [projects](outputs.tf#L141) | Project attributes. |  |
-| [pubsub_topics](outputs.tf#L146) | PubSub topic ids. |  |
-| [service_account_emails](outputs.tf#L153) | Service account emails. |  |
-| [service_account_iam_emails](outputs.tf#L160) | Service account IAM-format emails. |  |
-| [service_account_ids](outputs.tf#L167) | Service account IDs. |  |
-| [service_accounts](outputs.tf#L174) | Service account emails. |  |
-| [service_agents](outputs.tf#L179) | Service agent emails. |  |
-| [storage_buckets](outputs.tf#L190) | Bucket names. |  |
+| [custom_roles](outputs.tf#L113) | Custom role ids. |  |
+| [folder_ids](outputs.tf#L120) | Folder ids. |  |
+| [iam_principals](outputs.tf#L125) | IAM principals mappings. |  |
+| [kms_keys](outputs.tf#L130) | KMS key ids. |  |
+| [log_buckets](outputs.tf#L135) | Log bucket ids. |  |
+| [project_ids](outputs.tf#L142) | Project ids. |  |
+| [project_numbers](outputs.tf#L147) | Project numbers. |  |
+| [projects](outputs.tf#L154) | Project attributes. |  |
+| [pubsub_topics](outputs.tf#L159) | PubSub topic ids. |  |
+| [service_account_emails](outputs.tf#L166) | Service account emails. |  |
+| [service_account_iam_emails](outputs.tf#L173) | Service account IAM-format emails. |  |
+| [service_account_ids](outputs.tf#L180) | Service account IDs. |  |
+| [service_accounts](outputs.tf#L187) | Service account emails. |  |
+| [service_agents](outputs.tf#L192) | Service agent emails. |  |
+| [storage_buckets](outputs.tf#L203) | Bucket names. |  |
 <!-- END TFDOC -->
 ## Tests
 
