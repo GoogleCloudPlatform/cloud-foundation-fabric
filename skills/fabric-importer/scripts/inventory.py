@@ -286,6 +286,31 @@ def _has_deleted_ancestor(asset, deleted_containers):
   return False
 
 
+def _is_google_managed_logging_asset(asset):
+  """Checks if an asset is a Google-managed default log sink or log bucket (_Default / _Required)."""
+  t = asset.get('assetType', '')
+  name = asset.get('name', '')
+  if t == 'logging.googleapis.com/LogSink':
+    if name.endswith('/sinks/_Default') or name.endswith('/sinks/_Required'):
+      return True
+  elif t == 'logging.googleapis.com/LogBucket':
+    if name.endswith('/buckets/_Default') or name.endswith(
+        '/buckets/_Required'):
+      return True
+  return False
+
+
+def _is_pam_grant_asset(asset):
+  """Checks if an asset is a Privileged Access Manager (PAM) Grant."""
+  t = asset.get('assetType', '') or asset.get('asset_type', '')
+  if t == 'privilegedaccessmanager.googleapis.com/Grant':
+    return True
+  name = asset.get('name', '') or asset.get('key', '')
+  if '//privilegedaccessmanager.googleapis.com/' in name and '/grants/' in name:
+    return True
+  return False
+
+
 class ProjectRegistry:
   """Maintains bidirectional mapping between Project IDs and Project Numbers, and tracks deleted containers."""
 
@@ -1159,7 +1184,8 @@ def api_call_summary():
           f'{f", {failed} not ok" if failed else ""}: {families}')
 
 
-def collect(manifest, include_deleted=False):
+def collect(manifest, include_deleted=False, include_logging_defaults=False,
+            include_pam_grants=False):
   # Module-level accumulators: reset so a second collect() in the same
   # process cannot inherit the first run's failures (or hide behind
   # them).
@@ -1209,6 +1235,8 @@ def collect(manifest, include_deleted=False):
 
   all_entries = []
   scope_summaries = []
+  excluded_defaults_count = 0
+  excluded_pam_grants_count = 0
 
   for s in scopes:
     root = s['root']
@@ -1307,13 +1335,20 @@ def collect(manifest, include_deleted=False):
                 '--format=json', f'--page-size={CAI_SEARCH_PAGE_SIZE}'
             ], ignore_errors=True)
       registry.ingest_assets(assets)
-      filtered_res = [
-          a for a in assets
-          if (include_deleted or
-              (not _is_deleted_container(a) and
-               not _has_deleted_ancestor(a, registry.deleted_containers))) and
-          in_subtree(a, include, exclude, registry)
-      ]
+      filtered_res = []
+      for a in assets:
+        if not include_deleted and (_is_deleted_container(a) or
+                                    _has_deleted_ancestor(
+                                        a, registry.deleted_containers)):
+          continue
+        if not include_logging_defaults and _is_google_managed_logging_asset(a):
+          excluded_defaults_count += 1
+          continue
+        if not include_pam_grants and _is_pam_grant_asset(a):
+          excluded_pam_grants_count += 1
+          continue
+        if in_subtree(a, include, exclude, registry):
+          filtered_res.append(a)
       scope_entries += _normalize_resources(filtered_res)
 
     if ('iam' in effective_levels_by_type and
@@ -1322,6 +1357,8 @@ def collect(manifest, include_deleted=False):
           a for a in run_gcloud_json([scope_arg, '--content-type=iam-policy'])
           if (include_deleted or
               not _has_deleted_ancestor(a, registry.deleted_containers)) and
+          (include_logging_defaults or not _is_google_managed_logging_asset(a)
+          ) and (include_pam_grants or not _is_pam_grant_asset(a)) and
           in_subtree(a, include, exclude, registry)
       ]
       registry.ingest_assets(assets)
@@ -1413,6 +1450,20 @@ def collect(manifest, include_deleted=False):
         'state; never mapped, never waived). Details in '
         '_meta.pam_grant_exclusions.', file=sys.stderr)
 
+  if excluded_defaults_count and not include_logging_defaults:
+    print(
+        f'\nNOTICE: excluded {excluded_defaults_count} Google-managed default log sink(s)/bucket(s) (_Default, _Required).',
+        file=sys.stderr)
+    print('Use --include-logging-defaults to retain them in the denominator.',
+          file=sys.stderr)
+
+  if excluded_pam_grants_count and not include_pam_grants:
+    print(
+        f'\nNOTICE: excluded {excluded_pam_grants_count} Privileged Access Manager (PAM) grant(s).',
+        file=sys.stderr)
+    print('Use --include-pam-grants to retain them in the denominator.',
+          file=sys.stderr)
+
   if NATIVE_SWEEPS:
     by_type = {}
     for sw in NATIVE_SWEEPS:
@@ -1490,7 +1541,8 @@ def collect(manifest, include_deleted=False):
   return entries, registry, scope_summaries
 
 
-def survey(scope_root, include_deleted=False):
+def survey(scope_root, include_deleted=False, include_logging_defaults=False,
+           include_pam_grants=False):
   if '/' not in scope_root:
     scope_root = f'projects/{scope_root}'
   scope_flag = {
@@ -1510,6 +1562,10 @@ def survey(scope_root, include_deleted=False):
         a for a in assets if not _is_deleted_container(a) and
         not _has_deleted_ancestor(a, registry.deleted_containers)
     ]
+  if not include_logging_defaults:
+    assets = [a for a in assets if not _is_google_managed_logging_asset(a)]
+  if not include_pam_grants:
+    assets = [a for a in assets if not _is_pam_grant_asset(a)]
   return _normalize_resources(assets)
 
 
@@ -1529,6 +1585,14 @@ def main():
       '--include-deleted', action='store_true', help=
       'include soft-deleted / pending-deletion folders and projects (default: active only)'
   )
+  common.add_argument(
+      '--include-logging-defaults', action='store_true', help=
+      'include Google-managed default log sinks and log buckets (_Default, _Required)'
+  )
+  common.add_argument(
+      '--include-pam-grants', action='store_true', help=
+      'include Privileged Access Manager (PAM) grants (default: excluded as ephemeral runtime state)'
+  )
   sub = p.add_subparsers(dest='mode', required=True)
   ps = sub.add_parser('survey', parents=[common])
   ps.add_argument('--scope', required=True,
@@ -1541,20 +1605,27 @@ def main():
   VERBOSE = args.verbose
 
   if args.mode == 'survey':
+    kwargs = {}
     if args.include_deleted:
-      entries = survey(args.scope, include_deleted=True)
-    else:
-      entries = survey(args.scope)
+      kwargs['include_deleted'] = True
+    if args.include_logging_defaults:
+      kwargs['include_logging_defaults'] = True
+    if args.include_pam_grants:
+      kwargs['include_pam_grants'] = True
+    entries = survey(args.scope, **kwargs)
     payload = json.dumps(entries, indent=2)
   else:
     with open(args.manifest, 'rb') as f:
       manifest_raw = f.read()
     manifest = yaml.safe_load(manifest_raw)
+    kwargs = {}
     if args.include_deleted:
-      entries, registry, scope_summaries = collect(manifest,
-                                                   include_deleted=True)
-    else:
-      entries, registry, scope_summaries = collect(manifest)
+      kwargs['include_deleted'] = True
+    if args.include_logging_defaults:
+      kwargs['include_logging_defaults'] = True
+    if args.include_pam_grants:
+      kwargs['include_pam_grants'] = True
+    entries, registry, scope_summaries = collect(manifest, **kwargs)
 
     # Per-declared-type yield table.
     declared = [t['type'] for t in manifest.get('types') or []]

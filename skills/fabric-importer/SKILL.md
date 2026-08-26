@@ -204,6 +204,12 @@ projects) and their child resources, matching what is active in the GCP Console.
 Pass `--include-deleted` if you explicitly need to capture soft-deleted assets in
 the denominator (e.g. to audit or waive them).
 
+Similarly, Google-managed default log sinks and log buckets (`_Default` and
+`_Required`) as well as Privileged Access Manager (PAM) grants
+(`privilegedaccessmanager.googleapis.com/Grant`) are automatically excluded from
+the denominator. Pass `--include-logging-defaults` or `--include-pam-grants` if
+you explicitly need to capture them in the denominator.
+
 **CAI is the default source of the denominator, never the boundary of
 it.** Cloud Asset Inventory does not model every GCP resource. A type it
 does not support must be enumerated by other means and merged into the

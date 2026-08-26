@@ -2736,6 +2736,178 @@ class TestDeletedContainersFilter(unittest.TestCase):
     finally:
       inventory.run_json = real
 
+  def test_inventory_google_managed_logging_defaults_filtering(self):
+    real = inventory.run_json
+    fake_assets = [
+        {
+            'assetType':
+                'logging.googleapis.com/LogSink',
+            'name':
+                '//logging.googleapis.com/organizations/1/sinks/custom-sink',
+            'ancestors': ['organizations/1'],
+        },
+        {
+            'assetType': 'logging.googleapis.com/LogSink',
+            'name': '//logging.googleapis.com/organizations/1/sinks/_Default',
+            'ancestors': ['organizations/1'],
+        },
+        {
+            'assetType': 'logging.googleapis.com/LogSink',
+            'name': '//logging.googleapis.com/organizations/1/sinks/_Required',
+            'ancestors': ['organizations/1'],
+        },
+        {
+            'assetType':
+                'logging.googleapis.com/LogBucket',
+            'name':
+                '//logging.googleapis.com/projects/12345/locations/global/buckets/custom-bucket',
+            'ancestors': ['projects/12345', 'organizations/1'],
+        },
+        {
+            'assetType':
+                'logging.googleapis.com/LogBucket',
+            'name':
+                '//logging.googleapis.com/projects/12345/locations/global/buckets/_Default',
+            'ancestors': ['projects/12345', 'organizations/1'],
+        },
+        {
+            'assetType':
+                'logging.googleapis.com/LogBucket',
+            'name':
+                '//logging.googleapis.com/projects/12345/locations/global/buckets/_Required',
+            'ancestors': ['projects/12345', 'organizations/1'],
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      manifest = {
+          'scope': {
+              'root': 'organizations/1'
+          },
+          'types': [
+              {
+                  'type': 'logging.googleapis.com/LogSink'
+              },
+              {
+                  'type': 'logging.googleapis.com/LogBucket'
+              },
+          ]
+      }
+      # Default: excludes _Default and _Required sinks and buckets
+      entries_default, _, _ = inventory.collect(manifest,
+                                                include_logging_defaults=False)
+      keys_default = [e['key'] for e in entries_default]
+      self.assertIn(
+          '//logging.googleapis.com/organizations/1/sinks/custom-sink',
+          keys_default)
+      self.assertIn(
+          '//logging.googleapis.com/projects/12345/locations/global/buckets/custom-bucket',
+          keys_default)
+      self.assertNotIn(
+          '//logging.googleapis.com/organizations/1/sinks/_Default',
+          keys_default)
+      self.assertNotIn(
+          '//logging.googleapis.com/organizations/1/sinks/_Required',
+          keys_default)
+      self.assertNotIn(
+          '//logging.googleapis.com/projects/12345/locations/global/buckets/_Default',
+          keys_default)
+      self.assertNotIn(
+          '//logging.googleapis.com/projects/12345/locations/global/buckets/_Required',
+          keys_default)
+
+      # Opt-in: include_logging_defaults=True retains all
+      entries_all, _, _ = inventory.collect(manifest,
+                                            include_logging_defaults=True)
+      keys_all = [e['key'] for e in entries_all]
+      self.assertEqual(len(keys_all), 6)
+      self.assertIn('//logging.googleapis.com/organizations/1/sinks/_Default',
+                    keys_all)
+      self.assertIn(
+          '//logging.googleapis.com/projects/12345/locations/global/buckets/_Required',
+          keys_all)
+    finally:
+      inventory.run_json = real
+
+  def test_survey_google_managed_logging_defaults_filtering(self):
+    real = inventory.run_json
+    fake_assets = [
+        {
+            'assetType':
+                'logging.googleapis.com/LogSink',
+            'name':
+                '//logging.googleapis.com/organizations/1/sinks/custom-sink',
+            'ancestors': ['organizations/1'],
+        },
+        {
+            'assetType': 'logging.googleapis.com/LogSink',
+            'name': '//logging.googleapis.com/organizations/1/sinks/_Default',
+            'ancestors': ['organizations/1'],
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      entries_default = inventory.survey('organizations/1',
+                                         include_logging_defaults=False)
+      self.assertEqual(len(entries_default), 1)
+      self.assertEqual(
+          entries_default[0]['key'],
+          '//logging.googleapis.com/organizations/1/sinks/custom-sink')
+
+      entries_all = inventory.survey('organizations/1',
+                                     include_logging_defaults=True)
+      self.assertEqual(len(entries_all), 2)
+    finally:
+      inventory.run_json = real
+
+  def test_survey_pam_grants_filtering(self):
+    real = inventory.run_json
+    fake_assets = [
+        {
+            'assetType':
+                'privilegedaccessmanager.googleapis.com/Entitlement',
+            'name':
+                '//privilegedaccessmanager.googleapis.com/organizations/1/locations/global/entitlements/org-admin',
+            'ancestors': ['organizations/1'],
+        },
+        {
+            'assetType':
+                'privilegedaccessmanager.googleapis.com/Grant',
+            'name':
+                '//privilegedaccessmanager.googleapis.com/organizations/1/locations/global/entitlements/org-admin/grants/grant-123',
+            'ancestors': ['organizations/1'],
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      entries_default = inventory.survey('organizations/1',
+                                         include_pam_grants=False)
+      self.assertEqual(len(entries_default), 1)
+      self.assertEqual(
+          entries_default[0]['key'],
+          '//privilegedaccessmanager.googleapis.com/organizations/1/locations/global/entitlements/org-admin'
+      )
+
+      entries_all = inventory.survey('organizations/1', include_pam_grants=True)
+      self.assertEqual(len(entries_all), 2)
+    finally:
+      inventory.run_json = real
+
 
 def _parse_state(state_content):
   """Runs parse_state_files over one in-memory state document."""

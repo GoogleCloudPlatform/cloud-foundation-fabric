@@ -373,10 +373,10 @@ to the current working directory.
 
 | Script | Purpose | Flags |
 |---|---|---|
-| `inventory.py survey` | Enumerate everything in scope, to draft a manifest from | `--scope` (required), `--out`, `--verbose` |
+| `inventory.py survey` | Enumerate everything in scope, to draft a manifest from | `--scope` (required), `--out`, `--verbose`, `--include-deleted`, `--include-logging-defaults`, `--include-pam-grants` |
 | `manifest_init.py` | Draft a manifest from a survey (Mode B) | `--survey` (required), `--scope` (required), `--out` |
 | `manifest_from_state.py` | Infer a manifest from existing `.tfstate` (Mode A) | `--state` (1+, required), `--out` (`-` for stdout), `--force` to overwrite an existing manifest |
-| `inventory.py collect` | Build the denominator from CAI | `--manifest` (required), `--out`, `--verbose` |
+| `inventory.py collect` | Build the denominator from CAI | `--manifest` (required), `--out`, `--verbose`, `--include-deleted`, `--include-logging-defaults`, `--include-pam-grants` |
 | `coverage.py` | Gate 1 — completeness | `--inventory` (required), `--workspace` (required), `--coverage-map`, `--waivers`, `--require-signed-waivers`, `--allow-empty-inventory`, `--worklist-out` |
 | `verify_plan.py` | Gate 2 — plan convergence | positional plan JSON (default stdin), `--rules`, `--allow-empty-plan` |
 | `integrity.py` | Print the frozen-tools provenance digest | `--verbose` for per-file digests |

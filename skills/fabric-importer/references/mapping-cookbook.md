@@ -653,7 +653,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 
 ### Log sinks (org/folder level)
 
-- Never import `_Default` / `_Required` (Google-managed; waive).
+- Never import `_Default` / `_Required` (Google-managed; automatically excluded from the denominator by `inventory.py`).
 - The module `type` enum is `gcs` (not `storage`), `bigquery`,
   `logging`, `pubsub`, `project` — map the destination API prefix
   accordingly; fail on an unknown prefix, never rewrite (r7).
@@ -669,7 +669,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 ### Logging buckets (`modules/logging-bucket`) — verified r10
 
 - Manifest: `logging.googleapis.com/LogBucket`, `levels: [project]`.
-- Waive the `_Default` and `_Required` buckets (Google-managed).
+- `_Default` and `_Required` buckets are Google-managed and automatically excluded from the denominator by `inventory.py`.
 - ForceNew parent trap: the provider stores
   `project = "projects/<id>"` on import; a bare project id in `parent`
   plans a ForceNew recreation. Always pass
@@ -863,8 +863,18 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - **Org Policy Constraints & Traps**:
   - `constraints/iam.workloadIdentityPoolProviders`: Restricts allowed external identity provider issuer URLs.
   - Providers (such as GitHub Actions OIDC) require CEL `attribute_condition` referencing provider claims (e.g. `assertion.repository == '...'`).
-- **Residue Accounting**:
-  - Workload Identity Pools are soft-deleted by GCP with a 30-day purge window. A deleted pool ID cannot be reused immediately. Seeded pools during test runs must use round-specific unique IDs.
+### Privileged Access Manager (PAM)
+
+- **Canonical Module**: `modules/organization`, `modules/folder`, `modules/project` via `pam_entitlements` map or `factories_config.pam_entitlements` factory path.
+- **Resource Address**:
+  - `module.<container>.google_privileged_access_manager_entitlement.default["<entitlement_id>"]`
+- **Import ID Formats**:
+  - Entitlement: `{{parent}}/locations/{{location}}/entitlements/{{entitlement_id}}` (e.g., `organizations/123/locations/global/entitlements/my-entitlement` or `projects/my-project/locations/global/entitlements/my-entitlement`)
+- **CAI Types**:
+  - `privilegedaccessmanager.googleapis.com/Entitlement` (levels: `organization`, `folder`, `project`)
+  - `privilegedaccessmanager.googleapis.com/Grant`: Ephemeral runtime access requests generated upon JIT access activation. Excluded from survey and collection by default; retained only with `--include-pam-grants`.
+- **Traps**:
+  - Grants represent transient workflow state with short TTLs and should **not** be managed in Terraform baseline IaC.
 
 ### Root module
 
