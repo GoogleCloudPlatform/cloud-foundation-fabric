@@ -70,8 +70,9 @@ def load_rules(path):
                 file=sys.stderr)
           return []
         return rules
-      print(f'WARNING: unexpected top-level shape in {path} '
-            f'({type(data).__name__}); no rules loaded', file=sys.stderr)
+      print(
+          f'WARNING: unexpected top-level shape in {path} '
+          f'({type(data).__name__}); no rules loaded', file=sys.stderr)
       return []
   except yaml.YAMLError as e:
     print(f'WARNING: failed to parse benign rules {path}: {e}', file=sys.stderr)
@@ -392,7 +393,9 @@ def propose_rule(rc, detail):
   proposal = {
       'resource': rc.get('type', ''),
       'attributes': paths,
-      'when_before': {k: before.get(k) for k in paths},
+      'when_before': {
+          k: before.get(k) for k in paths
+      },
   }
   computed = [k for k in paths if unknown.get(k)]
   if computed:
@@ -458,8 +461,8 @@ def main():
     return 1
   rules = load_rules(args.rules)
   for rule in rules:
-    problem = rule_guard_problem(rule) if isinstance(rule, dict) else (
-        'rule is not a mapping')
+    problem = rule_guard_problem(rule) if isinstance(
+        rule, dict) else ('rule is not a mapping')
     if problem and not (isinstance(rule, dict) and rule.get('match')):
       print(
           f'WARNING: benign rule {rule.get("resource", "?") if isinstance(rule, dict) else rule!r} '

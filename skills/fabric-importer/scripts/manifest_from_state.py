@@ -72,6 +72,7 @@ def _hierarchy_level(value):
       return level
   return None
 
+
 # Mapping from Terraform google_* resource types to (CAI type, level_rule, flags)
 # level_rule can be:
 # - 'organization', 'folder', 'project': static single level
@@ -352,8 +353,8 @@ def parse_state_files(state_paths: List[str]):
             # project.
             if not lvl and rtype == 'google_project':
               fid = str(attrs.get('folder_id') or '').strip()
-              lvl = _hierarchy_level(fid) or ('folder' if fid.isdigit() else
-                                              None)
+              lvl = _hierarchy_level(fid) or ('folder'
+                                              if fid.isdigit() else None)
             if not lvl and attrs.get('org_id'):
               lvl = 'organization'
             if lvl:
@@ -371,8 +372,7 @@ def parse_state_files(state_paths: List[str]):
     print(
         f'WARNING: {len(unclassified)} resource instance kind(s) had a '
         'parent this tool could not classify; they are declared at level '
-        '`unknown` and retained. Confirm the level by hand:',
-        file=sys.stderr)
+        '`unknown` and retained. Confirm the level by hand:', file=sys.stderr)
     for u in sorted(unclassified):
       print(f'  - {u}', file=sys.stderr)
 
@@ -450,8 +450,7 @@ def _project_rooted_manifest(projects, project_numbers, types_found,
   ]
   has_unknown = any('unknown' in v['levels'] for v in types_found.values())
   levels = ['project'] + (['unknown'] if has_unknown else [])
-  for i, entry in enumerate(_project_include_lines(projects,
-                                                   project_numbers)):
+  for i, entry in enumerate(_project_include_lines(projects, project_numbers)):
     root = entry.strip().lstrip('- ').split()[0]
     lines += [
         f'  - name: project-{i + 1}',
@@ -548,8 +547,8 @@ def generate_manifest(org_ids, projects, project_numbers, folders, types_found,
         '',
     ]
     if not root_is_org:
-      org_only = sorted(t for t, v in types_found.items()
-                        if v['levels'] == {'organization'})
+      org_only = sorted(
+          t for t, v in types_found.items() if v['levels'] == {'organization'})
       if org_only:
         print(
             'WARNING: the scope root is a folder, so these declared '
