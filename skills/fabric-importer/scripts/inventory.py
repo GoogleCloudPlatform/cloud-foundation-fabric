@@ -229,21 +229,67 @@ def run_gcloud_json(args):
   ] + args)
 
 
+def _is_deleted_container(asset):
+  """Checks if a Folder or Project asset is in a deleted or pending-deletion lifecycle state."""
+  t = asset.get('assetType', '')
+  if t not in (
+      'cloudresourcemanager.googleapis.com/Folder',
+      'cloudresourcemanager.googleapis.com/Project',
+  ):
+    return False
+  res_data = asset.get('resource', {}).get('data', {})
+  state = (res_data.get('lifecycleState') or res_data.get('state') or
+           asset.get('additionalAttributes', {}).get('lifecycleState'))
+  if state:
+    state_str = str(state).upper()
+    if state_str in ('DELETE_REQUESTED', 'DELETE_IN_PROGRESS', 'DELETED'):
+      return True
+  return False
+
+
+def _has_deleted_ancestor(asset, deleted_containers):
+  """Checks if an asset itself or any ancestor is in deleted_containers."""
+  if not deleted_containers:
+    return False
+  name = (asset.get('name', '') or
+          '').removeprefix('//cloudresourcemanager.googleapis.com/')
+  if name in deleted_containers:
+    return True
+  for a in asset.get('ancestors') or []:
+    if a in deleted_containers:
+      return True
+  parent = (asset.get('parentFullResourceName', '') or
+            '').removeprefix('//cloudresourcemanager.googleapis.com/')
+  if parent in deleted_containers:
+    return True
+  for f in asset.get('folders') or []:
+    if f in deleted_containers:
+      return True
+  if asset.get('project') in deleted_containers:
+    return True
+  return False
+
+
 class ProjectRegistry:
-  """Maintains bidirectional mapping between Project IDs and Project Numbers."""
+  """Maintains bidirectional mapping between Project IDs and Project Numbers, and tracks deleted containers."""
 
   def __init__(self):
     self.id_to_num = {}
     self.num_to_id = {}
     self._unresolvable = set()
+    self.deleted_containers = set()
 
-  def register(self, num, pid):
+  def register(self, num, pid, is_deleted=False):
     if num:
       num_str = str(num).removeprefix('projects/').strip()
       if pid:
         pid_str = str(pid).removeprefix('projects/').strip()
         self.id_to_num[pid_str] = num_str
         self.num_to_id[num_str] = pid_str
+      if is_deleted:
+        self.deleted_containers.add(f'projects/{num_str}')
+        if pid:
+          self.deleted_containers.add(f'projects/{pid_str}')
 
   def resolve(self, item):
     """Resolves a project string (ID, number, or path) returning (number, id)."""
@@ -265,13 +311,16 @@ class ProjectRegistry:
         # re-spawned this subprocess once per ASSET.
         cmd = [
             'gcloud', 'projects', 'describe', pid,
-            '--format=json(projectNumber,projectId)'
+            '--format=json(projectNumber,projectId,lifecycleState)'
         ]
         out = run_json(cmd, ignore_errors=True, timeout=30)
         if isinstance(out, dict) and out.get('projectNumber'):
           num = str(out['projectNumber'])
           pid = str(out.get('projectId', pid))
-          self.register(num, pid)
+          is_del = str(out.get('lifecycleState',
+                               '')).upper() in ('DELETE_REQUESTED',
+                                                'DELETE_IN_PROGRESS', 'DELETED')
+          self.register(num, pid, is_deleted=is_del)
         else:
           self._unresolvable.add(pid)
           if not any(pid in m for m in SWEEP_FAILURES):
@@ -298,9 +347,10 @@ class ProjectRegistry:
     return {t}
 
   def ingest_assets(self, assets):
-    """Ingests Project resource assets into registry."""
+    """Ingests Project and Folder resource assets into registry."""
     for a in assets:
       t = a.get('assetType', '')
+      deleted = _is_deleted_container(a)
       if t == 'cloudresourcemanager.googleapis.com/Project':
         name = a.get('name', '')
         c_path = name.removeprefix('//cloudresourcemanager.googleapis.com/')
@@ -311,7 +361,17 @@ class ProjectRegistry:
                                                  {}).get('projectId')
         p_num = res_data.get('projectNumber') or num
         if p_num and pid:
-          self.register(p_num, pid)
+          self.register(p_num, pid, is_deleted=deleted)
+        elif deleted:
+          if p_num:
+            self.deleted_containers.add(f'projects/{p_num}')
+          if pid:
+            self.deleted_containers.add(f'projects/{pid}')
+      elif t == 'cloudresourcemanager.googleapis.com/Folder':
+        name = a.get('name', '')
+        c_path = name.removeprefix('//cloudresourcemanager.googleapis.com/')
+        if deleted:
+          self.deleted_containers.add(c_path)
 
 
 def _level_of(path):
@@ -983,7 +1043,7 @@ def api_call_summary():
           f'{f", {failed} not ok" if failed else ""}: {families}')
 
 
-def collect(manifest):
+def collect(manifest, include_deleted=False):
   # Module-level accumulators: reset so a second collect() in the same
   # process cannot inherit the first run's failures (or hide behind
   # them).
@@ -1085,6 +1145,8 @@ def collect(manifest):
         ])
         registry.ingest_assets(cont_assets)
         for a in cont_assets:
+          if not include_deleted and _is_deleted_container(a):
+            continue
           if in_subtree(a, _include, _exclude, registry):
             c_path = a['name'].removeprefix(
                 '//cloudresourcemanager.googleapis.com/')
@@ -1129,7 +1191,11 @@ def collect(manifest):
             ], ignore_errors=True)
       registry.ingest_assets(assets)
       filtered_res = [
-          a for a in assets if in_subtree(a, include, exclude, registry)
+          a for a in assets
+          if (include_deleted or
+              (not _is_deleted_container(a) and
+               not _has_deleted_ancestor(a, registry.deleted_containers))) and
+          in_subtree(a, include, exclude, registry)
       ]
       scope_entries += _normalize_resources(filtered_res)
 
@@ -1137,7 +1203,9 @@ def collect(manifest):
         effective_levels_by_type['iam']) or iam_types:
       assets = [
           a for a in run_gcloud_json([scope_arg, '--content-type=iam-policy'])
-          if in_subtree(a, include, exclude, registry)
+          if (include_deleted or
+              not _has_deleted_ancestor(a, registry.deleted_containers)) and
+          in_subtree(a, include, exclude, registry)
       ]
       registry.ingest_assets(assets)
       if 'iam' in effective_levels_by_type and effective_levels_by_type['iam']:
@@ -1149,13 +1217,19 @@ def collect(manifest):
         'org-policy']:
       assets = run_gcloud_json([scope_arg, '--content-type=org-policy'])
       scope_entries += _normalize_org_policies(
-          a for a in assets if in_subtree(a, include, exclude, registry))
+          a for a in assets
+          if (include_deleted or
+              not _has_deleted_ancestor(a, registry.deleted_containers)) and
+          in_subtree(a, include, exclude, registry))
       pol_assets = run_gcloud_json([
           scope_arg, '--content-type=resource',
           '--asset-types=orgpolicy.googleapis.com/Policy'
       ])
       scope_entries += _normalize_org_policies_from_resources(
-          a for a in pol_assets if in_subtree(a, include, exclude, registry))
+          a for a in pol_assets
+          if (include_deleted or
+              not _has_deleted_ancestor(a, registry.deleted_containers)) and
+          in_subtree(a, include, exclude, registry))
 
       for container, sweep_id in containers_for(
           effective_levels_by_type['org-policy']):
@@ -1194,6 +1268,13 @@ def collect(manifest):
   entries.sort(key=lambda e: e['key'])
 
   print(f'\n{api_call_summary()}', file=sys.stderr)
+
+  if registry.deleted_containers and not include_deleted:
+    print(
+        f'\nNOTICE: excluded {len(registry.deleted_containers)} soft-deleted / pending-deletion container(s) and their child resources.',
+        file=sys.stderr)
+    print('Use --include-deleted to retain them in the denominator.',
+          file=sys.stderr)
 
   if NATIVE_SWEEPS:
     by_type = {}
@@ -1272,7 +1353,7 @@ def collect(manifest):
   return entries, registry, scope_summaries
 
 
-def survey(scope_root):
+def survey(scope_root, include_deleted=False):
   if '/' not in scope_root:
     scope_root = f'projects/{scope_root}'
   scope_flag = {
@@ -1285,6 +1366,13 @@ def survey(scope_root):
   assets = run_gcloud_json([
       f'{scope_flag}={scope_root.split("/", 1)[1]}', '--content-type=resource'
   ])
+  registry = ProjectRegistry()
+  registry.ingest_assets(assets)
+  if not include_deleted:
+    assets = [
+        a for a in assets if not _is_deleted_container(a) and
+        not _has_deleted_ancestor(a, registry.deleted_containers)
+    ]
   return _normalize_resources(assets)
 
 
@@ -1300,6 +1388,10 @@ def main():
       help='print every gcloud command as it runs, with its outcome, '
       'duration and item count. The same log is always written to '
       "the output file's _meta.api_calls regardless of this flag")
+  common.add_argument(
+      '--include-deleted', action='store_true', help=
+      'include soft-deleted / pending-deletion folders and projects (default: active only)'
+  )
   sub = p.add_subparsers(dest='mode', required=True)
   ps = sub.add_parser('survey', parents=[common])
   ps.add_argument('--scope', required=True,
@@ -1312,13 +1404,20 @@ def main():
   VERBOSE = args.verbose
 
   if args.mode == 'survey':
-    entries = survey(args.scope)
+    if args.include_deleted:
+      entries = survey(args.scope, include_deleted=True)
+    else:
+      entries = survey(args.scope)
     payload = json.dumps(entries, indent=2)
   else:
     with open(args.manifest, 'rb') as f:
       manifest_raw = f.read()
     manifest = yaml.safe_load(manifest_raw)
-    entries, registry, scope_summaries = collect(manifest)
+    if args.include_deleted:
+      entries, registry, scope_summaries = collect(manifest,
+                                                   include_deleted=True)
+    else:
+      entries, registry, scope_summaries = collect(manifest)
 
     # Per-declared-type yield table.
     declared = [t['type'] for t in manifest.get('types') or []]
@@ -1374,6 +1473,8 @@ def main():
                     scope_summaries,
                 'resolved_projects':
                     registry.id_to_num,
+                'excluded_deleted_containers':
+                    sorted(list(registry.deleted_containers)),
             },
             'assets': entries,
         },

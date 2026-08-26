@@ -313,8 +313,8 @@ class TestVerifyPlanClassify(unittest.TestCase):
     writes_real_text = _rc('google_logging_organization_sink', ['update'],
                            before={'description': ''},
                            after={'description': 'PROD SINK - do not touch'})
-    self.assertEqual(verify_plan.classify(writes_real_text, rules)[0],
-                     'residual')
+    self.assertEqual(
+        verify_plan.classify(writes_real_text, rules)[0], 'residual')
 
   def test_secondary_ip_range_flag_alone_is_benign_with_ranges_residual(self):
     """send_secondary_ip_range_if_empty makes the provider transmit an
@@ -328,9 +328,9 @@ class TestVerifyPlanClassify(unittest.TestCase):
                     after={'send_secondary_ip_range_if_empty': True})
     self.assertEqual(verify_plan.classify(flag_only, rules)[0], 'benign')
     with_range_removal = _rc(
-        'google_compute_subnetwork', ['update'],
-        before={
-            'send_secondary_ip_range_if_empty': None,
+        'google_compute_subnetwork', ['update'], before={
+            'send_secondary_ip_range_if_empty':
+                None,
             'secondary_ip_range': [{
                 'range_name': 'pods',
                 'ip_cidr_range': '10.0.0.0/16'
@@ -360,18 +360,18 @@ class TestVerifyPlanClassify(unittest.TestCase):
                           'goog-managed': 'true'
                       }})
     self.assertEqual(verify_plan.classify(bookkeeping, rules)[0], 'benign')
-    real_write = _rc('google_project', ['update'],
-                     before={
-                         'terraform_labels': {},
-                         'labels': {}
-                     }, after={
-                         'terraform_labels': {
-                             'owner': 'someone-else'
-                         },
-                         'labels': {
-                             'owner': 'someone-else'
-                         }
-                     })
+    real_write = _rc(
+        'google_project', ['update'], before={
+            'terraform_labels': {},
+            'labels': {}
+        }, after={
+            'terraform_labels': {
+                'owner': 'someone-else'
+            },
+            'labels': {
+                'owner': 'someone-else'
+            }
+        })
     self.assertEqual(verify_plan.classify(real_write, rules)[0], 'residual')
 
   def test_partially_computed_map_cannot_launder_a_concrete_write(self):
@@ -849,31 +849,28 @@ class TestInventoryHelpers(unittest.TestCase):
     no-oped. The same typo in `include` emptied the denominator."""
     for field in ('include', 'exclude'):
       with self.assertRaises(SystemExit) as ctx:
-        inventory.parse_and_validate_scopes({
-            'scope': {
+        inventory.parse_and_validate_scopes(
+            {'scope': {
                 'root': 'organizations/1',
                 field: ['12345']
-            }
-        })
+            }})
       self.assertIn('ambiguous', str(ctx.exception))
 
   def test_misspelled_include_prefix_is_refused(self):
     with self.assertRaises(SystemExit) as ctx:
-      inventory.parse_and_validate_scopes({
-          'scope': {
+      inventory.parse_and_validate_scopes(
+          {'scope': {
               'root': 'organizations/1',
               'include': ['folder/22']
-          }
-      })
+          }})
     self.assertIn('unsupported prefix', str(ctx.exception))
 
   def test_bare_project_id_include_is_still_accepted(self):
-    scopes = inventory.parse_and_validate_scopes({
-        'scope': {
+    scopes = inventory.parse_and_validate_scopes(
+        {'scope': {
             'root': 'organizations/1',
             'include': ['my-app-prod']
-        }
-    })
+        }})
     self.assertEqual(scopes[0]['include'], ['my-app-prod'])
 
   def test_unresolvable_project_id_is_recorded_not_swallowed(self):
@@ -1199,8 +1196,7 @@ class TestVerifyPlanMain(unittest.TestCase):
             }
         }
     }
-    code, out, _ = _run_main(verify_plan, [],
-                             stdin_text=_plan_json([residual]))
+    code, out, _ = _run_main(verify_plan, [], stdin_text=_plan_json([residual]))
     self.assertEqual(code, 2)
     self.assertIn('RESIDUAL CHANGES', out)
     self.assertIn('google_project.p', out)
@@ -1344,18 +1340,18 @@ class TestCoverageHardening(unittest.TestCase):
         'google_folder.b': 'folders/111',
         'google_folder.c': 'folders/222',
     })
-    self.assertEqual(dupes, {'folders/111': ['google_folder.a',
-                                             'google_folder.b']})
+    self.assertEqual(dupes,
+                     {'folders/111': ['google_folder.a', 'google_folder.b']})
 
   def test_missing_workspace_is_malformed_input_not_a_gap(self):
     with tempfile.TemporaryDirectory() as td:
       inv = os.path.join(td, 'inventory.json')
       with open(inv, 'w') as f:
         json.dump({'_meta': {}, 'assets': [{'key': 'k', 'asset_type': 't'}]}, f)
-      code, _, err = _run_main(
-          coverage,
-          ['--inventory', inv, '--workspace',
-           os.path.join(td, 'does-not-exist')])
+      code, _, err = _run_main(coverage, [
+          '--inventory', inv, '--workspace',
+          os.path.join(td, 'does-not-exist')
+      ])
       self.assertEqual(code, 1)
       self.assertIn('workspace directory not found', err)
 
@@ -2217,8 +2213,7 @@ class TestIntegrityInputBinding(unittest.TestCase):
                                'scripts')
     on_disk = {
         f for f in os.listdir(scripts_dir)
-        if (f.endswith('.py') or f.endswith('.yaml')) and
-        not f.startswith('__')
+        if (f.endswith('.py') or f.endswith('.yaml')) and not f.startswith('__')
     }
     self.assertEqual(on_disk, set(integrity.FROZEN_FILES))
 
@@ -2367,10 +2362,261 @@ class TestMultiScopeAndProjectRegistry(unittest.TestCase):
     self.assertFalse(inventory.in_subtree(asset, [], ['my-app'], reg))
 
 
+class TestDeletedContainersFilter(unittest.TestCase):
+
+  def test_is_deleted_container_folder(self):
+    active_folder = {
+        'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+        'name': '//cloudresourcemanager.googleapis.com/folders/123',
+        'resource': {
+            'data': {
+                'lifecycleState': 'ACTIVE'
+            }
+        }
+    }
+    deleted_folder = {
+        'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+        'name': '//cloudresourcemanager.googleapis.com/folders/456',
+        'resource': {
+            'data': {
+                'lifecycleState': 'DELETE_REQUESTED'
+            }
+        }
+    }
+    deleted_folder_state = {
+        'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+        'name': '//cloudresourcemanager.googleapis.com/folders/789',
+        'resource': {
+            'data': {
+                'state': 'DELETE_REQUESTED'
+            }
+        }
+    }
+    self.assertFalse(inventory._is_deleted_container(active_folder))
+    self.assertTrue(inventory._is_deleted_container(deleted_folder))
+    self.assertTrue(inventory._is_deleted_container(deleted_folder_state))
+
+  def test_is_deleted_container_project(self):
+    active_project = {
+        'assetType': 'cloudresourcemanager.googleapis.com/Project',
+        'name': '//cloudresourcemanager.googleapis.com/projects/111',
+        'resource': {
+            'data': {
+                'lifecycleState': 'ACTIVE'
+            }
+        }
+    }
+    deleted_project = {
+        'assetType': 'cloudresourcemanager.googleapis.com/Project',
+        'name': '//cloudresourcemanager.googleapis.com/projects/222',
+        'resource': {
+            'data': {
+                'lifecycleState': 'DELETE_REQUESTED'
+            }
+        }
+    }
+    self.assertFalse(inventory._is_deleted_container(active_project))
+    self.assertTrue(inventory._is_deleted_container(deleted_project))
+
+  def test_is_deleted_container_non_container(self):
+    bucket = {
+        'assetType': 'storage.googleapis.com/Bucket',
+        'name': '//storage.googleapis.com/projects/_/buckets/my-bkt',
+        'resource': {
+            'data': {
+                'lifecycleState': 'DELETE_REQUESTED'
+            }
+        }
+    }
+    self.assertFalse(inventory._is_deleted_container(bucket))
+
+  def test_has_deleted_ancestor(self):
+    deleted = {'folders/999', 'projects/888'}
+    child_of_deleted_folder = {
+        'name': '//storage.googleapis.com/projects/_/buckets/b',
+        'ancestors': ['projects/111', 'folders/999', 'organizations/1']
+    }
+    child_of_active_folder = {
+        'name': '//storage.googleapis.com/projects/_/buckets/b2',
+        'ancestors': ['projects/111', 'folders/100', 'organizations/1']
+    }
+    self.assertTrue(
+        inventory._has_deleted_ancestor(child_of_deleted_folder, deleted))
+    self.assertFalse(
+        inventory._has_deleted_ancestor(child_of_active_folder, deleted))
+
+  def test_project_registry_tracks_deleted_containers(self):
+    reg = inventory.ProjectRegistry()
+    assets = [
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Project',
+            'name': '//cloudresourcemanager.googleapis.com/projects/111',
+            'resource': {
+                'data': {
+                    'projectId': 'prj-active',
+                    'projectNumber': '111',
+                    'lifecycleState': 'ACTIVE'
+                }
+            }
+        },
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Project',
+            'name': '//cloudresourcemanager.googleapis.com/projects/222',
+            'resource': {
+                'data': {
+                    'projectId': 'prj-deleted',
+                    'projectNumber': '222',
+                    'lifecycleState': 'DELETE_REQUESTED'
+                }
+            }
+        },
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+            'name': '//cloudresourcemanager.googleapis.com/folders/333',
+            'resource': {
+                'data': {
+                    'name': 'folders/333',
+                    'lifecycleState': 'DELETE_REQUESTED'
+                }
+            }
+        },
+    ]
+    reg.ingest_assets(assets)
+    self.assertIn('projects/222', reg.deleted_containers)
+    self.assertIn('projects/prj-deleted', reg.deleted_containers)
+    self.assertIn('folders/333', reg.deleted_containers)
+    self.assertNotIn('projects/111', reg.deleted_containers)
+
+  def test_collect_active_filtering(self):
+    real = inventory.run_json
+    fake_assets = [
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+            'name': '//cloudresourcemanager.googleapis.com/folders/111',
+            'ancestors': ['folders/111', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'name': 'folders/111',
+                    'displayName': 'ActiveFolder',
+                    'lifecycleState': 'ACTIVE'
+                }
+            }
+        },
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+            'name': '//cloudresourcemanager.googleapis.com/folders/222',
+            'ancestors': ['folders/222', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'name': 'folders/222',
+                    'displayName': 'DeletedFolder',
+                    'lifecycleState': 'DELETE_REQUESTED'
+                }
+            }
+        },
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Project',
+            'name': '//cloudresourcemanager.googleapis.com/projects/333',
+            'ancestors': ['projects/333', 'folders/222', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'projectId': 'child-of-deleted',
+                    'projectNumber': '333',
+                    'lifecycleState': 'ACTIVE'
+                }
+            }
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      manifest = {
+          'scope': {
+              'root': 'organizations/1'
+          },
+          'types': [
+              {
+                  'type': 'cloudresourcemanager.googleapis.com/Folder'
+              },
+              {
+                  'type': 'cloudresourcemanager.googleapis.com/Project'
+              },
+          ]
+      }
+      # Default: excludes deleted folder 222 and its child project 333
+      entries_default, reg_default, _ = inventory.collect(
+          manifest, include_deleted=False)
+      keys_default = [e['key'] for e in entries_default]
+      self.assertIn('//cloudresourcemanager.googleapis.com/folders/111',
+                    keys_default)
+      self.assertNotIn('//cloudresourcemanager.googleapis.com/folders/222',
+                       keys_default)
+      self.assertNotIn('//cloudresourcemanager.googleapis.com/projects/333',
+                       keys_default)
+
+      # Opt-in: include_deleted=True retains both
+      entries_all, reg_all, _ = inventory.collect(manifest,
+                                                  include_deleted=True)
+      keys_all = [e['key'] for e in entries_all]
+      self.assertIn('//cloudresourcemanager.googleapis.com/folders/111',
+                    keys_all)
+      self.assertIn('//cloudresourcemanager.googleapis.com/folders/222',
+                    keys_all)
+      self.assertIn('//cloudresourcemanager.googleapis.com/projects/333',
+                    keys_all)
+    finally:
+      inventory.run_json = real
+
+  def test_survey_active_filtering(self):
+    real = inventory.run_json
+    fake_assets = [
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+            'name': '//cloudresourcemanager.googleapis.com/folders/111',
+            'ancestors': ['folders/111', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'lifecycleState': 'ACTIVE'
+                }
+            }
+        },
+        {
+            'assetType': 'cloudresourcemanager.googleapis.com/Folder',
+            'name': '//cloudresourcemanager.googleapis.com/folders/222',
+            'ancestors': ['folders/222', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'lifecycleState': 'DELETE_REQUESTED'
+                }
+            }
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      entries_default = inventory.survey('organizations/1',
+                                         include_deleted=False)
+      self.assertEqual(len(entries_default), 1)
+      self.assertEqual(entries_default[0]['key'],
+                       '//cloudresourcemanager.googleapis.com/folders/111')
+
+      entries_all = inventory.survey('organizations/1', include_deleted=True)
+      self.assertEqual(len(entries_all), 2)
+    finally:
+      inventory.run_json = real
+
+
 def _parse_state(state_content):
   """Runs parse_state_files over one in-memory state document."""
-  with tempfile.NamedTemporaryFile('w', suffix='.tfstate',
-                                   delete=False) as f:
+  with tempfile.NamedTemporaryFile('w', suffix='.tfstate', delete=False) as f:
     json.dump(state_content, f)
     sp = f.name
   try:
@@ -2557,8 +2803,10 @@ class TestManifestFromState(unittest.TestCase):
     """The other shape: `parent: folders/111222` must classify too."""
     _, _, _, _, types_found = _parse_state({
         'resources': [{
-            'mode': 'managed',
-            'type': 'google_project',
+            'mode':
+                'managed',
+            'type':
+                'google_project',
             'instances': [{
                 'attributes': {
                     'project_id': 'p',
@@ -2578,8 +2826,10 @@ class TestManifestFromState(unittest.TestCase):
     vanished from the sweep."""
     _, _, _, _, types_found = _parse_state({
         'resources': [{
-            'mode': 'managed',
-            'type': 'google_tags_tag_binding',
+            'mode':
+                'managed',
+            'type':
+                'google_tags_tag_binding',
             'instances': [{
                 'attributes': {
                     'parent':
@@ -2589,8 +2839,8 @@ class TestManifestFromState(unittest.TestCase):
         }]
     })
     self.assertEqual(
-        types_found['cloudresourcemanager.googleapis.com/TagBinding']
-        ['levels'], {'project'})
+        types_found['cloudresourcemanager.googleapis.com/TagBinding']['levels'],
+        {'project'})
 
   def test_unclassifiable_parent_becomes_unknown_not_organization(self):
     _, _, _, _, types_found = _parse_state({
@@ -2605,17 +2855,18 @@ class TestManifestFromState(unittest.TestCase):
         }]
     })
     self.assertEqual(
-        types_found['cloudresourcemanager.googleapis.com/TagBinding']
-        ['levels'], {'unknown'})
+        types_found['cloudresourcemanager.googleapis.com/TagBinding']['levels'],
+        {'unknown'})
 
   def test_multi_org_state_is_refused(self):
     """Picking sorted(org_ids)[0] dropped every asset under the others."""
     with self.assertRaises(SystemExit) as cm:
-      manifest_from_state.generate_manifest({'1', '2'}, set(), {}, set(),
-                                            {'x': {
-                                                'levels': {'organization'},
-                                                'flags': {}
-                                            }}, ['s.tfstate'])
+      manifest_from_state.generate_manifest(
+          {'1', '2'}, set(), {}, set(),
+          {'x': {
+              'levels': {'organization'},
+              'flags': {}
+          }}, ['s.tfstate'])
     self.assertIn('more than one organization', str(cm.exception))
 
   def test_empty_state_is_refused_not_given_a_placeholder_root(self):
@@ -2644,12 +2895,12 @@ class TestManifestFromState(unittest.TestCase):
 
   def test_multi_folder_state_without_org_is_refused(self):
     with self.assertRaises(SystemExit) as cm:
-      manifest_from_state.generate_manifest(set(), set(), {},
-                                            {'111222', '333444'},
-                                            {'x': {
-                                                'levels': {'folder'},
-                                                'flags': {}
-                                            }}, ['s.tfstate'])
+      manifest_from_state.generate_manifest(
+          set(), set(), {}, {'111222', '333444'},
+          {'x': {
+              'levels': {'folder'},
+              'flags': {}
+          }}, ['s.tfstate'])
     self.assertIn('more than one folder', str(cm.exception))
 
   def test_foreign_provider_org_attribute_is_ignored(self):
@@ -2659,8 +2910,10 @@ class TestManifestFromState(unittest.TestCase):
     refusal on a state with exactly one Google organization."""
     org_ids, _, _, _, _ = _parse_state({
         'resources': [{
-            'mode': 'managed',
-            'type': 'tfe_workspace',
+            'mode':
+                'managed',
+            'type':
+                'tfe_workspace',
             'instances': [{
                 'attributes': {
                     'name': 'prod',
@@ -2668,8 +2921,10 @@ class TestManifestFromState(unittest.TestCase):
                 }
             }]
         }, {
-            'mode': 'managed',
-            'type': 'google_folder',
+            'mode':
+                'managed',
+            'type':
+                'google_folder',
             'instances': [{
                 'attributes': {
                     'name': 'folders/111222',
@@ -2686,8 +2941,10 @@ class TestManifestFromState(unittest.TestCase):
     blows up (or silently empties the denominator) in inventory.py."""
     org_ids, projects, pnums, folders, types_found = _parse_state({
         'resources': [{
-            'mode': 'managed',
-            'type': 'google_folder',
+            'mode':
+                'managed',
+            'type':
+                'google_folder',
             'instances': [{
                 'attributes': {
                     'name': 'folders/111222',
@@ -2734,18 +2991,21 @@ class TestManifestFromState(unittest.TestCase):
     with tempfile.TemporaryDirectory() as td:
       state = os.path.join(td, 's.tfstate')
       with open(state, 'w') as f:
-        json.dump({
-            'resources': [{
-                'mode': 'managed',
-                'type': 'google_folder',
-                'instances': [{
-                    'attributes': {
-                        'name': 'folders/111222',
-                        'parent': 'organizations/123456789012'
-                    }
+        json.dump(
+            {
+                'resources': [{
+                    'mode':
+                        'managed',
+                    'type':
+                        'google_folder',
+                    'instances': [{
+                        'attributes': {
+                            'name': 'folders/111222',
+                            'parent': 'organizations/123456789012'
+                        }
+                    }]
                 }]
-            }]
-        }, f)
+            }, f)
       out = os.path.join(td, 'import-manifest.yaml')
 
       def run(extra=()):
