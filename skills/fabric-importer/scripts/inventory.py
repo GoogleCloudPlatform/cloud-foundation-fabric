@@ -464,6 +464,17 @@ def _resolve_included_auto_generated(include_auto_generated=None,
     included.add('logging-defaults')
   if include_pam_grants:
     included.add('pam-grants')
+  valid_families = {family for family, _, _ in AUTO_GENERATED_FILTERS}
+  unknown = included - valid_families
+  if unknown:
+    valid_list = ', '.join(sorted(valid_families))
+    if len(unknown) == 1:
+      bad_str = repr(next(iter(unknown)))
+      raise SystemExit(f'unknown auto-generated filter family {bad_str}; '
+                       f'valid families: {valid_list}')
+    bad_str = ', '.join(sorted(repr(u) for u in unknown))
+    raise SystemExit(f'unknown auto-generated filter families: {bad_str}; '
+                     f'valid families: {valid_list}')
   return included
 
 

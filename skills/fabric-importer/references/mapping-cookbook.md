@@ -870,6 +870,9 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   by GCP and cannot be created via the Compute API (`routes.insert` rejects
   these next hops). `inventory.py` automatically filters them from the
   denominator; if present in an existing denominator, they must be waived.
+  Confirmed present in live CAI `resource.data` payloads (`nextHopNetwork` for
+  subnet-local routes, `nextHopHub` for NCC routes, `nextHopPeering` for VPC peering)
+  so filtering is structural without requiring gcloud hydration fallbacks (verified r20).
 - **Routes — importable, do import:** Default internet gateway routes
   (`0.0.0.0/0` -> `default-internet-gateway`, named `default-route-<hash>`)
   are legal `routes.insert` resources and must be imported via `net-vpc`'s
@@ -882,7 +885,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
     delete_default_routes_on_create = false
     routes = {
       default = {
-        name          = "default-route-e2b9279233c785be"
+        name          = "default-route-<hash>"
         description   = "Default route to the Internet."
         dest_range    = "0.0.0.0/0"
         next_hop_type = "gateway"
@@ -893,7 +896,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   }
 
   import {
-    id = "projects/sruff02-prod-net-core-0/global/routes/default-route-e2b9279233c785be"
+    id = "projects/<project-id>/global/routes/default-route-<hash>"
     to = module.net_vpc_hub.google_compute_route.gateway["default"]
   }
   ```

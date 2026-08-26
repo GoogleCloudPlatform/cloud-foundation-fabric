@@ -204,10 +204,10 @@ projects) and their child resources, matching what is active in the GCP Console.
 Pass `--include-deleted` if you explicitly need to capture soft-deleted assets in
 the denominator (e.g. to audit or waive them).
 
-Similarly, auto-generated resources that no API caller can create —
+Similarly, resources GCP creates or manages on the operator's behalf —
+un-creatable auto-generated VPC routes (subnet-local routes, NCC and peering routes),
 Google-managed default log sinks and log buckets (`_Default` and `_Required`),
-Privileged Access Manager (PAM) grants (`privilegedaccessmanager.googleapis.com/Grant`),
-and auto-generated VPC routes (subnet-local routes, NCC and peering routes) —
+and ephemeral Privileged Access Manager (PAM) grants (`privilegedaccessmanager.googleapis.com/Grant`) —
 are automatically excluded from the denominator. Pass `--include-auto-generated`
 (or `--include-auto-generated=family,...` e.g. `routes`, `logging-defaults`, `pam-grants`;
 `--include-logging-defaults` and `--include-pam-grants` remain supported as aliases)

@@ -31,6 +31,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 _BASE = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.join(_BASE, 'scripts'))
@@ -3235,6 +3236,72 @@ class TestDeletedContainersFilter(unittest.TestCase):
       self.assertEqual(len(entries), 4)
     finally:
       inventory.run_json = real
+
+  def test_auto_generated_invalid_family_fails_closed(self):
+    # Single typo
+    with self.assertRaises(SystemExit) as ctx:
+      inventory._resolve_included_auto_generated('route')
+    self.assertIn("unknown auto-generated filter family 'route'",
+                  str(ctx.exception))
+    self.assertIn('logging-defaults, pam-grants, routes', str(ctx.exception))
+
+    # Comma-separated with one invalid
+    with self.assertRaises(SystemExit) as ctx:
+      inventory._resolve_included_auto_generated('routes,invalid_family')
+    self.assertIn("unknown auto-generated filter family 'invalid_family'",
+                  str(ctx.exception))
+
+    # Multiple invalid in list
+    with self.assertRaises(SystemExit) as ctx:
+      inventory._resolve_included_auto_generated(['foo', 'bar'])
+    self.assertIn('unknown auto-generated filter families:', str(ctx.exception))
+    self.assertIn("'bar'", str(ctx.exception))
+    self.assertIn("'foo'", str(ctx.exception))
+
+  def test_inventory_cli_auto_generated_arguments(self):
+    # Test survey with bare flag
+    with mock.patch('sys.argv', [
+        'inventory.py', 'survey', '--scope=projects/1',
+        '--include-auto-generated'
+    ]):
+      with mock.patch('inventory.survey', return_value=[]) as mock_survey:
+        with mock.patch('sys.stdout', io.StringIO()):
+          inventory.main()
+          mock_survey.assert_called_once_with('projects/1',
+                                              include_auto_generated=True)
+
+    # Test collect with specific families
+    with tempfile.NamedTemporaryFile('w', suffix='.yaml', delete=False) as f:
+      f.write('scopes:\n  - root: projects/1\n')
+      manifest_path = f.name
+    try:
+      with mock.patch('sys.argv', [
+          'inventory.py', 'collect', f'--manifest={manifest_path}',
+          '--include-auto-generated=routes,pam-grants'
+      ]):
+        with mock.patch('inventory.collect',
+                        return_value=([], inventory.ProjectRegistry(),
+                                      [])) as mock_collect:
+          with mock.patch('sys.stdout', io.StringIO()):
+            inventory.main()
+            mock_collect.assert_called_once_with(
+                {'scopes': [{
+                    'root': 'projects/1'
+                }]}, include_auto_generated='routes,pam-grants')
+    finally:
+      os.remove(manifest_path)
+
+    # Test legacy aliases
+    with mock.patch('sys.argv', [
+        'inventory.py', 'survey', '--scope=projects/1',
+        '--include-logging-defaults', '--include-pam-grants'
+    ]):
+      with mock.patch('inventory.survey', return_value=[]) as mock_survey:
+        with mock.patch('sys.stdout', io.StringIO()):
+          inventory.main()
+          mock_survey.assert_called_once_with('projects/1',
+                                              include_logging_defaults=True,
+                                              include_pam_grants=True)
 
 
 def _parse_state(state_content):

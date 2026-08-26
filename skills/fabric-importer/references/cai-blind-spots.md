@@ -6,7 +6,7 @@ simultaneously (not enumerated → not required by coverage; not emitted →
 not diffed by plan). Treat this list as living documentation: verify and
 extend it per engagement.
 
-There are two distinct blind spots, and they need different remedies:
+There are three distinct blind spots, and they need different remedies:
 
 1. **CAI does not model the type at all.** The classic case, and what
    most of this document is about. Remedy: enumerate it by other means
@@ -15,6 +15,9 @@ There are two distinct blind spots, and they need different remedies:
    queried.** Rarer, much quieter, and not a blind spot in CAI at all —
    a blind spot in the question. See
    [Surface-dependent type taxonomies](#surface-dependent-type-taxonomies).
+3. **CAI models the type but omits a FIELD a consumer depends on.**
+   Quietest of all: the sweep succeeds and the payload simply lacks the
+   attribute. See [Field-level blind spots](#field-level-blind-spots).
 
 ## The rule
 
@@ -28,25 +31,16 @@ The ladder, in order of preference:
 
 1. **CAI** (`gcloud asset list`, `asset search-all-resources`) — default,
    because one sweep covers a whole hierarchy and returns ancestry.
-2. **CAI answered, but incompletely (field-level blind spots)** — CAI models
-   the asset type but omits specific resource fields. Note the critical
-   asymmetry: an unsupported type fails loudly (gcloud errors, the run refuses
-   with a clear remedy), whereas a missing field fails silently (`.get()`
-   returns `None`, a filter predicate answers "no", and the run looks healthy).
-   A filter predicate must never depend on a field whose presence in the live
-   payload has not been verified. When a discriminator field is unavailable or
-   unverified, the filter must **fail open** — keep the asset in the
-   denominator for a human to waive, never drop it.
-3. **`gcloud <service> list|describe`** — the preferred alternative when CAI
-   does not model the type. Read-only, already installed, already authenticated
-   as the run's read-only identity, and machine-readable with `--format=json`.
-   Declare it in the manifest as a native enumerator (below) so the entries
-   land in `inventory.json` like any others.
-4. **The service REST API** (`curl` with `gcloud auth print-access-token`)
+2. **`gcloud <service> list|describe`** — the preferred alternative.
+   Read-only, already installed, already authenticated as the run's
+   read-only identity, and machine-readable with `--format=json`.
+   Declare it in the manifest as a native enumerator (below) so the
+   entries land in `inventory.json` like any others.
+3. **The service REST API** (`curl` with `gcloud auth print-access-token`)
    — only where gcloud has no surface at all. Enumerate out of band,
    record the exact call in the run report, and treat any assets found
    as in scope for mapping.
-5. **A signed waiver plus a run-report entry** — the last resort, and a
+4. **A signed waiver plus a run-report entry** — the last resort, and a
    deliberate, attributed decision. "Not enumerable" is a fact to
    publish, never a silence.
 
@@ -191,6 +185,20 @@ A sibling type that `asset list` no longer recognises is therefore
 reported as a possibly-stale table, not as a failed run — a sibling is
 tool-supplied, not operator-declared, so it must never fail someone
 else's collection.
+
+## Field-level blind spots
+
+A missing field in a CAI payload is asymmetric to an unsupported asset type:
+- An **unsupported type fails loudly**: CAI returns `INVALID_ARGUMENT`, the run
+  stops, and a remedy is displayed.
+- A **missing field fails silently**: `.get()` returns `None`, a filter
+  predicate answers "no", and the asset unexpectedly stays in or drops out
+  of the denominator while the run appears healthy.
+
+A filter predicate must never depend on a field whose presence in the live
+payload has not been verified. When a discriminator field is unavailable or
+unverified in CAI, the filter must **fail open** — keep the asset in the
+denominator for a human to waive, never drop it silently.
 
 ## Built-in enumerators
 
