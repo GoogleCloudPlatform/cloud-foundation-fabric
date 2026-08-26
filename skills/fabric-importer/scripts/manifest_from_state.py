@@ -192,21 +192,49 @@ TF_TYPE_MAP = {
         ('identity.accesscontextmanager.googleapis.com/AccessLevel',
          'organization', {}),
 
-    # Networking
+    # Networking & Connectivity
     'google_compute_network': ('compute.googleapis.com/Network', 'project', {}),
     'google_compute_subnetwork':
         ('compute.googleapis.com/Subnetwork', 'project', {}),
+    'google_compute_global_address':
+        ('compute.googleapis.com/Address', 'project', {}),
     'google_compute_router': ('compute.googleapis.com/Router', 'project', {}),
     'google_compute_router_nat':
         ('compute.googleapis.com/Router', 'project', {}),
     'google_compute_firewall':
         ('compute.googleapis.com/Firewall', 'project', {}),
+    'google_compute_firewall_policy':
+        ('compute.googleapis.com/FirewallPolicy', 'dynamic', {}),
     'google_compute_network_firewall_policy':
         ('compute.googleapis.com/NetworkFirewallPolicy', 'project', {}),
     'google_compute_ha_vpn_gateway':
-        ('compute.googleapis.com/HaVpnGateway', 'project', {}),
+        ('compute.googleapis.com/VpnGateway', 'project', {}),
+    'google_compute_vpn_gateway':
+        ('compute.googleapis.com/VpnGateway', 'project', {}),
+    'google_compute_external_vpn_gateway':
+        ('compute.googleapis.com/ExternalVpnGateway', 'project', {}),
+    'google_compute_vpn_tunnel':
+        ('compute.googleapis.com/VpnTunnel', 'project', {}),
+    'google_dns_response_policy':
+        ('dns.googleapis.com/ResponsePolicy', 'project', {}),
     'google_dns_managed_zone':
         ('dns.googleapis.com/ManagedZone', 'project', {}),
+    'google_network_connectivity_hub':
+        ('networkconnectivity.googleapis.com/Hub', 'project', {}),
+    'google_network_connectivity_spoke':
+        ('networkconnectivity.googleapis.com/Spoke', 'project', {}),
+
+    # Storage
+    'google_storage_managed_folder':
+        ('storage.googleapis.com/ManagedFolder', 'project', {}),
+    'google_storage_managed_folder_iam_binding':
+        ('storage.googleapis.com/ManagedFolder', 'project', {
+            'iam': True
+        }),
+    'google_storage_managed_folder_iam_member':
+        ('storage.googleapis.com/ManagedFolder', 'project', {
+            'iam': True
+        }),
 
     # KMS & Security
     'google_kms_key_ring': ('cloudkms.googleapis.com/KeyRing', 'project', {}),
@@ -478,17 +506,23 @@ def _type_lines(types_found):
 
 
 def generate_manifest(org_ids, projects, project_numbers, folders, types_found,
-                      state_files):
+                      state_files, root=None):
   """Generates YAML string for the import manifest."""
-  # Guessing the root is the one error this tool must not make: every
-  # scope, and therefore the whole denominator, hangs off it.
-  if len(org_ids) > 1:
+  # Explicit root override (useful when state spans subfolders without an in-state org).
+  if root:
+    if not (root.startswith('organizations/') or root.startswith('folders/')):
+      raise SystemExit(
+          f'ERROR: explicit --root must start with organizations/ or folders/ '
+          f'(got: {root}).')
+    scope_root = root
+    root_is_org = root.startswith('organizations/')
+  elif len(org_ids) > 1:
     raise SystemExit(
         'ERROR: state spans more than one organization '
         f'({", ".join(sorted(org_ids))}). Picking one silently would '
         'drop every asset under the others from the denominator. Split '
         'the state files per organization and generate one manifest each.')
-  if org_ids:
+  elif org_ids:
     scope_root = f'organizations/{sorted(org_ids)[0]}'
     root_is_org = True
   elif len(folders) == 1:
@@ -502,7 +536,7 @@ def generate_manifest(org_ids, projects, project_numbers, folders, types_found,
         'ERROR: state spans more than one folder '
         f'({", ".join("folders/" + f for f in sorted(folders))}) and no '
         'organization was discovered, so there is no unambiguous scope '
-        'root. Declare the intended root by hand, or pass a state file '
+        'root. Pass --root (e.g. --root organizations/123) or a state file '
         'that includes the common ancestor.')
   elif projects:
     # A per-project state is the most common Mode A input and is exactly
@@ -576,6 +610,9 @@ def main():
   p = argparse.ArgumentParser(description=__doc__)
   p.add_argument('--state', nargs='+', required=True,
                  help='Path(s) to Terraform .tfstate file(s)')
+  p.add_argument(
+      '--root',
+      help='Explicit scope root (e.g. organizations/123 or folders/456)')
   p.add_argument('--out', default='import-manifest.yaml',
                  help='Output manifest file path (use "-" for stdout)')
   p.add_argument(
@@ -596,7 +633,7 @@ def main():
       args.state)
 
   manifest_yaml = generate_manifest(org_ids, projects, project_numbers, folders,
-                                    types_found, args.state)
+                                    types_found, args.state, root=args.root)
 
   if args.out == '-':
     sys.stdout.write(manifest_yaml)
