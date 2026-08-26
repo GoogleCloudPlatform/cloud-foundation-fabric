@@ -35,6 +35,14 @@ per-type rules (organization, folders, projects, service accounts, log
 sinks, logging buckets, VPC networks, root module) · fallback and
 accelerator.
 
+**Where the fielded data lives.** Address patterns, import IDs, CAI
+asset types and verification rounds are held in
+[`address-map.yaml`](./address-map.yaml) and rendered into the
+import-ID table below; the prose here owns everything else — the traps,
+the causal reasoning and the capability gaps. Add a new address to the
+YAML, not to the table, and run
+`uv run scripts/address_map.py` to check both.
+
 ## Canonical module map (normative)
 
 Fabric modules are the product — this table is the default mapping, not
@@ -59,6 +67,12 @@ and custom constraints are carried as `data/` YAML inside their owning
 | Service accounts | `modules/iam-service-account` | `project-factory` — `service_accounts:` block in the owning project's YAML (only when that project is factory-emitted) | SA + its IAM |
 | Log buckets | `modules/logging-bucket` | — | bucket config (sink destinations) |
 | VPC networks | `modules/net-vpc` | subnets only: `net-vpc` `factories_config.subnets_folder` | network, subnets (incl. proxy-only), routes |
+| VPC firewall rules (legacy) | `modules/net-vpc-firewall` | `net-vpc-firewall` `factories_config.rules_folder` | custom rules + the four `default_rules_config` rules |
+| Cloud NAT & Routers | `modules/net-cloudnat` | — | Cloud NAT + its Cloud Router (NAT-only routers) |
+| HA VPN | `modules/net-vpn-ha` | — | HA VPN gateway, external gateway, tunnels, its own Cloud Router, interfaces, BGP peers |
+| Cloud DNS | `modules/dns` | — (no factory: recordsets are the `recordsets` input, keyed `"<type> <name>"`) | managed zones, recordsets |
+| DNS Response Policy | `modules/dns-response-policy` | `dns-response-policy` `factories_config.rules` | response policies & rules |
+| NCC | `modules/ncc-spoke-ra` (hub + router-appliance spokes only) | — | hub; linked-VPC/VPN spokes are a capability gap |
 | Firewall policy rules | `modules/net-firewall-policy` inputs | `net-firewall-policy` `factories_config` rule files | ingress/egress rules |
 | Other | nearest Fabric module for the family; check `modules/` in-repo | see `FACTORIES.md` at the repo root — the authoritative factory catalog (every module factory flows through `factories_config`) | — |
 
@@ -411,75 +425,111 @@ governance:
 
 ## Import-ID quick table
 
-All rows verified live except where noted. `module.organization.` is
-shortened to `…` after the first row.
+**Generated — do not edit by hand.** The rows below are rendered from
+[`address-map.yaml`](./address-map.yaml), which owns the fielded subset
+of this cookbook: asset type, module, address pattern, import ID and the
+round that verified it. Edit the YAML and re-render:
 
-| Resource | Address pattern | Import ID |
-|---|---|---|
-| Custom role | `module.organization.google_organization_iam_custom_role.roles["<id>"]` | `organizations/<org>/roles/<id>` |
-| Org IAM member (additive, default) | `…google_organization_iam_member.bindings["<key>"]` | `<org> <role> <member>` (unverified; cond. appends `<condition_title>`) |
-| Org IAM binding (authoritative opt-in) | `…google_organization_iam_binding.authoritative["<role>"]` | `<org> <role>` |
-| Org IAM binding (cond.) | `…google_organization_iam_binding.bindings["<key>"]` | `<org> <role> <condition_title>` |
-| Org audit config | `…google_organization_iam_audit_config.default["<service>"]` | `<org> <service>` (verified r3) |
-| Org policy | `…google_org_policy_policy.default["<constraint>"]` | `organizations/<org>/policies/<constraint>` |
-| Org log sink | `…google_logging_organization_sink.sink["<name>"]` | `organizations/<org>/sinks/<name>` |
-| Folder | `module.folder-<key>.google_folder.folder[0]` | `folders/<id>` |
-| Folder IAM member (additive, default) | `module.folder-<key>.google_folder_iam_member.bindings["<key>"]` | `folders/<id> <role> <member>` (unverified; cond. appends `<condition_title>`) |
-| Folder IAM | `module.folder-<key>.google_folder_iam_binding.authoritative["<role>"]` | `folders/<id> <role>` |
-| Folder IAM (cond.) | `module.folder-<key>.google_folder_iam_binding.bindings["<key>"]` | `folders/<id> <role> <condition_title>` |
-| Folder org policy | `module.folder-<key>.google_org_policy_policy.default["<constraint>"]` | `folders/<id>/policies/<constraint>` |
-| Folder sink | `module.folder-<key>.google_logging_folder_sink.sink["<name>"]` | `folders/<id>/sinks/<name>` |
-| Project | `module.project-<key>.google_project.project[0]` | `projects/<project_id>` |
-| Project service | `module.project-<key>.google_project_service.project_services["<api>"]` | `<project_id>/<api>` |
-| Project service (orgpolicy) | `module.project-<key>.google_project_service.org_policy_service[0]` | `<project_id>/orgpolicy.googleapis.com` |
-| Project IAM member (additive, default) | `module.project-<key>.google_project_iam_member.bindings["<key>"]` | `<project_id> <role> <member>` (unverified; cond. appends `<condition_title>`) |
-| Project IAM | `module.project-<key>.google_project_iam_binding.authoritative["<role>"]` | `<project_id> <role>` |
-| Project IAM (cond.) | `module.project-<key>.google_project_iam_binding.bindings["<key>"]` | `<project_id> <role> <condition_title>` |
-| Service account | `module.sa-<key>.google_service_account.service_account[0]` | `projects/<project_id>/serviceAccounts/<email>` |
-| SA IAM member (additive, default) | `module.sa-<key>.google_service_account_iam_member.bindings["<key>"]` | `projects/<project_id>/serviceAccounts/<email> <role> <member>` (unverified; cond. appends `<condition_title>`) |
-| SA IAM binding | `module.sa-<key>.google_service_account_iam_binding.authoritative["<role>"]` | `projects/<project_id>/serviceAccounts/<email> <role>` |
-| SA IAM binding (cond.) | `module.sa-<key>.google_service_account_iam_binding.bindings["<key>"]` | `projects/<project_id>/serviceAccounts/<email> <role> <condition_title>` |
-| VPC network | `module.net_vpc_<key>.google_compute_network.network[0]` | `projects/<project_id>/global/networks/<name>` |
-| VPC subnet | `module.net_vpc_<key>.google_compute_subnetwork.subnetwork["<region>/<name>"]` | `projects/<project_id>/regions/<region>/subnetworks/<name>` |
-| VPC subnet (proxy-only) | `module.net_vpc_<key>.google_compute_subnetwork.proxy_only["<region>/<name>"]` | `projects/<project_id>/regions/<region>/subnetworks/<name>` |
-| VPC subnet (private NAT) | `module.net_vpc_<key>.google_compute_subnetwork.private_nat["<region>/<name>"]` | `projects/<project_id>/regions/<region>/subnetworks/<name>` (unverified) |
-| VPC route (gateway) | `module.net_vpc_<key>.google_compute_route.gateway["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` |
-| VPC route (ilb) | `module.net_vpc_<key>.google_compute_route.ilb["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` |
-| VPC route (instance) | `module.net_vpc_<key>.google_compute_route.instance["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` |
-| VPC route (ip) | `module.net_vpc_<key>.google_compute_route.ip["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` |
-| VPC route (vpn tunnel) | `module.net_vpc_<key>.google_compute_route.vpn_tunnel["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` |
-| Hierarchical Firewall Policy | `module.<instance>.google_compute_firewall_policy.hierarchical[0]` | `locations/global/firewallPolicies/<id>` |
-| Global Network Firewall Policy | `module.<instance>.google_compute_network_firewall_policy.net_global[0]` | `projects/<project_id>/global/firewallPolicies/<name>` |
-| Regional Network Firewall Policy | `module.<instance>.google_compute_region_network_firewall_policy.net_regional[0]` | `projects/<project_id>/regions/<region>/firewallPolicies/<name>` |
-| Interconnect Attachment | `module.<instance>.google_compute_interconnect_attachment.default["<key>"]` | `projects/<project_id>/regions/<region>/interconnectAttachments/<name>` |
-| HA VPN Gateway | `module.<instance>.google_compute_ha_vpn_gateway.ha_gateway[0]` | `projects/<project_id>/regions/<region>/vpnGateways/<name>` |
-| Log bucket | `module.logging_bucket_<key>.google_logging_project_bucket_config.bucket[0]` | `projects/<project_id>/locations/<location>/buckets/<name>` |
-| GCS bucket | `module.<instance>.google_storage_bucket.bucket[0]` | `<project_id>/<bucket_name>` (never bare — ForceNew trap) |
-| DNS zone | `module.<instance>.google_dns_managed_zone.dns_managed_zone[0]` | `projects/<project_id>/managedZones/<zone>` |
-| Cloud Router | `module.<instance>.google_compute_router.router[0]` | `projects/<project_id>/regions/<region>/routers/<name>` |
-| Cloud NAT | `module.<instance>.google_compute_router_nat.nat` | `projects/<project_id>/regions/<region>/routers/<router>/<nat>` |
-| KMS KeyRing | `module.<instance>.google_kms_key_ring.default[0]` | `projects/<project_id>/locations/<location>/keyRings/<name>` |
-| KMS CryptoKey | `module.<instance>.google_kms_crypto_key.default["<key>"]` | `projects/<project_id>/locations/<location>/keyRings/<name>/cryptoKeys/<key>` |
-| KMS CryptoKey IAM | `module.<instance>.google_kms_crypto_key_iam_binding.authoritative["<key>.<role>"]` | `projects/<project_id>/locations/<location>/keyRings/<name>/cryptoKeys/<key> <role>` |
-| BigQuery Dataset | `module.<instance>.google_bigquery_dataset.default` | `projects/<project_id>/datasets/<dataset_id>` (verified r17) |
-| Pub/Sub Topic | `module.<instance>.google_pubsub_topic.default` | `projects/<project_id>/topics/<topic_name>` (verified r17) |
-| CAS CA Pool | `module.<instance>.google_privateca_ca_pool.default[0]` | `projects/<project_id>/locations/<location>/caPools/<name>` (verified r14) |
-| CAS CA Pool IAM | `module.<instance>.google_privateca_ca_pool_iam_binding.authoritative["<role>"]` | `projects/<project_id>/locations/<location>/caPools/<name> <role>` (unverified) |
-| CAS CA Pool IAM (cond.) | `module.<instance>.google_privateca_ca_pool_iam_binding.bindings["<key>"]` | `projects/<project_id>/locations/<location>/caPools/<name> <role> <condition_title>` (unverified) |
-| Certificate Authority | `module.<instance>.google_privateca_certificate_authority.default["<id>"]` | `projects/<project_id>/locations/<location>/caPools/<pool>/certificateAuthorities/<id>` (unverified) |
-| VPC-SC Access Policy | `module.<instance>.google_access_context_manager_access_policy.default[0]` | `<policy_id>` (bare numeric string; verified r15) |
-| VPC-SC Access Level | `module.<instance>.google_access_context_manager_access_level.basic["<key>"]` | `accessPolicies/<policy_id>/accessLevels/<level_name>` (verified r15) |
-| VPC-SC Service Perimeter | `module.<instance>.google_access_context_manager_service_perimeter.regular["<key>"]` | `accessPolicies/<policy_id>/servicePerimeters/<perimeter_name>` (verified r15) |
-| Tag Key | `module.organization.google_tags_tag_key.default["<short_name>"]` | `tagKeys/<id>` (verified r18) |
-| Tag Value | `module.organization.google_tags_tag_value.default["<key_short_name>/<value_short_name>"]` | `tagValues/<id>` (verified r18) |
-| Tag Binding | `module.<instance>.google_tags_tag_binding.binding["<key>"]` | `tagBindings/<url-encoded-parent-and-value>` (verified r18) |
-| Workload Identity Pool | `module.project-<key>.google_iam_workload_identity_pool.default["<pool_id>"]` | `projects/<project_id>/locations/global/workloadIdentityPools/<pool_id>` (verified r18) |
-| Workload Identity Pool Provider | `module.project-<key>.google_iam_workload_identity_pool_provider.default["<pool_id>/<provider_id>"]` | `projects/<project_id>/locations/global/workloadIdentityPools/<pool_id>/providers/<provider_id>` (verified r18) |
-| NCC spoke (raw — gap) | `google_network_connectivity_spoke.<instance>` | `projects/<project_id>/locations/<location>/spokes/<name>` |
+```bash
+uv run scripts/address_map.py --render-cookbook
+```
 
-Verified across r2–r18 (see COVERAGE.md for the per-family evidence). For
+Two invariants are machine-enforced there and cannot be restated here by
+accident: an address pattern is claimed by exactly one entry, and a CAI
+asset type serviced by more than one module must say how to tell the
+carriers apart. `<placeholder>` segments are chosen per engagement.
+A blank `Verified` cell means the surface was never exercised live —
+an honest gap, not an implied guarantee.
 
-anything else: check the provider documentation's import section, or
+<!-- BEGIN ADDRESS-MAP (generated) -->
+
+| Resource | Module | Address pattern | Import ID | Verified |
+|---|---|---|---|---|
+| BigQuery Dataset | `modules/bigquery-dataset` | `module.<instance>.google_bigquery_dataset.default` | `projects/<project_id>/datasets/<dataset_id>` | r17 |
+| CAS CA Pool | `modules/certificate-authority-service` | `module.<instance>.google_privateca_ca_pool.default[0]` | `projects/<project_id>/locations/<location>/caPools/<name>` | r14 |
+| CAS CA Pool IAM | `modules/certificate-authority-service` | `module.<instance>.google_privateca_ca_pool_iam_binding.authoritative["<role>"]` | `projects/<project_id>/locations/<location>/caPools/<name> <role>` | — |
+| CAS CA Pool IAM (cond.) | `modules/certificate-authority-service` | `module.<instance>.google_privateca_ca_pool_iam_binding.bindings["<key>"]` | `projects/<project_id>/locations/<location>/caPools/<name> <role> <condition_title>` | — |
+| Certificate Authority | `modules/certificate-authority-service` | `module.<instance>.google_privateca_certificate_authority.default["<id>"]` | `projects/<project_id>/locations/<location>/caPools/<pool>/certificateAuthorities/<id>` | — |
+| DNS zone | `modules/dns` | `module.<instance>.google_dns_managed_zone.dns_managed_zone[0]` | `projects/<project_id>/managedZones/<zone>` | r12 |
+| DNS recordset | `modules/dns` | `module.<instance>.google_dns_record_set.dns_record_set["<type> <name>"]` | `projects/<project_id>/managedZones/<zone>/rrsets/<record_name>/<type>` | — |
+| DNS Response Policy | `modules/dns-response-policy` | `module.<instance>.google_dns_response_policy.default[0]` | `projects/<project_id>/responsePolicies/<response_policy_name>` | — |
+| DNS Response Policy rule | `modules/dns-response-policy` | `module.<instance>.google_dns_response_policy_rule.default["<rule_name>"]` | `projects/<project_id>/responsePolicies/<response_policy_name>/rules/<rule_name>` | — |
+| Folder | `modules/folder` | `module.folder-<key>.google_folder.folder[0]` | `folders/<id>` | r6 |
+| Folder IAM | `modules/folder` | `module.folder-<key>.google_folder_iam_binding.authoritative["<role>"]` | `folders/<id> <role>` | r6 |
+| Folder IAM (cond.) | `modules/folder` | `module.folder-<key>.google_folder_iam_binding.bindings["<key>"]` | `folders/<id> <role> <condition_title>` | r6 |
+| Folder IAM member (additive, default) | `modules/folder` | `module.folder-<key>.google_folder_iam_member.bindings["<key>"]` | `folders/<id> <role> <member>` | — |
+| Folder sink | `modules/folder` | `module.folder-<key>.google_logging_folder_sink.sink["<name>"]` | `folders/<id>/sinks/<name>` | r6 |
+| Folder org policy | `modules/folder` | `module.folder-<key>.google_org_policy_policy.default["<constraint>"]` | `folders/<id>/policies/<constraint>` | r6 |
+| GCS bucket | `modules/gcs` | `module.<instance>.google_storage_bucket.bucket[0]` | `<project_id>/<bucket_name>` | r12 |
+| Service account | `modules/iam-service-account` | `module.sa-<key>.google_service_account.service_account[0]` | `projects/<project_id>/serviceAccounts/<email>` | r8 |
+| SA IAM binding | `modules/iam-service-account` | `module.sa-<key>.google_service_account_iam_binding.authoritative["<role>"]` | `projects/<project_id>/serviceAccounts/<email> <role>` | r8 |
+| SA IAM binding (cond.) | `modules/iam-service-account` | `module.sa-<key>.google_service_account_iam_binding.bindings["<key>"]` | `projects/<project_id>/serviceAccounts/<email> <role> <condition_title>` | r8 |
+| SA IAM member (additive, default) | `modules/iam-service-account` | `module.sa-<key>.google_service_account_iam_member.bindings["<key>"]` | `projects/<project_id>/serviceAccounts/<email> <role> <member>` | — |
+| KMS CryptoKey | `modules/kms` | `module.<instance>.google_kms_crypto_key.default["<key>"]` | `projects/<project_id>/locations/<location>/keyRings/<name>/cryptoKeys/<key>` | r13 |
+| KMS CryptoKey IAM | `modules/kms` | `module.<instance>.google_kms_crypto_key_iam_binding.authoritative["<key>.<role>"]` | `projects/<project_id>/locations/<location>/keyRings/<name>/cryptoKeys/<key> <role>` | r13 |
+| KMS KeyRing | `modules/kms` | `module.<instance>.google_kms_key_ring.default[0]` | `projects/<project_id>/locations/<location>/keyRings/<name>` | r13 |
+| Log bucket | `modules/logging-bucket` | `module.logging_bucket_<key>.google_logging_project_bucket_config.bucket[0]` | `projects/<project_id>/locations/<location>/buckets/<name>` | r10 |
+| NCC Hub | `modules/ncc-spoke-ra` | `module.<instance>.google_network_connectivity_hub.hub[0]` | `projects/<project_id>/locations/global/hubs/<hub_name>` | — |
+| NCC spoke (router appliance) | `modules/ncc-spoke-ra` | `module.<instance>.google_network_connectivity_spoke.spoke_ra` | `projects/<project_id>/locations/<location>/spokes/<spoke_name>` | — |
+| Compute address (global PSA) | `modules/net-address` | `module.<instance>.google_compute_global_address.psa["<key>"]` | `projects/<project_id>/global/addresses/<name>` | r19 |
+| Compute address (global PSC) | `modules/net-address` | `module.<instance>.google_compute_global_address.psc["<key>"]` | `projects/<project_id>/global/addresses/<name>` | r19 |
+| Compute address (regional internal) | `modules/net-address` | `module.<instance>.google_compute_address.internal["<key>"]` | `projects/<project_id>/regions/<region>/addresses/<name>` | r19 |
+| Cloud NAT | `modules/net-cloudnat` | `module.<nat_instance>.google_compute_router_nat.nat` | `projects/<project_id>/regions/<region>/routers/<router>/<nat>` | r12 |
+| Cloud Router | `modules/net-cloudnat` | `module.<nat_instance>.google_compute_router.router[0]` | `projects/<project_id>/regions/<region>/routers/<name>` | r12 |
+| Hierarchical Firewall Policy | `modules/net-firewall-policy` | `module.<instance>.google_compute_firewall_policy.hierarchical[0]` | `locations/global/firewallPolicies/<id>` | r7 |
+| Global Network Firewall Policy | `modules/net-firewall-policy` | `module.<instance>.google_compute_network_firewall_policy.net_global[0]` | `projects/<project_id>/global/firewallPolicies/<name>` | r7 |
+| Regional Network Firewall Policy | `modules/net-firewall-policy` | `module.<instance>.google_compute_region_network_firewall_policy.net_regional[0]` | `projects/<project_id>/regions/<region>/firewallPolicies/<name>` | r7 |
+| Interconnect Attachment | `modules/net-vlan-attachment` | `module.<instance>.google_compute_interconnect_attachment.default["<key>"]` | `projects/<project_id>/regions/<region>/interconnectAttachments/<name>` | — |
+| VPC network | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_network.network[0]` | `projects/<project_id>/global/networks/<name>` | r3 |
+| VPC route (gateway) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_route.gateway["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` | r9 |
+| VPC route (ilb) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_route.ilb["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` | r9 |
+| VPC route (instance) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_route.instance["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` | r9 |
+| VPC route (ip) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_route.ip["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` | r9 |
+| VPC route (vpn tunnel) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_route.vpn_tunnel["<key>"]` | `projects/<project_id>/global/routes/<net>-<key>` | r9 |
+| VPC subnet | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_subnetwork.subnetwork["<region>/<name>"]` | `projects/<project_id>/regions/<region>/subnetworks/<name>` | r3 |
+| VPC subnet (private NAT) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_subnetwork.private_nat["<region>/<name>"]` | `projects/<project_id>/regions/<region>/subnetworks/<name>` | — |
+| VPC subnet (proxy-only) | `modules/net-vpc` | `module.net_vpc_<key>.google_compute_subnetwork.proxy_only["<region>/<name>"]` | `projects/<project_id>/regions/<region>/subnetworks/<name>` | r9 |
+| VPC firewall rule (custom) | `modules/net-vpc-firewall` | `module.<instance>.google_compute_firewall.custom_rules["<rule_name>"]` | `projects/<project_id>/global/firewalls/<rule_name>` | — |
+| VPC firewall rule (default, admins) | `modules/net-vpc-firewall` | `module.<instance>.google_compute_firewall.allow_admins[0]` | `projects/<project_id>/global/firewalls/<network_name>-ingress-admins` | — |
+| VPC firewall rule (default, http) | `modules/net-vpc-firewall` | `module.<instance>.google_compute_firewall.allow_tag_http[0]` | `projects/<project_id>/global/firewalls/<network_name>-ingress-tag-http` | — |
+| VPC firewall rule (default, https) | `modules/net-vpc-firewall` | `module.<instance>.google_compute_firewall.allow_tag_https[0]` | `projects/<project_id>/global/firewalls/<network_name>-ingress-tag-https` | — |
+| VPC firewall rule (default, ssh) | `modules/net-vpc-firewall` | `module.<instance>.google_compute_firewall.allow_tag_ssh[0]` | `projects/<project_id>/global/firewalls/<network_name>-ingress-tag-ssh` | — |
+| External VPN Gateway | `modules/net-vpn-ha` | `module.<vpn_instance>.google_compute_external_vpn_gateway.external_gateway["<peer_key>"]` | `projects/<project_id>/global/externalVpnGateways/<name>` | — |
+| HA VPN Gateway | `modules/net-vpn-ha` | `module.<vpn_instance>.google_compute_ha_vpn_gateway.ha_gateway[0]` | `projects/<project_id>/regions/<region>/vpnGateways/<name>` | — |
+| Cloud Router (VPN) | `modules/net-vpn-ha` | `module.<vpn_instance>.google_compute_router.router[0]` | `projects/<project_id>/regions/<region>/routers/<name>` | — |
+| Cloud Router interface (VPN) | `modules/net-vpn-ha` | `module.<vpn_instance>.google_compute_router_interface.router_interface["<tunnel_key>"]` | `<project_id>/<region>/<router_name>/<interface_name>` | — |
+| Cloud Router BGP peer (VPN) | `modules/net-vpn-ha` | `module.<vpn_instance>.google_compute_router_peer.bgp_peer["<tunnel_key>"]` | `projects/<project_id>/regions/<region>/routers/<router_name>/<peer_name>` | — |
+| VPN Tunnel | `modules/net-vpn-ha` | `module.<vpn_instance>.google_compute_vpn_tunnel.tunnels["<tunnel_key>"]` | `projects/<project_id>/regions/<region>/vpnTunnels/<name>` | — |
+| Org audit config | `modules/organization` | `module.organization.google_organization_iam_audit_config.default["<service>"]` | `<org> <service>` | r3 |
+| Custom role | `modules/organization` | `module.organization.google_organization_iam_custom_role.roles["<id>"]` | `organizations/<org>/roles/<id>` | r3 |
+| Org IAM binding (authoritative opt-in) | `modules/organization` | `module.organization.google_organization_iam_binding.authoritative["<role>"]` | `<org> <role>` | r3 |
+| Org IAM binding (cond.) | `modules/organization` | `module.organization.google_organization_iam_binding.bindings["<key>"]` | `<org> <role> <condition_title>` | r3 |
+| Org IAM member (additive, default) | `modules/organization` | `module.organization.google_organization_iam_member.bindings["<key>"]` | `<org> <role> <member>` | — |
+| Org log sink | `modules/organization` | `module.organization.google_logging_organization_sink.sink["<name>"]` | `organizations/<org>/sinks/<name>` | r3 |
+| Org policy | `modules/organization` | `module.organization.google_org_policy_policy.default["<constraint>"]` | `organizations/<org>/policies/<constraint>` | r5 |
+| Tag Key | `modules/organization` | `module.organization.google_tags_tag_key.default["<short_name>"]` | `tagKeys/<id>` | r18 |
+| Tag Value | `modules/organization` | `module.organization.google_tags_tag_value.default["<key_short_name>/<value_short_name>"]` | `tagValues/<id>` | r18 |
+| Tag Binding | `modules/organization` | `module.<instance>.google_tags_tag_binding.binding["<key>"]` | `tagBindings/<url-encoded-parent-and-value>` | r18 |
+| PAM entitlement | `modules/project` | `module.<container>.google_privileged_access_manager_entitlement.default["<entitlement_id>"]` | `<parent>/locations/<location>/entitlements/<entitlement_id>` | — |
+| Project | `modules/project` | `module.project-<key>.google_project.project[0]` | `projects/<project_id>` | r4 |
+| Project IAM | `modules/project` | `module.project-<key>.google_project_iam_binding.authoritative["<role>"]` | `<project_id> <role>` | r4 |
+| Project IAM (cond.) | `modules/project` | `module.project-<key>.google_project_iam_binding.bindings["<key>"]` | `<project_id> <role> <condition_title>` | r4 |
+| Project IAM member (additive, default) | `modules/project` | `module.project-<key>.google_project_iam_member.bindings["<key>"]` | `<project_id> <role> <member>` | — |
+| Project org policy | `modules/project` | `module.project-<key>.google_org_policy_policy.default["<constraint>"]` | `projects/<project_id>/policies/<constraint>` | — |
+| Project service | `modules/project` | `module.project-<key>.google_project_service.project_services["<api>"]` | `<project_id>/<api>` | r4 |
+| Project service (orgpolicy) | `modules/project` | `module.project-<key>.google_project_service.org_policy_service[0]` | `<project_id>/orgpolicy.googleapis.com` | r4 |
+| Workload Identity Pool | `modules/project` | `module.project-<key>.google_iam_workload_identity_pool.default["<pool_id>"]` | `projects/<project_id>/locations/global/workloadIdentityPools/<pool_id>` | r18 |
+| Workload Identity Pool Provider | `modules/project` | `module.project-<key>.google_iam_workload_identity_pool_provider.default["<pool_id>/<provider_id>"]` | `projects/<project_id>/locations/global/workloadIdentityPools/<pool_id>/providers/<provider_id>` | r18 |
+| Pub/Sub Topic | `modules/pubsub` | `module.<instance>.google_pubsub_topic.default` | `projects/<project_id>/topics/<topic_name>` | r17 |
+| VPC-SC Access Level | `modules/vpc-sc` | `module.<instance>.google_access_context_manager_access_level.basic["<key>"]` | `accessPolicies/<policy_id>/accessLevels/<level_name>` | r15 |
+| VPC-SC Access Policy | `modules/vpc-sc` | `module.<instance>.google_access_context_manager_access_policy.default[0]` | `<policy_id>` | r15 |
+| VPC-SC Service Perimeter | `modules/vpc-sc` | `module.<instance>.google_access_context_manager_service_perimeter.regular["<key>"]` | `accessPolicies/<policy_id>/servicePerimeters/<perimeter_name>` | r15 |
+| NCC spoke (raw — capability gap) | raw | `google_network_connectivity_spoke.<instance>` | `projects/<project_id>/locations/<location>/spokes/<spoke_name>` | r12 |
+
+<!-- END ADDRESS-MAP -->
+
+Verified across r2–r19 (see COVERAGE.md for the per-family evidence).
+For anything else: check the provider documentation's import section, or
 emit the import block with the CAI asset name minus the
 `//<service>.googleapis.com/` prefix — verified to match the provider
 import ID byte-for-byte on every family tested (r5 oracle, 100%) — and
@@ -707,26 +757,49 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - Lives in `project-<key>.tf`.
 
 
-### DNS managed zones (`modules/dns`) — verified r12
+### DNS zones and recordsets (`modules/dns`) — verified r12 (zones)
 
-- Manifest: `dns.googleapis.com/ManagedZone`, `levels: [project]`.
-- Address: `module.<instance>.google_dns_managed_zone.dns_managed_zone[0]`;
-  import ID `projects/<project_id>/managedZones/<zone_name>`.
+- Manifest: `dns.googleapis.com/ManagedZone` and, for recordsets,
+  `dns.googleapis.com/ResourceRecordSet`; `levels: [project]`.
+- Addresses and import IDs: see the generated table.
 - Private-zone client networks reference
   `module.net_vpc_<key>.self_link`.
+- **Recordset `for_each` key**: `"<type> <name>"` — type first, one
+  space, and `<name>` carries the trailing dot exactly as the API
+  returns it (`"A www.example.com."`). Getting the order or the dot
+  wrong produces a create/destroy pair rather than an import.
+- **Coverage map**: the `ManagedZone` key claims the zone address; each
+  recordset is its own CAI asset and claims its own address. Do not
+  fold recordsets under the zone key — that hides a per-record gap
+  behind a covered parent.
+- **CAI surface trap**: `ResourceRecordSet` is a supported asset type
+  for `gcloud asset list`, but it is "not available in the analysis
+  APIs". `--verify-search-parity` compares against
+  `search-all-resources`, so recordsets can be reported as
+  `only_in_list`. That is the documented API taxonomy, not a collection
+  bug — do not "fix" it by dropping the type.
+- **Description default trap**: `modules/dns` defaults `description` to
+  `"Terraform managed."` (with a space). FAST stages write
+  `"Terraform-managed."` (with a hyphen), and live zones created by
+  other tooling may carry anything at all. Mirror the live value
+  explicitly; an unset `description` silently plans the module default
+  over whatever is there.
 - Lives in `project-<key>.tf`.
 
 ### Cloud Routers and NAT (`modules/net-cloudnat`) — verified r12
 
 - Manifest: `compute.googleapis.com/Router`, `levels: [project]`.
-- Addresses: router `module.<instance>.google_compute_router.router[0]`,
-  NAT `module.<instance>.google_compute_router_nat.nat`.
-- Import IDs: router
-  `projects/<project_id>/regions/<region>/routers/<router_name>`, NAT
-  `.../routers/<router_name>/<nat_name>`.
+- Addresses and import IDs: see the generated table.
 - Inputs: `router_create = true`,
   `router_network = module.net_vpc_<key>.name`.
-- Coverage map: CAI models only `compute.googleapis.com/Router` (the NAT is a sub-resource with no independent CAI asset type). In `coverage-map.yaml`, the single router key claims both addresses: `[module.<instance>.google_compute_router.router[0], module.<instance>.google_compute_router_nat.nat]`.
+- **Carrier disambiguation — read before mapping any Router.**
+  `compute.googleapis.com/Router` is the one CAI type in this cookbook
+  that two modules legitimately create. A router whose only attached
+  function is NAT belongs here. A router that terminates VPN tunnels is
+  created by `modules/net-vpn-ha` and belongs in that section; mapping
+  it here strands the tunnels, interfaces and BGP peers with no
+  carrier. Decide from the live router's attachments, not its name.
+- Coverage map: CAI models only `compute.googleapis.com/Router` (the NAT is a sub-resource with no independent CAI asset type). In `coverage-map.yaml`, the single router key claims both addresses: `[module.<nat_instance>.google_compute_router.router[0], module.<nat_instance>.google_compute_router_nat.nat]`.
 - Lives in `project-<key>.tf`.
 
 ### Compute addresses (`modules/net-address`) — verified r19 (global PSC, global PSA, regional internal)
@@ -775,19 +848,24 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   networks via `module.net_vpc_<key>.self_link`.
 - Lives in `project-<key>.tf`.
 
-### NCC spokes — raw resource, documented capability gap (r12)
+### Network Connectivity Center — hub, and spokes as a capability gap (r12)
 
-- Manifest: `networkconnectivity.googleapis.com/Spoke`,
-  `levels: [project]`.
-- Capability gap: Fabric has no module for linked-VPC spokes —
-  `modules/ncc-spoke-ra` covers router-appliance spokes only. Per the
-  fallback doctrine this imports as a raw
-  `google_network_connectivity_spoke.<instance>` and MUST appear in the
-  run report's capability-gaps section (upstream-Fabric-issue
-  material). Revisit and lift with `moved {}` blocks if a module
-  appears.
-- Import ID:
-  `projects/<project_id>/locations/<location>/spokes/<spoke_name>`.
+- Manifest: `networkconnectivity.googleapis.com/Hub` and
+  `networkconnectivity.googleapis.com/Spoke`, `levels: [project]`.
+- **Hub**: `modules/ncc-spoke-ra` does carry the hub
+  (`google_network_connectivity_hub.hub[0]`, created when
+  `hub.create` is true), so a hub is NOT a capability gap. Import it
+  into that module rather than raw.
+- **Spoke capability gap**: `modules/ncc-spoke-ra` covers
+  router-appliance spokes only
+  (`google_network_connectivity_spoke.spoke_ra`, keyed on
+  `linked_router_appliance_instances`). Linked-VPC and linked-VPN
+  spokes have no Fabric carrier. Per the fallback doctrine these import
+  as a raw `google_network_connectivity_spoke.<instance>` and MUST
+  appear in the run report's capability-gaps section
+  (upstream-Fabric-issue material). Revisit and lift with `moved {}`
+  blocks if a module appears.
+- Import IDs: see the generated table.
 - `linked_vpc_network.uri = module.net_vpc_<key>.self_link`.
 - Lives in `project-<key>.tf`.
 
@@ -946,6 +1024,7 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - **Org Policy Constraints & Traps**:
   - `constraints/iam.workloadIdentityPoolProviders`: Restricts allowed external identity provider issuer URLs.
   - Providers (such as GitHub Actions OIDC) require CEL `attribute_condition` referencing provider claims (e.g. `assertion.repository == '...'`).
+
 ### Privileged Access Manager (PAM)
 
 - **Canonical Module**: `modules/organization`, `modules/folder`, `modules/project` via `pam_entitlements` map or `factories_config.pam_entitlements` factory path.
@@ -958,6 +1037,92 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   - `privilegedaccessmanager.googleapis.com/Grant`: Ephemeral runtime access requests generated upon JIT access activation. Excluded from survey and collection by default; retained only with `--include-pam-grants`.
 - **Traps**:
   - Grants represent transient workflow state with short TTLs and should **not** be managed in Terraform baseline IaC.
+
+### VPC firewall rules (`modules/net-vpc-firewall`)
+
+- Manifest: `compute.googleapis.com/Firewall`, `levels: [project]`.
+- **Carrier boundary**: `modules/net-vpc` deliberately does not manage
+  firewall rules — that is a module-boundary decision, not an omission.
+  `modules/net-vpc-firewall` is the carrier for legacy VPC firewall
+  rules; `modules/net-firewall-policy` carries hierarchical and network
+  firewall policies. They are different CAI types
+  (`.../Firewall` vs `.../FirewallPolicy`) and never substitute for
+  each other.
+- Addresses and import IDs: see the generated table.
+- **Five distinct addresses, not one.** The module emits custom rules
+  under `google_compute_firewall.custom_rules["<rule_name>"]`
+  (`for_each`, keyed on the rule name), *and* up to four `count`-based
+  default rules from `default_rules_config`:
+  `allow_admins[0]`, `allow_tag_http[0]`, `allow_tag_https[0]`,
+  `allow_tag_ssh[0]`, named `<network_name>-ingress-admins`,
+  `-ingress-tag-http`, `-ingress-tag-https` and `-ingress-tag-ssh`.
+  A live estate that was built with FAST already has these. Match a
+  live rule to the default-rule address when its name matches that
+  pattern, and to `custom_rules` otherwise — routing a default rule
+  through `custom_rules` plans a create/destroy pair against the same
+  live name.
+- **There is no `google_compute_firewall.rules` resource.** Verify the
+  resource label against `modules/net-vpc-firewall/main.tf` and
+  `default-rules.tf` before writing an import block.
+- Inputs: `project_id`, `network`, and `custom_rules` (or
+  `factories_config.rules_folder`).
+- Lives in `project-<key>.tf`.
+
+### DNS response policies (`modules/dns-response-policy`)
+
+- Manifest: `dns.googleapis.com/ResponsePolicy` and, for rules,
+  `dns.googleapis.com/ResponsePolicyRule`; `levels: [project]`.
+  Rules are a separate CAI asset type, not a sub-resource — declare
+  both or the rules never enter the denominator.
+- Addresses and import IDs: see the generated table.
+- **Input schema trap**: `networks` is `map(string)`
+  (`name => self_link`), not a list of strings
+  (`modules/dns-response-policy/variables.tf`).
+- **CAI surface trap**: both types are "not available in the analysis
+  APIs", so `--verify-search-parity` may report them as `only_in_list`.
+  Expected; see the DNS zones section.
+- Lives in `project-<key>.tf`.
+
+### HA VPN and VPN tunnels (`modules/net-vpn-ha`)
+
+- Manifest: `compute.googleapis.com/VpnGateway`,
+  `compute.googleapis.com/ExternalVpnGateway`,
+  `compute.googleapis.com/VpnTunnel` and
+  `compute.googleapis.com/Router`; `levels: [project]`.
+- Addresses and import IDs: see the generated table. Note the router
+  interface import ID has **no** `projects/` prefix
+  (`<project_id>/<region>/<router_name>/<interface_name>`) — it is the
+  one irregular form in this family.
+- **Carrier disambiguation**: this module creates its own
+  `google_compute_router.router[0]`, so a VPN-terminating router is
+  mapped here and NOT through `modules/net-cloudnat`. See the Cloud
+  Routers and NAT section for the rule.
+- **`shared_secret` cannot be imported, and cannot be waived.**
+  - Provider constraint: `google_compute_vpn_tunnel.shared_secret` is
+    `ForceNew`, and the Compute API returns only `shared_secret_hash`
+    on read. An imported tunnel therefore holds no plaintext secret.
+  - Fabric constraint: `modules/net-vpn-ha` sets
+    `shared_secret = coalesce(each.value.shared_secret, local.secret)`
+    where `local.secret` is `random_id.secret.b64_url`
+    (`modules/net-vpn-ha/main.tf`). **You cannot leave it unset.**
+    Omitting it does not produce a no-op — it produces an
+    unknown-at-plan-time value on a ForceNew attribute, which plans a
+    tunnel *replacement*, non-deterministically.
+  - **A waiver does not help.** `verify_plan.py` classifies anything
+    other than a clean import or a no-op — including `replace` — as
+    RESIDUAL and fails. `benign-drift.yaml` covers cosmetic attribute
+    diffs, not replacements. A run that "waives" a tunnel replacement
+    is a run that would destroy a live tunnel on apply. Do not do this.
+  - **Correct posture**: obtain the plaintext secret from the operator
+    out of band and set it explicitly. It is the only way the module
+    converges.
+  - **When the secret is genuinely unavailable**, this is a module
+    capability gap, and it is handled the way every other gap is: emit
+    a raw `google_compute_vpn_tunnel` with
+    `lifecycle { ignore_changes = [shared_secret] }`, and record it in
+    the run report's capability-gaps section with that reason. This is
+    a documented fallback, not a shortcut — and not the default.
+- Lives in `project-<key>.tf`.
 
 ### Root module
 

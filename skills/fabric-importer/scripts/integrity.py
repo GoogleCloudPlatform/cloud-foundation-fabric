@@ -67,6 +67,7 @@ import sys
 # at hash time, so this list may be extended without invalidating the
 # meaning of a digest for an unchanged set.
 FROZEN_FILES = (
+    'address_map.py',
     'benign-drift.yaml',
     'coverage.py',
     'integrity.py',
