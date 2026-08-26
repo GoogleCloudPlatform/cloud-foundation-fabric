@@ -195,6 +195,12 @@ incremental re-run, never a rewrite.
 uv run scripts/inventory.py collect --manifest import-manifest.yaml --out inventory.json
 ```
 
+By default, `inventory.py survey` and `inventory.py collect` filter out
+soft-deleted containers (`DELETE_REQUESTED` / `DELETE_IN_PROGRESS` folders and
+projects) and their child resources, matching what is active in the GCP Console.
+Pass `--include-deleted` if you explicitly need to capture soft-deleted assets in
+the denominator (e.g. to audit or waive them).
+
 **CAI is the default source of the denominator, never the boundary of
 it.** Cloud Asset Inventory does not model every GCP resource. A type it
 does not support must be enumerated by other means and merged into the
