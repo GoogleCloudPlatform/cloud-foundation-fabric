@@ -3593,6 +3593,63 @@ class TestManifestFromState(unittest.TestCase):
           }}, ['s.tfstate'])
     self.assertIn('more than one folder', str(cm.exception))
 
+  def test_explicit_root_allows_multi_folder_state(self):
+    text = manifest_from_state.generate_manifest(
+        set(), {'p1'}, {'p1': '999'}, {'111222', '333444'}, {
+            'compute.googleapis.com/Network': {
+                'levels': {'project'},
+                'flags': {}
+            }
+        }, ['s.tfstate'], root='organizations/123456789012')
+    parsed = yaml.safe_load(text)
+    self.assertEqual(parsed['scopes'][0]['root'], 'organizations/123456789012')
+
+  def test_vpn_gateway_and_networking_types_mapping(self):
+    _, _, _, _, types_found = _parse_state({
+        'resources': [
+            {
+                'mode': 'managed',
+                'type': 'google_compute_ha_vpn_gateway',
+                'instances': [{
+                    'attributes': {
+                        'project': 'p1'
+                    }
+                }]
+            },
+            {
+                'mode': 'managed',
+                'type': 'google_compute_external_vpn_gateway',
+                'instances': [{
+                    'attributes': {
+                        'project': 'p1'
+                    }
+                }]
+            },
+            {
+                'mode': 'managed',
+                'type': 'google_dns_response_policy',
+                'instances': [{
+                    'attributes': {
+                        'project': 'p1'
+                    }
+                }]
+            },
+            {
+                'mode': 'managed',
+                'type': 'google_network_connectivity_hub',
+                'instances': [{
+                    'attributes': {
+                        'project': 'p1'
+                    }
+                }]
+            },
+        ]
+    })
+    self.assertIn('compute.googleapis.com/VpnGateway', types_found)
+    self.assertIn('compute.googleapis.com/ExternalVpnGateway', types_found)
+    self.assertIn('dns.googleapis.com/ResponsePolicy', types_found)
+    self.assertIn('networkconnectivity.googleapis.com/Hub', types_found)
+
   def test_foreign_provider_org_attribute_is_ignored(self):
     """`organization` is a REQUIRED attribute on tfe_workspace, and
     github_*/azuread_* carry one too. Harvesting every provider let a

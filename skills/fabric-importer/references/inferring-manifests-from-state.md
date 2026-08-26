@@ -57,6 +57,14 @@ uv run scripts/manifest_from_state.py \
 All state files must belong to the same organization: a state spanning
 several is refused rather than silently resolved to one of them.
 
+When running on an isolated stage state (e.g. `stage-2-networking.tfstate`) that contains resources across multiple folders without including an organization resource in that state, specify the intended scope root with `--root`:
+```bash
+uv run scripts/manifest_from_state.py \
+  --state stage-2-networking.tfstate \
+  --root organizations/123456789012 \
+  --out import-manifest.yaml
+```
+
 ### 3. Review and Collect
 
 Review the generated `import-manifest.yaml`, then collect the live denominator:
@@ -100,15 +108,26 @@ The inference script automatically maps Terraform `google_*` resources to CAI as
 | `google_access_context_manager_*` | `identity.accesscontextmanager.googleapis.com/*` | `[organization]` | Access Policies, Perimeters, Levels |
 | `google_compute_network` | `compute.googleapis.com/Network` | `[project]` | VPCs |
 | `google_compute_subnetwork` | `compute.googleapis.com/Subnetwork` | `[project]` | Subnets |
+| `google_compute_global_address` | `compute.googleapis.com/Address` | `[project]` | Global IP Addresses |
 | `google_compute_router` | `compute.googleapis.com/Router` | `[project]` | Cloud Routers & NAT |
 | `google_compute_firewall` | `compute.googleapis.com/Firewall` | `[project]` | Firewall rules |
+| `google_compute_firewall_policy` | `compute.googleapis.com/FirewallPolicy` | `[organization, folder]` | Hierarchical Firewall Policies |
+| `google_compute_network_firewall_policy` | `compute.googleapis.com/NetworkFirewallPolicy` | `[project]` | Network Firewall Policies |
+| `google_compute_ha_vpn_gateway`, `google_compute_vpn_gateway` | `compute.googleapis.com/VpnGateway` | `[project]` | HA & Classic VPN Gateways |
+| `google_compute_external_vpn_gateway` | `compute.googleapis.com/ExternalVpnGateway` | `[project]` | External VPN Gateways |
+| `google_compute_vpn_tunnel` | `compute.googleapis.com/VpnTunnel` | `[project]` | VPN Tunnels |
+| `google_dns_managed_zone` | `dns.googleapis.com/ManagedZone` | `[project]` | Cloud DNS Zones |
+| `google_dns_response_policy` | `dns.googleapis.com/ResponsePolicy` | `[project]` | Cloud DNS Response Policies |
+| `google_network_connectivity_hub` | `networkconnectivity.googleapis.com/Hub` | `[project]` | NCC Hubs |
+| `google_network_connectivity_spoke` | `networkconnectivity.googleapis.com/Spoke` | `[project]` | NCC Spokes |
+| `google_storage_managed_folder` | `storage.googleapis.com/ManagedFolder` | `[project]` | Storage Managed Folders |
+| `google_storage_managed_folder_iam_*` | `storage.googleapis.com/ManagedFolder` | `[project]` | Emits `iam: true` on ManagedFolder |
 | `google_kms_key_ring` | `cloudkms.googleapis.com/KeyRing` | `[project]` | KMS Key Rings |
 | `google_kms_crypto_key` | `cloudkms.googleapis.com/CryptoKey` | `[project]` | KMS Keys |
 | `google_bigquery_dataset` | `bigquery.googleapis.com/Dataset` | `[project]` | BigQuery Datasets |
 | `google_pubsub_topic` | `pubsub.googleapis.com/Topic` | `[project]` | Pub/Sub Topics |
 | `google_pubsub_subscription` | `pubsub.googleapis.com/Subscription` | `[project]` | Pub/Sub Subscriptions |
 | `google_secret_manager_secret` | `secretmanager.googleapis.com/Secret` | `[project]` | Secret Manager |
-| `google_compute_network_firewall_policy` | `compute.googleapis.com/NetworkFirewallPolicy` | `[project]` | Network Firewall Policies |
 | `google_iam_workload_identity_pool` | `iam.googleapis.com/WorkloadIdentityPool` | `[project]` | WIF Pools |
 | `google_iam_workload_identity_pool_provider` | `iam.googleapis.com/WorkloadIdentityPoolProvider` | `[project]` | WIF Identity Providers |
 
