@@ -28,16 +28,25 @@ The ladder, in order of preference:
 
 1. **CAI** (`gcloud asset list`, `asset search-all-resources`) — default,
    because one sweep covers a whole hierarchy and returns ancestry.
-2. **`gcloud <service> list|describe`** — the preferred alternative.
-   Read-only, already installed, already authenticated as the run's
-   read-only identity, and machine-readable with `--format=json`.
-   Declare it in the manifest as a native enumerator (below) so the
-   entries land in `inventory.json` like any others.
-3. **The service REST API** (`curl` with `gcloud auth print-access-token`)
+2. **CAI answered, but incompletely (field-level blind spots)** — CAI models
+   the asset type but omits specific resource fields. Note the critical
+   asymmetry: an unsupported type fails loudly (gcloud errors, the run refuses
+   with a clear remedy), whereas a missing field fails silently (`.get()`
+   returns `None`, a filter predicate answers "no", and the run looks healthy).
+   A filter predicate must never depend on a field whose presence in the live
+   payload has not been verified. When a discriminator field is unavailable or
+   unverified, the filter must **fail open** — keep the asset in the
+   denominator for a human to waive, never drop it.
+3. **`gcloud <service> list|describe`** — the preferred alternative when CAI
+   does not model the type. Read-only, already installed, already authenticated
+   as the run's read-only identity, and machine-readable with `--format=json`.
+   Declare it in the manifest as a native enumerator (below) so the entries
+   land in `inventory.json` like any others.
+4. **The service REST API** (`curl` with `gcloud auth print-access-token`)
    — only where gcloud has no surface at all. Enumerate out of band,
    record the exact call in the run report, and treat any assets found
    as in scope for mapping.
-4. **A signed waiver plus a run-report entry** — the last resort, and a
+5. **A signed waiver plus a run-report entry** — the last resort, and a
    deliberate, attributed decision. "Not enumerable" is a fact to
    publish, never a silence.
 

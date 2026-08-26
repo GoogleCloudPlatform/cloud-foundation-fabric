@@ -2908,6 +2908,334 @@ class TestDeletedContainersFilter(unittest.TestCase):
     finally:
       inventory.run_json = real
 
+  def test_collect_auto_generated_routes_filtering(self):
+    real = inventory.run_json
+    fake_assets = [
+        # 1. Subnet-local route (nextHopNetwork set) -> auto-generated, must be filtered
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/default-route-r-1586852643b75d2a',
+            'ancestors': ['projects/12345', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'name':
+                        'default-route-r-1586852643b75d2a',
+                    'destRange':
+                        '10.73.0.0/24',
+                    'nextHopNetwork':
+                        'https://www.googleapis.com/compute/v1/projects/p1/global/networks/dev-0',
+                }
+            },
+        },
+        # 2. NCC route (nextHopHub set) -> auto-generated, must be filtered
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/ncc-subnet-route-c09a601c-7c42-550c-88ad-5fc3ee439d76',
+            'ancestors': ['projects/12345', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'name':
+                        'ncc-subnet-route-c09a601c-7c42-550c-88ad-5fc3ee439d76',
+                    'destRange':
+                        '10.72.0.0/24',
+                    'nextHopHub':
+                        'projects/p0/locations/global/hubs/hub',
+                }
+            },
+        },
+        # 3. Peering route (nextHopPeering set) -> auto-generated, must be filtered
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/peering-route-1234',
+            'ancestors': ['projects/12345', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'name':
+                        'peering-route-1234',
+                    'destRange':
+                        '10.0.0.0/16',
+                    'nextHopPeering':
+                        'https://www.googleapis.com/compute/v1/projects/p1/global/networks/peer-net',
+                }
+            },
+        },
+        # 4. Default internet route (0.0.0.0/0 -> default-internet-gateway) -> MUST survive in denominator
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/default-route-57519e35087f450e',
+            'ancestors': ['projects/12345', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'name':
+                        'default-route-57519e35087f450e',
+                    'destRange':
+                        '0.0.0.0/0',
+                    'nextHopGateway':
+                        'https://www.googleapis.com/compute/v1/projects/p1/global/gateways/default-internet-gateway',
+                }
+            },
+        },
+        # 5. User static route (nextHopGateway, custom name) -> MUST survive in denominator
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/dev-0-default',
+            'ancestors': ['projects/12345', 'organizations/1'],
+            'resource': {
+                'data': {
+                    'name':
+                        'dev-0-default',
+                    'destRange':
+                        '0.0.0.0/0',
+                    'nextHopGateway':
+                        'https://www.googleapis.com/compute/v1/projects/p1/global/gateways/default-internet-gateway',
+                }
+            },
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      manifest = {
+          'scopes': [{
+              'name': 'p1',
+              'root': 'projects/12345'
+          }],
+          'types': [{
+              'type': 'compute.googleapis.com/Route'
+          }],
+      }
+
+      # Default: auto-generated routes are excluded; default internet & user routes survive
+      entries_default, _, _ = inventory.collect(manifest)
+      keys_default = [e['key'] for e in entries_default]
+      self.assertEqual(len(keys_default), 2)
+      self.assertIn(
+          '//compute.googleapis.com/projects/p1/global/routes/default-route-57519e35087f450e',
+          keys_default)
+      self.assertIn(
+          '//compute.googleapis.com/projects/p1/global/routes/dev-0-default',
+          keys_default)
+      self.assertNotIn(
+          '//compute.googleapis.com/projects/p1/global/routes/default-route-r-1586852643b75d2a',
+          keys_default)
+      self.assertNotIn(
+          '//compute.googleapis.com/projects/p1/global/routes/ncc-subnet-route-c09a601c-7c42-550c-88ad-5fc3ee439d76',
+          keys_default)
+      self.assertNotIn(
+          '//compute.googleapis.com/projects/p1/global/routes/peering-route-1234',
+          keys_default)
+
+      # Verify AUTO_GENERATED_EXCLUSIONS recorded all 3 excluded routes
+      self.assertEqual(len(inventory.AUTO_GENERATED_EXCLUSIONS), 3)
+      for excl in inventory.AUTO_GENERATED_EXCLUSIONS:
+        self.assertEqual(excl['asset_type'], 'compute.googleapis.com/Route')
+        self.assertEqual(excl['family'], 'routes')
+        self.assertIn('auto-generated route', excl['reason'])
+
+      # Opt-in via include_auto_generated=True: all 5 routes survive
+      entries_all, _, _ = inventory.collect(manifest,
+                                            include_auto_generated=True)
+      self.assertEqual(len(entries_all), 5)
+      self.assertEqual(len(inventory.AUTO_GENERATED_EXCLUSIONS), 0)
+
+      # Opt-in via include_auto_generated='routes'
+      entries_routes, _, _ = inventory.collect(manifest,
+                                               include_auto_generated='routes')
+      self.assertEqual(len(entries_routes), 5)
+
+      # Opt-in via family list not containing 'routes' (e.g. 'logging-defaults')
+      entries_other, _, _ = inventory.collect(
+          manifest, include_auto_generated='logging-defaults')
+      self.assertEqual(len(entries_other), 2)
+      self.assertEqual(len(inventory.AUTO_GENERATED_EXCLUSIONS), 3)
+    finally:
+      inventory.run_json = real
+
+  def test_survey_auto_generated_routes_filtering(self):
+    real = inventory.run_json
+    fake_assets = [
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/default-route-r-1586852643b75d2a',
+            'ancestors': ['projects/12345'],
+            'resource': {
+                'data': {
+                    'nextHopNetwork': 'https://.../dev-0'
+                }
+            },
+        },
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/ncc-subnet-route-c09a601c-7c42-550c-88ad-5fc3ee439d76',
+            'ancestors': ['projects/12345'],
+            'resource': {
+                'data': {
+                    'nextHopHub': 'projects/p0/locations/global/hubs/hub'
+                }
+            },
+        },
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/default-route-57519e35087f450e',
+            'ancestors': ['projects/12345'],
+            'resource': {
+                'data': {
+                    'nextHopGateway': 'https://.../default-internet-gateway'
+                }
+            },
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      # Default: excludes nextHopNetwork and nextHopHub routes
+      entries_default = inventory.survey('projects/p1')
+      self.assertEqual(len(entries_default), 1)
+      self.assertEqual(
+          entries_default[0]['key'],
+          '//compute.googleapis.com/projects/p1/global/routes/default-route-57519e35087f450e'
+      )
+
+      # Opt-in: include_auto_generated=True returns all 3
+      entries_all = inventory.survey('projects/p1', include_auto_generated=True)
+      self.assertEqual(len(entries_all), 3)
+
+      # Opt-in by family: include_auto_generated='routes'
+      entries_routes = inventory.survey('projects/p1',
+                                        include_auto_generated='routes')
+      self.assertEqual(len(entries_routes), 3)
+    finally:
+      inventory.run_json = real
+
+  def test_auto_generated_filters_mixed_and_aliases(self):
+    real = inventory.run_json
+    fake_assets = [
+        # Logging default sink
+        {
+            'assetType': 'logging.googleapis.com/LogSink',
+            'name': '//logging.googleapis.com/projects/p1/sinks/_Default',
+            'ancestors': ['projects/12345'],
+        },
+        # Logging default bucket
+        {
+            'assetType':
+                'logging.googleapis.com/LogBucket',
+            'name':
+                '//logging.googleapis.com/projects/p1/locations/global/buckets/_Default',
+            'ancestors': ['projects/12345'],
+        },
+        # Auto route (subnet-local)
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/default-route-r-1',
+            'ancestors': ['projects/12345'],
+            'resource': {
+                'data': {
+                    'nextHopNetwork': 'https://.../net'
+                }
+            },
+        },
+        # User static route
+        {
+            'assetType':
+                'compute.googleapis.com/Route',
+            'name':
+                '//compute.googleapis.com/projects/p1/global/routes/my-route',
+            'ancestors': ['projects/12345'],
+            'resource': {
+                'data': {
+                    'nextHopGateway': 'https://.../default-internet-gateway'
+                }
+            },
+        },
+    ]
+
+    def fake(cmd, **kwargs):
+      del cmd, kwargs
+      return list(fake_assets)
+
+    inventory.run_json = fake
+    try:
+      manifest = {
+          'scopes': [{
+              'name': 'p1',
+              'root': 'projects/12345'
+          }],
+          'types': [
+              {
+                  'type': 'logging.googleapis.com/LogSink'
+              },
+              {
+                  'type': 'logging.googleapis.com/LogBucket'
+              },
+              {
+                  'type': 'compute.googleapis.com/Route'
+              },
+          ],
+      }
+
+      # 1. Default: only user route survives (all 3 auto-generated filtered)
+      entries, _, _ = inventory.collect(manifest)
+      self.assertEqual(len(entries), 1)
+      self.assertEqual(
+          entries[0]['key'],
+          '//compute.googleapis.com/projects/p1/global/routes/my-route')
+      self.assertEqual(len(inventory.AUTO_GENERATED_EXCLUSIONS), 3)
+
+      # 2. Legacy alias: include_logging_defaults=True
+      entries, _, _ = inventory.collect(manifest, include_logging_defaults=True)
+      self.assertEqual(len(entries), 3)
+      keys = [e['key'] for e in entries]
+      self.assertIn('//logging.googleapis.com/projects/p1/sinks/_Default', keys)
+      self.assertIn(
+          '//logging.googleapis.com/projects/p1/locations/global/buckets/_Default',
+          keys)
+      self.assertIn(
+          '//compute.googleapis.com/projects/p1/global/routes/my-route', keys)
+
+      # 3. Multi-family opt-in: include_auto_generated='routes'
+      entries, _, _ = inventory.collect(manifest,
+                                        include_auto_generated='routes')
+      self.assertEqual(len(entries), 2)
+      keys = [e['key'] for e in entries]
+      self.assertIn(
+          '//compute.googleapis.com/projects/p1/global/routes/default-route-r-1',
+          keys)
+      self.assertIn(
+          '//compute.googleapis.com/projects/p1/global/routes/my-route', keys)
+
+      # 4. Full opt-in: include_auto_generated=True
+      entries, _, _ = inventory.collect(manifest, include_auto_generated=True)
+      self.assertEqual(len(entries), 4)
+    finally:
+      inventory.run_json = real
+
 
 def _parse_state(state_content):
   """Runs parse_state_files over one in-memory state document."""

@@ -204,11 +204,14 @@ projects) and their child resources, matching what is active in the GCP Console.
 Pass `--include-deleted` if you explicitly need to capture soft-deleted assets in
 the denominator (e.g. to audit or waive them).
 
-Similarly, Google-managed default log sinks and log buckets (`_Default` and
-`_Required`) as well as Privileged Access Manager (PAM) grants
-(`privilegedaccessmanager.googleapis.com/Grant`) are automatically excluded from
-the denominator. Pass `--include-logging-defaults` or `--include-pam-grants` if
-you explicitly need to capture them in the denominator.
+Similarly, auto-generated resources that no API caller can create —
+Google-managed default log sinks and log buckets (`_Default` and `_Required`),
+Privileged Access Manager (PAM) grants (`privilegedaccessmanager.googleapis.com/Grant`),
+and auto-generated VPC routes (subnet-local routes, NCC and peering routes) —
+are automatically excluded from the denominator. Pass `--include-auto-generated`
+(or `--include-auto-generated=family,...` e.g. `routes`, `logging-defaults`, `pam-grants`;
+`--include-logging-defaults` and `--include-pam-grants` remain supported as aliases)
+if you explicitly need to capture them in the denominator.
 
 **CAI is the default source of the denominator, never the boundary of
 it.** Cloud Asset Inventory does not model every GCP resource. A type it
