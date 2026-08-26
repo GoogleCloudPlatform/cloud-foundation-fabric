@@ -291,6 +291,32 @@ the same inventory (this also overrides a built-in):
       key: '//iam.googleapis.com/{container}/denypolicies/{item.name}'
 ```
 
+CAI is also not one taxonomy but two, and they disagree. For a few
+Compute families the list surface (`asset list`, the primary sweep)
+splits the family by scope into separate asset types, while
+`search-all-resources` unifies them:
+`compute.googleapis.com/GlobalAddress`, `.../GlobalForwardingRule`,
+`.../RegionBackendService` and `.../RegionDisk` exist only on the list
+surface. Declaring the unified type therefore used to collect only part
+of the family — with no error, no failed sweep, and a non-zero yield, so
+every guard stayed quiet. The tool now sweeps the known siblings
+alongside the declared type at no extra API cost and accounts them under
+it, preserving the real type per entry (`cai_list_type`) and in
+`_meta.split_type_sweeps`.
+
+That table is a frozen snapshot of a document Google changes, so check
+it against live CAI at least once per engagement:
+
+```bash
+uv run scripts/inventory.py collect --manifest import-manifest.yaml \
+  --out inventory.json --verify-search-parity
+```
+
+It costs one extra `search-all-resources` call per scope and fails the
+run if the search surface returns an asset the list sweep did not.
+`_meta.split_parity` is absent when the probe did not run, which is not
+the same as clean.
+
 Every run closes with a one-line cost summary on stderr:
 
 ```
@@ -376,7 +402,7 @@ to the current working directory.
 | `inventory.py survey` | Enumerate everything in scope, to draft a manifest from | `--scope` (required), `--out`, `--verbose`, `--include-deleted`, `--include-logging-defaults`, `--include-pam-grants` |
 | `manifest_init.py` | Draft a manifest from a survey (Mode B) | `--survey` (required), `--scope` (required), `--out` |
 | `manifest_from_state.py` | Infer a manifest from existing `.tfstate` (Mode A) | `--state` (1+, required), `--out` (`-` for stdout), `--force` to overwrite an existing manifest |
-| `inventory.py collect` | Build the denominator from CAI | `--manifest` (required), `--out`, `--verbose`, `--include-deleted`, `--include-logging-defaults`, `--include-pam-grants` |
+| `inventory.py collect` | Build the denominator from CAI | `--manifest` (required), `--out`, `--verbose`, `--include-deleted`, `--include-logging-defaults`, `--include-pam-grants`, `--verify-search-parity` |
 | `coverage.py` | Gate 1 — completeness | `--inventory` (required), `--workspace` (required), `--coverage-map`, `--waivers`, `--require-signed-waivers`, `--allow-empty-inventory`, `--worklist-out` |
 | `verify_plan.py` | Gate 2 — plan convergence | positional plan JSON (default stdin), `--rules`, `--allow-empty-plan` |
 | `integrity.py` | Print the frozen-tools provenance digest | `--verbose` for per-file digests |

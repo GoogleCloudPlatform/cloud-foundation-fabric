@@ -6,6 +6,16 @@ simultaneously (not enumerated → not required by coverage; not emitted →
 not diffed by plan). Treat this list as living documentation: verify and
 extend it per engagement.
 
+There are two distinct blind spots, and they need different remedies:
+
+1. **CAI does not model the type at all.** The classic case, and what
+   most of this document is about. Remedy: enumerate it by other means
+   and merge it into the same denominator.
+2. **CAI models the type under a different NAME on the surface you
+   queried.** Rarer, much quieter, and not a blind spot in CAI at all —
+   a blind spot in the question. See
+   [Surface-dependent type taxonomies](#surface-dependent-type-taxonomies).
+
 ## The rule
 
 **CAI is the DEFAULT source of the denominator, never the boundary of
@@ -38,6 +48,122 @@ tool announces that it took the gcloud route. A declared type that CAI
 rejects and no enumerator covers fails the run with the remedy, instead
 of a generic enumeration failure. Steps 3 and 4 it cannot enforce — that
 is the operator's honesty, and the run report is where it is spent.
+
+## Surface-dependent type taxonomies
+
+CAI does not have one asset-type taxonomy. It has two, and for a handful
+of Compute families they disagree:
+
+- the **list / export / query / monitor** surface (`gcloud asset list`,
+  this tool's primary sweep) splits a family by scope into **separate
+  asset types**;
+- the **search / analysis** surface (`gcloud asset
+  search-all-resources`) folds those same resources into a **single
+  unified type**.
+
+Google documents this per type on the
+[supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types),
+but only in the per-type prose, which is easy to read past:
+
+> `compute.googleapis.com/Address` — Returns global and regional
+> addresses in the search and analysis APIs, and only regional addresses
+> in the list, export, query, and monitor APIs.
+>
+> `compute.googleapis.com/GlobalAddress` — Not available in the analysis
+> and search APIs. Use `compute.googleapis.com/Address` instead in the
+> search and analysis APIs.
+
+The documented pairs:
+
+| Declared (search taxonomy) | List-surface sibling swept alongside it |
+|---|---|
+| `compute.googleapis.com/Address` | `compute.googleapis.com/GlobalAddress` |
+| `compute.googleapis.com/BackendService` | `compute.googleapis.com/RegionBackendService` |
+| `compute.googleapis.com/Disk` | `compute.googleapis.com/RegionDisk` |
+| `compute.googleapis.com/ForwardingRule` | `compute.googleapis.com/GlobalForwardingRule` |
+
+### Why this one is worse than an unsupported type
+
+An unsupported type fails loudly. This one fails **silently, past every
+guard the tool has** — which is why it needed a mechanism rather than a
+sharper error message. Live-run finding: a global Private Service
+Connect address never entered the denominator, because
+
+- the declared type IS supported by `asset list`, so the
+  unsupported-type fallback to `search-all-resources` never fired;
+- the sweep SUCCEEDED, so nothing landed in `SWEEP_FAILURES`;
+- it returned 33 regional addresses, so the zero-yield warning stayed
+  quiet;
+- the asset was never collected, so `apply_level_filter`'s `unknown`
+  safety net never saw it either.
+
+The operator had already hand-written the correct `import {}` block, so
+the only signal that fired was `coverage.py` reporting it as an **orphan
+import block** — and an orphan was read as a coverage-map problem and
+waived, rather than as evidence that the denominator was short.
+
+**An orphan import block for a resource you know is live is evidence the
+denominator is short.** Investigate the enumeration before waiving it;
+a waiver signed over a short denominator makes the gap permanent and
+attributed to a human.
+
+### What `inventory.py` does
+
+`CAI_SPLIT_TYPES` is a frozen table of the pairs above. Declaring the
+unified type sweeps its list-surface siblings too, and the siblings'
+entries are **retyped back to the declared type**, so one manifest line
+means "all addresses" — which is what an operator reading the
+supported-types page will believe it means. This costs **zero extra API
+calls**: `asset list` takes a comma-separated `--asset-types`, so the
+siblings ride along in the existing sweep.
+
+Nothing is laundered by the retyping:
+
+- each retyped entry carries `cai_list_type` with the type CAI actually
+  returned it as, and that field travels into `coverage.py`'s worklist;
+- `_meta.split_type_sweeps` records declared type, list-surface type,
+  scope and yield;
+- collection prints a NOTICE naming every sibling that contributed.
+
+A sibling the manifest declares **in its own right** is not remapped: an
+operator who names `compute.googleapis.com/GlobalAddress` explicitly
+wants it accounted as itself, and remapping would make their
+per-declared-type yield read zero.
+
+### Checking the table against live CAI
+
+The table is a frozen snapshot of a document Google changes. A new split
+— or a renamed pairing — would put the tool straight back into the
+failure mode the table closes, so there is a probe:
+
+```bash
+uv run scripts/inventory.py collect --manifest import-manifest.yaml \
+  --out inventory.json --verify-search-parity
+```
+
+One extra `search-all-resources` call per scope, restricted to declared
+split types. It compares against the **raw** sweep output, before the
+manifest's subtree filters, because the question under test is taxonomy
+and not scope. Anything the search surface returns that the list sweep
+did not is **fatal** (exit 3) with the offending resource names: the
+table is stale and the denominator is incomplete.
+
+The probe is opt-in, for two reasons: it costs a call per scope, and it
+imports the search index's propagation lag as a possible false positive.
+Run it at least once per engagement, and quote the result in the run
+report. `_meta.split_parity` is absent when the probe did not run —
+which is **not** the same as clean.
+
+If the probe fires, identify the list-surface type of the missing assets
+(`gcloud asset list` with no `--asset-types`, then match on name) and
+report it: `CAI_SPLIT_TYPES` needs a new entry, which is a reviewed
+change to a frozen file, not a local patch.
+
+CAI **retiring** a split is the convergence this table is waiting for.
+A sibling type that `asset list` no longer recognises is therefore
+reported as a possibly-stale table, not as a failed run — a sibling is
+tool-supplied, not operator-declared, so it must never fail someone
+else's collection.
 
 ## Built-in enumerators
 
@@ -133,6 +259,7 @@ agent may draft one; a human signs it, exactly as with waivers.
 |---|---|---|
 | Service coverage | CAI supports several hundred asset types but not every GCP service/resource; niche or very new resources may be absent | Check the [CAI supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types) for every service the user cares about; for uncovered types, declare a native enumerator (above) so they still enter the denominator |
 | Wrong type string | A type string that does not exist in the catalogue is not a blind spot but a typo, and it presents as one. `gcloud asset list` answers `INVALID_ARGUMENT: No supported asset type matches: <type>` | `inventory.py` classifies that error separately from a permission failure and stops with instructions. Live example: `logging.googleapis.com/OrganizationSettings` does not exist — CAI models the Logs Router settings singleton as `logging.googleapis.com/Settings` at every container level |
+| Right type string, wrong surface | A type that is correct for `search-all-resources` can cover only PART of its family under `asset list`, which splits some Compute families by scope into separate types. No error, non-zero yield, silent gap. Live example: a global PSC address typed `compute.googleapis.com/GlobalAddress` by the list surface, absent from a `compute.googleapis.com/Address` sweep | **Handled automatically** for the documented pairs — `CAI_SPLIT_TYPES` sweeps the siblings and accounts them under the declared type. Run `--verify-search-parity` once per engagement to check the frozen table against live CAI; see [Surface-dependent type taxonomies](#surface-dependent-type-taxonomies) |
 | IAM deny policies | `iam.googleapis.com/DenyPolicy` is not a CAI asset type. Fabric manages deny policies at all three container levels (`iam_deny_policies`) | **Handled automatically** — built-in enumerator; just declare the type |
 | Log exclusions | `logging.googleapis.com/LogExclusion` is not a CAI asset type, and current `gcloud` has no `logging exclusions` group either — the ladder falls through to the REST API (`v2/{parent}/exclusions`). Fabric manages exclusions in `modules/organization`, `modules/folder` and `modules/project` | Enumerate out of band, map them, and record the enumeration method in the run report; do not let their absence from CAI read as absence from the estate |
 | Org-policy content-type lag | `--content-type=org-policy` can lag behind newly introduced v2 constraints; the `orgpolicy.googleapis.com/Policy` resource asset stream is more complete | `inventory.py` merges both CAI streams; keep cross-checking counts with `gcloud org-policies list` |
@@ -155,10 +282,19 @@ agent may draft one; a human signs it, exactly as with waivers.
    out-of-band enumeration recorded in the report, or a signed waiver —
    one of the three, always. Never a quiet removal from the manifest.
 2. Any count mismatch between CAI and a service API is a **failure to
-   investigate**, never noise to average over.
-3. Every entry that did not come from CAI is named in the run report,
+   investigate**, never noise to average over. The same applies between
+   CAI's own two surfaces: `asset list` and `search-all-resources`
+   disagreeing about a type is a taxonomy split to identify, not a
+   discrepancy to pick a winner from.
+3. An **orphan import block** reported by `coverage.py` for a resource
+   you know is live is evidence the denominator is short. Investigate
+   the enumeration first; a waiver over a short denominator makes the
+   gap permanent and signs a human's name to it.
+4. Every entry that did not come from CAI is named in the run report,
    with the command that produced it. `_meta.native_sweeps` in
-   `inventory.json` carries this for declared enumerators; out-of-band
-   enumeration is on you to quote.
-4. New blind spots discovered during an engagement get added here (this
+   `inventory.json` carries this for declared enumerators;
+   `_meta.split_type_sweeps` carries entries that came from CAI under a
+   different type than the one declared; out-of-band enumeration is on
+   you to quote.
+5. New blind spots discovered during an engagement get added here (this
    file is reference documentation, not a frozen tool).
