@@ -290,6 +290,22 @@ module-internal address, maintaining `tf/coverage-map.yaml`
 (escaping, import-ID formats, coalesce traps, dry-run keys, hashed
 condition keys).
 
+**Machine-managed IAM is excluded, never imported — and never part of
+the denominator.** Privileged Access Manager grant bindings — temporary
+time-bound conditional bindings that PAM injects on grant activation
+and revokes itself — are stripped by `inventory.py` before the
+denominator is formed: whenever IAM is collected, active grants are
+enumerated through CAI (`privilegedaccessmanager.googleapis.com/Grant`,
+one call per scope) and matching bindings are removed
+deterministically by (target, role, requester) from the grant itself.
+There is nothing to map and nothing to waive — a container whose
+policy is only grant bindings mints no `#iam` entry at all. Stripped
+bindings are stamped in `_meta.pam_grant_exclusions` and belong in the
+step-5 report, like `deleted:` principal tombstones (which remain a
+mapping-time exclusion). The cookbook's container-IAM rules are
+normative. PAM *entitlements* are ordinary importable configuration —
+only *grants* are excluded.
+
 When the cookbook has no section for a type — which is the normal case,
 not an error — follow the method below. The cookbook is the precipitate
 of that method, not a precondition for it.

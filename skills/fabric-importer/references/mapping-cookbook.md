@@ -513,6 +513,35 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - `deleted:` principals cannot be imported; exclude them from bindings
   but always surface them in the report (authoritative bindings will
   remove the tombstones on a future apply).
+- **PAM grant bindings are runtime state, never configuration —
+  excluded from the denominator by `inventory.py`, not by you.** On
+  grant activation, Privileged Access Manager injects a temporary
+  time-bound conditional binding into the container's allow policy and
+  revokes it itself when the grant ends; Google's PAM documentation
+  explicitly warns against managing these bindings in Terraform.
+  Whenever IAM is collected, `inventory.py` also sweeps active grants
+  through CAI (`privilegedaccessmanager.googleapis.com/Grant` — CAI
+  models the Grant, not the Entitlement; one extra call per scope,
+  covered by the same `cloudasset.viewer` grant) and strips matching
+  bindings before normalization. Matching is deterministic — (target,
+  role, requester) come from the grant resource itself, never from
+  string-matching the binding's condition, whose format Google does
+  not publish — and deliberately narrow: conditional bindings only, so
+  a permanent binding coinciding with a grant is kept. A container
+  whose policy holds only grant bindings mints no `#iam` entry:
+  structural exemption, not a waiver. Stripped bindings are stamped in
+  `_meta.pam_grant_exclusions`; quote them in the run report's
+  machine-managed exclusions. At emission time, work from the stamped
+  list — if a live policy shows a conditional binding that looks
+  PAM-shaped but is not in the stamp, the inventory is stale:
+  re-collect, do not classify by hand. Exclusion is also
+  collision-safe: Fabric `iam` maps produce bindings authoritative for
+  the (role, no-condition) tuple, and PAM bindings always carry a
+  condition, so an apply of the emitted config cannot revoke an active
+  grant. Declaring the Grant type in a manifest is refused. Do not
+  confuse grants with PAM *entitlements*, which are ordinary importable
+  configuration mapping to the `pam_entitlements` factory on
+  `organization` / `folder` / `project`.
 - Audit configs map to `logging_data_access` on `modules/organization`
   (verified r3).
 - Conditional binding import IDs need a non-empty condition title;

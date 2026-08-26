@@ -97,6 +97,22 @@ UNSUPPORTED_CAI_TYPES = []
 # provenance block: a denominator built partly outside CAI must say so.
 NATIVE_SWEEPS = []
 
+# Privileged Access Manager grant bindings are machine-managed runtime
+# state: PAM injects a temporary conditional role binding on grant
+# activation and revokes it itself when the grant ends. They are NEVER
+# configuration, so they are stripped from container IAM policies BEFORE
+# the denominator is formed — never mapped, never waived. CAI models the
+# Grant resource, which makes exclusion deterministic: (target, role,
+# requester) come from the grant itself, not from string-matching the
+# binding's condition (whose format Google does not publish). Every
+# stripped binding is recorded here and stamped into
+# _meta.pam_grant_exclusions.
+PAM_GRANT_TYPE = 'privilegedaccessmanager.googleapis.com/Grant'
+# Grant states during which the temporary binding may exist in the
+# policy (activation and revocation are propagation windows).
+PAM_ACTIVE_STATES = frozenset(('ACTIVATING', 'ACTIVE', 'REVOKING'))
+PAM_EXCLUSIONS = []
+
 import shutil
 
 # gcloud's wording when an asset type is not in the CAI catalogue. Both
@@ -583,6 +599,99 @@ def _normalize_iam(assets):
   return out
 
 
+def _pam_grant_records(grant_assets, registry):
+  """Normalizes active PAM grants for deterministic binding exclusion.
+
+  Returns one record per grant in a binding-bearing state, carrying the
+  canonicalized target container identifiers (project id AND number via
+  the registry), the granted roles, and the requester — everything
+  needed to identify the injected binding without guessing at its
+  condition format.
+  """
+  records = []
+  for a in grant_assets:
+    data = a.get('resource', {}).get('data', {})
+    state = str(data.get('state', '')).upper()
+    if state not in PAM_ACTIVE_STATES:
+      continue
+    access = (data.get('privilegedAccess') or {}).get('gcpIamAccess') or {}
+    name = data.get('name') or a.get('name', '')
+    target = str(access.get('resource') or
+                 '').removeprefix('//cloudresourcemanager.googleapis.com/')
+    if not target:
+      # Fall back to the grant's own name:
+      # <container>/locations/<loc>/entitlements/<e>/grants/<g>
+      target = name.removeprefix(
+          '//privilegedaccessmanager.googleapis.com/').split('/locations/',
+                                                             1)[0]
+    records.append({
+        'grant': name,
+        'state': state,
+        'requester': str(data.get('requester', '')).lower(),
+        'targets': registry.expand_target(target),
+        'roles': {
+            rb.get('role')
+            for rb in access.get('roleBindings') or []
+            if rb.get('role')
+        },
+    })
+  return records
+
+
+def _strip_pam_grant_bindings(iam_assets, records):
+  """Removes active PAM grant bindings from IAM policies, in place.
+
+  Matching is deliberately narrow — all three must hold:
+  conditional bindings only (PAM bindings always carry a time-bound
+  condition, so a permanent binding that coincides with a grant is
+  kept), role granted by a matching grant, member email equal to the
+  grant's requester.
+
+  A policy left with neither bindings nor audit configs is emptied
+  entirely, so _normalize_iam() does not mint a `#iam` denominator
+  entry for purely machine-managed state. Every stripped binding is
+  appended to PAM_EXCLUSIONS for the provenance stamp.
+  """
+  for a in iam_assets:
+    policy = a.get('iamPolicy') or {}
+    bindings = policy.get('bindings') or []
+    if not bindings:
+      continue
+    container = a.get('name',
+                      '').removeprefix('//cloudresourcemanager.googleapis.com/')
+    matching = [r for r in records if container in r['targets']]
+    if not matching:
+      continue
+    kept_bindings = []
+    for b in bindings:
+      role = b.get('role')
+      recs = [r for r in matching if role in r['roles']]
+      if not b.get('condition') or not recs:
+        kept_bindings.append(b)
+        continue
+      kept_members = []
+      for m in b.get('members') or []:
+        email = m.split(':', 1)[-1].lower()
+        rec = next((r for r in recs if r['requester'] == email), None)
+        if rec is None:
+          kept_members.append(m)
+        else:
+          PAM_EXCLUSIONS.append({
+              'container': container,
+              'role': role,
+              'member': m,
+              'grant': rec['grant'],
+              'state': rec['state'],
+          })
+      if kept_members:
+        kept_bindings.append(dict(b, members=kept_members))
+    if kept_bindings or policy.get('auditConfigs'):
+      if len(kept_bindings) != len(bindings):
+        a['iamPolicy'] = dict(policy, bindings=kept_bindings)
+    else:
+      a['iamPolicy'] = {}
+
+
 def _normalize_org_policies(assets):
   out = []
   for a in assets:
@@ -929,6 +1038,13 @@ def validate_manifest_types(types):
           'entries silently narrow the denominator (last one wins) — '
           'merge them into a single entry')
     seen.add(tt)
+    if tt == PAM_GRANT_TYPE:
+      raise SystemExit(
+          f'manifest type {tt!r} is machine-managed runtime state: active '
+          'PAM grants are enumerated automatically whenever IAM is '
+          'collected, and their temporary bindings are stripped from the '
+          'denominator (never mapped, never waived — see '
+          '_meta.pam_grant_exclusions). PAM grants are never imported')
     if t.get('enumerate') is not None:
       if tt in PSEUDO_TYPES:
         raise SystemExit(
@@ -1052,6 +1168,7 @@ def collect(manifest, include_deleted=False):
   del UNSUPPORTED_CAI_TYPES[:]
   del NATIVE_SWEEPS[:]
   del API_CALLS[:]
+  del PAM_EXCLUSIONS[:]
   registry = ProjectRegistry()
   scopes = parse_and_validate_scopes(manifest, registry)
   types = manifest.get('types') or []
@@ -1208,6 +1325,19 @@ def collect(manifest, include_deleted=False):
           in_subtree(a, include, exclude, registry)
       ]
       registry.ingest_assets(assets)
+      # Active PAM grants are ALWAYS enumerated alongside IAM (one CAI
+      # call per scope, covered by the same cloudasset.viewer grant) so
+      # their machine-managed temporary bindings can be deterministically
+      # stripped before normalization. A failure of this sweep is fatal
+      # like any other enumeration failure: an invisible grant would put
+      # a machine-managed binding back into the denominator.
+      pam_records = _pam_grant_records(
+          run_gcloud_json([
+              scope_arg, '--content-type=resource',
+              f'--asset-types={PAM_GRANT_TYPE}'
+          ]), registry)
+      if pam_records:
+        _strip_pam_grant_bindings(assets, pam_records)
       if 'iam' in effective_levels_by_type and effective_levels_by_type['iam']:
         scope_entries += _normalize_iam(assets)
       if iam_types:
@@ -1275,6 +1405,13 @@ def collect(manifest, include_deleted=False):
         file=sys.stderr)
     print('Use --include-deleted to retain them in the denominator.',
           file=sys.stderr)
+
+  if PAM_EXCLUSIONS:
+    print(
+        f'\nNOTICE: stripped {len(PAM_EXCLUSIONS)} active PAM grant '
+        'binding(s) from the IAM denominator (machine-managed runtime '
+        'state; never mapped, never waived). Details in '
+        '_meta.pam_grant_exclusions.', file=sys.stderr)
 
   if NATIVE_SWEEPS:
     by_type = {}
@@ -1471,6 +1608,12 @@ def main():
                     api_call_summary(),
                 'scopes':
                     scope_summaries,
+                # Machine-managed PAM grant bindings stripped from the
+                # denominator before normalization: the deterministic
+                # exclusion artifact step 3 works from, and the reviewer
+                # re-checks. These are structurally exempt, not waived.
+                'pam_grant_exclusions':
+                    list(PAM_EXCLUSIONS),
                 'resolved_projects':
                     registry.id_to_num,
                 'excluded_deleted_containers':

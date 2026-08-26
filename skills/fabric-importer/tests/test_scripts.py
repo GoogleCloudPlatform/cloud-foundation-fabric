@@ -775,6 +775,129 @@ class TestInventoryHelpers(unittest.TestCase):
     self.assertEqual(entries[0]['level'], 'folder')
     self.assertTrue(entries[0]['key'].endswith('folders/2#iam'))
 
+  def _pam_grant_asset(self, state='ACTIVE', target='folders/2',
+                       role='roles/owner', requester='alice@example.com'):
+    name = (f'{target}/locations/global/entitlements/e/grants/g')
+    return {
+        'name': f'//privilegedaccessmanager.googleapis.com/{name}',
+        'assetType': inventory.PAM_GRANT_TYPE,
+        'ancestors': ['folders/2', 'organizations/1'],
+        'resource': {
+            'data': {
+                'name': name,
+                'state': state,
+                'requester': requester,
+                'privilegedAccess': {
+                    'gcpIamAccess': {
+                        'resource':
+                            f'//cloudresourcemanager.googleapis.com/{target}',
+                        'roleBindings': [{
+                            'role': role
+                        }],
+                    }
+                },
+            }
+        },
+    }
+
+  def _folder_iam_asset(self, bindings):
+    return {
+        'name': '//cloudresourcemanager.googleapis.com/folders/2',
+        'assetType': self._FOLDER_TYPE,
+        'ancestors': ['folders/2', 'organizations/1'],
+        'iamPolicy': {
+            'bindings': bindings
+        },
+    }
+
+  _PAM_CONDITION = {
+      'title': 'pam-managed',
+      'expression': 'request.time < timestamp("2026-01-01T00:00:00Z")'
+  }
+
+  def test_pam_grant_bindings_are_stripped_before_denominator(self):
+    del inventory.PAM_EXCLUSIONS[:]
+    records = inventory._pam_grant_records([self._pam_grant_asset()],
+                                           inventory.ProjectRegistry())
+    assets = [
+        self._folder_iam_asset([
+            {
+                'role': 'roles/owner',
+                'members': ['user:alice@example.com'],
+                'condition': dict(self._PAM_CONDITION),
+            },
+            {
+                'role': 'roles/viewer',
+                'members': ['user:bob@example.com']
+            },
+        ])
+    ]
+    inventory._strip_pam_grant_bindings(assets, records)
+    # The grant binding is gone, the permanent one stays, and the
+    # container still mints a #iam entry for its real configuration.
+    policy = assets[0]['iamPolicy']
+    self.assertEqual([b['role'] for b in policy['bindings']], ['roles/viewer'])
+    self.assertEqual(len(inventory._normalize_iam(assets)), 1)
+    self.assertEqual(len(inventory.PAM_EXCLUSIONS), 1)
+    excl = inventory.PAM_EXCLUSIONS[0]
+    self.assertEqual(excl['container'], 'folders/2')
+    self.assertEqual(excl['role'], 'roles/owner')
+    self.assertEqual(excl['member'], 'user:alice@example.com')
+    del inventory.PAM_EXCLUSIONS[:]
+
+  def test_pam_only_policy_never_enters_denominator(self):
+    # A container whose entire policy is machine-managed grant bindings
+    # must not mint a #iam entry: exclusion is structural, not a waiver.
+    del inventory.PAM_EXCLUSIONS[:]
+    records = inventory._pam_grant_records([self._pam_grant_asset()],
+                                           inventory.ProjectRegistry())
+    assets = [
+        self._folder_iam_asset([{
+            'role': 'roles/owner',
+            'members': ['user:alice@example.com'],
+            'condition': dict(self._PAM_CONDITION),
+        }])
+    ]
+    inventory._strip_pam_grant_bindings(assets, records)
+    self.assertEqual(inventory._normalize_iam(assets), [])
+    self.assertEqual(len(inventory.PAM_EXCLUSIONS), 1)
+    del inventory.PAM_EXCLUSIONS[:]
+
+  def test_pam_matching_is_narrow(self):
+    # All three legs must hold: an unconditional binding for the same
+    # (role, member) is permanent configuration and stays; a conditional
+    # binding for a different member stays; an inactive grant matches
+    # nothing at all.
+    del inventory.PAM_EXCLUSIONS[:]
+    registry = inventory.ProjectRegistry()
+    records = inventory._pam_grant_records([
+        self._pam_grant_asset(),
+        self._pam_grant_asset(state='EXPIRED', role='roles/editor')
+    ], registry)
+    self.assertEqual(len(records), 1)
+    bindings = [
+        {
+            # same role+member as the grant, but no condition: permanent.
+            'role': 'roles/owner',
+            'members': ['user:alice@example.com'],
+        },
+        {
+            # conditional, same role, different member: kept.
+            'role': 'roles/owner',
+            'members': ['user:carol@example.com'],
+            'condition': dict(self._PAM_CONDITION),
+        },
+    ]
+    assets = [self._folder_iam_asset(bindings)]
+    inventory._strip_pam_grant_bindings(assets, records)
+    self.assertEqual(len(assets[0]['iamPolicy']['bindings']), 2)
+    self.assertEqual(inventory.PAM_EXCLUSIONS, [])
+
+  def test_pam_grant_type_cannot_be_declared_in_manifest(self):
+    with self.assertRaises(SystemExit) as ctx:
+      inventory.validate_manifest_types([{'type': inventory.PAM_GRANT_TYPE}])
+    self.assertIn('never imported', str(ctx.exception))
+
   def test_search_shaped_asset_fallbacks(self):
     # Round-11: search-all-resources results lack `ancestors`; level,
     # container, and subtree filtering fall back to search-shape fields.
