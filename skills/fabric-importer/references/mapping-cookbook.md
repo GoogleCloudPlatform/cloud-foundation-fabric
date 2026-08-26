@@ -76,8 +76,10 @@ unmarked claims as unverified.
 
 The manifest owns the choice, per resource family. `emission` is a
 map of family → style, where family names are the canonical-map rows
-and styles are `per-instance` (default) or `factory`; families without
-a factory carrier reject `factory`. It is valid in **two positions**:
+and styles are family-specific: `per-instance` (default) or `factory`
+for module-instance families (those without a factory carrier reject
+`factory`), and `additive` (default) or `authoritative` for the `iam`
+pseudo-family (see "Organization and containers: IAM"). It is valid in **two positions**:
 
 1. **Top level** — the manifest-wide default. This is the only
    position available in singular-`scope:` manifests (no scope
@@ -100,6 +102,7 @@ per-instance default apply.
 emission:                    # top level: manifest-wide defaults
   folder: factory            # -> project-factory hierarchy data/
   project: per-instance
+  iam: additive              # default; authoritative is the opt-in
 
 scopes:
   - name: org-foundation
@@ -230,7 +233,10 @@ is the authoritative catalog of factory carriers.
 - Every emitted resource gets a paired `import` block in the owning
   instance's `*-import.tf`, and an entry in `tf/coverage-map.yaml`.
 - Deterministic keys: map keys become Terraform addresses; derive them
-  from content, never from list position. For conditional IAM use
+  from content, never from list position. For additive IAM use
+  `slug(role)_slug(member)`, with
+  `_sha256(role\0member\0title\0expression)[:8]` appended when
+  conditional; for authoritative conditional bindings use
   `slug(role)_slug(title)_sha256(role\0title\0expression)[:8]`.
 - Run `terraform fmt -recursive` as the last emission step;
   `terraform fmt -check -recursive` must pass before the gates. Fmt-ed
@@ -411,12 +417,14 @@ shortened to `…` after the first row.
 | Resource | Address pattern | Import ID |
 |---|---|---|
 | Custom role | `module.organization.google_organization_iam_custom_role.roles["<id>"]` | `organizations/<org>/roles/<id>` |
-| Org IAM binding | `…google_organization_iam_binding.authoritative["<role>"]` | `<org> <role>` |
+| Org IAM member (additive, default) | `…google_organization_iam_member.bindings["<key>"]` | `<org> <role> <member>` (unverified; cond. appends `<condition_title>`) |
+| Org IAM binding (authoritative opt-in) | `…google_organization_iam_binding.authoritative["<role>"]` | `<org> <role>` |
 | Org IAM binding (cond.) | `…google_organization_iam_binding.bindings["<key>"]` | `<org> <role> <condition_title>` |
 | Org audit config | `…google_organization_iam_audit_config.default["<service>"]` | `<org> <service>` (verified r3) |
 | Org policy | `…google_org_policy_policy.default["<constraint>"]` | `organizations/<org>/policies/<constraint>` |
 | Org log sink | `…google_logging_organization_sink.sink["<name>"]` | `organizations/<org>/sinks/<name>` |
 | Folder | `module.folder-<key>.google_folder.folder[0]` | `folders/<id>` |
+| Folder IAM member (additive, default) | `module.folder-<key>.google_folder_iam_member.bindings["<key>"]` | `folders/<id> <role> <member>` (unverified; cond. appends `<condition_title>`) |
 | Folder IAM | `module.folder-<key>.google_folder_iam_binding.authoritative["<role>"]` | `folders/<id> <role>` |
 | Folder IAM (cond.) | `module.folder-<key>.google_folder_iam_binding.bindings["<key>"]` | `folders/<id> <role> <condition_title>` |
 | Folder org policy | `module.folder-<key>.google_org_policy_policy.default["<constraint>"]` | `folders/<id>/policies/<constraint>` |
@@ -424,9 +432,11 @@ shortened to `…` after the first row.
 | Project | `module.project-<key>.google_project.project[0]` | `projects/<project_id>` |
 | Project service | `module.project-<key>.google_project_service.project_services["<api>"]` | `<project_id>/<api>` |
 | Project service (orgpolicy) | `module.project-<key>.google_project_service.org_policy_service[0]` | `<project_id>/orgpolicy.googleapis.com` |
+| Project IAM member (additive, default) | `module.project-<key>.google_project_iam_member.bindings["<key>"]` | `<project_id> <role> <member>` (unverified; cond. appends `<condition_title>`) |
 | Project IAM | `module.project-<key>.google_project_iam_binding.authoritative["<role>"]` | `<project_id> <role>` |
 | Project IAM (cond.) | `module.project-<key>.google_project_iam_binding.bindings["<key>"]` | `<project_id> <role> <condition_title>` |
 | Service account | `module.sa-<key>.google_service_account.service_account[0]` | `projects/<project_id>/serviceAccounts/<email>` |
+| SA IAM member (additive, default) | `module.sa-<key>.google_service_account_iam_member.bindings["<key>"]` | `projects/<project_id>/serviceAccounts/<email> <role> <member>` (unverified; cond. appends `<condition_title>`) |
 | SA IAM binding | `module.sa-<key>.google_service_account_iam_binding.authoritative["<role>"]` | `projects/<project_id>/serviceAccounts/<email> <role>` |
 | SA IAM binding (cond.) | `module.sa-<key>.google_service_account_iam_binding.bindings["<key>"]` | `projects/<project_id>/serviceAccounts/<email> <role> <condition_title>` |
 | VPC network | `module.net_vpc_<key>.google_compute_network.network[0]` | `projects/<project_id>/global/networks/<name>` |
@@ -508,11 +518,27 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 
 ### Organization and containers: IAM
 
+- **Additive is the default emission for IAM** (manifest
+  `emission.iam`, styles `additive` | `authoritative`, same two
+  positions and resolution as every other emission family). Each live
+  (role, member, condition) tuple maps to one `iam_bindings_additive`
+  entry → one `google_*_iam_member.bindings["<key>"]`. Why default:
+  an apply can only create or destroy the exact tuples emitted — it
+  can never remove members it does not manage — and it is the
+  non-authoritative posture Google's PAM documentation recommends.
+  The honest tradeoff: additive emission cannot converge out-of-band
+  *additions* away — unmanaged members accumulate invisibly to the
+  plan, while coverage still counts the container policy as mapped.
+  Estates that want IAM fully declarative as the day-2 model opt into
+  `emission.iam: authoritative` (`iam` / `iam_bindings` maps — the
+  emission every existing verified round exercised); the choice is
+  the human's, recorded in the manifest.
 - Assert IAM policy `version: 3` when conditions exist — v1/v2
   responses flatten conditions, which is silent privilege escalation.
 - `deleted:` principals cannot be imported; exclude them from bindings
-  but always surface them in the report (authoritative bindings will
-  remove the tombstones on a future apply).
+  but always surface them in the report (under additive emission the
+  tombstones simply stay unmanaged; under authoritative emission an
+  apply would remove them).
 - **PAM grant bindings are runtime state, never configuration —
   excluded from the denominator by `inventory.py`, not by you.** On
   grant activation, Privileged Access Manager injects a temporary
@@ -535,10 +561,11 @@ let plan tell you: it errors loudly and safely on a wrong ID.
   list — if a live policy shows a conditional binding that looks
   PAM-shaped but is not in the stamp, the inventory is stale:
   re-collect, do not classify by hand. Exclusion is also
-  collision-safe: Fabric `iam` maps produce bindings authoritative for
-  the (role, no-condition) tuple, and PAM bindings always carry a
-  condition, so an apply of the emitted config cannot revoke an active
-  grant. Declaring the Grant type in a manifest is refused. Do not
+  collision-safe: under the additive default nothing unmanaged can be
+  removed by construction, and even under authoritative opt-in Fabric
+  `iam` maps produce bindings authoritative for the (role,
+  no-condition) tuple while PAM bindings always carry a condition, so
+  an apply of the emitted config cannot revoke an active grant. Declaring the Grant type in a manifest is refused. Do not
   confuse grants with PAM *entitlements*, which are ordinary importable
   configuration mapping to the `pam_entitlements` factory on
   `organization` / `folder` / `project`.
@@ -550,8 +577,11 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - **Multi-module state consolidation**: When inferring from Terraform
   state where IAM for the same scope/role is split across multiple module
   instances (e.g. `module.organization`, `module.organization-iam`, or
-  dynamic factory loops), member lists must be union-merged across all
-  matching state bindings before mapping into canonical module `iam` maps.
+  dynamic factory loops): under authoritative emission, member lists
+  must be union-merged across all matching state bindings before
+  mapping into canonical module `iam` maps; under additive emission,
+  deduplicate (role, member, condition) tuples across instances
+  instead — each tuple is emitted exactly once.
 - **Verbatim condition expressions & ForceNew**: IAM condition expressions
   from live API policies frequently contain a trailing newline (`\n`).
   Because `condition.expression` on `google_*_iam_binding` is `ForceNew`,

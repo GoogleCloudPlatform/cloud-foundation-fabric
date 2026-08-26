@@ -29,9 +29,12 @@ your output. Trust comes from the gates, not from you.
 
 ## Safety contract
 
-1. **NEVER run `terraform apply`.** Generated authoritative IAM makes an
-   apply equivalent to overwriting live IAM with a snapshot. Verification
-   is plan-only via `verify_plan.py`. Never synthesize state files.
+1. **NEVER run `terraform apply`.** The workspace contains authoritative
+   surfaces (org policies, sinks — and authoritative IAM where opted
+   into), so an apply is equivalent to overwriting live config with a
+   snapshot. The additive-IAM default narrows that blast radius; it does
+   not lift this rule. Verification is plan-only via `verify_plan.py`.
+   Never synthesize state files.
 2. **Read-only against GCP**: `list`/`describe`/`get-iam-policy`/asset
    export only. Prefer a dedicated read-only identity
    (`roles/cloudasset.viewer` + per-service viewers, via impersonation)
@@ -289,6 +292,16 @@ module-internal address, maintaining `tf/coverage-map.yaml`
 `references/mapping-cookbook.md` FIRST: it encodes the hard-won rules
 (escaping, import-ID formats, coalesce traps, dry-run keys, hashed
 condition keys).
+
+**IAM is emitted additive by default.** Bindings map to
+`iam_bindings_additive` (one `google_*_iam_member` per role/member/
+condition tuple): an apply can only create or destroy the exact pairs
+emitted and can never strip members it does not manage — the posture
+Google itself recommends for PAM coexistence. Authoritative emission
+(`iam` / `iam_bindings`) is a deliberate opt-in via `emission.iam:
+authoritative` in the manifest, for estates that want IAM fully
+declarative as the day-2 model; the cookbook's container-IAM rules
+cover both and the tradeoff.
 
 **Machine-managed IAM is excluded, never imported — and never part of
 the denominator.** Privileged Access Manager grant bindings — temporary

@@ -114,6 +114,9 @@ scope:
 # emission:
 #   folder: factory
 #   project: per-instance
+#   iam: additive       # default — google_*_iam_member per tuple; an
+#                       # apply can never strip unmanaged members. Use
+#                       # `authoritative` to make IAM fully declarative
 #
 # To factory-manage only SOME folders, split the tree into scopes
 # along subtree boundaries (include/exclude) and set emission per

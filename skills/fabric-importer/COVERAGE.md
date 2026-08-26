@@ -48,6 +48,13 @@ Fabric ref it was verified against; re-verify on bumps (see
 
 ## Verification Notes & Caveats
 
+- **Additive IAM default**: all V-level IAM rows above were verified
+  under **authoritative** emission (`iam` / `iam_bindings` maps), which
+  is now the opt-in (`emission.iam: authoritative`). The additive
+  default (`iam_bindings_additive` → `google_*_iam_member.bindings`)
+  is at **C**: addresses and import-ID formats derived from module
+  source and provider docs, not yet exercised live. First verified
+  additive round graduates it and re-stamps.
 - **Factory emission (opt-in)**: all matrix levels above are for the
   default per-instance emission. The `factory` emission mode (manifest
   `emission:` block; cookbook "Factory emission (opt-in)") is at **C**
