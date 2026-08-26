@@ -229,6 +229,10 @@ def retype_split_assets(assets, sibling_map):
   filtered by the permissive default instead of by user intent.
 
   Returns a {declared_type: {sibling_type: count}} tally for provenance.
+  The tally counts the RAW sweep — before the subtree/deleted/level
+  filters — because its job is to record what CAI returned; how many of
+  those survive into the denominator is a separate number, reconciled in
+  the end-of-run NOTICE.
   """
   tally = {}
   for a in assets:
@@ -1530,7 +1534,7 @@ def collect(manifest, include_deleted=False, include_logging_defaults=False,
               'declared_type': unified,
               'cai_list_type': sibling,
               'scope': root,
-              'yield_count': n,
+              'swept_count': n,
           })
       if verify_search_parity:
         _verify_split_parity(assets, active_resource_types, sibling_map, root,
@@ -1688,17 +1692,34 @@ def collect(manifest, include_deleted=False, include_logging_defaults=False,
     for sw in SPLIT_TYPE_SWEEPS:
       agg = by_declared.setdefault(sw['declared_type'], {})
       agg[sw['cai_list_type']] = (agg.get(sw['cai_list_type'], 0) +
-                                  sw['yield_count'])
+                                  sw['swept_count'])
+    # Swept and in-the-denominator are DIFFERENT numbers: the sweep is
+    # raw, and the subtree/deleted/level filters apply to retyped
+    # entries like to any other asset. Reconcile the two here rather
+    # than leaving the subtraction to the reader (a live validation run
+    # had to do exactly that by hand).
+    in_denom = {}
+    for e in entries:
+      lt = e.get('cai_list_type')
+      if lt:
+        key = (e['asset_type'], lt)
+        in_denom[key] = in_denom.get(key, 0) + 1
     print(
         f'\nNOTICE: {len(by_declared)} declared type(s) are split by '
         "scope in Cloud Asset Inventory's list surface but\nunified in "
         'its search surface. The list-only sibling type(s) were swept '
-        'too and are\naccounted under the declared type; they are IN '
-        'the denominator and must be mapped or\nwaived like any other '
-        'asset (details in _meta.split_type_sweeps):', file=sys.stderr)
+        'too and are\naccounted under the declared type; the ones in '
+        'scope are IN the denominator and\nmust be mapped or waived '
+        'like any other asset (details in _meta.split_type_sweeps):',
+        file=sys.stderr)
     for t, agg in sorted(by_declared.items()):
       for sibling, n in sorted(agg.items()):
-        print(f'  - {t}: +{n} entr(ies) from {sibling}', file=sys.stderr)
+        kept = in_denom.get((t, sibling), 0)
+        excluded = ('' if kept == n else
+                    f' ({n - kept} excluded by scope/level/deleted filters)')
+        print(
+            f'  - {t}: {n} swept from {sibling}, {kept} in the '
+            f'denominator{excluded}', file=sys.stderr)
     if not SPLIT_PARITY_FINDINGS:
       print(
           'The split-type table is a frozen snapshot of a Google doc '

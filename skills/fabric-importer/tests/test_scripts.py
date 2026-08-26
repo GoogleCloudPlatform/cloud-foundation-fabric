@@ -3597,8 +3597,61 @@ class TestCaiSplitTypes(unittest.TestCase):
             'declared_type': 'compute.googleapis.com/Address',
             'cai_list_type': 'compute.googleapis.com/GlobalAddress',
             'scope': 'projects/my-prj',
-            'yield_count': 1,
+            'swept_count': 1,
         })
+    # Swept == kept here, so no exclusion note.
+    self.assertIn('1 swept from', err)
+    self.assertIn('1 in the denominator', err)
+    self.assertNotIn('excluded by scope/level/deleted', err)
+
+  def test_notice_reconciles_swept_against_denominator(self):
+    """Live-run finding (validation round 2): three siblings swept
+    org-wide, one dropped by the manifest's subtree filter — and the
+    NOTICE claimed all swept entries were IN the denominator. The
+    reader had to reconcile 3 against 2 by hand. The NOTICE must do
+    that subtraction itself."""
+    out_of_scope = {
+        'name': ('//compute.googleapis.com/projects/other-prj/'
+                 'global/addresses/psc-elsewhere'),
+        'assetType': 'compute.googleapis.com/GlobalAddress',
+        'ancestors': ['projects/999', 'organizations/1'],
+    }
+
+    def handler(cmd, **kwargs):
+      joined = ' '.join(cmd)
+      resolved = self._resolve_project(joined)
+      if resolved is not None:
+        return resolved
+      if '--content-type=resource' in joined and 'Address' in joined:
+        return [
+            self._addr(self._REGIONAL, 'compute.googleapis.com/Address'),
+            self._addr(self._GLOBAL, 'compute.googleapis.com/GlobalAddress'),
+            out_of_scope,
+        ]
+      return []
+
+    manifest = {
+        'scope': {
+            'root': 'organizations/1',
+            'include': ['projects/111'],
+        },
+        'types': [{
+            'type': 'compute.googleapis.com/Address',
+            'levels': ['project']
+        }],
+    }
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      entries, _, _ = self._collect(handler, manifest)
+    err = buf.getvalue()
+    keys = {e['key'] for e in entries}
+    self.assertNotIn(out_of_scope['name'], keys)
+    # Raw sweep is stamped raw...
+    self.assertEqual(inventory.SPLIT_TYPE_SWEEPS[0]['swept_count'], 2)
+    # ...and the NOTICE reconciles it against what actually survived.
+    self.assertIn('2 swept from', err)
+    self.assertIn('1 in the denominator', err)
+    self.assertIn('(1 excluded by scope/level/deleted filters)', err)
 
   def test_no_parity_call_unless_asked(self):
     calls = []

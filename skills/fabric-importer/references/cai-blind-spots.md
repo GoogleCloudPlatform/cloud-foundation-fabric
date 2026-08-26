@@ -133,8 +133,13 @@ Nothing is laundered by the retyping:
 - each retyped entry carries `cai_list_type` with the type CAI actually
   returned it as, and that field travels into `coverage.py`'s worklist;
 - `_meta.split_type_sweeps` records declared type, list-surface type,
-  scope and yield;
-- collection prints a NOTICE naming every sibling that contributed.
+  scope and the RAW swept count — what CAI returned, before the
+  subtree/deleted/level filters;
+- collection prints a NOTICE naming every sibling that contributed, and
+  reconciles swept against in-the-denominator itself (e.g. `3 swept …,
+  2 in the denominator (1 excluded by scope/level/deleted filters)`) —
+  the filters apply to retyped entries like to any other asset, and the
+  subtraction is the tool's to show, not the reader's to derive.
 
 A sibling the manifest declares **in its own right** is not remapped: an
 operator who names `compute.googleapis.com/GlobalAddress` explicitly
