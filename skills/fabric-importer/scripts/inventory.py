@@ -97,6 +97,18 @@ UNSUPPORTED_CAI_TYPES = []
 # provenance block: a denominator built partly outside CAI must say so.
 NATIVE_SWEEPS = []
 
+# Which CAI list-surface sibling types were swept for a declared unified
+# type, and how many entries each contributed (see CAI_SPLIT_TYPES).
+# Part of the denominator that would not exist under a literal reading of
+# the manifest, so it is stamped rather than assumed.
+SPLIT_TYPE_SWEEPS = []
+
+# Results of the optional --verify-search-parity probe: assets the search
+# surface returns for a split type that the list sweep did not produce.
+# Non-empty means CAI_SPLIT_TYPES is stale against live CAI, and is
+# FATAL — the whole point is that this class of gap must never be quiet.
+SPLIT_PARITY_FINDINGS = []
+
 # Privileged Access Manager grant bindings are machine-managed runtime
 # state: PAM injects a temporary conditional role binding on grant
 # activation and revokes it itself when the grant ends. They are NEVER
@@ -130,6 +142,109 @@ _CAI_UNSUPPORTED_MARKERS = (
 def _is_unsupported_type_error(text):
   low = (text or '').lower()
   return any(m in low for m in _CAI_UNSUPPORTED_MARKERS)
+
+
+# ---------------------------------------------------------------------------
+# Surface-dependent asset-type taxonomies
+# ---------------------------------------------------------------------------
+# Cloud Asset Inventory does not have ONE asset-type taxonomy; it has
+# two, and they disagree. For a handful of Compute types the
+# list/export/query/monitor surface (`gcloud asset list`, which is this
+# tool's primary sweep) splits a family by scope into SEPARATE asset
+# types, while the search/analysis surface (`asset search-all-resources`)
+# folds them into a single unified type. Google documents this per type
+# on the supported-asset-types page, e.g.:
+#
+#   compute.googleapis.com/Address
+#     "Returns global and regional addresses in the search and analysis
+#      APIs, and only regional addresses in the list, export, query, and
+#      monitor APIs."
+#   compute.googleapis.com/GlobalAddress
+#     "Not available in the analysis and search APIs. Use
+#      compute.googleapis.com/Address instead in the search and analysis
+#      APIs."
+#
+# The failure this causes is the one this tool exists to prevent, and
+# every existing guard misses it (live-run finding, global PSC address):
+# the declared type is SUPPORTED by `asset list`, so the
+# unsupported-type fallback to `search-all-resources` never fires; the
+# sweep succeeds, so nothing lands in SWEEP_FAILURES; and it returns a
+# non-zero count, so the zero-yield warning stays quiet. The global
+# addresses are simply never asked for, and an asset absent from the
+# denominator is invisible to BOTH gates at once.
+#
+# So: declaring the unified (search-taxonomy) type ALSO sweeps its
+# list-taxonomy siblings, and the siblings' entries are retyped back to
+# the declared type — one manifest line means "all addresses", which is
+# what an operator reading the supported-types page will believe it
+# means. The list-surface type is preserved per entry as `cai_list_type`
+# and stamped into _meta.split_type_sweeps, so nothing is laundered.
+#
+# This costs ZERO extra API calls: `asset list` takes a comma-separated
+# --asset-types, so the siblings ride along in the existing sweep.
+#
+# This table is frozen, like NATIVE_ENUMERATORS and for the same reason:
+# it decides part of what the denominator contains. It is a snapshot of
+# a Google doc that changes, which is why --verify-search-parity exists
+# to check it against the search surface rather than trusting it
+# forever.
+#
+# Note on the source doc: the prose for BackendService says the list
+# surface returns "only regional backend services" while naming
+# RegionBackendService as the list-only sibling, which is
+# self-contradictory and is almost certainly an upstream error. The
+# PAIRING is what matters here and is unambiguous; the direction of the
+# split is not something this table has to decide.
+CAI_SPLIT_TYPES = {
+    'compute.googleapis.com/Address': ('compute.googleapis.com/GlobalAddress',),
+    'compute.googleapis.com/BackendService':
+        ('compute.googleapis.com/RegionBackendService',),
+    'compute.googleapis.com/Disk': ('compute.googleapis.com/RegionDisk',),
+    'compute.googleapis.com/ForwardingRule':
+        ('compute.googleapis.com/GlobalForwardingRule',),
+}
+
+
+def split_sibling_map(declared):
+  """Maps list-surface sibling type -> declared unified type.
+
+  A sibling the manifest declares in its own right is NOT remapped: an
+  operator who names `compute.googleapis.com/GlobalAddress` explicitly
+  wants it accounted as itself, and remapping would make their
+  per-declared-type yield read zero.
+  """
+  declared = set(declared)
+  return {
+      sibling: unified for unified, siblings in CAI_SPLIT_TYPES.items()
+      if unified in declared for sibling in siblings if sibling not in declared
+  }
+
+
+def retype_split_assets(assets, sibling_map):
+  """Retypes split-off siblings to their declared unified type in place.
+
+  Retyping happens BEFORE normalization so that apply_level_filter(),
+  which keys off `asset_type`, applies the DECLARED type's `levels`. A
+  sibling left under its own type would match no manifest entry and be
+  filtered by the permissive default instead of by user intent.
+
+  Returns a {declared_type: {sibling_type: count}} tally for provenance.
+  The tally counts the RAW sweep — before the subtree/deleted/level
+  filters — because its job is to record what CAI returned; how many of
+  those survive into the denominator is a separate number, reconciled in
+  the end-of-run NOTICE.
+  """
+  tally = {}
+  for a in assets:
+    unified = sibling_map.get(a.get('assetType', ''))
+    if not unified:
+      continue
+    sibling = a['assetType']
+    a['_cai_list_type'] = sibling
+    a['assetType'] = unified
+    tally.setdefault(unified, {})
+    tally[unified][sibling] = tally[unified].get(sibling, 0) + 1
+  return tally
 
 
 # Page sizes. gcloud passes these straight through to the API, and each
@@ -569,12 +684,19 @@ def _normalize_resources(assets):
       c = a['organization']
     elif a.get('project'):
       c = a['project']
-    out.append({
+    entry = {
         'key': a['name'],
         'asset_type': a.get('assetType', ''),
         'level': asset_level(a),
         'container': c,
-    })
+    }
+    # Retyped split-surface sibling (see CAI_SPLIT_TYPES): the entry is
+    # accounted under the declared unified type, but the type CAI's list
+    # surface actually returned travels with it into the worklist, so a
+    # reader never has to guess where it came from.
+    if a.get('_cai_list_type'):
+      entry['cai_list_type'] = a['_cai_list_type']
+    out.append(entry)
   return out
 
 
@@ -1041,6 +1163,50 @@ def sweep_native(asset_type, spec, containers, source='manifest'):
   return entries
 
 
+def _verify_split_parity(assets, declared_types, sibling_map, scope,
+                         search_scope):
+  """Checks CAI_SPLIT_TYPES against the live search surface.
+
+  CAI_SPLIT_TYPES is a frozen snapshot of a Google doc that changes. If
+  a new split appears — or an existing pairing is renamed — the table
+  goes quietly incomplete, which puts us back in the failure mode it was
+  added to close. This probe asks the OTHER surface, which by
+  construction unifies the families, and reports anything it returns
+  that the list sweep did not.
+
+  One call per scope, restricted to declared split types, so the cost is
+  bounded and does not scale with the type list. Comparison is against
+  the RAW sweep output, before the manifest's subtree filters: the
+  question under test is taxonomy, not scope, and mixing the two would
+  make every excluded subtree look like a parity failure.
+  """
+  split_declared = sorted(t for t in declared_types if t in CAI_SPLIT_TYPES)
+  if not split_declared:
+    return
+  family = set(split_declared) | set(sibling_map)
+  listed = {
+      a['name']
+      for a in assets
+      if a.get('assetType', '') in family and a.get('name')
+  }
+  found = run_json([
+      'gcloud', '--quiet', 'asset', 'search-all-resources',
+      f'--scope={search_scope}', f'--asset-types={",".join(split_declared)}',
+      '--format=json', f'--page-size={CAI_SEARCH_PAGE_SIZE}'
+  ], ignore_errors=True)
+  searched = {r['name'] for r in found if r.get('name')}
+  # Recorded even when clean: a probe that ran and found nothing is
+  # evidence, and its absence from the provenance block is how a reader
+  # tells "checked" from "not checked".
+  SPLIT_PARITY_FINDINGS.append({
+      'scope': scope,
+      'asset_types': split_declared,
+      'listed_count': len(listed),
+      'searched_count': len(searched),
+      'only_in_search': sorted(searched - listed),
+  })
+
+
 def validate_manifest_types(types):
   """Fails closed on manifest mistakes that silently shrink the
   denominator.
@@ -1185,7 +1351,7 @@ def api_call_summary():
 
 
 def collect(manifest, include_deleted=False, include_logging_defaults=False,
-            include_pam_grants=False):
+            include_pam_grants=False, verify_search_parity=False):
   # Module-level accumulators: reset so a second collect() in the same
   # process cannot inherit the first run's failures (or hide behind
   # them).
@@ -1193,6 +1359,8 @@ def collect(manifest, include_deleted=False, include_logging_defaults=False,
   del SUPPRESSED_SWEEPS[:]
   del UNSUPPORTED_CAI_TYPES[:]
   del NATIVE_SWEEPS[:]
+  del SPLIT_TYPE_SWEEPS[:]
+  del SPLIT_PARITY_FINDINGS[:]
   del API_CALLS[:]
   del PAM_EXCLUSIONS[:]
   registry = ProjectRegistry()
@@ -1263,6 +1431,14 @@ def collect(manifest, include_deleted=False, include_logging_defaults=False,
             t['type']] or 'unknown' in manifest_levels_by_type[t['type']])
     })
 
+    # CAI's list surface splits some Compute families by scope into
+    # separate asset types that its search surface unifies (see
+    # CAI_SPLIT_TYPES). Declaring the unified type must sweep the
+    # siblings too, or the split-off assets never enter the denominator
+    # and are invisible to BOTH gates.
+    sibling_map = split_sibling_map(active_resource_types)
+    sweep_resource_types = sorted(set(active_resource_types) | set(sibling_map))
+
     scope_entries = []
 
     # In-scope containers at a given set of levels, resolved once per
@@ -1305,15 +1481,20 @@ def collect(manifest, include_deleted=False, include_logging_defaults=False,
       _cache[ck] = out
       return out
 
-    if active_resource_types:
+    search_scope = scope_arg.replace(
+        '--organization=',
+        'organizations/').replace('--folder=',
+                                  'folders/').replace('--project=', 'projects/')
+
+    if sweep_resource_types:
       try:
         assets = run_gcloud_json([
             scope_arg, '--content-type=resource',
-            f'--asset-types={",".join(active_resource_types)}'
+            f'--asset-types={",".join(sweep_resource_types)}'
         ])
       except SystemExit:
         assets = []
-        for rt in active_resource_types:
+        for rt in sweep_resource_types:
           try:
             assets += run_gcloud_json(
                 [scope_arg, '--content-type=resource', f'--asset-types={rt}'])
@@ -1323,18 +1504,41 @@ def collect(manifest, include_deleted=False, include_logging_defaults=False,
               # model this type at all. `search-all-resources` would
               # fail identically, so skip it and raise the real issue —
               # the type needs a native enumerator.
-              if rt not in UNSUPPORTED_CAI_TYPES:
+              #
+              # A SIBLING is tool-supplied, not operator-declared, so it
+              # is not fatal: CAI retiring a split type is exactly the
+              # convergence CAI_SPLIT_TYPES is waiting for. It is still
+              # reported, because a stale frozen table is a fact about
+              # the denominator.
+              if rt in sibling_map:
+                msg = (f'{rt} (list-surface sibling of '
+                       f'{sibling_map[rt]}) is no longer a CAI type; '
+                       'CAI_SPLIT_TYPES may be stale')
+                if msg not in SUPPRESSED_SWEEPS:
+                  SUPPRESSED_SWEEPS.append(msg)
+              elif rt not in UNSUPPORTED_CAI_TYPES:
                 UNSUPPORTED_CAI_TYPES.append(rt)
               continue
-            search_scope = scope_arg.replace(
-                '--organization=', 'organizations/').replace(
-                    '--folder=', 'folders/').replace('--project=', 'projects/')
             assets += run_json([
                 'gcloud', '--quiet', 'asset', 'search-all-resources',
                 f'--scope={search_scope}', f'--asset-types={rt}',
                 '--format=json', f'--page-size={CAI_SEARCH_PAGE_SIZE}'
             ], ignore_errors=True)
       registry.ingest_assets(assets)
+      # Account split-off siblings under the DECLARED type, before the
+      # level filter (which keys off asset_type) ever sees them.
+      for unified, per_sibling in sorted(
+          retype_split_assets(assets, sibling_map).items()):
+        for sibling, n in sorted(per_sibling.items()):
+          SPLIT_TYPE_SWEEPS.append({
+              'declared_type': unified,
+              'cai_list_type': sibling,
+              'scope': root,
+              'swept_count': n,
+          })
+      if verify_search_parity:
+        _verify_split_parity(assets, active_resource_types, sibling_map, root,
+                             search_scope)
       filtered_res = []
       for a in assets:
         if not include_deleted and (_is_deleted_container(a) or
@@ -1483,6 +1687,72 @@ def collect(manifest, include_deleted=False, include_logging_defaults=False,
           f'  - {t}: {agg["yield_count"]} entr(ies) over '
           f'{agg["containers"]} container(s)', file=sys.stderr)
 
+  if SPLIT_TYPE_SWEEPS:
+    by_declared = {}
+    for sw in SPLIT_TYPE_SWEEPS:
+      agg = by_declared.setdefault(sw['declared_type'], {})
+      agg[sw['cai_list_type']] = (agg.get(sw['cai_list_type'], 0) +
+                                  sw['swept_count'])
+    # Swept and in-the-denominator are DIFFERENT numbers: the sweep is
+    # raw, and the subtree/deleted/level filters apply to retyped
+    # entries like to any other asset. Reconcile the two here rather
+    # than leaving the subtraction to the reader (a live validation run
+    # had to do exactly that by hand).
+    in_denom = {}
+    for e in entries:
+      lt = e.get('cai_list_type')
+      if lt:
+        key = (e['asset_type'], lt)
+        in_denom[key] = in_denom.get(key, 0) + 1
+    print(
+        f'\nNOTICE: {len(by_declared)} declared type(s) are split by '
+        "scope in Cloud Asset Inventory's list surface but\nunified in "
+        'its search surface. The list-only sibling type(s) were swept '
+        'too and are\naccounted under the declared type; the ones in '
+        'scope are IN the denominator and\nmust be mapped or waived '
+        'like any other asset (details in _meta.split_type_sweeps):',
+        file=sys.stderr)
+    for t, agg in sorted(by_declared.items()):
+      for sibling, n in sorted(agg.items()):
+        kept = in_denom.get((t, sibling), 0)
+        excluded = ('' if kept == n else
+                    f' ({n - kept} excluded by scope/level/deleted filters)')
+        print(
+            f'  - {t}: {n} swept from {sibling}, {kept} in the '
+            f'denominator{excluded}', file=sys.stderr)
+    if not SPLIT_PARITY_FINDINGS:
+      print(
+          'The split-type table is a frozen snapshot of a Google doc '
+          'that changes. Pass\n--verify-search-parity to check it '
+          'against the live search surface (one extra call\nper scope).',
+          file=sys.stderr)
+
+  parity_gaps = [f for f in SPLIT_PARITY_FINDINGS if f['only_in_search']]
+  if parity_gaps:
+    total = sum(len(f['only_in_search']) for f in parity_gaps)
+    print(
+        f'\nERROR: --verify-search-parity found {total} asset(s) that '
+        "Cloud Asset Inventory's search\nsurface returns and the list "
+        'sweep did not. The frozen split-type table is stale '
+        'against\nlive CAI, so the denominator is INCOMPLETE and cannot '
+        'be trusted:', file=sys.stderr)
+    for f in parity_gaps:
+      print(
+          f'  - scope {f["scope"]}: listed {f["listed_count"]}, '
+          f'searched {f["searched_count"]}', file=sys.stderr)
+      for name in f['only_in_search'][:10]:
+        print(f'      {name}', file=sys.stderr)
+      if len(f['only_in_search']) > 10:
+        print(f'      ... and {len(f["only_in_search"]) - 10} more',
+              file=sys.stderr)
+    print(
+        'Identify the list-surface asset type of the missing asset(s) '
+        '(`gcloud asset list` with\nno --asset-types, then match on '
+        'name) and report it: CAI_SPLIT_TYPES needs a new\nentry, which '
+        'is a reviewed change to a frozen file. Never proceed on a '
+        'partial\ndenominator.', file=sys.stderr)
+    raise SystemExit(3)
+
   if UNSUPPORTED_CAI_TYPES:
     print(
         f'\nERROR: {len(UNSUPPORTED_CAI_TYPES)} declared type(s) are not '
@@ -1601,6 +1871,12 @@ def main():
   pc = sub.add_parser('collect', parents=[common])
   pc.add_argument('--manifest', required=True)
   pc.add_argument('--out', default='-')
+  pc.add_argument(
+      '--verify-search-parity', action='store_true',
+      help="check the frozen split-type table against Cloud Asset Inventory's "
+      'search surface (one extra call per scope). Fails the run if search '
+      'returns an asset the list sweep did not — i.e. if CAI_SPLIT_TYPES '
+      'has gone stale')
   args = p.parse_args()
   VERBOSE = args.verbose
 
@@ -1625,6 +1901,8 @@ def main():
       kwargs['include_logging_defaults'] = True
     if args.include_pam_grants:
       kwargs['include_pam_grants'] = True
+    if args.verify_search_parity:
+      kwargs['verify_search_parity'] = True
     entries, registry, scope_summaries = collect(manifest, **kwargs)
 
     # Per-declared-type yield table.
@@ -1669,6 +1947,21 @@ def main():
                 # re-run these by hand.
                 'native_sweeps':
                     list(NATIVE_SWEEPS),
+                # Entries that entered the denominator because a
+                # declared type is split by scope in CAI's list surface
+                # (see CAI_SPLIT_TYPES). They are accounted under the
+                # declared type, so this block is the only place the
+                # list-surface type they were actually returned as is
+                # aggregated.
+                'split_type_sweeps':
+                    list(SPLIT_TYPE_SWEEPS),
+                # Result of --verify-search-parity. EMPTY means the
+                # probe did not run, which is not the same as clean: a
+                # probe that ran and found nothing appears here as a
+                # record whose `only_in_search` is empty. Read the
+                # record, not the key.
+                'split_parity':
+                    list(SPLIT_PARITY_FINDINGS),
                 # Every command this collection ran, in order, with its
                 # outcome and duration. Makes the cost of a scope
                 # auditable after the fact, and a slow or failing sweep

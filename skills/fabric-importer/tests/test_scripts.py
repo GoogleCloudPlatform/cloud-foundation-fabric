@@ -3426,5 +3426,323 @@ class TestCoverageEdgeCases(unittest.TestCase):
     self.assertEqual(unsigned, ['k2', 'k3', 'k4'])
 
 
+class TestCaiSplitTypes(unittest.TestCase):
+  """CAI's list and search surfaces use DIFFERENT asset-type taxonomies.
+
+  Live-run finding: a global Private Service Connect address was absent
+  from the denominator. `gcloud asset list --asset-types=
+  compute.googleapis.com/Address` returned 33 regional addresses;
+  `search-all-resources` for the same type returned 34, including the
+  global one. The cause is not a disagreement between the surfaces but a
+  documented taxonomy split: the list surface types global addresses as
+  `compute.googleapis.com/GlobalAddress`, which the manifest never
+  declared and the tool therefore never asked for.
+
+  Every existing guard missed it — the declared type is supported (no
+  unsupported-type fallback), the sweep succeeded (no SWEEP_FAILURES),
+  and it yielded 33 (no zero-yield warning) — which is why this needs
+  its own mechanism rather than a sharper error message.
+  """
+
+  _MANIFEST = {
+      'scope': {
+          'root': 'projects/my-prj'
+      },
+      'types': [{
+          'type': 'compute.googleapis.com/Address',
+          'levels': ['project']
+      }],
+  }
+
+  @staticmethod
+  def _addr(name, atype):
+    return {
+        'name': f'//compute.googleapis.com/projects/my-prj/{name}',
+        'assetType': atype,
+        'ancestors': ['projects/111', 'organizations/1'],
+    }
+
+  _REGIONAL = 'regions/europe-west1/addresses/regional-one'
+  _GLOBAL = 'global/addresses/psc-endpoint'
+
+  def _collect(self, handler, manifest=None, **kwargs):
+    real = inventory.run_json
+    inventory.run_json = handler
+    try:
+      return inventory.collect(manifest or self._MANIFEST, **kwargs)
+    finally:
+      inventory.run_json = real
+
+  @staticmethod
+  def _resolve_project(joined):
+    """CAI ancestors are project NUMBERS, so collect() resolves the scope
+    id first; unresolved, in_subtree() matches nothing."""
+    if 'projects describe' in joined:
+      return {
+          'projectNumber': '111',
+          'projectId': 'my-prj',
+          'lifecycleState': 'ACTIVE'
+      }
+    return None
+
+  def _list_handler(self, calls):
+
+    def handler(cmd, **kwargs):
+      joined = ' '.join(cmd)
+      calls.append(joined)
+      resolved = self._resolve_project(joined)
+      if resolved is not None:
+        return resolved
+      if 'search-all-resources' in joined:
+        return [
+            {
+                'name': self._addr(self._REGIONAL, '')['name']
+            },
+            {
+                'name': self._addr(self._GLOBAL, '')['name']
+            },
+        ]
+      if '--content-type=resource' in joined and 'Address' in joined:
+        out = [self._addr(self._REGIONAL, 'compute.googleapis.com/Address')]
+        if 'GlobalAddress' in joined:
+          out.append(
+              self._addr(self._GLOBAL, 'compute.googleapis.com/GlobalAddress'))
+        return out
+      return []
+
+    return handler
+
+  def test_split_sibling_map_only_covers_declared_unified_types(self):
+    self.assertEqual(
+        inventory.split_sibling_map(['compute.googleapis.com/Address']), {
+            'compute.googleapis.com/GlobalAddress':
+                'compute.googleapis.com/Address'
+        })
+    # Nothing declared, nothing swept: the table never widens a sweep on
+    # its own.
+    self.assertEqual(
+        inventory.split_sibling_map(['storage.googleapis.com/Bucket']), {})
+
+  def test_explicitly_declared_sibling_is_not_remapped(self):
+    """An operator who names the list-surface type wants it accounted as
+    itself; remapping would make their per-declared-type yield read 0."""
+    self.assertEqual(
+        inventory.split_sibling_map([
+            'compute.googleapis.com/Address',
+            'compute.googleapis.com/GlobalAddress',
+        ]), {})
+
+  def test_global_address_enters_the_denominator(self):
+    calls = []
+    with contextlib.redirect_stderr(io.StringIO()):
+      entries, _, _ = self._collect(self._list_handler(calls))
+    keys = {e['key'] for e in entries}
+    self.assertIn(self._addr(self._GLOBAL, '')['name'], keys)
+    self.assertIn(self._addr(self._REGIONAL, '')['name'], keys)
+
+  def test_sibling_rides_along_in_the_existing_call(self):
+    """The fix must cost zero extra API calls: `asset list` takes a
+    comma-separated --asset-types."""
+    calls = []
+    with contextlib.redirect_stderr(io.StringIO()):
+      self._collect(self._list_handler(calls))
+    sweeps = [c for c in calls if '--content-type=resource' in c]
+    self.assertEqual(len(sweeps), 1, calls)
+    self.assertIn('compute.googleapis.com/Address', sweeps[0])
+    self.assertIn('compute.googleapis.com/GlobalAddress', sweeps[0])
+
+  def test_sibling_is_accounted_under_the_declared_type(self):
+    calls = []
+    with contextlib.redirect_stderr(io.StringIO()):
+      entries, _, _ = self._collect(self._list_handler(calls))
+    glob = [
+        e for e in entries if e['key'].endswith('global/addresses/psc-endpoint')
+    ][0]
+    self.assertEqual(glob['asset_type'], 'compute.googleapis.com/Address')
+    # ...but the list-surface type is preserved, not laundered.
+    self.assertEqual(glob['cai_list_type'],
+                     'compute.googleapis.com/GlobalAddress')
+
+  def test_sibling_survives_the_level_filter(self):
+    """apply_level_filter() keys off asset_type. A sibling left under its
+    own type would match no manifest entry and be filtered by the
+    permissive default instead of by the operator's `levels`."""
+    manifest = {
+        'scope': {
+            'root': 'projects/my-prj'
+        },
+        'types': [{
+            'type': 'compute.googleapis.com/Address',
+            'levels': ['project']
+        }],
+    }
+    calls = []
+    with contextlib.redirect_stderr(io.StringIO()):
+      entries, _, _ = self._collect(self._list_handler(calls), manifest)
+    self.assertEqual(len(entries), 2)
+    self.assertTrue(all(e['level'] == 'project' for e in entries))
+
+  def test_split_sweep_is_announced_and_stamped(self):
+    calls = []
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      self._collect(self._list_handler(calls))
+    err = buf.getvalue()
+    self.assertIn('split by scope', err)
+    self.assertIn('compute.googleapis.com/GlobalAddress', err)
+    self.assertIn('--verify-search-parity', err)
+    self.assertEqual(len(inventory.SPLIT_TYPE_SWEEPS), 1)
+    self.assertEqual(
+        inventory.SPLIT_TYPE_SWEEPS[0], {
+            'declared_type': 'compute.googleapis.com/Address',
+            'cai_list_type': 'compute.googleapis.com/GlobalAddress',
+            'scope': 'projects/my-prj',
+            'swept_count': 1,
+        })
+    # Swept == kept here, so no exclusion note.
+    self.assertIn('1 swept from', err)
+    self.assertIn('1 in the denominator', err)
+    self.assertNotIn('excluded by scope/level/deleted', err)
+
+  def test_notice_reconciles_swept_against_denominator(self):
+    """Live-run finding (validation round 2): three siblings swept
+    org-wide, one dropped by the manifest's subtree filter — and the
+    NOTICE claimed all swept entries were IN the denominator. The
+    reader had to reconcile 3 against 2 by hand. The NOTICE must do
+    that subtraction itself."""
+    out_of_scope = {
+        'name': ('//compute.googleapis.com/projects/other-prj/'
+                 'global/addresses/psc-elsewhere'),
+        'assetType': 'compute.googleapis.com/GlobalAddress',
+        'ancestors': ['projects/999', 'organizations/1'],
+    }
+
+    def handler(cmd, **kwargs):
+      joined = ' '.join(cmd)
+      resolved = self._resolve_project(joined)
+      if resolved is not None:
+        return resolved
+      if '--content-type=resource' in joined and 'Address' in joined:
+        return [
+            self._addr(self._REGIONAL, 'compute.googleapis.com/Address'),
+            self._addr(self._GLOBAL, 'compute.googleapis.com/GlobalAddress'),
+            out_of_scope,
+        ]
+      return []
+
+    manifest = {
+        'scope': {
+            'root': 'organizations/1',
+            'include': ['projects/111'],
+        },
+        'types': [{
+            'type': 'compute.googleapis.com/Address',
+            'levels': ['project']
+        }],
+    }
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      entries, _, _ = self._collect(handler, manifest)
+    err = buf.getvalue()
+    keys = {e['key'] for e in entries}
+    self.assertNotIn(out_of_scope['name'], keys)
+    # Raw sweep is stamped raw...
+    self.assertEqual(inventory.SPLIT_TYPE_SWEEPS[0]['swept_count'], 2)
+    # ...and the NOTICE reconciles it against what actually survived.
+    self.assertIn('2 swept from', err)
+    self.assertIn('1 in the denominator', err)
+    self.assertIn('(1 excluded by scope/level/deleted filters)', err)
+
+  def test_no_parity_call_unless_asked(self):
+    calls = []
+    with contextlib.redirect_stderr(io.StringIO()):
+      self._collect(self._list_handler(calls))
+    self.assertFalse([c for c in calls if 'search-all-resources' in c])
+    self.assertEqual(inventory.SPLIT_PARITY_FINDINGS, [])
+
+  def test_parity_probe_is_clean_when_the_table_is_current(self):
+    calls = []
+    with contextlib.redirect_stderr(io.StringIO()):
+      self._collect(self._list_handler(calls), verify_search_parity=True)
+    probes = [c for c in calls if 'search-all-resources' in c]
+    self.assertEqual(len(probes), 1, calls)
+    # Bounded cost: the probe asks only for declared SPLIT types.
+    self.assertIn('--asset-types=compute.googleapis.com/Address', probes[0])
+    self.assertEqual(len(inventory.SPLIT_PARITY_FINDINGS), 1)
+    self.assertEqual(inventory.SPLIT_PARITY_FINDINGS[0]['only_in_search'], [])
+
+  def test_parity_probe_fails_loud_on_a_stale_table(self):
+    """The regression the whole table is exposed to: CAI adds a split
+    this frozen snapshot does not know about."""
+    unknown = ('//compute.googleapis.com/projects/my-prj/'
+               'global/addresses/some-future-split')
+
+    def handler(cmd, **kwargs):
+      joined = ' '.join(cmd)
+      resolved = self._resolve_project(joined)
+      if resolved is not None:
+        return resolved
+      if 'search-all-resources' in joined:
+        return [{
+            'name': self._addr(self._REGIONAL, '')['name']
+        }, {
+            'name': unknown
+        }]
+      if '--content-type=resource' in joined and 'Address' in joined:
+        return [self._addr(self._REGIONAL, 'compute.googleapis.com/Address')]
+      return []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      with self.assertRaises(SystemExit) as ctx:
+        self._collect(handler, verify_search_parity=True)
+    self.assertEqual(ctx.exception.code, 3)
+    err = buf.getvalue()
+    self.assertIn('search', err)
+    self.assertIn(unknown, err)
+    self.assertIn('CAI_SPLIT_TYPES', err)
+
+  def test_retired_sibling_type_is_reported_not_fatal(self):
+    """A sibling is tool-supplied, not operator-declared. CAI retiring a
+    split type is the convergence the table is waiting for, so it must
+    not fail the operator's run — but a stale frozen table is still a
+    fact about the denominator."""
+    err_text = ('command failed: gcloud --quiet asset list\n'
+                'ERROR: (gcloud.asset.list) INVALID_ARGUMENT: No '
+                'supported asset type matches: '
+                'compute.googleapis.com/GlobalAddress.')
+
+    def handler(cmd, **kwargs):
+      joined = ' '.join(cmd)
+      resolved = self._resolve_project(joined)
+      if resolved is not None:
+        return resolved
+      if kwargs.get('ignore_errors'):
+        return []
+      if 'GlobalAddress' in joined:
+        raise SystemExit(err_text)
+      if '--content-type=resource' in joined and 'Address' in joined:
+        return [self._addr(self._REGIONAL, 'compute.googleapis.com/Address')]
+      return []
+
+    buf = io.StringIO()
+    with contextlib.redirect_stderr(buf):
+      entries, _, _ = self._collect(handler)
+    self.assertEqual(len(entries), 1)
+    self.assertEqual(inventory.UNSUPPORTED_CAI_TYPES, [])
+    self.assertTrue(
+        any('CAI_SPLIT_TYPES may be stale' in m
+            for m in inventory.SUPPRESSED_SWEEPS), inventory.SUPPRESSED_SWEEPS)
+
+  def test_table_pairs_are_distinct_and_well_formed(self):
+    for unified, siblings in inventory.CAI_SPLIT_TYPES.items():
+      self.assertIsInstance(siblings, tuple, unified)
+      self.assertTrue(siblings, unified)
+      for s in siblings:
+        self.assertNotEqual(s, unified)
+        self.assertNotIn(s, inventory.CAI_SPLIT_TYPES,
+                         f'{s} is both a unified type and a sibling')
+
+
 if __name__ == '__main__':
   unittest.main()

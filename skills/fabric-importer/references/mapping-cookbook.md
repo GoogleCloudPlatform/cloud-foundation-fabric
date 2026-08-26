@@ -729,6 +729,52 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - Coverage map: CAI models only `compute.googleapis.com/Router` (the NAT is a sub-resource with no independent CAI asset type). In `coverage-map.yaml`, the single router key claims both addresses: `[module.<instance>.google_compute_router.router[0], module.<instance>.google_compute_router_nat.nat]`.
 - Lives in `project-<key>.tf`.
 
+### Compute addresses (`modules/net-address`) — verified r19 (global PSC, global PSA, regional internal)
+
+- Manifest: `compute.googleapis.com/Address`, `levels: [project]`.
+- **CAI split-type note**: CAI's list surface types GLOBAL addresses as
+  `compute.googleapis.com/GlobalAddress`; only the search surface
+  unifies them under `.../Address`. `inventory.py` sweeps the sibling
+  automatically and accounts it under the declared type — such entries
+  carry `cai_list_type` in the inventory and worklist, and
+  `_meta.split_type_sweeps` records the raw swept count. Do NOT declare
+  `GlobalAddress` yourself unless you deliberately want it accounted as
+  its own type. Run `--verify-search-parity` at least once per
+  engagement (see `cai-blind-spots.md`).
+- **Global PSC addresses** (`addressType: INTERNAL`,
+  `purpose: PRIVATE_SERVICE_CONNECT`, `global/` in the self link):
+  - Variable: `psc_addresses` with `region = null` (routes the entry
+    through `local.global_psc`). The paired consumer forwarding rule is
+    created only when `service_attachment != null`; an address-only
+    entry is legitimate.
+  - **Trap**: do NOT use `global_addresses` — it sets only
+    name/description/ip_version and cannot express `address_type`,
+    `purpose`, `network` or `address`, all ForceNew: the plan shows a
+    destroy/create, which on an import is always a mapping error.
+  - Address: `module.<instance>.google_compute_global_address.psc["<key>"]`;
+    import ID `projects/<project_id>/global/addresses/<name>`.
+  - **ForceNew trap — empty live description**: `psc_addresses.*.
+    description` defaults to `"Terraform managed."`, and `description`
+    is ForceNew on `google_compute_global_address`. A live address with
+    an empty description must set `description = ""` explicitly or the
+    plan shows a replacement.
+- **Global PSA addresses** (`purpose: VPC_PEERING`):
+  - Variable: `psa_addresses` with `address`, `network` and
+    `prefix_length` mirrored to live values.
+  - Address: `module.<instance>.google_compute_global_address.psa["<key>"]`;
+    import ID `projects/<project_id>/global/addresses/<name>`.
+- **Regional internal addresses** (`purpose: GCE_ENDPOINT` or
+  `SHARED_LOADBALANCER_VIP`):
+  - Variable: `internal_addresses` with `region`, `subnetwork` and
+    `purpose` mirrored to live values.
+  - Address: `module.<instance>.google_compute_address.internal["<key>"]`;
+    import ID `projects/<project_id>/regions/<region>/addresses/<name>`.
+- External, IPsec-interconnect and network-attachment variants:
+  unverified (not exercised by the validation runs).
+- **Reference rule**: `project_id = module.project_<key>.project_id`;
+  networks via `module.net_vpc_<key>.self_link`.
+- Lives in `project-<key>.tf`.
+
 ### NCC spokes — raw resource, documented capability gap (r12)
 
 - Manifest: `networkconnectivity.googleapis.com/Spoke`,

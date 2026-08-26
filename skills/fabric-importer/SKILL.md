@@ -223,12 +223,37 @@ enumerators for types known to be absent from the CAI catalogue
 (`NATIVE_ENUMERATORS`), so declaring the type in the manifest is enough
 — the tool skips CAI, sweeps with gcloud, and says so. Where no
 enumerator exists it refuses to proceed rather than guess, and it
-separates that case from a permission failure. Two remedies, in order:
+separates that case from a permission failure. Three remedies, in order:
 
 - **The type string is wrong.** The common case. Check it against the
   [supported types list](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
   — CAI calls the Logs Router settings singleton
   `logging.googleapis.com/Settings`, not `.../OrganizationSettings`.
+- **The type string is right, but only for the other CAI surface.** CAI
+  has TWO asset-type taxonomies. For a few Compute families the
+  list surface (`asset list`, the primary sweep) splits the family by
+  scope into separate types — `compute.googleapis.com/GlobalAddress`,
+  `.../GlobalForwardingRule`, `.../RegionBackendService`,
+  `.../RegionDisk` — while `search-all-resources` unifies them. This
+  one does not raise: the declared type is supported, the sweep
+  succeeds, the yield is non-zero, and the split-off assets are simply
+  never asked for. `inventory.py` sweeps the known siblings
+  automatically and accounts them under the declared type (stamped in
+  `_meta.split_type_sweeps`, and per entry as `cai_list_type`). The
+  table is a frozen snapshot of a doc that changes, so check it against
+  live CAI at least once per engagement:
+
+  ```bash
+  uv run scripts/inventory.py collect --manifest import-manifest.yaml \
+    --out inventory.json --verify-search-parity
+  ```
+
+  One extra call per scope; fatal if the search surface returns an asset
+  the list sweep did not. `_meta.split_parity` EMPTY means the probe did
+  not run; a probe that ran and found nothing is a record whose
+  `only_in_search` is empty. Read the record, not the key — and say
+  which in the report. See
+  [references/cai-blind-spots.md](./references/cai-blind-spots.md).
 - **CAI genuinely does not model the type, and no built-in covers it.**
   Give it a native enumerator in the manifest — a read-only gcloud
   command run per in-scope container, normalized into inventory
@@ -254,7 +279,9 @@ separates that case from a permission failure. Two remedies, in order:
 
 Every entry that did not come from CAI is stamped into
 `inventory.json`'s `_meta.native_sweeps` with the verbatim command, and
-belongs in the step-5 report.
+belongs in the step-5 report. Entries that came from CAI under a
+different asset type than the one declared are stamped into
+`_meta.split_type_sweeps` and belong there too.
 
 Collection closes with a one-line cost summary (`N gcloud call(s) in
 Xs: …`) and records every command it ran in `_meta.api_calls`. Add
@@ -374,6 +401,12 @@ The loop:
    `gcloud asset list` output before trusting it. Type strings taken
    from module knowledge have been wrong before. Record what CAI
    actually returns, including which enumeration path had to be used.
+   A non-zero yield is NOT confirmation that the type is complete: for
+   split families the list surface answers happily with only part of
+   the family (see step 1's second remedy). Where the type has any
+   global/regional/zonal distinction, census it on BOTH surfaces —
+   `asset list --asset-types=T` against `asset search-all-resources
+   --asset-types=T` — and reconcile the counts before trusting either.
    If CAI does not model the type at all, that is not a dead end and
    not a reason to narrow the manifest: enumerate it with `gcloud` (or
    the REST API) and merge it into the same denominator — see step 1 and
@@ -438,6 +471,17 @@ of completeness**, and a reconciled coverage report is not evidence of
 correctness. Never report one as if it covered the other, and never
 skip a gate because the other one is green.
 
+**An orphan import block is evidence about the DENOMINATOR, not just
+about the coverage map.** When gate 1 reports an `import {}` block
+targeting a resource that is not in `inventory.json`, and you know that
+resource is live, the first hypothesis is that enumeration missed it —
+not that the mapping is spurious. This is the only signal that fires for
+a silently short denominator, and it has been mistaken for a coverage-map
+problem and waived away in a live run. Investigate the enumeration path
+for that type (step 1, and `references/cai-blind-spots.md`) BEFORE
+proposing a waiver: a waiver over a short denominator makes the gap
+permanent and puts a human's name on it.
+
 ```bash
 terraform -chdir=tf fmt -recursive   # generated code is ALWAYS fmt-ed
 uv run scripts/coverage.py --inventory inventory.json --workspace tf \
@@ -485,7 +529,11 @@ module fell short, which attribute, and whether it is
 upstream-Fabric-issue material — plus
 benign diffs relied on, waivers in effect, proposed waivers/benign rules
 awaiting human review, and anything the manifest excludes that you
-believe deserves attention. Plain facts; no "100%" claims beyond what the
+believe deserves attention. State whether `--verify-search-parity` was
+run and what it found. An empty `_meta.split_parity` means the probe did
+not run; a clean probe is a record whose `only_in_search` is empty.
+Reporting an unchecked table as clean is exactly the kind of claim this
+section exists to prevent. Plain facts; no "100%" claims beyond what the
 gates literally verified.
 
 The report MUST include the verbatim stdout of both final gate runs —
