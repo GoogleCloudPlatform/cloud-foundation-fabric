@@ -59,8 +59,14 @@ and custom constraints are carried as `data/` YAML inside their owning
 | Service accounts | `modules/iam-service-account` | `project-factory` — `service_accounts:` block in the owning project's YAML (only when that project is factory-emitted) | SA + its IAM |
 | Log buckets | `modules/logging-bucket` | — | bucket config (sink destinations) |
 | VPC networks | `modules/net-vpc` | subnets only: `net-vpc` `factories_config.subnets_folder` | network, subnets (incl. proxy-only), routes |
+| VPC Firewall Rules | `modules/net-vpc-firewall` | `net-vpc-firewall` `factories_config.rules_folder` | legacy VPC firewall rules |
+| Cloud NAT & Routers | `modules/net-cloudnat` | — | Cloud NAT & Cloud Router |
+| HA VPN | `modules/net-vpn-ha` | — | HA VPN gateway, external gateway, tunnels, BGP peers |
+| Cloud DNS | `modules/dns` | `dns` `factories_config.recordsets_file` | managed zones, recordsets |
+| DNS Response Policy | `modules/dns-response-policy` | `dns-response-policy` `factories_config.rules` | response policies & rules |
 | Firewall policy rules | `modules/net-firewall-policy` inputs | `net-firewall-policy` `factories_config` rule files | ingress/egress rules |
 | Other | nearest Fabric module for the family; check `modules/` in-repo | see `FACTORIES.md` at the repo root — the authoritative factory catalog (every module factory flows through `factories_config`) | — |
+
 
 Instance keys: pick short stable slugs at first import (record them in
 `coverage-map.yaml`); keys are immutable afterwards. Because the key —
@@ -959,7 +965,85 @@ let plan tell you: it errors loudly and safely on a wrong ID.
 - **Traps**:
   - Grants represent transient workflow state with short TTLs and should **not** be managed in Terraform baseline IaC.
 
+### VPC Firewall Rules (`modules/net-vpc-firewall`)
+
+- **Manifest**: `compute.googleapis.com/Firewall`, `levels: [project]`.
+- **Carrier Distinction & Boundary Rule**: `modules/net-vpc` deliberately does not manage firewall rules directly to maintain module boundaries. `modules/net-vpc-firewall` is the dedicated Fabric carrier for legacy VPC firewall rules, distinct from `modules/net-firewall-policy` (which manages hierarchical and network firewall policies).
+- **Resource Addresses**:
+  - `module.<instance>.google_compute_firewall.custom_rules["<rule_name>"]` (or `rules["<rule_name>"]`)
+- **Import IDs**:
+  - `projects/<project_id>/global/firewalls/<rule_name>` (or `<project_id>/<rule_name>`)
+- **Inputs**: `project_id`, `network`, and `custom_rules` (or `factories_config.rules_folder`).
+- Lives in `project-<key>.tf`.
+
+### Cloud NAT & Routers (`modules/net-cloudnat`)
+
+- **Manifest**: `compute.googleapis.com/Router`, `levels: [project]`.
+- **Resource Addresses**:
+  - Router: `module.<instance>.google_compute_router.router[0]`
+  - NAT: `module.<instance>.google_compute_router_nat.nat`
+- **Import IDs**:
+  - Router: `projects/<project_id>/regions/<region>/routers/<router_name>`
+  - NAT: `projects/<project_id>/regions/<region>/routers/<router_name>/<nat_name>`
+- **Coverage Mapping Rule**: A single CAI `compute.googleapis.com/Router` key claims both `google_compute_router.router[0]` and `google_compute_router_nat.nat` in `coverage-map.yaml`.
+- Lives in `project-<key>.tf`.
+
+### Cloud DNS & Recordsets (`modules/dns`)
+
+- **Manifest**: `dns.googleapis.com/ManagedZone` and `dns.googleapis.com/ResourceRecordSet`, `levels: [project]`.
+- **Resource Addresses**:
+  - Managed Zone: `module.<instance>.google_dns_managed_zone.dns_managed_zone[0]`
+  - Recordsets: `module.<instance>.google_dns_record_set.dns_record_set["<type> <name>"]`
+- **Import IDs**:
+  - Zone: `projects/<project_id>/managedZones/<zone_name>`
+  - Recordset: `projects/<project_id>/managedZones/<zone_name>/rrsets/<record_name>/<type>`
+- **Coverage Mapping Rule**: In `coverage-map.yaml`, the `dns.googleapis.com/ManagedZone` key claims both the managed zone address and its child `google_dns_record_set` addresses.
+- **Default Description Trap**: Fabric's `modules/dns` defaults `description = "Terraform managed."` (with space), whereas FAST stages use `"Terraform-managed."` (with hyphen). Set `description = "Terraform-managed."` explicitly to prevent description drift.
+- Lives in `project-<key>.tf`.
+
+### DNS Response Policies (`modules/dns-response-policy`)
+
+- **Manifest**: `dns.googleapis.com/ResponsePolicy`, `levels: [project]`.
+- **Resource Addresses**:
+  - Response Policy: `module.<instance>.google_dns_response_policy.default[0]`
+  - Rules: `module.<instance>.google_dns_response_policy_rule.default["<rule_name>"]`
+- **Import IDs**:
+  - Policy: `projects/<project_id>/responsePolicies/<response_policy_name>`
+  - Rule: `projects/<project_id>/responsePolicies/<response_policy_name>/rules/<rule_name>`
+- **Input Schema Trap**: `networks` is `map(string)` (`name => self_link`), not a list of strings.
+- Lives in `project-<key>.tf`.
+
+### HA VPN & VPN Tunnels (`modules/net-vpn-ha`)
+
+- **Manifest**: `compute.googleapis.com/VpnGateway`, `compute.googleapis.com/ExternalVpnGateway`, `compute.googleapis.com/VpnTunnel`, and `compute.googleapis.com/Router`, `levels: [project]`.
+- **Resource Addresses**:
+  - HA VPN Gateway: `module.<instance>.google_compute_ha_vpn_gateway.ha_gateway[0]` (or external gateway resource)
+  - External VPN Gateway: `module.<instance>.google_compute_external_vpn_gateway.external_gateway["<peer_key>"]`
+  - VPN Tunnels: `module.<instance>.google_compute_vpn_tunnel.tunnels["<tunnel_key>"]`
+  - Router Interfaces: `module.<instance>.google_compute_router_interface.router_interface["<tunnel_key>"]`
+  - BGP Peers: `module.<instance>.google_compute_router_peer.bgp_peer["<tunnel_key>"]`
+- **Import IDs**:
+  - HA Gateway: `projects/<project_id>/regions/<region>/vpnGateways/<name>`
+  - External Gateway: `projects/<project_id>/global/externalVpnGateways/<name>`
+  - Tunnel: `projects/<project_id>/regions/<region>/vpnTunnels/<name>`
+  - Router Interface: `<project_id>/<region>/<router_name>/<interface_name>` *(provider format: no `projects/` prefix)*
+  - BGP Peer: `projects/<project_id>/regions/<region>/routers/<router_name>/<peer_name>`
+- **Secret Handling & Waiver Pattern**:
+  - Provider constraint: `google_compute_vpn_tunnel` marks `shared_secret` as `ForceNew: true`. The GCP Compute API only returns `shared_secret_hash` (not plaintext `shared_secret`) on import/read, leaving `shared_secret = null` in imported state. When configuration specifies `shared_secret`, Terraform plans a resource replacement (`destroy / re-create`).
+  - Recommended posture: Emit `modules/net-vpn-ha` with standard configuration, document/comment the secret requirement in HCL with instructions for the operator to provide the secret on day-2 mutation, and record a signed waiver for the preview diff.
+  - Alternative standalone fallback: Declare standalone `google_compute_vpn_tunnel` with `lifecycle { ignore_changes = [shared_secret] }`.
+- Lives in `project-<key>.tf`.
+
+### Network Connectivity Center (NCC)
+
+- **Manifest**: `networkconnectivity.googleapis.com/Hub`, `networkconnectivity.googleapis.com/Spoke`, `levels: [project]`.
+- **Capability Gap & Fallback**: Fabric provides `modules/ncc-spoke-ra` for router appliance spokes. Generic linked-VPC and linked-VPN spokes have no dedicated module carrier and are emitted as native `google_network_connectivity_spoke.<name>` resources.
+- **Import IDs**:
+  - Hub: `projects/<project_id>/locations/global/hubs/<hub_name>`
+  - Spoke: `projects/<project_id>/locations/<location>/spokes/<spoke_name>`
+
 ### Root module
+
 
 - Emit `versions.tf` (terraform >= 1.5, google + google-beta
   `>= 7.40, < 8`, `backend "local"`) and the module wiring yourself;
