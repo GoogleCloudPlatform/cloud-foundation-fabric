@@ -7,6 +7,23 @@
     "name": {
       "type": "string"
     },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "ALPHA",
+        "BETA",
+        "GA",
+        "DEPRECATED",
+        "DISABLED",
+        "EAP"
+      ]
+    },
     "includedPermissions": {
       "type": "array",
       "items": {

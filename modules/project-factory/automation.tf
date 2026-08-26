@@ -158,24 +158,29 @@ module "automation-service-accounts" {
     }
     tag_values = local.ctx_tag_values
   })
-  iam                    = lookup(each.value, "iam", {})
-  iam_bindings           = lookup(each.value, "iam_bindings", {})
-  iam_bindings_additive  = lookup(each.value, "iam_bindings_additive", {})
-  iam_billing_roles      = lookup(each.value, "iam_billing_roles", {})
-  iam_folder_roles       = lookup(each.value, "iam_folder_roles", {})
-  iam_organization_roles = lookup(each.value, "iam_organization_roles", {})
-  iam_project_roles      = lookup(each.value, "iam_project_roles", {})
-  # iam_sa_roles           = lookup(each.value, "iam_sa_roles", {})
+  iam                       = lookup(each.value, "iam", {})
+  iam_bindings              = lookup(each.value, "iam_bindings", {})
+  iam_bindings_additive     = lookup(each.value, "iam_bindings_additive", {})
+  iam_billing_bindings      = lookup(each.value, "iam_billing_bindings", {})
+  iam_billing_roles         = lookup(each.value, "iam_billing_roles", {})
+  iam_folder_bindings       = lookup(each.value, "iam_folder_bindings", {})
+  iam_folder_roles          = lookup(each.value, "iam_folder_roles", {})
+  iam_organization_bindings = lookup(each.value, "iam_organization_bindings", {})
+  iam_organization_roles    = lookup(each.value, "iam_organization_roles", {})
+  iam_project_bindings      = lookup(each.value, "iam_project_bindings", {})
+  iam_project_roles         = lookup(each.value, "iam_project_roles", {})
+  # iam_sa_roles              = lookup(each.value, "iam_sa_roles", {})
   # we don't interpolate buckets here as we can't use a dynamic key
-  iam_storage_roles = lookup(each.value, "iam_storage_roles", {})
-  tag_bindings      = lookup(each.value, "tag_bindings", {})
+  iam_storage_bindings = lookup(each.value, "iam_storage_bindings", {})
+  iam_storage_roles    = lookup(each.value, "iam_storage_roles", {})
+  tag_bindings         = lookup(each.value, "tag_bindings", {})
 }
 
 module "automation-service-accounts-iam" {
   source = "../iam-service-account"
   for_each = {
     for k, v in local.automation_sas :
-    k => v if lookup(v, "iam_sa_roles", null) != null
+    k => v if lookup(v, "iam_sa_roles", null) != null || lookup(v, "iam_sa_bindings", null) != null
   }
   project_id = each.value.automation_project
   prefix     = each.value.prefix
@@ -186,5 +191,6 @@ module "automation-service-accounts-iam" {
   context = merge(local.ctx, {
     service_account_ids = local.projects_sas_ids
   })
-  iam_sa_roles = lookup(each.value, "iam_sa_roles", {})
+  iam_sa_bindings = lookup(each.value, "iam_sa_bindings", {})
+  iam_sa_roles    = lookup(each.value, "iam_sa_roles", {})
 }

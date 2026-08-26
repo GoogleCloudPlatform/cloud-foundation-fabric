@@ -586,6 +586,41 @@ values:
     project: fast-prod-net-core-0
     tags: null
     timeouts: null
+  module.vpc-routes["hub"].google_compute_route.gateway["named"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    dest_range: 172.16.0.0/16
+    name: imported-route
+    network: hub-0
+    next_hop_gateway: default-internet-gateway
+    next_hop_ilb: null
+    next_hop_instance: null
+    next_hop_vpn_tunnel: null
+    params: []
+    priority: 1000
+    project: fast-prod-net-core-0
+    tags: null
+    timeouts: null
+  module.vpc-routes["hub"].google_network_connectivity_policy_based_route.default["skip-pbr-for-nva"]:
+    deletion_policy: DELETE
+    description: Terraform-managed.
+    filter:
+    - dest_range: 0.0.0.0/0
+      ip_protocol: ALL
+      protocol_version: IPV4
+      src_range: 0.0.0.0/0
+    interconnect_attachment: []
+    labels: null
+    name: imported-pbr
+    network: projects/fast-prod-net-core-0/global/networks/hub-0
+    next_hop_ilb_ip: null
+    next_hop_other_routes: DEFAULT_ROUTING
+    priority: 100
+    project: fast-prod-net-core-0
+    timeouts: null
+    virtual_machine:
+    - tags:
+      - nva
   module.vpn-ha["hub/to-onprem"].google_compute_external_vpn_gateway.external_gateway["default"]:
     deletion_policy: DELETE
     description: Terraform managed external VPN gateway
@@ -740,7 +775,7 @@ counts:
   google_compute_interconnect_attachment: 2
   google_compute_interconnect_attachment_group: 1
   google_compute_network: 1
-  google_compute_route: 4
+  google_compute_route: 5
   google_compute_router: 1
   google_compute_router_interface: 4
   google_compute_router_peer: 4
@@ -750,6 +785,7 @@ counts:
   google_logging_project_settings: 1
   google_network_connectivity_group: 1
   google_network_connectivity_hub: 1
+  google_network_connectivity_policy_based_route: 1
   google_network_connectivity_spoke: 3
   google_project: 1
   google_project_iam_member: 8
@@ -758,7 +794,7 @@ counts:
   google_storage_bucket_object: 2
   modules: 9
   random_id: 5
-  resources: 65
+  resources: 67
   terraform_data: 2
 
 outputs:

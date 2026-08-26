@@ -125,10 +125,14 @@ variable "workstation_configs" {
       service_account              = optional(string)
       service_account_scopes       = optional(list(string), [])
       tags                         = optional(list(string))
-      accelerators = optional(list(object({
-        type  = optional(string)
-        count = optional(number)
-      })), [])
+      accelerators                 = optional(map(number), {})
+      boost_configs = optional(map(object({
+        machine_type                 = optional(string)
+        boot_disk_size_gb            = optional(number)
+        enable_nested_virtualization = optional(bool, false)
+        pool_size                    = optional(number)
+        accelerators                 = optional(map(number), {})
+      })), {})
       shielded_instance_config = optional(object({
         enable_secure_boot          = optional(bool, false)
         enable_vtpm                 = optional(bool, false)

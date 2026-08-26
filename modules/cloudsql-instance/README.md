@@ -272,7 +272,7 @@ module "db" {
   source     = "./fabric/modules/cloudsql-instance"
   project_id = var.project_id
   context = {
-    networks = { myvpc = var.vpc.self_link }
+    networks = { myvpc = var.vpc.id }
   }
   network_config = {
     connectivity = {
@@ -294,10 +294,13 @@ module "db" {
   database_version  = "POSTGRES_13"
   tier              = "db-g1-small"
 
+  replicas = {
+    replica1 = { region = "us-central1" }
+  }
   gcp_deletion_protection       = false
   terraform_deletion_protection = false
 }
-# tftest modules=1 resources=1 inventory=psc-auto.yaml e2e
+# tftest modules=1 resources=2 inventory=psc-auto.yaml e2e
 ```
 
 ### Enable public IP

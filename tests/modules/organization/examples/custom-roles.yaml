@@ -1,10 +1,10 @@
-# Copyright 2023 Google LLC
+# Copyright 2026 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,17 +13,8 @@
 # limitations under the License.
 
 values:
-  module.org.google_organization_iam_custom_role.roles["test_2"]:
-    description: Terraform-managed.
-    org_id: '1122334455'
-    permissions:
-    - resourcemanager.projects.get
-    - resourcemanager.projects.getIamPolicy
-    - resourcemanager.projects.list
-    role_id: projectViewer
-    stage: GA
-    title: Custom role projectViewer
   module.org.google_organization_iam_custom_role.roles["test_1"]:
+    deletion_policy: DELETE
     description: Terraform-managed.
     org_id: '1122334455'
     permissions:
@@ -31,6 +22,17 @@ values:
     role_id: test_1
     stage: GA
     title: Custom role test_1
+  module.org.google_organization_iam_custom_role.roles["test_2"]:
+    deletion_policy: DELETE
+    description: Allows viewing project resources.
+    org_id: '1122334455'
+    permissions:
+    - resourcemanager.projects.get
+    - resourcemanager.projects.getIamPolicy
+    - resourcemanager.projects.list
+    role_id: projectViewer
+    stage: GA
+    title: Project viewer
 
 counts:
   google_organization_iam_custom_role: 2

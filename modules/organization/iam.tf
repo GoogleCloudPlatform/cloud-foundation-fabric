@@ -45,13 +45,19 @@ locals {
     {
       for k, v in local._custom_roles : k => {
         name        = lookup(v, "name", k)
+        title       = lookup(v, "title", null)
+        description = lookup(v, "description", null)
+        stage       = lookup(v, "stage", null)
         permissions = v["includedPermissions"]
       }
     },
     {
       for k, v in var.custom_roles : k => {
         name        = k
-        permissions = v
+        title       = v.title
+        description = v.description
+        stage       = v.stage
+        permissions = v.permissions
       }
     }
   )
@@ -116,11 +122,16 @@ check "custom_roles" {
 }
 
 resource "google_organization_iam_custom_role" "roles" {
-  for_each    = local.custom_roles
-  org_id      = local.organization_id_numeric
-  role_id     = each.value.name
-  title       = "Custom role ${each.value.name}"
-  description = "Terraform-managed."
+  for_each = local.custom_roles
+  org_id   = local.organization_id_numeric
+  role_id  = each.value.name
+  title = coalesce(
+    each.value.title, "Custom role ${each.value.name}"
+  )
+  description = coalesce(
+    each.value.description, "Terraform-managed."
+  )
+  stage       = each.value.stage
   permissions = each.value.permissions
 }
 

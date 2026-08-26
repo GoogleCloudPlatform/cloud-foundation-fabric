@@ -31,13 +31,17 @@ locals {
       try(local._iam_principals[role], [])
     )
   }
-  iam_billing_pairs = flatten([
+  iam_billing_pairs = merge(flatten([
     for entity, roles in var.iam_billing_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
+      for role in roles : [{
+        "${entity}-${role}" = {
+          billing_account_id = entity
+          role               = role
+          condition          = null
+        }
+      }]
     ]
-  ])
+  ])...)
   iam_bindings_additive = merge(
     var.iam_bindings_additive,
     [
@@ -51,41 +55,61 @@ locals {
       }
     ]...
   )
-  iam_folder_pairs = flatten([
+  iam_folder_pairs = merge(flatten([
     for entity, roles in var.iam_folder_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
+      for role in roles : [{
+        "${entity}-${role}" = {
+          folder_id = entity
+          role      = role
+          condition = null
+        }
+      }]
     ]
-  ])
-  iam_organization_pairs = flatten([
+  ])...)
+  iam_organization_pairs = merge(flatten([
     for entity, roles in var.iam_organization_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
+      for role in roles : [{
+        "${entity}-${role}" = {
+          organization_id = entity
+          role            = role
+          condition       = null
+        }
+      }]
     ]
-  ])
-  iam_project_pairs = flatten([
+  ])...)
+  iam_project_pairs = merge(flatten([
     for entity, roles in var.iam_project_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
+      for role in roles : [{
+        "${entity}-${role}" = {
+          project_id = entity
+          role       = role
+          condition  = null
+        }
+      }]
     ]
-  ])
-  iam_sa_pairs = flatten([
+  ])...)
+  iam_sa_pairs = merge(flatten([
     for entity, roles in var.iam_sa_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
+      for role in roles : [{
+        "${entity}-${role}" = {
+          service_account_id = entity
+          role               = role
+          condition          = null
+        }
+      }]
     ]
-  ])
-  iam_storage_pairs = flatten([
+  ])...)
+  iam_storage_pairs = merge(flatten([
     for entity, roles in var.iam_storage_roles : [
-      for role in roles : [
-        { entity = entity, role = role }
-      ]
+      for role in roles : [{
+        "${entity}-${role}" = {
+          bucket    = entity
+          role      = role
+          condition = null
+        }
+      }]
     ]
-  ])
+  ])...)
 }
 
 resource "google_service_account_iam_binding" "authoritative" {
@@ -152,15 +176,22 @@ moved {
 }
 
 resource "google_billing_account_iam_member" "billing_roles" {
-  for_each = {
-    for pair in local.iam_billing_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  billing_account_id = each.value.entity
+  for_each           = merge(local.iam_billing_pairs, var.iam_billing_bindings)
+  billing_account_id = each.value.billing_account_id
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )
   member = local.iam_email
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 moved {
@@ -169,15 +200,22 @@ moved {
 }
 
 resource "google_folder_iam_member" "folder_roles" {
-  for_each = {
-    for pair in local.iam_folder_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  folder = lookup(local.ctx.folder_ids, each.value.entity, each.value.entity)
+  for_each = merge(local.iam_folder_pairs, var.iam_folder_bindings)
+  folder   = lookup(local.ctx.folder_ids, each.value.folder_id, each.value.folder_id)
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )
   member = local.iam_email
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 moved {
@@ -186,15 +224,22 @@ moved {
 }
 
 resource "google_organization_iam_member" "organization_roles" {
-  for_each = {
-    for pair in local.iam_organization_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  org_id = each.value.entity
+  for_each = merge(local.iam_organization_pairs, var.iam_organization_bindings)
+  org_id   = each.value.organization_id
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )
   member = local.iam_email
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 moved {
@@ -203,29 +248,41 @@ moved {
 }
 
 resource "google_project_iam_member" "project_roles" {
-  for_each = {
-    for pair in local.iam_project_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  project = lookup(local.ctx.project_ids, each.value.entity, each.value.entity)
+  for_each = merge(local.iam_project_pairs, var.iam_project_bindings)
+  project  = lookup(local.ctx.project_ids, each.value.project_id, each.value.project_id)
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )
   member = local.iam_email
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 resource "google_service_account_iam_member" "additive" {
-  for_each = {
-    for pair in local.iam_sa_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  service_account_id = lookup(
-    local.ctx.service_account_ids, each.value.entity, each.value.entity
-  )
+  for_each           = merge(local.iam_sa_pairs, var.iam_sa_bindings)
+  service_account_id = lookup(local.ctx.service_account_ids, each.value.service_account_id, each.value.service_account_id)
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )
   member = local.iam_email
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }
 
 moved {
@@ -234,15 +291,20 @@ moved {
 }
 
 resource "google_storage_bucket_iam_member" "bucket_roles" {
-  for_each = {
-    for pair in local.iam_storage_pairs :
-    "${pair.entity}-${pair.role}" => pair
-  }
-  bucket = lookup(
-    local.ctx.storage_buckets, each.value.entity, each.value.entity
-  )
+  for_each = merge(local.iam_storage_pairs, var.iam_storage_bindings)
+  bucket   = lookup(local.ctx.storage_buckets, each.value.bucket, each.value.bucket)
   role = lookup(
     local.ctx.custom_roles, each.value.role, each.value.role
   )
   member = local.iam_email
+  dynamic "condition" {
+    for_each = each.value.condition == null ? [] : [""]
+    content {
+      expression = templatestring(
+        each.value.condition.expression, var.context.condition_vars
+      )
+      title       = each.value.condition.title
+      description = each.value.condition.description
+    }
+  }
 }

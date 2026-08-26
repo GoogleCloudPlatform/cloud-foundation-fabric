@@ -91,6 +91,32 @@ variable "data_overrides" {
       enable_ula_internal = optional(bool)
       internal_range      = optional(string)
     }))
+    policy_based_routes = optional(map(object({
+      name                = optional(string)
+      description         = optional(string, "Terraform-managed.")
+      labels              = optional(map(string))
+      priority            = optional(number)
+      next_hop_ilb_ip     = optional(string)
+      use_default_routing = optional(bool, false)
+      filter = optional(object({
+        ip_protocol = optional(string)
+        dest_range  = optional(string)
+        src_range   = optional(string)
+      }), {})
+      target = optional(object({
+        interconnect_attachment = optional(string)
+        tags                    = optional(list(string))
+      }), {})
+    })))
+    routes = optional(map(object({
+      name          = optional(string)
+      description   = optional(string, "Terraform-managed.")
+      dest_range    = string
+      next_hop_type = string
+      next_hop      = string
+      priority      = optional(number)
+      tags          = optional(list(string))
+    })))
   })
   default  = {}
   nullable = false

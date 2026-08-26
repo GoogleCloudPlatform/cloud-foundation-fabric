@@ -31,7 +31,7 @@ tmpdir:
 env:
   - GROUP
 persona:
-  initial_user_input: "Hi, please activate the fast-0-org-setup-prereqs skill and guide me through the setup."
+  initial_user_input: "Hi, please activate the fast-prerequisites skill and guide me through the setup."
   context: >
     You are a GCP developer setting up FAST.
     Your target environment is Standard GCP.

@@ -35,8 +35,9 @@ module "taxonomies" {
   context = merge(local.ctx, {
     iam_principals = merge(
       local.ctx_iam_principals,
-      lookup(local.self_sas_iam_emails, each.key, {}),
-      local.projects_service_agents
+      local.projects_service_agents,
+      lookup(local.per_project_service_agents, each.key, {}),
+      lookup(local.self_sas_iam_emails, each.key, {})
     )
     project_ids = merge(
       local.ctx.project_ids,

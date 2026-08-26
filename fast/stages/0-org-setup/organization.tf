@@ -15,6 +15,7 @@
  */
 
 locals {
+  _org_logging_settings = lookup(local.organization, "logging", null)
   ctx_condition_vars = {
     custom_roles = merge(
       local.ctx.custom_roles,
@@ -49,25 +50,18 @@ locals {
     ? try(local.defaults.organization.id, local.organization.id)
     : local.organization.id
   )
-  # build map of predefined groups if organization domain is set
+  # define domain principal if organization domain is set
   org_iam_principals = local.organization.domain == null ? {} : {
-    domain                  = "domain:${local.organization.domain}"
-    gcp-billing-admins      = "group:gcp-billing-admins@${local.organization.domain}"
-    gcp-devops              = "group:gcp-devops@${local.organization.domain}"
-    gcp-network-admins      = "group:gcp-network-admins@${local.organization.domain}"
-    gcp-organization-admins = "group:gcp-organization-admins@${local.organization.domain}"
-    gcp-secops-admins       = "group:gcp-secops-admins@${local.organization.domain}"
-    gcp-security-admins     = "group:gcp-security-admins@${local.organization.domain}"
-    gcp-support             = "group:gcp-support@${local.organization.domain}"
+    domain = "domain:${local.organization.domain}"
   }
   org_access_levels = {
     for k, v in module.organization[0].access_levels : k => v.id
   }
   org_logging_identities = merge(
-    module.organization[0].logging_identities.kms == null ? {} : {
+    try(local._org_logging_settings.kms_key_name, null) == null ? {} : {
       "organization/logging/kms" = module.organization[0].logging_identities.kms
     },
-    module.organization[0].logging_identities.logging == null ? {} : {
+    local._org_logging_settings == null ? {} : {
       "organization/logging/sinks" = module.organization[0].logging_identities.logging
     }
   )

@@ -86,5 +86,5 @@ module "test" {
     psc_cidr_block = "10.8.11.192/26"
   }
 }
-# tftest modules=2 resources=104
+# tftest modules=2 resources=6
 ```

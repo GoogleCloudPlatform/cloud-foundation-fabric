@@ -274,7 +274,7 @@ values:
     timeouts: null
   google_project_iam_member.bucket_sinks_binding["test-logging"]:
     condition:
-    - expression: resource.name.endsWith('projects/test-prod-audit-logs-0/locations/europe-west8/buckets/audit-logs')
+    - expression: resource.name.endsWith('locations/europe-west8/buckets/audit-logs')
       title: test-logging bucket writer
     project: test-prod-audit-logs-0
     role: roles/logging.bucketWriter

@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ values:
     default_partition_expiration_ms: null
     default_table_expiration_ms: null
     delete_contents_on_destroy: true
+    deletion_policy: DELETE
     description: Terraform managed.
     effective_labels:
       goog-terraform-provisioned: 'true'
@@ -60,6 +61,7 @@ values:
       goog-terraform-provisioned: 'true'
     timeouts: null
   module.destination-project.google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-dest-prj
@@ -70,6 +72,7 @@ values:
     cors: []
     custom_placement_config: []
     default_event_based_hold: null
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     enable_object_retention: null
@@ -103,6 +106,7 @@ values:
     project: test-project
   module.project-host.google_logging_project_sink.sink["alert"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: alert (Terraform-managed).
     destination: logging.googleapis.com/projects/test-dest-prj
     disabled: false
@@ -113,6 +117,7 @@ values:
     unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["debug"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: debug (Terraform-managed).
     disabled: false
     exclusions:
@@ -128,6 +133,7 @@ values:
     bigquery_options:
     - use_partitioned_tables: false
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: info (Terraform-managed).
     disabled: false
     exclusions: []
@@ -137,6 +143,7 @@ values:
     unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["notice"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: notice (Terraform-managed).
     destination: pubsub.googleapis.com/projects/project-id/topics/pubsub_sink
     disabled: false
@@ -147,6 +154,7 @@ values:
     unique_writer_identity: true
   module.project-host.google_logging_project_sink.sink["warnings"]:
     custom_writer_identity: null
+    deletion_policy: DELETE
     description: warnings (Terraform-managed).
     destination: storage.googleapis.com/test-gcs_sink
     disabled: false
@@ -179,6 +187,7 @@ values:
     project: projects/test-dest-prj
     role: roles/logging.logWriter
   module.project-host.google_project_service.project_services["logging.googleapis.com"]:
+    deletion_policy: DELETE
     disable_dependent_services: false
     disable_on_destroy: false
     project: test-project
@@ -195,6 +204,7 @@ values:
     role: roles/storage.objectCreator
     timeouts: null
   module.pubsub.google_pubsub_topic.default:
+    deletion_policy: DELETE
     effective_labels:
       goog-terraform-provisioned: 'true'
     ingestion_data_source_settings: []
@@ -226,3 +236,5 @@ counts:
   google_storage_bucket_iam_member: 1
   modules: 6
   resources: 21
+
+outputs: {}

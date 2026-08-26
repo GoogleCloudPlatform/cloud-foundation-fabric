@@ -58,24 +58,28 @@ module "project" {
     project_ids    = merge(var.project_ids, var.context.project_ids)
   }
   custom_roles = {
-    "secopsDashboardViewer" = [
-      "chronicle.dashboardCharts.get",
-      "chronicle.dashboardCharts.list",
-      "chronicle.dashboardQueries.execute",
-      "chronicle.dashboardQueries.get",
-      "chronicle.dashboardQueries.list",
-      "chronicle.dashboards.get",
-      "chronicle.dashboards.list",
-      "chronicle.dashboards.schedule",
-      "chronicle.nativeDashboards.get",
-      "chronicle.nativeDashboards.list"
-    ]
-    "secopsDataViewer" = [
-      "chronicle.legacies.legacyFindRawLogs",
-      "chronicle.legacies.legacySearchRawLogs",
-      "chronicle.referenceLists.get",
-      "chronicle.referenceLists.update"
-    ]
+    "secopsDashboardViewer" = {
+      permissions = [
+        "chronicle.dashboardCharts.get",
+        "chronicle.dashboardCharts.list",
+        "chronicle.dashboardQueries.execute",
+        "chronicle.dashboardQueries.get",
+        "chronicle.dashboardQueries.list",
+        "chronicle.dashboards.get",
+        "chronicle.dashboards.list",
+        "chronicle.dashboards.schedule",
+        "chronicle.nativeDashboards.get",
+        "chronicle.nativeDashboards.list"
+      ]
+    }
+    "secopsDataViewer" = {
+      permissions = [
+        "chronicle.legacies.legacyFindRawLogs",
+        "chronicle.legacies.legacySearchRawLogs",
+        "chronicle.referenceLists.get",
+        "chronicle.referenceLists.update"
+      ]
+    }
   }
   iam = {}
   iam_bindings_additive = merge(
