@@ -280,6 +280,12 @@ variable "projects" {
       soft_delete_retention = optional(number)
     })), {})
     contacts = optional(map(list(string)), {})
+    custom_roles = optional(map(object({
+      permissions = list(string)
+      title       = optional(string)
+      description = optional(string)
+      stage       = optional(string)
+    })), {})
     datasets = optional(map(object({
       encryption_key = optional(string)
       friendly_name  = optional(string)

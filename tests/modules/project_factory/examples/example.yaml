@@ -492,6 +492,12 @@ values:
     - serviceAccount:dev-tb-app0-0-ro@test-pf-teams-iac-0.iam.gserviceaccount.com
     project: test-pf-dev-tb-app0-0
     role: roles/viewer
+  module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["$custom_roles:custom_role_0"]:
+    condition: []
+    members:
+    - group:team-b-admins@example.org
+    project: test-pf-dev-tb-app0-1
+    role: projects/test-pf-dev-tb-app0-1/roles/custom_role_0
   module.project-factory.module.projects-iam["dev-tb-app0-1"].google_project_iam_binding.authoritative["roles/run.admin"]:
     condition: []
     members:
@@ -732,6 +738,16 @@ values:
       goog-terraform-provisioned: 'true'
       team: team-b
     timeouts: null
+  module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_custom_role.roles["custom_role_0"]:
+    deletion_policy: DELETE
+    description: Custom role 0 description.
+    permissions:
+    - compute.instances.get
+    - compute.instances.list
+    project: test-pf-dev-tb-app0-1
+    role_id: custom_role_0
+    stage: GA
+    title: Custom role 0
   module.project-factory.module.projects["dev-tb-app0-1"].google_project_iam_member.service_agents["container-engine-robot"]:
     condition: []
     project: test-pf-dev-tb-app0-1
@@ -1085,7 +1101,8 @@ counts:
   google_privileged_access_manager_entitlement: 2
   google_project: 4
   google_project_iam_audit_config: 1
-  google_project_iam_binding: 6
+  google_project_iam_binding: 7
+  google_project_iam_custom_role: 1
   google_project_iam_member: 23
   google_project_service: 14
   google_project_service_identity: 5
@@ -1104,7 +1121,7 @@ counts:
   google_tags_tag_value: 2
   google_tags_tag_value_iam_binding: 1
   modules: 39
-  resources: 125
+  resources: 127
   terraform_data: 2
 
 outputs: {}
