@@ -12,10 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module: modules/artifact-registry
-
-tests:
-  context:
-  universe:
-  remote_go_common:
-  remote_maven_common:
+values:
+  google_artifact_registry_repository.registry:
+    format: GO
+    mode: REMOTE_REPOSITORY
+    location: europe-west1
+    project: my-project
+    repository_id: go-remote
+    remote_repository_config:
+    - common_repository:
+      - uri: https://proxy.golang.org
