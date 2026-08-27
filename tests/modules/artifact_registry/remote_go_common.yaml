@@ -1,0 +1,61 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+values:
+  google_artifact_registry_repository.registry:
+    cleanup_policies: []
+    cleanup_policy_dry_run: null
+    deletion_policy: DELETE
+    description: Terraform-managed registry
+    docker_config: []
+    effective_labels:
+      goog-terraform-provisioned: 'true'
+    format: GO
+    kms_key_name: null
+    labels: null
+    location: europe-west1
+    maven_config: []
+    mode: REMOTE_REPOSITORY
+    project: my-project
+    remote_repository_config:
+    - apt_repository: []
+      common_repository:
+      - uri: https://proxy.golang.org
+      description: null
+      disable_upstream_validation: null
+      docker_repository: []
+      maven_repository: []
+      no_cache: []
+      npm_repository: []
+      python_repository: []
+      upstream_credentials: []
+      yum_repository: []
+    repository_id: go-remote
+    terraform_labels:
+      goog-terraform-provisioned: 'true'
+    timeouts: null
+    virtual_repository_config: []
+    vulnerability_scanning_config:
+    - enablement_config: null
+
+counts:
+  google_artifact_registry_repository: 1
+  modules: 0
+  resources: 1
+
+outputs:
+  id: __missing__
+  name: __missing__
+  repository: __missing__
+  url: europe-west1-go.pkg.dev/my-project/go-remote
