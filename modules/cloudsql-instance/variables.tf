@@ -232,8 +232,9 @@ variable "network_config" {
       psc_config = optional(object({
         allowed_consumer_projects      = optional(list(string))
         network_attachment_uri         = optional(string)
-        psc_auto_dns_enabled           = optional(bool, false)
-        psc_write_endpoint_dns_enabled = optional(bool, false)
+        psc_auto_dns_enabled           = optional(bool)
+        psc_write_endpoint_dns_enabled = optional(bool)
+        psc_auto_connection_policy_enabled = optional(bool)
         psc_auto_connections = optional(list(object({
           consumer_network            = string
           consumer_service_project_id = optional(string)
